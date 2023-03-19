@@ -1,0 +1,740 @@
+<form id="modifyFrm" action="" onsubmit="return false;">
+    <div class="col-12">
+       <div class="card">
+           <div class="card-header p-b-0">
+               <h3 class="sub-title"><strong>기본 정보</strong></h3>
+           </div>
+           <div class="card-block-small p-t-0">
+               <div class="row">
+                   <div class="col-12 col-lg-6 mb-3">
+                       <div class="mb-2 form-group required">
+                           <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="rcritNm"><strong>대여모집명</strong></label>
+                           <div class="col-12">
+                               <input type="text" class="form-control form-control-sm" name="rcritNm" id="rcritNm" th:value="${resVo.rcritNm}"/>
+                           </div>
+                       </div>
+                   </div>
+                   
+                   <div class="col-12 col-lg-6 mb-3">
+                      <div class="mb-0 form-group required">
+                           <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                               <strong>모집 여부</strong></div>
+                           <div class="col-12">
+                               <div class="form-radio">
+                                   <div class="radio radio-inline">
+                                       <label class="mb-0 form-label">
+                                           <input type="radio" name="operYn" value="Y" th:checked ="${resVo.operYn == 'Y'}">
+                                           <i class="helper"></i>Y
+                                       </label>
+                                   </div>
+                                   <div class="radio radio-inline">
+                                       <label class="mb-0 form-label">
+                                           <input type="radio" name="operYn" value="N" th:checked ="${resVo.operYn == 'N'}">
+                                           <i class="helper"></i>N
+                                       </label>
+                                   </div>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+                   <div class="row">
+                    <div class="col-12 col-lg-6 mb-3">
+                       <div class="mb-2 form-group required">
+                           <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="rcritNm"><strong>꾸러미 선택</strong></label>
+	                           <div class="col-12">
+	                                <input type="text" class="cmpnt-input" selectsearchcondition="packageid" id="packageid" name="packageid" style="position:absolute;width:0px;margin:0px;padding:0px;visibility:hidden;">
+	                                <select class="select2-hidden-accessible" name="selectPackageid" id="selectPackageid" tabindex="-1" aria-hidden="true" ></select>
+	                           </div>
+	                       </div>
+	                   </div>
+                   </div>
+               </div>
+           </div>
+           <div class="card-header p-t-0 p-b-0">
+               <h3 class="sub-title"><strong>대여접수 설정</strong></h3>
+           </div>
+           <div class="card-block-small p-t-0">
+               <div class="row">
+                   <div class="col-12 col-md-6 col-lg-3 mb-3">
+                       <div class="mb-0 form-group required">
+                           <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="bgngDt"><strong>대여 접수 시작일시</strong></label>
+                           <div class="col-12">
+                               <input type="datetime-local" class="form-control form-control-sm" name="bgngDt" id="bgngDt"
+                                      th:value="${#dates.format(resVo.bgngDt, 'yyyy-MM-dd')}+'T'+${#dates.format(resVo.bgngDt, 'HH:mm')}">
+                           </div>
+                       </div>
+                   </div>
+                   <div class="col-12 col-md-6 col-lg-3 mb-3">
+                       <div class="mb-0 form-group required">
+                           <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="endDt"><strong>대여 접수 마감일시</strong></label>
+                           <div class="col-12">
+                               <input type="datetime-local"  class="form-control form-control-sm" name="endDt" id="endDt" 
+                                     th:value="${#dates.format(resVo.endDt, 'yyyy-MM-dd')}+'T'+${#dates.format(resVo.endDt, 'HH:mm')}">
+                           </div>
+                       </div>
+                   </div>
+                   <div class="col-12 col-md-6 col-lg-3 mb-3">
+                       <div class="mb-2 form-group required">
+                           <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="rentalRecruitmentName"><strong>대여 차수/수량 제한</strong></label>
+                           <div class="col-12">
+                           <span kattr:select_code="lmtCd" grpCd="225" firstOptTxt="-전체 -"  th:attr="selectedCd=${resVo.lmtCd}" addClass="form-select form-select-sm " ></span>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+           </div>
+           <div class="row">
+               <div class="col-12">
+                   <div class="card-header p-t-0 p-b-0">
+                       <h3 class="sub-title"><strong>대여차시 설정</strong></h3>
+                   </div>
+                     <div class="card-block-small p-t-0" id="rndArea">
+                   </div>
+               </div>
+           </div>
+           
+           
+           <div class="card-header p-t-0 p-b-0">
+               <h3 class="sub-title"><strong>이미지/안내자료 업로드</strong></h3>
+           </div>
+           <div class="card-block-small p-t-0">
+               <div class="row">
+               
+                   <!--대표 이미지-->
+                   <div class="col-12 col-lg-6 mb-3">
+                       <div class="mb-0 form-group">
+                           <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="rentalRecruitmentMainImage"><strong>대표 이미지</strong></label>
+                           <div class="col-12">
+                               <input type="file" id="rprsImgFile" name="rprsImgFile" class="form-control form-control-sm"/>
+                           </div>
+                           <div class="mt-2 row">
+                               <div class="col-auto">
+                                 <input type="hidden" id="rprsImgFileGrpid" name="rprsImgFileGrpid" value="0"/>
+                                 <input type="hidden" id="rprsImgFileid" name="rprsImgFileid"  th:value="${resVo.rprsImgFileid}"/>
+                                 <!-- 파일 명 및 삭제 버튼 영역-->
+                                 <span id="rprsImgFileArea">
+                                 
+	                                 <th:block th:if ="${logoFile !=null}">
+	                                     <span th:id="'logo_img_'+${logoFile.fileid}" class="label label-inverse">
+	                                        <th:block th:text = "${logoFile.orginlFileNm}"></th:block>&nbsp;&nbsp;&nbsp;
+	                                         <a  href="javascript:void(0)"
+	                                             th:fileid ="${logoFile.fileid}"
+	                                             th:fileIdntfcKey ="${logoFile.fileIdntfcKey}"
+	                                             onclick="deleteLogoFile(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))" class="text-white">X</a>
+	                                     </span>
+	                                 </th:block>
+                                 
+                                 </span>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+                   
+                   <!-- 상세 이미지-->
+                   <div class="col-12 col-lg-6 mb-3">
+                       <div class="mb-0 form-group">
+                           <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="rentalRecruitmentDetailImage"><strong>상세 이미지</strong></label>
+                           <div class="col-12">
+                               <input type="file" multiple class="form-control form-control-sm" name="dtlImgFile" id="dtlImgFile"/>
+                           </div>
+                           <div class="mt-2 row">
+                               <div class="col-auto" >
+                                 <input type="hidden" id="dtlImgFilegrpid" name="dtlImgFilegrpid" th:value="${resVo.dtlImgFilegrpid}"/>
+                                 <!-- 파일 명 및 삭제 버튼 영역-->
+                                 <span id="dtlImgFileArea">
+                                 
+                                  <th:block th:if = "${dtlImgFileList} != null ">
+                                    <span th:each="item:${dtlImgFileList}" class ='label label-inverse ' th:id="'lendFile_'+${item.fileid}">
+                                        <th:block th:text="${item.orginlFileNm}"></th:block>
+                                        &nbsp;&nbsp;
+                                        <a  class = 'text-white' href = "javascript:void(0)"
+                                                   th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" 
+                                                   th:onclick="fn_deleteInstFile(this.name, this.dataset.idntfcKey)">X</a>
+                                    </span>
+                                   </th:block>
+                                   
+                                   </span>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+               <div class="mb-0 row">
+               
+                   <!-- 지도안 -->
+                   <div class="col-12 col-lg-6 mb-3">
+                       <div class="mb-0 form-group">
+                           <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="rentalRecruitmentMap"><strong>지도안</strong></label>
+                           <div class="col-12">
+                               <input type="file" multiple class="form-control form-control-sm" name="mapFile" id="mapFile"/>
+                           </div>
+                           <div class="mt-2 row">
+                               <div class="col-auto">
+                                 <input type="hidden" id="mapFilegrpid" name="mapFilegrpid" th:value="${resVo.mapFilegrpid}"/>
+                                 <!-- 파일 명 및 삭제 버튼 영역-->
+                                 <span id="mapFileArea">
+                                 
+                                   <th:block th:if = "${mapFileList} != null ">
+                                    <span th:each="item:${mapFileList}" class ='label label-inverse ' th:id="'lendFile_'+${item.fileid}">
+                                        <th:block th:text="${item.orginlFileNm}"></th:block>
+                                        &nbsp;&nbsp;
+                                        <a  class = 'text-white' href = "javascript:void(0)"
+                                                   th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" 
+                                                   th:onclick="fn_deleteInstFile(this.name, this.dataset.idntfcKey)">X</a>
+                                    </span>
+                                    </th:block>
+                                 
+                                 </span>
+                           
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+                   
+                   <!-- 교육사진-->
+                   <div class="col-12 col-lg-6 mb-3">
+                       <div class="mb-0 form-group">
+                           <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="rentalRecruitmentEduPicture"><strong>교육사진</strong></label>
+                           <div class="col-12">
+                               <input type="file" multiple class="form-control form-control-sm" name="eduPhotoFile" id="eduPhotoFile"/>
+                           </div>
+                           <div class="mt-2 row">
+                               <div class="col-auto">
+                                 <input type="hidden" id="eduPhotoFilegrpid" name="eduPhotoFilegrpid" th:value="${resVo.eduPhotoFilegrpid}"/>
+                                 <!-- 파일 명 및 삭제 버튼 영역-->
+                                 <span id="eduPhotoFileArea">
+                                    <th:block th:if = "${eduPhotoFileList} != null ">
+                                    <span th:each="item:${eduPhotoFileList}" class ='label label-inverse ' th:id="'lendFile_'+${item.fileid}">
+                                        <th:block th:text="${item.orginlFileNm}"></th:block>
+                                        &nbsp;&nbsp;
+                                        <a  class = 'text-white' href = "javascript:void(0)"
+                                                   th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" 
+                                                   th:onclick="fn_deleteInstFile(this.name, this.dataset.idntfcKey)">X</a>
+                                    </span>
+                                    </th:block>
+                                 </span>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+                   
+               </div>
+           </div>
+           <div class="card-header p-t-0 p-b-0">
+               <h3 class="sub-title"><strong>상세 정보</strong></h3>
+           </div>
+           <div class="card-block-small p-t-0">
+               <div class="mb-3 form-group row">
+                   <div class="col-12">
+                       <textarea rows="5" cols="5" class="form-control form-control-sm"  id="dtlCn" name="dtlCn"><th:block th:utext="${resVo.dtlCn}"/></textarea>
+                   </div>
+               </div>
+               <div class="row">
+                   <div class="col-12 col-lg-6 mb-3">
+                       <div class="mb-0 form-group">
+                           <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="rentalRecruitmentVideoUrl"><strong>유튜브 동영상 URL</strong>
+                               <a href="javascript:void(0)" data-bs-toggle="tooltip" data-bs-html="true" data-bs-original-title="ex) https://www.youtube.com/watch?v= <span class='text-danger'>E4Qct1k3s_Q</span><br/>&#8251; Youtube 주소에서 붉은색 부분을 복사해서 넣어주세요.">
+                                   <i class="fa fa-question-circle-o"></i>
+                                   <div class="col-auto border p-2 bg-white pos-absolute rounded" style="display: none;">
+                                       ex) https://www.youtube.com/watch?v= <span class="text-danger">E4Qct1k3s_Q</span><br/>
+                                       &#8251; Youtube 주소에서 붉은색 부분을 복사해서 넣어주세요.
+                                   </div>
+                               </a>
+                           </label>
+                           <div class="col-12 d-flex align-items-center text-nowrap">
+                               https://www.youtube.com/watch?v=
+                               <input type="text" class="col-lg-auto form-control form-control-sm" name="mvpUrl" id="mvpUrl" th:value="${resVo.mvpUrl}">
+                           </div>
+                       </div>
+                   </div>
+                   <div class="col-12 col-lg-6 mb-3">
+                       <div class="mb-0 form-group required">
+                           <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                               <strong>동영상 위치 설정</strong></div>
+                           <div class="col-12">
+                           
+                               <div class="form-radio">
+                                 <span kattr:radio_code="mvpPstnCd" grpCd="226"  th:attr="selectedCd=${resVo.mvpPstnCd}" isAdmin="true">
+                               </div>
+
+                           </div>
+                       </div>
+                   </div>
+               </div>
+           </div>
+           <div class="card-header p-t-0 p-b-0">
+               <h3 class="sub-title"><strong>유의사항</strong></h3>
+           </div>
+           <div class="card-block-small p-t-0">
+               <div class="mb-3 form-group row">
+                   <div class="col-12">
+                       <textarea rows="5" cols="5" class="form-control form-control-sm" id="atentMttr" name="atentMttr"><th:block th:utext="${resVo.atentMttr}"/></textarea>
+                   </div>
+               </div>
+           </div>
+           <div class="card-block-small">
+               <button type="button"class="btn btn-disabled m-r-5" onclick="javascript:gridHelper1.removeHighlight(); gridHelper1.toggleContent();">취소</button>
+               <button type="button"class="btn btn-primary" onclick="save()">저장</button>
+           </div>
+       </div>
+   </div>
+</form>
+
+<script type="text/javascript" src="/files/assets/pages/advance-elements/select2-custom.js"></script>
+<script  id="rndFrm" type="text/x-handlebars-template">
+ <div class="row mb-3 rnd-frm"  id="frm{{frmNum}}" data-chasi ="{{ordr}}" >
+     <div class="col-md-auto mt-1 mt-md-0">
+         <button type="button" class="input-group-text btn btn-primary btn-sm"onclick="plusFrm({{frmNum}})" >+</button>
+         {{#if isFirst}}
+         <button type="button" class="input-group-text btn btn-primary btn-sm"onclick="minusFrm({{frmNum}})"disabled >-</button>
+         {{else}}
+         <button type="button" class="input-group-text btn btn-primary btn-sm"onclick="minusFrm({{frmNum}})" >-</button>
+         {{/if}}
+     </div>
+     <div class="col-md-auto mt-1 mt-md-0" id="rndNum" > {{ordr}} 차  </div>
+     <div class="col-md">
+         <div class="row">
+             <div class="col-md-auto mt-1 mt-md-0">
+                 <div class="col-form-label col-sm-12 p-t-0 pb-1"><strong>대여 시작일</strong></div>
+                 <div class="col-12">
+                     <input type="date" class="form-control form-control-sm" aria-label="대여 시작일" id="bgngDe" name="bgngDe" value="{{bgngDe}}">
+                 </div>
+             </div>
+
+             <div class="col-md-auto mt-2 mt-md-0">
+                 <div class="col-form-label col-sm-12 p-t-0 pb-1"><strong>대여 반납일</strong></div>
+                 <div class="col-12">
+                     <input type="date" class="form-control form-control-sm" aria-label="대여 반납일" id="endDe" name="endDe" value="{{endDe}}">
+                 </div>
+             </div>
+
+             <div class="col-md-auto mt-2 mt-md-0">
+                 <div class="col-form-label col-sm-12 p-t-0 pb-1"><strong>수량</strong></div>
+                 <div class="col-12">
+                     <input type="number" class="form-control form-control-sm" aria-label="수량"  id="qnty" name="qnty"  value="{{qnty}}">
+                 </div>
+             </div>
+
+             <div class="col-md-auto mt-2 mt-md-0">
+                 <div class="col-form-label col-sm-12 p-t-0 pb-1"><strong>재고</strong></div>
+                 <div class="col-12">
+                     <input type="text" class="form-control form-control-sm" aria-label="재고" id="dlvy" readonly  value="{{totalCnt}}">
+                 </div>
+             </div>
+
+         </div>
+
+
+     </div>
+ </div>
+</script>
+
+<script th:inline="javascript">
+
+    /*<![CDATA[*/ 
+	var resVo = /*[[${resVo}]]*/null; 
+	var lendRndList = /*[[${lendRndList}]]*/null; 
+	var packageLsit = /*[[${packageLsit}]]*/null;
+    /*]]>*/
+    
+    var maxFrmNum = 0;
+    var modalFrmNum ;
+    var editor1 = null;
+    var editor2 = null;
+    var selectedPackageItem = null;
+    
+    $(function(){
+    	editor1 = CKEDITOR.replace('dtlCn');
+    	editor2 = CKEDITOR.replace('atentMttr');
+    	$('[data-bs-toggle="tooltip"]').tooltip();
+    	setPackageArea(lendRndList);
+    	bindMultipleLendFile("dtlImgFile","dtlImgFilegrpid","dtlImgFileArea","lend_file");
+    	bindMultipleLendFile("mapFile","mapFilegrpid","mapFileArea","pdf_view_file");
+    	bindMultipleLendFile("eduPhotoFile","eduPhotoFilegrpid","eduPhotoFileArea","lend_file");
+    	setPackageSelectBox();
+    })
+    
+    setPackageSelectBox=()=>{
+        
+        var selectList = [ {id:' ', text:'- 선택 -', value:'',option:"selected"} ];
+        packageLsit.forEach(function(item){
+            selectList.push({
+                 'id':item.packageid, 'text': item.packageNm, 'value' : item.packageid,'packageindvdCnt':item.packageindvdCnt
+            })
+            if(resVo.packageid == item.packageid) selectedPackageItem = item;
+        })
+        
+        $('#selectPackageid').select2({
+            language: {
+                noResults: function () {
+                    return '검색결과가 없습니다.';
+                }
+            },
+            data: selectList,
+            templateSelection: function (item) {
+                return item.text;
+            }
+        });
+        //change event  
+        $('#selectPackageid').on('select2:select', function(e){
+                  var item = e.params.data;
+                  document.getElementById('packageid').value = item.value;
+                  if(item.id==" " || item.id <= 0){
+                      $("#rndArea").html("* 꾸러미를 선택해주십시오.");
+                      selectedPackageItem = null;   
+                  }else{
+                      selectedPackageItem = item;
+                      $("#rndArea").html("");   
+                      plusFrm('first');
+                  }
+                  return item.text;
+        })
+        
+        if(resVo.packageid != null && resVo.packageid != 0){
+            $('#selectPackageid').val(resVo.packageid).trigger('change');
+            document.getElementById('packageid').value = resVo.packageid;
+        }else{
+        	$('#selectPackageid').val(' ').trigger('change');
+        }
+    }
+    
+    setPackageArea=(list)=>{
+        
+    	list.forEach(function(item){
+            maxFrmNum = maxFrmNum + 1;
+            var source = $("#rndFrm").html();
+            var template = Handlebars.compile(source);
+            var data = {
+                    frmNum    : maxFrmNum
+                    ,ordr     : item.ordr
+                    ,bgngDe   : item.bgngDe
+                    ,endDe    : item.endDe
+                    ,qnty     : item.qnty
+                    ,totalCnt : resVo.packageindvdCnt
+                    ,isFirst  : (maxFrmNum==1)? "true" :null
+            };
+            $("#rndArea").append(template(data));
+        })
+    }
+    
+    resetRndNumber=()=>{
+        var frmCnt = 0;
+        $(".rnd-frm").each(function(){
+           frmCnt = frmCnt+1;
+           var id = $(this).attr("id");
+           $("#"+id).attr("data-chasi",frmCnt);
+           $("#"+id+"  #rndNum").text(frmCnt+"차");
+        })
+    }
+    
+    plusFrm=(mode)=>{
+        var frmCnt = 0 ; 
+        $(".rnd-frm").each(function(){ frmCnt++ })
+        
+        if(frmCnt >= 10){
+            alert("차시는 10회까지 가능합니다.");
+            return;
+        }
+        maxFrmNum = maxFrmNum + 1;
+        var source = $("#rndFrm").html();
+        var template = Handlebars.compile(source);
+        var data = { 
+                frmNum : maxFrmNum
+                ,totalCnt : selectedPackageItem.packageindvdCnt
+                ,isFirst : (mode!=null && mode=='first')?true:false 
+        };
+        $("#rndArea").append(template(data));
+        resetRndNumber();
+    }
+    minusFrm=(frmNum)=>{
+        $("#frm"+frmNum).remove();
+        resetRndNumber();
+    }
+    
+    //대표이미지  첨부 
+    $('#rprsImgFile').on('change', function(event) {
+        
+         var formData = new FormData();
+         var objFile = event.target;
+         
+         formData.append("file", objFile.files[0]);
+         formData.append("filegrpNm", "lendLogo_file");
+         
+         if($('#rprsImgFileGrpid').val() != '')
+             formData.append("filegrpid", $('#rprsImgFileGrpid').val());
+
+         if(displayWorkProgress()){
+             $.ajax({
+                 url : '/uploadFile.do',
+                 processData : false,
+                 contentType : false,
+                 data : formData,
+                 type : 'POST',
+                 success : function(response) {
+                     
+                     if(response.result == 'fail'){
+                         alert(response.msg);
+                     }else if(response.filegrpid != undefined && response.filegrpid != ''){
+                         $("#rprsImgFileGrpid").val(response.filegrpid);
+                         $("#rprsImgFileid").val(response.fileid);
+                         let imageStr = '<span id="logo_img_'+response.fileid+'" class="label label-inverse">'+response.orginlFileNm
+                                        +' &nbsp;&nbsp;&nbsp;<a href="javascript:deleteLogoFile('+response.fileid+','+response.fileIdntfcKey+')" class="text-white">X</a>'
+                                        +'</span>'
+
+                         $("#rprsImgFileArea").html(imageStr);
+                         clearFileInput("rprsImgFile");
+                     }
+                     closeWorkProgress();
+                 }
+             });
+         }
+         event.preventDefault();
+    });
+    
+    bindMultipleLendFile=(fileInputId, fileGrpId, fileInfoAppendAreaId,filegrpNm)=>{
+        
+        $('#'+fileInputId).on("change", function(event) {
+           var objFile = document.querySelector('#'+fileInputId);
+           var formData = new FormData();
+           var content = "";
+           var uploadFileCnt = 0;
+           
+           for( i = 0 ; i < objFile.files.length ; i++) {
+               formData.append("files", objFile.files[i]);
+               uploadFileCnt++;
+           }
+           
+           formData.append("filegrpid", $("#"+fileGrpId).val());
+           formData.append("filegrpNm", filegrpNm);
+           
+               $.ajax({
+                   url : '/uploadMultipleFiles.do',
+                   processData : false,
+                   contentType : false,
+                   data : formData,
+                   type : 'POST',
+                   success : function(response) {
+                       if(response.result == 'fail'){
+                          alert(response.msg);
+                       }else{
+                           
+                           if($("#"+fileGrpId).val()=='0' || $("#"+fileGrpId).val()=='' || $("#"+fileGrpId).val()==null ){
+                               $("#"+fileGrpId).val( response[0].filegrpid );
+                           }
+                           for(i = 0 ;i < response.length; i++ ){
+                               content = "<span class ='label label-inverse mb-2' id='lendFile_"+response[i].fileid+"'>"+response[i].orginlFileNm ;
+                               content +="&nbsp;&nbsp;  <a  class = 'text-white' href = javascript:fn_deleteInstFile('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"')>X</a></span>";
+                               $('#'+fileInfoAppendAreaId).append(content);
+                           }
+                       }
+                       clearFileInput(fileInputId);
+                   }
+               })
+        });
+    }
+    
+    clearFileInput=(fileInputid)=>{
+        if (detectBrowser() == "other") { 
+            $("#"+fileInputid).val("");
+        } else {   
+           $("#"+fileInputid).replaceWith( $("#"+fileInputid).clone(true)) 
+        }
+    } 
+
+    var validator= $("#modifyFrm").validate({
+		      onsubmit: false,
+              ignore: [], // 에디터 사용시 추가해야한다.
+	          rules: {
+		        	     rcritNm      :   { required: true , maxlength: 50 }
+		        	    ,bgngDt       :   { required: true }
+		        	    ,endDt        :   { required: true }
+		        	    ,lmtCd        :   { required: true }  
+                        ,packageid    :   { required: true }
+		        	    ,mvpPstnCd    :   { required: true }  
+	            },
+	            messages: {
+		        	     rcritNm      :   { required: "대여모집명을 입력해주십시오" , maxlength: 50 }
+		        	    ,bgngDt       :   { required: "대여 접수 시작 일시를 입력해주십시오" }
+		        	    ,endDt        :   { required: "대여 접수 시작 종료일을 입력해주십시오" }
+		        	    ,lmtCd        :   { required: "대여차수/제한 코드를 선택해주십시오" }
+		        	    ,packageid    :   { required: "꾸러미를 선택해주십시오" }  
+		        	    ,mvpPstnCd    :   { required: "동영상 위치 설정을 입력해주십시오" }  
+	            }
+	})
+	
+ 	function save(){
+     	
+	 	if(!($("#modifyFrm").valid())) return;
+	 	
+	 	var rndArr = [];
+        $(".rnd-frm").each(function(){
+            var id     = ($(this).attr("id")).replace("frm","");
+            var ordr  = $("#frm"+id).data("chasi");
+            var bgngDe = $("#frm"+id+" #bgngDe").val();
+            var endDe  = $("#frm"+id+" #endDe").val();
+            var qnty  = $("#frm"+id+"  #qnty").val();
+            rndArr.push(
+                    {
+                        frmNum  : id
+                        ,ordr  : ordr
+                        ,bgngDe : bgngDe
+                        ,endDe  : endDe
+                        ,qnty   : qnty
+                    }
+            )
+        })
+        
+        //대여시작/반납일, 개체 추가 여부 체크
+        var bgngDeErrorNum = 0;
+        var endDeErrorNum = 0;
+        var noQntyErrorNum = 0;
+        var overQntyErrorNum = 0;
+        var isBeforeBgngDtErrorNum = 0;
+        var isOverChasiDtErrorNum = 0;
+        var isBgngOverNum = 0;
+        var bgngDt = ($("#bgngDt").val()).substring(0,10).replaceAll("-","") ;
+        var isError = false;
+        var preItem = null;
+        
+        rndArr.forEach(function(item){
+
+            if( (item.bgngDe==null || item.bgngDe==''|| item.bgngDe==' ') && !isError){
+            	bgngDeErrorNum = ( bgngDeErrorNum > 0)? bgngDeErrorNum:item.frmNum;
+            	isError = true;
+            }
+            if((item.endDe==null || item.endDe==''|| item.endDe==' ' ) && !isError ){
+            	endDeErrorNum = ( endDeErrorNum > 0)? endDeErrorNum:item.frmNum;
+                isError = true;
+            }
+            if((item.qnty==null ||item.qnty=='' || item.qnty <= 0 )&& !isError ){
+            	noQntyErrorNum = ( noQntyErrorNum > 0)? noQntyErrorNum:item.frmNum;
+                isError = true;
+            }
+            if((item.qnty > selectedPackageItem.packageindvdCnt )&& !isError ){
+                overQntyErrorNum = ( overQntyErrorNum > 0)? overQntyErrorNum:item.frmNum;
+                isError = true;
+            }
+            if((item.bgngDe).replaceAll("-","")>(item.endDe).replaceAll("-","") && !isError ){
+                isBgngOverNum = (isBgngOverNum>0)?isBgngOverNum :item.frmNum ;
+                isError = true;
+            }
+            if((bgngDt > (item.endDe).replaceAll("-",""))&& !isError ){
+            	isBeforeBgngDtErrorNum = ( isBeforeBgngDtErrorNum > 0)? isBeforeBgngDtErrorNum:item.frmNum;
+                isError = true;
+            }
+            if(preItem != null && preItem.bgngDe > item.bgngDe &&  preItem.endDe > item.endDe && !isError){
+            	isOverChasiDtErrorNum = ( isOverChasiDtErrorNum > 0)? isOverChasiDtErrorNum:item.frmNum;
+                isError = true;
+            }
+            preItem = item;
+            
+        })
+        
+        if(bgngDeErrorNum > 0 ){
+            alert("대여 시작일을 입력해주십시오.");
+            showErrorMark("#frm"+bgngDeErrorNum+" #bgngDe");
+            return;
+        }
+        if(endDeErrorNum > 0 ){
+            alert("대여 종료일을 입력해주십시오.");
+            showErrorMark("#frm"+endDeErrorNum+" #endDe");
+            return;
+        }
+        if(noQntyErrorNum > 0 ){
+        	alert("수량을 입력해주십시오.");
+            showErrorMark("#frm"+noQntyErrorNum+" #qnty");
+            return;
+        }
+        if(overQntyErrorNum > 0 ){
+            alert("수량이 재고보다 많습니다.");
+            showErrorMark("#frm"+overQntyErrorNum+"  #qnty");
+            return;
+        }
+        if(isBgngOverNum > 0 ){
+            alert("시작일자와 종료일자를 확인해주십시오.");
+            showErrorMark("#frm"+isBgngOverNum+" #bgngDe");
+            showErrorMark("#frm"+isBgngOverNum+" #endDe");
+            return;
+        }
+        if(isBeforeBgngDtErrorNum > 0 ){
+            alert("대여 반납일은 대여접수 시작일시 이후여야 합니다.");
+            showErrorMark("#frm"+isBeforeBgngDtErrorNum+"  #endDe");
+            return;
+        }
+        if(isOverChasiDtErrorNum > 0 ){
+            alert("이전 차시의 대여일보다 이후여야 합니다.");
+            showErrorMark("#frm"+isOverChasiDtErrorNum+"  #bgngDe");
+            showErrorMark("#frm"+isOverChasiDtErrorNum+"  #endDe");
+            return;
+        }
+        
+        //대여일자 시작/종료 중복 체크 
+        var isThereDuplicatedData = false;
+        var turn1 = 0;
+        rndArr.forEach(function(map){
+        	turn1++;
+	        var turn2 = 0;
+        	rndArr.forEach(function(item){
+        		turn2++;
+        		if(turn1==turn2)return;
+                let compareBgngDe = (item.bgngDe).replaceAll("-",""); 
+                let compareEndDe  = (item.endDe).replaceAll("-","");
+
+                if( (map.bgngDe).replaceAll("-","") >= compareBgngDe && (map.bgngDe).replaceAll("-","") <= compareEndDe ){
+                	isThereDuplicatedData = true;
+                } 
+                if( (map.endDe).replaceAll("-","") >= compareBgngDe && (map.endDe).replaceAll("-","") <= compareEndDe ){
+                	isThereDuplicatedData = true;
+                } 
+            })
+        })
+        
+        if(isThereDuplicatedData){
+            alert("대여차시 설정중 중복된 일자가 있습니다.");
+            return;
+        }
+
+        if(!confirm("저장하시겠습니까?"))return;
+
+  	 	let params={
+  	 		rcritid : resVo.rcritid,
+            packageid : $("#packageid").val(),
+  	 		rcritNm : $("#rcritNm").val(),
+  	 		lmtCd : $("#lmtCd").val(),
+            dtlCn : editor1.getData(),
+            atentMttr : editor2.getData(),
+  	 		mvpUrl : $("#mvpUrl").val(),
+  	 		bgngDt : ($("#bgngDt").val()).replace("T"," "),
+  	 		endDt : ($("#endDt").val()).replace("T"," "),
+  	 		rprsImgFileid     : $("#rprsImgFileid").val(),
+  	 		dtlImgFilegrpid   : $("#dtlImgFilegrpid").val(),
+  	 		mapFilegrpid      : $("#mapFilegrpid").val(),
+  	 		eduPhotoFilegrpid : $("#eduPhotoFilegrpid").val(),
+  	 		operYn : $("input[name=operYn]:checked").val(),
+  	 		mvpPstnCd : $("input[name=mvpPstnCd]:checked").val(),
+  	 		lendRndList :rndArr
+  	  	}
+
+	    if(displayWorkProgress()){
+			$.ajax({
+				url : "/mng/lend/updateLend.do",
+				type: 'POST',
+				cache : false,
+				traditional : true, //필수
+				dataType: 'json',
+				contentType: "application/json; charset=utf-8",
+				data : JSON.stringify(params),
+				success : function (data){
+					if(data.result=="success"){
+						alert(data.msg);
+						gridHelper1.resetListContent();
+					}else{
+						alert(data.msg);
+					}
+					closeWorkProgress();
+				}
+			});
+		}
+	}
+    
+</script>

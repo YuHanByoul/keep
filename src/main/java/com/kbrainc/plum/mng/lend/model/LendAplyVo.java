@@ -1,4 +1,4 @@
-package com.kbrainc.plum.front.lend.model;
+package com.kbrainc.plum.mng.lend.model;
 
 import java.util.Date;
 import java.util.List;
@@ -13,7 +13,6 @@ import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.ResCodeService;
 import com.kbrainc.plum.rte.util.CommonUtil;
-import com.kbrainc.plum.rte.util.StringUtil;
 
 import lombok.Data;
 
@@ -22,7 +21,7 @@ import lombok.Data;
  * 알림 VO
  *  
  * <pre>
- * com.kbrainc.plum.fornt.lend.model
+ * com.kbrainc.plum.mng.lend.model
  * - LendAplyVo.java
  * </pre> 
  *
@@ -34,7 +33,6 @@ import lombok.Data;
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Data
-@Alias("front.lendAplyVo")
 public class LendAplyVo extends ParentRequestVo {
 
     /** 로그인사용자정보 */
@@ -43,6 +41,12 @@ public class LendAplyVo extends ParentRequestVo {
     
     /** 대여 신청 아이디 */
     private Integer aplyid;
+    
+    /** 대여 신청 아이디(s) */
+    private  List<String> aplyids;
+    
+    /** 대여 신청 아이디(s) */
+    //private  String[] aplyids;
     
     /** 신청자아이디 */
     private Integer aplcntid;
@@ -170,7 +174,7 @@ public class LendAplyVo extends ParentRequestVo {
     private int mdfrid;
     
     /** 등록_일시 */
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd ")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private Date regDt;
     
     /** 등록자아이디 */
@@ -191,9 +195,6 @@ public class LendAplyVo extends ParentRequestVo {
     /** 대상 스트링(등록용)*/
     private String[] lendAplyTrgts;
     
-    /** 대여신청대상 리스트 (등록용)  */
-    private List<LendAplyTrgtVo> lendAplyTrgtList;
-    
     /** 대여 모집 아이디 */
     private Integer rcritid;
     
@@ -212,20 +213,11 @@ public class LendAplyVo extends ParentRequestVo {
     /**수량 */
     private Integer qnty;
     
+    /**잔여 수량 */
+    private Integer wrhousngCnt;
+    
     /**순차 */
     private Integer ordr;
-    
-    /** 연체여부YN **/
-    private String isLateYn;
-    
-    /** 완료여부YN **/
-    private String isCompleteYn;
-    
-    /** 대표 사진 이미지 파일 아이디**/
-    private Integer rprsImgFileid;
-    
-    /** 대표 사진 이미지 파일 키 아이디**/
-    private String fileIdntfcKey;
     
     /**기관 유형 코드 **/
     private String instTypeCd;
@@ -236,14 +228,19 @@ public class LendAplyVo extends ParentRequestVo {
     /**대여 불가 사유 **/
     private String rejectRsn;
     
-    
-    public void setRgtrNm(String rgtrNm) throws Exception{
-        this.rgtrNm = StringUtil.maskingName(rgtrNm) ;
-    }
-    
-    public void setRgtrAcnt(String rgtrAcnt) throws Exception{
-        this.rgtrAcnt = StringUtil.maskingAccount(rgtrAcnt) ;
-    }
+    /**검색용 파라메터 추가  **/
+    /**모집 아이디 **/
+    private String searchRcritid;
+    /**꾸러미 아이디 **/
+    private String searchPackageid;
+    /**상태코드 **/
+    private String searchSttsCd;
+    /** 배송 상태코드 **/
+    private String searchDlvySttsCd;
+    /** 대여 시작일 **/
+    private String searchStrtDt;
+    /** 대여 종료일 **/
+    private String searchEndDt;
     
     public void setSttsCd(String sttsCd) throws Exception{
         this.sttsCd = sttsCd;

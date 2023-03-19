@@ -1,6 +1,7 @@
 package com.kbrainc.plum.mng.lend.model;
 
 import java.util.List;
+import java.util.Map;
 
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
@@ -178,5 +179,57 @@ public interface LendDao {
      * @throws Exception 예외
      */
     public String checkPackageDuplicationYn(LendVo lendVo) throws Exception;
+    
+    /****** 꾸러미 대여 신청 관리**********/
+    /**
+     * 대여 신청 목록 호출 
+     *
+     * @Title       : selectLendAplyList 
+     * @Description :대여 신청 목록 호출 
+     * @param LendVo 객체
+     * @return List<LendAplyVo>  목록
+     * @throws Exception 예외
+     */
+    public List<LendAplyVo> selectLendAplyList(LendAplyVo LendAplyVo) throws Exception;
+    /**
+     * 대여 모집 목록 호출 
+     *
+     * @Title       : selectLendRcritList 
+     * @Description :대여 모집 목록 호출 
+     * @param LendVo 객체
+     * @return List<LendAplyVo>  목록
+     * @throws Exception 예외
+     */
+    public List<LendVo> selectLendRcritList(LendVo lendVo) throws Exception;
+    /**
+     * 대여 신청 승인 전 재고 및 수량 체크  
+     *
+     * @Title       : checkRndStockOver 
+     * @Description :대여 모집 목록 호출 
+     * @param LendVo 객체
+     * @return Map<String,String>
+     * @throws Exception 예외
+     */
+    public Map<String,String> checkRndStockOver(LendAplyVo LendAplyVo) throws Exception;
+    /**
+     * 대여 신청 일괄 상태 변경
+     *
+     * @Title       : updateLendAplyStts 
+     * @Description : 대여 신청 일괄 상태 변경 
+     * @param LendAplyVo 객체
+     * @return int
+     * @throws Exception 예외
+     */
+    public int updateLendAplyStts(LendAplyVo LendAplyVo) throws Exception;
+    /**
+     * 대여 신청 상세 호출
+     *
+     * @Title       : selectLendAplyInfo 
+     * @Description : 대여 신청 상세 호출 
+     * @param LendAplyVo 객체
+     * @return int
+     * @throws Exception 예외
+     */
+    public LendAplyVo selectLendAplyInfo(LendAplyVo LendAplyVo) throws Exception;
     
 }
