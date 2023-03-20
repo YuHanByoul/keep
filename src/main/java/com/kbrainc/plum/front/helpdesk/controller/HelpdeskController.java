@@ -120,6 +120,12 @@ public class HelpdeskController {
         return VIEW_PREFIX + "/helpdeskForm";
     }
 
+    @GetMapping("/helpdeskIntro.html")
+    public String helpdeskIntro() throws Exception {
+        return VIEW_PREFIX + "/helpdeskIntro";
+    }
+
+
     /**
      * 헬프데스크 신청 목록 조회
      *
