@@ -35,14 +35,18 @@
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="form-header"><strong class="label">교육주제</strong></div>
-                        <div class="form-body">
-                           <select title="교구유형" id="eduSbjctCd" name="eduSbjctCd">
-                                <option value="">- 전체 - </option>
-                                <option th:each="item:${sbjctList}" th:value="${item.CD}"><th:block th:text="${item.CD_NM}"/></option>
-                            </select>
-                        </div>
-                    </div>
+	                    <div class="form-header"><strong class="label">교육주제</strong></div>
+	                    <div class="form-body">
+	                        <div class="form-input">
+	                            <select name="searchManinEduSbjctCd" id="searchEduSbjctCd_1" title="주제" onchange="setSearchSelectBox.setNextDepth(155,this.value,'eduSbjctCd')">
+	                                <option value="" selected>- 전체 -</option>
+	                            </select>
+	                            <select name="eduSbjctCd" id="eduSbjctCd"  title="주제 상세" style="flex:auto">
+	                                <option value="" selected>- 전체 -</option>
+	                            </select>                           
+	                        </div>
+	                    </div>
+	                </div>
                 </div>
             
             <div class="search-filter-submit">
@@ -89,6 +93,10 @@
                        <p class="ellipsis" data-ellipsis="2">{{rcritNm}}</p>
                        <ul class="dot-list fc-black3">
                            <li class="d-flex">
+                               <span class="tit">모집기간 :</span>
+                               <span class="dc">{{{bgngDt}}} </br> ~  {{endDt}} </span>
+                           </li>
+                           <li class="d-flex">
                                <span class="tit">교육대상 :</span>
                                <span class="dc">{{{eduTrgtCdNm}}}</span>
                            </li>
@@ -123,7 +131,7 @@
 			$("#rcritNm").val("");
 			$("#eduTrgtCd").val("");
 			$("#typeCd").val("");
-			$("#eduSbjctCd").val("");
+			$("#searchEduSbjctCd_1").val("").trigger("change");
 			$("#eduTypeCd").val("");
 		}
 		function onSearch(){
@@ -153,6 +161,9 @@
 		    }
 		}
 		function renderingListData(list){
+			
+            console.log(list);
+			
 			list.forEach(function(item){
 				if(item.periodStts == 'W'){
                     item.tagStr = ' tag-blue ';
@@ -182,6 +193,60 @@
 	        var portalUrl = /*[[${T(com.kbrainc.plum.rte.util.CommonUtil).portalUrl}]]*/ "";
 	        location.href = portalUrl + "front/lend/lendDetail.html?rcritid="+rcritid;
 		}
+		
+        var getCodeListUrl = "/mng/customAttr/grpCodeList.do"
+            
+            var setSearchSelectBox = {
+                fn_getNextDepthList : function(grpcd , upprcd, targetId){
+                    $.ajax({
+                        url : getCodeListUrl,
+                        type: 'GET',
+                        cache : false,
+                        dataType: 'json',
+                        data: {
+                              grpcd  : grpcd
+                            , upprcd : upprcd
+                        }, 
+                        success : function (data){
+                            setSearchSelectBox.writeHtml(grpcd,targetId,data,"");
+                        },
+                        error : function (error){
+                        } 
+                        
+                    });
+                },
+                
+                writeHtml : function(grpcd,targetId,list,selected){
+                    var cntArr = targetId.split("_");
+                    var nextCnt = Number(cntArr[1])+1;
+                    var nextTarget = cntArr[0]+"_"+nextCnt;
+                       
+                    var html ="<select id='"+targetId+"' onchange=setSearchSelectBox.setNextDepth('"+grpcd+"',this.value,'"+nextTarget+"')>";
+                        html +="    <option value='' selected>- 전체 -</option>";
+                       
+                      for(var i=0 ; i < list.length;i++){
+                        if(list[i].cdid==selected){
+                        html +="    <option value="+list[i].cd+" selected>"+ list[i].cdNm+ "</option>";
+                        }else{
+                        html +="    <option value="+list[i].cd+">"+ list[i].cdNm+ "</option>";
+                        }
+                      }
+                      if(list.length == 0 && jQuery("#"+nextTarget)[0] != undefined){
+                        setSearchSelectBox.writeHtml(grpcd,nextTarget,list,selected);
+                      }
+                      html +="    </select>";
+                      $("#"+targetId).html(html);
+                },
+                
+                setNextDepth : function(grpcd , upprcd , targetId){
+                    setSearchSelectBox.fn_getNextDepthList(grpcd , upprcd , targetId);
+                }
+            }
+            
+            setSearchSelectBox.fn_getNextDepthList(155 , 0, 'searchEduSbjctCd_1');
+
+
+		
         </script>
     </div>
 </body>

@@ -35,9 +35,12 @@ import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
  */
 @Service
 public class ApiServiceImpl extends PlumAbstractServiceImpl implements ApiService {
+    
+    @Value("${data.go.kr.enc.serviceKey}")
+    private String dataEncServiceKey;
 
-    @Value("${data.go.kr.serviceKey}")
-    private String dataServiceKey;
+    @Value("${data.go.kr.dec.serviceKey}")
+    private String dataDecServiceKey;
     
     @Value("${hrfco.go.kr.serviceKey}")
     private String hrfcoServiceKey;
@@ -55,7 +58,7 @@ public class ApiServiceImpl extends PlumAbstractServiceImpl implements ApiServic
     */
     @Override
     public Map<String, Object> getCtprvnRltmMesureDnsty(String sidoName) throws Exception {
-        String path = "http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty?serviceKey=" + dataServiceKey + "&returnType=json&ver=1.3";
+        String path = "http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty?serviceKey=" + dataDecServiceKey + "&returnType=json&ver=1.3";
         path += "&numOfRows=100&pageNo=1&sidoName=" + sidoName;
         ResponseEntity<String> responseEntityStr = restTemplate.postForEntity(path, null, String.class); 
         Map<String, Object> response = new ObjectMapper().readValue(responseEntityStr.getBody(), Map.class);
@@ -76,7 +79,7 @@ public class ApiServiceImpl extends PlumAbstractServiceImpl implements ApiServic
     @Override
     public Map<String, Object> getMinuDustFrcstDspth(String searchDate, String informCode) throws Exception {
         
-        String path = "http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMinuDustFrcstDspth?serviceKey=" + dataServiceKey + "&returnType=json&ver=1.1";
+        String path = "http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMinuDustFrcstDspth?serviceKey=" + dataDecServiceKey + "&returnType=json&ver=1.1";
         path += "&numOfRows=100&pageNo=1&searchDate=" + searchDate + "&informCode=" + informCode;
         ResponseEntity<String> responseEntityStr = restTemplate.postForEntity(path, null, String.class); 
         Map<String, Object> response = new ObjectMapper().readValue(responseEntityStr.getBody(), Map.class);
@@ -95,7 +98,7 @@ public class ApiServiceImpl extends PlumAbstractServiceImpl implements ApiServic
     */
     @Override
     public Map<String, Object> getTMStdrCrdnt(String umdName) throws Exception {
-        String path = "http://apis.data.go.kr/B552584/MsrstnInfoInqireSvc/getTMStdrCrdnt?serviceKey=" + dataServiceKey + "&returnType=json";
+        String path = "http://apis.data.go.kr/B552584/MsrstnInfoInqireSvc/getTMStdrCrdnt?serviceKey=" + dataDecServiceKey + "&returnType=json";
         path += "&numOfRows=100&pageNo=1&umdName=" + umdName;
         ResponseEntity<String> responseEntityStr = restTemplate.postForEntity(path, null, String.class); 
         Map<String, Object> response = new ObjectMapper().readValue(responseEntityStr.getBody(), Map.class);
@@ -115,7 +118,7 @@ public class ApiServiceImpl extends PlumAbstractServiceImpl implements ApiServic
     */
     @Override
     public Map<String, Object> getNearbyMsrstnList(String tmX, String tmY) throws Exception {
-        String path = "http://apis.data.go.kr/B552584/MsrstnInfoInqireSvc/getNearbyMsrstnList?serviceKey=" + dataServiceKey + "&returnType=json";
+        String path = "http://apis.data.go.kr/B552584/MsrstnInfoInqireSvc/getNearbyMsrstnList?serviceKey=" + dataDecServiceKey + "&returnType=json";
         path += "&tmX=" + tmX + "&tmY=" + tmY;
         ResponseEntity<String> responseEntityStr = restTemplate.postForEntity(path, null, String.class); 
         Map<String, Object> response = new ObjectMapper().readValue(responseEntityStr.getBody(), Map.class);
@@ -134,7 +137,7 @@ public class ApiServiceImpl extends PlumAbstractServiceImpl implements ApiServic
     */
     @Override
     public Map<String, Object> getMsrstnAcctoRltmMesureDnsty(String stationName) throws Exception {
-        String path = "http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty?serviceKey=" + dataServiceKey + "&returnType=json&ver=1.3";
+        String path = "http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty?serviceKey=" + dataDecServiceKey + "&returnType=json&ver=1.3";
         path += "&numOfRows=1&pageNo=1&dataTerm=DAILY&stationName=" + stationName;
         ResponseEntity<String> responseEntityStr = restTemplate.postForEntity(path, null, String.class); 
         Map<String, Object> response = new ObjectMapper().readValue(responseEntityStr.getBody(), Map.class);
@@ -190,7 +193,7 @@ public class ApiServiceImpl extends PlumAbstractServiceImpl implements ApiServic
     @Override
     public Map<String, Object> getObsrSpotList(String doSeCode) throws Exception {
         StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/1390802/AgriWeather/getObsrSpotList");
-        urlBuilder.append("?serviceKey=eZApLnsE5ylVWll22RkEFJSxstx8R6XAD7GJvfg%2Blv%2B6JvcvjdX338EKLSAC2X8swUYR8Djpg3ntEdgwiLx%2B5A%3D%3D");
+        urlBuilder.append("?serviceKey=" + dataEncServiceKey);
         urlBuilder.append("&Page_Size=100");
         urlBuilder.append("&Page_No=1");
         urlBuilder.append("&Do_Se_Code=" + doSeCode);
@@ -215,6 +218,112 @@ public class ApiServiceImpl extends PlumAbstractServiceImpl implements ApiServic
         JSONObject jsonObject = XML.toJSONObject(sb.toString());
         Map<String, Object> response = new ObjectMapper().readValue(jsonObject.toString(), Map.class);
         
+        return response;
+    }
+    
+    /**
+    * 농업기상 관측 정보 조회(시간)
+    *
+    * @Title : getWeatherTimeList 
+    * @Description : 농업기상 관측 정보 조회(시간)
+    * @param dateTime 관측년월일
+    * @param obsrSpotCode 관측지점코드
+    * @return Map<String,Object> 조회결과
+    * @throws Exception 예외
+    */
+    @Override
+    public Map<String, Object> getWeatherTimeList(String dateTime, String obsrSpotCode) throws Exception {
+        StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/1390802/AgriWeather/WeatherObsrInfo/GnrlWeather/getWeatherTimeList");
+        urlBuilder.append("?serviceKey=" + dataEncServiceKey);
+        urlBuilder.append("&Page_Size=100");
+        urlBuilder.append("&Page_No=1");
+        urlBuilder.append("&date_Time=" + dateTime);
+        urlBuilder.append("&obsr_Spot_Code=" + obsrSpotCode);
+        URL url = new URL(urlBuilder.toString());
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Content-type", "application/json");
+        BufferedReader rd;
+        if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        } else {
+            rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+        }
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while((line = rd.readLine()) != null) {
+            sb.append(line);
+        }
+        rd.close();
+        conn.disconnect();
+        
+        JSONObject jsonObject = XML.toJSONObject(sb.toString());
+        Map<String, Object> response = new ObjectMapper().readValue(jsonObject.toString(), Map.class);
+        
+        return response;
+    }
+    
+    /**
+    * 농업기상 관측 정보 조회(일)
+    *
+    * @Title : getWeatherMonDayList 
+    * @Description : 농업기상 관측 정보 조회(일)
+    * @param searchYear 관측년도
+    * @param searchMonth 관측월
+    * @param obsrSpotCode 관측지점코드
+    * @return Map<String,Object> 조회결과
+    * @throws Exception 예외
+    */
+    @Override
+    public Map<String, Object> getWeatherMonDayList(String searchYear, String searchMonth, String obsrSpotCode) throws Exception {
+        StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/1390802/AgriWeather/WeatherObsrInfo/GnrlWeather/getWeatherMonDayList");
+        urlBuilder.append("?serviceKey=" + dataEncServiceKey);
+        urlBuilder.append("&Page_Size=100");
+        urlBuilder.append("&Page_No=1");
+        urlBuilder.append("&search_Year=" + searchYear);
+        urlBuilder.append("&search_Month=" + searchMonth);
+        urlBuilder.append("&obsr_Spot_Code=" + obsrSpotCode);
+        URL url = new URL(urlBuilder.toString());
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Content-type", "application/json");
+        BufferedReader rd;
+        if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        } else {
+            rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+        }
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while((line = rd.readLine()) != null) {
+            sb.append(line);
+        }
+        rd.close();
+        conn.disconnect();
+        
+        JSONObject jsonObject = XML.toJSONObject(sb.toString());
+        Map<String, Object> response = new ObjectMapper().readValue(jsonObject.toString(), Map.class);
+        
+        return response;
+    }
+    
+    /**
+    * 전기자동차 충전소 정보 목록 조회
+    *
+    * @Title : getChargerInfo 
+    * @Description : 전기자동차 충전소 정보 목록 조회
+    * @param zcode 지역구분 코드
+    * @param zscode 지역구분 상세 코드
+    * @return Map<String,Object> 조회결과
+    * @throws Exception 예외
+    */
+    @Override
+    public Map<String, Object> getChargerInfo(String zcode, String zscode) throws Exception {
+        String path = "http://apis.data.go.kr/B552584/EvCharger/getChargerInfo?serviceKey=" + dataEncServiceKey + "&dataType=JSON&numOfRows=10000&pageNo=1";
+        path += "&zcode=" + zcode + "&zscode=" + zscode;
+        ResponseEntity<String> responseEntityStr = restTemplate.postForEntity(path, null, String.class); 
+        Map<String, Object> response = new ObjectMapper().readValue(responseEntityStr.getBody(), Map.class);
+           
         return response;
     }
     

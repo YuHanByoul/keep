@@ -111,12 +111,7 @@ public class LendServiceImpl extends PlumAbstractServiceImpl implements LendServ
      * @return List<LendAplyVo> 객체
      */
     public List<LendAplyVo> selectLendReplyList(LendAplyVo lendAplyVo) throws Exception{
-        
         List<LendAplyVo> list = lendDao.selectLendReplyList(lendAplyVo);
-        for(LendAplyVo vo :list) {
-            vo.setRgtrAcnt(CommonUtil.maskingText(vo.getRgtrAcnt()));
-            vo.setRgtrNm(CommonUtil.maskingText(vo.getRgtrNm()));
-        }
         return list;
     }
     /**
