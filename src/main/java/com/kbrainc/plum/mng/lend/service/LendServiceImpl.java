@@ -1,13 +1,15 @@
 package com.kbrainc.plum.mng.lend.service;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kbrainc.plum.mng.lend.model.LendAplyDlivyVo;
+import com.kbrainc.plum.mng.lend.model.LendAplyVo;
 import com.kbrainc.plum.mng.lend.model.LendDao;
 import com.kbrainc.plum.mng.lend.model.LendRndPackageindvdVo;
 import com.kbrainc.plum.mng.lend.model.LendRndVo;
@@ -249,5 +251,91 @@ public class LendServiceImpl extends PlumAbstractServiceImpl implements LendServ
      */
     public String checkPackageDuplicationYn(LendVo lendVo) throws Exception{
         return lendDao.checkPackageDuplicationYn(lendVo);
+    }
+    
+    /****** 꾸러미 대여 신청 관리**********/
+    /**
+     * 대여 신청 목록 호출 
+     *
+     * @Title       : selectLendAplyList 
+     * @Description :대여 신청 목록 호출 
+     * @param LendVo 객체
+     * @return List<LendAplyVo>  목록
+     * @throws Exception 예외
+     */
+    public List<LendAplyVo> selectLendAplyList(LendAplyVo LendAplyVo) throws Exception{
+        return lendDao.selectLendAplyList(LendAplyVo);
+    }
+    /**
+     * 대여 모집 목록 호출 
+     *
+     * @Title       : selectLendRcritList 
+     * @Description :대여 모집 목록 호출 
+     * @param LendVo 객체
+     * @return List<LendAplyVo>  목록
+     * @throws Exception 예외
+     */
+    public List<LendVo> selectLendRcritList(LendVo lendVo) throws Exception{
+        return lendDao.selectLendRcritList(lendVo);
+    }
+    /**
+     * 대여 신청 승인 전 재고 및 수량 체크  
+     *
+     * @Title       : checkRndStockOver 
+     * @Description :대여 모집 목록 호출 
+     * @param LendVo 객체
+     * @return Map<String,String>
+     * @throws Exception 예외
+     */
+    public Map<String,String> checkRndStockOver(LendAplyVo lendAplyVo) throws Exception{
+        return lendDao.checkRndStockOver(lendAplyVo);
+    }
+    /**
+     * 대여 신청 일괄 상태 변경
+     *
+     * @Title       : updateLendAplyStts 
+     * @Description : 대여 신청 일괄 상태 변경 
+     * @param LendAplyVo 객체
+     * @return int
+     * @throws Exception 예외
+     */
+    public int updateLendAplyStts(LendAplyVo lendAplyVo) throws Exception{
+        return lendDao.updateLendAplyStts(lendAplyVo);
+    }
+    /**
+     * 대여 신청 상세 호출
+     *
+     * @Title       : selectLendAplyInfo 
+     * @Description : 대여 신청 상세 호출 
+     * @param LendAplyVo 객체
+     * @return int
+     * @throws Exception 예외
+     */
+    public LendAplyVo selectLendAplyInfo(LendAplyVo lendAplyVo) throws Exception{
+        return lendDao.selectLendAplyInfo(lendAplyVo);
+    }
+    /**
+     * 대여 출고 목록 호출
+     *
+     * @Title       : selectLendAplyDlvyList 
+     * @Description : 대여 출고 목록 호출 
+     * @param LendAplyVo 객체
+     * @return List<LendAplyDlivyVo> 객체
+     * @throws Exception 예외
+     */
+    public List<LendAplyDlivyVo> selectLendAplyDlvyList(LendAplyVo lendAplyVo) throws Exception{
+        return lendDao.selectLendAplyDlvyList(lendAplyVo);
+    }
+    /**
+     * 대여 신청 수정
+     *
+     * @Title       : updateLendAply 
+     * @Description : 대여 신청 수정 
+     * @param LendAplyVo 객체
+     * @return int
+     * @throws Exception 예외
+     */
+    public int updateLendAply(LendAplyVo lendAplyVo) throws Exception{
+        return lendDao.updateLendAply(lendAplyVo);
     }
 }

@@ -4,8 +4,8 @@
     xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
     layout:decorator="layout/front/subLayout" >
 <body>
-    <script type="text/javascript" src="../files/assets/pages/accordion/accordion.js"></script>
-    <div layout:fragment="content">
+<script type="text/javascript" src="../files/assets/pages/accordion/accordion.js"></script>
+<div layout:fragment="content">
     <div class="product-wrap sub-banner-swiper">
         <div class="thumb-swiper">
         
@@ -69,6 +69,10 @@
                         <dd><th:block th:text="${lendInfo.eduTypeCdNm}"/></dd>
                     </div>
                     <div class="list">
+                        <dt>모집 기간 :</dt>
+                        <dd><th:block th:text="${#dates.format(lendInfo.bgngDt, 'yyyy-MM-dd HH:mm')+' ~ '+#dates.format(lendInfo.endDt, 'yyyy-MM-dd HH:mm')}"/></dd>
+                    </div>
+                    <div class="list">
                         <dt>대여 제한  :</dt>
                         <dd>
                             <th:block th:if="${lendInfo.lmtCd == '225101'}" th:text="'한개의 차수에서 1개까지 신청 가능합니다.'"/>
@@ -124,11 +128,11 @@
                         <td><th:block th:text="${item.totalCnt}"/> </td>
                         <td>
                             <label class="inp vm">
-                               <input type="checkbox" th:id="chasi_chk+${item.rndid}" name="chasi_chk" th:disabled="${item.sttsCd =='L' or item.sttsCd =='S'}" >
+                               <input type="checkbox" th:id="chasi_chk+${item.rndid}" name="chasi_chk" th:disabled="${lendInfo.periodStts eq 'E' or item.sttsCd =='L' or item.sttsCd =='S'}" >
                             </label>
                         </td>
                         <td>
-                           <div class="form-input form-input-number j-center"  th:if="${item.sttsCd =='O'}">
+                           <div class="form-input form-input-number j-center"  th:if="${lendInfo.periodStts ne 'E' and item.sttsCd eq'O'}">
                                 <input type="number" value="" min="0" title="꾸러미 대여 갯수" data-width="50" class="ac" th:id="requestQnty" readonly
                                   th:max="${ (lendInfo.lmtCd =='225101' or lendInfo.lmtCd =='225103')? 1:2 }"  style="background-color:white;">
                                 <div class="btn-number">
@@ -138,27 +142,27 @@
                            </div>
                         </td>
                         <td>
-                           <span class="" th:if ="${item.sttsCd =='L'}" th:text="'모집 종료'"></span>  
-                           <span class="fc-red" th:if ="${item.sttsCd =='S'}" th:text="'재고 소진'"></span>
-                           <span class="fc-blue" th:if ="${item.sttsCd =='O'}" th:text="'신청 가능'"></span>
+                        
+                           <th:block  th:if ="${lendInfo.periodStts eq 'E'}" >
+                               <span class="" >모집 기간 종료</span>
+                           </th:block>  
+                           <th:block  th:unless ="${lendInfo.periodStts eq 'E'}" >
+	                           <span class=""        th:if ="${item.sttsCd eq 'L'}" >모집 종료</span>  
+	                           <span class="fc-red"  th:if ="${item.sttsCd eq 'S'}" >재고 소진</span>
+	                           <span class="fc-blue" th:if ="${item.sttsCd eq 'O'}" >신청 가능</span>
+                           </th:block>
                         </td>
+                        
                         <td>
-                           <th:block th:if="${item.sttsCd =='O'}"> 
+                           <th:block th:if="${lendInfo.periodStts == 'E' or item.sttsCd =='O'}"> 
                            <button type="button" class="btn-medium btn-green" th:rndid ="${item.rndid}" onclick="requestAply(this.getAttribute('rndid'))">신청</button>
                            </th:block>
-                           <th:block th:unless="${item.sttsCd =='O'}">-</th:block> 
+                           <th:block th:unless="${lendInfo.periodStts == 'E' or item.sttsCd =='O'}">-</th:block> 
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
-<!--         <div class="btn-wrap">
-            <div class="right">
-                <th:block sec:authorize-url="/front/lend/lendAply.html">
-                <button type="button" class="btn-medium btn-green" onclick="requestAply()">신청</button>
-                </th:block>
-            </div>
-        </div> -->
     </div>
     
     <div class="tab-content tab-sub dropDown">
@@ -239,29 +243,6 @@
       </h3>
     </script>
     <script th:inline="javascript">
-        var swiper = new Swiper(".gallery-list", {
-            loop: false,
-            spaceBetween: 0,
-            slidesPerView: 5,
-            freeMode: true,
-            watchSlidesProgress: true,
-        });
-        var swiper2 = new Swiper(".gallery-thumb", {
-            loop: false,
-            spaceBetween: 10,
-            thumbs: {
-                swiper: swiper,
-            },
-            navigation: {
-                nextEl: ".swiper-button-next",
-                prevEl: ".swiper-button-prev",
-            },
-            a11y: {
-                prevSlideMessage: '이전 슬라이드',
-                nextSlideMessage: '다음 슬라이드',
-            },
-        });
-        
         /*<![CDATA[*/ 
         var lendInfo = /*[[${lendInfo}]]*/null; 
         var rndList = /*[[${rndList}]]*/null; 
@@ -391,6 +372,30 @@
            f.action = "/front/lend/lendAply.html";
            f.submit();
        }
+       
+       var swiper = new Swiper(".gallery-list", {
+           loop: false,
+           spaceBetween: 0,
+           slidesPerView: 5,
+           freeMode: true,
+           watchSlidesProgress: true,
+       });
+       var swiper2 = new Swiper(".gallery-thumb", {
+           loop: false,
+           spaceBetween: 10,
+           thumbs: {
+               swiper: swiper,
+           },
+           navigation: {
+               nextEl: ".swiper-button-next",
+               prevEl: ".swiper-button-prev",
+           },
+           a11y: {
+               prevSlideMessage: '이전 슬라이드',
+               nextSlideMessage: '다음 슬라이드',
+           },
+       });
+       
        
     </script>
    </div>

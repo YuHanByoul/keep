@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/mng/mainLayout" 
+>
+<body>
+ <div layout:fragment="content">
+ <link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
+ <style>
+.hide{display:none;}
+</style>
+<!-- Page-body start -->
+  <div class="page-body">
+      <div class="row">
+          <div class="col-12">
+          <form name="searchFrm" id="searchFrm" action="" onsubmit="return false;" class="card">
+             <!-- 필터 부분 -->
+                 <div class="card-block-small">
+                     <!-- 키워드 filter -->
+                     <div class="row">
+                         <div class="col-lg-3 mb-3">
+                             <div class="mb-0 form-group row">
+                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></span>
+                                 <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                     <select name="searchType" id="searchType" class="form-select form-control ">
+                                        <option value="">- 전체 -</option>
+                                        <option value="nm">신청자명</option>
+                                        <option value="instNm">기관명</option>
+                                        <option value="email">이메일</option>
+                                        <option value="addr">배송지</option>
+                                     </select>
+                                     <input type="text" name="searchKeyword" id="searchKeyword" class="form-control" aria-label="Text input with dropdown button">
+                                 </div>
+                             </div>
+                         </div>
+                         
+                         <div class="col-lg-3 mb-3">
+                             <div class="mb-2 form-group ">
+		                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="rcritNm"><strong>대여모집</strong></label>
+		                         <div class="col-12">
+		                              <input type="text" class="cmpnt-input" selectsearchcondition="searchRcritid" id="searchRcritid" name="searchRcritid" style="position:absolute;width:0px;margin:0px;padding:0px;visibility:hidden;">
+		                              <select class="select2-hidden-accessible" name="selectRcritid" id="selectRcritid" tabindex="-1" aria-hidden="true" ></select>
+		                         </div>
+		                     </div>
+                         </div>
+                         
+                         <div class="col-lg-3 mb-3">
+                             <div class="mb-2 form-group ">
+		                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="rcritNm"><strong>꾸러미 선택</strong></label>
+		                         <div class="col-12">
+		                              <input type="text" class="cmpnt-input" selectsearchcondition="searchPackageid" id="searchPackageid" name="searchPackageid" style="position:absolute;width:0px;margin:0px;padding:0px;visibility:hidden;">
+		                              <select class="select2-hidden-accessible" name="selectPackageid" id="selectPackageid" tabindex="-1" aria-hidden="true" ></select>
+		                         </div>
+		                     </div>
+                         </div>
+                         
+                        <div class="col-lg-3 col-md-6 mb-3">
+                             <div class="mb-0 form-group row">
+                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterSearchSelectDate"><strong>대여기간</strong></label>
+                                 <div class="col-sm-12">
+                                     <input type="text"   id="filterSearchSelectDate"name="filterSearchSelectDate" class="form-control form-control-sm" value="" >
+                                     <input type="hidden" id="searchStrtDt"name="searchStrtDt" >
+                                     <input type="hidden" id="searchEndDt"name="searchEndDt" >
+                                     
+                                 </div>
+                             </div>
+                         </div>
+                         
+                         <div class="col-lg-3 col-md-6 mb-3">
+                             <div class="mb-0 form-group row">
+                                 <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>신청상태</strong></div>
+                                 <div class="col-sm-12">
+                                     <th:block kattr:select_code="searchSttsCd" grpCd="231" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true"></th:block>
+                                 </div>
+                             </div>
+                         </div>
+                         
+                         <div class="col-lg-3 col-md-6 mb-3">
+                             <div class="mb-0 form-group row">
+                                 <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>배송상태</strong></div>
+                                 <div class="col-sm-12">
+                                     <th:block kattr:select_code="searchDlvySttsCd" grpCd="230" upprCd="0" selectedCd="" onchange=""  addClass="form-select form-select-sm form-control-sm" isAdmin="true"></th:block>
+                                 </div>
+                             </div>
+                         </div>
+                         
+                         
+                         
+                     </div>
+                     <!-- //키워드 filter -->
+                     <!-- 키워드 filter-btn -->
+                     <div class="mt-1 p-t-20 text-center border-top">
+                         <button class="btn btn-disabled m-r-5" onclick="fn_init()" >초기화</button>
+                         <button class="btn btn-primary" onclick="fn_searchForm()" >검색</button>
+                     </div>
+                 </div>
+           </form>
+          </div>
+          <!-- //필터 부분 -->
+          
+          <div class="col-12">
+              <div class="card">
+                <div class="row p-20 p-b-0">
+                
+                    <div class="col-12 col-md-6 mb-2 mb-md-0">
+                        <h5><strong>대여 신청 검색결과</strong></h5>
+                    </div>
+                    <div class="col-12 col-md-6 text-right">
+                        <th:block sec:authorize-url="/mng/lendAply/updateLendAplyStts.do">
+                            <button type="button" class="btn btn-primary"  onclick="changeStts('231101');" >대여신청</button>
+                            <button type="button" class="btn btn-primary"  onclick="changeStts('231102');" >대여승인</button>
+                            <button type="button" class="btn btn-inverse"  onclick="openREjectModal();" >대여불가</button>
+                            <button type="button" class="btn btn-disabled" onclick="changeStts('231104');" >신청취소</button>
+                        </th:block>
+                    </div>
+                </div>
+                <div class="card-block-small">
+                    <div class="dt-responsive table-responsive">
+                        <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                            <table id="jsGrid" class="table-responsive"></table>
+                            <div id="listPager" class="text-center"></div>
+                       </div>
+                    </div>
+                </div>
+                
+              </div>
+          </div>
+		  <!-- Content Area -->
+		  <div class="col-12">
+		  <div id="contentPanel" class="card"></div>
+		  </div>
+      </div>
+  </div>
+  
+<!--기업 검색 모달 팝업  -->
+<div class="modal fade" id="rejectlendAplyModal"  data-bs-backdrop="static"></div>
+<script type="text/javascript" src="/files/assets/pages/advance-elements/select2-custom.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
+<script th:inline="javascript">
+
+	/*<![CDATA[*/ 
+	var packageLsit = /*[[${packageLsit}]]*/null; 
+	var lendLsit = /*[[${lendLsit}]]*/null; 
+	/*]]>*/
+	
+    var rejectPopupUrl = "/mng/lendAply/rejectLendAplyPopup.html";
+    var rejectlendAplyModal;
+	var gridHelper1 = null;
+	
+    $(function(){
+    	setPackageSelectBox();
+    	setLendSelectBox();
+        gridHelper1 = new GridHelper('jsGrid','contentPanel');
+
+        $("#searchDlvySttsCd").prepend("<option value ='' selected> - 전체 - </option><option value ='none'>없음</option>")
+        
+        $("#filterSearchSelectDate").daterangepicker({
+            opens: 'left',
+            locale: {
+	            "separator": " ~ ",                     // 시작일시와 종료일시 구분자
+	            "format": 'YYYY-MM-DD',     // 일시 노출 포맷
+	            "applyLabel": "적용",                    // 확인 버튼 텍스트
+	            "cancelLabel": "취소",                   // 취소 버튼 텍스트
+	            "daysOfWeek": ["일", "월", "화", "수", "목", "금", "토"],
+	            "monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"]
+            }
+          }, function(start, end, label) {
+            console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+        });
+        $("#filterSearchSelectDate").on('apply.daterangepicker', function(ev, picker) {
+            $("#searchStrtDt").val(picker.startDate.format('YYYY-MM-DD'));
+            $("#searchEndDt").val(picker.endDate.format('YYYY-MM-DD'));
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+        });
+        writeJsGridData();
+    });
+    
+	setPackageSelectBox=()=>{
+	    var selectList = [ {id:' ', text:'- 선택 -', value:'',option:"selected"} ];
+	    packageLsit.forEach(function(item){
+	        selectList.push({
+	             'id':item.packageid, 'text': item.packageNm, 'value' : item.packageid,'packageindvdCnt':item.packageindvdCnt
+	        })
+	    })
+	    $('#selectPackageid').select2({
+	        language: {
+	            noResults: function () {
+	                return '검색결과가 없습니다.';
+	            }
+	        },
+	        data: selectList,
+	        templateSelection: function (item) {
+	        	document.getElementById('searchPackageid').value = item.value;
+	            return item.text;
+	        }
+	  });
+	  $('#selectPackageid').val(' ').trigger('change');
+	}
+	setLendSelectBox=()=>{
+	    var selectList = [ {id:' ', text:'- 선택 -', value:'',option:"selected"} ];
+	    lendLsit.forEach(function(item){
+	        selectList.push({
+	             'id':item.rcritid, 'text': item.rcritNm, 'value' : item.rcritid
+	        })
+	    })
+	    $('#selectRcritid').select2({
+	        language: {
+	            noResults: function () {
+	                return '검색결과가 없습니다.';
+	            }
+	        },
+	        data: selectList,
+	        templateSelection: function (item) {
+	        	document.getElementById('searchRcritid').value = item.value;
+	            return item.text;
+	        }
+	  });
+	  $('#selectRcritid').val(' ').trigger('change');
+	}
+	
+    var selectedItems = [];
+    var gridHelper1;
+    
+    function fn_searchForm(){
+        gridHelper1.resetListContent();
+    }
+    
+    function fn_init() {
+        $( "#searchType"
+           +",#searchKeyword"
+           +",#searchSttsCd"
+           +",#searchDlvySttsCd"
+           +",#searchStrtDt"
+           +",#searchEndDt"
+           +",#filterSearchSelectDate"
+        ).val('');
+        $("#selectRcritid, #selectPackageid").val(" ").trigger('change');
+    }
+    
+    function writeJsGridData(){
+        $("#jsGrid").jsGrid({
+            height: "auto",
+            width: "100%",
+            autoload: true,
+            sorting: false,
+            paging: true,
+            pagerContainer: "#listPager",
+            pagerFormat: "{first} {prev} {pages} {next} {last}",
+            pagePrevText: "이전",
+            pageNextText: "다음",
+            pageFirstText: " < 처음 ㅣ",
+            pageLastText: " | 마지막 >",
+            pageSize: 10,
+            pageButtonCount: 10,
+            pageLoading: true,
+            pageIndex: 1,
+            noDataContent: "데이터가 없습니다.",
+            controller: {
+                loadData: function (filter) {
+                    var data = $.Deferred();
+                                            
+                    var formData = $('#searchFrm').serializeArray();
+                    var params = [
+                            {name: "pageNumber", value: filter.pageIndex},
+                            {name: "rowPerPage", value: filter.pageSize},
+                    ]
+                    if(filter.sortField != undefined){
+                        params.push({name: "orderField", value: filter.sortField});
+                        params.push({name: "orderDirection", value: filter.sortOrder});
+                    }else{
+                        params.push({name: "orderField", value: 'reg_dt'});
+                    }
+                    formData = formData.concat(params);
+                    
+                    $.ajax({
+                      type: "GET",
+                      contentType: "application/json; charset=utf-8",
+                      url: "/mng/lendAply/selectLendAplyList.do",
+                      dataType: "json",
+                      data: formData,
+                    }).done(function(response){
+                        var da = {
+                                data : escapeGridData(response.list)
+                                ,itemsCount : response.totalCount
+                            };
+                      data.resolve(da);
+                    });
+                    return data.promise();
+                },
+            },
+            fields: [
+                 {
+                     headerTemplate: function() {
+                         return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
+                     },
+                     itemTemplate: function(_, item) {
+                         return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox")
+                         //.prop("checked", $.inArray(String(item.userid), selectedItems) > -1)
+                         .prop("checked", $.inArray(item, selectedItems) > -1)
+                         .on("change", function () {
+                         $(this).is(":checked") ? selectItem($(this).parent().next().text()) : unselectItem($(this).parent().next().text());
+                         });
+                     },
+                     align: "center",
+                     width: "30",
+                     sorting: false
+                 }                  
+                ,{ name: 'aplyid', css: 'hide' }
+                ,{ title: 'No.'        ,name: 'rowNumber' ,type: "number", width : "80", align:"center",  sorting :false }
+                
+                ,{ title: '신청기관</br> 신청자'    ,name: 'rcritNm'   ,type: "text"  , width: "180",align:"center" 
+                    ,itemTemplate: function(value, item){  return item.instNm+"</br>"+item.aplcntNm} 
+                 }
+                ,{ title: '전화번호</br> 이메일'    ,name: 'telno'   ,type: "text"  , width: "180",align:"center" 
+                    ,itemTemplate: function(value, item){  return item.telno+"</br>"+item.eml} 
+                 }
+                ,{ title: '꾸러미명'    ,name: 'packageNm'   ,type: "text" , width: "150",align:"center"}
+                ,{ title: '신청수량'    ,name: 'qnty'        ,type: "text" , width: "70",align:"center"}
+                ,{ title: '잔여수량'    ,name: 'wrhousngCnt' ,type: "text" , width: "70",align:"center"}
+                ,{ title: '대여모집명'   ,name: 'rcritNm'    ,type: "text"  , width: "170",align:"center"}
+                ,{ title: '배송지'      ,name: 'telno'      ,type: "text"  , width: "230",align:"center" 
+                    ,itemTemplate: function(value, item){ 
+                    	 var arr = item.dlvyAddr.split(" ")
+                         return arr[0]+" "+arr[1]+" "+arr[2]+"</br>"+item.dlvyAddr.replace(arr[0],"").replace(arr[1],"").replace(arr[2],"")+item.dlvyAddrDtl} 
+                 }
+                ,{ title: '신청일시'      ,name: 'regDt'      ,type: "text" , width: "120", align:"center" 
+                    ,itemTemplate: function(value, item){return value.substring(0,10)+"</br>"+value.substring(10)}
+                 }
+                ,{ title: '배송상태'    ,name: 'dlvySttsCdNm'   ,type: "text"  , width: "100",align:"center"
+                	,itemTemplate: function(value, item){return (value=="" || value==null)? "-":value;}
+                 }
+                ,{ title: '신청상태'    ,name: 'sttsCdNm'   ,type: "text"  , width: "100",align:"center"}
+            ],
+            
+            /*[# sec:authorize-url="/mng/lendAply/lendAplyDetailForm.html"]*/
+            rowClick: function(args) {
+                if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+                var detailUrl = "/mng/lendAply/lendAplyDetailForm.html?aplyid=" + args.item.aplyid; 
+                gridHelper1.loadContent(detailUrl);
+                gridHelper1.rowClick(args);
+            },
+            /*[/]*/
+            onPageChanged: function(args) {
+                selectedItems = [];
+            }
+        });
+        
+        var selectItem = function(item) {
+            selectedItems.push(item);
+            if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                $("#selectAllCheckbox").prop("checked", true);
+            } else {
+                $("#selectAllCheckbox").prop("checked", false);
+            }
+        };
+         
+        var unselectItem = function(item) {
+            selectedItems = $.grep(selectedItems, function(i) {
+            return i !== item;
+            });
+            if(selectedItems.length == 0) {
+                $('#selectAllCheckbox').attr('checked', false);
+            }
+            if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                $("#selectAllCheckbox").prop("checked", true);
+            } else {
+                $("#selectAllCheckbox").prop("checked", false);
+            }
+        };
+        
+        $("#selectAllCheckbox").click(function(item) {
+            selectedItems = [];
+            if(this.checked) { // check select status
+                $('.singleCheckbox').each(function() { 
+                    this.checked = true;   
+                    selectItem($(this).parent().next().text());           
+                }); 
+            }else {
+                $('.singleCheckbox').each(function() { 
+                    this.checked = false;      
+                    unselectItem(item);
+                });  
+                selectedItems = [];
+            }
+        });
+    }
+    
+    function validChecked() {
+        if(selectedItems.length == 0) {
+            alert("대상을 선택해주세요.");
+            return false;
+        }
+        return true;
+    }
+
+    openREjectModal=()=>{
+        
+        if(selectedItems.length <=0 ){
+            alert("대상을 선택해주십시오.");
+            return;
+        }
+
+        $("#rejectlendAplyModal").load(rejectPopupUrl, function(response, status, xhr) {
+            if (status == "success") {
+                rejectlendAplyModal = new bootstrap.Modal($('#rejectlendAplyModal'));
+                rejectlendAplyModal.show();
+            }
+        });
+    }
+
+    changeStts=(sttsCd)=>{
+	  
+	      if(selectedItems.length <=0 ){
+	            alert("대상을 선택해주십시오.");
+	            return;
+	      }
+	      
+	      var aplyids = selectedItems.join(",");
+	      var params = {
+	    		  aplyids : aplyids
+	    	     ,sttsCd : sttsCd
+	      }
+	      
+	      if(displayWorkProgress()){
+	          $.ajax({
+	              url : "/mng/lendAply/updateLendAplyStts.do",
+	              type: 'POST',
+	              cache : false,
+	              dataType: 'json',
+	              data : params,
+	              success : function (data){
+	                  if(data.result=="success"){
+	                      alert(data.msg);
+	                      gridHelper1.resetListContent();
+		                  selectedItems = [];
+		                  
+		                  if(sttsCd =="231103"){rejectlendAplyModal.hide();}
+			                  
+	                  }else{
+	                      alert(data.msg);
+	                  }
+	                  closeWorkProgress();
+	              }
+	          });
+          }
+  }
+</script>
+</div> 
+</body>
+</html>

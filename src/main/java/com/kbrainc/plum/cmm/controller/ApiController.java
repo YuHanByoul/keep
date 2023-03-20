@@ -158,4 +158,59 @@ public class ApiController {
         return result;
     }
     
+    /**
+    * 농업기상 관측 정보 조회(시간)
+    *
+    * @Title : getWeatherTimeList 
+    * @Description : 농업기상 관측 정보 조회(시간)
+    * @param dateTime 관측년월일
+    * @param obsrSpotCode 관측지점코드
+    * @return Map<String,Object> 조회결과
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = {"/front/api/getWeatherTimeList.do"})
+    @ResponseBody
+    public Map<String, Object> getWeatherTimeList(@RequestParam("dateTime") String dateTime, @RequestParam("obsrSpotCode") String obsrSpotCode) throws Exception {
+        Map<String, Object> result = apiService.getWeatherTimeList(dateTime, obsrSpotCode);
+        
+        return result;
+    }
+    
+    /**
+    * 농업기상 관측 정보 조회(월)
+    *
+    * @Title : getWeatherMonDayList 
+    * @Description : 농업기상 관측 정보 조회(월)
+    * @param searchYear 관측년도
+    * @param searchMonth 관측월
+    * @param obsrSpotCode 관측지점코드
+    * @return Map<String,Object> 조회결과
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = {"/front/api/getWeatherMonDayList.do"})
+    @ResponseBody
+    public Map<String, Object> getWeatherMonDayList(@RequestParam("searchYear") String searchYear, @RequestParam("searchMonth") String searchMonth, @RequestParam("obsrSpotCode") String obsrSpotCode) throws Exception {
+        Map<String, Object> result = apiService.getWeatherMonDayList(searchYear, searchMonth, obsrSpotCode);
+        
+        return result;
+    }
+    
+    /**
+    * 전기자동차 충전소 정보 목록 조회
+    *
+    * @Title : getChargerInfo 
+    * @Description : 전기자동차 충전소 정보 목록 조회
+    * @param zcode 지역구분 코드
+    * @param zscode 지역구분 상세 코드
+    * @return Map<String,Object> 조회결과
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = {"/front/api/getChargerInfo.do"})
+    @ResponseBody
+    public Map<String, Object> getChargerInfo(@RequestParam("zcode") String zcode, @RequestParam("zscode") String zscode) throws Exception {
+        Map<String, Object> result = apiService.getChargerInfo(zcode, zscode);
+        
+        return result;
+    }
+    
 }

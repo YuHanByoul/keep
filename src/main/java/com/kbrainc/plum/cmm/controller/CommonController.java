@@ -1,6 +1,5 @@
 package com.kbrainc.plum.cmm.controller;
 
-import java.security.MessageDigest;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,10 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,9 +17,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,18 +29,18 @@ import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.config.security.properties.SecurityProperties;
 import com.kbrainc.plum.front.bbs.model.PstVo;
 import com.kbrainc.plum.front.bbs.service.BbsServiceImpl;
-import com.kbrainc.plum.front.member.model.MemberVo;
+import com.kbrainc.plum.front.mmnws.model.MmnwsVo;
+import com.kbrainc.plum.front.mmnws.service.MmnwsServiceImpl;
 import com.kbrainc.plum.mng.site.model.SiteVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.DrmncyInfoVo;
+import com.kbrainc.plum.rte.model.ParentRequestVo.ORDER_DIRECTION;
 import com.kbrainc.plum.rte.model.RoleInfoVo;
 import com.kbrainc.plum.rte.model.SiteInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.SiteInfo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.CommonUtil;
-
-import kr.go.onepass.client.org.apache.commons.lang.StringUtils;
 
 /**
  * 
@@ -82,6 +77,9 @@ public class CommonController {
     
     @Autowired
     private BbsServiceImpl bbsService;
+    
+    @Autowired
+    private MmnwsServiceImpl mmnwsService;
     
     /**
     * 인덱스.
@@ -153,17 +151,39 @@ public class CommonController {
                 mav.addObject("error", "true");
                 mav.setViewName("front/login");
             } else {
-                PstVo pstVo =new PstVo();
-                
+                PstVo pstVo = new PstVo();
                 pstVo.setUser(user);
-                pstVo.setRowPerPage(5);
-                pstVo.setBbsid(10);
+                pstVo.setRowPerPage(6);
+                pstVo.setBbsid(1);
+                pstVo.setOrderField("REG_DT");
+                pstVo.setOrderDirection(ORDER_DIRECTION.desc);
+                MmnwsVo mmnwsVo = new MmnwsVo();
+                mmnwsVo.setRowPerPage(6);
+                mmnwsVo.setOrderField("REG_DT");
+                mmnwsVo.setOrderDirection(ORDER_DIRECTION.desc);
                 try {
-                    List<PstVo> list= bbsService.selectPstList(pstVo);
-                    mav.addObject("list", list);
-                }catch(SQLException e){
+                    if(user == null) {
+                        mav.addObject("userType", "-1");
+                    } else {
+                        String userType = user.getUserType();
+                        String loginUserType = user.getLoginUserType();
+                        if(userType != null && userType.equals("C")) {
+                            mav.addObject("userType", userType);
+                        } else {
+                            mav.addObject("userType", loginUserType);
+                        }
+                    }
+                    List<PstVo> noticeList= bbsService.selectPstList(pstVo);
+                    mav.addObject("noticeList", noticeList);
+                    List<MmnwsVo> mmnwslist= mmnwsService.selectMmnwsList(mmnwsVo);
+                    mav.addObject("mmnwslist", mmnwslist);
+                    pstVo.setBbsid(12);
+                    List<PstVo> recruitList= bbsService.selectPstList(pstVo);
+                    mav.addObject("recruitList", recruitList);
+                    
+                } catch(SQLException e) {
                     mav.addObject("list", null);
-                }catch(Exception e){
+                } catch(Exception e) {
                     mav.addObject("list", null);
                 }
                 
@@ -206,16 +226,39 @@ public class CommonController {
                 return "mng/main";
             }
         } else { // 사용자 사이트
+            pstVo = new PstVo();
             pstVo.setUser(user);
-            pstVo.setRowPerPage(5);
-            pstVo.setBbsid(10);
+            pstVo.setRowPerPage(6);
+            pstVo.setBbsid(1);
+            pstVo.setOrderField("REG_DT");
+            pstVo.setOrderDirection(ORDER_DIRECTION.desc);
+            MmnwsVo mmnwsVo = new MmnwsVo();
+            mmnwsVo.setRowPerPage(6);
+            mmnwsVo.setOrderField("REG_DT");
+            mmnwsVo.setOrderDirection(ORDER_DIRECTION.desc);
             try {
-                List<PstVo> list= bbsService.selectPstList(pstVo);
-                model.addAttribute("list", list);
-            }catch(SQLException e){
-                model.addAttribute("list", null);
-            }catch(Exception e){
-                model.addAttribute("list", null);
+                if(user == null) {
+                    model.addAttribute("userType", "-1");
+                } else {
+                    String userType = user.getUserType();
+                    String loginUserType = user.getLoginUserType();
+                    if(userType != null && userType.equals("C")) {
+                        model.addAttribute("userType", userType);
+                    } else {
+                        model.addAttribute("userType", loginUserType);
+                    }
+                }
+                List<PstVo> noticeList= bbsService.selectPstList(pstVo);
+                model.addAttribute("noticeList", noticeList);
+                List<MmnwsVo> mmnwslist= mmnwsService.selectMmnwsList(mmnwsVo);
+                model.addAttribute("mmnwslist", mmnwslist);
+                pstVo.setBbsid(12);
+                List<PstVo> recruitList= bbsService.selectPstList(pstVo);
+                model.addAttribute("recruitList", recruitList);
+            } catch(SQLException e) {
+                model.addAttribute("noticList", null);
+            } catch(Exception e) {
+                model.addAttribute("noticList", null);
             }
             
             return "front/main";

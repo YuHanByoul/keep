@@ -13,6 +13,7 @@ import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.ResCodeService;
 import com.kbrainc.plum.rte.util.CommonUtil;
+import com.kbrainc.plum.rte.util.StringUtil;
 
 import lombok.Data;
 
@@ -232,10 +233,17 @@ public class LendAplyVo extends ParentRequestVo {
     /**기관 유형 코드명 **/
     private String instTypeCdNm;
     
-
-    
     /**대여 불가 사유 **/
     private String rejectRsn;
+    
+    
+    public void setRgtrNm(String rgtrNm) throws Exception{
+        this.rgtrNm = StringUtil.maskingName(rgtrNm) ;
+    }
+    
+    public void setRgtrAcnt(String rgtrAcnt) throws Exception{
+        this.rgtrAcnt = StringUtil.maskingAccount(rgtrAcnt) ;
+    }
     
     public void setSttsCd(String sttsCd) throws Exception{
         this.sttsCd = sttsCd;
