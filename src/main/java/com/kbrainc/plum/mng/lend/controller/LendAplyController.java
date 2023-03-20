@@ -4,14 +4,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.mng.lend.model.LendAplyVo;
 import com.kbrainc.plum.mng.lend.model.LendVo;
 import com.kbrainc.plum.mng.lend.service.LendService;
@@ -43,9 +45,6 @@ public class LendAplyController {
 
     @Autowired
     private LendService lendService;
-    
-    @Autowired
-    private FileService fileService;
     
     /**
      * 대여 신청관리
@@ -104,7 +103,19 @@ public class LendAplyController {
      */
     @RequestMapping(value = "/mng/lendAply/lendAplyDetailForm.html")
     public String lendAplyDetailForm(LendAplyVo lendAplyVo,Model model) throws Exception {
-        model.addAttribute("lendAplyInfo", lendService.selectLendAplyInfo(lendAplyVo));
+        
+        
+        LendAplyVo resVo = lendService.selectLendAplyInfo(lendAplyVo);
+        model.addAttribute("lendAplyInfo",resVo);
+        model.addAttribute("aplyDlivyList",lendService.selectLendAplyDlvyList(lendAplyVo));
+        
+        LendVo lendVo = new LendVo(); 
+        lendVo.setRcritid(resVo.getRcritid());
+        model.addAttribute("lendInfo",lendService.selectLend(lendVo));
+        
+        PackageVo packageVo = new PackageVo();
+        packageVo.setPackageid(resVo.getPackageid());
+        
         return "mng/lendAply/lendAplyDetailForm";
     }
     /**
@@ -179,13 +190,21 @@ public class LendAplyController {
      */
     @RequestMapping(value = "/mng/lendAply/updateLendAply.do")
     @ResponseBody
-    public Map<String, Object> updateLendAply(LendAplyVo lendAplyVo, BindingResult bindingResult1,@UserInfo UserVo user) throws Exception {
+    public Map<String, Object> updateLendAply(@Valid LendAplyVo lendAplyVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         int retVal = 0;
         
         lendAplyVo.setUser(user);
         
-        //retVal = lendService.udateLend(LendVo);
+        if (bindingResult1.hasErrors()) {
+            FieldError fieldError = bindingResult1.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+        
+        retVal = lendService.updateLendAply(lendAplyVo);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -197,12 +216,11 @@ public class LendAplyController {
         
         return resultMap;
     }
-          
     /**
-     * 대여 신청관리 상세 화면
+     * 대여 신청 대여불가 사유 팝업
      *
-     * @Title : lendAplyDetailForm
-     * @Description : 대여 신청관리 상세 화면
+     * @Title : rejectLendAplyPopup
+     * @Description : 대여 신청 대여불가 사유 팝업
      * @return String 이동화면경로
      * @throws Exception 예외
      */
@@ -211,6 +229,4 @@ public class LendAplyController {
         model.addAttribute("lendAplyInfo", lendService.selectLendAplyInfo(lendAplyVo));
         return "mng/lendAply/rejectLendAplyPopup";
     }
-       
-    
 }
