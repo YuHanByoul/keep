@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kbrainc.plum.mng.lend.model.LendAplyDlivyVo;
 import com.kbrainc.plum.mng.lend.model.LendAplyVo;
 import com.kbrainc.plum.mng.lend.model.LendDao;
 import com.kbrainc.plum.mng.lend.model.LendRndPackageindvdVo;
@@ -312,5 +313,29 @@ public class LendServiceImpl extends PlumAbstractServiceImpl implements LendServ
      */
     public LendAplyVo selectLendAplyInfo(LendAplyVo lendAplyVo) throws Exception{
         return lendDao.selectLendAplyInfo(lendAplyVo);
+    }
+    /**
+     * 대여 출고 목록 호출
+     *
+     * @Title       : selectLendAplyDlvyList 
+     * @Description : 대여 출고 목록 호출 
+     * @param LendAplyVo 객체
+     * @return List<LendAplyDlivyVo> 객체
+     * @throws Exception 예외
+     */
+    public List<LendAplyDlivyVo> selectLendAplyDlvyList(LendAplyVo lendAplyVo) throws Exception{
+        return lendDao.selectLendAplyDlvyList(lendAplyVo);
+    }
+    /**
+     * 대여 신청 수정
+     *
+     * @Title       : updateLendAply 
+     * @Description : 대여 신청 수정 
+     * @param LendAplyVo 객체
+     * @return int
+     * @throws Exception 예외
+     */
+    public int updateLendAply(LendAplyVo lendAplyVo) throws Exception{
+        return lendDao.updateLendAply(lendAplyVo);
     }
 }
