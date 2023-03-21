@@ -38,6 +38,29 @@ public interface CommonDao {
     * @throws Exception 예외
     */
     public List<SiteVo> selectSiteList(SiteVo site) throws Exception;
+    
+    /**
+    * 현재 사용자의 접근가능한 시도목록을 반환한다.
+    *
+    * @Title : selectAlowedCtprvnList
+    * @Description : 현재 사용자의 접근가능한 시도목록을 반환한다.
+    * @param userVo UserVo객체
+    * @return List<Map<String,Object>> 시도목록
+    * @throws Exception 예외
+    */
+    public List<Map<String, Object>> selectAlowedCtprvnList(UserVo userVo) throws Exception;
+    
+    /**
+    * 현재 사용자의 접근가능한 시군구목록을 반환한다.
+    *
+    * @Title : selectAlowedSignguList
+    * @Description : 현재 사용자의 접근가능한 시군구목록을 반환한다.
+    * @param userVo UserVo객체
+    * @return List<Map<String,Object>> 시군구목록
+    * @throws Exception 예외
+    */
+    public List<Map<String, Object>> selectAlowedSignguList(UserVo userVo) throws Exception;
+    
     /**
     * 현재 사용자의 접근가능한 기관목록을 반환한다.
     *

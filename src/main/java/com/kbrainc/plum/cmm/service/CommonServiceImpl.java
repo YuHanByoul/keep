@@ -59,6 +59,36 @@ public class CommonServiceImpl extends PlumAbstractServiceImpl implements Common
     }
     
     /**
+    * 현재 사용자의 접근가능한 시도목록을 반환한다.
+    *
+    * @Title : selectAlowedCtprvnList
+    * @Description : 현재 사용자의 접근가능한 시도목록을 반환한다.
+    * @return List<Map<String,Object>> 시도목록
+    * @throws Exception 예외
+    */
+    public List<Map<String, Object>> selectAlowedCtprvnList() throws Exception {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        HttpSession session = request.getSession();
+        UserVo userInfo = (UserVo)session.getAttribute("user");
+        return commonDao.selectAlowedCtprvnList(userInfo);
+    }
+    
+    /**
+    * 현재 사용자의 접근가능한 시군구목록을 반환한다.
+    *
+    * @Title : selectAlowedSignguList
+    * @Description : 현재 사용자의 접근가능한 시군구목록을 반환한다.
+    * @return List<Map<String,Object>> 시군구목록
+    * @throws Exception 예외
+    */
+    public List<Map<String, Object>> selectAlowedSignguList() throws Exception {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        HttpSession session = request.getSession();
+        UserVo userInfo = (UserVo)session.getAttribute("user");
+        return commonDao.selectAlowedSignguList(userInfo);
+    }
+    
+    /**
     * 현재 사용자의 접근가능한 기관목록을 반환한다.
     *
     * @Title : selectAlowedInstList
