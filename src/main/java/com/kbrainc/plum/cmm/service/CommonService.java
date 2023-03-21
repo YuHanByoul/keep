@@ -4,9 +4,14 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.kbrainc.plum.mng.site.model.SiteVo;
 import com.kbrainc.plum.rte.model.DrmncyInfoVo;
+import com.kbrainc.plum.rte.model.UserVo;
 
 /**
  * 
@@ -36,6 +41,26 @@ public interface CommonService {
     * @throws Exception 예외
     */
     public List<SiteVo> selectSiteList(SiteVo site) throws Exception;
+    
+    /**
+    * 현재 사용자의 접근가능한 시도목록을 반환한다.
+    *
+    * @Title : selectAlowedCtprvnList
+    * @Description : 현재 사용자의 접근가능한 시도목록을 반환한다.
+    * @return List<Map<String,Object>> 시도목록
+    * @throws Exception 예외
+    */
+    public List<Map<String, Object>> selectAlowedCtprvnList() throws Exception;
+    
+    /**
+    * 현재 사용자의 접근가능한 시군구목록을 반환한다.
+    *
+    * @Title : selectAlowedSignguList
+    * @Description : 현재 사용자의 접근가능한 시군구목록을 반환한다.
+    * @return List<Map<String,Object>> 시군구목록
+    * @throws Exception 예외
+    */
+    public List<Map<String, Object>> selectAlowedSignguList() throws Exception;
     
     /**
     * 현재 사용자의 접근가능한 기관목록을 반환한다.

@@ -40,7 +40,7 @@
                     </otherwise>
                 </choose>
                 <if test='user.roleInfo.trgtRgnCd == "S"'>
-                    AND INSTID IN(SELECT INSTID FROM TB_CMM_INST WHERE RGN_CD IN(SELECT RGN_CD FROM TB_CMM_ROLE_RGN WHERE ROLEID = #{user.roleInfo.roleid}))          
+                    AND INSTID IN(SELECT INSTID FROM TB_CMM_INST WHERE RGN_CD IN(SELECT SIGNGU_CD FROM TB_CMM_ADDR_SIGNGU WHERE CTPRVN_CD IN (SELECT RGN_CD FROM TB_CMM_ROLE_RGN WHERE ROLEID = #{user.roleInfo.roleid})))          
                 </if>
                         )
                     <if test='user.roleInfo.trgtInstCd == "A" and user.roleInfo.trgtRgnCd == "A"'>
@@ -74,7 +74,7 @@
                     </otherwise>
                 </choose>
                 <if test='user.roleInfo.trgtRgnCd == "S"'>
-                    AND INSTID IN(SELECT INSTID FROM TB_CMM_INST WHERE RGN_CD IN(SELECT RGN_CD FROM TB_CMM_ROLE_RGN WHERE ROLEID = #{user.roleInfo.roleid}))          
+                    AND INSTID IN(SELECT INSTID FROM TB_CMM_INST WHERE RGN_CD IN(SELECT SIGNGU_CD FROM TB_CMM_ADDR_SIGNGU WHERE CTPRVN_CD IN (SELECT RGN_CD FROM TB_CMM_ROLE_RGN WHERE ROLEID = #{user.roleInfo.roleid})))          
                 </if>
                         )
             </otherwise>
@@ -108,7 +108,7 @@
                     </otherwise>
                 </choose>
                 <if test='user.roleInfo.trgtRgnCd == "S"'>
-                    AND INSTID IN(SELECT INSTID FROM TB_CMM_INST WHERE RGN_CD IN(SELECT RGN_CD FROM TB_CMM_ROLE_RGN WHERE ROLEID = #{user.roleInfo.roleid}))          
+                    AND INSTID IN(SELECT INSTID FROM TB_CMM_INST WHERE RGN_CD IN(SELECT SIGNGU_CD FROM TB_CMM_ADDR_SIGNGU WHERE CTPRVN_CD IN (SELECT RGN_CD FROM TB_CMM_ROLE_RGN WHERE ROLEID = #{user.roleInfo.roleid})))     
                 </if>
                         )
                     <if test='user.roleInfo.trgtInstCd == "A" and @com.kbrainc.plum.rte.util.CommonUtil@isEmpty(searchSiteSysSeCd) and user.roleInfo.trgtRgnCd == "A"'>
@@ -144,9 +144,52 @@
                     </otherwise>
                 </choose>
                 <if test='user.roleInfo.trgtRgnCd == "S"'>
-                    AND INSTID IN(SELECT INSTID FROM TB_CMM_INST WHERE RGN_CD IN(SELECT RGN_CD FROM TB_CMM_ROLE_RGN WHERE ROLEID = #{user.roleInfo.roleid}))          
+                    AND INSTID IN(SELECT INSTID FROM TB_CMM_INST WHERE RGN_CD IN(SELECT SIGNGU_CD FROM TB_CMM_ADDR_SIGNGU WHERE CTPRVN_CD IN (SELECT RGN_CD FROM TB_CMM_ROLE_RGN WHERE ROLEID = #{user.roleInfo.roleid})))      
                 </if>
                         )
+            </otherwise>
+        </choose>
+    </sql>
+    
+    <sql id="ctprvnLmtCondition">
+        <choose>
+            <when test="@com.kbrainc.plum.rte.util.CommonUtil@isEmpty(searchCtprvnValue)">
+                <if test='user.roleInfo.trgtRgnCd == "S"'>
+                    AND ${tableAlias}.${columnName} IN(SELECT RGN_CD FROM TB_CMM_ROLE_RGN WHERE ROLEID = #{user.roleInfo.roleid})     
+                </if>
+            </when>
+            <otherwise>
+                <choose>
+                    <when test='user.roleInfo.trgtInstCd == "S"'>
+                        AND ${tableAlias}.${columnName} = #{searchCtprvnValue}
+                        AND ${tableAlias}.${columnName} IN(SELECT RGN_CD FROM TB_CMM_ROLE_RGN WHERE ROLEID = #{user.roleInfo.roleid})     
+                    </when>
+                    <otherwise>
+                        AND ${tableAlias}.${columnName} = #{searchCtprvnValue}
+                    </otherwise>
+                </choose>
+                        )
+            </otherwise>
+        </choose>
+    </sql>
+    
+    <sql id="signguLmtCondition">
+        <choose>
+            <when test="@com.kbrainc.plum.rte.util.CommonUtil@isEmpty(searchSignguValue)">
+                <if test='user.roleInfo.trgtRgnCd == "S"'>
+                    AND ${tableAlias}.${columnName} IN(SELECT SIGNGU_CD FROM TB_CMM_ADDR_SIGNGU WHERE CTPRVN_CD IN (SELECT RGN_CD FROM TB_CMM_ROLE_RGN WHERE ROLEID = #{user.roleInfo.roleid}))     
+                </if>
+            </when>
+            <otherwise>
+                <choose>
+                    <when test='user.roleInfo.trgtInstCd == "S"'>
+                        AND ${tableAlias}.${columnName} = #{searchSignguValue}
+                        AND ${tableAlias}.${columnName} IN(SELECT SIGNGU_CD FROM TB_CMM_ADDR_SIGNGU WHERE CTPRVN_CD IN (SELECT RGN_CD FROM TB_CMM_ROLE_RGN WHERE ROLEID = #{user.roleInfo.roleid}))
+                    </when>
+                    <otherwise>
+                        AND ${tableAlias}.${columnName} = #{searchSignguValue}
+                    </otherwise>
+                </choose>
             </otherwise>
         </choose>
     </sql>
