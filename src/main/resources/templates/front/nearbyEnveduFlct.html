@@ -37,9 +37,9 @@
                         <label class="inp inp-button"><input type="radio" name="map-wrap" class="blind" value="3"><b>교육프로그램</b></label>
                         <label class="inp inp-button"><input type="radio" name="map-wrap" class="blind" value="4"><b>전문가</b></label>
                     </div>
-                    <div class="map-inner" id="map"></div>
+                    
                 </div>
-               
+               <div class="map-inner" id="map"></div>
                 
             </div>
         </section>
@@ -383,9 +383,11 @@
             
             function displayCustomOverlay1(index, marker, place){
                 var customOverlay = new kakao.maps.CustomOverlay({
-                    position: marker.getPosition(),
-                    xAnchor: 0.5
+                    position: marker.getPosition()
                 });
+                var markerContent = document.createElement('div');
+                markerContent.classList.add('map-pin');
+                markerContent.style.left = '-150px';
                 
                 var content = '<div class="map-det">'
                     + '<button type="button" class="map-pin-close" title="레이어 닫기"></button>';
@@ -397,13 +399,13 @@
                     if(place.HMPG != null){
                         content += '<a href="https://' + place.HMPG + '" class="link" target="_blank" title="새 창">https://' + place.HMPG + '</a>';
                     }
-                    customOverlay.dk = 1.34;
+                    markerContent.style.top = '-205px';
                     
                 } else if(place.TYPE == '시설'){
                     content +=  '<div class="tag tag-blue">시설</div>';
                     content +=  '<button type="button" class="tit after-link"><span>'+(index +1)+'</span>'+place.INST_NM+'</button>';
                     content += '<div class="loc">'+ place.ADDR + ' ' + place.ADDR_DTL +'</div>';
-                    customOverlay.dk = 1.48;
+                    markerContent.style.top = '-160px';
                     
                 } else if(place.TYPE == '프로그램'){
                     content +=  '<div class="tag tag-blue">'+place.CATEGORY_NM+'</div>';
@@ -414,13 +416,12 @@
                     content += ' 정원 : ' + place.EDU_NOPE + '명<br>';
                     content += ' 교육주제 : ' + place.PRGRM_SJCT ;
                     content += '</div>';
-                    customOverlay.dk = 1.32;
+                    
+                    markerContent.style.top = '-220px';
+                    
                 }
-                
+               
                 content += '</div>';
-                
-                var markerContent = document.createElement('div');
-                markerContent.classList.add('map-pin');
                 
                 markerContent.innerHTML = content;
                 
@@ -466,6 +467,7 @@
                     
                     var markerContent = document.createElement('div');
                     markerContent.classList.add('map-pin');
+                    markerContent.style.left = '-140px';
                     
                     var content = '<ul class="map-pin-list">';
                     
@@ -537,11 +539,11 @@
                     
                     var customOverlay = new kakao.maps.CustomOverlay({
                         position: cluster.getCenter(),
-                        content: markerContent,
-                        xAnchor: 0.5
+                        content: markerContent
                     });
-                    //customOverlay.dk = 0.5 + (clusterMarkers.length/10 + 0.02);
-                    customOverlay.dk = 1.45 - (clusterMarkers.length * 0.04);
+
+                    markerContent.style.top = '-'+((clusterMarkers.length -1) * 45 +85)+'px';
+                    
                     customOverlay.setMap(map);
                     
                     clickedOverlay1 = customOverlay;

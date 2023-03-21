@@ -45,9 +45,6 @@ public class LendAplyVo extends ParentRequestVo {
     /** 대여 신청 아이디(s) */
     private  List<String> aplyids;
     
-    /** 대여 신청 아이디(s) */
-    //private  String[] aplyids;
-    
     /** 신청자아이디 */
     private Integer aplcntid;
     
@@ -117,7 +114,7 @@ public class LendAplyVo extends ParentRequestVo {
     @Size(max = 100, message = " 수령인은 100자를 초과할 수 없습니다.")
     private String recptr;
     
-    /** 수령인*/
+    /** 수령인 전화번호*/
     @Size(max = 40, message = "수령인 전화번호는 40자를 초과할 수 없습니다.")
     private String recptrTelno;
     
@@ -125,7 +122,7 @@ public class LendAplyVo extends ParentRequestVo {
     @Size(max = 200, message = "수령인 이메일은 200자를 초과할 수 없습니다.")
     private String recptrEml;
     
-    /** 수령인 이메일*/
+    /** 수령인 우편번호*/
     @Size(max = 200, message = "배송 우편번호는 10자를 초과할 수 없습니다.")
     private String dlvyZip;
     

@@ -55,6 +55,8 @@ public class AttrConfig extends AbstractProcessorDialect {
         processors.add(new PaginationAttr(dialectPrefix));
         processors.add(new SelectInstAttr(dialectPrefix));
         processors.add(new SelectRgnAttr(dialectPrefix));
+        processors.add(new SelectCtprvnAttr(dialectPrefix));
+        processors.add(new SelectSignguAttr(dialectPrefix));
         processors.add(new SelectSiteAttr(dialectPrefix));
         processors.add(new SwitchYnAttr(dialectPrefix));
         processors.add(new CheckCodeVerticalAttr(dialectPrefix));

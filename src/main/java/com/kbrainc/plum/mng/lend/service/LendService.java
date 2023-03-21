@@ -3,6 +3,7 @@ package com.kbrainc.plum.mng.lend.service;
 import java.util.List;
 import java.util.Map;
 
+import com.kbrainc.plum.mng.lend.model.LendAplyDlivyVo;
 import com.kbrainc.plum.mng.lend.model.LendAplyVo;
 import com.kbrainc.plum.mng.lend.model.LendRndPackageindvdVo;
 import com.kbrainc.plum.mng.lend.model.LendRndVo;
@@ -222,4 +223,24 @@ public interface LendService {
      * @throws Exception 예외
      */
     public LendAplyVo selectLendAplyInfo(LendAplyVo LendAplyVo) throws Exception;
+    /**
+     * 대여 출고 목록 호출
+     *
+     * @Title       : selectLendAplyDlvyList 
+     * @Description : 대여 출고 목록 호출 
+     * @param LendAplyVo 객체
+     * @return List<LendAplyDlivyVo> 객체
+     * @throws Exception 예외
+     */
+    public List<LendAplyDlivyVo> selectLendAplyDlvyList(LendAplyVo lendAplyVo) throws Exception;
+    /**
+     * 대여 신청 수정
+     *
+     * @Title       : updateLendAply 
+     * @Description : 대여 신청 수정 
+     * @param LendAplyVo 객체
+     * @return int
+     * @throws Exception 예외
+     */
+    public int updateLendAply(LendAplyVo lendAplyVo) throws Exception;
 }
