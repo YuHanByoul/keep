@@ -11,7 +11,7 @@
 				    <div class="mb-0 form-group">
 				        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>작성자ID</strong></div>
 				        <div class="col-12 p-t-5 p-b-5">
-				            <th:block th:text="${tchaidRvw.aplcntid}">
+				            <th:block th:text="${tchaidRvw.aplcntid}"></th:block>
 				        </div>
 				    </div>
 				</div>
@@ -19,7 +19,7 @@
 				    <div class="mb-0 form-group">
 				        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>작성자/기관</strong></div>
 				        <div class="col-12 p-t-5 p-b-5">
-				            <th:block th:text="${tchaidRvw.aplcntNm}">
+				            <th:block th:text="${tchaidRvw.aplcntNm}"></th:block> / <th:block th:text="${tchaidRvw.instNm}"></th:block>
 				        </div>
 				    </div>
 				</div>
@@ -29,7 +29,7 @@
 	                <div class="mb-0 form-group">
 	                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>구분</strong></div>
 	                    <div class="col-12 p-t-5 p-b-5">
-	                        <th:block th:text="${tchaidRvw.type}">
+	                        <th:block th:text="${tchaidRvw.type}"></th:block>
 	                    </div>
 	                </div>
 	            </div>
@@ -37,7 +37,7 @@
 	                <div class="mb-0 form-group">
 	                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>모집명</strong></div>
 	                    <div class="col-12 p-t-5 p-b-5">
-	                        <th:block th:text="${tchaidRvw.rcritNm}">
+	                        <th:block th:text="${tchaidRvw.rcritNm}"></th:block>
 	                    </div>
 	                </div>
 	            </div>
@@ -47,7 +47,7 @@
 	                <div class="mb-0 form-group">
 	                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>상품명</strong></div>
 	                    <div class="col-12 p-t-5 p-b-5">
-	                        <th:block th:text="${tchaidRvw.productNm}">
+	                        <th:block th:text="${tchaidRvw.productNm}"></th:block>
 	                    </div>
 	                </div>
 	            </div>
@@ -62,7 +62,7 @@
                     <div class="mb-0 form-group">
                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>만족도 점수</strong></div>
                         <div class="col-12 p-t-5 p-b-5">
-                            <th:block th:text="${tchaidRvw.rvwScr == 1 ? '1점 (매우 불만족)' : tchaidRvw.rvwScr == 2 ? '2점 (불만족)' : tchaidRvw.rvwScr == 3 ? '3점 (보통)' : tchaidRvw.rvwScr == 4 ? '4점 (만족)' : '5점 (매우 만족)'}">
+                            <th:block th:text="${tchaidRvw.rvwScr == 1 ? '1점 (매우 불만족)' : tchaidRvw.rvwScr == 2 ? '2점 (불만족)' : tchaidRvw.rvwScr == 3 ? '3점 (보통)' : tchaidRvw.rvwScr == 4 ? '4점 (만족)' : '5점 (매우 만족)'}"></th:block>
                         </div>
                     </div>
                 </div>
@@ -70,7 +70,7 @@
                     <div class="mb-0 form-group">
                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>등록일</strong></div>
                         <div class="col-12 p-t-5 p-b-5">
-                            <th:block th:text="${tchaidRvw.rvwRegDt}">
+                            <th:block th:text="${tchaidRvw.rvwRegDt}"></th:block>
                         </div>
                     </div>
                 </div>
@@ -78,22 +78,30 @@
             <div class="mb-3 form-group row">
                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="reviewContents"><strong>내용</strong></label>
                 <div class="col-12">
-                    <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="내용" id="rvwCn" name="rvwCn"></textarea>
+                    <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="내용" id="rvwCn" name="rvwCn"><th:block th:text="${tchaidRvw.rvwCn}"></th:bloc></textarea>
                 </div>
             </div>
             <div class="mb-3 form-group row">
                 <div class="mb-0 form-group">
                     <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>첨부파일</strong></label>
                     <div class="col-sm-12">
-                        <input type="file" class="form-control form-control-sm">
+	                    <input type="file" multiple class="form-control form-control-sm" id="rvwFile" name="rvwFile"/>
+					    <input type="hidden" name="rvwFilegrpid" id="rvwFilegrpid" value="0">
                     </div>
-                    <div class="mt-2 row">
-                        <div class="col-auto">
-                        <span class="label label-inverse">
-                            sampleFile.pptx <a href="javascript:void(0)" class="text-white">X</a>
-                        </span>
-                        </div>
-                    </div>
+	                <div class="mt-2 row">
+	                    <div class="col-auto">
+		                	<div id="multiFileUploadSuccess">
+								<th:block th:if="${fileMap} != null">
+									<div th:each="item:${fileMap}" class ="label label-inverse text-white" th:id="${item.fileid}">
+										<a class='text-white' href="javascript:void(0)" th:name="${item.fileid}" th:onclick="downloadFileByFileid([[${item.fileid}]],[[${item.fileIdntfcKey}]])"><th:block th:text="${item.orginlFileNm}"></th:block>&nbsp;&nbsp;</a>
+										<a class='text-white' href="javascript:void(0)" th:onclick="fn_deleteFileList([[${item.fileid}]],[[${item.fileIdntfcKey}]])">X</a>
+									</div>
+								</th:block>
+								<th:block th:unless="${fileMap} != null">
+								</th:block>	
+		                	</div>
+	                    </div>
+	                </div>
                 </div>
             </div>
         </div>
@@ -101,9 +109,6 @@
 	        <button type="button" class="btn btn-disabled m-r-5" id="cancelUpdateTchaidRvw" onclick="gridHelper1.toggleContent()">취소</button>
 	        <th:block sec:authorize-url="/mng/tchaidRvw/updateTchaidRvw.do"><button type="button" class="btn btn-primary" id="updateTchaidRvw" onclick="fn_updateTchaidRvw()">저장</button></th:block>
 	    </div>
-		<!-- Tab Container End -->
-	</div>
-	<!-- Hidden Contents End -->
 </form>
 
 <script type="text/javascript">
@@ -130,4 +135,46 @@
 			});
 		}
 	}
+ 	
+	$('#rvwFile').change(function(event) {
+        var objFile = document.querySelector('#rvwFile');
+        var formData = new FormData();
+        var content = "";
+        var uploadFileCnt = 0;
+        for( i = 0 ; i < objFile.files.length ; i++) {
+        	formData.append("files", objFile.files[i]);
+            uploadFileCnt++;
+        }
+        formData.append("filegrpid", $("#rvwFilegrpid").val());
+        formData.append("filegrpNm", "jntpurchsRvwfile");
+        
+		$.ajax({
+			url : '/uploadMultipleFiles.do',
+			processData : false,
+			contentType : false,
+			data : formData,
+			type : 'POST',
+			success : function(response) {
+				if(response.result == 'fail'){
+					alert(response.msg);
+				}else{
+					if($("#rvwFilegrpid").val()=='0' || $("#rvwFilegrpid").val()==''  || $("#rvwFilegrpid").val()==null){
+						$("#rvwFilegrpid").val( response[0].filegrpid );
+					}
+				
+					for(i = 0 ;i < response.length; i++ ){
+						content = "<div class='label label-inverse text-white' id='"+response[i].fileid+"'><a href=javascript:downloadFileByFileid('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"') class='text-white'>"+response[i].orginlFileNm+"&nbsp;&nbsp;</a>";
+	                    content +="<a href=javascript:fn_deleteFileList('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"') class='text-white'>X</a></div>";
+						$('#multiFileUploadSuccess').append(content);
+					}
+				}
+			}
+		})
+        
+		if (detectBrowser() == "other") { 
+			$("#rvwFile").val("");
+		} else {   
+			$("#rvwFile").replaceWith( $("#rvwFile").clone(true)) 
+		}
+    });
 </script>

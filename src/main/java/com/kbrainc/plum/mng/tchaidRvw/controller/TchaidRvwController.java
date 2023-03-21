@@ -1,5 +1,6 @@
 package com.kbrainc.plum.mng.tchaidRvw.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.mng.tchaidRvw.model.TchaidRvwVo;
 import com.kbrainc.plum.mng.tchaidRvw.service.TchaidRvwService;
 import com.kbrainc.plum.rte.constant.Constant;
@@ -42,6 +45,9 @@ public class TchaidRvwController {
     @Autowired
     private TchaidRvwService tchaidRvwService;
     
+    @Autowired
+    private FileService fileService;
+    
     /**
     * 교구후기관리 리스트화면으로 이동
     *
@@ -66,8 +72,31 @@ public class TchaidRvwController {
     * @return String
     */
     @RequestMapping(value = "/mng/tchaidRvw/tchaidRvwUpdateForm.html")
-    public String tchaidRvwUpdateForm(TchaidRvwVo tchaidRvwVo, Model model) throws Exception {
-        model.addAttribute("tchaidRvw", tchaidRvwService.selectTchaidRvwInfo(tchaidRvwVo));
+    public String tchaidRvwUpdateForm(TchaidRvwVo tchaidRvwVo, Model model, @UserInfo UserVo user) throws Exception {
+        TchaidRvwVo result = null;
+        result = tchaidRvwService.selectTchaidRvwInfo(tchaidRvwVo);
+        model.addAttribute("tchaidRvw", result);
+        
+        FileVo fileVo = new FileVo();
+        fileVo.setUser(user);
+        
+        if (result.getRvwFilegrpid() != null && !result.getRvwFilegrpid().equals(0)) {
+            fileVo.setFilegrpid(Integer.parseInt(result.getRvwFilegrpid().toString()));
+            ArrayList<FileVo> fileList= fileService.getFileList(fileVo);
+            model.addAttribute("fileMap",fileList );
+            model.addAttribute("currentFileCnt", fileList.size());
+        } else {
+            model.addAttribute("fileMap", null);
+            model.addAttribute("currentFileCnt", 0);
+        }
+        
+        if(tchaidRvwVo.getRvwFilegrpid() != null && result.getFileIdntfcKey() != null) {
+            StringBuffer fileBtn = new StringBuffer();
+            fileBtn.append("<div class ='label label-inverse text-white' id='" + tchaidRvwVo.getRvwFilegrpid() + "'>");
+            fileBtn.append("<a href=javascript:downloadFileByFileid('" + tchaidRvwVo.getRvwFilegrpid() + "','" + result.getFileIdntfcKey() + "') class='text-white'>" + result.getOrginlFileNm() + "&nbsp;&nbsp;</a>");
+            fileBtn.append("<a href=javascript:fn_deleteFileList('" + tchaidRvwVo.getRvwFilegrpid() + "','" + result.getFileIdntfcKey() + "') class='text-white'>X</a></div>");
+            model.addAttribute("fileBtn", fileBtn);
+        }
         
         return "mng/tchaidRvw/tchaidRvwUpdate";
     }

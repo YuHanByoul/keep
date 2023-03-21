@@ -43,8 +43,13 @@ public class TchaidRvwVo extends ParentRequestVo {
     private String productNm;
     private Integer rvwScr;
     private String rvwCn;
-    private String rvwFilegrpid;
+    private Integer rvwFilegrpid;
     private Date rvwRegDt;
+    
+    /** 첨부파일 관련 */
+    private String filegrpid;
+    private String fileIdntfcKey;
+    private String orginlFileNm;
     
     /** 등록자아이디 */
     private int rgtrid;
