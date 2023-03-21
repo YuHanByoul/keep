@@ -60,6 +60,7 @@
             		 LEFT OUTER JOIN (SELECT TCHAIDID, TCHAID_NM FROM TB_THA_TCHAID) E ON C.TCHAIDID = E.TCHAIDID
             	 WHERE
             		 STTS_CD = 181100
+                 GROUP BY APLYID                     
                 ) TB1
             WHERE
                 1=1
@@ -129,22 +130,30 @@
             		 LEFT OUTER JOIN (SELECT TCHAIDID, TCHAID_NM FROM TB_THA_TCHAID) E ON C.TCHAIDID = E.TCHAIDID
                  WHERE
                      STTS_CD = 181100
+                 GROUP BY APLYID
                 )TB1
             WHERE
                 TB1.APLYID = #{aplyid}
-                AND TB1.TCHAIDID = #{tchaidid}
                 AND TB1.TYPE = #{type}
     </select>
     
     <!-- 교구후기관리 게시글 수정 -->
     <update id="updateTchaidRvw" parameterType="TchaidRvwVo" keyProperty="userid">
         /* TchaidRvwDao.updateTchaidRvw */
-        UPDATE TB_THA_TCHAID_JNTPURCHS_RVW SET
-                CN                 = #{cn} 
-                ,WRT_DE                 = #{wrtDe} 
+        <if test="type == '대여'">
+        UPDATE TB_THA_PACKAGE_LEND_APLY SET
+                RVW_CN                 = #{rvwCn} 
                 ,MDFCN_DT               = NOW() 
                 ,MDFRID                 = #{user.userid}
-         WHERE RVWID = #{rvwid}
+         WHERE APLYID = #{aplyid}
+        </if>        
+        <if test="type == '공동구매'">
+        UPDATE TB_THA_TCHAID_JNTPURCHS_ORDER SET
+                RVW_CN                 = #{rvwCn} 
+                ,MDFCN_DT               = NOW() 
+                ,MDFRID                 = #{user.userid}
+         WHERE ORDERID = #{aplyid}     
+        </if>
     </update>
     
     <!-- 교구후기관리 게시글 삭제 -->
