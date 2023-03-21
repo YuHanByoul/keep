@@ -58,7 +58,7 @@ public class ApiServiceImpl extends PlumAbstractServiceImpl implements ApiServic
     */
     @Override
     public Map<String, Object> getCtprvnRltmMesureDnsty(String sidoName) throws Exception {
-        String path = "http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty?serviceKey=" + dataDecServiceKey + "&returnType=json&ver=1.3";
+        String path = "http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty?serviceKey=" + dataEncServiceKey + "&returnType=json&ver=1.3";
         path += "&numOfRows=100&pageNo=1&sidoName=" + sidoName;
         ResponseEntity<String> responseEntityStr = restTemplate.postForEntity(path, null, String.class); 
         Map<String, Object> response = new ObjectMapper().readValue(responseEntityStr.getBody(), Map.class);
