@@ -227,7 +227,7 @@ public class CommonController {
         
         if ("A".equals(sysSeCd)) { // 관리자 사이트
             if (sysAdminThaRoleid.equals(user.getRoleInfo().getRoleid())) {
-                return "mng/mainTha";
+                return "mng/eduResrce/eduResrceMain";
             } else if (sysAdminAssRoleid.equals(user.getRoleInfo().getRoleid())) {
                 return "mng/mainAss";
             } else {

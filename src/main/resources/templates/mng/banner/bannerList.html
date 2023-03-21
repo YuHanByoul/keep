@@ -42,361 +42,88 @@
 					<div class="card">
 						<div class="card-header p-b-0">
 							<ul class="nav nav-tabs  tabs" role="tablist">
-								<li class="nav-item"><a class="nav-link active"
-									data-bs-toggle="tab" href="#mainBanner" role="tab"><strong>메인배너</strong></a>
-								</li>
-								<li class="nav-item"><a class="nav-link"
-									data-bs-toggle="tab" href="#subBanner1" role="tab"><strong>서브배너1</strong></a>
-								</li>
-								<li class="nav-item"><a class="nav-link"
-									data-bs-toggle="tab" href="#subBanner2" role="tab"><strong>서브배너2</strong></a>
-								</li>
+								<li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#mainBanner" id="mainBanner" role="tab"><strong>메인배너</strong></a></li>
+								<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#subBanner1" id="subBanner1" role="tab"><strong>서브배너1</strong></a></li>
+								<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#subBanner2" id="subBanner2" role="tab"><strong>서브배너2</strong></a></li>
 							</ul>
 						</div>
-						<div class="tab-content tabs p-t-20">
-							<div class="tab-pane active" id="mainBanner" role="tabpanel">
-								<input type="hidden" class="js-single" />
-								<div class="card-block-small p-t-0">
-									<div class="col-12 row m-0">
-										<div class="col-12 col-lg-8 mb-10 mb-lg-0 p-l-0">
-											<div class="col-12 row p-0 p-b-10 sub-title m-l-0 m-r-0">
-												<div class="col-12 col-md-10 p-l-0">
-													<span class="d-inline-block mt-1"><strong>배너 목록</strong></span>
-												</div>
-												<div class="col-12 col-md-2 text-right p-r-0" id="regBtn">
-													<button type="button" class="btn btn-primary waves-effect waves-light" onclick="fn_openBannerInsertModal();">등록</button>
-												</div>
-											</div>
-											<div class="row">
-												<div class="col-12 col-lg-6" id="LeftBanner">
-													
-												</div>
-												<div class="col-12 col-lg-6" id="RightBanner">
-												
-												</div>
-											</div>
-											<!-- paging -->
-										    <div class="paging"></div>
-										    
-											<input type="hidden" id="pageNumber" name="pageNumber" value="1">
-											<input type="hidden" id="ORDER_DIRECTION" name="orderDirection" value="desc"> 
-											<input type="hidden" id="orderField" name="orderField" value="BANNERID ASC, REG_DT">
-										</div>
-										<div class="col-12 col-lg-4">
-	                                        <div class="col-12 row p-0 p-b-20 sub-title m-l-0 m-r-0">
-	                                            <div class="col-12 p-l-0">
-	                                                <span class="d-inline-block mt-1"><strong>노출배너 목록</strong></span>
-	                                            </div>
-	                                        </div>
-											<div class="row">
-												<div class="col-12 column">
-													
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="tab-pane" id="subBanner1" role="tabpanel"></div>
-							<div class="tab-pane" id="subBanner2" role="tabpanel"></div>
+						<div class="tab-content tabs p-t-20" id="tabContent">
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
+		<input type="hidden" id="pageNumber" name="pageNumber" value="1">
+		<input type="hidden" id="ORDER_DIRECTION" name="orderDirection" value="desc"> 
+		<input type="hidden" id="orderField" name="orderField" value="BANNERID ASC, REG_DT">
+		<input type="hidden" id="bannerPstnCd" name="bannerPstnCd" value="">
 		</form>
 		
-		<div class="modal fade" id="bannerInsertPopup" data-bs-backdrop="static"></div>
-		<div class="modal fade" id="bannerUpdatePopup" data-bs-backdrop="static"></div>
-
 		<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>		
 		
 		<script th:inline="javascript">
-			$("#regBtn").hide();
-			
-			$("#siteid").change(function() {
-				console.log($("#siteid").val())
-				if($("#siteid").val() == 0){
-					$("#regBtn").hide();		
-				}else{					
-					$("#regBtn").show();
-				}
-			});
-		
-			var columns = document.querySelectorAll(".column");
-			var leftHtml = "";
-			var rightHtml = "";
-			var columnHtml = "";
-			
-			var updatePopupUrl = "/mng/banner/bannerUpdatePopup.html";
-			var updateAddModal;
-			
-			var insertPopupUrl = "/mng/banner/bannerInsertPopup.html";
-			var insertAddModal;
-			
-			fn_openBannerInsertModal = () => {
-				$("#bannerInsertPopup").load(insertPopupUrl, function(response, status, xhr) {
-					if (status == "success") {
-						insertAddModal = new bootstrap.Modal($('#bannerInsertPopup'));
-						insertAddModal.show();
-					}
-				});
-			},
-			
-			fn_openBannerUpdateModal = (bannerid) => {
-				var url = updatePopupUrl+"?bannerid="+bannerid;
-				
-				$("#bannerUpdatePopup").load(url, function(response, status, xhr) {
-					if (status == "success") {
-						updateAddModal = new bootstrap.Modal($('#bannerUpdatePopup'));
-						updateAddModal.show();
-					}
-				});
-			}
-			
-			var banner = {
-				init : function() {
-					//페이지 진입시 리스트 조회
-					banner.selectBannerList();
-					
-					this.registEvent();
-					
-				},
-				
-				registEvent : function() {
-					// 사이트 선택시 리스트 초기화후 리스트 조회
-					$('#siteid').change(function(event) {
-						banner.selectBannerList();
-					})
-					
-					// drag&drop event
-					columns.forEach((column) => {
-					    var sortbale = new Sortable(column, {
-					        group: "shared",
-					        animation: 150,
-					        ghostClass: "blue-background-class",
-					        dataIdAttr: 'data-id',
-					        
-						    onEnd : function(evt) { // 배너를 drop 했을때 실행
-						    	var bannerid = sortbale.toArray();
-							    var dataList = new Array();
-							    for(var i = 1; i <= bannerid.length; i++){
-							    	var data = new Object();
-							    	data["bannerid"] = bannerid[i-1];
-							    	data["ordr"] = i;
-							    	dataList.push(data);
-							    }
-							    var params = new Object();
-							    params["bannerVoList"] = dataList;
-							    
-							 	// 배너 id, 순서 수정
-		 						if (displayWorkProgress()){
-									$.ajax({
-										url : "/mng/banner/updateExpsrBannerSort.do",
-										cache : false,
-										dataType : 'json',
-										data : JSON.stringify(params),
-										type : 'POST',
-										contentType: "application/json; charset=utf-8",
-										success : function(data) {
-											closeWorkProgress();
-										}
-									});
-								}
-						    }
-					    });
-					    
-					});
-				},
-				
-				// 배너 리스트 조회 및 리스트 생성 기능
-				selectBannerList: function() {
-					if (displayWorkProgress()){
-						$.ajax({
-							url : "/mng/banner/selectBannerList.do",
-							cache : false,
-							dataType : 'json',
-							data : $("#searchFrm").serialize(),
-							type : 'POST',
-							success : function(data) {
-								// 배너 리스트 초기화
-								$("#LeftBanner").children().remove();
-								$("#RightBanner").children().remove();
-								$(".paging").children().remove();
-								leftHtml = "";
-								rightHtml = "";
-								columnHtml = "";
-								$("#LeftBanner").html("<script type='text/javascript' src='/files/assets/pages/advance-elements/swithces.js'>"+"</"+"script>");
-								
-								// 배너 리스트 생성
-								if(data.list.length == null || data.list.length <= 0){
-									$("#LeftBanner").addClass("text-right")
-									$("#LeftBanner").html('<span> 데이터가 없습니다. </span>');
-								}else {
-									$("#LeftBanner").removeClass("text-right");
-									$(".column").removeClass("text-center");
-									for(var i = 0; i < data.list.length; i++){
-										if(i % 2 == 1){
-											$("#RightBanner").html(banner.fn_makeListRightHtml(data.list[i], i));
-										}else{
-											$("#LeftBanner").html(banner.fn_makeListLeftHtml(data.list[i], i));
-										}
-									}
-								}
-								
-								$(".column").html(banner.fn_makeListColumnHtml(data.expsrBannerList));
-								$(".paging").html(data.pagination);
-								banner.swicthBtnChange();
-								closeWorkProgress();
-							}
-						})
-					}
-				},
-				
-				// 배너목록 오른쪽영역 배너 생성
-				fn_makeListRightHtml : function(list, index) {
-					rightHtml += '<div class="col-12 mb-2 border border-dark p-10 rounded banner' + list.bannerid + '" draggable="true" data-id="' + list.bannerid + '">'
-					rightHtml += '<div class="mb-2 row">'
-					rightHtml += '<div class="col-10">' + list.bannerTtl + '</div>'
-					rightHtml += '<div class="p-l-0 col-2 text-right">'
-					rightHtml += '<input type="checkbox" class="js-single-small" name="banner" id="' + list.bannerid + '" bannerid="' + list.bannerid + '" ' + ((list.expsrYn=='Y') ? "checked" : "") + '/>'
-					rightHtml += '</div>'
-					rightHtml += '</div>'
-					rightHtml += '<img class="img-fluid col-12" src="/downloadFileByFileid.do?fileid=' + list.bannerFileid + '&file_idntfc_key=' + list.fileIdntfcKey + '" alt="banner image" onclick="fn_openBannerUpdateModal(' + list.bannerid + ');"/>'
-					rightHtml += '</div>'
-					return rightHtml;
-				},
-				
-				// 배너목록 왼쪽영역 배너 생성
-				fn_makeListLeftHtml : function(list, index) {
-					leftHtml += '<div class="col-12 mb-2 border border-dark p-10 rounded banner' + list.bannerid + '" draggable="true" data-id="' + list.bannerid + '">'
-					leftHtml += '<div class="mb-2 row">'
-					leftHtml += '<div class="col-10">' + list.bannerTtl + '</div>'
-					leftHtml += '<div class="p-l-0 col-2 text-right">'
-					leftHtml += '<input type="checkbox" class="js-single-small" name="banner" id="' + list.bannerid + '" bannerid="' + list.bannerid + '" ' + ((list.expsrYn=='Y') ? "checked" : "") + '/>'
-				    leftHtml += '</div>'
-				    leftHtml += '</div>'
-				    leftHtml += '<img class="img-fluid col-12" src="/downloadFileByFileid.do?fileid=' + list.bannerFileid + '&file_idntfc_key=' + list.fileIdntfcKey + '" alt="banner image" onclick="fn_openBannerUpdateModal(' + list.bannerid + ');"/>'
-				    leftHtml += '</div>'
-					return leftHtml;
-				},
-				
-				// 노출배너 목록에 배너 생성
-				fn_makeListColumnHtml : function(list) {
-					if (list == null || list.length <= 0) {
-						$(".column").addClass("text-center");
-						columnHtml += '<span> 데이터가 없습니다. </span>'
-					} else {
-						list.forEach(function(item, index) {
-							columnHtml += '<div class="col-12 mb-2 border border-dark p-10 rounded banner' + item.bannerid + '" draggable="true" data-id="' + item.bannerid + '">'
-							columnHtml += '<div class="mb-2 row">'
-							columnHtml += '<div class="col-10">' + item.bannerTtl + '</div>'
-							columnHtml += '</div>'
-						    columnHtml += '<img class="img-fluid col-12" src="/downloadFileByFileid.do?fileid=' + item.bannerFileid + '&file_idntfc_key=' + item.fileIdntfcKey + '" alt="banner image"/>'
-						    columnHtml += '</div>'
-						})
-					}
-					return columnHtml;
-				},
-				
-				// 스위치버튼을 눌렀을때 실행
-				swicthBtnChange : function() {
-					$(':checkbox[name="banner"]').on({
-					    change: function() {
-					    	if($(this).is(':checked')) { // 버튼은 on 했을경우
-					    		if($(".column").children('span').length == 1){ // 노출배너 목록에 <span> 데이터가 없습니다. </span>가 있을경우
-					    			$(".column").removeClass("text-center");
-					    			$(".column").children('span').remove();
-					    		}
-					    	
-					    		var clone = $(".banner"+this.id).clone();
-					    		var inputTagDelete = clone[0].querySelector("input");
-					    		$(".column").append(clone);
-					    		inputTagDelete.parentNode.innerHTML = "";
-					    		clone[0].querySelector("img").removeAttribute("onclick");
-					    		
-					    		// 배너 순서, 노출 여부 수정
-					    		if (displayWorkProgress()){
-									$.ajax({
-										url : "/mng/banner/updateExpsrBanner.do",
-										cache : false,
-										dataType : 'json',
-										data : JSON.stringify({bannerid : $('.banner'+this.id).attr("data-id"), ordr : $(".column").children().length, expsrYn : 'Y'}),
-										type : 'POST',
-										contentType: "application/json; charset=utf-8",
-										success : function(data) {
-											closeWorkProgress();
-										}
-									});
-								}
-					    	}else { // 버튼을 off 했을경우
-					    		var bannerid = this.id;	
-					    		// 해당하는 배너를 노출배너 목록에서 삭제 및 순서, 노출 여부를 수정
-					    		if (displayWorkProgress()){
-									$.ajax({
-										url : "/mng/banner/updateExpsrBanner.do",
-										cache : false,
-										dataType : 'json',
-										data : JSON.stringify({bannerid : $('.banner'+this.id).attr("data-id"), ordr : null, expsrYn : 'N'}),
-										type : 'POST',
-										contentType: "application/json; charset=utf-8",
-										success : function(data) {
-											$(".column").find($('.banner'+bannerid)).remove();
-											
-								    		var dataList = new Array();
-								    		for(var i = 0; i < $(".column").children().length; i++) {
-										    	var data = new Object();
-										    	data["bannerid"] = $(".column").find($(".column").children()[i]).attr('data-id');
-										    	data["ordr"] = i+1;
-										    	dataList.push(data);
-
-								    		}
-
-										    var params = new Object();
-										    params["bannerVoList"] = dataList;
-										    
-										 	// 배너 id, 순서 수정
-											$.ajax({
-												url : "/mng/banner/updateExpsrBannerSort.do",
-												cache : false,
-												dataType : 'json',
-												data : JSON.stringify(params),
-												type : 'POST',
-												contentType: "application/json; charset=utf-8",
-												success : function(data) {    
-												}
-											});
-											closeWorkProgress();
-										}
-									});
-								}
-					    	}
-					    }
-					});
-				}
-			}
-			
-	        $(function() {
-	            banner.init();
-	        });
-			
-			$(document).ready(function(){
-				switchCherryCallback = function() {
-					
-				}
-			});
-			
-			//공통 Pagination 사용시 function name 일괄 적용 할것
-			function goPage(page) {
-				$("#pageNumber").val(page);
-				
-				leftHtml = "";
-				rightHtml = "";
-				columnHtml = "";
-				
-				banner.selectBannerList();
-			}
+        var banner = {
+                init: function() {
+                    this.setTab();
+                    this.registEvent();                
+                },
+                
+                registEvent: function() {
+                    var _this = this;
+                    $(".nav-tabs a").on("show.bs.tab", function(event) {
+                        var tabId = event.currentTarget.attributes.id.value;
+                        _this.selectTab(tabId);
+                    });
+                },
+                
+                setTab: function() {
+                    var tabFlag = false;
+                    if(tabFlag == false) {
+                        this.selectTab("mainBanner");
+                        tabFlag = true;
+                    }
+                    if(tabFlag == false) {
+                        this.selectTab("subBanner1");
+                        tabFlag = true;
+                    }
+                    if(tabFlag == false) {
+                        this.selectTab("subBanner2");
+                        tabFlag = true;
+                    }
+                },
+                
+                selectTab: function(tabId) {
+                    if(tabId == "mainBanner") {
+                        this.loadTabContent("/mng/banner/mainBannerListForm.html");
+                        $("#bannerPstnCd").val("233101");
+                    } else if(tabId == "subBanner1") {
+                        this.loadTabContent("/mng/banner/subBannerListForm1.html");
+                        $("#bannerPstnCd").val("233102");
+                    }  else if(tabId == "subBanner2") {
+                        this.loadTabContent("/mng/banner/subBannerListForm2.html");
+                        $("#bannerPstnCd").val("233103");
+                    }
+                    $("#" + tabId).parent().addClass("active");
+                },
+                
+                loadTabContent: function(uri) {
+                    $.ajax({
+                        cache: false,
+                        url: uri, 
+                        type: "GET",
+                        async: "false",
+                        dataType: "html",
+                        success: function(result) { //요청이 성공했을때 실행되는 콜백 함수
+                            $("#tabContent").html(result);
+                        }
+                    });
+                }
+            };
+            
+            $(function() {
+                banner.init();
+            });
 		</script>
 	</div>
 </body>

@@ -63,6 +63,33 @@ public class BannerController {
         return "mng/banner/bannerList";
     }
     
+    @RequestMapping(value = "/mng/banner/mainBannerListForm.html")
+    public String mainBannerListForm(Model model, SiteVo siteVo) throws Exception {
+        List<SiteVo> siteList = null;
+        siteList =  bannerService.selectSiteList(siteVo);
+        model.addAttribute("siteList", siteList);
+        
+        return "mng/banner/mainBannerList";
+    }
+    
+    @RequestMapping(value = "/mng/banner/subBannerListForm1.html")
+    public String subBannerListForm1(Model model, SiteVo siteVo) throws Exception {
+        List<SiteVo> siteList = null;
+        siteList =  bannerService.selectSiteList(siteVo);
+        model.addAttribute("siteList", siteList);
+        
+        return "mng/banner/subBannerList1";
+    }
+    
+    @RequestMapping(value = "/mng/banner/subBannerListForm2.html")
+    public String subBannerListForm2(Model model, SiteVo siteVo) throws Exception {
+        List<SiteVo> siteList = null;
+        siteList =  bannerService.selectSiteList(siteVo);
+        model.addAttribute("siteList", siteList);
+        
+        return "mng/banner/subBannerList2";
+    }
+    
     /**
     * 배너관리 등록화면으로 이동
     *
