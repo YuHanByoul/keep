@@ -30,25 +30,22 @@ var apiManager = {
     
     // 실시간 대기정보
     , getCtprvnRltmMesureDnsty: function(sidoName, tabIdx, grid) {
-        console.log("+++++++++++++++++++++++++++실시간 대기정보 시작+++++++++++++++++++++++++++");
-        console.log("sidoName: " + sidoName + " / tabIdx: " + tabIdx);
-        if(displayWorkProgress(true)) {
-            $.ajax({
-                url: "/front/api/getCtprvnRltmMesureDnsty.do"
-                , type: "GET"
-                , data: {sidoName: sidoName} 
-                , cache: false
-                , success: function(result) {
-                    if(result.response && result.response.header.resultCode == "00") {
-                        main.setWidgetStatus("sucess", result.response.body.items[0].dataTime);
-                        apiManager.setCtprvnRltmMesureDnsty(result.response.body, tabIdx, grid);
-                    } else {
-                        main.setWidgetStatus("error");
-                    }
+        $.ajax({
+            url: "/front/api/getCtprvnRltmMesureDnsty.do"
+            , type: "GET"
+            , data: {sidoName: sidoName} 
+            , cache: false
+            , success: function(result) {
+                if(result.response && result.response.header.resultCode == "00") {
+                    main.setWidgetStatus("sucess", result.response.body.items[0].dataTime + "기준");
+                    apiManager.setCtprvnRltmMesureDnsty(result.response.body, tabIdx, grid);
+                } else {
+                    main.setWidgetStatus("error", null, "서비스 제공상태가 원할하지 않습니다.<br/>잠시후 다시 시도해주세요.");
                 }
-            });
-        }
+            }
+        });
     }
+    
     , setCtprvnRltmMesureDnsty: function(data, tabIdx, grid) {
         for(var i = 0; i < data.totalCount; i++) {
             var info = data.items[i];
@@ -56,132 +53,10 @@ var apiManager = {
             var stationName = info.stationName;
             var displayInfo = this.getRltmMesureDnstyInfo(tabIdx, info);
             
-            $(grid).append('<tr><td>' + sidoName + '</td><td>' + stationName + '</td><td><span class="fc-level' + displayInfo.grade + '">' + displayInfo.value + '</span></td></tr>');
+            $(grid).append(
+                '<tr><td>' + sidoName + '</td><td>' + stationName + '</td><td><span class="fc-level' + displayInfo.grade + '">' + displayInfo.value + '</span></td></tr>'
+            );
         }
-        console.log("+++++++++++++++++++++++++++실시간 대기정보 끝+++++++++++++++++++++++++++");
-    }
-    
-    // 오늘/내일/모레 예보
-    , getMinuDustFrcstDspth: function(informCode) {
-        $.ajax({
-            url: "/front/api/getMinuDustFrcstDspth.do"
-            , type: "GET"
-            , data: {searchDate: $.datepicker.formatDate("yy-mm-dd", new Date()), informCode: informCode} 
-            , cache: false
-            , success: function(result) {
-                if(result.response && result.response.header.resultCode == "00") {
-                    apiManager.setMinuDustFrcstDspth(informCode, result.response.body);
-                } else {
-                    console.log("서비스 제공상태가 원할하지 않습니다.");
-                }
-            }
-        });
-    }
-    
-    , setMinuDustFrcstDspth: function(type, data) {
-        console.log("::::::::::::::::::오늘/내일/모레 예보 시작::::::::::::::::::");
-        console.log("구분: " + type, data);
-        var now = new Date();
-        var today = $.datepicker.formatDate("yy-mm-dd", now);
-        var tomorrow = $.datepicker.formatDate("yy-mm-dd", new Date(now.setDate(now.getDate() + 1)));
-        var afterTomorrow = $.datepicker.formatDate("yy-mm-dd", new Date(now.setDate(now.getDate() + 1)));
-        var todayInfoList = "예보정보가 없습니다.", tomorrowInfoList = "예보정보가 없습니다.", afterTomorrowInfoList = "예보정보가 없습니다.";
-        for(var i = 0, len = data.totalCount; i < len; i++) {
-            var info = data.items[i];
-            if(info.informData == today && todayInfoList == "예보정보가 없습니다.") {
-                todayInfoList = info.informGrade.split(",");
-            } else if(info.informData == tomorrow && tomorrowInfoList == "예보정보가 없습니다.") {
-                tomorrowInfoList = info.informGrade.split(",");
-            } else if(info.informData == afterTomorrow && afterTomorrowInfoList == "예보정보가 없습니다.") {
-                afterTomorrowInfoList = info.informGrade.split(",");
-            }
-        }
-        console.log("오늘: ", todayInfoList);
-        console.log("내일: ", tomorrowInfoList);
-        console.log("모레: ", afterTomorrowInfoList);
-    }
-    
-    // 우리동네 대기정보
-    , getMsrstnAcctoRltmMesureDnsty: function() {
-        var stationName = !localStorage.getItem("nearMsrstn") ? "종로구" : localStorage.getItem("nearMsrstn");
-        $.ajax({
-            url: "/front/api/getMsrstnAcctoRltmMesureDnsty.do"
-            , type: "GET"
-            , data: {stationName: stationName} 
-            , cache: false
-            , success: function(result) {
-                if(result.response && result.response.header.resultCode == "00") {
-                    apiManager.setMsrstnAcctoRltmMesureDnsty(stationName, result.response.body);
-                } else {
-                    console.log("서비스 제공상태가 원할하지 않습니다.");
-                }
-            }
-        });
-    }
-    
-    , setMsrstnAcctoRltmMesureDnsty: function(stationName, data) {
-        console.log("::::::::::::::::::우리동네 대기정보 시작::::::::::::::::::");
-        console.log("측정소명: " + stationName, data);
-        console.log("::::::::::::::::::우리동네 대기정보 끝::::::::::::::::::");
-    }
-    
-    , onPostPopup: function() {
-        new daum.Postcode({
-            oncomplete: function(data) {
-                apiManager.getTMStdrCrdnt(data.bname).then(function(response) {
-                    var info, item;
-                    for(var i = 0; i < response.totalCount; i++) {
-                        item = response.items[i];
-                        if(item.sggName == data.sigungu) {
-                            info = item;
-                            break;
-                        }
-                    }
-                    apiManager.getNearbyMsrstnList(data, info);
-                }).catch(function(error) {
-                    console.log(error.message);
-                });
-            }
-        }).open();
-    }
-    
-    , getTMStdrCrdnt: function(umdName) {
-        return new Promise(function(resolve, reject) {
-            $.ajax({
-                url: "/front/api/getTMStdrCrdnt.do"
-                , type: "GET"
-                , data: {umdName: umdName} 
-                , cache: false
-                , success: function(result) {
-                    if(result.response && result.response.header.resultCode == "00") {
-                        resolve(result.response.body);
-                    } else {
-                        reject(new Error("서비스 제공상태가 원할하지 않습니다."));
-                    }
-                }
-            });
-        });
-    }
-    
-    , getNearbyMsrstnList: function(postData, tmData) {
-        $.ajax({
-            url: "/front/api/getNearbyMsrstnList.do"
-            , type: "GET"
-            , data: {tmX: tmData.tmX, tmY: tmData.tmY} 
-            , cache: false
-            , success: function(result) {
-                if(result.response && result.response.header.resultCode == "00") {
-                    var stationInfo = result.response.body.items[0];
-                    var confirmMsg = postData.address + "(" + postData.bname + ")" + "과(와)\n가장 가까운 측정소는 『" + stationInfo.stationName + " 측정소』입니다.\n해당 측정소의 대기정보를 조회 하시겠습니까?";
-                    if(confirm(confirmMsg)) {
-                        localStorage.setItem("nearMsrstn", stationInfo.stationName);    
-                        apiManager.getMsrstnAcctoRltmMesureDnsty();    
-                    }
-                } else {
-                    console.log("서비스 제공상태가 원할하지 않습니다.");
-                }
-            }
-        });
     }
     
     // 대기 노출 정보
@@ -237,8 +112,178 @@ var apiManager = {
         return grade == 1 ? "좋음" : grade == 2 ? "보통" : grade == 3 ? "나쁨" : grade == 4 ? "매우나쁨" : "-";
     }
     
+    // 오늘/내일/모레 예보
+    , getMinuDustFrcstDspth: function(informCode, dateIdx, grid) {
+        $.ajax({
+            url: "/front/api/getMinuDustFrcstDspth.do"
+            , type: "GET"
+            , data: {searchDate: $.datepicker.formatDate("yy-mm-dd", new Date()), informCode: informCode} 
+            , cache: false
+            , success: function(result) {
+                if(result.response && result.response.header.resultCode == "00") {
+                    apiManager.setMinuDustFrcstDspth(result.response.body, dateIdx, grid);
+                } else {
+                    main.setWidgetStatus("error", null, "서비스 제공상태가 원할하지 않습니다.<br/>잠시후 다시 시도해주세요.");
+                }
+            }
+        });
+    }
+    
+    , setMinuDustFrcstDspth: function(data, dateIdx, grid) {
+        var now = new Date();
+        var today = $.datepicker.formatDate("yy-mm-dd", now);
+        var tomorrow = $.datepicker.formatDate("yy-mm-dd", new Date(now.setDate(now.getDate() + 1)));
+        var afterTomorrow = $.datepicker.formatDate("yy-mm-dd", new Date(now.setDate(now.getDate() + 1)));
+        var todayInfoList = "예보정보가 없습니다.", tomorrowInfoList = "예보정보가 없습니다.", afterTomorrowInfoList = "예보정보가 없습니다.";
+        var dateTime;
+        for(var i = 0, len = data.totalCount; i < len; i++) {
+            var info = data.items[i];
+            if(info.informData == today && todayInfoList == "예보정보가 없습니다.") {
+                dateTime = info.dataTime;
+                todayInfoList = info.informGrade.split(",");
+            } else if(info.informData == tomorrow && tomorrowInfoList == "예보정보가 없습니다.") {
+                dateTime = info.dataTime;
+                tomorrowInfoList = info.informGrade.split(",");
+            } else if(info.informData == afterTomorrow && afterTomorrowInfoList == "예보정보가 없습니다.") {
+                dateTime = info.dataTime;
+                afterTomorrowInfoList = info.informGrade.split(",");
+            }
+        }
+        if((dateIdx == 0 && todayInfoList == "예보정보가 없습니다.") || (dateIdx == 1 && tomorrowInfoList == "예보정보가 없습니다.") || 
+          (dateIdx == 2 && afterTomorrowInfoList == "예보정보가 없습니다.")) {
+            main.setWidgetStatus("error", null, "예보정보가 없습니다.");
+        } else {
+            var data, area, grade, className;
+            var list = dateIdx == 0 ? todayInfoList : dateIdx == 1 ? tomorrowInfoList : afterTomorrowInfoList;
+            for(var i = 0, len = list.length; i < len; i++) {
+                data = list[i];
+                area = $.trim(data.split(":")[0]);
+                grade = $.trim(data.split(":")[1]);
+                className = grade == "좋음" ? "fc-level1" : grade == "보통" ? "fc-level2" : grade == "나쁨" ? "fc-level3" : "fc-level4";
+                $(grid).append(
+                    '<tr><td>' + area + '</td>' + '<td><span class="' + className + '"><i></i>' + grade + '</span></td></tr>' 
+                ); 
+            }
+            main.setWidgetStatus("sucess", dateTime);
+        }
+    }
+    
+    // 우리동네 대기정보
+    , getMsrstnAcctoRltmMesureDnsty: function(stationName, grid) {
+        $.ajax({
+            url: "/front/api/getMsrstnAcctoRltmMesureDnsty.do"
+            , type: "GET"
+            , data: {stationName: stationName} 
+            , cache: false
+            , success: function(result) {
+                if(result.response && result.response.header.resultCode == "00") {
+                    if(result.response.body.items.length == 0) {
+                        main.setWidgetStatus("error", null, "서비스 제공상태가 원할하지 않습니다.<br/>잠시후 다시 시도해주세요.");
+                    } else {
+                        main.setWidgetStatus("sucess", result.response.body.items[0].dataTime + "기준");
+                        apiManager.setMsrstnAcctoRltmMesureDnsty(result.response.body, grid);
+                    }
+                } else {
+                    main.setWidgetStatus("error", null, "서비스 제공상태가 원할하지 않습니다.<br/>잠시후 다시 시도해주세요.");
+                }
+            }
+        });
+    }
+    
+    , setMsrstnAcctoRltmMesureDnsty: function(data, grid) {
+        var info = data.items[0];
+        $(grid).append(
+            '<tr><td class="al pt5 pb5">초미세먼지(PM-2.5)</td><td class="al pt5 pb5"><span class="fc-level' + info.pm25Grade + '"><i></i>' + this.getGrade(info.pm25Grade) + '</span></td>' +
+            '<td class="al pt5 pb5">' + info.pm25Value + '㎍/㎥(1h), ' + info.pm25Value24 + '㎍/㎥(24h)</td></tr>' 
+        );
+        $(grid).append(
+            '<tr><td class="al pt5 pb5">미세먼지(PM-10)</td><td class="al pt5 pb5"><span class="fc-level' + info.pm10Grade + '"><i></i>' + this.getGrade(info.pm25Grade) + '</span></td>' +
+            '<td class="al pt5 pb5">' + info.pm10Value + '㎍/㎥(1h), ' + info.pm10Value24 + '㎍/㎥(24h)</td></tr>' 
+        );
+        $(grid).append(
+            '<tr><td class="al pt5 pb5">오존(O3)</td><td class="al pt5 pb5"><span class="fc-level' + info.o3Grade + '"><i></i>' + this.getGrade(info.o3Grade) + '</span></td>' +
+            '<td class="al pt5 pb5">' + info.o3Value + 'ppm</td></tr>' 
+        );
+        $(grid).append(
+            '<tr><td class="al pt5 pb5">이산화질소(NO2)</td><td class="al pt5 pb5"><span class="fc-level' + info.no2Grade + '"><i></i>' + this.getGrade(info.no2Grade) + '</span></td>' +
+            '<td class="al pt5 pb5">' + info.no2Value + 'ppm</td></tr>' 
+        );
+        $(grid).append(
+            '<tr><td class="al pt5 pb5">일산화탄소(CO)</td><td class="al pt5 pb5"><span class="fc-level' + info.coGrade + '"><i></i>' + this.getGrade(info.coGrade) + '</span></td>' +
+            '<td class="al pt5 pb5">' + info.coValue + 'ppm</td></tr>' 
+        );
+        $(grid).append(
+            '<tr><td class="al pt5 pb5">아황산가스(SO2)</td><td class="al pt5 pb5"><span class="fc-level' + info.so2Grade + '"><i></i>' + this.getGrade(info.so2Grade) + '</span></td>' +
+            '<td class="al pt5 pb5">' + info.so2Value + 'ppm</td></tr>' 
+        );
+    }
+    
+    , onPostPopup: function() {
+        new daum.Postcode({
+            oncomplete: function(data) {
+                apiManager.getTMStdrCrdnt(data.bname).then(function(response) {
+                    if(response.totalCount == 0) {
+                        main.setWidgetStatus("error", null, "검색한 주소와 가까운 측정소가 없습니다.<br/>주소를 다시 검색해 주세요.");
+                    } else {
+                        var info, item;
+                        for(var i = 0; i < response.totalCount; i++) {
+                            item = response.items[i];
+                            if(item.sggName == data.sigungu) {
+                                info = item;
+                                break;
+                            }
+                        }
+                        apiManager.getNearbyMsrstnList(data, info);                        
+                    }
+                }).catch(function(error) {
+                    main.setWidgetStatus("error", null, "서비스 제공상태가 원할하지 않습니다.<br/>잠시후 다시 시도해주세요.");
+                });
+            }
+        }).open();
+    }
+    
+    , getTMStdrCrdnt: function(umdName) {
+        return new Promise(function(resolve, reject) {
+            $.ajax({
+                url: "/front/api/getTMStdrCrdnt.do"
+                , type: "GET"
+                , data: {umdName: umdName} 
+                , cache: false
+                , success: function(result) {
+                    if(result.response && result.response.header.resultCode == "00") {
+                        resolve(result.response.body);
+                    } else {
+                        reject(new Error("서비스 제공상태가 원할하지 않습니다."));
+                    }
+                }
+            });
+        });
+    }
+    
+    , getNearbyMsrstnList: function(postData, tmData) {
+        $.ajax({
+            url: "/front/api/getNearbyMsrstnList.do"
+            , type: "GET"
+            , data: {tmX: tmData.tmX, tmY: tmData.tmY} 
+            , cache: false
+            , success: function(result) {
+                if(result.response && result.response.header.resultCode == "00") {
+                    var stationInfo = result.response.body.items[0];
+                    var confirmMsg = postData.address + "(" + postData.bname + ")" + "과(와)\n가장 가까운 측정소는 『" + stationInfo.stationName + " 측정소』입니다.\n해당 측정소의 대기정보를 조회 하시겠습니까?";
+                    if(confirm(confirmMsg)) {
+                        localStorage.setItem("nearMsrstn", stationInfo.stationName);
+                        main.onSearch();    
+                        //apiManager.getMsrstnAcctoRltmMesureDnsty();    
+                    }
+                } else {
+                    main.setWidgetStatus("error", null, "서비스 제공상태가 원할하지 않습니다.<br/>잠시후 다시 시도해주세요.");
+                }
+            }
+        });
+    }
+    
     // 수위정보
-    , getWaterlevelList: function() {
+    , getWaterlevelList: function(sidoName) {
         $.ajax({
             url: "/front/api/getWlobsList.do"
             , type: "GET"
@@ -247,7 +292,7 @@ var apiManager = {
             , success: function(result) {
                 console.log(result);
                 try {
-                    apiManager.getWlobsList(result.wlobsList.content, result.obsrvnList.content, "서울");
+                    apiManager.getWlobsList(result.wlobsList.content, result.obsrvnList.content, sidoName);
                 } catch {
                     console.log("서비스 제공상태가 원할하지 않습니다.");
                 }
