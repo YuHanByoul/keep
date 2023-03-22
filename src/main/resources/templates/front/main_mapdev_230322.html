@@ -2385,38 +2385,38 @@
                             }
                         });
                             
-                        function displayPlaces(places){
+                        async function displayPlaces(places){
                             if(places.length > 0){
                                 for (var i=0; i<places.length; i++){
                                     var place = places[i];
-                                    var marker = addMarker(place, i);
+                                    var marker = await addMarker(place, i);
                                 }
                                 clusterer.addMarkers(markers);
                             }
                         }  
                             
                         function addMarker(place, idx) {
-                                              
-                            var geocoder = new kakao.maps.services.Geocoder();
+                            return new Promise(function(resolve, reject){
+                                var geocoder = new kakao.maps.services.Geocoder();
                             
-                            geocoder.addressSearch(place.ADDR, function(result, status){
-                                if (status === kakao.maps.services.Status.OK) {
-                                    var marker = new kakao.maps.Marker({
-                                        position: new kakao.maps.LatLng(result[0].y, result[0].x) // 마커의 위치
-                                    });
-                                    
-                                    marker.placeData = place;
-                                    //marker.listIndex = idx;
-                                    marker.setMap(map); // 지도 위에 마커를 표출합니다
-                                    
-                                    markers.push(marker);  // 배열에 생성된 마커를 추가합니다
-                                    
-                                    displayCustomOverlay1(idx, marker, place);
-                                    
-                                    return marker;
-                                }
-                            });
-                            
+                                geocoder.addressSearch(place.ADDR, function(result, status){
+                                    if (status === kakao.maps.services.Status.OK) {
+                                        var marker = new kakao.maps.Marker({
+                                            position: new kakao.maps.LatLng(result[0].y, result[0].x) // 마커의 위치
+                                        });
+                                        
+                                        marker.placeData = place;
+                                        //marker.listIndex = idx;
+                                        marker.setMap(map); // 지도 위에 마커를 표출합니다
+                                        
+                                        markers.push(marker);  // 배열에 생성된 마커를 추가합니다
+                                        
+                                        displayCustomOverlay1(idx, marker, place);
+                                        
+                                        resolve(marker);
+                                    }
+                                });
+                            });            
                         }
                             
                         function displayCustomOverlay1(index, marker, place){
@@ -2640,38 +2640,38 @@
                             
                             geocoder.coord2RegionCode(currentPos.getLng(), currentPos.getLat(), addressCallback);
                             
-                            function displayPlaces(places){
+                            async function displayPlaces(places){
                                 if(places.length > 0){
                                     for (var i=0; i<places.length; i++){
                                         var place = places[i];
-                                        var marker = addMarker(place, i);
+                                        var marker = await addMarker(place, i);
                                     }
                                     clusterer.addMarkers(markers);
                                 }
                             }
                             
                             function addMarker(place, idx) {
-                                              
-                                var geocoder = new kakao.maps.services.Geocoder();
+                                return new Promise(function(resolve, reject){
+                                    var geocoder = new kakao.maps.services.Geocoder();
                                 
-                                geocoder.addressSearch(place.ADDR , function(result, status){
-                                    if (status === kakao.maps.services.Status.OK) {
-                                        var marker = new kakao.maps.Marker({
-                                            position: new kakao.maps.LatLng(result[0].y, result[0].x) // 마커의 위치
-                                        });
-                                        
-                                        marker.placeData = place;
-                                        //marker.listIndex = idx;
-                                        marker.setMap(map); // 지도 위에 마커를 표출합니다
-                                        
-                                        markers.push(marker);  // 배열에 생성된 마커를 추가합니다
-                                        
-                                        displayCustomOverlay1(idx, marker, place);
-                                        
-                                        return marker;
-                                    }
+                                    geocoder.addressSearch(place.ADDR , function(result, status){
+                                        if (status === kakao.maps.services.Status.OK) {
+                                            var marker = new kakao.maps.Marker({
+                                                position: new kakao.maps.LatLng(result[0].y, result[0].x) // 마커의 위치
+                                            });
+                                            
+                                            marker.placeData = place;
+                                            //marker.listIndex = idx;
+                                            marker.setMap(map); // 지도 위에 마커를 표출합니다
+                                            
+                                            markers.push(marker);  // 배열에 생성된 마커를 추가합니다
+                                            
+                                            displayCustomOverlay1(idx, marker, place);
+                                            
+                                            resolve(marker);
+                                        }
+                                    });
                                 });
-                                
                             }
                             
                             function removeMarker() {
