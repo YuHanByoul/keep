@@ -482,8 +482,7 @@ public class CmntyController {
         //게시글 댓글 조회
         CmntyCmntVo cmntyCmntVo = new CmntyCmntVo();
         cmntyCmntVo.setPstid(paramVo.getPstid());
-        cmntyCmntVo.setOrderDirection(ParentRequestVo.ORDER_DIRECTION.asc);
-        cmntyCmntVo.setOrderField("CMNT_GRP DESC, SORTORDR");
+        cmntyCmntVo.setRowPerPage(20);
         List<CmntyCmntVo> cmntyCmntList = cmntyService.selectCmntList(cmntyCmntVo);
         //게시글 정보 조회
         if ("1".equals(bbsInfo.getClsfCd() != null ? bbsInfo.getClsfCd() : "0")) {
@@ -654,29 +653,26 @@ public class CmntyController {
      *
      * @param paramVo
      * @param user
-     * @param model
-     * @return string
+     * @return map
      */
     @RequestMapping(value = "/front/cmnty/insertCmnt.do")
-    public String insertCmnt(@Valid CmntyCmntVo paramVo, @UserInfo UserVo user, Model model){
-        String url = "front/cmnty/cmntyWrap";
-        if(paramVo.getParntsCmntid() != null){
-            url = "front/cmnty/cmntReplyWrap";
-        }
+    @ResponseBody
+    public Map<String, Object> insertCmnt(@Valid CmntyCmntVo paramVo, @UserInfo UserVo user){
+        Map<String, Object> resultMap = new HashMap<>();
+        boolean result = false;
+
         paramVo.setUser(user);
-        cmntyService.insertCmnt(paramVo);
+        result = cmntyService.insertCmnt(paramVo);
 
-        //게시글 정보 조회
-        CmntyPstVo cmntyPstVo = new CmntyPstVo();
-        cmntyPstVo.setPstid(paramVo.getPstid());
-        cmntyPstVo.setBbsid(paramVo.getBbsid());
-        CmntyPstVo cmntyPstInfo = cmntyService.selectPstInfo(cmntyPstVo);
-
-        paramVo.setOrderDirection(ParentRequestVo.ORDER_DIRECTION.asc);
-        paramVo.setOrderField("CMNT_GRP DESC, SORTORDR");
-        model.addAttribute("cmntyPstInfo", cmntyPstInfo);
-        model.addAttribute("list", cmntyService.selectCmntList(paramVo));
-        return url;
+        if(result){
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("data", cmntyService.selectCmntList(paramVo).get(0));
+            resultMap.put("msg", "댓글을 등록하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "댓글 등록에 실패하였습니다.");
+        }
+        return resultMap;
     }
 
     /**
@@ -687,17 +683,23 @@ public class CmntyController {
      * @param paramVo
      * @param user
      * @param model
-     * @return string
+     * @return map
      */
     @RequestMapping(value = "/front/cmnty/updateCmnt.do")
-    public String updateCmnt(@Valid CmntyCmntVo paramVo, @UserInfo UserVo user, Model model){
-        paramVo.setUser(user);
-        cmntyService.updateCmnt(paramVo);
+    @ResponseBody
+    public Map<String, Object> updateCmnt(@Valid CmntyCmntVo paramVo, @UserInfo UserVo user, Model model){
+        Map<String, Object> resultMap = new HashMap<>();
+        boolean result = false;
 
-        paramVo.setOrderDirection(ParentRequestVo.ORDER_DIRECTION.asc);
-        paramVo.setOrderField("CMNT_GRP DESC, SORTORDR");
-        model.addAttribute("list", cmntyService.selectCmntList(paramVo));
-        return "front/cmnty/cmntyWrap";
+        paramVo.setUser(user);
+        result = cmntyService.updateCmnt(paramVo);
+
+        if(result){
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+        }
+        return resultMap;
     }
 
     /**
@@ -707,17 +709,26 @@ public class CmntyController {
      *
      * @param pstid
      * @param parntsCmntid
-     * @param model
-     * @return string
+     * @param rowPerPage
+     * @param pageNumber
+     * @return map
      */
     @RequestMapping(value="/front/cmnty/selectCmntReplyList.do")
-    public String selectCmntReplyList(Integer pstid, Integer parntsCmntid, Model model){
+    @ResponseBody
+    public Map<String, Object> selectCmntReplyList(Integer pstid, Integer parntsCmntid, Integer rowPerPage, Integer pageNumber){
+        Map<String, Object> resultMap = new HashMap<>();
         CmntyCmntVo cmntyCmntVo = new CmntyCmntVo();
         cmntyCmntVo.setPstid(pstid);
         cmntyCmntVo.setParntsCmntid(parntsCmntid);
+        cmntyCmntVo.setRowPerPage(rowPerPage);
+        cmntyCmntVo.setPageNumber(pageNumber);
         List<CmntyCmntVo> cmntyCmntReplyList = cmntyService.selectCmntList(cmntyCmntVo);
 
-        model.addAttribute("list", cmntyCmntReplyList);
-        return "front/cmnty/cmntReplyWrap";
+        if(cmntyCmntReplyList != null){
+            resultMap.put("data", cmntyCmntReplyList);
+        } else {
+            resultMap.put("data", null);
+        }
+        return resultMap;
     }
 }

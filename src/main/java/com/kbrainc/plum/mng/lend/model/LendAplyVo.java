@@ -180,9 +180,6 @@ public class LendAplyVo extends ParentRequestVo {
     /** 등록자 이름  */
     private String rgtrNm;
     
-    /** 요청 차시 */
-    private Integer requestRndid;
-    
     /** 요청 수량 */
     private Integer requestQnty;
     
@@ -225,9 +222,17 @@ public class LendAplyVo extends ParentRequestVo {
     /**대여 불가 사유 **/
     private String rejectRsn;
     
+    /** 꾸러미 아이디 (등록용) **/
+    private String[] packageindvdids;
+    
+    /** 꾸러미 개체 상태 코드 **/
+    private String packSttsCd;
+    
     /**검색용 파라메터 추가  **/
     /**모집 아이디 **/
     private String searchRcritid;
+    /**모집 차시아이디 **/
+    private String searchRndid;
     /**꾸러미 아이디 **/
     private String searchPackageid;
     /**상태코드 **/

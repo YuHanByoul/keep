@@ -58,7 +58,7 @@ public class CmntyCmntVo extends ParentRequestVo {
     @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date regDt;
     /** 등록자아이디 */
-    private Integer rgtrid;
+    private String rgtrid;
     /** 등록자이름 */
     private String rgtrNm;
     /** 등록자계정명 */
