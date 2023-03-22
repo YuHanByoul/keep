@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/mng/mobileMainLayout" 
+>
+<body>
+<div layout:fragment="content">
+<link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
+
+<!-- Page-body start -->
+<div class="page-body">
+    <div class="card position-relative">
+        <div class="card-block pt-0">
+            <ul class="desc-list" id="lendList"></ul>
+            <div class="text-center" id="pagination"></div>
+        </div>
+    </div>
+</div>
+<!-- Page-body end -->
+
+<!--모달 팝업  -->
+<div class="modal fade" id="lendModal"  data-bs-backdrop="static"></div>
+
+<!-- [팝업] 검색필터 -->
+<form id="searchForm">
+<div class="modal fade" id="topSearchPopup" data-bs-backdrop="static" style="z-index:1090;">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content type_2">
+            <div class="modal-header">
+                <h4 class="modal-title">검색필터</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card m-b-10">
+                    <div class="card-block-small">
+                        <div class="mb-3 form-group row">
+                            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
+                            <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                     <select name="searchType" id="searchType" class="form-select form-control ">
+                                        <option value="">- 전체 -</option>
+                                        <option value="nm">신청자명</option>
+                                        <option value="instNm">기관명</option>
+                                        <option value="package">꾸러미명</option>
+                                        <option value="addr">배송지</option>
+                                     </select>
+                                     <input type="text" name="searchKeyword" id="searchKeyword" class="form-control" aria-label="Text input with dropdown button">
+                            </div>
+                        </div>
+                        <div class="mb-3 form-group row">
+                            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>대여모집(차수)</strong></div>
+                            <div class="col-12">
+                               <input type="text" class="cmpnt-input" selectsearchcondition="searchRndid" id="searchRndid" name="searchRndid" style="position:absolute;width:0px;margin:0px;padding:0px;visibility:hidden;">
+                               <select class="select2-hidden-accessible" name="selectRndid" id="selectRndid" tabindex="-1" aria-hidden="true" ></select>
+                            </div>
+                        </div>
+                        <div class="mb-0 form-group row">
+                            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>대여시작일</strong></div>
+                            <div class="col-12">
+                               <input type="text"   id="filterSearchSelectDate"name="filterSearchSelectDate" class="form-control form-control-sm" value="" >
+                               <input type="hidden" id="searchStrtDt"name="searchStrtDt" >
+                               <input type="hidden" id="searchEndDt"name="searchEndDt" >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-inverse waves-effect waves-light" onclick="initSearch()">초기화</button>
+                <button type="button" class="btn btn-primary waves-effect waves-light" onclick="onSearch()">검색</button>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="pageNumber" name="pageNumber" value="1">
+<input type="hidden" id="rowPerPage" name="rowPerPage" value="12">
+<input type="hidden" id="orderDirection" name="orderDirection" value="asc">
+<input type="hidden" id="orderField" name="orderField" value="BGNG_DT desc,ORDR">
+<input type="hidden" id="searchDlvySttsCd" name="searchDlvySttsCd" value="230101">
+<input type="hidden" id="searchSttsCd" name="searchSttsCd" value="231102">
+</form>
+
+<!-- //[팝업] 검색필터 -->
+<script type="text/javascript" src="/files/assets/pages/advance-elements/select2-custom.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
+<script src="/js/common/handlebars/handlebars-v4.7.7.js"></script>   
+<script src="/js/common/handlebars/handlebars.helper.js"></script>
+<script id="lendListTemplate" type="text/x-handlebars-template">
+  {{#each lendList}}
+     <li>
+        <h5><strong><a href="javascript:goDetail('{{aplyid}}')" class="stretched-link">{{packageNm}}</a></strong></h5>
+        <dl>
+            <dt class="d-none">대여모집 :</dt>
+            <dd>{{rcritNm}} ▶ {{ordr}} 차  {{qnty}} 개</dd>
+        </dl>
+        <dl>
+            <dt class="d-none">대여기간 :</dt>
+            <dd>{{lendBgngDe}} ~ {{lendEndDe}}</dd>
+        </dl>
+        <dl>
+            <dt class="d-none">출고지 :</dt>
+            <dd>{{dlvyAddr}}  {{dlvyAddrDtl}} ({{instNm}})</dd>
+        </dl>
+    </li>
+  {{/each}}
+</script>
+
+<script th:inline="javascript">
+	/*<![CDATA[*/ 
+	var rndList = /*[[${rndList}]]*/null; 
+	/*]]>*/
+    var noDataMeg = '<div style="padding-top:20px; text-align:center;"><h5><strong>데이터가 없습니다.</a></strong></h5></div>';
+    var listTemplet = Handlebars.compile($("#lendListTemplate").html());
+    
+    $(function(){
+
+        $("#mobile-btn-back").html("<a class='btn-back' href='/main.html'><i class='fa fa-angle-left'></i></a>");
+        $("#mobile-btn-search").html('<a class="btn-search" href="javascript:openSearchPop()"><i class="feather icon-search"></i></a>');
+
+        $("#filterSearchSelectDate").daterangepicker({
+            opens: 'left',
+            locale: {
+                "separator": " ~ ",                     // 시작일시와 종료일시 구분자
+                "format": 'YYYY-MM-DD',     // 일시 노출 포맷
+                "applyLabel": "적용",                    // 확인 버튼 텍스트
+                "cancelLabel": "취소",                   // 취소 버튼 텍스트
+                "daysOfWeek": ["일", "월", "화", "수", "목", "금", "토"],
+                "monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"]
+            }
+          }, function(start, end, label) {
+            console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+        });
+        $("#filterSearchSelectDate").on('apply.daterangepicker', function(ev, picker) {
+            $("#searchStrtDt").val(picker.startDate.format('YYYY-MM-DD'));
+            $("#searchEndDt").val(picker.endDate.format('YYYY-MM-DD'));
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+        });
+        
+        setLendSelectBox();
+        selectLendList();
+    });
+
+    setLendSelectBox=()=>{
+        var selectList = [ {id:' ', text:'- 선택 -', value:'',option:"selected"} ];
+        rndList.forEach(function(item){
+            selectList.push({
+                 'id':item.rndid, 'text': item.rcritNm+" ( "+item.ordr+"차 )", 'value' : item.rndid
+            })
+        })
+        $('#selectRndid').select2({
+            language: {
+                noResults: function () {
+                    return '검색결과가 없습니다.';
+                }
+            },
+            data: selectList,
+            templateSelection: function (item) {
+                document.getElementById('searchRndid').value = item.value;
+                return item.text;
+            }
+      });
+      $('#selectRndid').val(' ').trigger('change');
+    }
+    function openSearchPop(){
+    	$("#topSearchPopup").modal("show"); 
+    }
+    function initSearch(){
+            $( "#searchType"
+               +",#searchKeyword"
+               +",#searchStrtDt"
+               +",#searchEndDt"
+               +",#filterSearchSelectDate"
+            ).val('');
+            $("#selectRndid").val(" ").trigger('change');
+    }
+    function onSearch(){
+        $("#searchForm #pageNumber").val('1');
+        selectLendList();
+        $("#topSearchPopup").modal("hide");
+    }
+    function selectLendList() {
+        if (displayWorkProgress()){
+            $.ajax({
+                url : "/mng/eduResrce/selectLendAplyDlvyList.do", 
+                cache : false,
+                dataType : 'json',
+                data : $("#searchForm").serialize(),
+                success : function(data) {
+                    renderingListData(data.list);
+                    $("#totalCount").text(data.totalCount);
+                    if(data.totalCount == 0) {
+                        $("#lendList").html(noDataMeg);
+                        $("#pagination").html('');
+                    }else{
+                        $("#pagination").html(data.pagination);
+                    }
+                    closeWorkProgress();
+                }
+            });
+        }
+    }
+    function renderingListData(list){
+        $("#lendList").html("");
+        $("#lendList").append(listTemplet({lendList:list}));
+    }
+    function goPage(page) {
+        $("#searchForm #pageNumber").val(page);
+        selectLendList();
+    }
+    function enterkey() {
+        if (window.event.keyCode == 13) {
+            selectLendList();
+        }
+    }
+    function goDetail(aplyid){
+        location.href = "/mng/eduResrce/dlvyDetailForm.html?aplyid="+aplyid;
+    }
+  </script>
+</div> 
+</body>
+</html>

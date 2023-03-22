@@ -1,0 +1,246 @@
+<style>
+    #canvas {
+      width: 100%;
+    }
+</style>
+
+    <!-- [팝업] 개체선택 -->
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content type_2">
+            <div class="modal-header">
+                <h4 class="modal-title">개체선택</h4>
+                <button type="button" class="btn-close" onclick="closeQRModal()">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+            
+                <div class="card m-b-10">
+                    <div class="card-header pt-2 p-b-0">
+                        <ul class="nav nav-tabs tabs mo-only" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#tap01" role="tab" onclick="startQR()" >QR 스캔</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#tap02" role="tab" onclick="stopQR()" >직접 선택</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="tab-content tabs">
+                        <div class="tab-pane active" id="tap01" role="tabpanel">
+                            <div class="card-block">
+                                <div class="text-center p-b-20">
+                                  <div id="loadingMessage">🎥 카메라에 접근 권한이 없습니다.<br/>(카메라 접근 권한을 활성화 시켜주십시오.)</div>
+								  <canvas id="canvas" hidden></canvas>
+								  <div id="output" hidden>
+								    <div id="outputMessage">No QR code detected.</div>
+								    <div hidden><b>Data:</b> <span id="outputData"></span></div>
+								  </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="tab-pane" id="tap02" role="tabpanel">
+                        <form id="packSearchForm">
+                            <div class="card-block pt-0">
+                                <ul class="desc-list" id="packListArea" style="width: 100%; max-height:400px; overflow-y: scroll;">
+                                </ul>
+                            </div>
+                        </form>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+
+<!-- //[팝업] 개체선택 -->
+<script type="text/javascript" src="/js/jsQR/jsQR.js"></script>
+<script src="/js/common/handlebars/handlebars-v4.7.7.js"></script>   
+<script src="/js/common/handlebars/handlebars.helper.js"></script>
+
+<script type="text/javascript">
+    // 스캔
+    var videoPlay = null;
+    var video = document.createElement("video");        
+    var canvasElement = document.getElementById("canvas");
+    var canvas = canvasElement.getContext("2d");
+    var loadingMessage = document.getElementById("loadingMessage");
+    var outputContainer = document.getElementById("output");
+    var outputMessage = document.getElementById("outputMessage");
+    var outputData = document.getElementById("outputData");
+        
+    function startScan() {
+
+        function drawLine(begin, end, color) {
+            canvas.beginPath();
+            canvas.moveTo(begin.x, begin.y);
+            canvas.lineTo(end.x, end.y);
+            canvas.lineWidth = 4;
+            canvas.strokeStyle = color;
+            canvas.stroke();
+        }
+
+        // 카메라 사용시
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(function(stream) {
+                video.srcObject = stream;
+                video.setAttribute("playsinline", true);      // iOS 사용시 전체 화면을 사용하지 않음을 전달
+                video.play();
+                requestAnimationFrame(tick);
+        });
+
+        function tick() {
+            loadingMessage.innerText = "⌛ 스캔 기능을 활성화 중입니다."
+
+            if(video.readyState === video.HAVE_ENOUGH_DATA) {
+                loadingMessage.hidden = true;
+                canvasElement.hidden = false;
+                //outputContainer.hidden = false;
+
+                // 읽어들이는 비디오 화면의 크기
+                canvasElement.height = video.videoHeight;
+                canvasElement.width = video.videoWidth;
+                canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+                
+                var imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+                var code = jsQR(imageData.data, imageData.width, imageData.height, {
+                                inversionAttempts : "dontInvert",
+                });
+                
+                // QR코드 인식에 성공한 경우
+                if(code) {
+                    // 인식한 QR코드의 영역을 감싸는 사용자에게 보여지는 테두리 생성
+                    drawLine(code.location.topLeftCorner, code.location.topRightCorner, "#FF0000");
+                    drawLine(code.location.topRightCorner, code.location.bottomRightCorner, "#FF0000");
+                    drawLine(code.location.bottomRightCorner, code.location.bottomLeftCorner, "#FF0000");
+                    drawLine(code.location.bottomLeftCorner, code.location.topLeftCorner, "#FF0000");
+                    //outputMessage.hidden = true;
+                    //outputData.parentElement.hidden = false;
+                    getQrData(code.data)
+                    // return을 써서 함수를 빠져나가면 QR코드 프로그램이 종료된다.
+                    return;
+                }
+                // QR코드 인식에 실패한 경우
+                else {
+                    //outputMessage.hidden = false;
+                    //outputData.parentElement.hidden = true;
+                    console.log("failed");
+                }
+            }
+            videoPlay = requestAnimationFrame(tick);
+        }
+    }
+    function closeQRModal(){
+    	stopQR();
+    	lendModal.hide();
+    }
+    function startQR(){
+    	startScan();
+    }
+    function stopQR(){
+    	cancelAnimationFrame(videoPlay);
+    }
+</script>
+<script id="packListTemplate" type="text/x-handlebars-template">
+  {{#each packList}}
+  <li>
+      <h5><strong><a href="javascript:choosePackageindvd('{{packageindvdid}}','{{indvdno}}')" class="stretched-link">{{packageindvdNm}}({{indvdno}})</a></strong></h5>
+      <dl>
+          <dt>상태 :</dt>
+          <dd>[{{sttsCdNm}}] [{{prductSttsCdNm}} 꾸러미]</dd>
+      </dl>
+  </li>
+  {{/each}}
+</script>
+
+<script th:inline="javascript">
+
+	/*<![CDATA[*/
+	 var params =/*[[${params}]]*/null;
+	/*]]>*/
+	
+	var noDataMeg = '<li style="padding-top:25px; text-align:center;"><h5><strong>데이터가 없습니다.</a></strong></h5></li>';
+    var packListTemplet = Handlebars.compile($("#packListTemplate").html());
+    $(function(){
+    	startQR();
+    	selectPackList();
+    });
+    
+    function selectPackList() {
+        if (displayWorkProgress(true)){
+            $.ajax({
+                url : "/mng/eduResrce/selectPackageindvdList.do", 
+                cache : false,
+                dataType : 'json',
+                data : {packageid : lendAplyInfo.packageid},
+                success : function(data) {
+                    $("#packListArea").html("");
+                    if(data.totalCount == 0) {
+                        $("#packListArea").html(noDataMeg);
+                    }else{
+                        renderingPackListData(data.list);
+                    }
+                    closeWorkProgress();
+                }
+            });
+        }
+    }
+    function renderingPackListData(list){
+        $("#packListArea").append(packListTemplet({packList:list}));
+    }
+    function getQrData(data){
+        if(data==null || data=="undefined" || !data.includes('/')){
+            alert("QR 데이터가 정상적으로 인식 되지 않았습니다.\n 다시 스캔 해주십시오");
+            cancelAnimationFrame(videoPlay);
+            startScan();
+            return;
+        }
+        var dataArr = data.split("/");
+        choosePackageindvd(dataArr[0],dataArr[1]);
+    }
+
+    function choosePackageindvd(packageindvdid,indvdno){
+
+    	var targetVal = $("#packageindvd"+params.ordr).val();
+        if( targetVal!= null && targetVal!="" && targetVal > 0) {return;}
+
+    	var selectedVal1 = $("#packageindvd1").val();
+    	var selectedVal2 = $("#packageindvd2").val();
+
+    	if(selectedVal1 == packageindvdid || selectedVal2 == packageindvdid){
+            alert("이미 선택 된 꾸러미 개체입니다.");
+            return;	
+        }
+        
+        if (displayWorkProgress()){
+            $.ajax({
+                url : "/mng/eduResrce/selectPackageindvdList.do", 
+                cache : false,
+                dataType : 'json',
+                data : {
+                       packageid : lendAplyInfo.packageid
+                       ,packageindvdid :packageindvdid
+                },
+                success : function(data) {
+                    if(data.totalCount == 0) {
+                        alert("신청 꾸러미의 개체가 아닙니다.");
+                        startQR();
+                    }else{
+                        var packageindvdStr = '<span class="label label-inverse" id="packOrd'
+                            packageindvdStr += params.ordr+'">'+indvdno
+                            packageindvdStr +='<a href="javascript:removePackageIndvd('+params.ordr+')" class="text-white">X</a></span>';
+	                        $("#packageindvd"+params.ordr).val(packageindvdid);
+	                        $("#packageSpan"+params.ordr).append(packageindvdStr);
+                        closeQRModal();
+                    }
+                    closeWorkProgress();
+                }
+            });
+        }
+    }
+
+    
+</script>
+
+
