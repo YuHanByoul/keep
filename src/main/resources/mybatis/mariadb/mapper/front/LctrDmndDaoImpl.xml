@@ -83,10 +83,10 @@
                         , A.FLD_ETC_CN
                         , A.ENV_EDU_CAREER_YY
                         , A.ENV_EDU_CAREER_MM
-                        , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_SBJCT C INNER JOIN TB_CMM_CD D ON C.SBJCT_CD = D.CD WHERE C.USERID = A.USERID) AS EXPRT_SBJCT_CD_NM
-                        , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_TRGT C INNER JOIN TB_CMM_CD D ON C.TRGT_CD = D.CD WHERE C.USERID = A.USERID) AS EXPRT_TRGT_CD_NM
-                        , IFNULL((SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_ACTVT_SCOPE C INNER JOIN TB_CMM_CD D ON C.RGN_CD = D.CD WHERE C.USERID= A.USERID), '') AS EXPRT_ACTVT_SCOPE_CD_NM
-                        , IFNULL((SELECT GROUP_CONCAT(CRTFCT_NM) FROM TB_ASS_EXPRT_CRTFCT WHERE USERID= A.USERID),'') AS EXPRT_CRTFCT_NM
+                        , E.GROUP_CD_NM AS EXPRT_SBJCT_CD_NM
+                        , F.GROUP_CD_NM AS EXPRT_TRGT_CD_NM
+                        , IFNULL(D.GROUP_CD_NM, '') AS EXPRT_ACTVT_SCOPE_CD_NM
+                        , IFNULL(G.GROUP_CRTFCT_NM,'') AS EXPRT_CRTFCT_NM
                         , B.NM
                         , B.BRDT
                         , B.GNDR
@@ -105,7 +105,7 @@
                             END
                             ) AS ITRST_YN
                         , YEAR(NOW()) - LEFT(B.BRDT,4) + 1 AS AGE
-                        , D.REG_DT AS MDFCN_DT
+                        , C.REG_DT AS MDFCN_DT
                     FROM TB_ASS_EXPRT A
                     INNER JOIN TB_CMM_USER B
                         ON A.USERID = B.USERID
@@ -114,8 +114,42 @@
                         FROM
                             TB_ASS_EXPRT_MDFCN_DMND
                         WHERE (USERID, REG_DT) IN (SELECT USERID, MAX(REG_DT) FROM TB_ASS_EXPRT_MDFCN_DMND GROUP BY USERID)
+                            AND STTS_CD != '152101'
+                    ) C
+                        ON A.USERID = C.USERID
+                    LEFT OUTER JOIN (
+                        SELECT
+                            GROUP_CONCAT(TCAC.CTPRVN_NM) AS GROUP_CD_NM, TAEAS.USERID
+                        FROM TB_CMM_ADDR_CTPRVN TCAC
+                        INNER JOIN TB_ASS_EXPRT_ACTVT_SCOPE TAEAS
+                            ON TCAC.CTPRVN_CD = TAEAS.RGN_CD
+                        GROUP BY TAEAS.USERID
                     ) D
-                        ON A.USERID = D.USERID AND D.STTS_CD != '152101'
+                        ON A.USERID = D.USERID
+                    LEFT OUTER JOIN (
+                        SELECT
+                            GROUP_CONCAT(TCC.CD_NM) AS GROUP_CD_NM, TAES.USERID
+                        FROM TB_ASS_EXPRT_SBJCT TAES
+                        INNER JOIN TB_CMM_CD TCC
+                            ON TAES.SBJCT_CD = TCC.CD
+                        GROUP BY TAES.USERID
+                    ) E
+                        ON A.USERID = E.USERID
+                    LEFT OUTER JOIN (
+                        SELECT
+                            GROUP_CONCAT(TCC.CD_NM) AS GROUP_CD_NM, TAET.USERID
+                        FROM TB_ASS_EXPRT_TRGT TAET
+                        INNER JOIN TB_CMM_CD TCC
+                            ON TAET.TRGT_CD = TCC.CD
+                        GROUP BY TAET.USERID
+                    ) F
+                        ON A.USERID = F.USERID
+                    LEFT OUTER JOIN (
+                        SELECT GROUP_CONCAT(CRTFCT_NM) AS GROUP_CRTFCT_NM, USERID
+                        FROM TB_ASS_EXPRT_CRTFCT
+                        GROUP BY USERID
+                    ) G
+                        ON A.USERID = G.USERID
                     WHERE 1 = 1
                         <if test="exprtTypeCd != null and exprtTypeCd != ''">
                             AND A.EXPRT_TYPE_CD = #{exprtTypeCd}
@@ -170,9 +204,9 @@
              , A.FLD_ETC_CN
              , A.ENV_EDU_CAREER_YY
              , A.ENV_EDU_CAREER_MM
-             , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_SBJCT C  INNER JOIN TB_CMM_CD D ON C.SBJCT_CD = D.CD WHERE C.USERID = #{userid}) AS EXPRT_SBJCT_CD_NM
-             , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_ACTVT_SCOPE C  INNER JOIN TB_CMM_CD D ON C.RGN_CD = D.CD WHERE C.USERID= #{userid}) AS EXPRT_ACTVT_SCOPE_CD_NM
-             , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_TRGT C INNER JOIN TB_CMM_CD D ON C.TRGT_CD = D.CD WHERE C.USERID = #{userid}) AS EXPRT_TRGT_CD_NM
+             , D.GROUP_CD_NM AS EXPRT_SBJCT_CD_NM
+             , C.GROUP_CD_NM AS EXPRT_ACTVT_SCOPE_CD_NM
+             , E.GROUP_CD_NM AS EXPRT_TRGT_CD_NM
              , A.MOBLPHON_RLS_YN
              , A.TELNO_RLS_YN
              , A.EML_RLS_YN
@@ -197,6 +231,33 @@
         FROM TB_ASS_EXPRT A
         INNER JOIN TB_CMM_USER B
             ON A.USERID = B.USERID
+        LEFT OUTER JOIN (
+            SELECT
+                GROUP_CONCAT(TCAC.CTPRVN_NM) AS GROUP_CD_NM, TAEAS.USERID
+            FROM TB_CMM_ADDR_CTPRVN TCAC
+                     INNER JOIN TB_ASS_EXPRT_ACTVT_SCOPE TAEAS
+                                ON TCAC.CTPRVN_CD = TAEAS.RGN_CD
+            GROUP BY TAEAS.USERID
+        ) C
+            ON A.USERID = C.USERID
+        LEFT OUTER JOIN (
+            SELECT
+                GROUP_CONCAT(TCC.CD_NM) AS GROUP_CD_NM, TAES.USERID
+            FROM TB_ASS_EXPRT_SBJCT TAES
+                     INNER JOIN TB_CMM_CD TCC
+                                ON TAES.SBJCT_CD = TCC.CD
+            GROUP BY TAES.USERID
+        ) D
+            ON A.USERID = D.USERID
+        LEFT OUTER JOIN (
+            SELECT
+                GROUP_CONCAT(TCC.CD_NM) AS GROUP_CD_NM, TAET.USERID
+            FROM TB_ASS_EXPRT_TRGT TAET
+                     INNER JOIN TB_CMM_CD TCC
+                                ON TAET.TRGT_CD = TCC.CD
+            GROUP BY TAET.USERID
+        ) E
+            ON A.USERID = E.USERID
         WHERE A.USERID = #{userid}
     </select>
 
