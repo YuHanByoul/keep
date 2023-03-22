@@ -627,10 +627,12 @@ public class PackageController {
     public String packageindvdQRPopup(PackageindvdVo packageindvdVo , Model model) throws Exception {
         
         model.addAttribute("printMode",packageindvdVo.getMode());
-        model.addAttribute("resVo",packageService.selectPackageindvd(packageindvdVo));
+        
+        PackageindvdVo resVo=packageService.selectPackageindvd(packageindvdVo);
+        model.addAttribute("resVo",resVo);
         
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
-        String text = String.valueOf(packageindvdVo.getPackageindvdid());
+        String text = String.valueOf(resVo.getPackageindvdid()+"/"+resVo.getIndvdno());
         text = new String(text.getBytes("UTF-8"), "ISO-8859-1");
         BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, 150, 150);
         
