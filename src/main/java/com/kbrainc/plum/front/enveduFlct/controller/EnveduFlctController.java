@@ -55,7 +55,7 @@ public class EnveduFlctController {
      public String nearbyEnveduFlct(HttpServletRequest request, Model model) throws Exception {
          
          Map searchMap = new HashMap<>();
-         int pagePerCnt = 10;
+         int pagePerCnt = 30;
          int selectedPage = 1;
          int totalPage = 0;
          
@@ -93,7 +93,7 @@ public class EnveduFlctController {
           Map<String, Object> resultMap = new HashMap<>();
           Map searchMap = new HashMap<>();
           
-          int pagePerCnt = 10;
+          int pagePerCnt = 30;
           int selectedPage = (int) param.get("selectedPage");
           int totalPage = 0;
           
@@ -113,7 +113,7 @@ public class EnveduFlctController {
               searchMap.put("category", param.get("category"));
           }
           
-          searchMap.put("pagePerCnt", 10);
+          searchMap.put("pagePerCnt", pagePerCnt);
           searchMap.put("selectedPage", selectedPage);
           
           List<Map<String, Object>> list = enveduFlctService.nearbyEnveduFlct(searchMap);

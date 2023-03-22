@@ -4,7 +4,7 @@
 		<div class="modal-content type_2">
 			<div class="modal-header">
 				<h4 class="modal-title">배너 수정</h4>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+				<button type="button" class="btn-close">
 					<span aria-hidden="true"></span>
 				</button>
 			</div>
@@ -34,7 +34,7 @@
 								<div class="col-sm-12 mb-2">
 									<input type="file" class="form-control form-control-sm" id="bannerFile" name="bannerFile"/>
 		                            <input type="hidden" name="bannerFilegrpid" id="bannerFilegrpid" value="0">
-		                            <input type="hidden" name="bannerFileid" id="bannerFileid" value="0">
+		                            <input type="hidden" name="bannerFileid" id="bannerFileid" th:value="${banner.bannerFileid}">
 								</div>
 								<div class="mb-2 row">
 				                    <div class="col-auto">
@@ -70,7 +70,16 @@
 </form>
 
 <script th:inline="javascript">
-
+	$(".btn-close").click(function() {
+		if($("#bannerFileid").val() == 0) {
+			alert("이미지를 첨부해주십시오.");
+			return false;
+		}else{
+			updateAddModal.hide();
+		}
+	});
+	
+	
 	var validator= $("#updateBannerFrm").validate({
 		rules: {
 			siteid : { required: true },
@@ -151,7 +160,10 @@
 		
 	function updateBanner() {
 		if(!($("#updateBannerFrm").valid())) return;
-		
+		if($("#bannerFileid").val() == 0) {
+			alert("이미지가 완전히 등록된 후 시도해주십시오.");
+			return false;
+		}
 		$.ajax({
 		    url : "/mng/banner/updateBanner.do",
 		    type: 'POST',
