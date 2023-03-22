@@ -1,18 +1,65 @@
 <div>
-        <div>댓글 : [[${cmntyPstInfo.cmntCnt}]]</div>
-        <div class="form-input">
-                <input type="hidden" class="cn" value="댓글 테스트" />
-                <button type="button" class="btn-small btn-gray cmnt-insert-btn">등록</button>
+    <div class="reply-content">
+        <div class="reply-length">댓글 <span>[[${cmntyPstInfo.cmntCnt}]]</span></div>
+        <div class="reply-input">
+            <div class="reply-textarea">
+                <textarea class="areaResize" style="height: 70px;" placeholder="댓글 내용을 입력해주세요."></textarea>
+                <div class="desc ar size"><span>0</span> / 1,000자</div>
+            </div>
+            <div class="btn-wrap">
+                <button type="button" class="btn-medium btn-green cmnt-insert-btn">등록</button>
+            </div>
         </div>
-        <div th:each="item : ${list}" style="border-bottom: 1px solid;">
-                <div style="color: red;">[[${item.rgtrNm}]]</div>
-                <div>[[${item.cn}]]</div>
-                <button type="button" class="btn-small btn-gray cmnt-reply-btn" th:data-parnts-cmntid="${item.cmntid}">답글 : <span>[[${item.cmntReplyCnt}]]</span></button>
-                <div class="cmnt-reply-wrap">
-                        <th:block th:if="${item.dpth == 1}">
-                                <th:block th:replace="/front/cmnty/cmntReplyWrap"></th:block>
+    </div>
+    <div class="reply-list">
+        <div class="dep01">
+            <ul>
+                <li th:if="${list.size() > 0}" th:each="item : ${list}">
+                    <div class="reply-container">
+                        <th:block th:if="${item.delYn ne 'Y'}">
+                            <div class="top">
+                                <div class="profile" th:text="${item.rgtrNm + ' (' + item.rgtrAcnt + ')'}"></div>
+                                <div class="date" th:text="${#dates.format(item.regDt, 'yyyy-MM-dd HH:mm')}"></div>
+                                <div class="pc-only">
+                                    <div class="btn-wrap btn-wrap-medium">
+                                        <div class="left">
+                                            <button type="button" class="btn-xsmall btn-outline-blue reply-btn" th:data-parnts-cmntid="${item.cmntid}">답글</button>
+                                            <button th:if="${item.rgtrid eq paramVo.user.userid}" type="button" class="btn-xsmall btn-outline-black update-form-btn" th:data-cmntid="${item.cmntid}">수정</button>
+                                            <button th:if="${item.rgtrid eq paramVo.user.userid}" type="button" class="btn-xsmall btn-outline-black cmnt-delete-btn" th:data-cmntid="${item.cmntid}">삭제</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="reply-input">
+                                <div class="reply-textarea">
+                                <pre th:text="${item.cn}">/pre>
+                                </div>
+                            </div>
+                            <div class="mo-only">
+                                <div class="btn-wrap btn-wrap-medium">
+                                    <div class="left">
+                                        <button type="button" class="btn-xsmall btn-outline-blue reply-btn" th:data-parnts-cmntid="${item.cmntid}">답글</button>
+                                        <button th:if="${item.rgtrid eq paramVo.user.userid}" type="button" class="btn-xsmall btn-outline-black update-form-btn" th:data-cmntid="${item.cmntid}">수정</button>
+                                        <button th:if="${item.rgtrid eq paramVo.user.userid}" type="button" class="btn-xsmall btn-outline-black cmnt-delete-btn" th:data-cmntid="${item.cmntid}">삭제</button>
+                                    </div>
+                                </div>
+                            </div>
                         </th:block>
-                </div>
+                        <th:block th:if="${item.delYn eq 'Y'}">
+                            삭제한 댓글입니다.
+                        </th:block>
+                    </div>
+                    <div class="dep02">
+                        <ul>
+
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+            <div class="relpy-more-view">
+                <button th:if="${cmntyPstInfo.cmntCnt > 20}" type="button" class="btn-small btn-outline-black more-btn">댓글 더보기</button>
+                <input type="hidden" id="pageIndex" value="1" />
+            </div>
         </div>
-        <th:block kattr:pagination="list" onclick="movePage"/>
+    </div>
 </div>

@@ -253,15 +253,6 @@ public interface CmntyDao {
     List<CmntyCmntVo> selectCmntList(CmntyCmntVo paramVo);
 
     /**
-     * 환경동아리 댓글 순서 수정
-     * Title : updateCmntOrdElse
-     * Description : 환경동아리 댓글 순서 수정
-     *
-     * @param paramVo
-     */
-    void updateCmntOrdElse(CmntyCmntVo paramVo);
-
-    /**
      * 환경동아리 댓글 등록
      * Title : insertCmnt
      * Description : 환경동아리 댓글 등록

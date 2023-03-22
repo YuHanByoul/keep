@@ -47,17 +47,17 @@
             </div>
         </div>
 
-        <div class="btn-wrap">
-            <div class="center">
-                <button type="button" class="btn-medium btn-gray action-btn" data-action="/front/cmnty/cmntyPstList.html">목록</button>
-                <button th:if="${bbsInfo.cmntUseYn eq 'Y'}" type="button" class="btn-medium btn-gray action-btn" data-action="/front/cmnty/cmntyPstInsertForm.html">답글</button>
-                <button th:if="${cmntyPstInfo.rgtrid eq paramVo.user.userid}" type="button" class="btn-medium btn-gray action-btn" data-action="/front/cmnty/cmntyPstUpdateForm.html">수정</button>
-                <button th:if="${cmntyPstInfo.rgtrid eq paramVo.user.userid}" type="button" class="btn-medium btn-gray delete-btn" data-del-yn="Y">삭제</button>
-            </div>
-        </div>
-
         <div class="cmnt-wrap" th:if="${cmntyPstInfo.cmntUseYn eq 'Y'}">
             <th:block th:replace="front/cmnty/cmntyWrap"></th:block>
+        </div>
+
+        <div class="btn-wrap">
+            <div class="center">
+                <button th:if="${cmntyPstInfo.rgtrid eq paramVo.user.userid}" type="button" class="btn-medium btn-gray delete-btn" data-del-yn="Y">삭제</button>
+                <button th:if="${cmntyPstInfo.rgtrid eq paramVo.user.userid}" type="button" class="btn-medium btn-gray action-btn" data-action="/front/cmnty/cmntyPstUpdateForm.html">수정</button>
+                <button type="button" class="btn-medium btn-gray action-btn" data-action="/front/cmnty/cmntyPstList.html">목록</button>
+                <button th:if="${bbsInfo.cmntUseYn eq 'Y'}" type="button" class="btn-medium btn-gray action-btn" data-action="/front/cmnty/cmntyPstInsertForm.html">답글</button>
+            </div>
         </div>
 
         <!--<div class="page-navigation">
@@ -78,6 +78,80 @@
         </div>-->
     </div>
 
+    <div class="clone-tmps" style="display: none;">
+        <li class="common-cmnt">
+            <div class="reply-container">
+                <div class="top">
+                    <div class="profile"></div>
+                    <div class="date"></div>
+                    <div class="pc-only">
+                        <div class="btn-wrap btn-wrap-medium">
+                            <div class="left">
+                                <button type="button" class="btn-xsmall btn-outline-blue reply-btn">답글</button>
+                                <button type="button" class="btn-xsmall btn-outline-black update-form-btn">수정</button>
+                                <button type="button" class="btn-xsmall btn-outline-black cmnt-delete-btn">삭제</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="reply-input">
+                    <div class="reply-textarea">
+                        <pre></pre>
+                    </div>
+                </div>
+                <div class="mo-only">
+                    <div class="btn-wrap btn-wrap-medium">
+                        <div class="left">
+                            <button type="button" class="btn-xsmall btn-outline-blue reply-btn">답글</button>
+                            <button type="button" class="btn-xsmall btn-outline-black update-form-btn">수정</button>
+                            <button type="button" class="btn-xsmall btn-outline-black cmnt-delete-btn">삭제</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="dep02">
+                <ul></ul>
+            </div>
+        </li>
+
+        <li class="reply-cmnt-input">
+            <div class="reply-container">
+                <div class="reply-input">
+                    <div class="reply-textarea">
+                        <textarea title="답글" placeholder="답글 내용을 입력해주세요."></textarea>
+                        <div class="desc ar size"><span>0</span> / 1,000자</div>
+                    </div>
+                    <div class="btn-wrap">
+                        <button type="button" class="btn-medium btn-green cmnt-insert-btn">등록</button>
+                    </div>
+                </div>
+            </div>
+        </li>
+
+        <li class="update-cmnt-input">
+            <div class="reply-container">
+                <div class="top">
+                    <div class="profile"></div>
+                    <div class="date"></div>
+                </div>
+                <div class="reply-input">
+                    <div class="reply-textarea">
+                        <textarea title="답글" placeholder="답글 내용을 입력해주세요."></textarea>
+                        <div class="desc ar size"><span>0</span> / 1,000자</div>
+                    </div>
+                    <div class="btn-wrap">
+                        <button type="button" class="btn-medium btn-green cmnt-update-btn">수정</button>
+                    </div>
+                </div>
+            </div>
+        </li>
+
+        <div class="relpy-more-view">
+            <button type="button" class="btn-small btn-outline-black bg-grayd reply-more-btn">답글 더보기</button>
+            <input type="hidden" id="pageIndex" value="1" />
+        </div>
+    </div>
+
     <form name="searchForm" id="searchForm">
         <input type="hidden" id="pageNumber" name="pageNumber" th:value="${paramVo.pageNumber}">
         <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${paramVo.rowPerPage}">
@@ -91,10 +165,16 @@
     <script th:inline="javascript">
         window.addEventListener('DOMContentLoaded',function (){
             const $searchForm = $('#searchForm');
-            const $cmntWrap = $('.cmnt-wrap');
-            //const $cmntInput = $('.cmnt-input-clone > .cmnt-input');
+            const $replyLength = $('.reply-length > span');
+            const $cmntWrap = $('.reply-list .dep01 > ul');
+            const $commonCmnt = $('.clone-tmps .common-cmnt');
+            const $replyCmntInput = $('.clone-tmps .reply-cmnt-input');
+            const $updateCmntInput = $('.clone-tmps .update-cmnt-input');
+            const $replyMoreView = $('.clone-tmps .relpy-more-view');
             const pstid = $searchForm[0].pstid.value;
             const bbsid = $searchForm[0].bbsid.value;
+            const userid = /*[[${paramVo.user.userid}]]*/null;
+            let rowPerPage = 20;
 
             /*$('.move-pst-btn').on('click', function(){
                 const pstid = $(this).data('pstid');
@@ -103,6 +183,11 @@
                 $searchForm[0].pstid.value = pstid;
                 $searchForm[0].submit();
             });*/
+
+            $('.cmnt-wrap').on('change', 'textarea', function (){
+                const textSize = $(this).val().length;
+                $(this).siblings('.size').find('span').text(textSize);
+            });
 
             $('.action-btn').on('click',function(){
                 $searchForm[0].action = $(this).data('action');
@@ -136,12 +221,10 @@
 
             //댓글/대댓글 등록 ajax
             $('.cmnt-wrap').on('click', '.cmnt-insert-btn',function(){
-                const cn = $(this).siblings('.cn').val();
+                const $textarea = $(this).closest('.reply-input').find('textarea');
                 const rslYn = 'Y'; //추후 비밀글 생기면 조작할 수 있도록 수정바람
-                const $cmntReplyBtn = $(this).closest('.cmnt-reply-wrap').siblings('.cmnt-reply-btn'); //대댓글일시
-                const parntsCmntid = $cmntReplyBtn.data('parnts-cmntid'); //대댓글일시
-                const cmntReplyCnt = $cmntReplyBtn.children('span'); //대댓글일시
-                const $cmntReplyWrap = $(this).closest('.cmnt-reply-wrap'); //대댓글일시
+                const parntsCmntid = $(this).data('parnts-cmntid'); //대댓글일시
+                const $cmntReplyWrap = $(this).closest('.dep02').find('ul'); //대댓글일시
                 if(displayWorkProgress(true)){
                     $.ajax({
                         type: 'POST',
@@ -150,29 +233,88 @@
                             pstid : pstid,
                             bbsid : bbsid,
                             parntsCmntid : parntsCmntid, //댓글에 댓글일시
-                            cn : cn,
+                            cn : $textarea.val(),
                             rlsYn : rslYn
                         },
-                        success : function (result){
-                            alert('댓글을 등록하였습니다.');
-                            if(parntsCmntid === undefined){
-                                $cmntWrap.html(result);
-                            }else{
-                                $cmntReplyWrap.html(result);
-                                cmntReplyCnt.text(Number(cmntReplyCnt.text())+1);
+                        success : function (response){
+                            alert(response.msg);
+                            if(response.result !== 'fail'){
+                                const $item = $commonCmnt.clone(true);
+                                const isRgtr = response.data.rgtrid === userid;
+                                if(parntsCmntid === undefined){
+                                    $cmntWrap.prepend( // 댓글 등록 후 html 추가
+                                        $item.find('.profile').text(response.data.rgtrNm + ' (' + response.data.rgtrAcnt + ')').end()
+                                            .find('.date').text(response.data.regDt).end()
+                                            .find('.reply-btn').data({'parntsCmntid':response.data.cmntid}).end()
+                                            .find('.update-form-btn, .cmnt-delete-btn').data({'cmntid': (isRgtr ? response.data.cmntid : null)})
+                                                .prop({disabled:(isRgtr ? false : true)})
+                                                .css({display:(isRgtr ? 'block' : 'none')}).end()
+                                            .find('.reply-textarea > pre').text(response.data.cn).end()
+                                    );
+                                    $replyLength.text(Number($replyLength.text())+1);
+                                    $textarea.val('');
+                                    const rowPerPageSet = Number($cmntWrap.siblings('.relpy-more-view').find('#pageIndex').val()); //현재 rowPage 계산
+                                    if(Number($replyLength.text()) > Number(rowPerPage*rowPerPageSet)){ //rowPerPage 넘어갈 시 마지막 답글 사라짐
+                                        $cmntWrap.children().last().find('.more-btn').remove();
+                                        if(!$cmntWrap.closest('.dep01').children().last().children().is('button')){
+                                            $cmntWrap.closest('.dep01').find('.relpy-more-view').prepend(
+                                                $replyMoreView.find('button').clone(true)
+                                                    .find('.bg-grayd').removeClass('bg-grayd').end()
+                                                    .find('button').removeClass('reply-more-btn').addClass('more-btn').end()
+                                            );
+                                        }
+                                    }
+                                }else{
+                                    $cmntReplyWrap.find('.reply-cmnt-input').before( // 답글 등록 후 html 추가
+                                        $item.find('.profile').text(response.data.rgtrNm + ' (' + response.data.rgtrAcnt + ')').end()
+                                            .find('.date').text(response.data.regDt).end()
+                                            .find('.reply-btn').remove().end()
+                                            .find('.update-form-btn, .cmnt-delete-btn').data({'cmntid': (isRgtr ? response.data.cmntid : null)})
+                                                .prop({disabled:(isRgtr ? false : true)})
+                                                .css({display:(isRgtr ? 'block' : 'none')}).end()
+                                            .find('.reply-textarea > pre').text(response.data.cn).end()
+                                            .find('.dep02').remove().end()
+                                    );
+                                    $textarea.val('');
+                                    const rowPerPageSet = Number($cmntWrap.siblings('.relpy-more-view').find('#pageIndex').val()); //현재 rowPage 계산
+                                    if(response.data.cmntReplyCnt > Number(rowPerPage*rowPerPageSet)){ //rowPerPage 넘어갈 시 마지막 답글 사라짐
+                                        $cmntReplyWrap.children().first().remove();
+                                        if(!$cmntReplyWrap.closest('.dep02').children().last().children().is('button')){
+                                            $cmntReplyWrap.closest('.dep02').prepend($replyMoreView.clone(true).find('button').data({'parntsCmntid':parntsCmntid}).end());
+                                        }
+                                    }
+                                }
                             }
-                        },
-                        error: function (result){
-                            alert('댓글 등록이 실패하였습니다.');
                         }
                     });
                 }
             });
-            //댓글/대댓글 삭제 ajax 수정도 가능은함
-            $('.cmnt-wrap').on('click', '.update-btn', function (){
-                const delYn = 'Y'; //댓글 수정 가능할시 값 Y이면 삭제로직/값 N일 경우 수정로직 타게 구현
+            //댓글 수정 버튼 클릭 시 수정 입력 창 생성
+            $('.cmnt-wrap').on('click', '.update-form-btn', function (){
+                const $item = $updateCmntInput.clone(true);
                 const cmntid = $(this).data('cmntid');
-                if(confirm('작성한 댓글을 삭제하시겠습니까?')){
+                const cn = $(this).closest('.reply-container').find('pre').text();
+                const rgtrInfo = $(this).closest('.reply-container').find('.profile').text();
+                const regDt = $(this).closest('.reply-container').find('.date').text();
+                $(this).closest('li').before(
+                    $item.find('.profile').text(rgtrInfo).end()
+                        .find('.date').text(regDt).end()
+                        .find('textarea').val(cn).end()
+                        .find('.cmnt-update-btn').data({'cmntid':cmntid}).end()
+                );
+                $(this).closest('li').remove();
+            });
+            //댓글/대댓글 삭제 ajax 수정도 가능은함
+            $('.cmnt-wrap').on('click', '.cmnt-update-btn, .cmnt-delete-btn', function (){
+                const isDelete = $(this).is('.cmnt-delete-btn'); //true 삭제로직, false 수정로직
+                const isReply = $(this).closest('.dep02').length > 0 ? true : false; //답글 여부
+                const delYn = isDelete ? 'Y' : 'N';
+                const cn = $(this).closest('.reply-input').find('textarea').val();
+                const cmntid = $(this).data('cmntid');
+                const rgtrInfo = $(this).closest('.reply-container').find('.profile').text();
+                const regDt = $(this).closest('.reply-container').find('.date').text();
+                const $this = $(this);
+                if(confirm(isDelete ? '작성한 댓글을 삭제하시겠습니까?' : '작성한 댓글을 수정하시겠습니까?')){
                     if(displayWorkProgress(true)){
                         $.ajax({
                             type: 'POST',
@@ -181,42 +323,182 @@
                                 pstid : pstid,
                                 delYn : delYn,
                                 cmntid : cmntid,
+                                cn : cn,
                             },
-                            success : function (result){
-                                alert('댓글을 삭제하였습니다.');
-                                if(parntsCmntid === undefined){
-                                    $cmntWrap.html(result);
-                                }else{
-                                    //$cmntReplyWrap.html(result);
+                            success : function (response){
+                                if(response.result !== 'fail'){
+                                    if(isDelete){
+                                        alert('댓글을 삭제하였습니다.');
+                                        $this.closest('.reply-container').text('삭제한 댓글입니다.');
+                                    }else{
+                                        alert('댓글을 수정했습니다.')
+                                        const $item = $commonCmnt.clone(true);
+                                        $this.closest('li').before(
+                                            $item.find('.profile').text(rgtrInfo).end()
+                                                .find('.date').text(regDt).end()
+                                                .find('.reply-btn').data({'parntsCmntid':cmntid}).end()
+                                                .find('.update-form-btn, .cmnt-delete-btn').data({'cmntid':cmntid}).end()
+                                                .find('.reply-textarea > pre').text(cn).end()
+                                        );
+                                        if(isReply){
+                                            $this.closest('li').prev().find('.reply-btn').remove();
+                                        }
+                                        $this.closest('li').remove();
+                                    }
                                 }
-                            },
-                            error: function (result){
-                                alert('댓글 삭제에 실패하였습니다.');
                             }
                         });
                     }
                 }
             });
-            //댓글 > 답글 클릭 시 압력폼 생성 및 목록 get js 부모아이디 추가 필요
-            $('.cmnt-wrap').on('click', '.cmnt-reply-btn', function (){
-                const parntsCmntid = $(this).data('parnts-cmntid');
-                const $cmntReplyWrap = $(this).siblings('.cmnt-reply-wrap');
+            //댓글 > 답글 클릭
+            $('.cmnt-wrap').on('click', '.reply-btn', function (){
+                const $this = $(this);
+                const $cmntReplyWrap = $(this).closest('.reply-container').siblings('.dep02').find('ul');
+                if(!$this.is('.active')){
+                    const parntsCmntid = $(this).data('parnts-cmntid');
+                    $.ajax({
+                        type: 'POST',
+                        url : "/front/cmnty/selectCmntReplyList.do",
+                        data : {
+                            pstid : pstid,
+                            parntsCmntid : parntsCmntid,
+                            rowPerPage : rowPerPage,
+                            pageNumber : 1,
+                            replyYn : 'Y' //답글전용
+                        },
+                        success : function (result){
+                            if(result.data != null){
+                                let cmntReplyCnt = '';
+                                for(let item of result.data){
+                                    cmntReplyCnt = item.cmntReplyCnt;
+                                    const $item = $commonCmnt.clone(true);
+                                    const isRgtr = item.rgtrid === userid;
+                                    if(item.delYn === 'Y'){
+                                        $cmntReplyWrap.prepend(
+                                            $item.find('.reply-container').text('삭제한 댓글입니다.').end()
+                                                .find('.dep02').remove().end()
+                                        );
+                                    }else{
+                                        $cmntReplyWrap.prepend(
+                                            $item.find('.profile').text(item.rgtrNm + ' (' + item.rgtrAcnt + ')').end()
+                                                .find('.date').text(item.regDt).end()
+                                                .find('.reply-btn').remove().end()
+                                                .find('.update-form-btn, .cmnt-delete-btn').data({'cmntid': (isRgtr ? item.cmntid : null)})
+                                                .prop({disabled:(isRgtr ? false : true)})
+                                                .css({display:(isRgtr ? 'block' : 'none')}).end()
+                                                .find('.reply-textarea > pre').text(item.cn).end()
+                                                .find('.dep02').remove().end()
+                                        );
+                                    }
+                                }
+                                const $replyInputClone = $replyCmntInput.clone(true);
+                                $cmntReplyWrap.append($replyInputClone.find('.cmnt-insert-btn').data({'parntsCmntid':parntsCmntid}).end());
+                                $cmntReplyWrap.closest('.dep02').append($replyMoreView.clone(true).find('button').remove().end());
+
+                                if(cmntReplyCnt > rowPerPage){
+                                    $cmntReplyWrap.closest('.dep02').find('.relpy-more-view').prepend($replyMoreView.find('button').clone(true).data({'parntsCmntid':parntsCmntid}));
+                                }
+                                $this.addClass('active');
+                            }else{
+                                alert('답글을 불러오는데 오류가 발생했습니다.');
+                            }
+                        }
+                    });
+                }else{
+                    $cmntReplyWrap.children().remove();
+                    $cmntReplyWrap.siblings('.relpy-more-view').remove();
+                    $this.removeClass('active');
+                }
+            });
+            //댓글 더보기
+            $('.cmnt-wrap').on('click', '.more-btn', function (){
+                const $this = $(this);
+                const $pageIndex = $(this).siblings('#pageIndex');
+                let pageNumber = Number($pageIndex.val());
+                const pageSetNum = Number(pageNumber+1);
+                const nextLimit = Number(pageSetNum*rowPerPage);
                 $.ajax({
                     type: 'POST',
                     url : "/front/cmnty/selectCmntReplyList.do",
                     data : {
                         pstid : pstid,
-                        parntsCmntid : parntsCmntid
+                        parntsCmntid : null,
+                        rowPerPage : rowPerPage,
+                        pageNumber : pageSetNum
                     },
                     success : function (result){
-                        $cmntReplyWrap.html(result);
-                    },
-                    error: function (result){
-                        alert('답글을 불러오는데 오류가 발생했습니다.');
+                        if(result.data != null){
+                            for(let item of result.data){
+                                const $item = $commonCmnt.clone(true);
+                                const isRgtr = item.rgtrid === userid;
+                                $cmntWrap.append(
+                                    $item.find('.profile').text(item.rgtrNm + ' (' + item.rgtrAcnt + ')').end()
+                                        .find('.date').text(item.regDt).end()
+                                        .find('.reply-btn').data({'parntsCmntid':item.cmntid}).end()
+                                        .find('.update-form-btn, .cmnt-delete-btn').data({'cmntid': (isRgtr ? item.cmntid : null)})
+                                        .prop({disabled:(isRgtr ? false : true)})
+                                        .css({display:(isRgtr ? 'block' : 'none')}).end()
+                                        .find('.reply-textarea > pre').text(item.cn).end()
+                                )
+                            }
+                            if(Number($replyLength.text()) <= nextLimit){ //nextLimit 보다 댓굴의 총개수가 작을 경우 더보기 버튼 필요없음
+                                $this.closest('.relpy-more-view').find('button').remove();
+                            }
+                            $pageIndex.val(Number(pageNumber+1)); //페이지 증가
+                        }else{
+                            alert('더보기를 불러오는데 오류가 발생했습니다.');
+                        }
                     }
                 });
             });
-            //page 이동 함수 필요 (댓글 , 대댓글)
+            //대댓글 더보기
+            $('.cmnt-wrap').on('click', '.reply-more-btn', function (){
+                const $this = $(this);
+                const $pageIndex = $(this).siblings('#pageIndex');
+                let pageNumber = Number($pageIndex.val());
+                const $cmntReplyWrap = $(this).closest('.dep02').find('ul'); //대댓글의 경우
+                const parntsCmntid = $(this).data('parntsCmntid'); //대댓글의 경우
+                const pageSetNum = Number(pageNumber+1);
+                const nextLimit = Number(pageSetNum*rowPerPage);
+                $.ajax({
+                    type: 'POST',
+                    url : "/front/cmnty/selectCmntReplyList.do",
+                    data : {
+                        pstid : pstid,
+                        parntsCmntid : parntsCmntid,
+                        rowPerPage : rowPerPage,
+                        pageNumber : pageSetNum,
+                        replyYn : 'Y' //답글전용
+                    },
+                    success : function (result){
+                        if(result.data != null){
+                            let cmntReplyCnt = null;
+                            for(let item of result.data){
+                                cmntReplyCnt = item.cmntReplyCnt;
+                                const $item = $commonCmnt.clone(true);
+                                const isRgtr = item.rgtrid === userid;
+                                $cmntReplyWrap.children().first().prepend(
+                                    $item.find('.profile').text(item.rgtrNm + ' (' + item.rgtrAcnt + ')').end()
+                                        .find('.date').text(item.regDt).end()
+                                        .find('.reply-btn').remove().end()
+                                        .find('.update-form-btn, .cmnt-delete-btn').data({'cmntid': (isRgtr ? item.cmntid : null)})
+                                        .prop({disabled:(isRgtr ? false : true)})
+                                        .css({display:(isRgtr ? 'block' : 'none')}).end()
+                                        .find('.reply-textarea > pre').text(item.cn).end()
+                                        .find('.dep02').remove().end()
+                                )
+                            }
+                            if(cmntReplyCnt <= nextLimit){ //n extLimit보다 댓굴의 총개수가 작을 경우 더보기 버튼 필요없음
+                                $this.closest('.relpy-more-view').find('button').remove();
+                            }
+                            $pageIndex.val(Number(pageNumber+1)); //페이지 증가
+                        }else{
+                            alert('더보기를 불러오는데 오류가 발생했습니다.');
+                        }
+                    }
+                });
+            });
         });
     </script>
 </div>
