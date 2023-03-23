@@ -641,26 +641,44 @@
     <!-- 환경동아리 댓글 목록 -->
     <select id="selectCmntList" resultType="front.CmntyCmntVo">
         /* CmntyDao.selectCmntList */
-        <include refid="PaginationMapper.header"/>
-        SELECT
-            A.CMNTID
-            , A.PSTID
-            , A.CN
-            , A.PARNTS_CMNTID
-            , A.CMNT_GRP
-            , A.DPTH
-            , A.SORTORDR
-            , A.RLS_YN
-            , A.DEL_YN
-            , A.MDFCN_DT
-            , A.MDFRID
-            , A.REG_DT
-            , A.RGTRID
-            , (SELECT NM FROM TB_CMM_USER WHERE USERID = A.RGTRID) RGTR_NM
-            , (SELECT ACNT FROM TB_CMM_USER WHERE USERID = A.RGTRID) RGTR_ACNT
-            , (SELECT COUNT(0) FROM TB_CMT_CMNTY_CMNT WHERE PSTID = #{pstid} AND PARNTS_CMNTID = A.CMNTID) CMNT_REPLY_CNT
-        FROM TB_CMT_CMNTY_CMNT A
-        WHERE A.PSTID = #{pstid}
+        /*SELECT
+            CMM.CMNTID
+            , CMM.PSTID
+            , CMM.CN
+            , CMM.PARNTS_CMNTID
+            , CMM.CMNT_GRP
+            , CMM.DPTH
+            , CMM.SORTORDR
+            , CMM.RLS_YN
+            , CMM.DEL_YN
+            , CMM.MDFCN_DT
+            , CMM.MDFRID
+            , CMM.REG_DT
+            , CMM.RGTRID
+            , CMM.RGTR_NM
+            , CMM.RGTR_ACNT
+            , CMM.CMNT_REPLY_CNT
+        FROM(*/
+            SELECT
+                /*(ROW_NUMBER() over (ORDER BY A.CMNTID)) AS ROWNUMBER*/
+                A.CMNTID
+                , A.PSTID
+                , A.CN
+                , A.PARNTS_CMNTID
+                , A.CMNT_GRP
+                , A.DPTH
+                , A.SORTORDR
+                , A.RLS_YN
+                , A.DEL_YN
+                , A.MDFCN_DT
+                , A.MDFRID
+                , DATE_FORMAT(A.REG_DT, '%Y-%m-%d %H:%i:%s') REG_DT
+                , A.RGTRID
+                , (SELECT NM FROM TB_CMM_USER WHERE USERID = A.RGTRID) RGTR_NM
+                , (SELECT ACNT FROM TB_CMM_USER WHERE USERID = A.RGTRID) RGTR_ACNT
+                , (SELECT COUNT(0) FROM TB_CMT_CMNTY_CMNT WHERE PSTID = #{pstid} AND PARNTS_CMNTID = A.PARNTS_CMNTID) CMNT_REPLY_CNT
+            FROM TB_CMT_CMNTY_CMNT A
+            WHERE A.PSTID = #{pstid}
         <choose>
             <when test="parntsCmntid != null and parntsCmntid != ''">
                 AND A.PARNTS_CMNTID = #{parntsCmntid}
@@ -669,7 +687,12 @@
                 AND A.PARNTS_CMNTID IS NULL
             </otherwise>
         </choose>
-        <include refid="PaginationMapper.footer"/>
+            <if test="cmntid != null and cmntid != ''">
+                AND A.CMNTID = #{cmntid}
+            </if>
+            ORDER BY A.REG_DT DESC
+            LIMIT #{pageOffset}, #{rowPerPage}
+        /*) CMM ORDER BY CMM.ROWNUMBER ${orderSort}*/
     </select>
     <!-- 환경동아리 댓글 순서 수정 -->
 <!--    <update id="updateCmntOrdElse">-->
@@ -683,7 +706,10 @@
 <!--          AND SORTORDR >= #{sortordr}-->
 <!--    </update>-->
     <!-- 환경동아리 댓글 등록 -->
-    <insert id="insertCmnt">
+    <insert id="insertCmnt" useGeneratedKeys="true">
+        <selectKey resultType="int" keyProperty="cmntid" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
         /* CmntyDao.insertCmnt */
         INSERT INTO TB_CMT_CMNTY_CMNT (
             PSTID
@@ -725,7 +751,6 @@
         </when>
         <otherwise>
             , CN = #{cn}
-            , RLS_YN = #{rlsYn}
         </otherwise>
     </choose>
         WHERE CMNTID = #{cmntid}
