@@ -90,7 +90,7 @@
             <if test="inviteYn != 'Y'.toString()">
                 , #{user.userid} <!--USERID-->
             </if>
-            <if test="joinaprvmthdCd == '115100' and inviteYn != 'Y'.toString()">
+            <if test="joinaprvmthdCd == '115100' and inviteYn != 'Y'.toString() and esterYn != 'Y'.toString()">
                 , '118101' <!--MBR_STTS_CD-->
             </if>
             <if test="joinaprvmthdCd == '115101' and inviteYn != 'Y'.toString() or esterYn == 'Y'.toString()">
@@ -106,7 +106,7 @@
                 , '117101' <!--AUTHRT_CD-->
             </if>
             , NOW()     <!--JOIN_APLY_DT-->
-            <if test="joinaprvmthdCd == '115100' or inviteYn == 'Y'.toString()">
+            <if test="joinaprvmthdCd == '115100' and esterYn != 'Y'.toString() or inviteYn == 'Y'.toString()">
             , null      <!--JOIN_APRV_DT-->
             , null      <!--AUTZR_ID-->
             </if>
@@ -641,58 +641,38 @@
     <!-- 환경동아리 댓글 목록 -->
     <select id="selectCmntList" resultType="front.CmntyCmntVo">
         /* CmntyDao.selectCmntList */
-        /*SELECT
-            CMM.CMNTID
-            , CMM.PSTID
-            , CMM.CN
-            , CMM.PARNTS_CMNTID
-            , CMM.CMNT_GRP
-            , CMM.DPTH
-            , CMM.SORTORDR
-            , CMM.RLS_YN
-            , CMM.DEL_YN
-            , CMM.MDFCN_DT
-            , CMM.MDFRID
-            , CMM.REG_DT
-            , CMM.RGTRID
-            , CMM.RGTR_NM
-            , CMM.RGTR_ACNT
-            , CMM.CMNT_REPLY_CNT
-        FROM(*/
-            SELECT
-                /*(ROW_NUMBER() over (ORDER BY A.CMNTID)) AS ROWNUMBER*/
-                A.CMNTID
-                , A.PSTID
-                , A.CN
-                , A.PARNTS_CMNTID
-                , A.CMNT_GRP
-                , A.DPTH
-                , A.SORTORDR
-                , A.RLS_YN
-                , A.DEL_YN
-                , A.MDFCN_DT
-                , A.MDFRID
-                , DATE_FORMAT(A.REG_DT, '%Y-%m-%d %H:%i:%s') REG_DT
-                , A.RGTRID
-                , (SELECT NM FROM TB_CMM_USER WHERE USERID = A.RGTRID) RGTR_NM
-                , (SELECT ACNT FROM TB_CMM_USER WHERE USERID = A.RGTRID) RGTR_ACNT
-                , (SELECT COUNT(0) FROM TB_CMT_CMNTY_CMNT WHERE PSTID = #{pstid} AND PARNTS_CMNTID = A.PARNTS_CMNTID) CMNT_REPLY_CNT
-            FROM TB_CMT_CMNTY_CMNT A
-            WHERE A.PSTID = #{pstid}
-        <choose>
-            <when test="parntsCmntid != null and parntsCmntid != ''">
-                AND A.PARNTS_CMNTID = #{parntsCmntid}
-            </when>
-            <otherwise>
-                AND A.PARNTS_CMNTID IS NULL
-            </otherwise>
-        </choose>
-            <if test="cmntid != null and cmntid != ''">
-                AND A.CMNTID = #{cmntid}
-            </if>
-            ORDER BY A.REG_DT DESC
-            LIMIT #{pageOffset}, #{rowPerPage}
-        /*) CMM ORDER BY CMM.ROWNUMBER ${orderSort}*/
+        SELECT
+            A.CMNTID
+            , A.PSTID
+            , A.CN
+            , A.PARNTS_CMNTID
+            , A.CMNT_GRP
+            , A.DPTH
+            , A.SORTORDR
+            , A.RLS_YN
+            , A.DEL_YN
+            , A.MDFCN_DT
+            , A.MDFRID
+            , DATE_FORMAT(A.REG_DT, '%Y-%m-%d %H:%i:%s') REG_DT
+            , A.RGTRID
+            , (SELECT NM FROM TB_CMM_USER WHERE USERID = A.RGTRID) RGTR_NM
+            , (SELECT ACNT FROM TB_CMM_USER WHERE USERID = A.RGTRID) RGTR_ACNT
+            , (SELECT COUNT(0) FROM TB_CMT_CMNTY_CMNT WHERE PSTID = #{pstid} AND PARNTS_CMNTID = A.PARNTS_CMNTID) CMNT_REPLY_CNT
+        FROM TB_CMT_CMNTY_CMNT A
+        WHERE A.PSTID = #{pstid}
+    <choose>
+        <when test="parntsCmntid != null and parntsCmntid != ''">
+            AND A.PARNTS_CMNTID = #{parntsCmntid}
+        </when>
+        <otherwise>
+            AND A.PARNTS_CMNTID IS NULL
+        </otherwise>
+    </choose>
+        <if test="cmntid != null and cmntid != ''">
+            AND A.CMNTID = #{cmntid}
+        </if>
+        ORDER BY A.REG_DT DESC
+        LIMIT #{pageOffset}, #{rowPerPage}
     </select>
     <!-- 환경동아리 댓글 순서 수정 -->
 <!--    <update id="updateCmntOrdElse">-->

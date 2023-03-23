@@ -1,4 +1,4 @@
-package com.kbrainc.plum.front.cmnty.controller;
+package com.kbrainc.plum.front.mypage.cmnty.controller;
 
 import com.kbrainc.plum.cmm.file.service.FileServiceImpl;
 import com.kbrainc.plum.front.cmnty.model.*;
@@ -23,22 +23,23 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * 환경동아리 Controller
+ * 마이페이지 > 환경동아리 Controller
  *
  * <pre>
- * com.kbrainc.plum.front.cmnty.controller
+ * com.kbrainc.plum.front.mypage.cmnty.controller
  * - CmntyController.java
  * </pre>
  *
  * @author : KBrainc_SBD
  * @ClassName : CmntyController
- * @Description : 환경동아리 Controller
- * @date : 2023. 02. 28.
+ * @Description : 마이페이지 > 환경동아리 Controller
+ * @date : 2023. 03. 23.
  * @Version :
  * @Company : Copyright&copy; KBRAIN Company. All Rights Reserved
  */
-@Controller("front.CmntyController")
-@Alias("front.CmntyController")
+
+@Controller("front.mypage.CmntyController")
+@Alias("front.mypage.CmntyController")
 public class CmntyController {
     @Resource(name = "front.CmntyService")
     private CmntyService cmntyService;
@@ -57,7 +58,7 @@ public class CmntyController {
      * @return string
      * @throws Exception
      */
-    @RequestMapping(value = "/front/cmnty/cmntyList.html")
+    @RequestMapping(value = "/front/mypage/cmnty/cmntyList.html")
     public String cmntyList(@UserInfo UserVo userVo, CmntyVo cmntyVo, Model model) throws Exception{
         cmntyVo.setUser(userVo);
         List<CmntyVo> cmntyList = cmntyService.selectCmntyList(cmntyVo);
@@ -77,7 +78,7 @@ public class CmntyController {
      * @param user
      * @return map
      */
-    @RequestMapping(value="/front/cmnty/insertCmntyMbr.do")
+    @RequestMapping(value="/front/mypage/cmnty/insertCmntyMbr.do")
     @ResponseBody
     public Map<String,Object> insertCmntyMbr(CmntyVo cmntyVo, @UserInfo UserVo user){
         Map<String, Object> resultMap = new HashMap<>();
@@ -96,7 +97,7 @@ public class CmntyController {
             resultMap.put("msg", "가입신청 되었습니다.\n관리자의 승인 후 가입 처리됩니다.");
             if("115101".equals(cmntyInfo.getJoinaprvmthdCd())){
                 resultMap.put("msg", "가입되었습니다.");
-                resultMap.put("url","/front/cmnty/cmntyPstList.html");
+                resultMap.put("url","/front/mypage/cmnty/cmntyPstList.html");
             }
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
@@ -114,7 +115,7 @@ public class CmntyController {
      * @param user
      * @return map
      */
-    @RequestMapping(value="/front/cmnty/deleteCmntyMbr.do")
+    @RequestMapping(value="/front/mypage/cmnty/deleteCmntyMbr.do")
     @ResponseBody
     public Map<String,Object> deleteCmntyMbr(CmntyVo cmntyVo, @UserInfo UserVo user){
         Map<String, Object> resultMap = new HashMap<>();
@@ -142,7 +143,7 @@ public class CmntyController {
      * @param user
      * @return map
      */
-    @RequestMapping(value="/front/cmnty/updateCmntyMbr.do")
+    @RequestMapping(value="/front/mypage/cmnty/updateCmntyMbr.do")
     @ResponseBody
     public Map<String,Object> updateCmntyMbr(CmntyVo cmntyVo, @UserInfo UserVo user){
         Map<String, Object> resultMap = new HashMap<>();
@@ -168,7 +169,7 @@ public class CmntyController {
      * @param model
      * @return string
      */
-    @RequestMapping(value="/front/cmnty/cmntyForm.html")
+    @RequestMapping(value="/front/mypage/cmnty/cmntyForm.html")
     public String cmntyForm(CmntyVo cmntyVo, Model model, @UserInfo UserVo user) throws Exception {
         cmntyVo.setUser(user);
         model.addAttribute("cmntyVo",cmntyVo);
@@ -186,7 +187,7 @@ public class CmntyController {
      * @param user
      * @return map
      */
-    @RequestMapping(value="/front/cmnty/insertCmnty.do")
+    @RequestMapping(value="/front/mypage/cmnty/insertCmnty.do")
     @ResponseBody
     public Map<String,Object> insertCmnty(CmntyVo cmntyVo, @UserInfo UserVo user){
         Map<String, Object> resultMap = new HashMap<>();
@@ -216,7 +217,7 @@ public class CmntyController {
      * @param user
      * @return string
      */
-    @RequestMapping(value="/front/cmnty/cmntyPstList.html")
+    @RequestMapping(value="/front/mypage/cmnty/cmntyPstList.html")
     public String cmntyPstList(CmntyBbsVo paramVo, Model model, @UserInfo UserVo user){
         paramVo.setUser(user);
         //환경동아리 정보 & 회원 상태 값
@@ -270,7 +271,7 @@ public class CmntyController {
      * @return string
      * @throws Exception
      */
-    @RequestMapping(value="/front/cmnty/cmntySetForm.html")
+    @RequestMapping(value="/front/mypage/cmnty/cmntySetForm.html")
     public String cmntySetForm(CmntyVo paramVo, Model model, @UserInfo UserVo user) throws Exception {
         paramVo.setUser(user);
         CmntyVo cmntyInfo = cmntyService.selectCmntyInfo(paramVo);
@@ -290,7 +291,7 @@ public class CmntyController {
      * @param user
      * @return map
      */
-    @RequestMapping(value="/front/cmnty/deleteCmnty.do")
+    @RequestMapping(value="/front/mypage/cmnty/deleteCmnty.do")
     @ResponseBody
     public Map<String,Object> deleteCmnty(CmntyVo cmntyVo, @UserInfo UserVo user){
         Map<String, Object> resultMap = new HashMap<>();
@@ -328,7 +329,7 @@ public class CmntyController {
      * @param user
      * @return map
      */
-    @RequestMapping(value="/front/cmnty/updateCmnty.do")
+    @RequestMapping(value="/front/mypage/cmnty/updateCmnty.do")
     @ResponseBody
     public Map<String,Object> updateCmnty(CmntyVo cmntyVo, @UserInfo UserVo user){
         Map<String, Object> resultMap = new HashMap<>();
@@ -358,7 +359,7 @@ public class CmntyController {
      * @param user
      * @return string
      */
-    @RequestMapping(value = "/front/cmnty/cmntyMbrList.html")
+    @RequestMapping(value = "/front/mypage/cmnty/cmntyMbrList.html")
     public String cmntyMbrList(CmntyMbrVo paramVo, Model model, @UserInfo UserVo user){
         CmntyVo cmntyVo = new CmntyVo();
         cmntyVo.setUser(user);
@@ -382,7 +383,7 @@ public class CmntyController {
      * @param userNm
      * @return map
      */
-    @RequestMapping(value="/front/cmnty/selectMbr.do")
+    @RequestMapping(value="/front/mypage/cmnty/selectMbr.do")
     @ResponseBody
     public Map<String,Object> selectMbr(String userNm, String cmntyid){
         Map<String, Object> result = new HashMap<>();
@@ -406,7 +407,7 @@ public class CmntyController {
      * @param user
      * @return map
      */
-    @RequestMapping(value="/front/cmnty/joinCmntyMbr.do")
+    @RequestMapping(value="/front/mypage/cmnty/joinCmntyMbr.do")
     @ResponseBody
     public Map<String,Object> joinCmntyMbr(CmntyVo cmntyVo, @UserInfo UserVo user){
         Map<String, Object> resultMap = new HashMap<>();
@@ -439,7 +440,7 @@ public class CmntyController {
      * @param user
      * @return string
      */
-    @RequestMapping(value = "/front/cmnty/cmntyMbrWaitList.html")
+    @RequestMapping(value = "/front/mypage/cmnty/cmntyMbrWaitList.html")
     public String cmntyMbrWaitList(CmntyMbrVo paramVo, Model model, @UserInfo UserVo user){
         CmntyVo cmntyVo = new CmntyVo();
         cmntyVo.setUser(user);
@@ -468,7 +469,7 @@ public class CmntyController {
      * @return string
      * @throws Exception
      */
-    @RequestMapping(value = "/front/cmnty/cmntyPstView.html")
+    @RequestMapping(value = "/front/mypage/cmnty/cmntyPstView.html")
     public String cmntyPstView(Integer cmntyid, CmntyPstVo paramVo, Model model, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         paramVo.setUser(user);
@@ -511,7 +512,7 @@ public class CmntyController {
      * @param model
      * @return string
      */
-    @RequestMapping(value = "/front/cmnty/cmntyPstInsertForm.html")
+    @RequestMapping(value = "/front/mypage/cmnty/cmntyPstInsertForm.html")
     public String cmntyPstInsertForm(Integer cmntyid, CmntyPstVo paramVo, Model model) {
         //게시판 정보 조회
         CmntyBbsVo cmntyBbsVo = new CmntyBbsVo();
@@ -551,7 +552,7 @@ public class CmntyController {
      * @return map
      * @throws Exception
      */
-    @RequestMapping(value = "/front/cmnty/insertCmntyPst.do")
+    @RequestMapping(value = "/front/mypage/cmnty/insertCmntyPst.do")
     @ResponseBody
     public Map<String, Object> insertCmntyPst(@Valid CmntyPstVo paramVo, @UserInfo UserVo user){
         Map<String, Object> resultMap = new HashMap<>();
@@ -582,7 +583,7 @@ public class CmntyController {
      * @return string
      * @throws Exception
      */
-    @RequestMapping(value = "/front/cmnty/cmntyPstUpdateForm.html")
+    @RequestMapping(value = "/front/mypage/cmnty/cmntyPstUpdateForm.html")
     public String cmntyPstUpdateForm(Integer cmntyid, CmntyPstVo paramVo, Model model, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         paramVo.setUser(user);
@@ -627,7 +628,7 @@ public class CmntyController {
      * @param user
      * @return map
      */
-    @RequestMapping(value = "/front/cmnty/updateCmntyPst.do")
+    @RequestMapping(value = "/front/mypage/cmnty/updateCmntyPst.do")
     @ResponseBody
     public Map<String, Object> updateCmntyPst(@Valid CmntyPstVo paramVo, @UserInfo UserVo user){
         Map<String, Object> resultMap = new HashMap<>();
@@ -655,7 +656,7 @@ public class CmntyController {
      * @param user
      * @return map
      */
-    @RequestMapping(value = "/front/cmnty/insertCmnt.do")
+    @RequestMapping(value = "/front/mypage/cmnty/insertCmnt.do")
     @ResponseBody
     public Map<String, Object> insertCmnt(@Valid CmntyCmntVo paramVo, @UserInfo UserVo user){
         Map<String, Object> resultMap = new HashMap<>();
@@ -684,7 +685,7 @@ public class CmntyController {
      * @param user
      * @return map
      */
-    @RequestMapping(value = "/front/cmnty/updateCmnt.do")
+    @RequestMapping(value = "/front/mypage/cmnty/updateCmnt.do")
     @ResponseBody
     public Map<String, Object> updateCmnt(@Valid CmntyCmntVo paramVo, @UserInfo UserVo user){
         Map<String, Object> resultMap = new HashMap<>();
@@ -712,7 +713,7 @@ public class CmntyController {
      * @param pageNumber
      * @return map
      */
-    @RequestMapping(value="/front/cmnty/selectCmntReplyList.do")
+    @RequestMapping(value="/front/mypage/cmnty/selectCmntReplyList.do")
     @ResponseBody
     public Map<String, Object> selectCmntReplyList(Integer pstid, Integer parntsCmntid, Integer rowPerPage, Integer pageNumber){
         Map<String, Object> resultMap = new HashMap<>();
