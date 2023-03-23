@@ -4,18 +4,21 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
+
+import javax.annotation.Resource;
 
 import org.json.JSONObject;
 import org.json.XML;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
+import com.kbrainc.plum.front.member.model.MemberVo;
+import com.kbrainc.plum.front.myInfo.model.MyInfoDao;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 /**
  * 
@@ -44,6 +47,9 @@ public class ApiServiceImpl extends PlumAbstractServiceImpl implements ApiServic
     
     @Value("${hrfco.go.kr.serviceKey}")
     private String hrfcoServiceKey;
+    
+    @Resource(name = "front.myInfoDao")
+    private MyInfoDao myInfoDao;
     
     private final RestTemplate restTemplate = new RestTemplate();
     
@@ -325,6 +331,28 @@ public class ApiServiceImpl extends PlumAbstractServiceImpl implements ApiServic
         Map<String, Object> response = new ObjectMapper().readValue(responseEntityStr.getBody(), Map.class);
            
         return response;
+    }
+    
+    /**
+    *
+    * 맞춤 환경정보 저장
+    *
+    * @Title : insertEnvfld
+    * @Description : 
+    * @param memberVo MemberVo객체
+    * @return int insert 로우수
+    * @throws Exception 예외
+    */
+    @Override
+    @Transactional
+    public int insertEnvfld(MemberVo memberVo) throws Exception {
+        int retVal = 0;
+        int userid = memberVo.getUserid();
+        
+        retVal += myInfoDao.deleteEnvfld(memberVo);
+        retVal += myInfoDao.insertEnvfld(memberVo);
+        
+        return retVal;
     }
     
 }

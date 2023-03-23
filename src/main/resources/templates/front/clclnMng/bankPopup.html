@@ -1,0 +1,78 @@
+<form id="saveForm">
+    <input type="hidden" name="aplyid" id="aplyid" th:value="${aplyid}"/>
+    <!-- layerpopup -->
+    <div class="layer-header">
+        <strong class="tit">뱅크다 거래 불러오기</strong>
+        <button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
+    </div>
+    <div class="layer-content">
+        
+
+        <div class="table-row table-row-mo">
+            <table>
+                <caption>뱅크다 거래 불러오기 - 거래기간</caption>
+                <colgroup>
+                    <col style="width:140px;">
+                    <col>
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <th scope="row">거래기간<i class="ast" title="필수입력">*</i></th>
+                        <td>
+                            <div class="form-input">
+                                <input type="date" title="시작일">
+                                <div class="bul">~</div>
+                                <input type="date" title="종료일">
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="ac mt10">거래기간을 입력 후 불러오기를 선택하면 뱅크다 거래정보 내역이 일괄 등록됩니다.</p>
+    </div>
+    <div class="layer-footer">
+        <div class="btn-wrap">
+            <div class="center">
+                <button type="button" class="btn-medium btn-gray" data-layer-close>닫기</button>
+                <button type="button" class="btn-medium btn-green">불러오기</button>
+            </div>
+        </div>
+    </div>
+    <!-- //layerpopup -->
+</form>
+<style>
+    .form-msg { color : red; }
+</style>   
+<script th:inline="javascript">
+$(function () {
+	
+});
+
+function save() {
+    if(!($("#saveForm").valid())) return;
+    if(!confirm("저장 하시겠습니까?")){return;}
+    
+    $("#amt").val(removeComma($("#amt").val()));
+    var data =  $("#saveForm").serialize();
+    $.ajax({
+        url : "/front/clclnMng/saveClclnDsctn.do",
+        type: 'POST',
+        cache : false,
+        dataType: 'json',
+        data : data,
+        success : function (data){
+            if(data.result=="success"){
+                alert(data.msg);
+                $('.btn-layer-close').trigger('click');
+                listPage.selectList();
+            }else{
+                alert(data.msg);
+            }
+        },
+        error : function (error){
+        }
+    });
+}
+
+</script>

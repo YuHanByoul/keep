@@ -1,0 +1,359 @@
+<form id="saveForm">
+    <input type="hidden" name="dsctnid" id="dsctnid" th:value="${detail.dsctnid == null ? 0 : detail.dsctnid}"/>
+    <input type="hidden" name="aplyid" id="aplyid" th:value="${aplyid}"/>
+    <input type="hidden" name="seCd" id="seCd" th:value="${seCd}"/>
+    <!-- layerpopup -->
+    <div class="layer-header">
+        <strong class="tit"><th:block th:text="${seCd == '210101' ? '입금등록' : '집행등록'}"/></strong>
+        <button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
+    </div>
+    <div class="layer-content">
+        
+        <div class="table-caption mt0">
+            <div class="right">
+                <p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
+            </div>
+        </div>
+
+        <div class="table-row table-row-mo">
+            <table>
+                <caption>집행등록 - 이용구분, 일자, 금액(원), 집행처, 항목, 세부항목, 내역, 사용목적, 증빙서종류, 증빙서류</caption>
+                <colgroup>
+                    <col style="width:140px;">
+                    <col>
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <th scope="row">이용구분<i class="ast" title="필수입력">*</i></th>
+                        <td>
+                            <span kattr:radio_code="utztnSecd" grpCd="236" th:attr="selectedCd=${detail.utztnSecd}"/><p class="form-msg"></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">일자<i class="ast" title="필수입력">*</i></th>
+                        <td>
+                            <input type="date" title="일자" id="de" name="de" th:value="${detail.de}"><p class="form-msg"></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">금액(원)<i class="ast" title="필수입력">*</i></th>
+                        <td>
+                            <input type="text" title="금액(원)" id="amt" name="amt" th:value="${detail.amt}" class="ar" placeholder="금액(원)을 입력해주세요."><p class="form-msg"></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">집행처<i class="ast" title="필수입력">*</i></th>
+                        <td>
+                            <input type="text" title="집행처" id="excutTrgt" name="excutTrgt" th:value="${detail.excutTrgt}" placeholder="집행처를 입력해주세요."><p class="form-msg"></p>
+                        </td>
+                    </tr>
+                    <tr th:if="${seCd == '210102'}">
+                        <th scope="row">항목<i class="ast" title="필수입력">*</i></th>
+                        <td>
+                            <select title="항목" id="artclUpperCd" name="artclUpperCd">
+                                <option value="선택">- 선택 -</option>
+                            </select>
+                            <p class="form-msg"></p>
+                        </td>
+                    </tr>
+                    <tr th:if="${seCd == '210102'}">
+                        <th scope="row">세부항목<i class="ast" title="필수입력">*</i></th>
+                        <td>
+                            <select title="항목" id="artclCd" name="artclCd">
+                                <option value="선택">- 선택 -</option>
+                            </select>
+                            <p class="form-msg"></p>
+                        </td>
+                    </tr>
+                    <tr th:if="${seCd == '210101'}">
+                        <th scope="row">항목<i class="ast" title="필수입력">*</i></th>
+                        <td>
+                            <span kattr:select_code="dpstSecd" th:attr="selectedCd=${detail.dpstSecd}" grpCd="214" firstOptTxt="- 선택 -" addClass="input-sm"/>
+                            <p class="form-msg"></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">내역</th>
+                        <td>
+                            <input type="text" title="내역" id="dsctn" name="dsctn" th:value="${detail.dsctn}" placeholder="내역을 입력해주세요.">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">사용목적</th>
+                        <td>
+                            <textarea title="사용목적" id="usePrps" name="usePrps"><th:block th:text="${detail.usePrps}"/></textarea>
+                            <div class="desc ar size"><span>0</span> / 1,000자</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">증빙서종류</th>
+                        <td>
+                            <span kattr:select_code="prufKndCd" th:attr="selectedCd=${detail.prufKndCd}" grpCd="237" firstOptTxt="- 선택 -" addClass="input-sm"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">증빙서류<i class="ast" title="필수입력">*</i></th>
+                        <td>
+                            <div class="form-input-file">
+                                <label class="form-input">
+                                    <input type="file" id="multiFileInput" name="files" class="blind" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부" maxcount="1">
+                                    <span class="btn-medium btn-gray">파일선택</span>
+                                </label>
+                                <div class="upload-response">
+	                                <div id="multipleFileUploadError"></div>
+	                                <div id="multipleFileUploadSuccess">
+	                                <th:block th:if="${fileList != null}">
+	                                    <div th:each="item : ${fileList}" th:id="${item.fileid}" class="col-auto">
+	                                        <ul th:if="${item.orginlFileNm != null}">
+	                                            <li th:fileid='${item.fileid}'
+	                                                th:fileIdntfcKey="${item.fileIdntfcKey}"
+	                                                th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))"
+	                                                class='label label-inverse'
+	                                                th:data_ext="${#strings.replace(item.fileExtsn, '.', '')}">
+	                                                <th:block th:text="${item.orginlFileNm}" />&nbsp;&nbsp; 
+	                                                <a th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="fn_deleteFileList(this.name, this.dataset.idntfcKey)" class='text-white'> 
+	                                                <th:block th:text="X"></th:block></a>
+	                                            </li>
+	                                        </ul>
+	                                    </div>
+	                                </th:block>
+	                                </div>
+	                            </div>
+<!-- 	                            <input type="hidden" id="atchFilegrpid" name="atchFilegrpid" th:value="${(detail.atchFilegrpid == '' or detail.atchFilegrpid == null) ? 0 : detail.atchFilegrpid}"/> -->
+	                            <input type="hidden" id="atchFilegrpid" name="atchFilegrpid" th:value="${(detail.atchFilegrpid == '' or detail.atchFilegrpid == null) ? 0 : detail.atchFilegrpid}"/>
+	                            <p class="feedback"></p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="layer-footer">
+        <div class="btn-wrap">
+            <div class="center">
+                <button type="button" class="btn-medium btn-gray" data-layer-close>닫기</button>
+                <button type="button" class="btn-medium btn-green" onclick="save(); return false;">저장</button>
+            </div>
+        </div>
+    </div>
+    <!-- //layerpopup -->
+</form>
+<style>
+    .form-msg { color : red; }
+</style>   
+<script th:inline="javascript">
+var upprCd = "";
+var atchfileCnt = 1;
+var uploadFileCnt = 0;
+/*<![CDATA[*/
+var fldCd = /*[[${fldCd}]]*/null;
+var seCd = /*[[${seCd}]]*/null;
+var artclUpperCd = /*[[${detail.artclUpperCd}]]*/null;
+var artclCd = /*[[${detail.artclCd}]]*/null;
+/*]]>*/
+/* 커스텀태그(공통코드) : 교육주제 */
+var getCodeListUrl = "/mng/customAttr/grpCodeList.do"
+
+$(document).on("change", "select[name=artclUpperCd]", function(){
+	fn_getNextDepthList("artclCd", $(this).val(), "");
+});
+   
+$(function () {
+	if (fldCd == "173106") {
+        upprCd = "218300";
+    } else if (fldCd == "173105") {
+        upprCd = "218400";
+    } else if (fldCd == "173104") {
+        upprCd = "218200";
+    } else if (fldCd == "173107") {
+        upprCd = "218500";
+    } else {
+        upprCd = "218100";
+    }
+	fn_getNextDepthList("artclUpperCd", upprCd, artclUpperCd == null ? "" : artclUpperCd);
+	
+	if (artclCd != null && seCd == "210102") {
+		setTimeout(function(){
+			fn_getNextDepthList("artclCd", artclUpperCd, artclCd);
+	    }, 100);		
+	}
+	
+	var validator= $("#saveForm").validate({
+	    rules    : { 
+	    	utztnSecd : { required: true }
+	    	,de : { required: true }
+	    	,amt : { required: true, number: true }
+	    	,excutTrgt : { required: true, maxlength: 100 }
+	    	,artclUpperCd : { required: true }
+	    	,artclCd : { required: true }
+// 	    	,atchFilegrpid : { required: true }
+	    }
+	    , messages : { 
+	    	utztnSecd : { required:"이용구분을 선택해 주십시오." } 
+	    	,de : { required:"일자를 선택해 주십시오." } 
+	    	,amt : { required:"금액을 입력해 주십시오.", number: "숫자만 입력가능합니다." } 
+	    	,excutTrgt : { required:"이용구분을 선택해 주십시오.", maxlength: "최대 100자를 넘을수 없습니다." } 
+	    	,artclUpperCd : { required:"항목을 선택해 주십시오." } 
+	    	,artclCd : { required:"세부항목을 선택해 주십시오." } 
+// 	    	,atchFilegrpid : { required:"첨부파일을 등록해 주십시오." } 
+	    }
+	});
+	
+	$("#amt").on("keyup", function(){
+        $(this).val($(this).val().replace(/[^0-9]/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,'));
+    });
+});
+
+function fn_getNextDepthList(targetId, upprcd, selected){
+    $.ajax({
+        url : getCodeListUrl,
+        type: 'GET',
+        cache : false,
+        dataType: 'json',
+        data: {
+              grpcd  : '218'
+            , upprcd : upprcd
+        }, 
+        success : function (data){
+            writeHtml(targetId, data, selected);
+        },
+        error : function (error){
+        }
+    });
+}
+
+function writeHtml(targetId, list, selected){
+	$("#"+targetId).find("option").remove();
+    var html ="";
+        html +="    <option value='' selected>- 선택 -</option>";
+       
+    for(var i=0 ; i < list.length;i++){
+        if(list[i].cd == selected){
+            html +="    <option value="+list[i].cd+" selected>"+ list[i].cdNm+ "</option>";
+        } else {
+            html +="    <option value="+list[i].cd+">"+ list[i].cdNm+ "</option>";
+        }
+    }
+    $("#"+targetId).html(html);
+}
+
+function save() {
+    if(!($("#saveForm").valid())) return;
+    if (Number($("#atchFilegrpid").val()) == 0) {
+        alert("첨부파일을 등록 하십시오.");
+        return;
+    }
+    if(!confirm("저장 하시겠습니까?")){return;}
+    
+    $("#amt").val(removeComma($("#amt").val()));
+    var data =  $("#saveForm").serialize();
+    $.ajax({
+        url : "/front/clclnMng/saveClclnDsctn.do",
+        type: 'POST',
+        cache : false,
+        dataType: 'json',
+        data : data,
+        success : function (data){
+            if(data.result=="success"){
+                alert(data.msg);
+                $('.btn-layer-close').trigger('click');
+                listPage.init();
+            }else{
+                alert(data.msg);
+            }
+        },
+        error : function (error){
+        }
+    });
+}
+
+//파일업로드
+$('#multiFileInput').on("change", function(event) {
+    var objFile = document.querySelector('#multiFileInput');
+    var formData = new FormData();
+    var content = "";
+
+    if (Number($("#atchFilegrpid").val()) > 0) {
+    	alert("첨부파일은 1개만 등록 가능합니다.");
+    	return;
+    }
+    
+    for( i = 0 ; i < objFile.files.length ; i++) {
+        if(uploadFileCnt >= atchfileCnt){
+            alert("첨부파일은  "+atchfileCnt+ " 개 까지 가능합니다." ); break;
+        } else {
+            formData.append("files", objFile.files[i]);
+            uploadFileCnt++;
+        }
+    }
+    
+    formData.append("filegrpid", $("#atchFilegrpid").val());
+    formData.append("filegrpNm", "clclnDsctn_file");
+
+    if(uploadFileCnt > 0){
+        $.ajax({
+            url : '/uploadMultipleFiles.do',
+            processData : false,
+            contentType : false,
+            data : formData,
+            type : 'POST',
+            success : function(response) {
+                if(response.result == 'fail'){
+                    alert(response.msg);
+                }else{
+                    if($("#atchFilegrpid").val()=='0' || $("#atchFilegrpid").val()==''  || $("#atchFilegrpid").val()==null){
+                        $("#atchFilegrpid").val( response[0].filegrpid );
+                    }
+
+                    for(i = 0 ;i < response.length; i++ ){
+                        content = '<ul>';
+                        content +=  '<li class="file-block" data_ext="'+response[i].fileExtsn.replace(".", '')+'" id="'+response[i].fileid+'"><span class="name">'+response[i].orginlFileNm
+                        content += '&nbsp;&nbsp;<a href="javascript:void(0)" onclick=uploadFileCnt--;fn_deleteFileList("'+response[i].fileid+'","'+response[i].fileIdntfcKey+'")>X</a></span></li>'
+                        content += '</ul>';
+                        $('#multipleFileUploadSuccess').append(content);
+                    }
+                }
+            }
+        });
+    }
+});
+
+// 파일삭제
+function fn_deleteFileList(fileid, fileIdntfcKey){
+    if(!confirm("파일을 삭제하시겠습니까?")){return;}
+    fn_deleteFile(fileid, fileIdntfcKey);
+    $("#"+fileid).remove();
+}
+
+// 파일삭제
+function fn_deleteFile(fileid, fileIdntfcKey){
+    var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey;
+    $.ajax({
+        url : deleteFileUrl,
+        type: 'GET',
+        cache : false,
+        dataType: 'json',
+        success : function (data){
+            if(data.result=="success"){
+                $("#"+fileid).remove();
+                $("#atchFilegrpid").val("0");
+                alert("파일삭제가 완료 되었습니다.");
+            }else{
+                alert("파일삭제중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+            }
+        },
+        error : function (error){
+        }
+    });
+}
+
+//콤마 제거
+function removeComma(value){
+    if (value == "" || value == null) {
+        return 0;               
+    }
+    value = value.replace(/[^\d]+/g, "");
+    return value; 
+}
+</script>

@@ -279,6 +279,15 @@ public interface MemberService {
      * @throws Exception 예외
      */
     public String checkJoinWithOnepassYn(MemberVo memberVo) throws Exception;
-    
+    /**
+     *  관심분야 코드 호출     
+     *
+     * @Title       : selectItrstfldCd 
+     * @Description : 관심분야 코드 호출
+     * @param Map<String,Object> 객체
+     * @return Map<String,Object> 
+     * @throws Exception 예외
+     */
+    public List<Map<String,Object>> selectItrstfldCd(Map<String,Object> paramMap) throws Exception;
     
 }

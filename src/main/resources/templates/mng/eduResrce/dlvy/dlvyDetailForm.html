@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/mng/mobileMainLayout" 
+>
+<body>
+<div layout:fragment="content">
+<link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
+
+<!-- Page-body start -->
+<div class="page-body">
+    <div class="card position-relative">
+        
+        <div class="card-block">
+            <ul class="desc-list">
+                <li class="border-0 p-0">
+                    <h5><strong>[[${lendAplyInfo.packageNm}]]</strong></h5>
+                    <dl class="align-items-center">
+                        <dt class="d-none">대여모집 :</dt>
+                        <dd>[[${lendAplyInfo.rcritNm}]] ▶  [[${lendAplyInfo.ordr}]] 차 [[${lendAplyInfo.qnty}]] 개</dd>
+                    </dl>
+                    <dl>
+                        <dt class="d-none">대여기간 :</dt>
+                        <dd>[[${lendAplyInfo.lendBgngDe}]]  ~  [[${lendAplyInfo.lendEndDe}]]</dd>
+                    </dl>
+                    <dl>
+                        <dt class="d-none">출고지 :</dt>
+                        <dd>[[${lendAplyInfo.dlvyAddr}]] [[${lendAplyInfo.dlvyAddrDtl}]] ([[${lendAplyInfo.instNm}]])</dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+        
+    </div>
+
+    <div class="card">
+        <div class="card-header p-b-0">
+            <h3 class="sub-title"><strong>꾸러미개체 배정</strong></h3>
+        </div>
+        <div class="card-block-small pt-0">
+        
+            <div class="mb-3">
+                <div class="form-label col-sm-12 col-form-label py-0"><strong>[[${lendAplyInfo.rcritNm}]] ▶  [[${lendAplyInfo.ordr}]] 차 [[${lendAplyInfo.qnty}]] 개</strong></div>
+
+                
+                <div class="row align-items-end mt-2">
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="checkAndOpenSelectPop('1')"><i class="icofont icofont-check-circled"></i>개체선택</button>
+                    </div>
+                    <div class="col ps-0" id="packageSpan1" ></div>
+                    <input type="hidden" id="packageindvd1" name="packageindvd1" value="0">
+                </div>
+                
+                <div class="row align-items-end mt-2" th:if ="${lendAplyInfo.qnty == 2}">
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="checkAndOpenSelectPop('2')"><i class="icofont icofont-check-circled"></i>개체선택</button>
+                    </div>
+                    <div class="col ps-0" id="packageSpan2" ></div>
+                    <input type="hidden" id="packageindvd2" name="packageindvd2" value="0">
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <form id="packageindvdDlvyFrm">
+    <div class="card">
+        <div class="card-header p-b-0">
+          <h3 class="sub-title border-0 mb-0"><strong>택배사</strong></h3>
+          <th:block kattr:select_code="hdryInstCd" grpCd="235" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true"></th:block>
+        </div>
+        <div class="card-header p-b-0">
+            <h3 class="sub-title border-0 mb-0"><strong>송장번호</strong></h3>
+        </div>
+        <div class="card-block-small pt-0">
+            <input type="text" class="form-control form-control-sm" name="invcnoDlivy" id="invcnoDlivy" placeholder="">
+        </div>
+    </div>
+    </form>
+
+    <div class="card-block-small row justify-content-between">
+        <div class="col-auto">
+            <button type="button" class="btn btn-disabled" onclick="javascript:location.href='/mng/eduResrce/dlvyList.html'" >취소</button>
+        </div>
+        <div class="col-auto">
+            <button type="button" class="btn btn-primary" onclick="saveDlvy()" >출고 확인</button>
+        </div>
+    </div>
+</div>
+<!-- Page-body end -->
+
+<!--모달 팝업  -->
+<div class="modal fade" id="lendPackageindvdModal"  data-bs-backdrop="static"></div>
+<script type="text/javascript" src="/js/validator/jquery.validate.js"></script>    
+<script type="text/javascript" src="/js/validator/jquery.validate.add.js"></script>    
+<script type="text/javascript" src="/js/validator/jquery.validate.setting.js"></script>
+<script th:inline="javascript">
+	/*<![CDATA[*/ 
+	var lendAplyInfo = /*[[${lendAplyInfo}]]*/null; 
+	/*]]>*/
+    var lendModal ;
+    var modalUrl = "/mng/eduResrce/selectPackageindvdPopup.html"
+        
+    $(function(){
+        $("#mobile-btn-back").html("<a class='btn-back' href='/mng/eduResrce/dlvyList.html'><i class='fa fa-angle-left'></i></a>");
+    });
+    
+    checkAndOpenSelectPop=(ordr)=>{
+    	var PackNum = Number($("#packageindvd"+ordr).val());
+    	if(PackNum != null && PackNum > 0){
+        	alert("이미 선택된 꾸러미 개체가 있습니다.");
+        	return;
+        }
+    	openPackageindvdModal(ordr);
+    }
+    openPackageindvdModal=(ordr)=>{
+        $("#lendPackageindvdModal").load(modalUrl+"?ordr="+ordr+"&packageid="+lendAplyInfo.packageid, function(response, status, xhr) {
+            if (status == "success") {
+                lendModal = new bootstrap.Modal($('#lendPackageindvdModal'));
+                lendModal.show();
+            }
+        });
+    }
+    removePackageIndvd=(ordr)=>{
+    	$("#packageindvd"+ordr).val("0");
+    	$("#packOrd"+ordr).remove();
+    }
+    
+    var validator= $("#packageindvdDlvyFrm").validate({
+        onsubmit: false,
+        rules: {
+        	 hdryInstCd  : { required: true , maxlength: 50 }
+        	,invcnoDlivy : { required: true , maxlength: 50 }
+        },
+        messages: {
+        	 hdryInstCd  : { required: "택배사를 선택해주십시오" , maxlength: 50 }
+            ,invcnoDlivy : { required: "송장번호를 입력해주십시오" , maxlength: 50 }
+        }
+    })
+
+    function saveDlvy(){
+    	var packId1 = $("#packageindvd1").val();
+    	var idArr = [];
+        if(packId1 <= 0){
+            alert("꾸러미 개체를 선택해주십시오.");
+            return;
+        }else{
+        	idArr.push(packId1);
+        }
+        if(Number(lendAplyInfo.qnty) > 1){
+            var packId2 = $("#packageindvd2").val();
+	        if(packId2 <= 0){
+	            alert("꾸러미 개체를 선택해주십시오.");
+	            return;
+	        }else{
+	        	idArr.push(packId2);
+	        }
+        }
+        
+        //if(!($("#packageindvdDlvyFrm").valid())) return;
+        
+        var hdryInstCd =$("#hdryInstCd").val();
+        var invcnoDlivy =$("#invcnoDlivy").val();
+        
+        if((hdryInstCd != null && hdryInstCd != "") ||  (invcnoDlivy != null && invcnoDlivy != "")){
+        	if(!($("#packageindvdDlvyFrm").valid())) return;
+        }
+        
+        if(!confirm("출고 처리 하시겠습니까?"))return;
+        
+        var params = {
+                aplyid:lendAplyInfo.aplyid
+                ,rndid:lendAplyInfo.rndid
+                ,packageindvdids:idArr.join(",")
+                ,dlvySttsCd : "230102"
+                ,packSttsCd:"216102" //꾸러미 출고 상태값
+                ,hdryInstCd : $("#packageindvdDlvyFrm #hdryInstCd").val()
+                ,invcnoDlivy : $("#packageindvdDlvyFrm #invcnoDlivy").val()
+        }
+
+        if(displayWorkProgress()){
+            $.ajax({
+                url : "/mng/eduResrce/insertPackageindvdDlvy.do",
+                type: 'POST',
+                cache : false,
+                dataType: 'json',
+                data : params,
+                success : function (data){
+                    if(data.result=="success"){
+                        alert(data.msg);
+                        location.href="/mng/eduResrce/dlvyList.html";
+                    }else{
+                        alert(data.msg);
+                    }
+                    closeWorkProgress();
+                }
+            });
+        }
+    }
+  </script>
+</div> 
+</body>
+</html>

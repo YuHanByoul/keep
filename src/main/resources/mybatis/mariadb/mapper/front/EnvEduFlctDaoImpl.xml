@@ -28,8 +28,6 @@
                     , A.HMPG AS HMPG 
                     , A.ADDR 
                     , A.ADDR_DTL 
-                    , A.ADDR_LAT 
-                    , A.ADDR_LOT 
                     , NULL AS EDU_NOPE
                     , NULL AS PRGRM_TRGT
                     , NULL AS PRGRM_SJCT
@@ -52,8 +50,6 @@
                     , C.EXTNL_URL AS HMPG 
                     , C.ADDR 
                     , C.ADDR_DTL 
-                    , C.ADDR_LAT 
-                    , C.ADDR_LOT 
                     , NULL AS EDU_NOPE
                     , NULL AS PRGRM_TRGT
                     , NULL AS PRGRM_SJCT
@@ -74,8 +70,6 @@
                     , NULL AS HMPG 
                     , F.ADDR 
                     , F.ADDR_DTL 
-                    , F.ADDR_LAT 
-                    , F.ADDR_LOT 
                     , D.EDU_NOPE 
                     , GROUP_CONCAT(DISTINCT H.CD_NM ORDER BY H.CD SEPARATOR ', ') AS PRGRM_TRGT
                     , GROUP_CONCAT(DISTINCT J.CD_NM ORDER BY J.CD SEPARATOR ', ') AS PRGRM_SJCT
@@ -103,8 +97,6 @@
                     , NULL AS HMPG 
                     , M.ADDR 
                     , M.ADDR_DTL 
-                    , M.ADDR_LAT 
-                    , M.ADDR_LOT 
                     , K.EDU_NOPE 
                     , GROUP_CONCAT(DISTINCT O.CD_NM ORDER BY O.CD SEPARATOR ', ') AS PRGRM_TRGT
                     , GROUP_CONCAT(DISTINCT Q.CD_NM ORDER BY Q.CD SEPARATOR ', ') AS PRGRM_SJCT
@@ -119,9 +111,55 @@
                     LEFT JOIN TB_CMM_CD Q ON P.CLSF_CD = Q.CD
                 WHERE K.USE_YN = 'Y'
                 GROUP BY K.PRGRMID 
+                UNION ALL 
+                SELECT 
+                    R.PRGRMID 
+                    , '프로그램' AS TYPE
+                    , NULL AS CATEGORY_CD
+                    , '우수 환경교육 프로그램' AS CATEGORY_NM
+                    , R.INSTID 
+                    , V.INST_NM 
+                    , R.PRGRM_NM 
+                    , NULL AS TELNO 
+                    , NULL AS HMPG
+                    , V.ADDR
+                    , V.ADDR_DTL 
+                    , S.EDU_NOPE 
+                    , CASE 
+                        WHEN S.WHOL_AGE = 'Y' THEN '전체 연령'
+                        ELSE 
+                            CONCAT_WS(',', 
+                                CASE 
+                                    WHEN INFNT = 'Y' THEN '유아'
+                                END,
+                                CASE 
+                                    WHEN SCHBOY = 'Y' THEN '초등학생'
+                                END,
+                                CASE 
+                                    WHEN MSKLSD = 'Y' THEN '중학생'
+                                END,
+                                CASE 
+                                    WHEN HGSCHST = 'Y' THEN '고등학생'
+                                END,
+                                CASE 
+                                    WHEN ADULT = 'Y' THEN '성인'
+                                END
+                            )
+                    END AS PRGRM_TRGT
+                    , GROUP_CONCAT(DISTINCT U.CD_NM ORDER BY U.CD SEPARATOR ', ') AS PRGRM_SJCT
+                    , 5 AS ORDR
+                    , R.REG_DT
+                FROM TB_ASS_PRGRM R
+                    LEFT JOIN TB_ASS_PRGRM_DSTNCTN S ON R.PRGRMID = S.PRGRMID
+                    LEFT JOIN TB_ASS_PRGRM_EDU_SBJCT T ON R.PRGRMID = T.PRGRMID 
+                    LEFT JOIN TB_CMM_CD U ON T.EDU_SBJCT_CD = U.CD
+                    LEFT JOIN TB_CMM_INST V ON R.INSTID = V.INSTID 
+                WHERE STTS_CD = '111111'
+                GROUP BY R.PRGRMID 
             ) DL
             WHERE 
-                DL.ADDR_LAT IS NOT NULL AND DL.ADDR_LOT IS NOT NULL
+                DL.ADDR IS NOT NULL
+                AND LENGTH(DL.ADDR) > 0
                 <if test="keyword != null and keyword != ''">
                     <if test="searchType == 1">
                         AND 
@@ -152,7 +190,7 @@
                 </if>
         ) A1
         WHERE 
-            A1.RN BETWEEN 1+(#{pagePerCnt} * (#{selectedPage} - 1)) AND 10+(#{pagePerCnt} * (#{selectedPage}-1))
+            A1.RN BETWEEN 1+(#{pagePerCnt} * (#{selectedPage} - 1)) AND #{pagePerCnt}+(#{pagePerCnt} * (#{selectedPage}-1))
     </select>
     
     <select id="nearbyEnveduFlctCount" parameterType="java.util.Map" resultType="int">
@@ -176,8 +214,6 @@
                     , A.HMPG AS HMPG 
                     , A.ADDR 
                     , A.ADDR_DTL 
-                    , A.ADDR_LAT 
-                    , A.ADDR_LOT 
                     , NULL AS EDU_NOPE
                     , NULL AS PRGRM_TRGT
                     , NULL AS PRGRM_SJCT
@@ -200,8 +236,6 @@
                     , C.EXTNL_URL AS HMPG 
                     , C.ADDR 
                     , C.ADDR_DTL 
-                    , C.ADDR_LAT 
-                    , C.ADDR_LOT 
                     , NULL AS EDU_NOPE
                     , NULL AS PRGRM_TRGT
                     , NULL AS PRGRM_SJCT
@@ -222,8 +256,6 @@
                     , NULL AS HMPG 
                     , F.ADDR 
                     , F.ADDR_DTL 
-                    , F.ADDR_LAT 
-                    , F.ADDR_LOT 
                     , D.EDU_NOPE 
                     , GROUP_CONCAT(DISTINCT H.CD_NM ORDER BY H.CD SEPARATOR ', ') AS PRGRM_TRGT
                     , GROUP_CONCAT(DISTINCT J.CD_NM ORDER BY J.CD SEPARATOR ', ') AS PRGRM_SJCT
@@ -251,8 +283,6 @@
                     , NULL AS HMPG 
                     , M.ADDR 
                     , M.ADDR_DTL 
-                    , M.ADDR_LAT 
-                    , M.ADDR_LOT 
                     , K.EDU_NOPE 
                     , GROUP_CONCAT(DISTINCT O.CD_NM ORDER BY O.CD SEPARATOR ', ') AS PRGRM_TRGT
                     , GROUP_CONCAT(DISTINCT Q.CD_NM ORDER BY Q.CD SEPARATOR ', ') AS PRGRM_SJCT
@@ -267,9 +297,55 @@
                     LEFT JOIN TB_CMM_CD Q ON P.CLSF_CD = Q.CD
                 WHERE K.USE_YN = 'Y'
                 GROUP BY K.PRGRMID 
+                UNION ALL 
+                SELECT 
+                    R.PRGRMID 
+                    , '프로그램' AS TYPE
+                    , NULL AS CATEGORY_CD
+                    , '우수 환경교육 프로그램' AS CATEGORY_NM
+                    , R.INSTID 
+                    , V.INST_NM 
+                    , R.PRGRM_NM 
+                    , NULL AS TELNO 
+                    , NULL AS HMPG
+                    , V.ADDR
+                    , V.ADDR_DTL 
+                    , S.EDU_NOPE 
+                    , CASE 
+                        WHEN S.WHOL_AGE = 'Y' THEN '전체 연령'
+                        ELSE 
+                            CONCAT_WS(',', 
+                                CASE 
+                                    WHEN INFNT = 'Y' THEN '유아'
+                                END,
+                                CASE 
+                                    WHEN SCHBOY = 'Y' THEN '초등학생'
+                                END,
+                                CASE 
+                                    WHEN MSKLSD = 'Y' THEN '중학생'
+                                END,
+                                CASE 
+                                    WHEN HGSCHST = 'Y' THEN '고등학생'
+                                END,
+                                CASE 
+                                    WHEN ADULT = 'Y' THEN '성인'
+                                END
+                            )
+                    END AS PRGRM_TRGT
+                    , GROUP_CONCAT(DISTINCT U.CD_NM ORDER BY U.CD SEPARATOR ', ') AS PRGRM_SJCT
+                    , 5 AS ORDR
+                    , R.REG_DT
+                FROM TB_ASS_PRGRM R
+                    LEFT JOIN TB_ASS_PRGRM_DSTNCTN S ON R.PRGRMID = S.PRGRMID
+                    LEFT JOIN TB_ASS_PRGRM_EDU_SBJCT T ON R.PRGRMID = T.PRGRMID 
+                    LEFT JOIN TB_CMM_CD U ON T.EDU_SBJCT_CD = U.CD
+                    LEFT JOIN TB_CMM_INST V ON R.INSTID = V.INSTID 
+                WHERE STTS_CD = '111111'
+                GROUP BY R.PRGRMID 
             ) DL
             WHERE 
-                DL.ADDR_LAT IS NOT NULL AND DL.ADDR_LOT IS NOT NULL
+                DL.ADDR IS NOT NULL 
+                AND LENGTH(DL.ADDR) > 0
                 <if test="keyword != null and keyword != ''">
                     <if test="searchType == 1">
                         AND 

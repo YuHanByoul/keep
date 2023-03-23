@@ -90,7 +90,7 @@
             <if test="inviteYn != 'Y'.toString()">
                 , #{user.userid} <!--USERID-->
             </if>
-            <if test="joinaprvmthdCd == '115100' and inviteYn != 'Y'.toString()">
+            <if test="joinaprvmthdCd == '115100' and inviteYn != 'Y'.toString() and esterYn != 'Y'.toString()">
                 , '118101' <!--MBR_STTS_CD-->
             </if>
             <if test="joinaprvmthdCd == '115101' and inviteYn != 'Y'.toString() or esterYn == 'Y'.toString()">
@@ -106,7 +106,7 @@
                 , '117101' <!--AUTHRT_CD-->
             </if>
             , NOW()     <!--JOIN_APLY_DT-->
-            <if test="joinaprvmthdCd == '115100' or inviteYn == 'Y'.toString()">
+            <if test="joinaprvmthdCd == '115100' and esterYn != 'Y'.toString() or inviteYn == 'Y'.toString()">
             , null      <!--JOIN_APRV_DT-->
             , null      <!--AUTZR_ID-->
             </if>
@@ -264,7 +264,7 @@
         ) VALUES (
             #{cmntyVo.cmntyid}
             , #{tmplatId}
-            , #{index}
+            , (SELECT IFNULL(MAX(A.ORDR)+1,0) FROM TB_CMT_CMNTY_CTGRY A WHERE A.CMNTYID = #{cmntyVo.cmntyid})
             , NOW()
             , #{cmntyVo.user.userid}
             , NOW()
@@ -641,7 +641,6 @@
     <!-- 환경동아리 댓글 목록 -->
     <select id="selectCmntList" resultType="front.CmntyCmntVo">
         /* CmntyDao.selectCmntList */
-        <include refid="PaginationMapper.header"/>
         SELECT
             A.CMNTID
             , A.PSTID
@@ -654,22 +653,26 @@
             , A.DEL_YN
             , A.MDFCN_DT
             , A.MDFRID
-            , A.REG_DT
+            , DATE_FORMAT(A.REG_DT, '%Y-%m-%d %H:%i:%s') REG_DT
             , A.RGTRID
             , (SELECT NM FROM TB_CMM_USER WHERE USERID = A.RGTRID) RGTR_NM
             , (SELECT ACNT FROM TB_CMM_USER WHERE USERID = A.RGTRID) RGTR_ACNT
-            , (SELECT COUNT(0) FROM TB_CMT_CMNTY_CMNT WHERE PSTID = #{pstid} AND PARNTS_CMNTID = A.CMNTID) CMNT_REPLY_CNT
+            , (SELECT COUNT(0) FROM TB_CMT_CMNTY_CMNT WHERE PSTID = #{pstid} AND PARNTS_CMNTID = A.PARNTS_CMNTID) CMNT_REPLY_CNT
         FROM TB_CMT_CMNTY_CMNT A
         WHERE A.PSTID = #{pstid}
-        <choose>
-            <when test="parntsCmntid != null and parntsCmntid != ''">
-                AND A.PARNTS_CMNTID = #{parntsCmntid}
-            </when>
-            <otherwise>
-                AND A.PARNTS_CMNTID IS NULL
-            </otherwise>
-        </choose>
-        <include refid="PaginationMapper.footer"/>
+    <choose>
+        <when test="parntsCmntid != null and parntsCmntid != ''">
+            AND A.PARNTS_CMNTID = #{parntsCmntid}
+        </when>
+        <otherwise>
+            AND A.PARNTS_CMNTID IS NULL
+        </otherwise>
+    </choose>
+        <if test="cmntid != null and cmntid != ''">
+            AND A.CMNTID = #{cmntid}
+        </if>
+        ORDER BY A.REG_DT DESC
+        LIMIT #{pageOffset}, #{rowPerPage}
     </select>
     <!-- 환경동아리 댓글 순서 수정 -->
 <!--    <update id="updateCmntOrdElse">-->
@@ -683,7 +686,10 @@
 <!--          AND SORTORDR >= #{sortordr}-->
 <!--    </update>-->
     <!-- 환경동아리 댓글 등록 -->
-    <insert id="insertCmnt">
+    <insert id="insertCmnt" useGeneratedKeys="true">
+        <selectKey resultType="int" keyProperty="cmntid" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
         /* CmntyDao.insertCmnt */
         INSERT INTO TB_CMT_CMNTY_CMNT (
             PSTID
@@ -725,7 +731,6 @@
         </when>
         <otherwise>
             , CN = #{cn}
-            , RLS_YN = #{rlsYn}
         </otherwise>
     </choose>
         WHERE CMNTID = #{cmntid}

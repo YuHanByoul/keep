@@ -162,6 +162,12 @@ public class LendVo extends ParentRequestVo {
     /** 등록용 대여 차시   */
     private List<LendRndVo> lendRndList ;
     
+    /** 차시 아이디 */
+    private Integer rndid;
+    
+    /** 차시 순서 */
+    private Integer ordr;
+    
     /** 삭제용   */
     private List<Integer> deleteIds ;
     

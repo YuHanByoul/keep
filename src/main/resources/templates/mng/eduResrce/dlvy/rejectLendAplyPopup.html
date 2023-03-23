@@ -1,0 +1,76 @@
+<!-- [팝업] 대여불가 사유 -->
+   <div class="modal-dialog modal-md" role="document">
+       <div class="modal-content type_2">
+           <div class="modal-header">
+               <h4 class="modal-title">대여불가 사유</h4>
+               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                   <span aria-hidden="true"></span>
+               </button>
+           </div>
+           <form id="rejectForm">
+           <div class="modal-body">
+               <div class="card m-b-10">
+                   <div class="card-block-small">
+                       <div class="mb-0 form-group row">
+                           <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="checkListReasonPopupReason"><strong>사유</strong></label>
+                           <div class="col-12">
+                               <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="Default textarea" id="rejectRsn" name="rejectRsn"></textarea>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+           </div>
+           </form>
+           <div class="modal-footer">
+               <button type="button" class="btn btn-primary" onclick="saveRejectStts()">확인</button>
+           </div>
+       </div>
+   </div>
+<!-- //[팝업] 대여불가 사유 -->
+<script th:inline="javascript">
+
+	var validator= $("#rejectForm").validate({
+	    onsubmit: false,
+	    rules: {
+	    	  rejectRsn      :   { required: true , maxlength: 500 }
+	      },
+	      messages: {
+	    	  rejectRsn      :   { required: "불가 사유를 입력해주십시오" , maxlength: 500 }
+	      }
+	})
+
+    saveRejectStts=()=>{
+    	if(!($("#rejectForm").valid())) return;
+
+        var aplyids = selectedItems.join(",");
+        var params = {
+                aplyids : aplyids
+               ,sttsCd : "231103"
+               ,rejectRsn : $("#rejectRsn").val()
+        }
+        
+        if(displayWorkProgress()){
+            $.ajax({
+                url : "/mng/lendAply/updateLendAplyStts.do",
+                type: 'POST',
+                cache : false,
+                dataType: 'json',
+                data : params,
+                success : function (data){
+                    if(data.result=="success"){
+                        alert(data.msg);
+                        gridHelper1.resetListContent();
+                        selectedItems = [];
+                        rejectlendAplyModal.hide();
+                    }else{
+                        alert(data.msg);
+                    }
+                    closeWorkProgress();
+                }
+            });
+        }
+
+
+		
+    }
+</script>

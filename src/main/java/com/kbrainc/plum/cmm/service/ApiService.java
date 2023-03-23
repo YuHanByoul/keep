@@ -3,8 +3,10 @@ package com.kbrainc.plum.cmm.service;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kbrainc.plum.front.member.model.MemberVo;
 
 /**
  * 
@@ -150,5 +152,17 @@ public interface ApiService {
     * @throws Exception 예외
     */
     public Map<String, Object> getChargerInfo(String zcode, String zscode) throws Exception;
+    
+    /**
+    *
+    * 맞춤 환경정보 저장
+    *
+    * @Title : insertEnvfld
+    * @Description : 
+    * @param memberVo MemberVo객체
+    * @return int insert 로우수
+    * @throws Exception 예외
+    */
+    public int insertEnvfld(MemberVo memberVo) throws Exception;
     
 }
