@@ -1,0 +1,87 @@
+ <div class="table-caption">
+     <div class="left">
+         <h3 class="sub-title">잔액/이자개요</h3>
+         <p>정산내역관리에서 등록한 집행금액, 입금금액(이자/캐시백/기타입금)을 등록한 내용으로 자동 계산됩니다.</p>
+     </div>
+ </div>
+
+ <div class="table-row table-row-mo">
+     <table>
+         <caption>잔액/이자개요 - 프로그램명, 지원금</caption>
+         <colgroup>
+             <col style="width:25%;">
+             <col>
+         </colgroup>
+         <tbody>
+             <tr>
+                 <th scope="row">프로그램명</th>
+                 <td><th:block th:text="${detail.prgrmNm}"/></td>
+             </tr>
+             <tr>
+                 <th scope="row">지원금</th>
+                 <td><th:block th:text="${#numbers.formatInteger(detail.totAmt, 0, 'COMMA')}" /></td>
+             </tr>
+         </tbody>
+     </table>
+ </div>
+
+ <div class="table-combi table-layout-auto table-combi-scroll mt10">
+     <table>
+         <caption>잔액/이자개요 - 구분(지출액(강사비, 교육진행비, 운영경비, 여비, 합계), 이자+캐쉬백(이자, 캐쉬백, 합계), 잔액), 집행금액, 입금금액, 소계, 잔액</caption>
+         <colgroup>
+             <col style="width:15%">
+             <col style="width:10%">
+                <col>
+                <col>
+                <col>
+           </colgroup>
+           <thead>
+               <tr>
+                   <th scope="colgroup" colspan="2">구분</th>
+                   <th scope="col">집행금액</th>
+                   <th scope="col">입금금액</th>
+                   <th scope="col">소계</th>
+               </tr>
+           </thead>
+           <tbody>
+               <th:block th:if="${#lists.size(list) > 0}">
+               <tr th:each="list, i: ${list}">
+                   <th scope="rowgroup" th:if="${list.groupNum == '1'}" th:rowspan="${list.rowspan}"><th:block th:text="${list.seCd == '210102' ? '지출액' : '이자+캐쉬백'}"/></th>
+                   <th scope="row"><th:block th:text="${list.artclNm == null ? '합계' : list.artclNm}"/></th>
+                   <td class="ar" th:colspan="${list.seCd == '210101' ? '3' : ''}"><th:block th:text="${#numbers.formatInteger(list.amt, 0, 'COMMA')}" /></td>
+                   <td class="ar" th:if="${list.seCd == '210102'}">0</td>
+                   <td class="ar" th:if="${list.seCd == '210102'}"><th:block th:text="${#numbers.formatInteger(list.amt, 0, 'COMMA')}" /></td>
+               </tr>
+               </th:block>
+               <th:block th:unless="${#lists.size(list) > 0}">
+               <tr>
+                   <td class="nodata" colspan="9">
+                       <p><span class="icon icon-notice bg-black9"></span>집행내역이 없습니다.</p>
+                   </td>
+               </tr>
+               </th:block>
+           </tbody>
+           <tfoot th:if="${#lists.size(list) > 0}">
+               <tr>
+                   <th scope="row" colspan="2" class="bg5">합계</th>
+                   <td colspan="3" class="ar" id="totalAmt"></td>
+               </tr>
+           </tfoot>
+       </table>
+   </div>
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+var totAmt = /*[[${detail.totAmt}]]*/null;
+var listSize = /*[[${#lists.size(list)}]]*/null;
+/*]]>*/
+var amt = 0;
+$(function () {
+    if (listSize > 0) {
+    	/*<![CDATA[*/
+    	amt = /*[[${list[list[0].rowspan-1].amt}]]*/0;
+    	/*]]>*/
+    } 
+    $("#totalAmt").text(String(totAmt-amt).replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,'));
+});
+</script>

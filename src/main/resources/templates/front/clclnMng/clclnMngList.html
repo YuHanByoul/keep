@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" 
+>
+
+<body>
+<div layout:fragment="content">
+    <section>
+        <div class="table-caption">
+            <div class="left">
+                <h3 class="sub-title">정산관리</h3>
+                <p>최종 사업계약 시 제출한 소요예산 산출내역에 따른 집행금액을 시스템(정산내역, 카드이용내역, 계죄이체내역, 증빙자료)에 입력 및 제출하는 단계입니다. </p>
+            </div>
+        </div>
+
+        <div class="table-caption">
+            <div class="left">
+                <h3 class="sub-title">정산관리 절차</h3>
+            </div>
+        </div>
+
+        <div class="steps-list">
+            <ul>
+                <li>
+                    <span class="icon icon-cert-step01" title=""></span>
+                    <dl>
+                        <dt><span>사업기간 내 <br class="pc-only">정산내역 등록</span></dt>
+                        <dd>지출 및 입금내역 수시 등록 <br class="pc-only"> 거래명세서/영수증 <br class="pc-only"> 등 증빙사본 </dd>
+                    </dl>
+                </li>
+                <li>
+                    <span class="icon icon-cert-step02" title=""></span>
+                    <dl>
+                        <dt><span>사업완료 후 10일 이내 정산보고서 제출 </span></dt>
+                        <dd>정산제출공문 및 <br class="pc-only"> 정산관련 첨부파일 등록</dd>
+                    </dl>
+                </li>
+                <li>
+                    <span class="icon icon-cert-step03" title=""></span>
+                    <dl>
+                        <dt><span>정산보고서 검토</span></dt>
+                        <dd>항목별 사업비 지출 <br class="pc-only"> 내역 검토 및 보완</dd>
+                    </dl>
+                </li>
+                <li>
+                    <span class="icon icon-info-pay" title=""></span>
+                    <dl>
+                        <dt><span>사업비 및 이자액 반납</span></dt>
+                        <dd>사업비 잔액 및 <br class="pc-only"> 이자액/캐시백 반환</dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+
+        <form class="search-filter mt45" id="searchForm" name="searchForm">
+            <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+            <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
+            <input type="hidden" id="ORDER_DIRECTION" name="orderDirection" value="desc">
+            <input type="hidden" id="orderField" name="orderField" value="REG_DT">
+            <div class="form-input-wrap">
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">사업분야</strong></div>
+                    <div class="form-body">
+                        <span kattr:select_code="searchFldCd" grpCd="173" firstOptTxt="- 전체 -" addClass="input-sm"></span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">공모명</strong></div>
+                    <div class="form-body">
+                        <input type="search" title="공모명" placeholder="공모명을 입력해주세요." name="searchPcntstNm" id="searchPcntstNm">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">프로그램명</strong></div>
+                    <div class="form-body">
+                        <input type="search" title="프로그램명" id="searchPrgrmNm" name="searchPrgrmNm" placeholder="프로그램명을 입력해 주세요.">
+                    </div>
+                </div>
+            </div>
+            <div class="search-filter-submit">
+                <button type="reset" class="btn-medium btn-gray btn-before-refresh" onclick="listPage.searchInit();">초기화</button>
+                <button type="button" class="btn-medium btn-green btn-before-search" onclick="listPage.search();">검색</button>
+            </div>
+        </form>
+
+        <div class="table-caption flex-nowrap">
+            <div class="left">
+                <p>총 <b id="totalCount">0</b> 건</p>
+            </div>
+            <div class="right">
+                <select title="글 보기 개수" id="rowPerPageChange" name="rowPerPageChange">
+                    <option value="10">10개씩 보기</option>
+                    <option value="50">50개씩 보기</option>
+                    <option value="100">100개씩 보기</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="pc-only">
+            <div class="table-col table-layout-auto table-col-mo">
+                <table>
+                    <caption>정산관리 - 번호, 사업분야, 공모명, 프로그램명, 사업기간</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">번호</th>
+                            <th scope="col">사업분야</th>
+                            <th scope="col">공모명</th>
+                            <th scope="col">프로그램명</th>
+                            <th scope="col">사업기간</th>
+                        </tr>
+                    </thead>
+                    <tbody id="list-area">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mo-only">
+            <div class="table-list">
+                <ul>
+                    <li class="block" id="list-mobile-area">
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div id="pagination" aria-label="pagination"></div>
+    </section>
+    
+    <!-- layerpopup -->
+    <div class="layer-popup layer-large" data-layer-id="suppModalPopup">
+        <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+        <div class="layer-wrap" id="suppModalPopup">
+        </div>
+    </div>
+    
+    <script th:inline="javascript">
+        var listPage = {
+            listUrl: '/front/clclnMng/selectClclnMngList.do',
+            detailUrl : '/front/clclnMng/clclnMngTabForm.html',
+    
+            init(rowPerPage) {
+                if(rowPerPage != null) {
+                    $("#rowPerPage").val(parseInt(rowPerPage));
+                    $('#pageNumber').val('1');
+                }
+                this.selectList();
+            },
+            search() {
+                $('#pageNumber').val('1');
+                this.selectList();
+            },
+            searchInit() {
+                $("#searchFldCd").val('');
+                $("#searchPcntstNm").val('');
+                $("#searchPrgrmNm").val('');
+                this.selectList();
+            },
+            selectList() {
+                if (displayWorkProgress(true)) {
+                    let formData = $('#searchForm').serializeArray();
+    
+                    $.ajax({
+                        url: listPage.listUrl,
+                        cache: false,
+                        dataType: 'json',
+                        data: formData,
+                        type: 'GET',
+                        success: function (data) {
+                            listPage.makeListHtml(data);
+                            closeWorkProgress();
+                        }
+                    });
+                }
+            },
+            moveToDetail(aplyid) {
+                location.href = this.detailUrl + '?aplyid=' + aplyid;
+            },
+            suppPopup: function(splmntid,delvryid,fldCd) {
+                $("#suppModalPopup").load("/front/delvry/delvryAplySplmntPopup.html?splmntid=" + splmntid + '&delvryid=' + delvryid + '&fldCd=' + fldCd, function(response, status, xhr) {
+                    if (status == "success") {
+                        layerPopup.open({target:'suppModalPopup'});
+                    }
+                });
+            },
+            makeListHtml(data) {
+                var listHtml = "";
+                var mobileHtml = "";
+                if (data.list == null || data.list.length <= 0) {
+                    listHtml += `
+                    <tr>
+                        <td class="nodata" colspan="7">
+                            <p><span class="icon icon-notice bg-black9"></span>정산관리 내용이 없습니다.</p>
+                        </td>
+                    </tr>
+                    `;
+                    mobileHtml += `
+                    <div class="nodata">
+                        <p><span class="icon icon-notice bg-black9"></span>정산관리 내용이 없습니다.</p>
+                    </div>
+                    `;
+                } else {
+                    data.list.forEach(function(item) {
+                        listHtml += `
+                        <tr>
+                       	<td>${item.rowNumber}</td>
+                        <td>${item.fldNm}</td>
+                        <td>${item.pcntstNm}</td>
+                        <td><a href="javascript:void(0)" onclick="listPage.moveToDetail(${item.aplyid})" class="link ellipsis">${item.prgrmNm}</a></td>
+                        <td>${item.bsnsBgngDe}<br class="pc-only"> ~ ${item.bsnsEndDe}</td>`;
+                        mobileHtml += `
+                        <div class="tbody">
+                            <dl>
+                                <div class="list">
+                                    <dt>번호</dt>
+                                    <dd>${item.rowNumber}</dd>
+                                </div>
+                                <div class="list">
+                                    <dt>사업분야</dt>
+                                    <dd>${item.fldNm}</dd>
+                                </div>
+                                <div class="list">
+	                                <dt>공모명</dt>
+	                                <dd>${item.pcntstNm}</dd>
+	                            </div>
+                                <div class="list">
+                                    <dt>프로그램명</dt>
+                                    <dd><a href="javascript:void(0)" onclick="listPage.moveToDetail(${item.aplyid})" class="link ellipsis">${item.prgrmNm}</a></dd>
+                                </div>
+                                <div class="list">
+                                    <dt>사업기간</dt>
+                                    <dd>${item.bsnsBgngDe}<br class="pc-only"> ~ ${item.bsnsEndDe}</dd>
+                                </div>
+                            </dl>
+                        </div>`;
+                    });
+                }
+                $('#list-area').html(listHtml);
+                $('#list-mobile-area').html(mobileHtml);
+                $("#pagination").html(data.pagination);
+                $("#totalCount").html(data.totalCount);
+            }
+        };
+    
+        $(function () {
+            listPage.init();
+            
+            $("#rowPerPageChange").change(function(){
+                $("#rowPerPage").val($(this).val());
+                listPage.init($(this).val());
+            });
+        });
+    </script>
+</div>
+</body>
+</html>
