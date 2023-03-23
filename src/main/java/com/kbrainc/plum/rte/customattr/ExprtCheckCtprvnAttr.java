@@ -30,12 +30,12 @@ import java.util.Map;
  * @Version :
  * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
  */
-public class CheckCtprvnAttr extends AbstractAttributeTagProcessor {
-    private static final String ATTR_NAME = "check_ctprvn";
+public class ExprtCheckCtprvnAttr extends AbstractAttributeTagProcessor {
+    private static final String ATTR_NAME = "exprt_check_ctprvn";
     private static final int PRECEDENCE = 1000;
     CommonService commonService = (CommonService) CommonUtil.getBean("commonServiceImpl", CommonUtil.getCurrentRequest());
 
-    public CheckCtprvnAttr(final String dialectPrefix) {
+    public ExprtCheckCtprvnAttr(final String dialectPrefix) {
         super(TemplateMode.HTML, // This processor will apply only to HTML mode
                 dialectPrefix, // Prefix to be applied to name for matching
                 null, // No tag name: match any tag name
@@ -77,7 +77,7 @@ public class CheckCtprvnAttr extends AbstractAttributeTagProcessor {
                 isAdmin = tag.getAttribute("isAdmin").getValue();
             }
 
-            List<Map<String, Object>> ctprvnList = commonService.selectAlowedCtprvnList();
+            List<Map<String, Object>> ctprvnList = commonService.selectCtprvnList();
 
             //관리자 적용시
             if (isAdmin.equals("true")) {

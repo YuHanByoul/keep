@@ -204,9 +204,6 @@
              , A.FLD_ETC_CN
              , A.ENV_EDU_CAREER_YY
              , A.ENV_EDU_CAREER_MM
-             , D.GROUP_CD_NM AS EXPRT_SBJCT_CD_NM
-             , C.GROUP_CD_NM AS EXPRT_ACTVT_SCOPE_CD_NM
-             , E.GROUP_CD_NM AS EXPRT_TRGT_CD_NM
              , A.MOBLPHON_RLS_YN
              , A.TELNO_RLS_YN
              , A.EML_RLS_YN
@@ -220,44 +217,20 @@
              , B.TELNO
              , B.EML
              , (
-                CASE WHEN
-                         (SELECT COUNT(1)
-                          FROM TB_ASS_EXPRT_ITRST
-                          WHERE EXPRTID = A.USERID AND USERID = #{user.userid}
-                         ) <![CDATA[>]]> 0 THEN 'Y'
-                ELSE 'N'
-                END
+                    CASE WHEN
+                             (SELECT COUNT(1)
+                              FROM TB_ASS_EXPRT_ITRST
+                              WHERE EXPRTID = A.USERID AND USERID = #{user.userid}
+                             ) <![CDATA[>]]> 0 THEN 'Y'
+                    ELSE 'N'
+                    END
                 ) AS ITRST_YN
+             , (SELECT GROUP_CONCAT(TCC.CD_NM) FROM TB_ASS_EXPRT_SBJCT TAES INNER JOIN TB_CMM_CD TCC ON TAES.SBJCT_CD = TCC.CD WHERE TAES.USERID = #{userid}) AS EXPRT_SBJCT_CD_NM
+             , (SELECT GROUP_CONCAT(TCC.CD_NM) FROM TB_ASS_EXPRT_TRGT TAET INNER JOIN TB_CMM_CD TCC ON TAET.TRGT_CD = TCC.CD WHERE TAET.USERID = #{userid}) AS EXPRT_TRGT_CD_NM
+             , (SELECT GROUP_CONCAT(TCAC.CTPRVN_NM) FROM TB_CMM_ADDR_CTPRVN TCAC INNER JOIN TB_ASS_EXPRT_ACTVT_SCOPE TAEAS ON TCAC.CTPRVN_CD = TAEAS.RGN_CD WHERE TAEAS.USERID = #{userid}) AS EXPRT_ACTVT_SCOPE_CD_NM
         FROM TB_ASS_EXPRT A
         INNER JOIN TB_CMM_USER B
             ON A.USERID = B.USERID
-        LEFT OUTER JOIN (
-            SELECT
-                GROUP_CONCAT(TCAC.CTPRVN_NM) AS GROUP_CD_NM, TAEAS.USERID
-            FROM TB_CMM_ADDR_CTPRVN TCAC
-                     INNER JOIN TB_ASS_EXPRT_ACTVT_SCOPE TAEAS
-                                ON TCAC.CTPRVN_CD = TAEAS.RGN_CD
-            GROUP BY TAEAS.USERID
-        ) C
-            ON A.USERID = C.USERID
-        LEFT OUTER JOIN (
-            SELECT
-                GROUP_CONCAT(TCC.CD_NM) AS GROUP_CD_NM, TAES.USERID
-            FROM TB_ASS_EXPRT_SBJCT TAES
-                     INNER JOIN TB_CMM_CD TCC
-                                ON TAES.SBJCT_CD = TCC.CD
-            GROUP BY TAES.USERID
-        ) D
-            ON A.USERID = D.USERID
-        LEFT OUTER JOIN (
-            SELECT
-                GROUP_CONCAT(TCC.CD_NM) AS GROUP_CD_NM, TAET.USERID
-            FROM TB_ASS_EXPRT_TRGT TAET
-                     INNER JOIN TB_CMM_CD TCC
-                                ON TAET.TRGT_CD = TCC.CD
-            GROUP BY TAET.USERID
-        ) E
-            ON A.USERID = E.USERID
         WHERE A.USERID = #{userid}
     </select>
 

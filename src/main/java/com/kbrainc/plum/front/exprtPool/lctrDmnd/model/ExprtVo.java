@@ -1,6 +1,7 @@
 package com.kbrainc.plum.front.exprtPool.lctrDmnd.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -11,6 +12,7 @@ import org.apache.ibatis.type.Alias;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 전문가 Vo 클래스
@@ -172,9 +174,16 @@ public class ExprtVo extends ParentRequestVo {
 
         if (CommonUtil.isEmpty(this.exprtActvtScopeCdNm)) {
             try {
-                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
-                CodeInfoVo code = resCodeService.getCodeInfo(this.exprtActvtScopeCd);
-                this.exprtActvtScopeCdNm = code.getCdNm();
+                CommonService commonService = (CommonService) CommonUtil.getBean("commonServiceImpl", CommonUtil.getCurrentRequest());
+                List<Map<String, Object>> ctprvnList = commonService.selectCtprvnList();
+
+                for (Map<String, Object> ctprvnInfo : ctprvnList) {
+                    if (ctprvnInfo.get("CTPRVN_CD").equals(this.exprtActvtScopeCd)) {
+                        this.exprtActvtScopeCdNm = (String) ctprvnInfo.get("CTPRVN_NM");
+                        break;
+                    }
+                }
+
             } catch (NoClassDefFoundError e) {
                 //e.printStackTrace();
                 return;

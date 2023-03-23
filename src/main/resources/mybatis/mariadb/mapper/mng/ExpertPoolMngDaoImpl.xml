@@ -9,8 +9,6 @@
       <!--전문가 목록 조회-->
     <select id="selectExpertList" resultType="ExpertVo">
         <include refid="PaginationMapper.header"/>
-        SELECT AA.*
-        FROM (
             SELECT
                 A.USERID
                 , A.EXPRT_TYPE_CD
@@ -73,51 +71,49 @@
                 GROUP BY TAET.USERID
             ) E
             ON A.USERID = E.USERID
-        ) AA
-        WHERE 1=1
-        <if test="searchKeyword != null and searchKeyword != ''">
-            <if test="searchType == 'nm' ">
-                AND AA.NM LIKE CONCAT('%',#{searchKeyword},'%')
+            WHERE 1=1
+            <if test="searchKeyword != null and searchKeyword != ''">
+                <if test="searchType == 'nm' ">
+                    AND B.NM LIKE CONCAT('%',#{searchKeyword},'%')
+                </if>
+                <if test="searchType == 'acnt' ">
+                    AND B.ACNT LIKE CONCAT('%',#{searchKeyword},'%')
+                </if>
             </if>
-            <if test="searchType == 'acnt' ">
-                AND AA.ACNT LIKE CONCAT('%',#{searchKeyword},'%')
+            <if test="exprtTypeCd != null and exprtTypeCd != ''">
+                AND A.EXPRT_TYPE_CD = #{exprtTypeCd}
             </if>
-        </if>
-        <if test="exprtTypeCd != null and exprtTypeCd != ''">
-            AND AA.EXPRT_TYPE_CD = #{exprtTypeCd}
-        </if>
-        <if test="exprtField != null and exprtField != ''">
-            <choose>
-                <when test='exprtField == "1"'>
-                    AND AA.FLD_LCTR_YN = 'Y'
-                </when>
-                <when test='exprtField == "2"'>
-                    AND AA.FLD_PLANNG_YN = 'Y'
-                </when>
-                <when test='exprtField == "3"'>
-                    AND AA.FLD_CNSLTNG_YN = 'Y'
-                </when>
-                <when test='exprtField == "4"'>
-                    AND AA.FLD_ETC_YN = 'Y'
-                </when>
-            </choose>
-        </if>
-        <if test="exprtTrgtCdNm != null and exprtTrgtCdNm != ''">
-            AND AA.EXPRT_TRGT_CD_NM LIKE CONCAT('%', #{exprtTrgtCdNm} , '%')
-        </if>
-        <if test="exprtSbjctCdNm != null and exprtSbjctCdNm != ''">
-            AND AA.EXPRT_SBJCT_CD_NM LIKE CONCAT('%', #{exprtSbjctCdNm} , '%')
-        </if>
-        <if test="exprtActvtScopeCdNm != null and exprtActvtScopeCdNm != ''">
-            AND AA.EXPRT_ACTVT_SCOPE_CD_NM LIKE CONCAT('%', #{exprtActvtScopeCdNm} , '%')
-        </if>
-        <if test="userSttsCd != null and userSttsCd != ''">
-            AND AA.USER_STTS_CD = #{userSttsCd}
-        </if>
-        <if test="sttsCd != null and sttsCd != ''">
-            AND AA.STTS_CD = #{sttsCd}
-        </if>
-
+            <if test="exprtField != null and exprtField != ''">
+                <choose>
+                    <when test='exprtField == "1"'>
+                        AND A.FLD_LCTR_YN = 'Y'
+                    </when>
+                    <when test='exprtField == "2"'>
+                        AND A.FLD_PLANNG_YN = 'Y'
+                    </when>
+                    <when test='exprtField == "3"'>
+                        AND A.FLD_CNSLTNG_YN = 'Y'
+                    </when>
+                    <when test='exprtField == "4"'>
+                        AND A.FLD_ETC_YN = 'Y'
+                    </when>
+                </choose>
+            </if>
+            <if test="exprtTrgtCdNm != null and exprtTrgtCdNm != ''">
+                AND E.GROUP_CD_NM LIKE CONCAT('%', #{exprtTrgtCdNm} , '%')
+            </if>
+            <if test="exprtSbjctCdNm != null and exprtSbjctCdNm != ''">
+                AND D.GROUP_CD_NM LIKE CONCAT('%', #{exprtSbjctCdNm} , '%')
+            </if>
+            <if test="exprtActvtScopeCdNm != null and exprtActvtScopeCdNm != ''">
+                AND C.GROUP_CD_NM LIKE CONCAT('%', #{exprtActvtScopeCdNm} , '%')
+            </if>
+            <if test="userSttsCd != null and userSttsCd != ''">
+                AND B.STTS_CD = #{userSttsCd}
+            </if>
+            <if test="sttsCd != null and sttsCd != ''">
+                AND A.STTS_CD = #{sttsCd}
+            </if>
         <include refid="PaginationMapper.footer"/>
     </select>
 

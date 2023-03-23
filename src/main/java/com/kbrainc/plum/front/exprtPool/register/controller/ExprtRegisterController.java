@@ -58,6 +58,16 @@ public class ExprtRegisterController {
     @Autowired
     private FileServiceImpl fileService;
 
+    /**
+     * 전문가 풀 소개 화면
+     *
+     * @param user
+     * @param model
+     * @return string
+     * @throws Exception
+     * @Title : registerStep1
+     * @Description : 전문가 풀 소개 화면
+     */
     @GetMapping("/registerStep1.html")
     public String registerStep1(@UserInfo UserVo user, Model model) throws Exception {
         model.addAttribute("user", user);
@@ -69,6 +79,18 @@ public class ExprtRegisterController {
         return VIEW_PATH + "/registerStep1";
     }
 
+    /**
+     * 이용약관 화면
+     *
+     * @param response
+     * @param exprtRegisterVo
+     * @param user
+     * @param model
+     * @return string
+     * @throws Exception
+     * @Title : registerStep2
+     * @Description : 이용약관 화면
+     */
     @GetMapping("/registerStep2.html")
     public String registerStep2(HttpServletResponse response, ExprtRegisterVo exprtRegisterVo, @UserInfo UserVo user, Model model) throws Exception {
         if (user == null) {
@@ -107,6 +129,18 @@ public class ExprtRegisterController {
     }
 
 
+    /**
+     * 전문가 가입 신청 화면
+     *
+     * @param response
+     * @param exprtRegisterVo
+     * @param user
+     * @param model
+     * @return string
+     * @throws Exception
+     * @Title : registerStep3
+     * @Description : 전문가 가입 신청 화면
+     */
     @RequestMapping("/registerStep3.html")
     public String registerStep3(HttpServletResponse response, @ModelAttribute ExprtRegisterVo exprtRegisterVo, @UserInfo UserVo user, Model model) throws Exception {
         if (user != null) {
@@ -174,11 +208,29 @@ public class ExprtRegisterController {
         return VIEW_PATH + "/registerStep3";
     }
 
+    /**
+     * 가입 신청 완료 화면
+     *
+     * @return string
+     * @Title : registerStep4
+     * @Description : 가입 신청 완료 화면
+     */
     @GetMapping("/registerStep4.html")
     public String registerStep4() {
         return VIEW_PATH + "/registerStep4";
     }
 
+    /**
+     * 전문가 등록
+     *
+     * @param exprtRegisterVo
+     * @param bindingResult
+     * @param user
+     * @return map
+     * @throws Exception
+     * @Title : insertExprt
+     * @Description : 전문가 등록
+     */
     @PostMapping("/insertExprt.do")
     @ResponseBody
     public Map<String, Object> insertExprt(@Valid @RequestBody ExprtRegisterVo exprtRegisterVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
@@ -210,6 +262,14 @@ public class ExprtRegisterController {
         return result;
     }
 
+    /**
+     * 이용약관 동의 체크
+     *
+     * @param agreYn
+     * @return boolean
+     * @Title : inValidateRequiredAgre
+     * @Description : 이용약관 동의 체크
+     */
     private boolean inValidateRequiredAgre(String... agreYn) {
         for (String agre : agreYn) {
             if (agre == null || agre.equals("N")) return false;
