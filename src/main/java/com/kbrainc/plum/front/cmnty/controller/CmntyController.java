@@ -682,12 +682,11 @@ public class CmntyController {
      *
      * @param paramVo
      * @param user
-     * @param model
      * @return map
      */
     @RequestMapping(value = "/front/cmnty/updateCmnt.do")
     @ResponseBody
-    public Map<String, Object> updateCmnt(@Valid CmntyCmntVo paramVo, @UserInfo UserVo user, Model model){
+    public Map<String, Object> updateCmnt(@Valid CmntyCmntVo paramVo, @UserInfo UserVo user){
         Map<String, Object> resultMap = new HashMap<>();
         boolean result = false;
 
