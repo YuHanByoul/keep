@@ -146,7 +146,7 @@
             </div>
         </li>
 
-        <div class="relpy-more-view">
+        <div class="reply-more-view">
             <button type="button" class="btn-small btn-outline-black bg-grayd reply-more-btn">답글 더보기</button>
             <input type="hidden" id="pageIndex" value="1" />
         </div>
@@ -170,7 +170,7 @@
             const $commonCmnt = $('.clone-tmps .common-cmnt');
             const $replyCmntInput = $('.clone-tmps .reply-cmnt-input');
             const $updateCmntInput = $('.clone-tmps .update-cmnt-input');
-            const $replyMoreView = $('.clone-tmps .relpy-more-view');
+            const $replyMoreView = $('.clone-tmps .reply-more-view');
             const pstid = $searchForm[0].pstid.value;
             const bbsid = $searchForm[0].bbsid.value;
             const userid = /*[[${paramVo.user.userid}]]*/null;
@@ -184,7 +184,7 @@
                 $searchForm[0].submit();
             });*/
 
-            $('.cmnt-wrap').on('change', 'textarea', function (){
+            $('.cmnt-wrap').on('change, keyup', 'textarea', function (){
                 const textSize = $(this).val().length;
                 $(this).siblings('.size').find('span').text(textSize);
             });
@@ -225,6 +225,10 @@
                 const rslYn = 'Y'; //추후 비밀글 생기면 조작할 수 있도록 수정바람
                 const parntsCmntid = $(this).data('parnts-cmntid'); //대댓글일시
                 const $cmntReplyWrap = $(this).closest('.dep02').find('ul'); //대댓글일시
+                if($textarea.val() === ''){
+                    alert('댓글 내용을 입력해주세요.');
+                    return;
+                }
                 if(displayWorkProgress(true)){
                     $.ajax({
                         type: 'POST',
@@ -232,12 +236,11 @@
                         data : {
                             pstid : pstid,
                             bbsid : bbsid,
-                            parntsCmntid : parntsCmntid, //댓글에 댓글일시
+                            parntsCmntid : parntsCmntid,
                             cn : $textarea.val(),
                             rlsYn : rslYn
                         },
                         success : function (response){
-                            alert(response.msg);
                             if(response.result !== 'fail'){
                                 const $item = $commonCmnt.clone(true);
                                 const isRgtr = response.data.rgtrid === userid;
@@ -253,11 +256,11 @@
                                     );
                                     $replyLength.text(Number($replyLength.text())+1);
                                     $textarea.val('');
-                                    const rowPerPageSet = Number($cmntWrap.siblings('.relpy-more-view').find('#pageIndex').val()); //현재 rowPage 계산
+                                    const rowPerPageSet = Number($cmntWrap.siblings('.reply-more-view').find('#pageIndex').val()); //현재 rowPage 계산
                                     if(Number($replyLength.text()) > Number(rowPerPage*rowPerPageSet)){ //rowPerPage 넘어갈 시 마지막 답글 사라짐
                                         $cmntWrap.children().last().find('.more-btn').remove();
                                         if(!$cmntWrap.closest('.dep01').children().last().children().is('button')){
-                                            $cmntWrap.closest('.dep01').find('.relpy-more-view').prepend(
+                                            $cmntWrap.closest('.dep01').find('.reply-more-view').prepend(
                                                 $replyMoreView.find('button').clone(true)
                                                     .find('.bg-grayd').removeClass('bg-grayd').end()
                                                     .find('button').removeClass('reply-more-btn').addClass('more-btn').end()
@@ -265,7 +268,7 @@
                                         }
                                     }
                                 }else{
-                                    $cmntReplyWrap.find('.reply-cmnt-input').before( // 답글 등록 후 html 추가
+                                    $cmntReplyWrap.find('.reply-cmnt-input').before( // 대댓글 등록 후 html 추가
                                         $item.find('.profile').text(response.data.rgtrNm + ' (' + response.data.rgtrAcnt + ')').end()
                                             .find('.date').text(response.data.regDt).end()
                                             .find('.reply-btn').remove().end()
@@ -276,20 +279,21 @@
                                             .find('.dep02').remove().end()
                                     );
                                     $textarea.val('');
-                                    const rowPerPageSet = Number($cmntWrap.siblings('.relpy-more-view').find('#pageIndex').val()); //현재 rowPage 계산
+                                    const rowPerPageSet = Number($cmntReplyWrap.siblings('.reply-more-view').find('#pageIndex').val()); //현재 rowPage 계산
                                     if(response.data.cmntReplyCnt > Number(rowPerPage*rowPerPageSet)){ //rowPerPage 넘어갈 시 마지막 답글 사라짐
                                         $cmntReplyWrap.children().first().remove();
                                         if(!$cmntReplyWrap.closest('.dep02').children().last().children().is('button')){
-                                            $cmntReplyWrap.closest('.dep02').prepend($replyMoreView.clone(true).find('button').data({'parntsCmntid':parntsCmntid}).end());
+                                            $cmntReplyWrap.closest('.dep02').find('.reply-more-view').prepend($replyMoreView.find('button').clone(true).data({'parntsCmntid':parntsCmntid}));
                                         }
                                     }
                                 }
                             }
+                            closeWorkProgress();
                         }
                     });
                 }
             });
-            //댓글 수정 버튼 클릭 시 수정 입력 창 생성
+            //댓글/대댓글 수정 버튼 클릭 시 수정 입력 창 생성
             $('.cmnt-wrap').on('click', '.update-form-btn', function (){
                 const $item = $updateCmntInput.clone(true);
                 const cmntid = $(this).data('cmntid');
@@ -304,7 +308,7 @@
                 );
                 $(this).closest('li').remove();
             });
-            //댓글/대댓글 삭제 ajax 수정도 가능은함
+            //댓글/대댓글 삭제 ajax 수정도
             $('.cmnt-wrap').on('click', '.cmnt-update-btn, .cmnt-delete-btn', function (){
                 const isDelete = $(this).is('.cmnt-delete-btn'); //true 삭제로직, false 수정로직
                 const isReply = $(this).closest('.dep02').length > 0 ? true : false; //답글 여부
@@ -314,6 +318,10 @@
                 const rgtrInfo = $(this).closest('.reply-container').find('.profile').text();
                 const regDt = $(this).closest('.reply-container').find('.date').text();
                 const $this = $(this);
+                if(!isDelete && cn === ''){
+                    alert('댓글 내용을 입력해주세요.');
+                    return;
+                }
                 if(confirm(isDelete ? '작성한 댓글을 삭제하시겠습니까?' : '작성한 댓글을 수정하시겠습니까?')){
                     if(displayWorkProgress(true)){
                         $.ajax({
@@ -328,10 +336,8 @@
                             success : function (response){
                                 if(response.result !== 'fail'){
                                     if(isDelete){
-                                        alert('댓글을 삭제하였습니다.');
-                                        $this.closest('.reply-container').text('삭제한 댓글입니다.');
+                                        $this.closest('.reply-container').text('삭제된 댓글입니다.');
                                     }else{
-                                        alert('댓글을 수정했습니다.')
                                         const $item = $commonCmnt.clone(true);
                                         $this.closest('li').before(
                                             $item.find('.profile').text(rgtrInfo).end()
@@ -346,6 +352,7 @@
                                         $this.closest('li').remove();
                                     }
                                 }
+                                closeWorkProgress();
                             }
                         });
                     }
@@ -357,57 +364,59 @@
                 const $cmntReplyWrap = $(this).closest('.reply-container').siblings('.dep02').find('ul');
                 if(!$this.is('.active')){
                     const parntsCmntid = $(this).data('parnts-cmntid');
-                    $.ajax({
-                        type: 'POST',
-                        url : "/front/cmnty/selectCmntReplyList.do",
-                        data : {
-                            pstid : pstid,
-                            parntsCmntid : parntsCmntid,
-                            rowPerPage : rowPerPage,
-                            pageNumber : 1,
-                            replyYn : 'Y' //답글전용
-                        },
-                        success : function (result){
-                            if(result.data != null){
-                                let cmntReplyCnt = '';
-                                for(let item of result.data){
-                                    cmntReplyCnt = item.cmntReplyCnt;
-                                    const $item = $commonCmnt.clone(true);
-                                    const isRgtr = item.rgtrid === userid;
-                                    if(item.delYn === 'Y'){
-                                        $cmntReplyWrap.prepend(
-                                            $item.find('.reply-container').text('삭제한 댓글입니다.').end()
-                                                .find('.dep02').remove().end()
-                                        );
-                                    }else{
-                                        $cmntReplyWrap.prepend(
-                                            $item.find('.profile').text(item.rgtrNm + ' (' + item.rgtrAcnt + ')').end()
-                                                .find('.date').text(item.regDt).end()
-                                                .find('.reply-btn').remove().end()
-                                                .find('.update-form-btn, .cmnt-delete-btn').data({'cmntid': (isRgtr ? item.cmntid : null)})
-                                                .prop({disabled:(isRgtr ? false : true)})
-                                                .css({display:(isRgtr ? 'block' : 'none')}).end()
-                                                .find('.reply-textarea > pre').text(item.cn).end()
-                                                .find('.dep02').remove().end()
-                                        );
+                    if(displayWorkProgress(true)){
+                        $.ajax({
+                            type: 'POST',
+                            url : "/front/cmnty/selectCmntReplyList.do",
+                            data : {
+                                pstid : pstid,
+                                parntsCmntid : parntsCmntid,
+                                rowPerPage : rowPerPage,
+                                pageNumber : 1
+                            },
+                            success : function (result){
+                                if(result.data != null){
+                                    let cmntReplyCnt = '';
+                                    for(let item of result.data){
+                                        cmntReplyCnt = item.cmntReplyCnt;
+                                        const $item = $commonCmnt.clone(true);
+                                        const isRgtr = item.rgtrid === userid;
+                                        if(item.delYn === 'Y'){
+                                            $cmntReplyWrap.prepend(
+                                                $item.find('.reply-container').text('삭제된 댓글입니다.').end()
+                                                    .find('.dep02').remove().end()
+                                            );
+                                        }else{
+                                            $cmntReplyWrap.prepend(
+                                                $item.find('.profile').text(item.rgtrNm + ' (' + item.rgtrAcnt + ')').end()
+                                                    .find('.date').text(item.regDt).end()
+                                                    .find('.reply-btn').remove().end()
+                                                    .find('.update-form-btn, .cmnt-delete-btn').data({'cmntid': (isRgtr ? item.cmntid : null)})
+                                                    .prop({disabled:(isRgtr ? false : true)})
+                                                    .css({display:(isRgtr ? 'block' : 'none')}).end()
+                                                    .find('.reply-textarea > pre').text(item.cn).end()
+                                                    .find('.dep02').remove().end()
+                                            );
+                                        }
                                     }
-                                }
-                                const $replyInputClone = $replyCmntInput.clone(true);
-                                $cmntReplyWrap.append($replyInputClone.find('.cmnt-insert-btn').data({'parntsCmntid':parntsCmntid}).end());
-                                $cmntReplyWrap.closest('.dep02').append($replyMoreView.clone(true).find('button').remove().end());
+                                    const $replyInputClone = $replyCmntInput.clone(true);
+                                    $cmntReplyWrap.append($replyInputClone.find('.cmnt-insert-btn').data({'parntsCmntid':parntsCmntid}).end());
+                                    $cmntReplyWrap.closest('.dep02').append($replyMoreView.clone(true).find('button').remove().end());
 
-                                if(cmntReplyCnt > rowPerPage){
-                                    $cmntReplyWrap.closest('.dep02').find('.relpy-more-view').prepend($replyMoreView.find('button').clone(true).data({'parntsCmntid':parntsCmntid}));
+                                    if(cmntReplyCnt > rowPerPage){
+                                        $cmntReplyWrap.closest('.dep02').find('.reply-more-view').prepend($replyMoreView.find('button').clone(true).data({'parntsCmntid':parntsCmntid}));
+                                    }
+                                    $this.addClass('active');
+                                }else{
+                                    alert('답글을 불러오는데 오류가 발생했습니다.');
                                 }
-                                $this.addClass('active');
-                            }else{
-                                alert('답글을 불러오는데 오류가 발생했습니다.');
+                                closeWorkProgress();
                             }
-                        }
-                    });
+                        });
+                    }
                 }else{
                     $cmntReplyWrap.children().remove();
-                    $cmntReplyWrap.siblings('.relpy-more-view').remove();
+                    $cmntReplyWrap.siblings('.reply-more-view').remove();
                     $this.removeClass('active');
                 }
             });
@@ -418,39 +427,42 @@
                 let pageNumber = Number($pageIndex.val());
                 const pageSetNum = Number(pageNumber+1);
                 const nextLimit = Number(pageSetNum*rowPerPage);
-                $.ajax({
-                    type: 'POST',
-                    url : "/front/cmnty/selectCmntReplyList.do",
-                    data : {
-                        pstid : pstid,
-                        parntsCmntid : null,
-                        rowPerPage : rowPerPage,
-                        pageNumber : pageSetNum
-                    },
-                    success : function (result){
-                        if(result.data != null){
-                            for(let item of result.data){
-                                const $item = $commonCmnt.clone(true);
-                                const isRgtr = item.rgtrid === userid;
-                                $cmntWrap.append(
-                                    $item.find('.profile').text(item.rgtrNm + ' (' + item.rgtrAcnt + ')').end()
-                                        .find('.date').text(item.regDt).end()
-                                        .find('.reply-btn').data({'parntsCmntid':item.cmntid}).end()
-                                        .find('.update-form-btn, .cmnt-delete-btn').data({'cmntid': (isRgtr ? item.cmntid : null)})
-                                        .prop({disabled:(isRgtr ? false : true)})
-                                        .css({display:(isRgtr ? 'block' : 'none')}).end()
-                                        .find('.reply-textarea > pre').text(item.cn).end()
-                                )
+                if(displayWorkProgress(true)){
+                    $.ajax({
+                        type: 'POST',
+                        url : "/front/cmnty/selectCmntReplyList.do",
+                        data : {
+                            pstid : pstid,
+                            parntsCmntid : null,
+                            rowPerPage : rowPerPage,
+                            pageNumber : pageSetNum
+                        },
+                        success : function (result){
+                            if(result.data != null){
+                                for(let item of result.data){
+                                    const $item = $commonCmnt.clone(true);
+                                    const isRgtr = item.rgtrid === userid;
+                                    $cmntWrap.append(
+                                        $item.find('.profile').text(item.rgtrNm + ' (' + item.rgtrAcnt + ')').end()
+                                            .find('.date').text(item.regDt).end()
+                                            .find('.reply-btn').data({'parntsCmntid':item.cmntid}).end()
+                                            .find('.update-form-btn, .cmnt-delete-btn').data({'cmntid': (isRgtr ? item.cmntid : null)})
+                                            .prop({disabled:(isRgtr ? false : true)})
+                                            .css({display:(isRgtr ? 'block' : 'none')}).end()
+                                            .find('.reply-textarea > pre').text(item.cn).end()
+                                    )
+                                }
+                                if(Number($replyLength.text()) <= nextLimit){ //nextLimit 보다 댓굴의 총개수가 작을 경우 더보기 버튼 필요없음
+                                    $this.closest('.reply-more-view').find('button').remove();
+                                }
+                                $pageIndex.val(Number(pageNumber+1)); //페이지 증가
+                            }else{
+                                alert('더보기를 불러오는데 오류가 발생했습니다.');
                             }
-                            if(Number($replyLength.text()) <= nextLimit){ //nextLimit 보다 댓굴의 총개수가 작을 경우 더보기 버튼 필요없음
-                                $this.closest('.relpy-more-view').find('button').remove();
-                            }
-                            $pageIndex.val(Number(pageNumber+1)); //페이지 증가
-                        }else{
-                            alert('더보기를 불러오는데 오류가 발생했습니다.');
+                            closeWorkProgress();
                         }
-                    }
-                });
+                    });
+                }
             });
             //대댓글 더보기
             $('.cmnt-wrap').on('click', '.reply-more-btn', function (){
@@ -461,43 +473,45 @@
                 const parntsCmntid = $(this).data('parntsCmntid'); //대댓글의 경우
                 const pageSetNum = Number(pageNumber+1);
                 const nextLimit = Number(pageSetNum*rowPerPage);
-                $.ajax({
-                    type: 'POST',
-                    url : "/front/cmnty/selectCmntReplyList.do",
-                    data : {
-                        pstid : pstid,
-                        parntsCmntid : parntsCmntid,
-                        rowPerPage : rowPerPage,
-                        pageNumber : pageSetNum,
-                        replyYn : 'Y' //답글전용
-                    },
-                    success : function (result){
-                        if(result.data != null){
-                            let cmntReplyCnt = null;
-                            for(let item of result.data){
-                                cmntReplyCnt = item.cmntReplyCnt;
-                                const $item = $commonCmnt.clone(true);
-                                const isRgtr = item.rgtrid === userid;
-                                $cmntReplyWrap.children().first().prepend(
-                                    $item.find('.profile').text(item.rgtrNm + ' (' + item.rgtrAcnt + ')').end()
-                                        .find('.date').text(item.regDt).end()
-                                        .find('.reply-btn').remove().end()
-                                        .find('.update-form-btn, .cmnt-delete-btn').data({'cmntid': (isRgtr ? item.cmntid : null)})
-                                        .prop({disabled:(isRgtr ? false : true)})
-                                        .css({display:(isRgtr ? 'block' : 'none')}).end()
-                                        .find('.reply-textarea > pre').text(item.cn).end()
-                                        .find('.dep02').remove().end()
-                                )
+                if(displayWorkProgress(true)){
+                    $.ajax({
+                        type: 'POST',
+                        url : "/front/cmnty/selectCmntReplyList.do",
+                        data : {
+                            pstid : pstid,
+                            parntsCmntid : parntsCmntid,
+                            rowPerPage : rowPerPage,
+                            pageNumber : pageSetNum
+                        },
+                        success : function (result){
+                            if(result.data != null){
+                                let cmntReplyCnt = null;
+                                for(let item of result.data){
+                                    cmntReplyCnt = item.cmntReplyCnt;
+                                    const $item = $commonCmnt.clone(true);
+                                    const isRgtr = item.rgtrid === userid;
+                                    $cmntReplyWrap.children().first().prepend(
+                                        $item.find('.profile').text(item.rgtrNm + ' (' + item.rgtrAcnt + ')').end()
+                                            .find('.date').text(item.regDt).end()
+                                            .find('.reply-btn').remove().end()
+                                            .find('.update-form-btn, .cmnt-delete-btn').data({'cmntid': (isRgtr ? item.cmntid : null)})
+                                            .prop({disabled:(isRgtr ? false : true)})
+                                            .css({display:(isRgtr ? 'block' : 'none')}).end()
+                                            .find('.reply-textarea > pre').text(item.cn).end()
+                                            .find('.dep02').remove().end()
+                                    )
+                                }
+                                if(cmntReplyCnt <= nextLimit){ //nextLimit보다 댓굴의 총개수가 작을 경우 더보기 버튼 필요없음
+                                    $this.closest('.reply-more-view').find('button').remove();
+                                }
+                                $pageIndex.val(Number(pageNumber+1)); //페이지 증가
+                            }else{
+                                alert('더보기를 불러오는데 오류가 발생했습니다.');
                             }
-                            if(cmntReplyCnt <= nextLimit){ //n extLimit보다 댓굴의 총개수가 작을 경우 더보기 버튼 필요없음
-                                $this.closest('.relpy-more-view').find('button').remove();
-                            }
-                            $pageIndex.val(Number(pageNumber+1)); //페이지 증가
-                        }else{
-                            alert('더보기를 불러오는데 오류가 발생했습니다.');
+                            closeWorkProgress();
                         }
-                    }
-                });
+                    });
+                }
             });
         });
     </script>
