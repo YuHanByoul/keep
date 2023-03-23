@@ -75,7 +75,7 @@ public class HttpInterceptor extends HandlerInterceptorAdapter {
     private int ssoPort;
     
     /** 다국어를 적용할 포털의 URL */
-    String[] localeAllowedPageUrls = {"/main.html"};
+    String[] localeAllowedPageUrls = {"/main.html", "/front/intro/ntnEnvEduCntr/intro1.html", "/front/intro/ntnEnvEduCntr/intro3.html", "/front/intro/ntnEnvEduCntr/intro4.html"};
     Set<String> localeAllowedPageUrlSet = new HashSet<String>(Arrays.asList(localeAllowedPageUrls));
 
 
