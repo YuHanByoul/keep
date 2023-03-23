@@ -4,14 +4,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kbrainc.plum.cmm.service.ApiServiceImpl;
+import com.kbrainc.plum.front.member.model.MemberVo;
+import com.kbrainc.plum.rte.constant.Constant;
+import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 
 /**
  * 
@@ -211,6 +214,34 @@ public class ApiController {
         Map<String, Object> result = apiService.getChargerInfo(zcode, zscode);
         
         return result;
+    }
+    
+    /**
+    * 맞춤 환경정보 저장
+    *
+    * @Title : insertEnvfld
+    * @Description : 맞춤 환경정보 저장
+    * @param memberVo MemberVo객체
+    * @return Map<String,Object> 응답결과객체
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/front/api/insertEnvfld.do")
+    @ResponseBody
+    public Map<String, Object> insertEnvfld(MemberVo memberVo, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        memberVo.setUser(user);
+        memberVo.setUserid(Integer.parseInt(user.getUserid()));
+        
+        int retVal = apiService.insertEnvfld(memberVo);
+        
+        if(retVal > 0) {
+            resultMap.put("msg", "맞춤 환경정보가 저장되었습니다.");
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+        }else {
+            resultMap.put("msg", "맞춤 환경정보 저장에 실패하였습니다.");
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+        }
+        return resultMap;
     }
     
 }

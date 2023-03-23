@@ -188,7 +188,7 @@ public class CommonController {
                     List<PstVo> recruitList= bbsService.selectPstList(pstVo);
                     mav.addObject("recruitList", recruitList);
                     MemberVo memberInfo = memberService.selectMemberInfo(memberVo);
-                    mav.addObject("itrstfldCds", memberInfo.getItrstfldCd());
+                    mav.addObject("envfldCds", memberInfo.getEnvfldCd());
                 } catch(SQLException e) {
                     mav.addObject("list", null);
                 } catch(Exception e) {
@@ -266,7 +266,7 @@ public class CommonController {
                 List<PstVo> recruitList= bbsService.selectPstList(pstVo);
                 model.addAttribute("recruitList", recruitList);
                 MemberVo memberInfo = memberService.selectMemberInfo(memberVo);
-                model.addAttribute("itrstfldCds", memberInfo.getItrstfldCd());
+                model.addAttribute("envfldCds", memberInfo.getEnvfldCd());
             } catch(SQLException e) {
                 model.addAttribute("noticList", null);
             } catch(Exception e) {
