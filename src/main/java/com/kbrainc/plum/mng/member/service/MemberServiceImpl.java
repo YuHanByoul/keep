@@ -10,7 +10,6 @@ import java.util.Map;
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
@@ -19,6 +18,7 @@ import org.thymeleaf.context.Context;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.cmm.file.service.FileStorageService;
+import com.kbrainc.plum.cmm.model.CommonDao;
 import com.kbrainc.plum.cmm.service.SmsNhnServiceImpl;
 import com.kbrainc.plum.cmm.service.SmsService;
 import com.kbrainc.plum.mng.member.model.BlcklstDsctnVo;
@@ -60,8 +60,14 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
 
     @Autowired
     private MemberDao memberDao;
+    
+    @Autowired
+    private CommonDao commonDao;
 
-    @Autowired @Qualifier("MailService")
+    //@Autowired @Qualifier("MailService")
+    //private MailService mailService;
+    
+    @Autowired @Qualifier("MailNhnService")
     private MailService mailService;
     
     @Autowired
@@ -257,10 +263,20 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
             String transType = tempPwdVo.getTransType();
             //email
             if ("email".equals(transType)) {
+                
+                
+                StringBuilder contents = new StringBuilder();
+                contents.append("<tr><td align=\"center\" style=\"font-family:'맑은 고딕','Malgun Gothic','돋움',dotum,sans-serif;font-size:16px;font-weight:400;font-stretch:normal;font-style:normal;line-height:1.5;letter-spacing:-1px;color:#333333;padding:0 10px;\">");
+                contents.append("임시 비밀번호를 보내드립니다.<br /><br />로그인 후 비밀번호를 변경해주세요.<br /><br />");
+                contents.append("임시 비밀번호  :  "+ password);
+                contents.append("&nbsp;</td></tr><tr><td style=\"height:30px;font-size:0px;mso-line-height-rule:exactly;line-height:0px;\">&nbsp;</td></tr>");
+                
                 Context context = new Context();
-                context.setVariable("pssword", password);
+                context.setVariable("title", "임시비밀번호 발급");
+                context.setVariable("content", contents.toString());
                 context.setVariable("portalUrl", CommonUtil.portalUrl);
-                String mailContents = templateEngine.process("mail/mail_tempPwd", context);
+                
+                String mailContents = templateEngine.process("mail/mail_basic_template", context);
                 
                 String mailTitle = "임시비밀번호 발급";
                 MailVo mailVo = new MailVo(null, mebmerInfo.getEml(), mailTitle, mailContents, Integer.valueOf(tempPwdVo.getUser().getUserid()), "U", mebmerInfo.getUserid());
@@ -578,7 +594,11 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
      * @throws Exception 예외
      */
     public int updateMemberDelYn(MemberVo memberVo) throws Exception{
-        return memberDao.updateMemberDelYn(memberVo);
+        int retVal = 0;
+        retVal += memberDao.updateMemberDelYn(memberVo);
+        retVal += commonDao.deleteUserDrmncy(memberVo.getUser().getUserid());
+        retVal += commonDao.deleteRoleUser(memberVo.getUser().getUserid());
+        return retVal;
     };
     /**
      *  회원 기관정보 수정  
@@ -603,6 +623,18 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
      */
     public String checkJoinWithOnepassYn(MemberVo memberVo) throws Exception{
         return memberDao.checkJoinWithOnepassYn(memberVo);
+    };
+    /**
+     *  관심분야 코드 호출     
+     *
+     * @Title       : selectItrstfldCd 
+     * @Description : 관심분야 코드 호출
+     * @param Map<String,Object> 객체
+     * @return Map<String,Object> 
+     * @throws Exception 예외
+     */
+    public List<Map<String,Object>> selectItrstfldCd(Map<String,Object> paramMap) throws Exception{
+        return memberDao.selectItrstfldCd(paramMap);
     };
     
 }
