@@ -53,12 +53,10 @@ public class MmnwsVo extends ParentRequestVo {
     /** 작성 일자 */
     private String wrtDe;
     /** 수정 일시 */
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date mdfcnDt;
     /** 수정자 아이디 */
     private int mdfrid;
     /** 등록 일시 */
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date regDt;
     /** 등록자아이디 */
     private int rgtrid;

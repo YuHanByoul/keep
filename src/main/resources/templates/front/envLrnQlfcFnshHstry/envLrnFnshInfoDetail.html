@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" >
+<body>
+	<div layout:fragment="content">
+	
+		<!-- container -->
+		<div class="table-caption">
+			<div class="left">
+				<h3 class="sub-title">수료정보</h3>
+			</div>
+		</div>
+	
+		<div class="table-row">
+			<table>
+				<caption>수료정보  - 교육구분, 교육명, 분류, 교육기간, 수료번호, 수료일, 증명서</caption>
+				<colgroup>
+					<col style="width:140px;">
+					<col>
+					<col style="width:140px;">
+					<col>
+				</colgroup>
+				<tbody>
+					<tr>
+						<th scope="row">교육구분</th>
+						<td th:text="${fnshInfo.eduType}"></td>
+						<th scope="row">교육명</th>
+						<td th:text="${fnshInfo.eduNm}"></td>
+					</tr>
+					<tr>
+						<th scope="row">분류</th>
+						<td th:text="${fnshInfo.eduForm}"></td>
+						<th scope="row">교육기간</th>
+						<td th:text="${fnshInfo.eduDt}"></td>
+					</tr>
+					<tr>
+						<th scope="row">수료번호</th>
+						<td th:text="${fnshInfo.fnshRsltCode}"></td>
+						<th scope="row">수료일</th>
+						<td th:text="${fnshInfo.fnshPrcsDt}"></td>
+					</tr>
+					<tr th:if="${fnshInfo.eduType} == 'lMS'">
+						<th scope="row">증명서</th>
+						<td colspan="3"><button type="button" class="btn-medium btn-green" th:onclick="printCrtf([[${fnshInfo.fnshUrl}]])">출력</button></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	
+	
+		<div class="btn-wrap">
+			<div class="center">
+				<button type="button" class="btn-medium btn-gray" onclick="moveToList();">목록</button>
+			</div>
+		</div>
+		<!-- //content -->
+		
+		<script th:inline="javascript">
+			function printCrtf(url) {
+				var urlTest1 = url.includes('https://');
+				var urlTest2 = url.includes('http://');
+				
+				if(urlTest1 && urlTest2) {
+					window.open(url);
+				}else{
+					window.open('http://'+url);
+				}
+			}
+			
+	        function moveToList() {
+	            location.href = '/front/envLrnQlfcFnshHstry/envLrnQlfcFnshHstryListForm.html';
+	        }
+		</script>
+		
+	</div>
+</body>
+</html>
