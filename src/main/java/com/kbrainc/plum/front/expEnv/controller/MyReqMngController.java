@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
+import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.front.bizAply.model.BudgetVo;
 import com.kbrainc.plum.front.bizAply.model.CapabilityResultVo;
 import com.kbrainc.plum.front.bizAply.model.CapabilityVo;
@@ -74,6 +75,9 @@ public class MyReqMngController {
     
     @Autowired
     private FileService fileService;
+    
+    @Autowired
+    private CommonService commonService;
     
     /**
     * 공모신청 화면으로 이동. 
@@ -172,6 +176,7 @@ public class MyReqMngController {
                 detail = reqMngService.userBaseInfoDetail(reqUserVo);                 
             }
              
+            model.addAttribute("sidoList", commonService.selectAlowedCtprvnList());
             model.addAttribute("mode", reqUserVo.getMode());
             model.addAttribute("pcntstid", reqUserVo.getPcntstid());
             model.addAttribute("pcntstNm", StringUtils.isEmpty(reqUserVo.getPcntstNm()) ? detail.getPcntstNm() : reqUserVo.getPcntstNm());

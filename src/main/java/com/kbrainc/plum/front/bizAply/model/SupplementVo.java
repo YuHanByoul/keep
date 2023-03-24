@@ -95,4 +95,10 @@ public class SupplementVo extends ParentRequestVo {
     
     /** 사업보고아이디 */
     private Integer reportid;
+    
+    /** 통장사본 첨부파일 */
+    private Integer bnkbFileid;
+    
+    /** 정산첨부파일 */
+    private Integer excclcAtchFilegrpid;
 }
