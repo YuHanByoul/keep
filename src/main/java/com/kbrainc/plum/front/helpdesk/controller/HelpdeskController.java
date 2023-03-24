@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,8 +87,18 @@ public class HelpdeskController {
      * @Description : 헬프데스크 상세화면
      */
     @GetMapping("/helpdeskDetail.html")
-    public String helpdeskDetail(HelpdeskVo searchVo, Model model, @UserInfo UserVo user) throws Exception {
+    public String helpdeskDetail(HelpdeskVo searchVo, Model model, @UserInfo UserVo user, HttpServletResponse response) throws Exception {
         HelpdeskVo helpdesk = helpdeskService.selectHelpdesk(searchVo);
+
+        if(helpdesk.getRlsYn().equals("N")) {
+            if(!helpdesk.getUserid().equals(Integer.valueOf(user.getUserid()))) {
+                response.setContentType("text/html;charset=UTF-8");
+                PrintWriter writer = response.getWriter();
+                writer.print("<script>alert('비공개 글의 경우 작성자만 볼 수 있습니다.');history.back();</script>");
+                return null;
+            }
+        }
+
         HelpdeskAnsVo helpdeskAns = helpdeskService.selectHelpdeskAns(searchVo);
 
         model.addAttribute("loginUserid", user != null ? Integer.valueOf(user.getUserid()) : null);

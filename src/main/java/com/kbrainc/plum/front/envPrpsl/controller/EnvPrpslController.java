@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -114,8 +116,18 @@ public class EnvPrpslController {
      * @Description : 환경교육 제안 상세 화면
      */
     @GetMapping("/envPrpslDetail.html")
-    public String envPrpslDetail(EnvPrpslVo searchVo, Model model, @UserInfo UserVo user) throws Exception {
+    public String envPrpslDetail(EnvPrpslVo searchVo, Model model, @UserInfo UserVo user, HttpServletResponse response) throws Exception {
         EnvPrpslVo envPrpsl = envPrpslSerivce.selectEnvPrpsl(searchVo);
+
+        if(envPrpsl.getRlsYn().equals("N")) {
+            if(!envPrpsl.getUserid().equals(Integer.valueOf(user.getUserid()))) {
+                response.setContentType("text/html;charset=UTF-8");
+                PrintWriter writer = response.getWriter();
+                writer.print("<script>alert('비공개 글의 경우 작성자만 볼 수 있습니다.');history.back();</script>");
+                return null;
+            }
+        }
+
         EnvPrpslAnsVo envPrpslAns = envPrpslSerivce.selectEnvPrpslAns(searchVo);
 
         model.addAttribute("loginUserid", user != null ? Integer.valueOf(user.getUserid()) : null);
