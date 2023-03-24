@@ -77,10 +77,24 @@ public interface MapService {
 	* @Title : mapExcelDatalValidationCheck
 	* @Description : 지도기반데이터 엑셀데이터 체크
 	* @param excelList
+	 * @param resrceSeCd
 	* @return
 	* @throws Exception
 	* @return Map<String,Object>
 	*/
-	public Map<String, Object> mapExcelDatalValidationCheck(ArrayList excelList) throws Exception;
+	public Map<String, Object> mapExcelDatalValidationCheck(ArrayList excelList, String resrceSeCd) throws Exception;
+
+	/**
+	* 지도기반데이터 목록 등록
+	*
+	* @Title : insertMapList
+	* @Description : 지도기반데이터 목록 등록
+	* @param mapVoList
+	 * @param user
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertMapList(List<MapVo> mapVoList, UserVo user) throws Exception;
 
 }
