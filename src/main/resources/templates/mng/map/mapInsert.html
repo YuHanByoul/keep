@@ -1,0 +1,322 @@
+
+<form id="mapFrm" >
+    <input type="hidden" id="rgnCd"    name="rgnCd" />
+    <input type="hidden" id="zip"      name="zip" />
+
+    <div class="card">
+        <div class="card-header p-b-0">
+            <h3 class="sub-title"><strong>기본정보</strong></h3>
+        </div>
+        <div class="card-block-small p-t-0">
+            <div class="row">
+                <div class="col-sm-6 col-lg-3">
+                    <div class="mb-3 form-group row">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>구분</strong></div>
+                        <div class="col-sm-12">
+                            <select class="form-select form-select-sm form-control-sm" id="resrceSeCd" name="resrceSeCd" onchange="changeResrceSeCd()">
+                                <option value="238101">기관</option>
+                                <option value="238102">환경교육시설</option>
+                                <option value="238103104">교육프로그램 > 환경교육 프로그램</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="mb-3 form-group row">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>지역(시도)</strong></div>
+                        <div class="col-sm-12">
+                            <select class="form-select form-select-sm form-control-sm" id="ctprvnCd" name="ctprvnCd">
+                                <option value="">- 전체 -</option>
+                                <option th:each="item:${sidoList}" th:value="${item.ctprvnCd}" ><th:block th:text="${item.ctprvnNm}" ></th:block></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-header p-t-0 p-b-0">
+            <h3 class="sub-title"><strong>지도기반 데이터 정보</strong></h3>
+        </div>
+
+        <div class="card-block-small p-t-0" id="type1" style="display:''">
+            <!-- [CASE] 구분 - 기관, 환경교육시설 -->
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="mb-3 form-group row required">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>환경자원명</strong></label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control form-control-sm" name="resrceNm" id="resrceNm" placeholder="" value="">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="mb-3 form-group row required">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>전화번호</strong></label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control form-control-sm" name="telno" id="telno" placeholder="" value="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- [CASE] 교육프로그램 -->
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="mb-3 form-group row required">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>홈페이지</strong></label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control form-control-sm" name="hmpg" id="hmpg" placeholder="" value=""/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="mb-3 form-group row required">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="addr1"><strong>주소</strong></label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control form-control-sm" name="addr1" id="addr1" placeholder="주소" onclick="daumPostcode()" readonly/>
+                            <span class="messages"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="mb-3 form-group row required">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="addrDtl1"><strong>상세주소</strong></label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control form-control-sm" name="addrDtl1" id="addrDtl1" placeholder="">
+                            <span class="messages"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3 form-group row required" >
+                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1 "><strong>사용여부</strong></div>
+                    <div class="col-12">
+                        <div class="form-radio">
+                            <div class="radio radio-inline">
+                                <span kattr:radio_yn="useYn" label1="사용" label2="미사용" addStyle="margin-top:4px" addClass="col-sm-3" isAdmin="true" value="Y"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-block-small p-t-0" id="type2" style="display:''">
+            <!-- [CASE] 교육프로그램 -->
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="mb-3 form-group row required">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>환경자원명</strong></label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control form-control-sm" name="resrceNm1" id="resrceNm1" placeholder="" value="">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="mb-3 form-group row required">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>운영기관명</strong></label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control form-control-sm" name="instNm" id="instNm" placeholder="" value="">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="mb-3 form-group row required">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>교육대상</strong></label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control form-control-sm" name="eduTrgt" id="eduTrgt" placeholder="" value="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-3 col-sm-6">
+                    <div class="mb-3 form-group row required">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>교육인원</strong></label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control form-control-sm" name="eduNope" id="eduNope" placeholder="" value="">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="mb-3 form-group row required">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>교육주제</strong></label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control form-control-sm" name="eduSbjct" id="eduSbjct" placeholder="" value="">
+                        </div>
+                    </div>
+                </div>
+<!--                 <div class="col-lg-3 col-sm-6"> -->
+<!--                     <div class="mb-3 form-group row required"> -->
+<!--                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>등록자</strong></label> -->
+<!--                         <div class="col-sm-12"> -->
+<!--                             <input type="text" class="form-control form-control-sm" name="eduNope" id="eduNope" placeholder="" value=""> -->
+<!--                         </div> -->
+<!--                     </div> -->
+<!--                 </div> -->
+<!--                 <div class="col-lg-3 col-sm-6"> -->
+<!--                     <div class="mb-3 form-group row required"> -->
+<!--                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>등록일</strong></label> -->
+<!--                         <div class="col-sm-12"> -->
+<!--                             <input type="text" class="form-control form-control-sm" name="eduSbjct" id="eduSbjct" placeholder="" value=""> -->
+<!--                         </div> -->
+<!--                     </div> -->
+<!--                 </div> -->
+            </div>
+            <!-- // [CASE] -->
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="mb-3 form-group row required">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="addr2"><strong>주소</strong></label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control form-control-sm" name="addr2" id="addr2" placeholder="주소" onclick="daumPostcode()" readonly/>
+                            <span class="messages"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="mb-3 form-group row required">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="addrDtl2"><strong>상세주소</strong></label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control form-control-sm" name="addrDtl2" id="addrDtl2" placeholder="">
+                            <span class="messages"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3 form-group row">
+                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사용여부</strong></div>
+                    <div class="col-12">
+                        <div class="form-radio">
+                            <div class="radio radio-inline">
+                                <span kattr:radio_yn="useYn" label1="사용" label2="미사용" addStyle="margin-top:4px" addClass="col-sm-3" isAdmin="true"  />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-block-small">
+            <button type="button" class="btn btn-disabled m-r-5" onclick="gridHelper1.toggleContent();">취소</button>
+            <button type="button" class="btn btn-primary" onclick="doSave()">저장</button>
+        </div>
+    </div>
+</form>
+
+<script th:inline="javascript">
+
+    var validator = $("#mapFrm #resrceSeCd").val() != "238103104" ?
+    	$("#mapFrm").validate({
+            onsubmit: false,
+            rules: {
+                    resrceNm1:   { required: true , maxlength: 100 }
+                  , telno    :   { required: true }
+                  , hmpg     :   { required: true }
+                  , addr     :   { required: true }
+                  , addrDtl  :   { required: true }
+                  , useYn    :   { required: true }
+              },
+              messages: {
+                    resrceNm1:   { required: "환경자원명을 입력해주십시오." , maxlength: "기관명은 100자 이하여야 합니다." }
+                  , telno    :   { required: "전화번호를 입력해주십시오." }
+                  , hmpg     :   { required: "홈페이지를 입력해주십시오." }
+                  , addr     :   { required: "주소를 입력하세요"  }
+                  , addrDtl  :   { required: "상세주소를 입력하세요"  }
+                  , useYn    :   { required: "사용여부를 선택해주십시오." }
+              }
+        })
+        :
+        $("#mapFrm").validate({
+            rules: {
+                    resrceNm2:   { required: true , maxlength: 100 }
+                  , ctprvnCd :   { required: true }
+                  , hmpg     :   { required: true }
+                  , telno    :   { required: true }
+                  , rgtrid   :   { required: true }
+                  , regDt    :   { required: true }
+                  , useYn    :   { required: true }
+              },
+              messages: {
+                    resrceNm2:   { required: "환경자원명을 입력해주십시오." , maxlength: "기관명은 100자 이하여야 합니다." }
+                  , ctprvnCd :   { required: "지역(시도)를 선택해주십시오." }
+                  , hmpg     :   { required: "홈페이지를 입력해주세요." }
+                  , telno    :   { required: "전화번호를 입력하세요"  }
+                  , rgtrid   :   { required: "승인상태를 선택해주십시오." }
+                  , regDt    :   { required: "숫자만 입력가능합니다." }
+                  , useYn    :   { required: "숫자만 입력가능합니다." }
+              }
+        });
+
+
+    function daumPostcode(){
+        new daum.Postcode({
+            oncomplete: function(data) {
+                var addr = '';
+                if (data.userSelectedType === 'R') {
+                    addr = data.roadAddress;
+                } else {
+                    addr = data.jibunAddress;
+                }
+                $('#rgnCd').val(data.sigunguCode);
+                $('#zip').val(data.zonecode);
+                $('#addr').val(addr);
+                $('#addrDtl').focus();
+            }
+        }).open();
+    }
+
+    function changeResrceSeCd(){
+
+    	if($("#mapFrm #resrceSeCd").val() == "238103104"){
+    	    alert("!");
+    	    $("#type1").prop("style","display:none");
+    	    $("#type2").prop("style","display:''");
+    	}else{
+    		$("#type1").prop("style","display:''");
+    		$("#type2").prop("style","display:none");
+    	}
+    }
+
+    function doSave(){
+    	let data;
+
+		if(!($("#mapFrm").valid())) return;
+	    data =  $("#mapFrm").serialize();
+
+        if(!confirm("저장하시겠습니까?")) return;
+
+        if(displayWorkProgress()){
+            $.ajax({
+                url : "/mng/map/insertMap.do",
+                type: 'POST',
+                cache : false,
+                dataType: 'json',
+                data : data,
+                success : function (data){
+
+                    if(data.result=="success"){
+                        alert(data.msg);
+                        gridHelper1.resetListContent();
+                    }else{
+                        alert(data.msg);
+                    }
+                    closeWorkProgress();
+                }
+            });
+        }
+    }
+
+    $(function(){
+
+    	changeResrceSeCd();
+    	if($("#resrceid").val() != null && $("#resrceid").val() != 0){
+
+    	}
+    })
+
+</script>
