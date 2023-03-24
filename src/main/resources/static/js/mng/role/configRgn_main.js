@@ -62,20 +62,8 @@ function makeTree(){
                             var option = "";
                             var ctprvnCd;
                             for(var i = 0; i < data.allRgnList.length; i++){
-                                if(i == 0) {
-                                    option += "<optgroup label='" + data.allRgnList[i].CTPRVN_NM + "'>";
-                                    ctprvnCd = data.allRgnList[i].CTPRVN_CD;
-                                }else if(data.allRgnList[i].CTPRVN_CD != ctprvnCd){
-                                    option += "</optgroup>";
-                                    option += "<optgroup label='" + data.allRgnList[i].CTPRVN_NM + "'>";
-                                    ctprvnCd = data.allRgnList[i].CTPRVN_CD;
-                                }
                                 findIndex = data.roleRgnList.findIndex(item => item.RGN_CD == data.allRgnList[i].RGN_CD);
                                 option += "<option value='" + data.allRgnList[i].RGN_CD + "' " + (findIndex > -1 ? "selected":"") + ">" + data.allRgnList[i].CD_NM + "</option>";
-                                
-                                if(i == data.allRgnList.length - 1){
-                                    option += "</optgroup>";
-                                }
                             }
                             jQuery("#rgncds").append(option);
                         }
@@ -129,7 +117,6 @@ function fn_save(){
 }
 
 $('.searchable').multiSelect({
-    selectableOptgroup: true,
     selectableHeader: "<input type='text' class='form-control' autocomplete='off' placeholder='검색어 입력'>",
     selectionHeader: "<input type='text' class='form-control' autocomplete='off' placeholder='검색어 입력'>",
     afterInit: function(ms) {

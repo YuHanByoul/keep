@@ -22,6 +22,37 @@
 	    </if>
 	</select>
     
+    <!-- 현재 사용자의 접근가능한 시도목록을 반환한다. -->
+    <select id="selectAlowedCtprvnList" parameterType="UserVo" resultType="java.util.Map">
+        /* CommonDao.selectAlowedCtprvnList */
+        SELECT 
+            CTPRVN_CD,
+            CTPRVN_NM
+        FROM 
+            TB_CMM_ADDR_CTPRVN
+        WHERE 1 = 1
+        <if test='roleInfo.trgtRgnCd == "S"'>
+            AND CTPRVN_CD IN(SELECT RGN_CD FROM TB_CMM_ROLE_RGN WHERE ROLEID = #{roleInfo.roleid})          
+        </if>
+        ORDER BY ORDR ASC
+    </select>
+    
+    <!-- 현재 사용자의 접근가능한 시군구목록을 반환한다. -->
+    <select id="selectAlowedSignguList" parameterType="UserVo" resultType="java.util.Map">
+        /* CommonDao.selectAlowedSignguList */
+        SELECT
+            A.SIGNGU_CD,
+            B.CTPRVN_NM,
+            A.SIGNGU_NM
+        FROM 
+            TB_CMM_ADDR_SIGNGU A INNER JOIN TB_CMM_ADDR_CTPRVN B ON A.CTPRVN_CD = B.CTPRVN_CD
+        WHERE 1 = 1
+        <if test='roleInfo.trgtRgnCd == "S"'>
+        AND A.CTPRVN_CD IN(SELECT RGN_CD FROM TB_CMM_ROLE_RGN WHERE ROLEID = #{roleInfo.roleid})
+        </if>         
+        ORDER BY A.ORDR ASC
+    </select>
+    
     <!-- 현재 사용자의 접근가능한 기관목록을 반환한다. -->
     <select id="selectAlowedInstList" parameterType="UserVo" resultType="java.util.Map">
         /* CommonDao.selectAlowedInstList */
@@ -48,7 +79,7 @@
             </otherwise>
         </choose>
         <if test='roleInfo.trgtRgnCd == "S"'>
-            AND INSTID IN(SELECT INSTID FROM TB_CMM_INST WHERE RGN_CD IN(SELECT RGN_CD FROM TB_CMM_ROLE_RGN WHERE ROLEID = #{roleInfo.roleid}))          
+            AND INSTID IN(SELECT INSTID FROM TB_CMM_INST WHERE RGN_CD IN(SELECT SIGNGU_CD FROM TB_CMM_ADDR_SIGNGU WHERE CTPRVN_CD IN (SELECT RGN_CD FROM TB_CMM_ROLE_RGN WHERE ROLEID = #{roleInfo.roleid})))      
         </if>
         ORDER BY INST_NM ASC
     </select>
@@ -81,7 +112,7 @@
             </otherwise>
         </choose>
         <if test='user.roleInfo.trgtRgnCd == "S"'>
-            AND S.INSTID IN(SELECT INSTID FROM TB_CMM_INST WHERE RGN_CD IN(SELECT RGN_CD FROM TB_CMM_ROLE_RGN WHERE ROLEID = #{user.roleInfo.roleid}))         
+            AND S.INSTID IN(SELECT INSTID FROM TB_CMM_INST WHERE RGN_CD IN(SELECT SIGNGU_CD FROM TB_CMM_ADDR_SIGNGU WHERE CTPRVN_CD IN (SELECT RGN_CD FROM TB_CMM_ROLE_RGN WHERE ROLEID = #{user.roleInfo.roleid})))         
         </if>
         ORDER BY S.SITE_NM ASC
     </select>

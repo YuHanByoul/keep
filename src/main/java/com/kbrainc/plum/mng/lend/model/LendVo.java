@@ -121,6 +121,33 @@ public class LendVo extends ParentRequestVo {
     
     /** 수정자아이디 */
     private int mdfrid;
+    
+    /** 꾸러미 */
+    /** 꾸러미명  */
+    private String packageNm;
+    /** 꾸러미 유형 코드  */
+    private String typeCd;
+    
+    /** 꾸러미 유형 코드명  */
+    private String typeCdNm;
+    
+    /** 교육 유형 코드  */
+    private String eduTypeCd;
+    
+    /** 교육 유형 코드명  */
+    private String eduTypeCdNm;
+    
+    /** 주제 코드명(S)  */
+    private String eduSbjctCdNm;
+    
+    /** 교육 대상 코드명(S)  */
+    private String eduTrgtCdNm;
+    
+    /** 모둠구성 코드 */
+    private String teamCmpstnCd;
+    
+    /** 모둠구성 코드 명  */
+    private String teamCmpstnCdNm;
      
     /****** 추가 검색용****/
     /** 대여 상태  코드 */
@@ -134,6 +161,12 @@ public class LendVo extends ParentRequestVo {
     
     /** 등록용 대여 차시   */
     private List<LendRndVo> lendRndList ;
+    
+    /** 차시 아이디 */
+    private Integer rndid;
+    
+    /** 차시 순서 */
+    private Integer ordr;
     
     /** 삭제용   */
     private List<Integer> deleteIds ;
@@ -157,6 +190,55 @@ public class LendVo extends ParentRequestVo {
                 //e.printStackTrace();
                 return ;
              }
+        }
+    }
+    public void setTypeCd(String typeCd) throws Exception{
+        this.typeCd = typeCd;
+        if(CommonUtil.isEmpty(this.typeCdNm)) { 
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.typeCd);
+                this.typeCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                //e.printStackTrace();
+                return ;
+            }catch(Exception e) {
+                //e.printStackTrace();
+                return ;
+            }
+        }
+    }
+    
+    public void setEduTypeCd(String eduTypeCd) throws Exception{
+        this.eduTypeCd = eduTypeCd;
+        if(CommonUtil.isEmpty(this.eduTypeCdNm)) { 
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.eduTypeCd);
+                this.eduTypeCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                //e.printStackTrace();
+                return ;
+            }catch(Exception e) {
+                //e.printStackTrace();
+                return ;
+            }
+        }
+    }
+    public void setTeamCmpstnCd(String teamCmpstnCd) throws Exception{
+        this.teamCmpstnCd = teamCmpstnCd;
+        if(CommonUtil.isEmpty(this.teamCmpstnCdNm)) { 
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.teamCmpstnCd);
+                this.teamCmpstnCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                //e.printStackTrace();
+                return ;
+            }catch(Exception e) {
+                //e.printStackTrace();
+                return ;
+            }
         }
     }
     

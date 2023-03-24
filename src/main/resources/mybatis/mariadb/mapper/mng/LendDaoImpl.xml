@@ -224,41 +224,71 @@
    
    <!-- 대여 상세 정보  --> 
    <select id="selectLend" parameterType="LendVo" resultType="LendVo">
-        /* LendDao.selectLendList */
-        SELECT 
-            A.RCRITID
-            ,A.RCRIT_NM
-            ,A.BGNG_DT
-            ,A.END_DT
-            ,A.PACKAGEID
-            ,A.LMT_CD
-            ,A.DTL_CN
-            ,A.MVP_URL
-            ,A.MVP_PSTN_CD
-            ,A.ATENT_MTTR
-            ,A.RPRS_IMG_FILEID
-            ,A.DTL_IMG_FILEGRPID
-            ,A.MAP_FILEGRPID
-            ,A.EDU_PHOTO_FILEGRPID
-            ,A.OPER_YN
-            ,A.MDFCN_DT
-            ,A.MDFRID
-            ,A.REG_DT
-            ,A.RGTRID
-            ,packageindvdCnt
-         FROM 
-           TB_THA_PACKAGE_LEND_RCRIT A
-           LEFT OUTER JOIN (
-               SELECT 
-                    PACKAGEID
-                    ,COUNT(PACKAGEID) packageindvdCnt
-                 FROM 
-                    TB_THA_PACKAGEINDVD
-                 GROUP BY PACKAGEID
-           ) B 
-           ON A.PACKAGEID = B.PACKAGEID
-        WHERE 1=1
-          AND A.RCRITID = #{rcritid}
+        /* LendDao.selectLend */
+             SELECT 
+                 A.RCRITID
+                 ,A.RCRIT_NM
+                 ,A.BGNG_DT
+                 ,A.PACKAGEID
+                 ,A.END_DT
+                 ,A.LMT_CD
+                 ,A.DTL_CN
+                 ,A.MVP_URL
+                 ,A.MVP_PSTN_CD
+                 ,A.ATENT_MTTR
+                 ,IFNULL(A.RPRS_IMG_FILEID,0) RPRS_IMG_FILEID 
+                 ,A.DTL_IMG_FILEGRPID
+                 ,A.MAP_FILEGRPID
+                 ,A.EDU_PHOTO_FILEGRPID
+                 ,A.OPER_YN
+                 ,A.MDFCN_DT
+                 ,A.MDFRID
+                 ,A.REG_DT
+                 ,A.RGTRID
+                 ,B.TYPE_CD 
+                 ,B.EDU_TYPE_CD
+                 ,B.PACKAGE_NM 
+                 ,B.TEAM_CMPSTN_CD
+                 ,C.EDU_SBJCT_CD
+                 ,C.EDU_SBJCT_CD_NM
+                 ,D.EDU_TRGT_CD
+                 ,D.EDU_TRGT_CD_NM
+               FROM 
+                 TB_THA_PACKAGE_LEND_RCRIT A
+                 INNER JOIN TB_THA_PACKAGE B
+                 ON A.PACKAGEID = B.PACKAGEID
+                 INNER JOIN (
+                     SELECT
+                        A.PACKAGEID
+                        ,CONCAT(D.CD_NM ,'-',GROUP_CONCAT(C.CD_NM)) EDU_SBJCT_CD_NM 
+                        ,GROUP_CONCAT(C.CD) EDU_SBJCT_CD 
+                      FROM 
+                        TB_THA_PACKAGE A 
+                        INNER JOIN TB_THA_PACKAGE_EDU_SBJCT_MAPNG B
+                        ON A.PACKAGEID = B.PACKAGEID
+                        INNER JOIN  TB_CMM_CD C
+                        ON B.EDU_SBJCT_CD = C.CD
+                        INNER JOIN  TB_CMM_CD D
+                        ON C.UPPR_CD  = D.CD
+                        GROUP BY A.PACKAGEID
+                 ) C
+                 ON B.PACKAGEID = C.PACKAGEID
+                 INNER JOIN (
+                    SELECT
+                          A.PACKAGEID 
+                         ,GROUP_CONCAT(C.CD_NM) EDU_TRGT_CD_NM 
+                         ,GROUP_CONCAT(C.CD) EDU_TRGT_CD 
+                      FROM 
+                        TB_THA_PACKAGE A 
+                        INNER JOIN TB_THA_PACKAGE_EDU_TRGT_MAPNG B
+                        ON A.PACKAGEID = B.PACKAGEID
+                        INNER JOIN  TB_CMM_CD C
+                        ON B.EDU_TRGT_CD  = C.CD
+                        GROUP BY A.PACKAGEID
+                 ) D
+                 ON B.PACKAGEID = D.PACKAGEID
+              WHERE 1=1
+                AND RCRITID = #{rcritid}
    </select>
    
    <!-- 대여 차시 상세 리스트  --> 
@@ -522,11 +552,14 @@
             <if test="searchKeyword != null and searchKeyword != '' and searchType == 'addr'">
                AND (A.DLVY_ADDR   LIKE CONCAT('%',#{searchKeyword},'%') or A.DLVY_ADDR_DTL   LIKE CONCAT('%',#{searchKeyword},'%') )
             </if>
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'package'">
+               AND F.PACKAGE_NM  LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
             <if test="searchRcritid != null and searchRcritid != '' ">
                AND C.RCRITID = #{searchRcritid}
             </if>
             <if test="searchPackageid != null and searchPackageid != '' ">
-               AND C.RCRITID = #{searchPackageid}
+               AND A.PACKAGEID = #{searchPackageid}
             </if>
             <if test="searchSttsCd != null and searchSttsCd != '' ">
                AND A.STTS_CD = #{searchSttsCd}
@@ -547,6 +580,10 @@
             <if test="searchEndDt != null and searchEndDt != '' ">
                AND A.LEND_END_DE  <![CDATA[<=]]> #{searchEndDt}
             </if>
+            <if test="searchRndid != null and searchRndid != '' ">
+               AND B.RNDID = #{searchRndid}
+            </if>
+
           <include refid="PaginationMapper.footer"/>
     </select>
     <!-- 대여 모집 목록 호출 -->
@@ -575,7 +612,7 @@
             FROM 
               TB_THA_PACKAGE_LEND_RCRIT
     </select>
-    <!-- 대여 모집 목록 호출 -->
+    <!-- 대여 신청 재고 및 차시 별 수량 등 체크  -->
     <select id="checkRndStockOver" parameterType="LendAplyVo" resultType="map">
       /* PackageDao.selectLendRcritList */
       WITH RND_LIMIT_CNT AS (
@@ -691,7 +728,7 @@
                     FROM 
                        TB_THA_PACKAGE_LEND_APLY A
                       WHERE 1=1
-                        AND DLVY_STTS_CD != '230102'
+                        AND (DLVY_STTS_CD != '230102' OR DLVY_STTS_CD IS NULL )
                         AND STTS_CD != #{sttsCd}
                         AND A.APLYID IN (
                             <foreach item="item" collection="aplyids" separator=",">
@@ -741,9 +778,11 @@
                 ,A.REG_DT
                 ,A.RGTRID
                 ,B.ORDR 
+                ,B.RCRITID
                 ,C.INST_TYPE_CD
                 ,D.CTPRVN_NM AS CTPRVN_CD_NM
                 ,E.PACKAGE_NM 
+                ,F.RCRIT_NM 
               FROM 
                 TB_THA_PACKAGE_LEND_APLY A
                 INNER JOIN TB_THA_PACKAGE_LEND_RND B
@@ -752,11 +791,213 @@
                 ON A.INSTID = C.INSTID 
                 LEFT OUTER  JOIN TB_CMM_ADDR_CTPRVN D
                 ON A.CTPRVN_CD = D.CTPRVN_CD
-                INNER JOIN tb_tha_package E
+                INNER JOIN TB_THA_PACKAGE E
                 ON A.PACKAGEID = E.PACKAGEID 
+                INNER JOIN TB_THA_PACKAGE_LEND_RCRIT F 
+                ON B.RCRITID  = F.RCRITID 
             WHERE 1=1
               AND APLYID = #{aplyid}
     </select>
+    <!-- 대여 출고 목록 호출 --> 
+    <select id="selectLendAplyDlvyList" parameterType="LendAplyVo" resultType="LendAplyDlivyVo">
+            /* LendDao.selectLendAplyDlvyList */
+            SELECT 
+                A.APLYID
+               ,A.RNDID
+               ,A.PACKAGEINDVDID
+               ,A.DLIVY_PRCS_DT
+               ,A.WRHOUSNG_PRCS_DT
+               ,A.DLIVY_PICID
+               ,A.WRHOUSNG_PICID
+               ,A.REG_DT
+               ,A.RGTRID
+               ,B.PACKAGEINDVD_NM  
+               ,B.INDVDNO 
+             FROM 
+               TB_THA_PACKAGE_LEND_APLY_DLIVY A
+               INNER JOIN TB_THA_PACKAGEINDVD B 
+               ON A.PACKAGEINDVDID = B.PACKAGEINDVDID 
+            WHERE 1=1 
+              AND APLYID = #{aplyid}
+    </select>
+    <!-- 대여 신청 수정   -->    
+    <update id="updateLendAply"  parameterType="LendAplyVo"  >
+        /* LendDao.updateLendAply */
+        UPDATE TB_THA_PACKAGE_LEND_APLY
+          SET
+          <if test="instid != null and instid != ''">
+             INSTID         = #{instid       },
+          </if>
+          <if test="packageid != null and packageid != ''">
+             PACKAGEID      = #{packageid    },
+          </if>
+          <if test="qnty != null and qnty != ''">
+             QNTY           = #{qnty         },
+          </if>
+          <if test="lendBgngDe != null and lendBgngDe != ''">
+             LEND_BGNG_DE   = #{lendBgngDe   },
+          </if>
+          <if test="lendEndDe != null and lendEndDe != ''">
+             LEND_END_DE    = #{lendEndDe    },
+          </if>
+          <if test="rejectRsn != null and rejectRsn != ''">
+             REJECT_RSN     = #{rejectRsn    },
+          </if>
+          <if test="sttsCd != null and sttsCd != ''">
+            STTS_CD = #{sttsCd},
+          </if>  
+          <if test="dlvySttsCd != null and dlvySttsCd != ''">
+             DLVY_STTS_CD   = #{dlvySttsCd   },
+          </if>
+          <if test="aplcntNm != null and aplcntNm != ''">
+             APLCNT_NM      = #{aplcntNm     },
+          </if>
+          <if test="instNm != null and instNm != ''">
+             INST_NM        = #{instNm       },
+          </if>
+          <if test="telno != null and telno != ''">
+             TELNO          = #{telno        },
+          </if>
+          <if test="eml != null and eml != ''">
+             EML            = #{eml          },
+          </if>
+          <if test="eduCnt != null and eduCnt != ''">
+             EDU_CNT        = #{eduCnt       },
+          </if>
+          <if test="eduNope != null and eduNope != ''">
+             EDU_NOPE       = #{eduNope      },
+          </if>
+          <if test="grpNm != null and grpNm != ''">
+             GRP_NM         = #{grpNm        },
+          </if>
+          <if test="ctprvnCd != null and ctprvnCd != ''">
+             CTPRVN_CD      = #{ctprvnCd     },
+          </if>
+          <if test="recptr != null and recptr != ''">
+             RECPTR         = #{recptr       },
+          </if>
+          <if test="recptrTelno != null and recptrTelno != ''">
+             RECPTR_TELNO   = #{recptrTelno  },
+          </if>
+          <if test="recptrEml != null and recptrEml != ''">
+             RECPTR_EML     = #{recptrEml    },
+          </if>
+          <if test="dlvyZip != null and dlvyZip != ''">
+             DLVY_ZIP       = #{dlvyZip      },
+          </if>
+          <if test="dlvyAddr != null and dlvyAddr != ''">
+             DLVY_ADDR      = #{dlvyAddr     },
+          </if>
+          <if test="dlvyAddrDtl != null and dlvyAddrDtl != ''">
+             DLVY_ADDR_DTL  = #{dlvyAddrDtl  },
+          </if>
+          <if test="hdryInstCd != null and hdryInstCd != ''">
+             HDRY_INST_CD   = #{hdryInstCd   },
+          </if>
+          <if test="invcnoDlivy != null and invcnoDlivy != ''">
+            INVCNO_DLIVY = #{invcnoDlivy   },  
+          </if>  
+          <if test="invcnoWrhousng != null and invcnoWrhousng != ''">
+            INVCNO_WRHOUSNG = #{invcnoWrhousng},  
+          </if>  
+          <if test="rvwScr != null and rvwScr != ''">
+            RVW_SCR = #{rvwScr        },  
+          </if>  
+          <if test='rvwCn != null and rvwCn != ""'>
+            RVW_CN = #{rvwCn         },  
+          </if>  
+          <if test="rvwFilegrpid != null and rvwFilegrpid != 0">
+            RVW_FILEGRPID = #{rvwFilegrpid  },  
+          </if>  
+          <if test="rvwCn != null and rvwCn != ''">
+            RVW_REG_DT = NOW(),  
+          </if>  
+            MDFCN_DT = NOW()            ,  
+            MDFRID  = #{user.userid   }     
+        WHERE APLYID = #{aplyid}     
+    </update>
     
+    <!--************* 모바일 출고 관리****************-->
+    <!-- 대여 모집 차시 목록 호출 (검색용)-->
+    <select id="selectLendRcritRndList" parameterType="LendVo" resultType="LendVo">
+          /* LendDao.selectLendRcritRndList */
+            SELECT  
+               A.RCRITID
+              ,A.RCRIT_NM
+              ,B.RNDID 
+              ,B.ORDR 
+              ,A.PACKAGEID
+              ,A.BGNG_DT
+              ,A.END_DT
+              ,A.LMT_CD
+            FROM 
+              TB_THA_PACKAGE_LEND_RCRIT A
+              INNER JOIN  TB_THA_PACKAGE_LEND_RND B
+              ON A.RCRITID = B.RCRITID
+    </select>
+    <!-- 꾸러미개체 목록 호출 (검색용)-->
+    <select id="searchPackageindvdList" parameterType="PackageindvdVo" resultType="PackageindvdVo">
+          /* LendDao.searchPackageindvdList */
+             SELECT 
+                 PACKAGEINDVDID
+                 ,INDVDNO
+                 ,PACKAGEINDVD_NM
+                 ,PACKAGEID
+                 ,STTS_CD
+                 ,PRDUCT_STTS_CD
+                 ,USE_YN
+                 ,MDFCN_DT
+                 ,MDFRID
+                 ,REG_DT
+                 ,RGTRID
+               FROM 
+                 TB_THA_PACKAGEINDVD
+              WHERE 1=1 
+                AND USE_YN = 'Y'
+                AND PACKAGEID = #{packageid}
+              <if test="packageindvdid != null and packageindvdid != ''">
+                AND PACKAGEINDVDID = #{packageindvdid}
+              </if>  
+   </select>
+   <!-- 대여 신청 출고 등록-->
+   <insert id="insertLendAplyDlivy" parameterType="LendAplyVo" >
+        /* LendDao.insertLendAplyDlivy */
+        INSERT INTO TB_THA_PACKAGE_LEND_APLY_DLIVY (
+             APLYID
+             ,RNDID
+             ,PACKAGEINDVDID
+             ,DLIVY_PRCS_DT
+             ,DLIVY_PICID
+             ,REG_DT
+             ,RGTRID
+        )VALUES
+        <foreach item="packageindvdid" collection="packageindvdids" separator=",">
+        (
+              #{aplyid        }
+             ,#{rndid         }
+             ,#{packageindvdid}
+             ,NOW()
+             ,#{user.userid }
+             ,NOW()
+             ,#{user.userid }
+        )
+        </foreach>
+   </insert>
+   <!-- 꾸러미 개체 입출고 상태 수정-->
+   <update id="updatePackageindvdStts" parameterType="LendAplyVo"  >
+        /* LendDao.updatePackageindvdStts */
+        UPDATE TB_THA_PACKAGEINDVD
+           SET
+              <if test="packSttsCd != null and packSttsCd != ''">
+              STTS_CD         = #{packSttsCd          },
+              </if>
+              MDFCN_DT        = NOW(),
+              MDFRID          = #{user.userid }
+         WHERE PACKAGEINDVDID IN (
+                 <foreach item="packageindvdid" collection="packageindvdids" separator=",">
+                 #{packageindvdid}
+                 </foreach>
+         )
+   </update>
     
 </mapper>

@@ -9,8 +9,6 @@
       <!--전문가 목록 조회-->
     <select id="selectExpertList" resultType="ExpertVo">
         <include refid="PaginationMapper.header"/>
-        SELECT AA.*
-        FROM (
             SELECT
                 A.USERID
                 , A.EXPRT_TYPE_CD
@@ -40,57 +38,82 @@
                 , B.STTS_CD AS USER_STTS_CD
                 , B.ACNT
                 , B.NM
-                ,(SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_SBJCT C  INNER JOIN TB_CMM_CD D ON C.SBJCT_CD = D.CD WHERE C.USERID = A.USERID) AS EXPRT_SBJCT_CD_NM
-                ,(SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_ACTVT_SCOPE C  INNER JOIN TB_CMM_CD D ON C.RGN_CD = D.CD WHERE C.USERID= A.USERID) AS EXPRT_ACTVT_SCOPE_CD_NM
-                ,(SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_TRGT C INNER JOIN TB_CMM_CD D ON C.TRGT_CD = D.CD WHERE C.USERID = A.USERID) AS EXPRT_TRGT_CD_NM
+                , D.GROUP_CD_NM AS EXPRT_SBJCT_CD_NM
+                , C.GROUP_CD_NM AS EXPRT_ACTVT_SCOPE_CD_NM
+                , E.GROUP_CD_NM AS EXPRT_TRGT_CD_NM
             FROM TB_ASS_EXPRT A
             INNER JOIN TB_CMM_USER B
-            ON A.USERID = B.USERID
-        ) AA
-        WHERE 1=1
-        <if test="searchKeyword != null and searchKeyword != ''">
-            <if test="searchType == 'nm' ">
-                AND AA.NM LIKE CONCAT('%',#{searchKeyword},'%')
+                ON A.USERID = B.USERID
+            LEFT OUTER JOIN (
+                SELECT
+                    GROUP_CONCAT(TCAC.CTPRVN_NM) AS GROUP_CD_NM, TAEAS.USERID
+                FROM TB_CMM_ADDR_CTPRVN TCAC
+                INNER JOIN TB_ASS_EXPRT_ACTVT_SCOPE TAEAS
+                    ON TCAC.CTPRVN_CD = TAEAS.RGN_CD
+                GROUP BY TAEAS.USERID
+            ) C
+                ON A.USERID = C.USERID
+            LEFT OUTER JOIN (
+                SELECT
+                    GROUP_CONCAT(TCC.CD_NM) AS GROUP_CD_NM, TAES.USERID
+                FROM TB_ASS_EXPRT_SBJCT TAES
+                INNER JOIN TB_CMM_CD TCC
+                    ON TAES.SBJCT_CD = TCC.CD
+                GROUP BY TAES.USERID
+            ) D
+                ON A.USERID = D.USERID
+            LEFT OUTER JOIN (
+                SELECT
+                    GROUP_CONCAT(TCC.CD_NM) AS GROUP_CD_NM, TAET.USERID
+                FROM TB_ASS_EXPRT_TRGT TAET
+                INNER JOIN TB_CMM_CD TCC
+                    ON TAET.TRGT_CD = TCC.CD
+                GROUP BY TAET.USERID
+            ) E
+            ON A.USERID = E.USERID
+            WHERE 1=1
+            <if test="searchKeyword != null and searchKeyword != ''">
+                <if test="searchType == 'nm' ">
+                    AND B.NM LIKE CONCAT('%',#{searchKeyword},'%')
+                </if>
+                <if test="searchType == 'acnt' ">
+                    AND B.ACNT LIKE CONCAT('%',#{searchKeyword},'%')
+                </if>
             </if>
-            <if test="searchType == 'acnt' ">
-                AND AA.ACNT LIKE CONCAT('%',#{searchKeyword},'%')
+            <if test="exprtTypeCd != null and exprtTypeCd != ''">
+                AND A.EXPRT_TYPE_CD = #{exprtTypeCd}
             </if>
-        </if>
-        <if test="exprtTypeCd != null and exprtTypeCd != ''">
-            AND AA.EXPRT_TYPE_CD = #{exprtTypeCd}
-        </if>
-        <if test="exprtField != null and exprtField != ''">
-            <choose>
-                <when test='exprtField == "1"'>
-                    AND AA.FLD_LCTR_YN = 'Y'
-                </when>
-                <when test='exprtField == "2"'>
-                    AND AA.FLD_PLANNG_YN = 'Y'
-                </when>
-                <when test='exprtField == "3"'>
-                    AND AA.FLD_CNSLTNG_YN = 'Y'
-                </when>
-                <when test='exprtField == "4"'>
-                    AND AA.FLD_ETC_YN = 'Y'
-                </when>
-            </choose>
-        </if>
-        <if test="exprtTrgtCdNm != null and exprtTrgtCdNm != ''">
-            AND AA.EXPRT_TRGT_CD_NM LIKE CONCAT('%', #{exprtTrgtCdNm} , '%')
-        </if>
-        <if test="exprtSbjctCdNm != null and exprtSbjctCdNm != ''">
-            AND AA.EXPRT_SBJCT_CD_NM LIKE CONCAT('%', #{exprtSbjctCdNm} , '%')
-        </if>
-        <if test="exprtActvtScopeCdNm != null and exprtActvtScopeCdNm != ''">
-            AND AA.EXPRT_ACTVT_SCOPE_CD_NM LIKE CONCAT('%', #{exprtActvtScopeCdNm} , '%')
-        </if>
-        <if test="userSttsCd != null and userSttsCd != ''">
-            AND AA.USER_STTS_CD = #{userSttsCd}
-        </if>
-        <if test="sttsCd != null and sttsCd != ''">
-            AND AA.STTS_CD = #{sttsCd}
-        </if>
-
+            <if test="exprtField != null and exprtField != ''">
+                <choose>
+                    <when test='exprtField == "1"'>
+                        AND A.FLD_LCTR_YN = 'Y'
+                    </when>
+                    <when test='exprtField == "2"'>
+                        AND A.FLD_PLANNG_YN = 'Y'
+                    </when>
+                    <when test='exprtField == "3"'>
+                        AND A.FLD_CNSLTNG_YN = 'Y'
+                    </when>
+                    <when test='exprtField == "4"'>
+                        AND A.FLD_ETC_YN = 'Y'
+                    </when>
+                </choose>
+            </if>
+            <if test="exprtTrgtCdNm != null and exprtTrgtCdNm != ''">
+                AND E.GROUP_CD_NM LIKE CONCAT('%', #{exprtTrgtCdNm} , '%')
+            </if>
+            <if test="exprtSbjctCdNm != null and exprtSbjctCdNm != ''">
+                AND D.GROUP_CD_NM LIKE CONCAT('%', #{exprtSbjctCdNm} , '%')
+            </if>
+            <if test="exprtActvtScopeCdNm != null and exprtActvtScopeCdNm != ''">
+                AND C.GROUP_CD_NM LIKE CONCAT('%', #{exprtActvtScopeCdNm} , '%')
+            </if>
+            <if test="userSttsCd != null and userSttsCd != ''">
+                AND B.STTS_CD = #{userSttsCd}
+            </if>
+            <if test="sttsCd != null and sttsCd != ''">
+                AND A.STTS_CD = #{sttsCd}
+            </if>
         <include refid="PaginationMapper.footer"/>
     </select>
 
@@ -239,7 +262,7 @@
 
     <!--평균 별점 조회-->
     <select id="getExpertReviewScrAvg" resultType="java.lang.Double">
-        SELECT TRUNCATE(AVG(SCR),1)
+        SELECT IFNULL(TRUNCATE(AVG(SCR),1),0)
         FROM TB_ASS_LCTR_DMND
         WHERE EXPRTID = #{userid}
     </select>

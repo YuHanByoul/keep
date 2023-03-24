@@ -1,6 +1,7 @@
 package com.kbrainc.plum.mng.expertPoolMng.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -10,6 +11,7 @@ import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 전문가 Vo 클래스
@@ -28,155 +30,255 @@ import java.util.List;
  */
 @Data
 public class ExpertVo extends ParentRequestVo {
-    /** 로그인 사용자 정보 */
+    /**
+     * 로그인 사용자 정보
+     */
     private UserVo user;
 
-    /** 사용자 아이디 */
+    /**
+     * 사용자 아이디
+     */
     private Integer userid;
 
-    /** 전문가_유형_코드 */
+    /**
+     * 전문가_유형_코드
+     */
     private String exprtTypeCd;
 
-    /** 분야_강의_여부 */
+    /**
+     * 분야_강의_여부
+     */
     private String fldLctrYn;
 
-    /** 분야_기획_여부 */
+    /**
+     * 분야_기획_여부
+     */
     private String fldPlanngYn;
 
-    /** 분야_컨설팅_여부 */
+    /**
+     * 분야_컨설팅_여부
+     */
     private String fldCnsltngYn;
 
-    /** 분야_기타_여부 */
+    /**
+     * 분야_기타_여부
+     */
     private String fldEtcYn;
 
-    /** 분야_기타_내용 */
+    /**
+     * 분야_기타_내용
+     */
     private String fldEtcCn;
 
-    /** 휴대폰_공개_여부 */
+    /**
+     * 휴대폰_공개_여부
+     */
     private String moblphonRlsYn;
 
-    /** 이메일_공개_여부 */
+    /**
+     * 이메일_공개_여부
+     */
     private String emlRlsYn;
 
-    /** 전화번호_공개_여부 */
+    /**
+     * 전화번호_공개_여부
+     */
     private String telnoRlsYn;
 
-    /** 자격_공개_여부 */
+    /**
+     * 자격_공개_여부
+     */
     private String qlfcRlsYn;
 
-    /** 재직_공개_여부 */
+    /**
+     * 재직_공개_여부
+     */
     private String hdofRlsYn;
 
-    /** 경력_공개_여부 */
+    /**
+     * 경력_공개_여부
+     */
     private String careerRlsYn;
 
-    /** 기업_강의_요청_수신_여부 */
+    /**
+     * 기업_강의_요청_수신_여부
+     */
     private String entLctrDmndRcptnYn;
 
-    /** 강의_안내_수신_여부 */
+    /**
+     * 강의_안내_수신_여부
+     */
     private String lctrGdncRcptnYn;
 
-    /** 환경_교육_경력_년 */
+    /**
+     * 환경_교육_경력_년
+     */
     private int envEduCareerYy;
 
-    /** 환경_교육_경력_월 */
+    /**
+     * 환경_교육_경력_월
+     */
     private int envEduCareerMm;
 
-    /** 상태_코드 */
+    /**
+     * 상태_코드
+     */
     private String sttsCd;
 
-    /** 신청_일시 */
+    /**
+     * 신청_일시
+     */
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date aplyDt;
 
-    /** 수정_일시 */
+    /**
+     * 수정_일시
+     */
     private Date mdfcnDt;
 
-    /** 수정자아이디 */
+    /**
+     * 수정자아이디
+     */
     private String mdfrid;
 
-    /** 등록_일시 */
+    /**
+     * 등록_일시
+     */
     private Date regDt;
 
-    /** 등록자 아이디 */
+    /**
+     * 등록자 아이디
+     */
     private String rgtrid;
 
-    /** 승인_일시 */
+    /**
+     * 승인_일시
+     */
     private Date aprvDt;
 
-    /** 반려_일시 */
+    /**
+     * 반려_일시
+     */
     private Date rjctDt;
 
-    /** 취소_일시 */
+    /**
+     * 취소_일시
+     */
     private Date cnclDt;
 
-    /** 전문가 유형 코드 이름 */
+    /**
+     * 전문가 유형 코드 이름
+     */
     private String expertTypeCdNm;
 
-    /** 전문가 아이디 */
+    /**
+     * 전문가 아이디
+     */
     private String acnt;
 
-    /** 전문가 이름*/
+    /**
+     * 전문가 이름
+     */
     private String nm;
 
-    /** 회원 상태 코드*/
+    /**
+     * 회원 상태 코드
+     */
     private String userSttsCd;
 
-    /** 회원 상태 코드 이름*/
+    /**
+     * 회원 상태 코드 이름
+     */
     private String userSttsCdNm;
 
-    /** 전문가 상태 코드 이름*/
+    /**
+     * 전문가 상태 코드 이름
+     */
     private String expertSttsCdNm;
 
-    /** 성별 */
+    /**
+     * 성별
+     */
     private String gndr;
 
-    /** 생년월일 */
+    /**
+     * 생년월일
+     */
     private String brdt;
 
-    /** 전화번호 */
+    /**
+     * 전화번호
+     */
     private String telno;
 
-    /** 휴대폰번호 */
+    /**
+     * 휴대폰번호
+     */
     private String moblphon;
 
-    /** 이메일 */
+    /**
+     * 이메일
+     */
     private String eml;
 
-    /** 전문분야(대상) 코드 */
+    /**
+     * 전문분야(대상) 코드
+     */
     private String exprtTrgtCd;
 
-    /** 전문분야(환경주제) 코드 */
+    /**
+     * 전문분야(환경주제) 코드
+     */
     private String exprtSbjctCd;
 
-    /** 가능 활동범위 코드 */
+    /**
+     * 가능 활동범위 코드
+     */
     private String exprtActvtScopeCd;
 
-    /** 주요활동지역 코드 */
+    /**
+     * 주요활동지역 코드
+     */
     private String exprtActvtRgnCd;
 
-    /** 전문분야(대상) 코드 이름 */
+    /**
+     * 전문분야(대상) 코드 이름
+     */
     private String exprtTrgtCdNm;
 
-    /** 전문분야(환경주제) 코드 이름 */
+    /**
+     * 전문분야(환경주제) 코드 이름
+     */
     private String exprtSbjctCdNm;
 
-    /** 가능 활동범위 코드 이름 */
+    /**
+     * 가능 활동범위 코드 이름
+     */
     private String exprtActvtScopeCdNm;
 
-    /** 주요활동지역 코드 이름 */
+    /**
+     * 주요활동지역 코드 이름
+     */
     private String exprtActvtRgnCdNm;
 
-    /** 경력사항 리스트 */
+    /**
+     * 경력사항 리스트
+     */
     List<ExpertCareerVo> expertCareerList;
 
-    /** 자격사항 리스트 */
+    /**
+     * 자격사항 리스트
+     */
     List<ExpertCrtfctVo> expertCrtfctList;
 
-    /**재직사항 리스트 */
+    /**
+     * 재직사항 리스트
+     */
     List<ExpertHdofVo> expertHdofList;
 
-    /** 검색용 필드 (전문분야) */
+    /**
+     * 검색용 필드 (전문분야)
+     */
     private String exprtField;
 
     /**
@@ -299,9 +401,15 @@ public class ExpertVo extends ParentRequestVo {
         this.exprtActvtScopeCd = exprtActvtScopeCd;
         if (CommonUtil.isEmpty(this.exprtActvtScopeCdNm)) {
             try {
-                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
-                CodeInfoVo code = resCodeService.getCodeInfo(this.exprtActvtScopeCd);
-                this.exprtActvtScopeCdNm = code.getCdNm();
+                CommonService commonService = (CommonService) CommonUtil.getBean("commonServiceImpl", CommonUtil.getCurrentRequest());
+                List<Map<String, Object>> ctprvnList = commonService.selectCtprvnList();
+
+                for (Map<String, Object> ctprvnInfo : ctprvnList) {
+                    if (ctprvnInfo.get("CTPRVN_CD").equals(this.exprtActvtScopeCd)) {
+                        this.exprtActvtScopeCdNm = (String) ctprvnInfo.get("CTPRVN_NM");
+                        break;
+                    }
+                }
             } catch (NoClassDefFoundError e) {
                 //e.printStackTrace();
                 return;
@@ -316,9 +424,15 @@ public class ExpertVo extends ParentRequestVo {
         this.exprtActvtRgnCd = exprtActvtRgnCd;
         if (CommonUtil.isEmpty(this.exprtActvtRgnCdNm)) {
             try {
-                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
-                CodeInfoVo code = resCodeService.getCodeInfo(this.exprtActvtRgnCd);
-                this.exprtActvtRgnCdNm = code.getCdNm();
+                CommonService commonService = (CommonService) CommonUtil.getBean("commonServiceImpl", CommonUtil.getCurrentRequest());
+                List<Map<String, Object>> ctprvnList = commonService.selectCtprvnList();
+
+                for (Map<String, Object> ctprvnInfo : ctprvnList) {
+                    if (ctprvnInfo.get("CTPRVN_CD").equals(this.exprtActvtScopeCd)) {
+                        this.exprtActvtScopeCdNm = (String) ctprvnInfo.get("CTPRVN_NM");
+                        break;
+                    }
+                }
             } catch (NoClassDefFoundError e) {
                 //e.printStackTrace();
                 return;

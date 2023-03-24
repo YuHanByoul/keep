@@ -106,6 +106,12 @@ public class MemberController {
             years[j] = i;
         }
         model.addAttribute("years", years);
+        
+        Map<String,Object> paramMap = new HashMap();
+        paramMap.put("cdgrpid",105);
+        paramMap.put("upprCd", 0);
+        model.addAttribute("itrstfldList", memberService.selectItrstfldCd(paramMap));
+        
        // return "mng/member/memberInsert";
         return "mng/member/memberForm";
     }
@@ -136,6 +142,11 @@ public class MemberController {
         resultVo.setGndr(decStr);
         
         model.addAttribute("member", resultVo);
+        
+        Map<String,Object> paramMap = new HashMap();
+        paramMap.put("cdgrpid",105);
+        paramMap.put("upprCd", 0);
+        model.addAttribute("itrstfldList", memberService.selectItrstfldCd(paramMap));
         
         return "mng/member/memberUpdate";
     }
@@ -740,10 +751,9 @@ public class MemberController {
     /**
      * 회원탈퇴 
      *
-     * @Title       : sendSms 
-     * @Description : sms발송.
-     * @param smsVo SmsVo객체
-     * @param bindingResult 유효성검증결과
+     * @Title       : quitMember 
+     * @Description : 회원탈퇴.
+     * @param MemberVo 객체
      * @param user 사용자세션정보
      * @return Map<String,Object> 응답결과객체
      * @throws Exception 예외

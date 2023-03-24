@@ -29,6 +29,8 @@ import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.config.security.properties.SecurityProperties;
 import com.kbrainc.plum.front.bbs.model.PstVo;
 import com.kbrainc.plum.front.bbs.service.BbsServiceImpl;
+import com.kbrainc.plum.front.member.model.MemberVo;
+import com.kbrainc.plum.front.member.service.MemberServiceImpl;
 import com.kbrainc.plum.front.mmnws.model.MmnwsVo;
 import com.kbrainc.plum.front.mmnws.service.MmnwsServiceImpl;
 import com.kbrainc.plum.mng.site.model.SiteVo;
@@ -80,6 +82,9 @@ public class CommonController {
     
     @Autowired
     private MmnwsServiceImpl mmnwsService;
+    
+    @Autowired
+    private MemberServiceImpl memberService;
     
     /**
     * 인덱스.
@@ -161,6 +166,8 @@ public class CommonController {
                 mmnwsVo.setRowPerPage(6);
                 mmnwsVo.setOrderField("REG_DT");
                 mmnwsVo.setOrderDirection(ORDER_DIRECTION.desc);
+                MemberVo memberVo = new MemberVo();
+                memberVo.setUser(user);
                 try {
                     if(user == null) {
                         mav.addObject("userType", "-1");
@@ -180,7 +187,8 @@ public class CommonController {
                     pstVo.setBbsid(12);
                     List<PstVo> recruitList= bbsService.selectPstList(pstVo);
                     mav.addObject("recruitList", recruitList);
-                    
+                    MemberVo memberInfo = memberService.selectMemberInfo(memberVo);
+                    mav.addObject("envfldCds", memberInfo.getEnvfldCd());
                 } catch(SQLException e) {
                     mav.addObject("list", null);
                 } catch(Exception e) {
@@ -219,7 +227,7 @@ public class CommonController {
         
         if ("A".equals(sysSeCd)) { // 관리자 사이트
             if (sysAdminThaRoleid.equals(user.getRoleInfo().getRoleid())) {
-                return "mng/mainTha";
+                return "mng/eduResrce/eduResrceMain";
             } else if (sysAdminAssRoleid.equals(user.getRoleInfo().getRoleid())) {
                 return "mng/mainAss";
             } else {
@@ -236,6 +244,8 @@ public class CommonController {
             mmnwsVo.setRowPerPage(6);
             mmnwsVo.setOrderField("REG_DT");
             mmnwsVo.setOrderDirection(ORDER_DIRECTION.desc);
+            MemberVo memberVo = new MemberVo();
+            memberVo.setUser(user);
             try {
                 if(user == null) {
                     model.addAttribute("userType", "-1");
@@ -255,6 +265,8 @@ public class CommonController {
                 pstVo.setBbsid(12);
                 List<PstVo> recruitList= bbsService.selectPstList(pstVo);
                 model.addAttribute("recruitList", recruitList);
+                MemberVo memberInfo = memberService.selectMemberInfo(memberVo);
+                model.addAttribute("envfldCds", memberInfo.getEnvfldCd());
             } catch(SQLException e) {
                 model.addAttribute("noticList", null);
             } catch(Exception e) {

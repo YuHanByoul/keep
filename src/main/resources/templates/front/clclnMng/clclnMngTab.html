@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" 
+>
+
+<body>
+<div layout:fragment="content">
+    <section>
+        <div class="tab-content tab-sub dropDown">
+	        <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">정산내역관리</button>
+	        <ul class="tab-list target" role="tablist">
+	            <li class="tab active"><button aria-controls="tab-subpanel01" onclick="selectTab(this.id);" id="tab-sub01" role="tab">정산내역관리</button></li>
+	            <li class="tab"><button aria-controls="tab-subpanel02" onclick="selectTab(this.id);" id="tab-sub02" role="tab">잔액/이자관리</button></li>
+	        </ul>
+		    <div id="tab-subpanel01" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub01"></div>
+		    <div id="tab-subpanel02" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub02"></div>
+	    </div>
+	</section>
+    
+    <script th:inline="javascript">
+	    /*<![CDATA[*/
+	    var aplyid = /*[[${clclnVo.aplyid}]]*/null;
+	    /*]]>*/
+	
+        loadTabContent("tab-sub01", "/front/clclnMng/clclnDsctnForm.html?aplyid=" + aplyid);
+	
+	    function selectTab(tabId) {
+	        if(tabId == "tab-sub01") {
+	            loadTabContent(tabId, "/front/clclnMng/clclnDsctnForm.html?aplyid=" + aplyid);
+	        } else if(tabId == "tab-sub02") {
+	            loadTabContent(tabId, "/front/clclnMng/blncIntForm.html?aplyid=" + aplyid);
+	        }
+	    }
+	
+	    function loadTabContent(tabId, uri){
+	    	$('#tab-subpanel01').html();
+	    	$('#tab-subpanel02').html();
+	        $.ajax({
+	            cache   : false
+	          , url     : uri
+	          , type    : 'GET'
+	          , async   : 'false'
+	          , dataType: 'html'
+	          , success : function(result){ //요청이 성공했을때 실행되는 콜백 함수
+	        	  if(tabId == "tab-sub01") {
+		              $('#tab-subpanel01').html(result);
+	        	  } else if(tabId == "tab-sub02") {
+		              $('#tab-subpanel02').html(result);
+	        	  }
+	          }
+	        });
+	    }
+    </script>
+</div>
+</body>
+</html>

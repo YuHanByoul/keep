@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kbrainc.plum.mng.lend.model.LendAplyDlivyVo;
 import com.kbrainc.plum.mng.lend.model.LendAplyVo;
 import com.kbrainc.plum.mng.lend.model.LendDao;
 import com.kbrainc.plum.mng.lend.model.LendRndPackageindvdVo;
@@ -312,5 +313,85 @@ public class LendServiceImpl extends PlumAbstractServiceImpl implements LendServ
      */
     public LendAplyVo selectLendAplyInfo(LendAplyVo lendAplyVo) throws Exception{
         return lendDao.selectLendAplyInfo(lendAplyVo);
+    }
+    /**
+     * 대여 출고 목록 호출
+     *
+     * @Title       : selectLendAplyDlvyList 
+     * @Description : 대여 출고 목록 호출 
+     * @param LendAplyVo 객체
+     * @return List<LendAplyDlivyVo> 객체
+     * @throws Exception 예외
+     */
+    public List<LendAplyDlivyVo> selectLendAplyDlvyList(LendAplyVo lendAplyVo) throws Exception{
+        return lendDao.selectLendAplyDlvyList(lendAplyVo);
+    }
+    /**
+     * 대여 신청 수정
+     *
+     * @Title       : updateLendAply 
+     * @Description : 대여 신청 수정 
+     * @param LendAplyVo 객체
+     * @return int
+     * @throws Exception 예외
+     */
+    public int updateLendAply(LendAplyVo lendAplyVo) throws Exception{
+        return lendDao.updateLendAply(lendAplyVo);
+    }
+    /**
+     * 대여 모집 차시 목록 호출 (검색용) 
+     *
+     * @Title       : selectLendRcritRndList 
+     * @Description :대여 모집 차시 목록 호출 (검색용) 
+     * @param LendVo 객체
+     * @return List<LendAplyVo>  목록
+     * @throws Exception 예외
+     */
+    public List<LendVo> selectLendRcritRndList(LendVo lendVo) throws Exception{
+        return lendDao.selectLendRcritRndList(lendVo);
+    }
+    /**
+     * 출고 꾸러미 개체 목록 호출
+     *
+     * @Title       : searchPackageindvdList 
+     * @Description :출고 꾸러미 개체 목록 호출 
+     * @param LendVo 객체
+     * @return List<PackageindvdVo>  목록
+     * @throws Exception 예외
+     */
+    public List<PackageindvdVo> searchPackageindvdList(PackageindvdVo packageindvdVo) throws Exception{
+        return lendDao.searchPackageindvdList(packageindvdVo);
+    }
+    /**
+     * 꾸러미 개체 입출고 상태 수정
+     *
+     * @Title       : updatePackageindvdStts 
+     * @Description :꾸러미 개체 입출고 상태 수정 
+     * @param LendAplyVo 객체
+     * @return int  목록
+     * @throws Exception 예외
+     */
+    public int updatePackageindvdStts(LendAplyVo lendAplyVo) throws Exception{
+        return lendDao.updatePackageindvdStts(lendAplyVo);
+    }
+    /**
+     * 대여 신청 출고 등록
+     *
+     * @Title       : insertLendAplyDlivy 
+     * @Description :대여 신청 출고 등록 
+     * @param LendAplyVo 객체
+     * @return int  목록
+     * @throws Exception 예외
+     */
+    @Transactional
+    public int insertLendAplyDlivy(LendAplyVo lendAplyVo) throws Exception{
+        int resInt = 0 ;
+        //신청 상태 변경 
+        resInt += lendDao.updateLendAply(lendAplyVo);
+        //신청 꾸러미 출고 등록 
+        resInt += lendDao.insertLendAplyDlivy(lendAplyVo);
+        //꾸러미 입출고 상태 변경 
+        resInt += lendDao.updatePackageindvdStts(lendAplyVo);
+        return resInt;
     }
 }

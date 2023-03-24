@@ -43,6 +43,9 @@ public class BannerVo extends ParentRequestVo {
     /** 배너_위치_코드 */
     private String bannerPstnCd;
     
+    /** 배너_위치_코드 - 저장용 */
+    private String popupBannerPstnCd;
+    
     /**  배너_제목 */
     @NotEmpty(message = "제목을 입력해주십시오.")
     private String bannerTtl;

@@ -60,9 +60,13 @@
 			</div>
 		</div>
 	</div>
+	
+	<input type="hidden" id="popupBannerPstnCd" name="popupBannerPstnCd" value="">
 </form>
 
 <script th:inline="javascript">
+	$("#popupBannerPstnCd").val($("#bannerPstnCd").val());
+	
 	var validator= $("#bannerInsertFrm").validate({
 		rules: {
 			siteid : { required: true },
@@ -143,7 +147,10 @@
 	
 	function insertBanner() {
 		if(!($("#bannerInsertFrm").valid())) return;
-		
+		if($("#bannerFileid").val() == 0) {
+			alert("이미지가 완전히 등록된 후 시도해주십시오.");
+			return false;
+		}
         $.ajax({
             url : "/mng/banner/insertBanner.do",
             type: 'POST',

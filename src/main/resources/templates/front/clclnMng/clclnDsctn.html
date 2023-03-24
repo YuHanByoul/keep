@@ -1,0 +1,482 @@
+<div class="table-caption">
+	<div class="left">
+		<h3 class="sub-title">정산개요</h3>
+		<p>예산액은 자동 등록되며 집행액, 이자/캐시백/기타입금 입금액을 정산 등록한 내용으로 자동 계산됩니다.</p>
+	</div>
+</div>
+
+<div class="pc-only">
+	<div class="table-col table-layout-auto table-col-mo">
+		<table>
+			<caption>정산개요 - 공모명, 프로그램명, 사업기간, 정산율, 예산액, 집행금액, 입금액, 잔액</caption>
+			<thead>
+				<tr>
+					<th scope="col">공모명</th>
+					<th scope="col">프로그램명</th>
+					<th scope="col">사업기간</th>
+					<th scope="col">정산율</th>
+					<th scope="col">예산액</th>
+					<th scope="col">집행금액</th>
+					<th scope="col">입금액</th>
+					<th scope="col">잔액</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="al"><th:block th:text="${detail.pcntstNm}" /></td>
+					<td class="al"><th:block th:text="${detail.prgrmNm}" /></td>
+					<td><th:block th:text="${detail.bsnsDe}" /></td>
+					<td><th:block th:text="${detail.clclnRate}" />%</td>
+					<td><th:block th:text="${#numbers.formatInteger(detail.totAmt, 0, 'COMMA')}" /></td>
+					<td><th:block th:text="${#numbers.formatInteger(detail.minusAmt, 0, 'COMMA')}" /></td>
+					<td><th:block th:text="${#numbers.formatInteger(detail.plusAmt, 0, 'COMMA')}" /></td>
+					<td><th:block th:text="${#numbers.formatInteger(detail.nowAmt, 0, 'COMMA')}" /></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<div class="mo-only">
+	<div class="table-list">
+		<ul>
+			<li class="block">
+				<div class="tbody">
+					<dl>
+						<div class="list">
+							<dt>공모명</dt>
+							<dd>
+								<th:block th:text="${detail.pcntstNm}" />
+							</dd>
+						</div>
+						<div class="list">
+							<dt>프로그램명</dt>
+							<dd>
+								<th:block th:text="${detail.prgrmNm}" />
+							</dd>
+						</div>
+						<div class="list">
+							<dt>사업기간</dt>
+							<dd>
+								<th:block th:text="${detail.bsnsDe}" />
+							</dd>
+						</div>
+						<div class="list">
+							<dt>정산율</dt>
+							<dd>
+								<th:block th:text="${detail.clclnRate}" />%
+							</dd>
+						</div>
+						<div class="list">
+							<dt>예산액</dt>
+							<dd>
+								<th:block th:text="${#numbers.formatInteger(detail.totAmt, 0, 'COMMA')}" />
+							</dd>
+						</div>
+						<div class="list">
+							<dt>집행금액</dt>
+							<dd>
+								<th:block th:text="${#numbers.formatInteger(detail.minusAmt, 0, 'COMMA')}" />
+							</dd>
+						</div>
+						<div class="list">
+							<dt>입금액</dt>
+							<dd>
+								<th:block th:text="${#numbers.formatInteger(detail.plusAmt, 0, 'COMMA')}" />
+							</dd>
+						</div>
+						<div class="list">
+							<dt>잔액</dt>
+							<dd>
+								<th:block th:text="${#numbers.formatInteger(detail.nowAmt, 0, 'COMMA')}" />
+							</dd>
+						</div>
+					</dl>
+				</div>
+			</li>
+		</ul>
+	</div>
+</div>
+
+<div class="table-caption">
+	<div class="left">
+		<h3 class="sub-title">정산등록</h3>
+	</div>
+</div>
+
+<div class="box-desc-list bg7">
+	<strong class="box-desc-tit"><div class="icon icon-notice bg-black3"></div> 집행등록, 입금등록을 하면, 정산개요 및 정산보고서 메뉴에 자동 등록됩니다.</strong>
+	<ul>
+		<li>안내 1 : 집행등록(집행비용), 입금등록(이자, 캐시백)을 사업기간 중 수시로 등록해주세요.</li>
+		<li>안내 2 : 집행 1건 당 1개의 증빙자료(계좌이체, 카드전표, 출금확인서 등 사본) 만 등록 가능합니다.</li>
+	</ul>
+</div>
+
+<form class="search-filter mt45" id="searchForm" name="searchForm">
+    <input type="hidden" id="aplyid" name="aplyid" th:value="${detail.aplyid}">
+    <input type="hidden" id="fldCd" name="fldCd" th:value="${detail.fldCd}">
+	<div class="form-input-wrap">
+		<div class="form-row">
+			<div class="form-header">
+				<strong class="label">이용구분</strong>
+			</div>
+			<div class="form-body">
+				<span kattr:select_code="searchUtztnSecd" grpCd="236" firstOptTxt="- 전체 -" addClass="input-sm"></span>
+			</div>
+		</div>
+		<div class="form-row">
+			<div class="form-header">
+				<strong class="label">입출금</strong>
+			</div>
+			<div class="form-body">
+				<span kattr:select_code="searchSeCd" grpCd="210" firstOptTxt="- 전체 -" addClass="input-sm"></span>
+			</div>
+		</div>
+		<div class="form-row">
+			<div class="form-header">
+				<strong class="label">일자</strong>
+			</div>
+			<div class="form-body">
+				<input type="date" title="시작일자" id="searchDeStart" name="searchDeStart"><div class="bul">~</div><input type="date" title="종료일자" id="searchDeEnd" name="searchDeEnd">
+			</div>
+		</div>
+	</div>
+	<div class="search-filter-submit">
+		<button type="reset" class="btn-medium btn-gray btn-before-refresh"  onclick="listPage.searchInit()">초기화</button>
+		<button type="button" class="btn-medium btn-green btn-before-search" onclick="listPage.selectList()">검색</button>
+	</div>
+</form>
+
+<div class="table-caption flex-nowrap">
+	<div class="right d-flex mo-flex-wrap">
+		<div class="btn-wrap mt0">
+			<div class="right">
+				<button type="button" class="btn-medium btn-red" th:onclick="listPage.bankPopup([[${detail.aplyid}]]);">뱅크다 거래등록</button>
+				<button type="button" class="btn-medium btn-blue" th:onclick="listPage.clclnDsctnPopup([[${detail.aplyid}]], 0, [[${detail.fldCd}]], '210102')">집행등록</button>
+				<button type="button" class="btn-medium btn-blue" th:onclick="listPage.clclnDsctnPopup([[${detail.aplyid}]], 0, [[${detail.fldCd}]], '210101')">입금등록</button>
+				<button type="button" class="btn-medium btn-gray" onclick="listPage.deleteList()">삭제</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="table-col table-col-scroll">
+    <form id="listForm" name="listForm">
+	<table>
+		<caption>정산 등록 목록 - 집행 급액 합계, 입금 금액 합계, 선택, 일자, 이용구분, 항목,
+			세부항목, 집행처, 금액(원), 등록일, 입출금</caption>
+		<colgroup>
+			<col style="width: 55px;">
+			<col style="width: 10%">
+			<col style="width: 9%">
+			<col style="width: 8%">
+			<col style="">
+			<col style="">
+			<col style="width: 15%;">
+			<col style="width: 10%">
+			<col style="width: 7%;">
+		</colgroup>
+		<thead>
+			<tr>
+				<th scope="col" colspan="9">
+					<dl class="table-summary">
+						<div class="list fc-red">
+							<dt>집행 금액 합계 :</dt>
+							<dd>
+								<b id="minusSum">0</b>
+							</dd>
+						</div>
+						<div class="list fc-blue">
+							<dt>입금 금액 금액 합계 :</dt>
+							<dd>
+								<b id="plusSum">0</b>
+							</dd>
+						</div>
+					</dl>
+				</th>
+			</tr>
+			<tr>
+				<th scope="col">선택</th>
+				<th scope="col">일자</th>
+				<th scope="col">이용구분</th>
+				<th scope="col">항목</th>
+				<th scope="col">세부항목</th>
+				<th scope="col">집행처</th>
+				<th scope="col">금액(원)</th>
+				<th scope="col">등록일</th>
+				<th scope="col">입출금</th>
+			</tr>
+		</thead>
+		<tbody id="list-area">
+		</tbody>
+	</table>
+	</form>
+</div>
+
+<div class="table-caption flex-nowrap">
+	<div class="left">
+		<h3 class="sub-title">집행내역 개요서</h3>
+		<p class="fc-red">* 이자/캐시백 미포함</p>
+	</div>
+	<div class="right d-flex mo-flex-wrap">
+		<div>
+			<button type="button" class="btn-medium btn-blue" onclick="listPage.excelDownload()">엑셀다운로드</button>
+		</div>
+	</div>
+</div>
+
+<div class="table-col table-layout-auto table-col-scroll">
+	<table>
+		<caption>집행내역 개요서 - 비목(항목, 세목), 예산액, 지출금액, 집행건수, 집행잔액, 집행비율</caption>
+		<thead>
+			<tr>
+				<th scope="colgroup" colspan="2">비목</th>
+				<th scope="col" rowspan="2">예산액</th>
+				<th scope="col" rowspan="2">지출금액</th>
+				<th scope="col" rowspan="2">집행건수</th>
+				<th scope="col" rowspan="2">집행잔액</th>
+				<th scope="col" rowspan="2">집행비율</th>
+			</tr>
+			<tr>
+				<th scope="col">항목</th>
+				<th scope="col">세목</th>
+			</tr>
+		</thead>
+		<tbody id="outlList-area">
+		</tbody>
+	</table>
+</div>
+
+<!-- layerpopup -->
+<div class="layer-popup layer-large" data-layer-id="clclnDsctnModalPopup">
+    <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+    <div class="layer-wrap" id="clclnDsctnModalPopup">
+    </div>
+</div>
+
+<!-- layerpopup -->
+<div class="layer-popup layer-large" data-layer-id="bankModalPopup">
+    <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+    <div class="layer-wrap" id="bankModalPopup">
+    </div>
+</div>
+
+<script th:inline="javascript">
+	/*<![CDATA[*/
+	var fldCd = /*[[${detail.fldCd}]]*/null;
+	var aplyid = /*[[${detail.aplyid}]]*/null;
+	var excclcSttsCd = /*[[${detail.excclcSttsCd}]]*/null;
+	/*]]>*/
+    var listPage = {
+        listUrl: '/front/clclnMng/selectClclnDsctnList.do',
+        outlListUrl: '/front/clclnMng/selectClclnDsctnOutlList.do',
+        detailUrl : '/front/clclnMng/clclnMngTabForm.html',
+        deleteUrl : '/front/clclnMng/deleteClclnDsctn.do',
+        excelDownloadUrl : '/front/clclnMng/pcntst/clclnDsctnOutlExcelDownload.do',
+
+        init() {
+            this.selectList();
+            this.outlSelectList();
+        },
+        search() {
+            this.selectList();
+        },
+        searchInit() {
+            $("#searchUtztnSecd").val('');
+            $("#searchSeCd").val('');
+            $("#searchDeStart").val('');
+            $("#searchDeEnd").val('');
+            this.selectList();
+        },
+        addComma(value) {
+        	if (value == "" || value == null) {
+                return 0;               
+            }
+        	return value.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
+        },
+        removeComma(value){
+            if (value == "" || value == null) {
+                return 0;               
+            }
+            value = value.replace(/[^\d]+/g, "");
+            return value; 
+        },
+        selectList() {
+            if (displayWorkProgress(true)) {
+                let formData = $('#searchForm').serializeArray();
+
+                $.ajax({
+                    url: listPage.listUrl,
+                    cache: false,
+                    dataType: 'json',
+                    data: formData,
+                    type: 'GET',
+                    success: function (data) {
+                    	var minusSum = 0, plusSum = 0;
+                    	for (var i = 0; i < data.list.length; i++) {
+                    		if (data.list[i].seCd == "210101") {
+                    			plusSum += Number(listPage.removeComma(data.list[i].amt));
+                    		} else {
+                    			minusSum += Number(listPage.removeComma(data.list[i].amt));
+                    		}
+                    	}
+                        $("#minusSum").text(listPage.addComma(String(minusSum)));
+                 		$("#plusSum").text(listPage.addComma(String(plusSum)));
+                        listPage.makeListHtml(data);
+                        closeWorkProgress();
+                    }
+                });
+            }
+        },
+        outlSelectList() {
+            if (displayWorkProgress(true)) {
+                $.ajax({
+                    url: listPage.outlListUrl,
+                    cache: false,
+                    dataType: 'json',
+                    data: {
+                    	fldCd: fldCd
+                    	, aplyid: aplyid
+                    },
+                    type: 'GET',
+                    success: function (data) {
+                        listPage.makeOutlListHtml(data);
+                        closeWorkProgress();
+                    }
+                });
+            }
+        },
+        deleteList: function() {
+        	if (excclcSttsCd == "203106") {
+        		alert("해당 프로그램의 정산보고가 완료되어 삭제가 불가합니다.");
+        		return;
+        	}
+        	if (!$("input[name=dsctnids]").is(":checked")) {
+        		alert("삭제 할 항목을 선택하십시오.");
+        		return;
+        	}
+        	if (!confirm("삭제 하시겠습니까?")) return;
+        	if (displayWorkProgress(true)) {
+        		let formData = $('#listForm').serializeArray();
+        		
+                $.ajax({
+                    url: listPage.deleteUrl,
+                    cache: false,
+                    dataType: 'json',
+                    data: formData,
+                    type: 'POST',
+                    success: function (data) {
+                    	if(data.result=="success"){
+                            alert(data.msg);
+                            listPage.selectList();
+                        }else{
+                            alert(data.msg);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+        },
+        clclnDsctnPopup: function(aplyid, dsctnid, fldCd, seCd) {
+            $("#clclnDsctnModalPopup").load("/front/clclnMng/clclnDsctnPopup.html?aplyid=" + aplyid + "&dsctnid=" + dsctnid + "&fldCd=" + fldCd + "&seCd=" + seCd, function(response, status, xhr) {
+                if (status == "success") {
+                    layerPopup.open({target:'clclnDsctnModalPopup'});
+                }
+            });
+        },
+        bankPopup: function(aplyid) {
+            $("#bankModalPopup").load("/front/clclnMng/bankPopup.html?aplyid=" + aplyid, function(response, status, xhr) {
+                if (status == "success") {
+                    layerPopup.open({target:'bankModalPopup'});
+                }
+            });
+        },
+        makeListHtml(data) {
+            var listHtml = "";
+            if (data.list == null || data.list.length <= 0) {
+                listHtml += `
+                <tr>
+                    <td class="nodata" colspan="9">
+                        <p><span class="icon icon-notice bg-black9"></span>집행내역이 없습니다.</p>
+                    </td>
+                </tr>
+                `;
+            } else {
+                data.list.forEach(function(item) {
+                    listHtml += `
+                    	<tr class="tr-check">
+	                        <td><label class="inp"><input type="checkbox" name="dsctnids" value="${item.dsctnid}" title="열 선택"></label></td>
+	                        <td>${item.de}</td>
+	                        <td>${item.utztnSenm}</td>
+	                        <td>${item.artclUpperNm}</td>
+	                        <td>${item.artclNm}</td>
+	                        <td><a class="link" href="javascript:;" onclick="listPage.clclnDsctnPopup(${item.aplyid},${item.dsctnid},${item.fldCd},${item.seCd})">${item.excutTrgt}</a></td>
+	                        <td class="ar ${item.color}">${item.amt}</td>
+	                        <td>${item.regDt}</td>
+	                        <td class="${item.color}">${item.seNm}</td>
+                        </tr>`;
+                });
+            }
+            $('#list-area').html(listHtml);
+        },
+        makeOutlListHtml(data) {
+        	var listHtml = "";
+        	var footHtml = "";
+            if (data.list == null || data.list.length <= 0) {
+                listHtml += `
+                <tr>
+                    <td class="nodata" colspan="9">
+                        <p><span class="icon icon-notice bg-black9"></span>집행내역이 없습니다.</p>
+                    </td>
+                </tr>
+                `;
+            } else {
+                data.list.forEach(function(item) {
+                    listHtml += `<tr>`;
+                    if (item.groupNum == "1" && item.artclUpperNm != null) {
+                        listHtml += `<td rowspan="${item.rowspan}">${item.artclUpperNm}</td>`;                    	
+                    }
+                    if (item.artclUpperNm == null) {
+                    	listHtml += `
+                    	    <th scope="row" colspan="2" class="bg7">합계</th>
+                    	    <td class="bg7 ar">${item.amt}</td>
+                            <td class="bg7 ar">${item.minusSum}</td>
+                            <td class="bg7 ar">${item.cnt}</td>
+                            <td class="bg7 ar">${item.nowAmt}</td>
+                            <td class="bg7 ar">${item.clclnRate}%</td>
+                    	`;
+                    } else if (item.artclNm == null) {
+                        listHtml += `
+                            <th scope="row" colspan="2">소계</th>
+                            <td class="bg5 ar">${item.amt}</td>
+                            <td class="bg5 ar">${item.minusSum}</td>
+                            <td class="bg5 ar">${item.cnt}</td>
+                            <td class="bg5 ar">${item.nowAmt}</td>
+                            <td class="bg5 ar">${item.clclnRate}%</td>
+                        `;
+                    } else {
+                        listHtml += `
+                            <td>${item.artclNm}</td>
+	                        <td class="ar">${item.amt}</td>
+	                        <td class="ar">${item.minusSum}</td>
+	                        <td class="ar">${item.cnt}</td>
+	                        <td class="ar">${item.nowAmt}</td>
+	                        <td class="ar">${item.clclnRate}%</td>
+                        `;
+                    }
+	                listHtml += `</tr>`;
+                });
+            }
+            $('#outlList-area').html(listHtml);
+        },
+        excelDownload() {
+            var data = document.searchForm;
+            data.action = this.excelDownloadUrl;
+            data.submit();
+        }
+    };
+
+    $(function () {
+        listPage.init();
+    });
+</script>

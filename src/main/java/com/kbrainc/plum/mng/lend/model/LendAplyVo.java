@@ -45,9 +45,6 @@ public class LendAplyVo extends ParentRequestVo {
     /** 대여 신청 아이디(s) */
     private  List<String> aplyids;
     
-    /** 대여 신청 아이디(s) */
-    //private  String[] aplyids;
-    
     /** 신청자아이디 */
     private Integer aplcntid;
     
@@ -117,7 +114,7 @@ public class LendAplyVo extends ParentRequestVo {
     @Size(max = 100, message = " 수령인은 100자를 초과할 수 없습니다.")
     private String recptr;
     
-    /** 수령인*/
+    /** 수령인 전화번호*/
     @Size(max = 40, message = "수령인 전화번호는 40자를 초과할 수 없습니다.")
     private String recptrTelno;
     
@@ -125,7 +122,7 @@ public class LendAplyVo extends ParentRequestVo {
     @Size(max = 200, message = "수령인 이메일은 200자를 초과할 수 없습니다.")
     private String recptrEml;
     
-    /** 수령인 이메일*/
+    /** 수령인 우편번호*/
     @Size(max = 200, message = "배송 우편번호는 10자를 초과할 수 없습니다.")
     private String dlvyZip;
     
@@ -183,9 +180,6 @@ public class LendAplyVo extends ParentRequestVo {
     /** 등록자 이름  */
     private String rgtrNm;
     
-    /** 요청 차시 */
-    private Integer requestRndid;
-    
     /** 요청 수량 */
     private Integer requestQnty;
     
@@ -228,9 +222,17 @@ public class LendAplyVo extends ParentRequestVo {
     /**대여 불가 사유 **/
     private String rejectRsn;
     
+    /** 꾸러미 아이디 (등록용) **/
+    private String[] packageindvdids;
+    
+    /** 꾸러미 개체 상태 코드 **/
+    private String packSttsCd;
+    
     /**검색용 파라메터 추가  **/
     /**모집 아이디 **/
     private String searchRcritid;
+    /**모집 차시아이디 **/
+    private String searchRndid;
     /**꾸러미 아이디 **/
     private String searchPackageid;
     /**상태코드 **/

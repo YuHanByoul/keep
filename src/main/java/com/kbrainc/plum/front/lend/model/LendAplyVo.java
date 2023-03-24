@@ -179,9 +179,6 @@ public class LendAplyVo extends ParentRequestVo {
     /** 등록자 이름  */
     private String rgtrNm;
     
-    /** 요청 차시 */
-    private Integer requestRndid;
-    
     /** 요청 수량 */
     private Integer requestQnty;
     

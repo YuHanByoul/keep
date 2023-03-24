@@ -830,7 +830,7 @@ const tabContent = {
 			// 기존 탭 패널 비활성화
 			$('#' + $(this).attr('aria-controls')).siblings('.tabpanel').removeClass('active');
 			if ($(this).is('button')) {
-				history.pushState({}, "", "#" + $(this).attr('id'))
+				//history.pushState({}, "", "#" + $(this).attr('id'))
 			}
 		})
 	},
