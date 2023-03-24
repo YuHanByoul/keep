@@ -100,6 +100,18 @@ public interface BizRptDao {
 	public int updateRptSttsCd(@Param("user") UserVo user, @Param("reportids") String[] reportids) throws Exception;
 
 	/**
+	* 보고상태코드 수정
+	*
+	* @Title : updateReportSttsCd
+	* @Description : 보고상태코드 수정
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int updateReportSttsCd(BizRptVo bizRptVo) throws Exception;
+
+	/**
 	* 중간보고제출 상세 조회
 	*
 	* @Title : selectMdlRptSbmsnDetail

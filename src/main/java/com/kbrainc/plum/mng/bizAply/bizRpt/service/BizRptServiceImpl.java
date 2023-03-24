@@ -464,8 +464,11 @@ public class BizRptServiceImpl extends PlumAbstractServiceImpl implements BizRpt
 	public int insertRptSplmnt(BizRptVo bizRptVo) throws Exception{
 
 		int ret = 0;
-		bizRptVo.setAnsSttsCd("203104");    //답변상태코드 : 보완요청
+		bizRptVo.setAnsSttsCd("201101");    //답변상태코드 : 보완요청
 		ret = bizRptDao.insertRptSplmnt(bizRptVo);
+
+		bizRptVo.setReportSttsCd("203104");    //보고상태코드 : 보완요청
+		ret = bizRptDao.updateReportSttsCd(bizRptVo);
 
 		return ret ;
 	}

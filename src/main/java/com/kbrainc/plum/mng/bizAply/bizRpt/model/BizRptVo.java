@@ -156,6 +156,12 @@ public class BizRptVo extends ParentRequestVo {
 	/** 필수 주제 이름 */
 	private String essntlSbjctNm;
 
+	/** 교육 대상 */
+	private String trgt;
+
+	/** 필수 주제 이름 */
+	private String sbjct;
+
 	/** 기타내용 */
 	private String etcCn;
 

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : EnvLrnQlfcFnshHstryDaoImpl.xml
+	Description : 환경학습 수료/자격 이력
+-->
+<mapper namespace="com.kbrainc.plum.front.envLrnQlfcFnshHstry.model.EnvLrnQlfcFnshHstryDao">
+    
+    <!-- 환경학습 수료정보 목록 조회 -->
+    <select id="selectFnshInfoList" parameterType="front.EnvLrnQlfcFnshHstryVo" resultType="front.EnvLrnQlfcFnshHstryVo">
+        /* EnvLrnQlfcFnshHstryDao.selectFnshInfoList */
+        <include refid="PaginationMapper.header"/>
+            SELECT
+                TB1.*
+            FROM
+                (
+                SELECT
+                    CRTF_NO AS FNSHID
+                  , 'LMS' AS EDU_TYPE
+                  , EXTRNL_CRSE_NM AS EDU_NM
+                  , EDU_FORM
+                  , CRTF_NO AS FNSH_RSLT_CODE
+                  , DATE_FORMAT(FNSH_PRCS_DT, '%Y-%m-%d %H:%i:%s') AS FNSH_PRCS_DT
+                  , CRTF_URL AS FNSH_URL
+                FROM
+                    KEEP_DEV_LMS.VW_ENROLL_LEARN_RSLT
+            
+                UNION ALL
+            
+                SELECT
+                    CRS_APLCNT_ID AS FNSHID
+                  , '환경교육사' AS EDU_TYPE
+                  , CONCAT(CRS_GRD, ' ', CRS_DVSN) AS EDU_NM
+                  , '-' AS EDU_FORM
+                  , FNSH_RSLT_CODE
+                  , DATE_FORMAT(FNSH_YMD, '%Y-%m-%d %H:%i:%s') AS FNSH_PRCS_DT
+                  , '-' AS FNSH_URL
+                FROM
+                    KEEP_DEV_LICENSE.VW_CRS_APLCNT_RSLT
+                ) TB1
+            WHERE
+                1 = 1
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 환경교육용어사전 게시글 상세조회 -->
+    <select id="selectFnshInfoDetail" parameterType="front.EnvLrnQlfcFnshHstryVo" resultType="front.EnvLrnQlfcFnshHstryVo"> 
+        /* EnvLrnQlfcFnshHstryDao.selectFnshInfoDetail */
+        <choose>
+            <when test="eduType == 'LMS'">
+                SELECT
+                    'LMS' AS EDU_TYPE
+                  , EXTRNL_CRSE_NM AS EDU_NM
+                  , EDU_FORM
+                  , CONCAT(DATE_FORMAT(LRNG_BGNG_DT, '%Y-%m-%d'), ' ~ ', DATE_FORMAT(LRNG_END_DT, '%Y-%m-%d')) AS EDU_DT
+                  , CRTF_NO AS FNSH_RSLT_CODE
+                  , DATE_FORMAT(FNSH_PRCS_DT, '%Y-%m-%d') AS FNSH_PRCS_DT
+                  , CRTF_URL AS FNSH_URL
+                FROM
+                    KEEP_DEV_LMS.VW_ENROLL_LEARN_RSLT
+                WHERE
+                      1 = 1
+                  AND CRTF_NO = #{fnshid}
+            </when>
+            <otherwise>
+                SELECT
+                    '환경교육사' AS EDU_TYPE
+                  , CONCAT(CRS_GRD, ' ',CRS_DVSN) AS EDU_NM
+                  , '-' AS EDU_FORM
+                  , CONCAT(DATE_FORMAT(EDU_BGN_DT, '%Y-%m-%d'), ' ~ ', DATE_FORMAT(EDU_END_DT, '%Y-%m-%d')) AS EDU_DT
+                  , FNSH_RSLT_CODE
+                  , DATE_FORMAT(FNSH_YMD, '%Y-%m-%d') AS FNSH_PRCS_DT
+                FROM
+                    KEEP_DEV_LICENSE.VW_CRS_APLCNT_RSLT
+                WHERE
+                      1 = 1
+                  AND CRS_APLCNT_ID = #{fnshid}
+            </otherwise>
+        </choose>
+    </select>
+    
+    <!-- 환경학습 자격정보 목록 조회 -->
+    <select id="selectQlfcInfoList" parameterType="front.EnvLrnQlfcFnshHstryVo" resultType="front.EnvLrnQlfcFnshHstryVo">
+        /* EnvLrnQlfcFnshHstryDao.selectQlfcInfoList */
+        <include refid="PaginationMapper.header"/>
+            SELECT
+                '환경교육사' AS EDU_TYPE
+              , CONCAT('환경교육사', ' - ', CRS_GRD) AS QLFC_NM
+              , QLFC_RSLT_CODE
+              , DATE_FORMAT(LCNC_ACQS_YMD, '%Y-%m-%d') AS LCNC_ACQS_YMD
+            FROM
+                KEEP_DEV_LICENSE.VW_MMBR_QLFC
+            WHERE
+                1 = 1
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 환경교육용어사전 게시글 상세조회 -->
+    <select id="selectQlfcInfoDetail" parameterType="front.EnvLrnQlfcFnshHstryVo" resultType="front.EnvLrnQlfcFnshHstryVo"> 
+        /* EnvLrnQlfcFnshHstryDao.selectQlfcInfoDetail */
+        SELECT
+            '환경교육사' AS EDU_TYPE
+          , CONCAT('환경교육사', ' - ', CRS_GRD) AS QLFC_NM
+          , '환경부' AS ACQS_INST
+          , QLFC_RSLT_CODE
+          , DATE_FORMAT(LCNC_ACQS_YMD, '%Y-%m-%d') AS LCNC_ACQS_YMD
+        FROM
+            KEEP_DEV_LICENSE.VW_MMBR_QLFC
+        WHERE
+              1 = 1
+          AND QLFC_RSLT_CODE = #{qlfcRsltCode}
+    </select>    
+</mapper>

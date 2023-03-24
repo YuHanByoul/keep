@@ -8,11 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kbrainc.plum.front.dsgnMng.model.DsgnMngVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngDao;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
+import com.kbrainc.plum.mng.asgsysSrng.model.LdrVo;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmDao;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmObjcVo;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmVo;
+import com.kbrainc.plum.mng.dsgnPrgrm.model.OperPrfmncVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
@@ -365,7 +368,25 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	@Override
 	@Transactional
 	public int updateOperRslt(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
-		return dsgnPrgrmDao.updateOperRslt(dsgnPrgrmVo);
+		int ret=0;
+		if(dsgnPrgrmVo.getRsltCyclid() != null && dsgnPrgrmVo.getRsltCyclid() !=0 ) {
+			ret+=dsgnPrgrmDao.updateOperRslt(dsgnPrgrmVo);
+		}else {
+			ret+=dsgnPrgrmDao.insertOperRslt(dsgnPrgrmVo);
+		}
+
+		List<OperPrfmncVo> prfmncLst = dsgnPrgrmVo.getOperPrfmncLst();
+		dsgnPrgrmDao.deleteOperPrfmnc(dsgnPrgrmVo);
+
+		if(prfmncLst != null && prfmncLst.size() > 0) {
+			for(OperPrfmncVo vo : prfmncLst) {
+				vo.setUser(dsgnPrgrmVo.getUser());
+				vo.setCyclid(dsgnPrgrmVo.getCyclid());
+				ret += dsgnPrgrmDao.insertOperPrfmnc(vo);
+			}
+		}
+
+		return ret;
 	}
 
 	/**

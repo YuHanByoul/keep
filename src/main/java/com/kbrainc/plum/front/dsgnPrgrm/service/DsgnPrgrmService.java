@@ -225,4 +225,15 @@ public interface DsgnPrgrmService {
 	*/
 	public List<DsgnPrgrmVo> selectQitemList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
+	/**
+	* 보안요청 조회
+	*
+	* @Title : selectSplmntDmnd
+	* @Description : 보안요청 조회
+	* @param dsgnPrgrmVo
+	* @throws Exception
+	* @return DsgnPrgrmVo
+	*/
+	public DsgnPrgrmVo selectSplmntDmnd(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
 }

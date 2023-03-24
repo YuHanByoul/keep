@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+    layout:decorator="layout/front/subLayout" >
+<body>
+    <div layout:fragment="content">
+        <form id="chgAplyDtlForm" name="chgAplyDtlForm" method="post">
+            <input type="hidden" id="aplyid" name="aplyid" th:value="${chgAplyInfo.aplyid}">
+            <input type="hidden" id="aplySttsCd" name="aplySttsCd" th:value="${chgAplyInfo.aplySttsCd}">
+            <!-- content -->
+
+            <div class="tab-content tab-sub dropDown">
+                <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">변경내역</button>
+                <ul class="tab-list tab-list-pc target" role="tablist">
+                    <li class="tab"><a th:href="@{/front/dsgnMng/dsgnMngDetailForm.html?aplcntid=}+${aplcntid}" role="tab">지정내역</a></li>
+                    <li class="tab active"><a id="chgDsctnTab" th:href="@{/front/dsgnMng/chgDsctnForm.html?aplcntid=}+${aplcntid}" role="tab" >변경내역</a></li>
+                    <li class="tab"><a th:href="@{/front/dsgnMng/operRsltForm.html?aplcntid=}+${aplcntid}" role="tab" >운영결과</a></li>
+                    <li class="tab"><a th:href="@{/front/dsgnMng/implmntIdntyForm.html?aplcntid=}+${aplcntid}" role="tab" >이행확인</a></li>
+                    <li class="tab"><a th:href="@{/front/dsgnMng/objcAplyForm.html?aplcntid=}+${aplcntid}" role="tab" >이의신청</a></li>
+                </ul>
+            </div>
+
+            <div class="table-caption">
+                <div class="left">
+                    <h3 class="sub-title">기본정보</h3>
+                </div>
+            </div>
+
+            <div class="table-row">
+                <table>
+                    <caption>기본정보  - 지정프로그램명, 지정번호, 기관명, 지정기간</caption>
+                    <colgroup>
+                        <col style="width:140px;">
+                        <col>
+                        <col style="width:140px;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th scope="row">지정프로그램명</th>
+                            <td>
+                                <select id="prgrmid" name="prgrmid" value="" title="프로그램 선택" >
+                                    <th:block th:if="${dsgnPrgrmList != null}" th:each="item : ${dsgnPrgrmList}">
+                                        <option th:value="${item.prgrmid}">[[${item.prgrmNm}]]</option>
+                                    </th:block>
+                                </select>
+                            </td>
+                            <th scope="row">지정번호</th>
+                            <td>
+                                [[${chgAplyInfo.dsgnNo}]]
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">기관명</th>
+                            <td>[[${chgAplyInfo.instNm}]]</td>
+                            <th scope="row">지정기간</th>
+                            <td>[[${chgAplyInfo.dsgnPrd}]]</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+            <div class="table-caption">
+                <div class="left">
+                    <h3 class="sub-title">변경내용</h3>
+                </div>
+            </div>
+
+            <div class="table-combi table-layout-auto">
+                <table>
+                    <caption>변경내용 - 변경사항(변경시, 1.프로그램영역 (활동프로그램 세부 내용의 일부 변경,20% 이내의 예산 변경),2. 지도자 영역: 동일 경력 및 유사 자격자로 변경, 3. 교육활동환경영역: 동일조건의 장소와 인력으로 변경, 변경사유), 여부, 추가제출서류, 변경내용</caption>
+                    <colgroup></colgroup>
+                    <thead>
+                        <tr>
+                            <th scope="colgroup" colspan="2">변경사항</th>
+                            <th scope="col">여부</th>
+                            <th scope="col">추가제출서류</th>
+                            <th scope="col">변경내용</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row" colspan="2">변경 시</th>
+                            <td>[[${chgAplyInfo.samenssYn == 'Y'? 'O':'X'}]]</td>
+                            <td>-</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th scope="rowgroup" rowspan="2">1. 프로그램 영역</th>
+                            <th scope="row">황동프로그램 세부 내용의 일부 변경</th>
+                            <td>[[${chgAplyInfo.prgrmChgYn == 'Y'? 'O':'X'}]]</td>
+                            <td>지정 기준 1</td>
+                            <td>[[${chgAplyInfo.prgrmChgCn}]]</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">20%  이내의 예산 변경</th>
+                            <td>[[${chgAplyInfo.bgtChgYn == 'Y'? 'O':'X'}]]</td>
+                            <td>지정 기준 2</td>
+                            <td>[[${chgAplyInfo.bgtChgCn}]]</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" colspan="2"> 2.지도자 영역 : 동일 경력 및 유사 자격자로 변경</th>
+                            <td>[[${chgAplyInfo.ldrChgYn == 'Y'? 'O':'X'}]]</td>
+                            <td>지정 기준 1,4</td>
+                            <td>[[${chgAplyInfo.ldrChgCn}]]</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" colspan="2"> 3.교육활동환경영역 : 동일조건의 장소와 인력으로 변경</th>
+                            <td>[[${chgAplyInfo.eduEnvChgYn} == 'Y'? 'O':'X']]</td>
+                            <td>지정 기준 5</td>
+                            <td>[[${chgAplyInfo.eduEnvChgCn}]]</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" colspan="2">변경사유</th>
+                            <td colspan="3">[[${chgAplyInfo.eduEnvChgCn}]]</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+            <div class="table-caption">
+                <div class="left">
+                    <h3 class="sub-title">증빙자료</h3>
+                </div>
+            </div>
+
+            <div class="table-row">
+                <table>
+                    <caption>증빙자료  - 첨부파일</caption>
+                    <colgroup>
+                        <col style="width:140px;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th scope="row">첨부파일</th>
+                            <td>
+                                <div class="form-input-file">
+                                <ul>
+                                <th:block th:if="${fileList != null} "th:each="item : ${fileList}">
+                                    <li class="file-block" th:data_ext="${item.ext}"><span class="name"><a href="javascript:void(0)" th:onclick="javascript:downloadFileByFileid([[${item.fileid}]],[[${item.fileIdntfcKey}]])"><th:block th:text="${item.orginlFileNm}"></th:block></a></span></li>
+                                </th:block>
+                                </ul>
+                            </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="btn-wrap">
+                <div class="right">
+                    <button type="button" class="btn-medium btn-gray" id="delBtn" onclick="aplyCmptn.delAply()">삭제</button>
+                    <button type="button" class="btn-medium btn-gray" id="modBtn" onclick="aplyCmptn.modAply()">수정</button>
+                </div>
+            </div>
+            <!-- //content -->
+        </form>
+        <script th:inline="javascript">
+
+
+            var aplyCmptn = {
+
+
+            	init(){
+            		if($("#aplySttsCd").val()=='119101'){
+            			$("#delBtn").show();
+            			$("#modBtn").hide();
+            		}else{
+            			$("#delBtn").hide();
+            			$("#modBtn").show();
+            		}
+
+
+
+            	},
+            	delAply() {
+
+                    var id=$("#aplyid").val();
+                     $.ajax({
+                    	 url: "/front/dsgnMng/deleteChgAply.do?aplyid="+id,
+                         type: 'GET',
+                         cache: false,
+                         dataType: 'json',
+                         success: function (data) {
+                             if(data.result=="success"){
+                                 alert(data.msg);
+                                 $("#chgDsctnTab").get(0).click();
+                             }else{
+                                 alert(data.msg);
+                             }
+                             closeWorkProgress();
+                         }
+                    });
+            	},
+            	modAply() {
+            		var id= $("#aplyid").val();
+            		location.href = "/front/dsgnMng/chgAplyUpdateForm.html?aplyid="+id;
+            	}
+            }
+
+            $(function(){
+            	aplyCmptn.init();
+            });
+
+
+        </script>
+    </div>
+</body>
+</html>
