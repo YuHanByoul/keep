@@ -256,11 +256,12 @@
     <select id="selectMyExprt" resultType="com.kbrainc.plum.front.mypage.exprtPool.model.MyExprtVo">
         SELECT
             EXPRT_TYPE_CD
-            , FLD_LCTR_YN
-            , FLD_PLANNG_YN
-            , FLD_CNSLTNG_YN
-            , FLD_ETC_YN
-            , FLD_ETC_CN
+             , (SELECT CONCAT_WS(',',
+                                 CASE WHEN FLD_LCTR_YN = 'Y' THEN '강의' END
+                           , CASE WHEN FLD_PLANNG_YN = 'Y' THEN '기획' END
+                           , CASE WHEN FLD_CNSLTNG_YN = 'Y' THEN '사업자문 및 컨설팅' END
+                           , CASE WHEN FLD_ETC_YN = 'Y' THEN CONCAT('기타(', FLD_ETC_CN,')') END
+                           )) AS FLDS
             , MOBLPHON_RLS_YN
             , TELNO_RLS_YN
             , EML_RLS_YN
