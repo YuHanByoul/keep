@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
+import com.kbrainc.plum.front.bizAply.model.SupplementVo;
+
 /**
 * 마이페이지 > 체험환경교육 프로그램 지원관리 > 정산관리 DAO 인터페이스 
 *
@@ -105,4 +107,40 @@ public interface ClclnDao {
     * @return int
      */
     int deleteClclnDsctn(ClclnDsctnVo clclnDsctnVo) throws Exception;
+    
+    /**
+    * 보완요청 상세조회 
+    *
+    * @Title : selectSplmntInfo
+    * @Description : TODO
+    * @param supplementVo
+    * @return
+    * @throws Exception
+    * @return SupplementVo
+     */
+    SupplementVo selectSplmntInfo(SupplementVo supplementVo) throws Exception;
+    
+    /**
+    * 보완요청 답변 수정. 
+    *
+    * @Title : updateSplmnt
+    * @Description : TODO
+    * @param supplementVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int updateSplmnt(SupplementVo supplementVo) throws Exception;
+
+    /**
+    * 정산보고관리 제출 / 보완완료 상태 업데이트. 
+    *
+    * @Title : updateStts
+    * @Description : TODO
+    * @param supplementVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int updateStts(SupplementVo supplementVo) throws Exception;
 }
