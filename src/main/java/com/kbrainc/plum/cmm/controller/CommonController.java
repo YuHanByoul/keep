@@ -33,6 +33,8 @@ import com.kbrainc.plum.front.member.model.MemberVo;
 import com.kbrainc.plum.front.member.service.MemberServiceImpl;
 import com.kbrainc.plum.front.mmnws.model.MmnwsVo;
 import com.kbrainc.plum.front.mmnws.service.MmnwsServiceImpl;
+import com.kbrainc.plum.mng.banner.model.BannerVo;
+import com.kbrainc.plum.mng.banner.service.BannerServiceImpl;
 import com.kbrainc.plum.mng.site.model.SiteVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.DrmncyInfoVo;
@@ -85,6 +87,9 @@ public class CommonController {
     
     @Autowired
     private MemberServiceImpl memberService;
+    
+    @Autowired
+    private BannerServiceImpl bannerSerivice;
     
     /**
     * 인덱스.
@@ -168,6 +173,10 @@ public class CommonController {
                 mmnwsVo.setOrderDirection(ORDER_DIRECTION.desc);
                 MemberVo memberVo = new MemberVo();
                 memberVo.setUser(user);
+                BannerVo bannerVo = new BannerVo();
+                bannerVo.setSiteid(site.getSiteid());
+                bannerVo.setBannerPstnCd("233101");
+                bannerVo.setExpsrYn('Y');
                 try {
                     if(user == null) {
                         mav.addObject("userType", "-1");
@@ -188,7 +197,11 @@ public class CommonController {
                     List<PstVo> recruitList= bbsService.selectPstList(pstVo);
                     mav.addObject("recruitList", recruitList);
                     MemberVo memberInfo = memberService.selectMemberInfo(memberVo);
-                    mav.addObject("envfldCds", memberInfo.getEnvfldCd());
+                    if(memberInfo != null) {
+                        mav.addObject("envfldCds", memberInfo.getEnvfldCd());
+                    }
+                    List<BannerVo> bannerList = bannerSerivice.selectExpsrBannerList(bannerVo);
+                    mav.addObject("bannerList", bannerList);
                 } catch(SQLException e) {
                     mav.addObject("list", null);
                 } catch(Exception e) {
@@ -246,6 +259,10 @@ public class CommonController {
             mmnwsVo.setOrderDirection(ORDER_DIRECTION.desc);
             MemberVo memberVo = new MemberVo();
             memberVo.setUser(user);
+            BannerVo bannerVo = new BannerVo();
+            bannerVo.setSiteid(site.getSiteid());
+            bannerVo.setBannerPstnCd("233101");
+            bannerVo.setExpsrYn('Y');
             try {
                 if(user == null) {
                     model.addAttribute("userType", "-1");
@@ -266,7 +283,11 @@ public class CommonController {
                 List<PstVo> recruitList= bbsService.selectPstList(pstVo);
                 model.addAttribute("recruitList", recruitList);
                 MemberVo memberInfo = memberService.selectMemberInfo(memberVo);
-                model.addAttribute("envfldCds", memberInfo.getEnvfldCd());
+                if(memberInfo != null) {
+                    model.addAttribute("envfldCds", memberInfo.getEnvfldCd());
+                }
+                List<BannerVo> bannerList = bannerSerivice.selectExpsrBannerList(bannerVo); 
+                model.addAttribute("bannerList", bannerList);
             } catch(SQLException e) {
                 model.addAttribute("noticList", null);
             } catch(Exception e) {
