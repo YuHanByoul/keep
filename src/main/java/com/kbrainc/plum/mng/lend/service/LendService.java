@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.kbrainc.plum.mng.lend.model.LendAplyDlivyVo;
 import com.kbrainc.plum.mng.lend.model.LendAplyVo;
+import com.kbrainc.plum.mng.lend.model.LendPackageindvdChckVo;
 import com.kbrainc.plum.mng.lend.model.LendRndPackageindvdVo;
 import com.kbrainc.plum.mng.lend.model.LendRndVo;
 import com.kbrainc.plum.mng.lend.model.LendVo;
@@ -283,5 +284,81 @@ public interface LendService {
      * @throws Exception 예외
      */
     public int insertLendAplyDlivy(LendAplyVo lendAplyVo) throws Exception;
+    
+    /**************입고 관리 **************/
+    /**
+     * 대여 신청 출고 상태 (입고)수정
+     *
+     * @Title       : updateLendAplyDlivy 
+     * @Description :대여 신청 출고 상태 (입고)수정 
+     * @param LendAplyVo 객체
+     * @return int  목록
+     * @throws Exception 예외
+     */
+    public int updateLendAplyDlivy(LendAplyVo lendAplyVo) throws Exception;
+    /**
+     * 꾸러미 개체 점검 등록
+     *
+     * @Title       : insertLendPackageindvdChck 
+     * @Description :꾸러미 개체 점검 등록 
+     * @param LendAplyVo 객체
+     * @return int  목록
+     * @throws Exception 예외
+     */
+    public int insertLendPackageindvdChck(LendPackageindvdChckVo lendPackageindvdChckVo) throws Exception;
+    /**
+     * 꾸러미 개체 점검 답변 등록
+     *
+     * @Title       : insertLendPackageindvdChckAns 
+     * @Description :꾸러미 개체 점검 답변 등록 
+     * @param LendAplyVo 객체
+     * @return int  목록
+     * @throws Exception 예외
+     */
+    public int insertLendPackageindvdChckAns(LendPackageindvdChckVo lendPackageindvdChckVo) throws Exception;
+    /**
+     * 입고 확인 꾸러미 개체 목록 호출 
+     *
+     * @Title       : selectLendPackageindvdList 
+     * @Description :입고 확인 꾸러미 개체 목록 호출 
+     * @param LendAplyVo 객체
+     * @return int  목록
+     * @throws Exception 예외
+     */
+    public List<LendAplyVo> selectLendPackageindvdList(LendAplyVo lendAplyVo) throws Exception;
+    /**
+     * 교구 점검 양식 문항/보기 리스트 호출
+     *
+     * @Title       : selectFormExidList 
+     * @Description :교구 점검 양식 문항/보기 리스트 호출 
+     * @param LendAplyVo 객체
+     * @return int  목록
+     * @throws Exception 예외
+     */
+    public List<Map<String,Object>> selectFormExidList(Map<String,Object> parmaMap) throws Exception;
+    /**
+     * 입고 처리 (점검 등록 및 이상처리 등)
+     *
+     * @Title       : selectFormExidList 
+     * @Description :교구 점검 양식 문항/보기 리스트 호출 
+     * @param LendAplyVo 객체
+     * @return int  목록
+     * @throws Exception 예외
+     */
+    public Map<String,Object> wrhounsngProcess(LendPackageindvdChckVo lendPackageindvdChckVo) throws Exception;
+    /**
+     * 대여차시 별 이미 승인 된 꾸러미 개체 여부 확인
+     *
+     * @Title       : isThereRndPackageindvdYn 
+     * @Description : 대여차시 별 이미 승인 된 꾸러미 개체 여부 확인 
+     * @param LendPackageindvdChckVo 객체
+     * @return int  목록
+     * @throws Exception 예외
+     */
+    public String isThereRndPackageindvdYn(LendAplyVo lendAplyVo) throws Exception;
+    
+    
+    
+    
     
 }

@@ -334,7 +334,7 @@
            ,B.PACKAGEINDVD_NM 
            ,B.INDVDNO 
          FROM 
-           TB_THA_PACKAGE_LEND_RND_PACKAGEINDVD A
+           TB_THA_PACKAGE_LEND_APLY_DLIVY A
            INNER JOIN TB_THA_PACKAGEINDVD B
            ON A.PACKAGEINDVDID =B.PACKAGEINDVDID 
         WHERE 1=1 
@@ -674,7 +674,7 @@
                      ,GROUP_CONCAT( A.APLYID ) APLYIDS
                      ,C.TOTAL_CNT - C.RESERVATION_CNT AS RESERVED_CNT
                      ,C.PACKAGEINDVD_LIMIT
-                     ,IFNULL((SELECT SUM(QNTY) FROM TB_THA_PACKAGE_LEND_APLY WHERE STTS_CD = '231102' AND RNDID = B.RNDID),0) AS INST_RESERVATION_CNT
+                     ,IFNULL((SELECT SUM(QNTY) FROM TB_THA_PACKAGE_LEND_APLY WHERE STTS_CD = '231102' AND RNDID = B.RNDID AND A.INSTID = INSTID),0) AS INST_RESERVATION_CNT
                    FROM
                      TB_THA_PACKAGE_LEND_APLY A
                      INNER JOIN TB_THA_PACKAGE_LEND_RND B
@@ -999,5 +999,206 @@
                  </foreach>
          )
    </update>
-    
+   
+   <!--**************입고 관리 **************-->
+   <!-- 대여 신청 출고 수정 -->
+   <update id="updateLendAplyDlivy" parameterType="LendAplyDlivyVo" >
+        /* LendDao.updateLendAplyDlivy */
+        UPDATE TB_THA_PACKAGE_LEND_APLY_DLIVY
+           SET 
+             DLIVY_PRCS_DT  = NOW(),            
+             DLIVY_PICID    = #{user.userid }
+         WHERE APLYID = #{aplyid        }
+           AND RNDID  = #{rndid         }
+           AND PACKAGEINDVDID = #{packageindvdid}
+               
+   </update>
+   <!-- 꾸러미 개체 점검 등록-->
+   <insert id="insertLendPackageindvdChck" parameterType="LendPackageindvdChckVo" useGeneratedKeys="true" keyProperty="chckid">
+         /* LendDao.insertLendPackageindvdChck */
+         INSERT INTO TB_THA_PACKAGEINDVD_CHCK(
+                FORMID
+                ,APLYID
+                ,RNDID
+                ,PACKAGEINDVDID
+                ,ABNRMLID
+                ,CHCK_CD
+                ,PICID
+                ,CHCK_DE
+                ,MDFCN_DT
+                ,MDFRID
+                ,REG_DT
+                ,RGTRID
+             )VALUES(
+                 #{formid        }
+                ,#{aplyid        }
+                ,#{rndid         }
+                ,#{packageindvdid}
+                ,#{abnrmlid      }
+                ,#{chckCd        }
+                ,#{user.userid   }
+                ,#{chckDe        }
+                ,NOW()
+                ,#{user.userid   }
+                ,NOW()
+                ,#{user.userid   }
+             )
+   </insert>
+   <!-- 꾸러미 개체 점검 답변 등록-->
+   <insert id="insertLendPackageindvdChckAns" parameterType="LendPackageindvdChckVo" >
+        /* LendDao.insertLendPackageindvdChckAns */
+        INSERT INTO TB_THA_PACKAGEINDVD_CHCK_ANS(
+              CHCKID
+              ,ARTCLID
+              ,TCHAIDID
+              ,EXID
+              ,EX_CN
+              ,ACTN_MTTR
+              ,MDFCN_DT
+              ,MDFRID
+              ,REG_DT
+              ,RGTRID
+           )VALUES
+           <foreach item="item" collection="lendPackageindvdChkAnsList" separator=",">
+           (
+              #{chckid   }
+              ,#{item.artclid  }
+              ,#{item.tchaidid }
+              ,#{item.exid     }
+              ,#{item.exCn    }
+              ,#{item.actnMttr}
+              ,NOW()
+              ,#{user.userid   }
+              ,NOW()
+              ,#{user.userid   }
+           )
+           </foreach>
+   </insert>
+   <!-- 입고 확인 꾸러미 개체 목록 호출-->
+   <select id="selectLendPackageindvdList" parameterType="LendAplyVo" resultType="LendAplyVo">
+          /* LendDao.selectLendPackageindvdList */
+        <if test='packageindvdid == null or packageindvdid == "" or packageindvdid == 0 '>
+          <include refid="PaginationMapper.header"/>
+        </if>
+         SELECT 
+             D.RCRIT_NM 
+             ,A.APLYID
+             ,A.PACKAGEINDVDID
+             ,B.RNDID 
+             ,B.LEND_BGNG_DE 
+             ,B.LEND_END_DE 
+             ,C.ORDR
+             ,B.DLVY_ADDR 
+             ,B.DLVY_ADDR_DTL
+             ,B.PACKAGEID
+             ,E.PACKAGEINDVD_NM AS PACKAGE_NM
+             ,E.INDVDNO 
+             ,A.WRHOUSNG_PRCS_DT
+             ,B.STTS_CD
+             ,B.DLVY_STTS_CD
+             ,A.REG_DT
+             ,F.INSTID
+             ,F.INST_NM
+          FROM
+            TB_THA_PACKAGE_LEND_APLY_DLIVY A
+            INNER JOIN  TB_THA_PACKAGE_LEND_APLY B
+            ON A.APLYID = B.APLYID
+            INNER JOIN TB_THA_PACKAGE_LEND_RND C
+            ON A.RNDID = C.RNDID 
+            INNER JOIN TB_THA_PACKAGE_LEND_RCRIT D
+            ON C.RCRITID = D.RCRITID  
+            INNER JOIN TB_THA_PACKAGEINDVD E
+            ON A.PACKAGEINDVDID = E.PACKAGEINDVDID
+            INNER JOIN TB_CMM_INST F
+            ON B.INSTID = F.INSTID  
+        WHERE 1=1 
+          AND B.STTS_CD = '231102'
+          AND B.DLVY_STTS_CD  = '230102'
+          AND A.WRHOUSNG_PRCS_DT IS NULL
+          AND A.WRHOUSNG_PICID IS NULL 
+           <if test="searchKeyword != null and searchKeyword != '' and searchType == 'nm'">
+              AND D.RCRIT_NM LIKE CONCAT('%',#{searchKeyword},'%')
+           </if>
+           <if test="searchKeyword != null and searchKeyword != '' and searchType == 'number'">
+              AND E.INDVDNO = #{searchKeyword}
+           </if>
+           <if test="packageindvdid != null and packageindvdid != '' ">
+              AND A.PACKAGEINDVDID = #{packageindvdid}
+              ORDER BY A.REG_DT DESC
+           </if>
+           
+        <if test='packageindvdid == null or packageindvdid == "" or packageindvdid == 0 '>
+            <include refid="PaginationMapper.footer"/>
+        </if>
+   </select>
+   <!-- 교구 점검 양식 문항/보기 리스트 호출  -->
+   <select id="selectFormExidList" parameterType="map" resultType="map">
+          /* LendDao.selectFormExidList */
+          SELECT 
+              B.ARTCLID artclid 
+              ,B.FORMID formid  
+              ,B.ORDR   ordr 
+              ,B.CN     cn 
+              ,group_concat(concat(C.ORDR,'/',C.EXID,'/',C.CN) ORDER BY C.ORDR ASC) excn
+            FROM
+              TB_THA_PACKAGEINDVD_CHCK_FORM A
+              INNER JOIN TB_THA_PACKAGEINDVD_CHCK_ARTCL B 
+              ON A.FORMID = B.FORMID 
+              INNER JOIN TB_THA_PACKAGEINDVD_CHCK_ARTCL_EX C
+              ON B.ARTCLID = C.ARTCLID 
+           WHERE 1=1
+             AND A.FORMID  = #{formid}
+             GROUP BY B.ARTCLID 
+             ORDER BY B.ORDR ASC
+   </select>
+   <!-- 꾸러미 개체 점검 교구 등록 -->
+   <insert id="insertPackageindvdChckTchaid" parameterType="LendPackageindvdChckVo" >
+          /* LendDao.packageindvdChckTchaid */
+          INSERT INTO TB_THA_PACKAGEINDVD_CHCK_TCHAID(
+                TCHAIDID
+                ,CHCKID
+                ,QNTY
+                ,CMPNT
+                ,MDFCN_DT
+                ,MDFRID
+                ,REG_DT
+                ,RGTRID
+           )VALUES
+           <foreach item="item" collection="lendPackageindvdChckTchaidList" separator=",">
+           (
+               #{item.tchaidid}
+              ,#{chckid     }
+              ,#{item.qnty  }
+              ,#{item.cmpnt }
+              ,NOW()
+              ,#{user.userid}
+              ,NOW()
+              ,#{user.userid}
+           )
+           </foreach>
+   </insert>
+   <!-- 대여 신청 입고 수정 -->
+   <update id="updateLendAplyWrhousng" parameterType="LendPackageindvdChckVo" >
+        /* LendDao.updateLendAplyWrhousng */
+        UPDATE TB_THA_PACKAGE_LEND_APLY_DLIVY
+           SET 
+             WRHOUSNG_PRCS_DT  = NOW(),            
+             WRHOUSNG_PICID    = #{user.userid }
+         WHERE APLYID = #{aplyid}
+           AND RNDID  = #{rndid }
+           AND PACKAGEINDVDID = #{packageindvdid}
+   </update>
+   <!-- 대여차시 별 이미 승인 된 꾸러미 개체 여부 확인 -->
+   <select id="isThereRndPackageindvdYn" parameterType="PackageindvdVo" resultType="String">
+       SELECT
+          CASE WHEN  COUNT(A.PACKAGEINDVDID) > 0 THEN 'Y'
+               ELSE 'N'
+          END
+         FROM 
+           TB_THA_PACKAGE_LEND_APLY_DLIVY A
+        WHERE 1=1
+          AND A.RNDID = #{rndid}
+          AND A.PACKAGEINDVDID = #{packageindvdid}
+   </select>
+   
 </mapper>
