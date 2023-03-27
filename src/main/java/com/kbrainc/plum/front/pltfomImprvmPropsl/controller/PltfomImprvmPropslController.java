@@ -20,7 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -115,9 +117,19 @@ public class PltfomImprvmPropslController {
      * @Description : 플랫폼 개선 제안 상세 화면
      */
     @GetMapping("/pltfomImprvmPropslDetail.html")
-    public String pltfomImprvPropslDetail(PltfomImprvmPropslVo searchVo, Model model, @UserInfo UserVo user) throws Exception {
+    public String pltfomImprvPropslDetail(PltfomImprvmPropslVo searchVo, Model model, @UserInfo UserVo user, HttpServletResponse response) throws Exception {
 
         PltfomImprvmPropslVo propsl = pltfomImprvmPropslService.selectPropsl(searchVo);
+
+        if(propsl.getRlsYn().equals("N")) {
+            if(!propsl.getUserid().equals(Integer.valueOf(user.getUserid()))) {
+                response.setContentType("text/html;charset=UTF-8");
+                PrintWriter writer = response.getWriter();
+                writer.print("<script>alert('비공개 글의 경우 작성자만 볼 수 있습니다.');history.back();</script>");
+                return null;
+            }
+        }
+
         PltfomImprvmPropslAnsVo propslAns = pltfomImprvmPropslService.selectPropslAns(searchVo);
 
         model.addAttribute("loginUserid", user != null ? Integer.valueOf(user.getUserid()) : null);

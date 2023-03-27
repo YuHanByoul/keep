@@ -48,7 +48,7 @@
             <div class="form-row">
                 <div class="form-header"><strong class="label">가능 활동범위</strong></div>
                 <div class="form-body">
-                    <span kattr:select_code="exprtActvtScopeCd" grpCd="125" firstOptTxt="- 전체 -"></span>
+                  <th:block kattr:exprt_select_ctprvn="exprtActvtScopeCd" firstOptTxt="- 전체 -"></th:block>
                 </div>
             </div>
         </div>
@@ -89,6 +89,7 @@
             search() {
                 $('#pageNumber').val(1);
                 this.selectExprtList();
+
             },
 
             selectExprtList() {
@@ -139,43 +140,41 @@
                                                 </label>
                                             </div>
                                         </div>
-                                        <a onclick="lctrDmndList.moveToDetail(${item.userid})">
-                                            <div class="resume-center">
-                                                <div class="resume-detail">
-                                                    <dl>
-                                                        <div class="list">
-                                                            <dt><span class="icon icon-doc bg-blue"></span>전문분야</dt>
-                                                            <dd class="ellipsis">${exprtField.join(', ')}
-                                                                ${isNull(item.exprtTrgtCdNm) ? '' : '/' + item.exprtTrgtCdNm}
-                                                                ${isNull(item.exprtSbjctCdNm) ? '' : '/' + item.exprtSbjctCdNm}
-                                                            </dd>
-                                                        </div>
-                                                        <div class="list">
-                                                            <dt><span class="icon icon-career bg-blue"></span>경력</dt>
-                                                            <dd>${item.careerRlsYn == 'Y' ?
-                                                                    `총 ${item.envEduCareerYy == null ? '0' : item.envEduCareerYy}년 ${item.envEduCareerMm == null ? '0' : item.envEduCareerMm}개월`
-                                                                    : '비공개'
-                                                                }
-                                                            </dd>
-                                                        </div>
-                                                        <div class="list">
-                                                            <dt><span class="icon icon-cert bg-blue"></span>자격</dt>
-                                                            <dd class="ellipsis">${item.qlfcRlsYn == 'Y' ? item.exprtCrtfctNm : '비공개'}</dd>
-                                                        </div>
-                                                        <div class="list">
-                                                            <dt><span class="icon icon-location bg-blue"></span>가능 활동범위</dt>
-                                                            <dd class="ellipsis">${item.exprtActvtScopeCdNm}</dd>
-                                                        </div>
-                                                    </dl>
-                                                </div>
-                                                <div class="resume-update">
-                                                    <div class="resume-update-date">${item.mdfcnDt} 업데이트</div>
-                                                    <div class="link">
-                                                        <a class="btn-medium btn-green" onclick="lctrDmndList.moveToInsertForm(${item.userid})">요청서 작성</a>
+                                        <div class="resume-center move-detail" data-id="${item.userid}" style="cursor:pointer;">
+                                            <div class="resume-detail">
+                                                <dl>
+                                                    <div class="list">
+                                                        <dt><span class="icon icon-doc bg-blue"></span>전문분야</dt>
+                                                        <dd class="ellipsis">${exprtField.join(', ')}
+                                                            ${isNull(item.exprtTrgtCdNm) ? '' : '/' + item.exprtTrgtCdNm}
+                                                            ${isNull(item.exprtSbjctCdNm) ? '' : '/' + item.exprtSbjctCdNm}
+                                                        </dd>
                                                     </div>
+                                                    <div class="list">
+                                                        <dt><span class="icon icon-career bg-blue"></span>경력</dt>
+                                                        <dd>${item.careerRlsYn == 'Y' ?
+                                                                `총 ${item.envEduCareerYy == null ? '0' : item.envEduCareerYy}년 ${item.envEduCareerMm == null ? '0' : item.envEduCareerMm}개월`
+                                                                : '비공개'
+                                                            }
+                                                        </dd>
+                                                    </div>
+                                                    <div class="list">
+                                                        <dt><span class="icon icon-cert bg-blue"></span>자격</dt>
+                                                        <dd class="ellipsis">${item.qlfcRlsYn == 'Y' ? item.exprtCrtfctNm : '비공개'}</dd>
+                                                    </div>
+                                                    <div class="list">
+                                                        <dt><span class="icon icon-location bg-blue"></span>가능 활동범위</dt>
+                                                        <dd class="ellipsis">${item.exprtActvtScopeCdNm}</dd>
+                                                    </div>
+                                                </dl>
+                                            </div>
+                                            <div class="resume-update">
+                                                <div class="resume-update-date">${item.mdfcnDt} 업데이트</div>
+                                                <div class="link">
+                                                    <a class="btn-medium btn-green move-insert" data-id="${item.userid}">요청서 작성</a>
                                                 </div>
                                             </div>
-                                        </a>
+                                        </div>
                                     </div>
                                 </li>`;
                     });
@@ -220,7 +219,9 @@
                 });
             },
 
-            moveToInsertForm(userid) {
+            moveToInsertForm(e, userid) {
+                e.stopPropagation();
+
                 if (this.user == null) {
                     alert('14세 이상 개인회원 또는 기관회원 가입 후 전문가 요청이 가능합니다.');
                     return;
@@ -266,6 +267,15 @@
             $('#exprtActvtScopeCd').val(lctrDmndList.searchVo.exprtActvtScopeCd);
 
             lctrDmndList.selectExprtList();
+
+            $(document).on('click', '.move-detail', function(){
+                $this = $(this);
+                lctrDmndList.moveToDetail($this.data('id'));
+            }).on('click', '.move-insert', function(e){
+                $this = $(this);
+                lctrDmndList.moveToInsertForm(e, $this.data('id'));
+            });
+
         });
     </script>
 </div>

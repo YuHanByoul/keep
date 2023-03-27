@@ -1,0 +1,174 @@
+	<form class="search-filter search-filter-combination" id="qlfcInfoForm" name="qlfcInfoForm">
+		<input type="hidden" id="pageNumber" name="pageNumber" value="1">
+		<input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
+		<input type="hidden" id="ORDER_DIRECTION" name="orderDirection" value="asc">	
+		<input type="hidden" id="orderField" name="orderField" value="LCNC_ACQS_YMD">
+	</form>
+		
+	<div class="table-caption flex-nowrap">
+		<div class="left">
+			<p>총 <b id="totalCount">0</b> 건</p>
+		</div>
+		<div class="right">
+			<select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage" onchange="qlfcInfo.changeRowPerPage()">
+				<option value="10">10개씩 보기</option>
+				<option value="50">50개씩 보기</option>
+				<option value="100">100개씩 보기</option>
+			</select>
+		</div>
+	</div>
+
+	<div class="pc-only">
+		<div class="table-col table-layout-auto">
+			<table>
+				<caption>자격정보 - 번호, 교육구분, 자격증명, 자격증 번호, 자격 취득일, 신청일자, 발급상태</caption>
+				<colgroup>
+					<col>
+					<col>
+					<col style="width:27%;">
+					<col>
+				</colgroup>
+				<thead>
+					<tr>
+						<th scope="col">번호</th>
+						<th scope="col">교육구분</th>
+						<th scope="col">자격증명</th>
+						<th scope="col">자격증 번호</th>
+						<th scope="col">자격 취득일</th>
+					</tr>
+				</thead>
+				<tbody id="pc-list-area">
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	
+
+	<div class="mo-only">
+		<div class="table-list">
+			<ul id="mo-list-area">
+			</ul>
+		</div>
+	</div>
+
+	<div class="pagination" aria-label="pagination">
+	</div>
+		
+	<script th:inline="javascript">
+    	var qlfcInfo = {
+            listUrl : '/front/envLrnQlfcFnshHstry/selectQlfcInfoList.do',
+            detailUrl : '/front/envLrnQlfcFnshHstry/envLrnQlfcInfoDetailForm.html',
+
+            init(rowPerPage) {
+            	if(rowPerPage != null) {
+                    $("#rowPerPage").val(parseInt(rowPerPage));
+                    $('#pageNumber').val('1');
+            	}
+                this.selectFnshInfoList();
+            },
+            
+            changeRowPerPage() {
+                $('#rowPerPage').val($('#selectRowPerPage').val());
+                this.selectFnshInfoList();
+            },
+
+            selectFnshInfoList() {
+                if (displayWorkProgress(true)) {
+                    let formData = $('#qlfcInfoForm').serializeArray();
+
+                    $.ajax({
+                        url: qlfcInfo.listUrl,
+                        cache: false,
+                        dataType: 'json',
+                        data: formData,
+                        type: 'GET',
+                        success: function (data) {
+                        	qlfcInfo.makeListHtml(data);
+                            closeWorkProgress();
+                        }
+                    });
+                }
+            },
+
+            makeListHtml(data) {
+                var PC_listHtml = "";
+                var MO_listHtml = "";
+                if (data.list == null || data.list.length <= 0) {
+                	PC_listHtml += `
+   					<tr>
+						<td class="nodata" colspan="5">
+						<p><span class="icon icon-notice bg-black9"></span>자격정보가 없습니다.</p>
+						</td>
+					</tr>
+                    `;
+                    
+                	MO_listHtml += `
+       				<li class="block">
+    					<div class="nodata">
+    					<p><span class="icon icon-notice bg-black9"></span>자격정보가 없습니다.</p>
+    					</div>
+    				</li>
+					`;                    
+                } else {
+                    data.list.forEach(function(item) {
+                    	PC_listHtml += `
+        				<tr>
+    						<td>${item.rowNumber}</td>
+    						<td>${item.eduType}</td>
+    						<td><a href="${qlfcInfo.detailUrl}?qlfcRsltCode=${item.qlfcRsltCode}" class="link ellipsis">${item.qlfcNm}</a></td>
+    						<td>${item.qlfcRsltCode}</td>
+    						<td>${item.lcncAcqsYmd}</td>
+    					</tr>
+						`;
+                   									
+                    	MO_listHtml += `
+           				<li class="block">
+        					<div class="tbody">
+        						<dl>
+		   							<div class="list">
+										<dt>번호</dt>
+										<dd>${item.rowNumber}</dd>
+									</div>
+									<div class="list">
+										<dt>교육구분</dt>
+										<dd>${item.eduType}</dd>
+									</div>
+									<div class="list">
+										<dt>자격증명</dt>
+										<dd><a href="" class="link ellipsis">${item.qlfcNm}</a></dd>
+									</div>
+									<div class="list">
+										<dt>자격증 번호</dt>
+										<dd>${item.qlfcRsltCode}</dd>
+									</div>
+									<div class="list">
+										<dt>자격 취득일</dt>
+										<dd>${item.lcncAcqsYmd}</dd>
+									</div>
+        						</dl>
+        					</div>
+        				</li>
+       					`;
+                    });
+                }	
+                $('#pc-list-area').html(PC_listHtml);
+                $('#mo-list-area').html(MO_listHtml);
+                $("#pagination").html(data.pagination);
+                $("#totalCount").html(data.totalCount);
+            }
+        };
+
+        $(function () {
+        	qlfcInfo.init();
+        })
+		
+		function goPage(page) {
+			$("#pageNumber").val(page);
+			
+			qlfcInfo.selectFnshInfoList();
+		}
+	</script>
+	
+</body>
+</html>
