@@ -579,6 +579,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	/** 자격명 */
 	private String qlfcNm;
 
+	/** 취득일 */
+	private String acqsDe;
+
 	/** 급수  */
 	private String grd;
 
