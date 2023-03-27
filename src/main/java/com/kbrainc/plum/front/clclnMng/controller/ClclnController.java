@@ -27,6 +27,7 @@ import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.StringUtil;
+import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 
 /**
  * 
@@ -88,6 +89,7 @@ public class ClclnController {
         result =  clclnService.selectClclnList(clclnVo);
         if (result.size() > 0) {
             resultMap.put("totalCount", (result.get(0).getTotalCount()));
+            resultMap.put("pagination", PaginationUtil.getFrontPaginationHtml(result.get(0).getTotalPage(), result.get(0).getPageNumber(), 10));
         } else {
             resultMap.put("totalCount", 0);
         }

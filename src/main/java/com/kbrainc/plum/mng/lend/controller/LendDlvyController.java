@@ -1,4 +1,4 @@
-package com.kbrainc.plum.mng.eduResrce.controller;
+package com.kbrainc.plum.mng.lend.controller;
 
 import java.util.HashMap;
 import java.util.List;
@@ -161,6 +161,31 @@ public class LendDlvyController {
         return resultMap;
     }
     /**
+     * 꾸러미 개체  출고 전 유효성 검증    
+     *
+     * @Title : checkPackageindvdValidation
+     * @Description : 꾸러미 개체  출고 전 유효성 검증
+     * @param PackageindvdVo packageindvdVo 객체
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/eduResrce/checkPackageindvdValidation.do")
+    @ResponseBody
+    public Map<String, Object> checkPackageindvdValidation(PackageindvdVo packageindvdVo, LendAplyVo lendAplyVo,@UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        
+        List<PackageindvdVo> result = null;
+        packageindvdVo.setUser(user);
+        
+        result = lendService.searchPackageindvdList(packageindvdVo);
+        
+        resultMap.put("duplicationPackInSameRndYn", lendService.isThereRndPackageindvdYn(lendAplyVo));
+        
+        resultMap.put("isOtherPackageYn", (result.size() > 0)? "N":"Y");
+        
+        return resultMap;
+    }
+    /**
      * 출고 꾸러미 개체 등록
      * 
      * @Title : insertPackageindvdDlvy
@@ -186,10 +211,10 @@ public class LendDlvyController {
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "저장에 성공하였습니다.");
+            resultMap.put("msg", "출고 처리 하였습니다.");
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-            resultMap.put("msg", "저장에 실패했습니다.");
+            resultMap.put("msg", "출고 처리에 실패했습니다.");
         }
         return resultMap;
     }

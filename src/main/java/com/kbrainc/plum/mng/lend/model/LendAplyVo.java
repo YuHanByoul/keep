@@ -222,7 +222,13 @@ public class LendAplyVo extends ParentRequestVo {
     /**대여 불가 사유 **/
     private String rejectRsn;
     
-    /** 꾸러미 아이디 (등록용) **/
+    /** 꾸러미 개체 아이디  **/
+    private Integer packageindvdid;
+    
+    /** 꾸러미 개체 아이디  **/
+    private String indvdno;
+    
+    /** 꾸러미 개체  아이디 (등록용) **/
     private String[] packageindvdids;
     
     /** 꾸러미 개체 상태 코드 **/

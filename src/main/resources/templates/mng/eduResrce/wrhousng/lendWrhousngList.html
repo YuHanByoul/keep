@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/mng/mobileMainLayout" 
+>
+<body>
+<div layout:fragment="content">
+ <style>
+    #canvas {
+      width: 100%;
+    }
+</style>
+
+<!-- Page-body start -->
+<div class="page-body">
+
+      <div class="card m-b-10">
+          <div class="card-header pt-2 p-b-0">
+              <ul class="nav nav-tabs tabs mo-only" role="tablist">
+                  <li class="nav-item">
+                      <a class="nav-link active" data-bs-toggle="tab" href="#tap01" role="tab" onclick="startQR()" >QR 스캔</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" data-bs-toggle="tab" href="#tap02" role="tab" onclick="stopQR()" >직접 선택</a>
+                  </li>
+              </ul>
+          </div>
+          <div class="tab-content tabs">
+              <div class="tab-pane active" id="tap01" role="tabpanel">
+                  <div class="card-block">
+                      <div class="text-center p-b-20">
+                        <div id="loadingMessage">🎥 카메라에 접근 권한이 없습니다.<br/>(카메라 접근 권한을 활성화 시켜주십시오.)</div>
+                        <canvas id="canvas" hidden></canvas>
+                        <div id="output" hidden>
+                          <div id="outputMessage">No QR code detected.</div>
+                          <div hidden><b>Data:</b> <span id="outputData"></span></div>
+                        </div>
+                      </div>
+                  </div>
+              </div>
+              
+              <div class="tab-pane" id="tap02" role="tabpanel">
+              <form id="packSearchForm">
+                  <div class="card-block pt-0">
+                      <ul class="desc-list" id="packListArea" >
+                      </ul>
+                      <div class="text-center" id="pagination"></div>
+                  </div>
+              </form>
+              </div>
+              
+          </div>
+      </div>
+
+    <!-- <div class="card position-relative">
+        <div class="card-block pt-0">
+            <ul class="desc-list" id="lendList"></ul>
+            <div class="text-center" id="pagination"></div>
+        </div>
+    </div> -->
+    
+</div>
+<!-- Page-body end -->
+
+<!--모달 팝업  -->
+<div class="modal fade" id="lendModal"  data-bs-backdrop="static"></div>
+
+<!-- [팝업] 검색필터 -->
+<form id="searchForm">
+<div class="modal fade" id="topSearchPopup" data-bs-backdrop="static" style="z-index:1090;">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content type_2">
+            <div class="modal-header">
+                <h4 class="modal-title">검색필터</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card m-b-10">
+                    <div class="card-block-small">
+                        <div class="mb-3 form-group row">
+                            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
+                            <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                     <select name="searchType" id="searchType" class="form-select form-control ">
+                                        <option value="">- 전체 -</option>
+                                        <option value="nm">꾸러미명</option>
+                                        <option value="number">꾸러미개체 번호</option>
+                                     </select>
+                                     <input type="text" name="searchKeyword" id="searchKeyword" class="form-control" aria-label="Text input with dropdown button">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-inverse waves-effect waves-light" onclick="initSearch()">초기화</button>
+                <button type="button" class="btn btn-primary waves-effect waves-light" onclick="onSearch()">검색</button>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="pageNumber" name="pageNumber" value="1">
+<input type="hidden" id="rowPerPage" name="rowPerPage" value="5">
+<input type="hidden" id="orderDirection" name="orderDirection" value="desc">
+<input type="hidden" id="orderField" name="orderField" value="REG_DT">
+</form>
+
+<!-- //[팝업] 검색필터 -->
+<script type="text/javascript" src="/js/jsQR/jsQR.js"></script>
+<script src="/js/common/handlebars/handlebars-v4.7.7.js"></script>   
+<script src="/js/common/handlebars/handlebars.helper.js"></script>
+
+<script type="text/javascript">
+    // 스캔
+    var videoPlay = null;
+    var video = document.createElement("video");        
+    var canvasElement = document.getElementById("canvas");
+    var canvas = canvasElement.getContext("2d");
+    var loadingMessage = document.getElementById("loadingMessage");
+    var outputContainer = document.getElementById("output");
+    var outputMessage = document.getElementById("outputMessage");
+    var outputData = document.getElementById("outputData");
+        
+    function startScan() {
+
+        function drawLine(begin, end, color) {
+            canvas.beginPath();
+            canvas.moveTo(begin.x, begin.y);
+            canvas.lineTo(end.x, end.y);
+            canvas.lineWidth = 4;
+            canvas.strokeStyle = color;
+            canvas.stroke();
+        }
+
+        // 카메라 사용시
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(function(stream) {
+                video.srcObject = stream;
+                video.setAttribute("playsinline", true);      // iOS 사용시 전체 화면을 사용하지 않음을 전달
+                video.play();
+                requestAnimationFrame(tick);
+        });
+
+        function tick() {
+            loadingMessage.innerText = "⌛ 스캔 기능을 활성화 중입니다."
+
+            if(video.readyState === video.HAVE_ENOUGH_DATA) {
+                loadingMessage.hidden = true;
+                canvasElement.hidden = false;
+                //outputContainer.hidden = false;
+
+                // 읽어들이는 비디오 화면의 크기
+                canvasElement.height = video.videoHeight;
+                canvasElement.width = video.videoWidth;
+                canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+                
+                var imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+                var code = jsQR(imageData.data, imageData.width, imageData.height, {
+                                inversionAttempts : "dontInvert",
+                });
+                
+                // QR코드 인식에 성공한 경우
+                if(code) {
+                    // 인식한 QR코드의 영역을 감싸는 사용자에게 보여지는 테두리 생성
+                    drawLine(code.location.topLeftCorner, code.location.topRightCorner, "#FF0000");
+                    drawLine(code.location.topRightCorner, code.location.bottomRightCorner, "#FF0000");
+                    drawLine(code.location.bottomRightCorner, code.location.bottomLeftCorner, "#FF0000");
+                    drawLine(code.location.bottomLeftCorner, code.location.topLeftCorner, "#FF0000");
+                    //outputMessage.hidden = true;
+                    //outputData.parentElement.hidden = false;
+                    getQrData(code.data)
+                    // return을 써서 함수를 빠져나가면 QR코드 프로그램이 종료된다.
+                    return;
+                }
+                // QR코드 인식에 실패한 경우
+                else {
+                    //outputMessage.hidden = false;
+                    //outputData.parentElement.hidden = true;
+                    console.log("failed");
+                }
+            }
+            videoPlay = requestAnimationFrame(tick);
+        }
+    }
+    function closeQRModal(){
+        stopQR();
+        lendModal.hide();
+    }
+    function startQR(){
+        startScan();
+    }
+    function stopQR(){
+        cancelAnimationFrame(videoPlay);
+    }
+</script>
+<script id="packListTemplate" type="text/x-handlebars-template">
+  {{#each packList}}
+     <li>
+        <h5><strong><a href="javascript:choosePackageindvd('{{packageindvdid}}')" class="stretched-link">{{packageNm}} ({{indvdno}})</a></strong></h5>
+        <dl>
+            <dt >대여모집 :</dt>
+            <dd>{{rcritNm}} ▶ {{ordr}} 차 </dd>
+        </dl>
+        <dl>
+            <dt >대여기간 :</dt>
+            <dd>{{lendBgngDe}} ~ {{lendEndDe}}</dd>
+        </dl>
+        <dl>
+            <dt >출고지 :</dt>
+            <dd>{{dlvyAddr}}  {{dlvyAddrDtl}} ({{instNm}})</dd>
+        </dl>
+    </li>
+  {{/each}}
+</script>
+
+<script th:inline="javascript">
+
+    /*<![CDATA[*/
+     var params =/*[[${params}]]*/null;
+    /*]]>*/
+    
+    var noDataMeg = '<span style="padding-top:25px; text-align:center;"><h5><strong>데이터가 없습니다.</a></strong></h5></span>';
+    var packListTemplet = Handlebars.compile($("#packListTemplate").html());
+    $(function(){
+        $("#mobile-btn-search").html('<a class="btn-search" href="javascript:openSearchPop()"><i class="feather icon-search"></i></a>');
+        startQR();
+        selectPackList();
+    });
+
+    function openSearchPop(){
+        $("#topSearchPopup").modal("show"); 
+    }
+    function initSearch(){
+        $( "#searchType,#searchKeyword").val('');
+	}
+	function onSearch(){
+	    $("#searchForm #pageNumber").val('1');
+	    selectPackList();
+	    $("#topSearchPopup").modal("hide");
+	}
+    function goPage(page) {
+        $("#searchForm #pageNumber").val(page);
+        selectPackList();
+    }
+    function selectPackList() {
+        
+        if (displayWorkProgress()){
+            $.ajax({
+                url : "/mng/wrhousng/selectPackageindvdWrhousngList.do", 
+                cache : false,
+                dataType : 'json',
+                data : $("#searchForm").serialize(),
+                success : function(data) {
+                    $("#packListArea").html("");
+                    if(data.totalCount == 0) {
+                        $("#packListArea").html(noDataMeg);
+                        $("#pagination").html('');
+                    }else{
+                        renderingPackListData(data.list);
+                        $("#pagination").html(data.pagination);
+                    }
+                    closeWorkProgress();
+                }
+            });
+        }
+    }
+    function renderingPackListData(list){
+        $("#packListArea").append(packListTemplet({packList:list}));
+    }
+    function getQrData(data){
+        if(data==null || data=="undefined" || !data.includes('/')){
+            alert("QR 데이터가 정상적으로 인식 되지 않았습니다.\n 다시 스캔 해주십시오");
+            cancelAnimationFrame(videoPlay);
+            startScan();
+            return;
+        }
+        var dataArr = data.split("/");
+        choosePackageindvdByQR(dataArr[0],dataArr[1]);
+    }
+    function choosePackageindvd(packageindvdid){
+        location.href="/mng/wrhousng/wrhousngDetail.html?packageindvdid="+packageindvdid
+    }
+    function choosePackageindvdByQR(packageindvdid){
+
+        if (displayWorkProgress()){
+            $.ajax({
+                url : "/mng/wrhousng/selectPackageindvdWrhousngList.do", 
+                cache : false,
+                dataType : 'json',
+                data : {packageindvdid:packageindvdid},
+                success : function(data) {
+                    if(data.totalCount == 0) {
+                        alert("입고 대상 꾸러미 개체가 아닙니다.\n");
+                        startQR();
+                    }else{
+				        location.href="/mng/wrhousng/wrhousngDetail.html?packageindvdid="+packageindvdid
+                    }
+                    closeWorkProgress();
+                }
+            });
+        }
+    }
+
+    
+</script>
+</div> 
+</body>
+</html>
