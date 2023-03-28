@@ -32,7 +32,10 @@
         /* EnveduCntrDao.selectPrvtEnvEduCntrList */
         SELECT 
             A.INST_NM 
-            , CONCAT('https://', A.HMPG) AS HMPG 
+            , CASE 
+                WHEN INSTR(A.HMPG, '://') > 0 THEN A.HMPG
+                ELSE CONCAT('https://', A.HMPG)
+            END AS HMPG
             , A.TELNO 
             , A.ADDR 
             , A.ADDR_DTL 
@@ -44,9 +47,10 @@
             , A.MDFRID 
         FROM TB_CMM_INST A
             LEFT JOIN TB_CMM_FILE B ON B.FILEID = A.LOGO_FILEID 
+            LEFT JOIN TB_CMM_CD C ON A.INST_TYPE_CD = C.CD 
         WHERE 
             1=1
-            AND A.INST_TYPE_CD IN (108106, 108107)
+            AND C.UPPR_CD = 108102
             AND A.USE_YN = 'Y'
             AND A.APRV_STTS_CD = 2
         ORDER BY A.INST_NM
