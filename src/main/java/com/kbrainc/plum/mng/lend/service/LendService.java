@@ -1,16 +1,11 @@
 package com.kbrainc.plum.mng.lend.service;
 
-import java.util.List;
-import java.util.Map;
-
-import com.kbrainc.plum.mng.lend.model.LendAplyDlivyVo;
-import com.kbrainc.plum.mng.lend.model.LendAplyVo;
-import com.kbrainc.plum.mng.lend.model.LendPackageindvdChckVo;
-import com.kbrainc.plum.mng.lend.model.LendRndPackageindvdVo;
-import com.kbrainc.plum.mng.lend.model.LendRndVo;
-import com.kbrainc.plum.mng.lend.model.LendVo;
+import com.kbrainc.plum.mng.lend.model.*;
 import com.kbrainc.plum.mng.pack.model.PackageVo;
 import com.kbrainc.plum.mng.pack.model.PackageindvdVo;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -284,13 +279,13 @@ public interface LendService {
      * @throws Exception 예외
      */
     public int insertLendAplyDlivy(LendAplyVo lendAplyVo) throws Exception;
-    
+
     /**************입고 관리 **************/
     /**
      * 대여 신청 출고 상태 (입고)수정
      *
-     * @Title       : updateLendAplyDlivy 
-     * @Description :대여 신청 출고 상태 (입고)수정 
+     * @Title       : updateLendAplyDlivy
+     * @Description :대여 신청 출고 상태 (입고)수정
      * @param LendAplyVo 객체
      * @return int  목록
      * @throws Exception 예외
@@ -299,8 +294,8 @@ public interface LendService {
     /**
      * 꾸러미 개체 점검 등록
      *
-     * @Title       : insertLendPackageindvdChck 
-     * @Description :꾸러미 개체 점검 등록 
+     * @Title       : insertLendPackageindvdChck
+     * @Description :꾸러미 개체 점검 등록
      * @param LendAplyVo 객체
      * @return int  목록
      * @throws Exception 예외
@@ -309,18 +304,18 @@ public interface LendService {
     /**
      * 꾸러미 개체 점검 답변 등록
      *
-     * @Title       : insertLendPackageindvdChckAns 
-     * @Description :꾸러미 개체 점검 답변 등록 
+     * @Title       : insertLendPackageindvdChckAns
+     * @Description :꾸러미 개체 점검 답변 등록
      * @param LendAplyVo 객체
      * @return int  목록
      * @throws Exception 예외
      */
     public int insertLendPackageindvdChckAns(LendPackageindvdChckVo lendPackageindvdChckVo) throws Exception;
     /**
-     * 입고 확인 꾸러미 개체 목록 호출 
+     * 입고 확인 꾸러미 개체 목록 호출
      *
-     * @Title       : selectLendPackageindvdList 
-     * @Description :입고 확인 꾸러미 개체 목록 호출 
+     * @Title       : selectLendPackageindvdList
+     * @Description :입고 확인 꾸러미 개체 목록 호출
      * @param LendAplyVo 객체
      * @return int  목록
      * @throws Exception 예외
@@ -329,8 +324,8 @@ public interface LendService {
     /**
      * 교구 점검 양식 문항/보기 리스트 호출
      *
-     * @Title       : selectFormExidList 
-     * @Description :교구 점검 양식 문항/보기 리스트 호출 
+     * @Title       : selectFormExidList
+     * @Description :교구 점검 양식 문항/보기 리스트 호출
      * @param LendAplyVo 객체
      * @return int  목록
      * @throws Exception 예외
@@ -339,8 +334,8 @@ public interface LendService {
     /**
      * 입고 처리 (점검 등록 및 이상처리 등)
      *
-     * @Title       : selectFormExidList 
-     * @Description :교구 점검 양식 문항/보기 리스트 호출 
+     * @Title       : selectFormExidList
+     * @Description :교구 점검 양식 문항/보기 리스트 호출
      * @param LendAplyVo 객체
      * @return int  목록
      * @throws Exception 예외
@@ -349,16 +344,26 @@ public interface LendService {
     /**
      * 대여차시 별 이미 승인 된 꾸러미 개체 여부 확인
      *
-     * @Title       : isThereRndPackageindvdYn 
-     * @Description : 대여차시 별 이미 승인 된 꾸러미 개체 여부 확인 
+     * @Title       : isThereRndPackageindvdYn
+     * @Description : 대여차시 별 이미 승인 된 꾸러미 개체 여부 확인
      * @param LendPackageindvdChckVo 객체
      * @return int  목록
      * @throws Exception 예외
      */
     public String isThereRndPackageindvdYn(LendAplyVo lendAplyVo) throws Exception;
-    
-    
-    
-    
-    
+
+
+
+
+
+
+    /**
+     * 배송 및 츨고 관리  출고정보 수정
+     * Title : updateLendAplyDlivy
+     * Description : 배송 및 츨고 관리  출고정보 수정
+     *
+     * @param lendAplyVo
+     * @return int
+     */
+    int updateLendAplyDlivyProc(LendAplyVo lendAplyVo) throws Exception;
 }
