@@ -106,11 +106,12 @@
                         dataType: 'json',
                         data: $('#searchForm').serializeArray(),
                         type: 'GET',
-                        success: function (data) {
-                            $("#pcListArea").html(pltfomPropslList.makeListHtmlForPc(data.list));
-                            $("#moListArea").html(pltfomPropslList.makeListHtmlForMo(data.list));
-                            $("#pagination").html(data.pagination);
-                            $("#total-count").html(data.totalCount);
+                        success: function (response) {
+                            let data = escapeData(response.list);
+                            $("#pcListArea").html(pltfomPropslList.makeListHtmlForPc(data));
+                            $("#moListArea").html(pltfomPropslList.makeListHtmlForMo(data));
+                            $("#pagination").html(response.pagination);
+                            $("#total-count").html(response.totalCount);
                             closeWorkProgress();
                         }
                     });
@@ -144,11 +145,11 @@
             makeListHtmlForMo(list) {
                 let html = "";
                 if (list == null || list.length <= 0) {
-                    html += `                <li class="block">
-                    <div class="nodata">
-                        <p><span class="icon icon-notice bg-black9"></span>환경교육 제안 내용이 없습니다.</p>
-                    </div>
-                </li>`;
+                    html += `<li class="block">
+                                <div class="nodata">
+                                    <p><span class="icon icon-notice bg-black9"></span>환경교육 제안 내용이 없습니다.</p>
+                                </div>
+                            </li>`;
                 } else {
                     list.forEach(function (item) {
                         html += `
