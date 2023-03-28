@@ -82,7 +82,6 @@ public class BbsController {
             /* 공지사항인 경우 submit 페이징 방식으로 처리 */
             paramVo.setUser(user);
             paramVo.setSite(site);
-            if (paramVo.getTabType() == null) paramVo.setTabType(1);
             if (paramVo.getTabType().equals(2)) {
                 paramVo.setOrderField("GRP DESC,ORD");
             } else {
@@ -122,6 +121,8 @@ public class BbsController {
 
         paramVo.setUser(user);
         paramVo.setSite(site);
+        paramVo.setOrderField("FIXORDER ASC,GRP DESC,ORD");
+
         model.addAttribute("PstVo", paramVo);
 
         //조회수 증가 

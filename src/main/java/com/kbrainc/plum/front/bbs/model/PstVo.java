@@ -126,7 +126,7 @@ public class PstVo extends ParentRequestVo {
     private String prevTitle;
 
     /*탭 식별용(공지사항에만 사용)*/
-    private Integer tabType;
+    private Integer tabType = 1;
     private String instNm;
 	
     /** 로그인사용자정보 */
