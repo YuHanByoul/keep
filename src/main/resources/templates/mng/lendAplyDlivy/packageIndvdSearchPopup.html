@@ -6,82 +6,119 @@
                 <span aria-hidden="true"></span>
             </button>
         </div>
-        <div class="modal-body">
+        <div class="modal-body" id="packageListBody">
             <div class="card mb-0">
                 <div class="card-block-small">
-                    <div><strong>꾸러미명</strong></div>
-
-                    <!-- 그리드 부분(임의로 넣어둠) -->
-                    <table id="colum-select" class="table table-striped table-bordered nowrap dataTable" role="grid" aria-describedby="colum-select_info">
-                        <thead>
-                        <tr role="row">
-                            <th class="select-checkbox sorting_disabled" rowspan="1" colspan="1" aria-label="" style="width: 3.125px;"></th>
-                            <th class="sorting_asc" tabindex="0" aria-controls="colum-select" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 126.625px;">사용자</th>
-                            <th class="sorting" tabindex="0" aria-controls="colum-select" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 213.312px;">휴대폰</th>
-                            <th class="sorting" tabindex="0" aria-controls="colum-select" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 87.1094px;">이메일</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr role="row" class="odd">
-                            <td class=" select-checkbox"></td>
-                            <td class="sorting_1">Airi Satou</td>
-                            <td>01012345678</td>
-                            <td>adcde@gmail.com</td>
-                        </tr>
-                        <tr role="row" class="even">
-                            <td class=" select-checkbox"></td>
-                            <td class="sorting_1">Angelica Ramos</td>
-                            <td>01012345678</td>
-                            <td>adcde@gmail.com</td>
-                        </tr>
-                        <tr role="row" class="odd">
-                            <td class=" select-checkbox"></td>
-                            <td class="sorting_1">Angelica Ramos</td>
-                            <td>01012345678</td>
-                            <td>adcde@gmail.com</td>
-                        </tr><tr role="row" class="even">
-                            <td class=" select-checkbox"></td>
-                            <td class="sorting_1">Angelica Ramos</td>
-                            <td>01012345678</td>
-                            <td>adcde@gmail.com</td>
-                        </tr><tr role="row" class="odd">
-                            <td class=" select-checkbox"></td>
-                            <td class="sorting_1">Angelica Ramos</td>
-                            <td>01012345678</td>
-                            <td>adcde@gmail.com</td>
-                        </tr><tr role="row" class="even">
-                            <td class=" select-checkbox"></td>
-                            <td class="sorting_1">Angelica Ramos</td>
-                            <td>01012345678</td>
-                            <td>adcde@gmail.com</td>
-                        </tr><tr role="row" class="odd">
-                            <td class=" select-checkbox"></td>
-                            <td class="sorting_1">Angelica Ramos</td>
-                            <td>01012345678</td>
-                            <td>adcde@gmail.com</td>
-                        </tr><tr role="row" class="even">
-                            <td class=" select-checkbox"></td>
-                            <td class="sorting_1">Angelica Ramos</td>
-                            <td>01012345678</td>
-                            <td>adcde@gmail.com</td>
-                        </tr><tr role="row" class="odd">
-                            <td class=" select-checkbox"></td>
-                            <td class="sorting_1">Angelica Ramos</td>
-                            <td>01012345678</td>
-                            <td>adcde@gmail.com</td>
-                        </tr><tr role="row" class="even">
-                            <td class=" select-checkbox"></td>
-                            <td class="sorting_1">Angelica Ramos</td>
-                            <td>01012345678</td>
-                            <td>adcde@gmail.com</td>
-                        </tr></tbody>
-                    </table>
-                    <!-- //그리드 부분(임의로 넣어둠) -->
+                    <div class="dt-responsive table-responsive">
+                        <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                            <table id="indvdidGrid" class="table-responsive"></table>
+                            <div id="indvdidPager" class="text-center"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-primary">확인</button>
+            <button type="button" class="btn btn-primary" th:onclick="fn_packageChose([[${idx}]]);">확인</button>
         </div>
     </div>
 </div>
+
+<script th:inline="javascript">
+    var packageindvdids = /*[[${params.packageindvdids}]]*/null;
+    var packageid = /*[[${params.packageid}]]*/null;
+    var indvdPopup = {
+        listUrl : "/mng/lendAplyDlivy/selectPackageIndvdList.do",
+
+        init: function() {
+            indvdidGrid = new GridHelper("indvdidGrid");
+            this.setGrid();
+        },
+
+        setGrid: function() {
+            $("#indvdidGrid").jsGrid({
+                height: "300px",
+                width: "100%",
+                autoload: true,
+                sorting: true,
+                paging: false,
+                pagerContainer: "#indvdidPager",
+                pagerFormat: "{first} {prev} {pages} {next} {last}",
+                pagePrevText: "이전",
+                pageNextText: "다음",
+                pageFirstText: " < 처음 ㅣ",
+                pageLastText: " | 마지막 >",
+                pageSize: 20000,
+                pageButtonCount: 10,
+                pageLoading: true,
+                pageIndex: 1,
+                noDataContent: "데이터가 없습니다.",
+                controller: {
+                    loadData: function(filter) {
+                        var data = $.Deferred();
+                        var params = [
+                            {name: "pageNumber", value: filter.pageIndex},
+                            {name: "rowPerPage", value: filter.pageSize},
+                            {name: "orderField", value: "REG_DT"},
+                            {name: "orderDirection", value: "asc"},
+                            {name: "packageid", value: packageid},
+                        ];
+                        if(packageindvdids !== null){
+                            for (const packageindvdid of packageindvdids) {
+                                params.push({name: "packageindvdids", value: packageindvdid})
+                            }
+                        }
+
+                        $.ajax({
+                            type: "GET",
+                            contentType: "application/json; charset=utf-8",
+                            url: indvdPopup.listUrl,
+                            data: params,
+                            dataType: "json"
+                        }).done(function(response) {
+                            var da = {
+                                data : escapeGridData(response.list),
+                                itemsCount : response.totalCount
+                            };
+                            data.resolve(da);
+                        });
+
+                        return data.promise();
+                    }
+                },
+                fields: [
+                    {
+                        title: "선택",
+                        itemTemplate: function(_, item) {
+                            return $("<input>").attr("type", "radio").attr({class: "singleRadiobox", name:"packageindvdno"})
+                                .data({"indvdno":item.indvdno, "packageindvdid": item.packageindvdid});
+                        },
+                        align: "center",
+                        width: "30",
+                        sorting: false
+                    },
+                    {
+                        title: "꾸러미 개체",
+                        itemTemplate: function(_, item) {
+                            return $("<label/>").text(item.packageindvdNm+'('+item.indvdno+')').css({display: "block"});
+                        },
+                        width: "180",
+                        align: "center"
+                    },
+                    {
+                        title: "상태",
+                        itemTemplate: function(_, item) {
+                            return $("<label/>").text('['+item.sttsCdNm+']['+item.prductSttsCdNm+' 꾸러미]').css({display: "block"});
+                        },
+                        width: "180",
+                        align: "center"
+                    }
+                ],
+            });
+        },
+    };
+
+    $(function() {
+        indvdPopup.init();
+    });
+</script>
