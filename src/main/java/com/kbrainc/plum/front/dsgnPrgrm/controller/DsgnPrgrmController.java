@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
@@ -388,8 +389,8 @@ public class DsgnPrgrmController {
 		AsgsysSrngVo asgsysSrngVo = new AsgsysSrngVo();
 		BeanUtils.copyProperties(dsgnPrgrmVo, asgsysSrngVo);
 
-		retVal+=dsgnPrgrmService.updateAssPrgrm(dsgnPrgrmVo);
 		retVal+=asgsysSrngService.insertPrgrmDstnctn(asgsysSrngVo);
+		retVal+=dsgnPrgrmService.updateAssPrgrm(dsgnPrgrmVo);
 
     	if (retVal > 0) {
     		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -429,7 +430,7 @@ public class DsgnPrgrmController {
 		asgsysSrngVo.setPrgrmSchdlLst(dsgnPrgrmVo.getPrgrmSchdlLst());
 		asgsysSrngVo.setEmrgcyActnPlanLst(dsgnPrgrmVo.getEmrgcyActnPlanLst());
 
-		retVal+=dsgnPrgrmService.updateAssPrgrm(dsgnPrgrmVo);
+		//retVal+=dsgnPrgrmService.updateAssPrgrm(dsgnPrgrmVo);
 		retVal+=asgsysSrngService.updatePrgrmDstnctn(asgsysSrngVo);
 
 		if (retVal > 0) {
@@ -672,9 +673,9 @@ public class DsgnPrgrmController {
 
     	} else {
     		model.addAttribute("bfrCertFileList", Collections.emptyList());
-
-    		model.addAttribute("opner", asgsysSrngVo.getOpner());
     	}
+
+    	model.addAttribute("opner", asgsysSrngVo.getOpner());
 
 		return "front/dsgnPrgrm/sftyMngForm";
 	}
@@ -727,11 +728,51 @@ public class DsgnPrgrmController {
 		DsgnPrgrmVo chkListInfo = null;
 		chkListInfo = dsgnPrgrmService.selectChkListInfo(dsgnPrgrmVo);
 		dsgnPrgrmVo.setChklstid(chkListInfo.getChklstid());
+		dsgnPrgrmVo.setSbmsnid(chkListInfo.getSbmsnid());
 
 		model.addAttribute("chkListInfo", chkListInfo);
 		model.addAttribute("qitemList", dsgnPrgrmService.selectQitemList(dsgnPrgrmVo));
+		model.addAttribute("ansList", dsgnPrgrmService.selectChkAnsList(dsgnPrgrmVo));
+
+		model.addAttribute("opner", dsgnPrgrmVo.getOpner());
+
 		return "front/dsgnPrgrm/chkListForm";
 	}
+
+	/**
+	* 체크리스트 등록
+	*
+	* @Title : insertChkList
+	* @Description : 체크리스트 등록
+	* @param asgsysSrngVo
+	* @param user
+	* @return
+	* @throws Exception
+	* @return Map<String,Object>
+	*/
+	@RequestMapping(value = "/front/dsgnPrgrm/insertChkList.do")
+    @ResponseBody
+    public Map<String, Object> insertChkList(AsgsysSrngVo asgsysSrngVo,  @UserInfo UserVo user, HttpServletRequest request) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+
+     	asgsysSrngVo.setUserIp(CommonUtil.getClientIp(request));
+        asgsysSrngVo.setUser(user);
+
+        int retVal = 0;
+
+        //체크리스트 등록
+        retVal = asgsysSrngService.updateAssChklst(asgsysSrngVo);
+
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "등록에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "등록에 실패했습니다.");
+        }
+
+        return resultMap;
+    }
 
 	@RequestMapping(value = "/front/dsgnPrgrm/aplyCmptnForm.html")
 	public String aplyCmptnForm(Model model) throws Exception {

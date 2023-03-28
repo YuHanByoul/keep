@@ -261,6 +261,65 @@ public interface DsgnMngService {
 	*/
 	public boolean deleteChgAply(DsgnMngVo dsgnMngVo) throws Exception;
 
+	/**
+	* 컨설팅관리 목록 조회
+	*
+	* @Title : selectCnsltngMngList
+	* @Description : 컨설팅관리 목록 조회
+	* @param dsgnMngVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnMngVo>
+	*/
+	public List<DsgnMngVo> selectCnsltngMngList(DsgnMngVo dsgnMngVo) throws Exception;
+
+	/**
+	* (컨설팅)신청정보 조회
+	*
+	* @Title : selectAplyInfo
+	* @Description : (컨설팅)신청정보 조회
+	* @param dsgnMngVo
+	* @return
+	* @throws Exception
+	* @return DsgnMngVo
+	*/
+	public DsgnMngVo selectAplyInfo(DsgnMngVo dsgnMngVo) throws Exception;
+
+	/**
+	* 컨설팅 신청 등록
+	*
+	* @Title : insertCnsltngAply
+	* @Description : 컨설팅 신청 등록
+	* @param dsgnMngVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertCnsltngAply(DsgnMngVo dsgnMngVo) throws Exception;
+
+	/**
+	 * 컨설팅 신청 수정
+	 *
+	 * @Title : updateCnsltngAply
+	 * @Description : 컨설팅 신청 수정
+	 * @param dsgnMngVo
+	 * @return
+	 * @throws Exception
+	 * @return int
+	 */
+	public int updateCnsltngAply(DsgnMngVo dsgnMngVo) throws Exception;
+
+	/**
+	* 컨설팅신청 삭제
+	*
+	* @Title : deleteCnsltngAply
+	* @Description : 컨설팅신청 삭제
+	* @param dsgnMngVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int deleteCnsltngAply(DsgnMngVo dsgnMngVo) throws Exception;
 
 
 }

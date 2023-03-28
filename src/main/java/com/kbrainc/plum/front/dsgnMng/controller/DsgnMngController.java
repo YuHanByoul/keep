@@ -9,7 +9,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.ibatis.type.Alias;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,14 +17,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
-import com.kbrainc.plum.front.book.model.BookVo;
-import com.kbrainc.plum.front.cmnty.model.CmntyVo;
 import com.kbrainc.plum.front.dsgnMng.model.DsgnMngVo;
 import com.kbrainc.plum.front.dsgnMng.service.DsgnMngService;
-import com.kbrainc.plum.front.dsgnPrgrm.controller.DsgnPrgrmController;
-import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmDao;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.mng.dsgnPrgrm.service.DsgnPrgrmService;
+import com.kbrainc.plum.mng.qestnr.model.QitemExVo;
+import com.kbrainc.plum.mng.qestnr.model.QitemVo;
+import com.kbrainc.plum.mng.qestnr.service.QestnrService;
+import com.kbrainc.plum.mng.srvy.service.SrvyService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
@@ -61,6 +60,11 @@ public class DsgnMngController {
 
 	@Autowired
 	private DsgnPrgrmService dsgnPrgrmService;
+
+	@Autowired
+	private QestnrService qestnrService;
+	@Autowired
+	private SrvyService srvyService;
 
     /**
     * 지정관리 메뉴 이동
@@ -804,10 +808,205 @@ public class DsgnMngController {
     }
 
 
+    /**
+    * 컨설팅관리 목록 화면 이동
+    *
+    * @Title : cnsltngMngList
+    * @Description : 컨설팅관리 목록 화면 이동
+    * @param dsgnMngVo
+    * @param model
+    * @param user
+    * @return
+    * @throws Exception
+    * @return String
+    */
+    @RequestMapping(value = "/front/dsgnMng/cnsltngMngList.html")
+    public String cnsltngMngList(DsgnMngVo dsgnMngVo, Model model, @UserInfo UserVo user) throws Exception {
+    	dsgnMngVo.setUser(user);
+    	model.addAttribute("aplcntid", user.getUserid());
+    	return "front/dsgnMng/cnsltngMngList";
+    }
 
+    /**
+    * 컨설팅관리 목록 조회
+    *
+    * @Title : selectCnsltngMngList
+    * @Description : 컨설팅관리 목록 조회
+    * @param dsgnMngVo
+    * @param user
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/front/dsgnMng/selectCnsltngMngList.do")
+    @ResponseBody
+    public Map<String, Object> selectCnsltngMngList(DsgnMngVo dsgnMngVo, @UserInfo UserVo user) throws Exception {
+    	Map<String, Object> response = new HashMap<>();
 
+    	dsgnMngVo.setUser(user);
 
+    	List<DsgnMngVo> list = dsgnMngService.selectCnsltngMngList(dsgnMngVo);
+    	if (list.size() > 0) {
+    		response.put("totalCount", (list.get(0).getTotalCount()));
+    		response.put("pagination", PaginationUtil.getFrontPaginationHtml(list.get(0).getTotalPage(), list.get(0).getPageNumber(), 10));
+    	} else {
+    		response.put("totalCount", 0);
+    	}
+    	response.put("list", list);
+    	return response;
+    }
 
+    /**
+    * 신청정보 화면 이동
+    *
+    * @Title : aplyInfoForm
+    * @Description : 신청정보 화면 이동
+    * @param dsgnMngVo
+    * @param model
+    * @param user
+    * @return
+    * @throws Exception
+    * @return String
+    */
+    @RequestMapping(value = "/front/dsgnMng/aplyInfoForm.html")
+    public String aplyInfoForm(DsgnMngVo dsgnMngVo, Model model, @UserInfo UserVo user) throws Exception {
+    	dsgnMngVo.setUser(user);
+    	DsgnMngVo aplyInfo = null;
+    	QitemVo qitemVo = new QitemVo();
+    	List<QitemVo> qitemList = null;
 
+    	aplyInfo = dsgnMngService.selectAplyInfo(dsgnMngVo);
+
+    	model.addAttribute("aplcntid", user.getUserid());
+    	model.addAttribute("aplyInfo", aplyInfo);
+
+    	if(aplyInfo.getQestnrid() != null && aplyInfo.getQestnrid()!=0) {
+    		qitemVo.setQestnrid(aplyInfo.getQestnrid());
+    		//qitemList = qestnrService.selectQitemList(qitemVo);
+    		model.addAttribute("qitemList", qestnrService.selectQitemWithExList(qitemVo));
+    	}
+
+    	return "front/dsgnMng/aplyInfo";
+    }
+
+    /**
+    * 컨설팅 신청 등록
+    *
+    * @Title : insertCnsltngAply
+    * @Description : 컨설팅 신청 등록
+    * @param dsgnMngVo
+    * @param user
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/front/dsgnMng/insertCnsltngAply.do")
+    @ResponseBody
+    public Map<String, Object> insertCnsltngAply(DsgnMngVo dsgnMngVo ,@UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+
+        dsgnMngVo.setUser(user);
+        dsgnMngVo.setAplcntid(user.getUserid());
+
+        int retVal = 0;
+
+        retVal = dsgnMngService.insertCnsltngAply(dsgnMngVo);
+
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "등록에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "등록에 실패했습니다.");
+        }
+
+        return resultMap;
+    }
+    /**
+    * 컨설팅신청 삭제
+    *
+    * @Title : deleteCnsltngAply
+    * @Description : 컨설팅 신청 삭제
+    * @param dsgnMngVo
+    * @param user
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/front/dsgnMng/deleteCnsltngAply.do")
+    @ResponseBody
+    public Map<String, Object> deleteCnsltngAply(DsgnMngVo dsgnMngVo ,@UserInfo UserVo user) throws Exception {
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+    	dsgnMngVo.setUser(user);
+    	dsgnMngVo.setAplcntid(user.getUserid());
+
+    	int retVal = 0;
+
+    	retVal = dsgnMngService.deleteCnsltngAply(dsgnMngVo);
+
+    	if (retVal > 0) {
+    		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+    		resultMap.put("msg", "삭제에 성공하였습니다.");
+    	} else {
+    		resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+    		resultMap.put("msg", "삭제에 실패했습니다.");
+    	}
+
+    	return resultMap;
+    }
+
+    /**
+    * 컨설팅신청 수정
+    *
+    * @Title : updateCnsltngAply
+    * @Description : 컨설팅신청 수정
+    * @param dsgnMngVo
+    * @param user
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/front/dsgnMng/updateCnsltngAply.do")
+    @ResponseBody
+    public Map<String, Object> updateCnsltngAply(DsgnMngVo dsgnMngVo ,@UserInfo UserVo user) throws Exception {
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+    	dsgnMngVo.setUser(user);
+    	dsgnMngVo.setAplcntid(user.getUserid());
+
+    	int retVal = 0;
+
+    	retVal = dsgnMngService.updateCnsltngAply(dsgnMngVo);
+
+    	if (retVal > 0) {
+    		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+    		resultMap.put("msg", "수정에 성공하였습니다.");
+    	} else {
+    		resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+    		resultMap.put("msg", "수정에 실패했습니다.");
+    	}
+
+    	return resultMap;
+    }
+
+    /**
+    * 컨설팅평가 화면 이동
+    *
+    * @Title : cnsltngEvlForm
+    * @Description : 컨설팅평가 화면 이동
+    * @param dsgnMngVo
+    * @param model
+    * @param user
+    * @return
+    * @throws Exception
+    * @return String
+    */
+    @RequestMapping(value = "/front/dsgnMng/cnsltngEvlForm.html")
+    public String cnsltngEvlForm(DsgnMngVo dsgnMngVo, Model model, @UserInfo UserVo user) throws Exception {
+    	dsgnMngVo.setUser(user);
+    	model.addAttribute("aplcntid", user.getUserid());
+    	return "front/dsgnMng/cnsltngEvl";
+    }
 
 }

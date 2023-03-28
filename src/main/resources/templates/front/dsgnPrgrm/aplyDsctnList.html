@@ -13,6 +13,7 @@
             <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
             <input type="hidden" id="orderField" name="orderField" value="APLY_DT">
             <input type="hidden" id="prgrmid" name="prgrmid" value="">
+            <input type="hidden" id="sttsCd" name="sttsCd" value="">
             <input type="hidden" id="opner" name="opner" value="myPage">
 
             <div class="form-input-wrap">
@@ -160,9 +161,11 @@
                 $('#rowPerPage').val($('#selectRowPerPage').val());
             },
 
-            moveToDetail(prgrmid) {
+            moveToDetail(prgrmid,sttsCd) {
+
                 var f = document.forms.searchForm;
                 f.prgrmid.value = prgrmid;
+                f.sttsCd.value = sttsCd;
                 f.action = this.detailUrl;
                 f.submit();
 
@@ -189,6 +192,7 @@
 
             makeListHtml(list) {
                 var html = "";
+
                 if (list == null || list.length <= 0) {
                     html += `<tr>
                                 <td class="nodata" colspan="7">
@@ -196,24 +200,23 @@
                                 </td>
                             </tr>`;
                 } else {
+
                     list.forEach(function (item) {
-                        let canGoToDetail = item.rlsYn == 'Y' || (item.rlsYn == 'N' && (item.userid == aplyDsctnList.userid));
+                    	var prgrmid  = item?.prgrmid  ?? "";
+                    	var prgrmNm  = item?.prgrmNm  ?? "";
+                    	var sttsCd   = item?.sttsCd   ?? "";
+                    	var sttsCdNm = item?.sttsCdNm ?? "";
+                    	var aplyDt   = item?.aplyDt   ?? "";
+                    	var vstDt    = item?.vstDt    ?? "";
+
                         html +=
                         	`
                             <tr>
                                 <td>${item.rowNumber}</td>
-                                <td><a href="#" onclick="aplyDsctnList.moveToDetail(${item.prgrmid})" class="link ellipsis">${item.prgrmNm == null ? '': item.prgrmNm}</a></td>
-                            `
-                            if(item.sttsCd=="111101" || item.sttsCd=="111102"){
-                            	html += `<td><button type="button" onclick="aplyDsctnList.openPop(${item.sttsCd},${item.prgrmid})" class="link">${item.sttsCdNm == null ? '': item.sttsCdNm}</button></td>`
-                            }else{
-                            	html += `<td>${item.sttsCdNm == null ? '': item.sttsCdNm}</button></td>`
-                            }
-
-                        html +=
-                            `
-                                <td>${item.aplyDt == null ? '': item.aplyDt}</td>
-                                <td>${item.vstDt == null ? '': item.vstDt}</td>
+                                <td><a href="#" onclick="aplyDsctnList.moveToDetail('${prgrmid}','${sttsCd}')" class="link ellipsis">${prgrmNm}</a></td>
+                                ${sttsCd=="111108" || sttsCd=="111109" ? `<td><button type="button" onclick="aplyDsctnList.openPop('${prgrmid}','${sttsCd})'" class="link">${sttsCdNm}</button></td>` :`<td>${sttsCdNm}</button></td>` }
+                                <td>${aplyDt}</td>
+                                <td>${vstDt}</td>
                             </tr>
                             `;
                     });
@@ -221,7 +224,7 @@
                 return html;
             },
 
-            openPop(sttsCd,id){
+            openPop(id, sttsCd){
 
                 var popSe = "";
                 if(sttsCd == "129101") popSe= "mod"

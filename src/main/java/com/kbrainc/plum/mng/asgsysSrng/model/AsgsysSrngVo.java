@@ -181,6 +181,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	/** 트리순서 */
 	private Integer treeOrd;
 
+	/** 컨설팅 아이디*/
+	private Integer cnsltngid;
+
 	/** 컨설팅 진행여부*/
 	private String cnsltngPrgrsYn;
 
@@ -313,6 +316,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
     /** 신청자 자가진단 점수*/
     private Integer aplcntScr;
 
+    /** 체출구분코드*/
+    private String sbmsnSeCd;
+
 	/** 문항 id*/
 	private Integer qitemid;
 
@@ -370,6 +376,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
 
     /**운영_형태_코드 */
 	private String operFrmCd;
+
+	/**체크리스트 운영_형태_코드 */
+	private String chkOperFrmCd;
 
     /**1월 */
 	private String jan;

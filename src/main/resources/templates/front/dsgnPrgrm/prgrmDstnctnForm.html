@@ -5,8 +5,9 @@
         <form id="dstnctnForm" name="dstnctnForm" th:action="@{/front/dsgnPrgrm/prgrmEvlForm.html}" method="post">
         <input type="hidden"  id="prgrmid" name="prgrmid" th:value="${aplyInfo.prgrmid}" />
         <input type="hidden"  id="dstnctnid" name="dstnctnid" th:value="${aplyInfo.dstnctnid}" />
+        <input type="hidden"  id="opner" name="opner" th:value="${opner==null ?'':opner}" />
 
-        <div class="steps" id="steps" >
+        <div class="steps" id="steps" th:if="${opner!='myPage'}">
             <ol>
                 <li>
                     <div class="steps-inner"><span>01</span> <strong>약관동의</strong></div>
@@ -107,8 +108,8 @@
                                 <td>
                                     <div class="form-check-list">
                                         <input type="hidden"  id="styYn" name="styYn" th:value="${aplyInfo.styYn}" />
-                                        <label class="inp"><input type="radio" id="styYn1" name="styYn1" th:checked="${aplyInfo.styYn=='Y'}" value="Y"><b>비숙박</b></label>
-                                        <label class="inp"><input type="radio" id="styYn2" name="styYn2" th:checked="${aplyInfo.styYn=='N'}" value="N"><b class="mr10">숙박</b>
+                                        <label class="inp"><input type="radio" id="styYn2" name="styYn2" th:checked="${aplyInfo.styYn=='N'}" value="N"><b class="mr10">비숙박</b>
+                                        <label class="inp"><input type="radio" id="styYn1" name="styYn1" th:checked="${aplyInfo.styYn=='Y'}" value="Y"><b class="mr10">숙박</b></label>
 
                                             <span class="form-input mo-flex-wrap">
                                                 <input type="number" class="ar" title="박" style="flex: 0 0 50px; width: 50px;" id="styNight" name="styNight" th:value="${aplyInfo.styNight}" /><div class="bul">박</div>
@@ -124,7 +125,7 @@
                                 <th scope="row">운영형태<i class="ast" title="필수입력">*</i></th>
                                 <td>
                                     <div class="form-input">
-                                        <span kattr:select_code="operFrmCd" th:attr="grpcd=145, selectedCd=${aplyInfo.operFrmCd}" firstOptTxt="- 선택 -" ></span>
+                                        <span kattr:select_code="operFrmCd" th:attr="grpcd=120, selectedCd=${aplyInfo.operFrmCd}" firstOptTxt="- 선택 -" ></span>
                                     </div>
                                     <p class="feedback"></p>
                                 </td>
@@ -603,6 +604,19 @@
                 $("[id^=planTr]").each(function(index, item)       { param["emrgcyActnPlanLst[" + index + "].prgrmid"     ] = $("#prgrmid").val()});       //프로그램 id (key)
                 $("[id^=sbstnPrgrmNm]").each(function(index, item) { param["emrgcyActnPlanLst[" + index + "].sbstnPrgrmNm"] = item.value; });    //차수
                 $("[id^=planPrgrmNm]").each(function(index, item)  { param["emrgcyActnPlanLst[" + index + "].prgrmNm"     ] = item.value; });    //프로그램명
+
+                //숙박여부와 프로그램우수성의 운영형태로 체크리스트의 운영형태를 판단하여 체크리스트 결정
+
+                if($("#operFrmCd").val() == "120104") {
+                	param["chkOperFrmCd"] = "145102";
+                }
+                else if ($("#operFrmCd").val() != "120104"){
+                	if($("#styYn").val()=="Y"){
+                		param["chkOperFrmCd"] = "145100";
+                	}else{
+                		param["chkOperFrmCd"] = "145101";
+                	}
+                }
 
                 $.ajax({
                     url : url,

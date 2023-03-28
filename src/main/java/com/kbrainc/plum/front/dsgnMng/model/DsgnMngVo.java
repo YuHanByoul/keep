@@ -55,6 +55,9 @@ public class DsgnMngVo extends ParentRequestVo {
     /** 기관 이름 */
     private String instNm;
 
+    /** 기관 이름 */
+    private String telno;
+
     /** 상태 코드 */
     private String sttsCd;
 
@@ -142,6 +145,9 @@ public class DsgnMngVo extends ParentRequestVo {
     /** 담당자 아이디 */
     private String picid;
 
+    /** 담당자 명 */
+    private String picNm;
+
     /** 요청 내용 */
     private String dmndCn;
 
@@ -223,9 +229,6 @@ public class DsgnMngVo extends ParentRequestVo {
     /** 책임개발자 휴대폰번호 */
     private String snrstfdvlprMoblphon;
 
-    /** 담당자 이름 */
-    private String picNm;
-
     /** 담당자 이메일 */
     private String picEml;
 
@@ -237,6 +240,9 @@ public class DsgnMngVo extends ParentRequestVo {
 
     /** 프로그램 유형 코드 */
     private String prgrmTypeCd;
+
+    /** 프로그램 유형 코드 */
+    private String addrAll;
 
     /** 숙박 여부 */
     private String styYn;
@@ -397,12 +403,97 @@ public class DsgnMngVo extends ParentRequestVo {
     /** 숙박(박) */
     private Integer styDaytm;
 
+    /** 컨설팅  진행 여부 */
+    private String cnsltngPrgrsYn;
+
+    /** 컨설텅아이디 */
+    private Integer cnsltngid;
+
+    /** 사용자아이디 */
+    private Integer userid;
+
+    /** 신청 일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    private Date aplyDt;
+
+    /** 컨설팅 종류 코드 */
+    private String cnsltngKndCd;
+
+    /** 컨설턴트아이디 */
+    private Integer cnstntid;
+
+    /** 평가상태 */
+    private String evlStts;
+
     /** 수정자 아이디 */
     private Integer mdfrId;
 
     /** 등록자 아이디 */
     private Integer rgtrId;
 
+    /** 컨설턴트명 */
+    private String nm;
+
+    /** 코드 명 */
+    private String cdNm;
+
+    /** 방문일시 */
+    private String vstDt;
+
+    /** 희망 일자1 */
+    private String hopeDe1;
+
+    /** 희망 일자1 오전 오후 코드 */
+    private String hopeDe1AmPmCd;
+
+    /** 희망 일자2 */
+    private String hopeDe2;
+
+    /** 희망 일자2 오전 오후 코드 */
+    private String hopeDe2AmPmCd;
+
+    /** 프로그램 */
+    private String prgrm;
+
+    /** 지도자 */
+    private String ldr;
+
+    /** 기타 */
+    private String etc;
+
+    /** 기관아이디 */
+    private Integer instid;
+
+    /** 사용자 이름 */
+    private String userNm;
+
+    /** 기관 전화번호 */
+    private String instTelno;
+
+    /** 우편번호 */
+    private String zip;
+
+    /** 주소 */
+    private String addr;
+
+    /** 주소 상세 */
+    private String addrDtl;
+
+    /** 안전관리 */
+    private String sftymng;
+
+    /** 설문아이디 */
+    private Integer srvyid;
+
+    /** 계정 */
+    private String acnt;
+
+    /** 기관담당자 이름 */
+    private String instPicNm;
+
+    private String addrZip;
+
+    private Integer qestnrid;
 
     /** 답변 일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")

@@ -102,6 +102,9 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 	/** 운영 형태 코드 */
 	private String operFrmCd;
 
+	/** 체크리스트 운영 형태 코드 */
+	private String chkOperFrmCd;
+
 	/** 운영 형태 코드 */
 	private String operFrmCdNm;
 
@@ -605,11 +608,17 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     /** 배점 */
     private Integer altm;
 
-    private String pseCd;
-    private String qitmOrdr;
-    private String treeOrd;
-    private String seOrdr;
+    /** 점수 */
+    private Integer scr;
 
+    private String dp1;
+    private String dp2;
+    private String lv;
+    private String ordr;
+    private String qrow;
+
+    /** 제출id */
+    private String sbmsnid;
 
     public void setSttsCd(String sttsCd) throws Exception{
         this.sttsCd = sttsCd;

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+    layout:decorator="layout/front/subLayout" >
+<body>
+    <div layout:fragment="content">
+        <form id="searchForm" name="searchForm" >
+                <input type="hidden" id="aplcntid" name="aplcntid" value="">
+                <input type="hidden" id="cnsltngid" name="cnsltngid" value="">
+                <input type="hidden" id="mode" name="mode" value="">
+                <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+                <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
+                <input type="hidden" id="orderField" name="orderField" value="APLY_DT">
+                <input type="hidden" id="prgrmid" name="prgrmid" value="">
+
+            <!-- content -->
+                <div class="table-caption">
+                    <div class="left">
+                        <h3 class="sub-title">컨설팅 주의사항</h3>
+                    </div>
+                </div>
+
+             <div class="box-desc-list bg7 mb45">
+                <ul>
+                    <li>신청서에는 컨설팅이 원활히 진행될 수 있도록 필요한 정보와 컨설팅 요구사항을 최대한 자세히 기술하여 주시기 바랍니다.</li>
+                    <li>간단한 문의 및 지정정보시스템 이용에 관한 문의는 먼저 유선(02-3407-1580, 3406-3190)로 해주시기 바랍니다.</li>
+                    <li>컨설팅에 참여한 환경교육전문가는 실제 심사 시 배정되지 않습니다.</li>
+                    <li>프로그램명을 선택하시면 해당 컨설팅 신청내역 정보를 볼 수 있습니다.</li>
+                    <li>취소 버튼은 선택하시면, 컨설팅 취소 처리됩니다. 단,  컨설팅 완료 이후에는 취소가 불가합니다.</li>
+                    <li>컨설팅 완료 후 컨설팅 평가를 진행해 주시면 더 나은 서비스에 제공에 도움이 됩니다.</li>
+
+                </ul>
+            </div>
+
+            <div class="pc-only">
+                <div class="table-col table-layout-auto">
+                    <table>
+                        <caption>컨설팅 주의사항 - 번호, 프로그램명, 신청일, 컨설팅유형, 컨설팅담당자, 현장방문 일시, 진행상태, 컨설팅 평가</caption>
+                        <colgroup>
+                            <col style="width:6%;">
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th scope="col">번호</th>
+                                <th scope="col">프로그램명</th>
+                                <th scope="col">신청일</th>
+                                <th scope="col">컨설팅유형</th>
+                                <th scope="col">컨설팅담당자 </th>
+                                <th scope="col">현장방문 일시</th>
+                                <th scope="col">진행상태</th>
+                                <th scope="col">컨설팅 평가</th>
+                            </tr>
+                        </thead>
+                        <tbody id="list-area"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mo-only">
+                <div class="table-list">
+                    <ul>
+                        <li class="block" id="list-mobile-area"/>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="pagination" class="pagination" aria-label="pagination"/>
+            <!-- //content -->
+        </form>
+        <script th:inline="javascript">
+            var cnsltngMngList= {
+            	listUrl:"/front/dsgnMng/selectCnsltngMngList.do",
+            	dtlUrl:"/front/dsgnMng/aplyInfoForm.html",
+
+            	selectList() {
+
+                    if (displayWorkProgress(true)) {
+                        let formData = $('#searchForm').serializeArray();
+
+                        $.ajax({
+                            url: cnsltngMngList.listUrl,
+                            cache: false,
+                            dataType: 'json',
+                            data: formData,
+                            type: 'GET',
+                            success: function (data) {
+                                cnsltngMngList.makeListHtml(data);
+                                closeWorkProgress();
+                            }
+                        });
+                    }
+                },
+
+                goDtl(id1, id2){
+                    var f = document.forms.searchForm;
+
+                    f.action = cnsltngMngList.dtlUrl;
+                    f.prgrmid.value = id1;
+                    f.cnsltngid.value = id2;
+                    f.submit();
+                },
+
+        		makeListHtml(data) {
+                    var html = "";
+                    var list = data.list;
+                    var mobileHtml = "";
+
+                    if (list == null || list.length <= 0) {
+                        html += `<tr>
+                                     <td class="nodata" colspan="7">
+                                         <p><span class="icon icon-notice bg-black9"></span>컨설팅관리 없습니다.</p>
+                                     </td>
+                                 </tr>
+                                 `;
+                        mobileHtml += `<tr>
+                                     <td class="nodata" colspan="7">
+                                         <p><span class="icon icon-notice bg-black9"></span>컨설팅관리 없습니다.</p>
+                                     </td>
+                                 </tr>
+                                 `;
+                    } else {
+                        list.forEach(function (item, idx) {
+
+                                html += `<tr>
+                                         <td>${item.rowNumber}</td>
+                                         <td><button type="button" class="link ellipsis" onclick="cnsltngMngList.goDtl('${item.prgrmid}','${item.cnsltngid}')">${item.prgrmNm}</a></td>
+                                         <td>${item.aplyDt}</td>
+                                         <td>${item.cdNm}</td>
+                                         <td>${item.nm}</td>
+                                         <td>${item.vstDt}</td>
+                                         <td>${item.sttsCdNm}</td>
+                                         <td>
+                                             <a href="#" class="btn-small btn-outline-black">${item.evlStts}</a>
+                                         </td>
+                                         </tr>
+                                        `
+//                                 if(item.operReg == '대기중'){
+//                                     html += `<td>${item.operReg}</td>`
+//                                 }
+//                                 else{
+//                                     html += `<td><button type="button" class="btn-small btn-outline-blue" onclick="cnsltngMngList.goDtl('${item.operReg}','${item.cyclid}')">${item.operReg}</button></td>`
+//                                 }
+//                                 html += `
+//                                          <td>${item.sbmsnPrd}</td>
+//                                          <td>${item.sttsCdNm}</td>
+//                                          <td>${item.regDt== null ? '':item.regDt}</td>
+//                                          </tr>
+//                                         `;
+
+//                                 mobileHtml += `
+//                                     <div class="tbody">
+//                                         <dl>
+//                                 ${idx === 0 || idx % 3 === 0 ?
+//                                            `<div class="list">
+//                                                 <dt>번호</dt>
+//                                                 <dd>${item.rowNumber/3}</dd>
+//                                             </div>
+//                                             <div class="list">
+//                                                 <dt>지정번호</dt>
+//                                                 <dd>${item.dsgnNo}</dd>
+//                                             </div>
+//                                             <div class="list">
+//                                                 <dt>프로그램명</dt>
+//                                                 <dd>${item.prgrmNm}</dd>
+//                                             </div>`: ``}
+
+//                                             <div class="list">
+//                                                 <dt>등록하기</dt>
+//                                                 <dd><button type="button" class="btn-small btn-outline-blue" onclick="cnsltngMngList.goDtl('${item.operReg}','${item.cyclid}')">${item.operReg}</button></dd>
+//                                             </div>
+//                                             <div class="list">
+//                                                 <dt>제출기간</dt>
+//                                                 <dd>${item.sbmsnPrd}</dd>
+//                                             </div>
+//                                             <div class="list">
+//                                                 <dt>진행상태</dt>
+//                                                 <dd>${item.sttsCdNm}</dd>
+//                                             </div>
+//                                             <div class="list">
+//                                                 <dt>등록일</dt>
+//                                                 <dd>${item.regDt}</dd>
+//                                             </div>
+//                                         </dl>
+//                                     </div>
+//                                 </li>
+//                                 </ul>
+//                             </div>
+//                             `;
+                        });
+                    }
+                    $("#list-area").html(html);
+                    $("#pagination").html(data.pagination);
+                    $('#list-mobile-area').html(mobileHtml);
+                }
+            }
+
+            function goPage(page) {
+                $("#pageNumber").val(page);
+                cnsltngMngList.selectList();
+            }
+
+            $(function () {
+            	cnsltngMngList.selectList();
+            });
+        </script>
+    </div>
+</body>
+</html>
