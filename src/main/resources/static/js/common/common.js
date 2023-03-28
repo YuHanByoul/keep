@@ -1,3 +1,14 @@
+/**
+* 객체 데이터의 값을 escape 처리한다.
+*
+* @Description : 객체 데이터의 값을 escape 처리한다.
+* @param data escape 처리할 객체
+* @return 값이 escape 처리된 객체
+*
+*/
+function escapeData(data){ // 데이터를 escape 처리함.
+    return JSON.parse($('<div/>').text(JSON.stringify(data)).html());
+}
 
 /**
 	 * 문자열을 파라메터로 받아서 UTF-8형식으로 변화하여 리턴시켜준다
