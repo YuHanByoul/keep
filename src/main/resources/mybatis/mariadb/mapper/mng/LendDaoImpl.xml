@@ -1219,4 +1219,96 @@
         WHERE APLYID = #{aplyid}
           AND RNDID = #{rndid}
     </delete>
+
+   <!-- 입고 확인 꾸러미 개체 목록 호출-->
+   <select id="selectHealthChckPackageindvdList" parameterType="LendAplyVo" resultType="LendAplyVo">
+        /* LendDao.selectHealthChckPackageindvdList */
+        <include refid="PaginationMapper.header"/>
+         SELECT
+             D.RCRIT_NM
+             ,A.APLYID
+             ,A.PACKAGEINDVDID
+             ,B.RNDID
+             ,B.LEND_BGNG_DE
+             ,B.LEND_END_DE
+             ,C.ORDR
+             ,B.DLVY_ADDR
+             ,B.DLVY_ADDR_DTL
+             ,B.PACKAGEID
+             ,E.PACKAGEINDVD_NM AS PACKAGE_NM
+             ,E.INDVDNO
+             ,A.WRHOUSNG_PRCS_DT
+             ,B.STTS_CD
+             ,B.DLVY_STTS_CD
+             ,A.REG_DT
+             ,F.INSTID
+             ,F.INST_NM
+          FROM
+            TB_THA_PACKAGE_LEND_APLY_DLIVY A
+            INNER JOIN  TB_THA_PACKAGE_LEND_APLY B
+            ON A.APLYID = B.APLYID
+            INNER JOIN TB_THA_PACKAGE_LEND_RND C
+            ON A.RNDID = C.RNDID
+            INNER JOIN TB_THA_PACKAGE_LEND_RCRIT D
+            ON C.RCRITID = D.RCRITID
+            INNER JOIN TB_THA_PACKAGEINDVD E
+            ON A.PACKAGEINDVDID = E.PACKAGEINDVDID
+            INNER JOIN TB_CMM_INST F
+            ON B.INSTID = F.INSTID
+        WHERE 1=1
+          AND B.STTS_CD = '231102'
+          AND B.DLVY_STTS_CD  = '230102'
+          AND A.WRHOUSNG_PRCS_DT IS NULL
+          AND A.WRHOUSNG_PICID IS NULL
+           <if test="searchKeyword != null and searchKeyword != '' and searchType == 'nm'">
+              AND D.RCRIT_NM LIKE CONCAT('%',#{searchKeyword},'%')
+           </if>
+           <if test="searchKeyword != null and searchKeyword != '' and searchType == 'number'">
+              AND E.INDVDNO = #{searchKeyword}
+           </if>
+           <if test="packageindvdid != null and packageindvdid != '' ">
+              AND A.PACKAGEINDVDID = #{packageindvdid}
+              ORDER BY A.REG_DT DESC
+           </if>
+
+           <include refid="PaginationMapper.footer"/>
+   </select>
+
+   <!-- 위생체크용 꾸러미 개체 목록 호출-->
+   <select id="selectPackageindvdListForHealthChck" parameterType="PackageindvdVo" resultType="PackageindvdVo">
+        /* LendDao.selectPackageindvdListForHealthChck */
+           <if test='packageindvdid == null or packageindvdid == "" or packageindvdid == 0 '>
+                <include refid="PaginationMapper.header"/>
+           </if>
+             SELECT
+                 PACKAGEINDVDID
+                 ,INDVDNO
+                 ,PACKAGEINDVD_NM
+                 ,PACKAGEID
+                 ,STTS_CD
+                 ,PRDUCT_STTS_CD
+                 ,USE_YN
+                 ,MDFCN_DT
+                 ,MDFRID
+                 ,REG_DT
+                 ,RGTRID
+               FROM
+                 tb_tha_packageindvd
+              WHERE 1=1
+                AND USE_YN = 'Y'
+             <if test="searchKeyword != null and searchKeyword != '' and searchType == 'nm'">
+                AND PACKAGEINDVD_NM LIKE CONCAT('%',#{searchKeyword},'%')
+             </if>
+             <if test="searchKeyword != null and searchKeyword != '' and searchType == 'number'">
+                AND INDVDNO = #{searchKeyword}
+             </if>
+             <if test="packageindvdid != null and packageindvdid != '' ">
+                AND PACKAGEINDVDID = #{packageindvdid}
+             </if>
+
+           <if test='packageindvdid == null or packageindvdid == "" or packageindvdid == 0 '>
+                <include refid="PaginationMapper.footer"/>
+           </if>
+     </select>
+
 </mapper>

@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : CancelDaoImpl.xml
+	Description : 마이페이지 > 체험환경 > 사업포기신청
+-->
+<mapper namespace="com.kbrainc.plum.front.cncl.model.CancelDao">
+    
+    <!-- 컨설팅 내역 목록 조회 -->
+    <select id="selectCancelList" parameterType="CancelVo" resultType="CancelVo">
+        /* CancelDao.selectCancelList */
+        <include refid="PaginationMapper.header"/>
+        SELECT 
+            TSA.APLYID 
+            , TCC.CD_NM AS FLD_NM
+            , TSP.PCNTST_NM 
+            , TSA.PRGRM_NM
+            , TSP.FLD_CD 
+            , TSA.INSTID 
+            , TSA.USERID 
+            , TSA.INST_NM 
+            , TSA.APLCNT_NM
+            , TSDA.BANK_CD 
+            , TSDA.BACNTNO 
+            , TSDA.DPSTR_NM
+            , TSBCD.DMNDID 
+            , TSBCD.RTURN_BGNG_DE 
+            , TSBCD.RTURN_END_DE
+            , TSBCD.DMND_STTS_CD 
+            , TCC3.CD_NM AS DMND_STTS_NM
+            , DATE_FORMAT(TSBCD.CNCL_DT, '%Y-%m-%d') AS CNCL_DT 
+            , TSBCD.CN 
+            , TSA.REG_DT 
+            , TSA.MDFCN_DT 
+        FROM TB_SPB_PCNTST TSP 
+        INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID 
+        INNER JOIN (
+                SELECT 
+                    MAX(DELVRY_APLYID) AS DELVRY_APLYID
+                    , A.APLYID 
+                    , A.BANK_CD 
+                    , A.BACNTNO 
+                    , A.DPSTR_NM
+                FROM TB_SPB_DELVRY_APLY A
+                WHERE A.DELVRY_STTS_CD = '202102'
+                GROUP BY A.BANK_CD, A.BACNTNO, A.DPSTR_NM
+            ) TSDA ON TSDA.APLYID = TSA.APLYID 
+        INNER JOIN TB_SPB_BSNS_CNCL_DMND TSBCD ON TSBCD.APLYID = TSA.APLYID 
+        LEFT OUTER JOIN TB_CMM_CD TCC ON TCC.CD = TSP.FLD_CD 
+        LEFT OUTER JOIN TB_CMM_CD TCC2 ON TCC2.CD = TSA.APLY_STTS_CD 
+        LEFT OUTER JOIN TB_CMM_CD TCC3 ON TCC3.CD = TSBCD.DMND_STTS_CD 
+        WHERE TSA.USERID = #{user.userid}
+        <if test="user.loginUserType == 'P'.toString()">
+        AND TSP.FLD_CD IN ('173105','173106')
+        </if>
+        <if test="user.loginUserType == 'I'.toString()">
+        AND TSP.FLD_CD NOT IN ('173105','173106')
+        </if>
+        <if test="dmndid != null and dmndid != ''">
+            AND TSBCD.DMNDID = #{dmndid}
+        </if>
+        <if test="searchFldCd != null and searchFldCd != ''">
+            AND TSP.FLD_CD = #{searchFldCd}
+        </if>
+        <if test="searchPcntstNm != null and searchPcntstNm != ''">
+            AND TSP.PCNTST_NM LIKE CONCAT('%',#{searchPcntstNm},'%')
+        </if>
+        <if test="searchPrgrmNm != null and searchPrgrmNm != ''">
+            AND PRGRM_NM LIKE CONCAT('%',#{searchPrgrmNm},'%')
+        </if>
+        <if test="searchSttsCd != null and searchSttsCd != ''">
+            AND TSBCD.DMND_STTS_CD = #{searchSttsCd}
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 사업분야 목록 조회 -->
+    <select id="selectFldList" parameterType="CancelVo" resultType="CancelVo">
+        /* CancelDao.selectFldList */
+        SELECT DISTINCT 
+            TSP.FLD_CD 
+            , TCC.CD_NM AS FLD_NM
+        FROM TB_SPB_PCNTST TSP 
+        INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID  
+        INNER JOIN (
+                SELECT 
+                    MAX(DELVRY_APLYID) AS DELVRY_APLYID
+                    , A.APLYID 
+                    , A.BANK_CD 
+                    , A.BACNTNO 
+                    , A.DPSTR_NM
+                FROM TB_SPB_DELVRY_APLY A
+                WHERE A.DELVRY_STTS_CD = '202102'
+                GROUP BY A.BANK_CD, A.BACNTNO, A.DPSTR_NM
+            ) TSDA ON TSDA.APLYID = TSA.APLYID
+        LEFT OUTER JOIN TB_CMM_CD TCC ON TCC.CD = TSP.FLD_CD 
+        WHERE USERID = #{user.userid}
+        ORDER BY TCC.ORD
+    </select>
+    
+    <!-- 신청 기본정보 조회 -->
+    <select id="selectBaseInfo" parameterType="CancelVo" resultType="CancelVo">
+        /* CancelDao.selectCancelList */
+        SELECT 
+            TSP.FLD_CD 
+            , TCC.CD_NM AS FLD_NM
+            , TSP.PCNTST_NM 
+            , TSA.PRGRM_NM 
+            , TSA.APLYID 
+            , TSA.INSTID 
+            , TSA.USERID 
+            , TSA.INST_NM 
+            , TSA.APLCNT_NM
+            , TSDA.BANK_CD 
+            , TSDA.BACNTNO 
+            , TSDA.DPSTR_NM
+            , TSA.APLY_STTS_CD
+        FROM TB_SPB_PCNTST TSP 
+        INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID  
+        INNER JOIN (
+                SELECT 
+                    MAX(DELVRY_APLYID) AS DELVRY_APLYID
+                    , A.APLYID 
+                    , A.BANK_CD 
+                    , A.BACNTNO 
+                    , A.DPSTR_NM
+                FROM TB_SPB_DELVRY_APLY A
+                WHERE A.DELVRY_STTS_CD = '202102'
+                GROUP BY A.BANK_CD, A.BACNTNO, A.DPSTR_NM
+            ) TSDA ON TSDA.APLYID = TSA.APLYID
+        LEFT OUTER JOIN TB_CMM_CD TCC ON TCC.CD = TSP.FLD_CD 
+        WHERE USERID = #{user.userid}
+        <if test="user.loginUserType == 'P'.toString()">
+        AND TSP.FLD_CD IN ('173105','173106')
+        </if>
+        <if test="user.loginUserType == 'I'.toString()">
+        AND TSP.FLD_CD NOT IN ('173105','173106')
+        </if>
+        <if test="fldCd != null and fldCd != ''">
+            AND TSP.FLD_CD = #{fldCd}
+        </if>
+        <if test="aplyid != null and aplyid != ''">
+            AND TSA.APLYID = #{aplyid}
+        </if>
+        ORDER BY TSP.FLD_CD 
+    </select>
+    
+    <!-- 사업포기신청 등록 -->
+    <insert id="insertCancel" parameterType="CancelVo" useGeneratedKeys="true" keyProperty="dmndid">
+        /* CancelDao.insertCancel */
+        INSERT INTO TB_SPB_BSNS_CNCL_DMND (
+            APLYID
+            , USERID
+            , INSTID
+            , RTURN_BGNG_DE
+            , RTURN_END_DE
+            , CN
+            , DMND_STTS_CD
+            , CNCL_DT
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{aplyid}
+            , #{user.userid}
+            , #{user.instid}
+            , #{rturnBgngDe}
+            , #{rturnEndDe}
+            , #{cn}
+            , #{dmndSttsCd}
+            , NOW()
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    
+    <!-- 사업포기신청 수정 -->
+    <update id="updateCancel" parameterType="CancelVo">
+        UPDATE TB_SPB_BSNS_CNCL_DMND SET
+            RTURN_BGNG_DE = #{rturnBgngDe}
+            , RTURN_END_DE = #{rturnEndDe}
+            , CN = #{cn}
+            , DMND_STTS_CD = #{dmndSttsCd}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE DMNDID = #{dmndid}
+    </update>
+    
+    <!-- 공모신청서 상태 수정 -->
+    <update id="updateAplyCancel" parameterType="CancelVo">
+        UPDATE TB_SPB_APLY SET
+            APLY_STTS_CD = #{aplySttsCd}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE APLYID = #{aplyid}
+    </update>
+        
+    <!-- 송금은행 정보 수정 -->
+    <update id="updateDelvryInfo" parameterType="CancelVo">
+        /* CancelDao.updateDelvryInfo */
+        UPDATE TB_SPB_DELVRY_APLY SET
+            BANK_CD = #{bankCd}
+            , BACNTNO = #{bacntno}
+            , DPSTR_NM = #{dpstrNm}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE APLYID = #{aplyid}
+    </update>
+</mapper>

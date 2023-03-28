@@ -104,7 +104,7 @@
 <input type="hidden" id="pageNumber" name="pageNumber" value="1">
 <input type="hidden" id="rowPerPage" name="rowPerPage" value="4">
 <input type="hidden" id="orderDirection" name="orderDirection" value="desc">
-<input type="hidden" id="orderField" name="orderField" value="REG_DT">
+<input type="hidden" id="orderField" name="orderField" value="PACKAGEINDVD_NM asc , packageindvdid">
 </form>
 
 <!-- //[팝업] 검색필터 -->
@@ -197,18 +197,10 @@
 <script id="packListTemplate" type="text/x-handlebars-template">
   {{#each packList}}
      <li>
-        <h5><strong><a href="javascript:choosePackageindvd('{{packageindvdid}}')" class="stretched-link">{{packageNm}} ({{indvdno}})</a></strong></h5>
+        <h5><strong><a href="javascript:choosePackageindvd('{{packageindvdid}}')" class="stretched-link">{{packageindvdNm}} ({{indvdno}})</a></strong></h5>
         <dl>
-            <dt >대여모집 :</dt>
-            <dd>{{rcritNm}} ▶ {{ordr}} 차 </dd>
-        </dl>
-        <dl>
-            <dt >대여기간 :</dt>
-            <dd>{{lendBgngDe}} ~ {{lendEndDe}}</dd>
-        </dl>
-        <dl>
-            <dt >출고지 :</dt>
-            <dd>{{dlvyAddr}}  {{dlvyAddrDtl}} ({{instNm}})</dd>
+            <dt >상태 :</dt>
+            <dd>[{{sttsCdNm}}] [{{prductSttsCdNm}} 꾸러미] </dd>
         </dl>
     </li>
   {{/each}}
@@ -247,11 +239,12 @@
         
         if (displayWorkProgress()){
             $.ajax({
-                url : "/mng/wrhousng/selectPackageindvdWrhousngList.do", 
+                url : "/mng/health/selectHealthchckPackageindvdList.do", 
                 cache : false,
                 dataType : 'json',
                 data : $("#searchForm").serialize(),
                 success : function(data) {
+
                     $("#packListArea").html("");
                     if(data.totalCount == 0) {
                         $("#packListArea").html(noDataMeg);
@@ -276,32 +269,11 @@
             return;
         }
         var dataArr = data.split("/");
-        choosePackageindvdByQR(dataArr[0],dataArr[1]);
+        choosePackageindvd(dataArr[0]);
     }
     function choosePackageindvd(packageindvdid){
-        location.href="/mng/wrhousng/wrhousngDetail.html?packageindvdid="+packageindvdid
+        location.href="/mng/health/healthChckDetail.html?packageindvdid="+packageindvdid
     }
-    function choosePackageindvdByQR(packageindvdid){
-
-        if (displayWorkProgress()){
-            $.ajax({
-                url : "/mng/wrhousng/selectPackageindvdWrhousngList.do", 
-                cache : false,
-                dataType : 'json',
-                data : {packageindvdid:packageindvdid},
-                success : function(data) {
-                    if(data.totalCount == 0) {
-                        alert("입고 대상 꾸러미 개체가 아닙니다.\n");
-                        startQR();
-                    }else{
-				        location.href="/mng/wrhousng/wrhousngDetail.html?packageindvdid="+packageindvdid
-                    }
-                    closeWorkProgress();
-                }
-            });
-        }
-    }
-
     
 </script>
 </div> 

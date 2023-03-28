@@ -27,22 +27,22 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
- * 대여 관리 컨트롤러 클래스.
+ * 대여 위생 관리 컨트롤러 클래스.
  *
  * <pre>
- * com.kbrainc.plum.mng.lend.LendDlvyController - LendController.java
+ * com.kbrainc.plum.mng.lend.LendHealthController - LendHealthController.java
  * </pre>
  *
- * @ClassName : LendDlvyController
- * @Description :  대여 입고/위생 관리 컨트롤러 클래스.
+ * @ClassName : LendHealthController
+ * @Description :  대여 위생 관리 컨트롤러 클래스.
  * @author : KBRAINC
- * @date : 2023. 03. 20.
+ * @date : 2023. 03. 28.
  * @Version :
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Controller
 @Slf4j
-public class LendWrhousngController {
+public class LendHealthController {
 
     @Autowired
     private LendService lendService;
@@ -51,43 +51,39 @@ public class LendWrhousngController {
     private PackageService packageService;
     
     /**
-     * 출고 대여 신청 리스트 화면 
+     * 위생체크 리스트 화면 
      *
      * @Title : lendAplyList
      * @Description : 대여 신청관리
      * @return String 이동화면경로
      * @throws Exception 예외
      */
-    @RequestMapping(value = "/mng/wrhousng/wrhousngList.html")
+    @RequestMapping(value = "/mng/health/healthchckList.html")
     public String dlvyList(LendVo lendVo,Model model) throws Exception {
-        return "mng/eduResrce/wrhousng/lendWrhousngList";
+        return "mng/eduResrce/health/lendHealthChckList";
     }
     /**
-     * 출고 대여신청 리스트 호출  
+     * 위생체크용 꾸러미 개체  목록 호출  
      *
      * @Title : selectLendAplyList
-     * @Description : 대여 신청관리 목록 호출 
-     * @param LendAplyVo lendAplyVo 객체
+     * @Description : 위생체크용 꾸러미 개체  목록 호출 
+     * @param PackageindvdVo PackageindvdVo 객체
      * @return Map<String,Object> 응답결과객체
      * @throws Exception 예외
      */
-    @RequestMapping(value = "/mng/wrhousng/selectPackageindvdWrhousngList.do")
+    @RequestMapping(value = "/mng/health/selectHealthchckPackageindvdList.do")
     @ResponseBody
-    public Map<String, Object> selectLendAplyDlvyList(LendAplyVo lendAplyVo, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> selectLendAplyDlvyList(PackageindvdVo packageindvdVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         
-        List<LendAplyVo> result = null;
-        lendAplyVo.setUser(user);
+        List<PackageindvdVo> result = null;
+        packageindvdVo.setUser(user);
         
-        result = lendService.selectLendPackageindvdList(lendAplyVo);
+        result = lendService.selectPackageindvdListForHealthChck(packageindvdVo);
 
         if (result.size() > 0) {
-            
             resultMap.put("totalCount", result.size());
-            
-            if(lendAplyVo.getPackageindvdid()==null || lendAplyVo.getPackageindvdid()== 0 ) {
-                resultMap.put("pagination",PaginationUtil.getPagingHtml(result.get(0).getTotalPage(), result.get(0).getPageNumber(), 12));
-            } 
+            resultMap.put("pagination",PaginationUtil.getPagingHtml(result.get(0).getTotalPage(), result.get(0).getPageNumber(), 12));
         } else {
             resultMap.put("totalCount", 0);
         }
@@ -96,19 +92,17 @@ public class LendWrhousngController {
         return resultMap;
     }
     /**
-     * 입고 관리 상세 화면
+     * 위생체크 상세 화면
      *
-     * @Title : wrhousngDetail
-     * @Description : 입고 관리 상세 화면
+     * @Title : healthChckDetail
+     * @Description : 위생체크 상세 화면
      * @return String 이동화면경로
      * @throws Exception 예외
      */
-    @RequestMapping(value = "/mng/wrhousng/wrhousngDetail.html")
-    public String dlvyDetailForm(LendAplyVo lendAplyVo,PackageindvdVo PackageindvdVo ,Model model) throws Exception {
-        List<LendAplyVo> result = null;
-        result = lendService.selectLendPackageindvdList(lendAplyVo);
-        model.addAttribute("packList", result);
+    @RequestMapping(value = "/mng/health/healthChckDetail.html")
+    public String healthChckDetail(LendAplyVo lendAplyVo,PackageindvdVo PackageindvdVo ,Model model) throws Exception {
         
+        model.addAttribute("packageindvdInfo", lendService.selectPackageindvdListForHealthChck(PackageindvdVo).get(0));
         List<PackageindvdTchaidCmpstnVo> tchaidlist = packageService.selectPackageindvdTchaidList(PackageindvdVo);
         model.addAttribute("tchaidlist", tchaidlist);
         
@@ -116,23 +110,23 @@ public class LendWrhousngController {
         paramMap.put("formid", 1);
         model.addAttribute("artclExList", lendService.selectFormExidList(paramMap));
         
-        return "mng/eduResrce/wrhousng/wrhousngDetail";
+        return "mng/eduResrce/health/healthChckDetail";
     }
     /**
-     * 입고 관리 입고 처리  
+     * 위생체크 처리   
      * 
-     * @Title : modifyPackageindvdStts
-     * @Description : 출고 꾸러미 개체 등록
+     * @Title : healthChck
+     * @Description : 위생체크 처리
      * @param LendAplyVo lendAplyVo 객체
      * @return Map<String,Object> 응답결과객체
      * @throws Exception 예외
      */
-    @RequestMapping(value = "/mng/wrhousng/modifyPackageindvdStts.do")
+    @RequestMapping(value = "/mng/health/healthChck.do")
     @ResponseBody
-    public Map<String, Object> modifyPackageindvdStts(@RequestBody LendPackageindvdChckVo lendPackageindvdChckVo, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> healthChck(@RequestBody LendPackageindvdChckVo lendPackageindvdChckVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         lendPackageindvdChckVo.setUser(user);
-        resultMap = lendService.wrhounsngChckProcess(lendPackageindvdChckVo);
+        resultMap = lendService.healthChckProcess(lendPackageindvdChckVo);
         return resultMap;
     }
     
