@@ -1,21 +1,6 @@
 package com.kbrainc.plum.mng.lend.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.kbrainc.plum.mng.lend.model.LendAplyDlivyVo;
-import com.kbrainc.plum.mng.lend.model.LendAplyVo;
-import com.kbrainc.plum.mng.lend.model.LendDao;
-import com.kbrainc.plum.mng.lend.model.LendPackageindvdChckVo;
-import com.kbrainc.plum.mng.lend.model.LendRndPackageindvdVo;
-import com.kbrainc.plum.mng.lend.model.LendRndVo;
-import com.kbrainc.plum.mng.lend.model.LendVo;
+import com.kbrainc.plum.mng.lend.model.*;
 import com.kbrainc.plum.mng.pack.model.PackageDao;
 import com.kbrainc.plum.mng.pack.model.PackageVo;
 import com.kbrainc.plum.mng.pack.model.PackageindvdAbnrmlVo;
@@ -24,6 +9,14 @@ import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import com.kbrainc.plum.rte.util.StringUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -424,10 +417,12 @@ public class LendServiceImpl extends PlumAbstractServiceImpl implements LendServ
 
         String[] insertPackageindvd = lendAplyVo.getPackageindvdids();
         String[] deletePackageindvd = lendAplyVo.getDeletePackageindvdids();
-        //꾸러미 입고 상태 변경
-        lendAplyVo.setPackageindvdids(deletePackageindvd);
-        lendAplyVo.setPackSttsCd("216101");
-        resInt += lendDao.updatePackageindvdStts(lendAplyVo);
+        if(deletePackageindvd != null){
+            //꾸러미 입고 상태 변경
+            lendAplyVo.setPackageindvdids(deletePackageindvd);
+            lendAplyVo.setPackSttsCd("216101");
+            resInt += lendDao.updatePackageindvdStts(lendAplyVo);
+        }
         //꾸러미 출고 상태 변경
         lendAplyVo.setPackageindvdids(insertPackageindvd);
         lendAplyVo.setPackSttsCd("216102");
