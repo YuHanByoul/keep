@@ -373,6 +373,17 @@ public interface LendDao {
      * @throws Exception 예외
      */
     public String isThereRndPackageindvdYn(LendAplyVo lendAplyVo) throws Exception;
+    /**
+     * 위생체크용 꾸러미 개체 목록 호출
+     *
+     * @Title       : selectPackageindvdListForHealthChck 
+     * @Description : 위생체크용 꾸러미 개체 목록 호출 
+     * @param PackageindvdVo 객체
+     * @return List<PackageindvdVo>  목록
+     * @throws Exception 예외
+     */
+    public List<PackageindvdVo> selectPackageindvdListForHealthChck(PackageindvdVo packageindvdVo) throws Exception;
+    
     
     
     
