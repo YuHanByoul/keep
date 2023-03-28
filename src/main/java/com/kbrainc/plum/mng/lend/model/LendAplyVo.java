@@ -1,20 +1,16 @@
 package com.kbrainc.plum.mng.lend.model;
 
-import java.util.Date;
-import java.util.List;
-
-import javax.validation.constraints.Size;
-
-import org.apache.ibatis.type.Alias;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.ResCodeService;
 import com.kbrainc.plum.rte.util.CommonUtil;
-
 import lombok.Data;
+
+import javax.validation.constraints.Size;
+import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -230,6 +226,9 @@ public class LendAplyVo extends ParentRequestVo {
     
     /** 꾸러미 개체  아이디 (등록용) **/
     private String[] packageindvdids;
+
+    /** 삭제한 꾸러미 아이디 (수정용) **/
+    private String[] deletePackageindvdids;
     
     /** 꾸러미 개체 상태 코드 **/
     private String packSttsCd;
@@ -249,6 +248,12 @@ public class LendAplyVo extends ParentRequestVo {
     private String searchStrtDt;
     /** 대여 종료일 **/
     private String searchEndDt;
+    /** 출고일자 **/
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    private Date dlivyPrcsDt;
+    /** 입고일자 **/
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    private Date wrhousngPrcsDt;
     
     public void setSttsCd(String sttsCd) throws Exception{
         this.sttsCd = sttsCd;
