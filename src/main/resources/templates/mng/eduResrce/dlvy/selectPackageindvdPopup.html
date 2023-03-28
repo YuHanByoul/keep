@@ -136,7 +136,11 @@
     	lendModal.hide();
     }
     function startQR(){
-    	startScan();
+        try{
+       	   startScan();
+        }catch(e){
+            return false;
+        }
     }
     function stopQR(){
     	cancelAnimationFrame(videoPlay);
@@ -163,8 +167,8 @@
 	var noDataMeg = '<li style="padding-top:25px; text-align:center;"><h5><strong>데이터가 없습니다.</a></strong></h5></li>';
     var packListTemplet = Handlebars.compile($("#packListTemplate").html());
     $(function(){
-    	startQR();
     	selectPackList();
+
     });
     
     function selectPackList() {
@@ -193,7 +197,7 @@
         if(data==null || data=="undefined" || !data.includes('/')){
             alert("QR 데이터가 정상적으로 인식 되지 않았습니다.\n 다시 스캔 해주십시오");
             cancelAnimationFrame(videoPlay);
-            startScan();
+            startQR();
             return;
         }
         var dataArr = data.split("/");

@@ -188,7 +188,11 @@
         lendModal.hide();
     }
     function startQR(){
-        startScan();
+        try{
+           startScan();
+        }catch(e){
+            return false;
+        }
     }
     function stopQR(){
         cancelAnimationFrame(videoPlay);
@@ -216,8 +220,8 @@
     var packListTemplet = Handlebars.compile($("#packListTemplate").html());
     $(function(){
         $("#mobile-btn-search").html('<a class="btn-search" href="javascript:openSearchPop()"><i class="feather icon-search"></i></a>');
-        startQR();
         selectPackList();
+        startQR();
     });
 
     function openSearchPop(){
@@ -265,7 +269,7 @@
         if(data==null || data=="undefined" || !data.includes('/')){
             alert("QR 데이터가 정상적으로 인식 되지 않았습니다.\n 다시 스캔 해주십시오");
             cancelAnimationFrame(videoPlay);
-            startScan();
+            startQR();
             return;
         }
         var dataArr = data.split("/");
