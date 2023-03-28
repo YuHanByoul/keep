@@ -43,33 +43,42 @@
 				<p>총 <b id="totalCount">0</b> 건</p>
 			</div>
 		</div>
-
-		<div class="table-col table-layout-auto table-col-mo">
-			<table>
-				<caption>신청정보 - 번호, 상태, 제목, 등록기관, 접수기간, 당첨자 발표일, 조회수</caption>
-				<colgroup>
-					<col>
-					<col>
-					<col style="width:30%;">
-					<col>
-					<col>
-					<col>
-					<col>
-				</colgroup>
-				<thead>
-					<tr>
-						<th scope="col">번호</th>
-						<th scope="col">상태</th>
-						<th scope="col">제목</th>
-						<th scope="col">등록기관</th>
-						<th scope="col">접수기간</th>
-						<th scope="col">당첨자 발표일</th>
-						<th scope="col">조회수</th>
-					</tr>
-				</thead>
-				<tbody id="list-area">
-				</tbody>
-			</table>
+		
+		<div class="pc-only">
+			<div class="table-col table-layout-auto">
+				<table>
+					<caption>신청정보 - 번호, 상태, 제목, 등록기관, 접수기간, 당첨자 발표일, 조회수</caption>
+					<colgroup>
+						<col>
+						<col>
+						<col style="width:30%;">
+						<col>
+						<col>
+						<col>
+						<col>
+					</colgroup>
+					<thead>
+						<tr>
+							<th scope="col">번호</th>
+							<th scope="col">상태</th>
+							<th scope="col">제목</th>
+							<th scope="col">등록기관</th>
+							<th scope="col">접수기간</th>
+							<th scope="col">당첨자 발표일</th>
+							<th scope="col">조회수</th>
+						</tr>
+					</thead>
+					<tbody id="pc-list-area">
+					</tbody>
+				</table>
+			</div>
+		</div>
+		
+		<div class="mo-only">
+			<div class="table-list">
+				<ul id="mo-list-area">
+				</ul>
+			</div>
 		</div>
 
 		<div id="pagination" aria-label="pagination">
@@ -134,20 +143,29 @@
                 },
 
                 makeListHtml(data) {
-                    var listHtml = "";
+                    var pc_listHtml = "";
+                    var mo_listHtml = "";
                     if (data.list == null || data.list.length <= 0) {
-                    	listHtml += `
+                    	pc_listHtml += `
                         <tr>
                             <td class="nodata" colSpan="7">
                                 <p><span class="icon icon-notice bg-black9"></span>등록된 내용이 없습니다</p>
                             </td>
                         </tr>
                         `;
+                        
+                    	mo_listHtml += `
+       					<li class="block">
+    						<div class="nodata">
+    							<p><span class="icon icon-notice bg-black9"></span>등록된 이벤트 소식이 없습니다.</p>
+    						</div>
+    					</li>
+                        `;
                     } else {
                         data.list.forEach(function(item) {
    							if(`${item.newEvnt}` == 'NEW'){
-   								listHtml += `
-	   	         					<tr>
+   								pc_listHtml += `
+	   	         				<tr>
 	   	     						<td>${item.rowNumber}</td>
 	   	     						<td>${item.stts}</td>
 	   	     						<td class="al article"><a href="javascript:void(0)" onclick="evnt.moveToDetail(${item.evntid})" class="link new">${item.ttl}</a></td>
@@ -155,11 +173,48 @@
 	   	     						<td>${item.bgngDe} ~ ${item.endDe}</td>
 	   	     						<td>${item.prsntnDe}</td>
 	   	     						<td>${item.hits}</td>
-	   	     						</tr>
+	   	     					</tr>
+   	    						`;
+   	    						
+   								mo_listHtml += `
+								<li class="block">
+   									<div class="tbody">
+   										<dl>
+   											<div class="list">
+   												<dt>번호</dt>
+   												<dd>${item.rowNumber}</dd>
+   											</div>
+   											<div class="list">
+   												<dt>상태</dt>
+   												<dd>${item.stts}</dd>
+   											</div>
+   											<div class="list">
+   												<dt>제목</dt>
+   												<dd><a href="javascript:void(0)" onclick="evnt.moveToDetail(${item.evntid})" class="link new">${item.ttl}</a></dd>
+   											</div>
+   											<div class="list">
+   												<dt>등록기관</dt>
+   												<dd>${item.instNm}</dd>
+   											</div>
+   											<div class="list">
+   												<dt>접수기간</dt>
+   												<dd>${item.bgngDe} ~ ${item.endDe}</dd>
+   											</div>
+   											<div class="list">
+   												<dt>당첨자 발표일</dt>
+   												<dd>${item.prsntnDe}</dd>
+   											</div>
+   											<div class="list">
+   												<dt>조회수</dt>
+   												<dd>${item.hits}</dd>
+   											</div>
+   										</dl>
+   									</div>
+   								</li>
    	    						`;
    							}else {
-   								listHtml += `
-	   	         					<tr>
+   								pc_listHtml += `
+	   	         				<tr>
 	   	     						<td>${item.rowNumber}</td>
 	   	     						<td>${item.stts}</td>
 	   	     						<td class="al article"><a href="javascript:void(0)" onclick="evnt.moveToDetail(${item.evntid})" class="link ellipsis">${item.ttl}</a></td>
@@ -167,12 +222,50 @@
 	   	     						<td>${item.bgngDe} ~ ${item.endDe}</td>
 	   	     						<td>${item.prsntnDe}</td>
 	   	     						<td>${item.hits}</td>
-	   	     						</tr>
+	   	     					</tr>
+   	    						`;
+   	    						
+   								mo_listHtml += `
+   								<li class="block">
+   									<div class="tbody">
+   										<dl>
+   											<div class="list">
+   												<dt>번호</dt>
+   												<dd>${item.rowNumber}</dd>
+   											</div>
+   											<div class="list">
+   												<dt>상태</dt>
+   												<dd>${item.stts}</dd>
+   											</div>
+   											<div class="list">
+   												<dt>제목</dt>
+   												<dd><a href="javascript:void(0)" onclick="evnt.moveToDetail(${item.evntid})" class="link ellipsis">${item.ttl}</a></dd>
+   											</div>
+   											<div class="list">
+   												<dt>등록기관</dt>
+   												<dd>${item.instNm}</dd>
+   											</div>
+   											<div class="list">
+   												<dt>접수기간</dt>
+   												<dd>${item.bgngDe} ~ ${item.endDe}</dd>
+   											</div>
+   											<div class="list">
+   												<dt>당첨자 발표일</dt>
+   												<dd>${item.prsntnDe}</dd>
+   											</div>
+   											<div class="list">
+   												<dt>조회수</dt>
+   												<dd>${item.hits}</dd>
+   											</div>
+   										</dl>
+   									</div>
+   								</li>
    	    						`;
    							}
                         });
                     }
-                    $('#list-area').html(listHtml);
+                    $('#pc-list-area').html(pc_listHtml);
+                    $('#mo-list-area').html(mo_listHtml);
                     $("#pagination").html(data.pagination);
                     $("#totalCount").html(data.totalCount);
                 }

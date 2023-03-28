@@ -76,7 +76,7 @@ public class PrgrmController {
     @RequestMapping(value = "/front/envEdu/{eduSbjctCd}/prgrmListForm.html")
     public String cntntsListForm(@PathVariable String eduSbjctCd, Model model, CodeVo codeVo) throws Exception {
         codeVo.setCd(eduSbjctCd);
-        CodeVo codeInfo = codeService.selectCodeInfo(codeVo);        
+        CodeVo codeInfo = codeService.selectCodeInfo(codeVo);
         
         model.addAttribute("mainEduSbjctCd", codeInfo.getUpprCd());
         model.addAttribute("eduSbjctCd", eduSbjctCd);
@@ -96,7 +96,7 @@ public class PrgrmController {
     * @return String
     */
     @RequestMapping(value="/front/envEdu/prgrmDetailForm.html")
-    public String prgrmDetailForm(PrgrmVo prgrmVo, Model model) throws Exception {
+    public String prgrmDetailForm(PrgrmVo prgrmVo, Model model, String eduSbjctCd) throws Exception {
         PrgrmVo prgrm = null;
         prgrm = PrgrmService.selectPrgrmInfo(prgrmVo);
         model.addAttribute("prgrm", prgrm);
@@ -114,6 +114,8 @@ public class PrgrmController {
         }else {
             model.addAttribute("prgrmList", prgrmList);
         }
+        
+        model.addAttribute("eduSbjctCd", eduSbjctCd);
 
         return "front/envEdu/prgrmDetail";
     }
