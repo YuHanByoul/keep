@@ -87,7 +87,7 @@ public class CntstController {
         model.addAttribute("cntst", result);
         
         List<CntstVo> file = cntstService.selectCntstFileList(cntstVo);
-        if(file.get(0).getAtchFilegrpid() != null) {
+        if(file.get(0) != null) {
             model.addAttribute("file", file);
         }else {
             model.addAttribute("file", "Empty");
