@@ -1,28 +1,6 @@
 package com.kbrainc.plum.mng.lend.service;
 
 import com.kbrainc.plum.mng.lend.model.*;
-import com.kbrainc.plum.mng.pack.model.PackageVo;
-import com.kbrainc.plum.mng.pack.model.PackageindvdVo;
-import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import com.kbrainc.plum.mng.lend.model.LendAplyDlivyVo;
-import com.kbrainc.plum.mng.lend.model.LendAplyVo;
-import com.kbrainc.plum.mng.lend.model.LendDao;
-import com.kbrainc.plum.mng.lend.model.LendPackageindvdChckVo;
-import com.kbrainc.plum.mng.lend.model.LendRndPackageindvdVo;
-import com.kbrainc.plum.mng.lend.model.LendRndVo;
-import com.kbrainc.plum.mng.lend.model.LendVo;
 import com.kbrainc.plum.mng.pack.model.PackageDao;
 import com.kbrainc.plum.mng.pack.model.PackageVo;
 import com.kbrainc.plum.mng.pack.model.PackageindvdAbnrmlVo;
@@ -30,6 +8,14 @@ import com.kbrainc.plum.mng.pack.model.PackageindvdVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -421,7 +407,7 @@ public class LendServiceImpl extends PlumAbstractServiceImpl implements LendServ
      */
     @Override
     @Transactional
-    public int updateLendAplyDlivy(LendAplyVo lendAplyVo) throws Exception {
+    public int updateLendAplyDlivyProc(LendAplyVo lendAplyVo) throws Exception {
         int resInt = 0;
         //해당 신청아이디에 속한 꾸러미 출고 전체 삭제
         resInt += lendDao.deleteLendAplyDlivy(lendAplyVo);

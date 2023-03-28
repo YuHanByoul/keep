@@ -7,15 +7,6 @@ import com.kbrainc.plum.mng.pack.model.PackageindvdVo;
 import java.util.List;
 import java.util.Map;
 
-import com.kbrainc.plum.mng.lend.model.LendAplyDlivyVo;
-import com.kbrainc.plum.mng.lend.model.LendAplyVo;
-import com.kbrainc.plum.mng.lend.model.LendPackageindvdChckVo;
-import com.kbrainc.plum.mng.lend.model.LendRndPackageindvdVo;
-import com.kbrainc.plum.mng.lend.model.LendRndVo;
-import com.kbrainc.plum.mng.lend.model.LendVo;
-import com.kbrainc.plum.mng.pack.model.PackageVo;
-import com.kbrainc.plum.mng.pack.model.PackageindvdVo;
-
 /**
  * 
  * 교구 대여 관리 서비스 인터페이스.
@@ -374,5 +365,5 @@ public interface LendService {
      * @param lendAplyVo
      * @return int
      */
-    int updateLendAplyDlivy(LendAplyVo lendAplyVo) throws Exception;
+    int updateLendAplyDlivyProc(LendAplyVo lendAplyVo) throws Exception;
 }

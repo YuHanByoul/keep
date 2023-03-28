@@ -155,7 +155,7 @@ public class LendAplyDlivyController {
         int retVal = 0;
 
         lendAplyVo.setUser(user);
-        //retVal = lendService.updateLendAplyDlivy(lendAplyVo);
+        //retVal = lendService.updateLendAplyDlivyProc(lendAplyVo);
 
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
