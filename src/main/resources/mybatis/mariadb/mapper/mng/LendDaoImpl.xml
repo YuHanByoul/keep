@@ -508,7 +508,9 @@
                ,G.WRHOUSNG_CNT
                ,A.INSTID 
                ,F.PACKAGE_NM
-             FROM 
+               ,H.DLIVY_PRCS_DT
+               ,H.WRHOUSNG_PRCS_DT
+             FROM
                TB_THA_PACKAGE_LEND_APLY A
                INNER JOIN TB_THA_PACKAGE_LEND_RND B
                ON A.RNDID = B.RNDID
@@ -519,7 +521,7 @@
                INNER JOIN TB_CMM_USER E
                ON A.APLCNTID  = E.USERID  
                INNER JOIN TB_THA_PACKAGE F
-               ON A.PACKAGEID = F.PACKAGEID  
+               ON A.PACKAGEID = F.PACKAGEID
                LEFT OUTER JOIN (
                        SELECT
                        A.RNDID
@@ -529,7 +531,7 @@
                        LEFT OUTER JOIN(
                            SELECT 
                                A.RNDID -- 차시 아이디
-                              ,IFNULL(SUM(A.QNTY),0) AS RESERVATION_CNT 
+                               , IFNULL(SUM(A.QNTY),0) AS RESERVATION_CNT
                              FROM 
                                TB_THA_PACKAGE_LEND_APLY A
                             WHERE 1=1 
@@ -539,6 +541,8 @@
                        ON A.RNDID = B.RNDID
               ) G
               ON A.RNDID = G.RNDID
+              LEFT OUTER JOIN TB_THA_PACKAGE_LEND_APLY_DLIVY H
+              ON H.APLYID = A.APLYID
             WHERE 1=1
             <if test="searchKeyword != null and searchKeyword != '' and searchType == 'nm'">
                AND E.NM  LIKE CONCAT('%',#{searchKeyword},'%')
@@ -957,7 +961,14 @@
                 AND PACKAGEID = #{packageid}
               <if test="packageindvdid != null and packageindvdid != ''">
                 AND PACKAGEINDVDID = #{packageindvdid}
-              </if>  
+              </if>
+              <if test="packageindvdids != null and packageindvdids != ''">
+                AND PACKAGEINDVDID NOT IN (
+                  <foreach item="packageindvdid" collection="packageindvdids" separator=",">
+                      #{packageindvdid}
+                  </foreach>
+                )
+              </if>
    </select>
    <!-- 대여 신청 출고 등록-->
    <insert id="insertLendAplyDlivy" parameterType="LendAplyVo" >
@@ -999,5 +1010,10 @@
                  </foreach>
          )
    </update>
-    
+    <!-- 삭제한 꾸러미 출고 삭제 -->
+    <delete id="deleteLendAplyDlivy" parameterType="LendAplyVo">
+        /* LendDao.deleteLendAplyDlivy */
+        DELETE FROM TB_THA_PACKAGE_LEND_APLY_DLIVY
+        WHERE APLYID = #{aplyid}
+    </delete>
 </mapper>

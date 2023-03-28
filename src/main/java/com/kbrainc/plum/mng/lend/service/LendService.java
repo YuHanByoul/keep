@@ -1,15 +1,11 @@
 package com.kbrainc.plum.mng.lend.service;
 
-import java.util.List;
-import java.util.Map;
-
-import com.kbrainc.plum.mng.lend.model.LendAplyDlivyVo;
-import com.kbrainc.plum.mng.lend.model.LendAplyVo;
-import com.kbrainc.plum.mng.lend.model.LendRndPackageindvdVo;
-import com.kbrainc.plum.mng.lend.model.LendRndVo;
-import com.kbrainc.plum.mng.lend.model.LendVo;
+import com.kbrainc.plum.mng.lend.model.*;
 import com.kbrainc.plum.mng.pack.model.PackageVo;
 import com.kbrainc.plum.mng.pack.model.PackageindvdVo;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -283,5 +279,14 @@ public interface LendService {
      * @throws Exception 예외
      */
     public int insertLendAplyDlivy(LendAplyVo lendAplyVo) throws Exception;
-    
+
+    /**
+     * 배송 및 츨고 관리  출고정보 수정
+     * Title : updateLendAplyDlivy
+     * Description : 배송 및 츨고 관리  출고정보 수정
+     *
+     * @param lendAplyVo
+     * @return int
+     */
+    int updateLendAplyDlivy(LendAplyVo lendAplyVo) throws Exception;
 }

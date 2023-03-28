@@ -1,22 +1,16 @@
 package com.kbrainc.plum.mng.lend.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import com.kbrainc.plum.mng.lend.model.*;
+import com.kbrainc.plum.mng.pack.model.PackageVo;
+import com.kbrainc.plum.mng.pack.model.PackageindvdVo;
+import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kbrainc.plum.mng.lend.model.LendAplyDlivyVo;
-import com.kbrainc.plum.mng.lend.model.LendAplyVo;
-import com.kbrainc.plum.mng.lend.model.LendDao;
-import com.kbrainc.plum.mng.lend.model.LendRndPackageindvdVo;
-import com.kbrainc.plum.mng.lend.model.LendRndVo;
-import com.kbrainc.plum.mng.lend.model.LendVo;
-import com.kbrainc.plum.mng.pack.model.PackageVo;
-import com.kbrainc.plum.mng.pack.model.PackageindvdVo;
-import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -392,6 +386,37 @@ public class LendServiceImpl extends PlumAbstractServiceImpl implements LendServ
         resInt += lendDao.insertLendAplyDlivy(lendAplyVo);
         //꾸러미 입출고 상태 변경 
         resInt += lendDao.updatePackageindvdStts(lendAplyVo);
+        return resInt;
+    }
+
+    /**
+     * 배송 및 츨고 관리  출고정보 수정
+     * Title : updateLendAplyDlivy
+     * Description : 배송 및 츨고 관리  출고정보 수정
+     *
+     * @param lendAplyVo
+     * @return int
+     */
+    @Override
+    @Transactional
+    public int updateLendAplyDlivy(LendAplyVo lendAplyVo) throws Exception {
+        int resInt = 0;
+        //해당 신청아이디에 속한 꾸러미 출고 전체 삭제
+        resInt += lendDao.deleteLendAplyDlivy(lendAplyVo);
+        //신청 꾸러미 출고 등록
+        resInt += lendDao.insertLendAplyDlivy(lendAplyVo);
+
+        String[] insertPackageindvd = lendAplyVo.getPackageindvdids();
+        String[] deletePackageindvd = lendAplyVo.getDeletePackageindvdids();
+        //꾸러미 입고 상태 변경
+        lendAplyVo.setPackageindvdids(deletePackageindvd);
+        lendAplyVo.setPackSttsCd("216101");
+        resInt += lendDao.updatePackageindvdStts(lendAplyVo);
+        //꾸러미 출고 상태 변경
+        lendAplyVo.setPackageindvdids(insertPackageindvd);
+        lendAplyVo.setPackSttsCd("216102");
+        resInt += lendDao.updatePackageindvdStts(lendAplyVo);
+
         return resInt;
     }
 }

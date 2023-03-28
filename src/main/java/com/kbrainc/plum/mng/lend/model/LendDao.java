@@ -1,12 +1,11 @@
 package com.kbrainc.plum.mng.lend.model;
 
-import java.util.List;
-import java.util.Map;
-
-import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
-
 import com.kbrainc.plum.mng.pack.model.PackageVo;
 import com.kbrainc.plum.mng.pack.model.PackageindvdVo;
+import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -291,5 +290,14 @@ public interface LendDao {
      * @throws Exception 예외
      */
     public int insertLendAplyDlivy(LendAplyVo lendAplyVo) throws Exception;
-    
+
+    /**
+     * 삭제한 꾸러미 출고 삭제
+     * Title : deleteLendAplyDlivy
+     * Description : 삭제한 꾸러미 출고 삭제
+     *
+     * @param lendAplyVo
+     * @return int
+     */
+    int deleteLendAplyDlivy(LendAplyVo lendAplyVo);
 }
