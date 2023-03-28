@@ -1,19 +1,16 @@
 package com.kbrainc.plum.mng.pack.model;
 
-import java.util.Date;
-import java.util.List;
-
-import javax.validation.constraints.Size;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.kbrainc.plum.mng.tchaid.model.TchaidCmpntCmpstnVo;
 import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.ResCodeService;
 import com.kbrainc.plum.rte.util.CommonUtil;
-
 import lombok.Data;
+
+import javax.validation.constraints.Size;
+import java.util.Date;
+import java.util.List;
 
 /**
 * [클래스 요약].
@@ -92,6 +89,9 @@ public class PackageindvdVo extends ParentRequestVo {
     
     /** 꾸러미 개체 이상  아이이디 */
     private Integer abnrmlid;
+
+    /** 꾸러미 아이디 (검색제외용) **/
+    private String[] packageindvdids;
     
     private String mode;
     private String typeCd;

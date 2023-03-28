@@ -508,7 +508,9 @@
                ,G.WRHOUSNG_CNT
                ,A.INSTID 
                ,F.PACKAGE_NM
-             FROM 
+               ,H.DLIVY_PRCS_DT
+               ,H.WRHOUSNG_PRCS_DT
+             FROM
                TB_THA_PACKAGE_LEND_APLY A
                INNER JOIN TB_THA_PACKAGE_LEND_RND B
                ON A.RNDID = B.RNDID
@@ -519,7 +521,7 @@
                INNER JOIN TB_CMM_USER E
                ON A.APLCNTID  = E.USERID  
                INNER JOIN TB_THA_PACKAGE F
-               ON A.PACKAGEID = F.PACKAGEID  
+               ON A.PACKAGEID = F.PACKAGEID
                LEFT OUTER JOIN (
                        SELECT
                        A.RNDID
@@ -529,7 +531,7 @@
                        LEFT OUTER JOIN(
                            SELECT 
                                A.RNDID -- 차시 아이디
-                              ,IFNULL(SUM(A.QNTY),0) AS RESERVATION_CNT 
+                               , IFNULL(SUM(A.QNTY),0) AS RESERVATION_CNT
                              FROM 
                                TB_THA_PACKAGE_LEND_APLY A
                             WHERE 1=1 
@@ -539,6 +541,8 @@
                        ON A.RNDID = B.RNDID
               ) G
               ON A.RNDID = G.RNDID
+              LEFT OUTER JOIN TB_THA_PACKAGE_LEND_APLY_DLIVY H
+              ON H.APLYID = A.APLYID
             WHERE 1=1
             <if test="searchKeyword != null and searchKeyword != '' and searchType == 'nm'">
                AND E.NM  LIKE CONCAT('%',#{searchKeyword},'%')
@@ -957,7 +961,14 @@
                 AND PACKAGEID = #{packageid}
               <if test="packageindvdid != null and packageindvdid != ''">
                 AND PACKAGEINDVDID = #{packageindvdid}
-              </if>  
+              </if>
+              <if test="packageindvdids != null and packageindvdids != ''">
+                AND PACKAGEINDVDID NOT IN (
+                  <foreach item="packageindvdid" collection="packageindvdids" separator=",">
+                      #{packageindvdid}
+                  </foreach>
+                )
+              </if>
    </select>
    <!-- 대여 신청 출고 등록-->
    <insert id="insertLendAplyDlivy" parameterType="LendAplyVo" >
@@ -999,19 +1010,19 @@
                  </foreach>
          )
    </update>
-   
+
    <!--**************입고 관리 **************-->
    <!-- 대여 신청 출고 수정 -->
    <update id="updateLendAplyDlivy" parameterType="LendAplyDlivyVo" >
         /* LendDao.updateLendAplyDlivy */
         UPDATE TB_THA_PACKAGE_LEND_APLY_DLIVY
-           SET 
-             DLIVY_PRCS_DT  = NOW(),            
+           SET
+             DLIVY_PRCS_DT  = NOW(),
              DLIVY_PICID    = #{user.userid }
          WHERE APLYID = #{aplyid        }
            AND RNDID  = #{rndid         }
            AND PACKAGEINDVDID = #{packageindvdid}
-               
+
    </update>
    <!-- 꾸러미 개체 점검 등록-->
    <insert id="insertLendPackageindvdChck" parameterType="LendPackageindvdChckVo" useGeneratedKeys="true" keyProperty="chckid">
@@ -1080,19 +1091,19 @@
         <if test='packageindvdid == null or packageindvdid == "" or packageindvdid == 0 '>
           <include refid="PaginationMapper.header"/>
         </if>
-         SELECT 
-             D.RCRIT_NM 
+         SELECT
+             D.RCRIT_NM
              ,A.APLYID
              ,A.PACKAGEINDVDID
-             ,B.RNDID 
-             ,B.LEND_BGNG_DE 
-             ,B.LEND_END_DE 
+             ,B.RNDID
+             ,B.LEND_BGNG_DE
+             ,B.LEND_END_DE
              ,C.ORDR
-             ,B.DLVY_ADDR 
+             ,B.DLVY_ADDR
              ,B.DLVY_ADDR_DTL
              ,B.PACKAGEID
              ,E.PACKAGEINDVD_NM AS PACKAGE_NM
-             ,E.INDVDNO 
+             ,E.INDVDNO
              ,A.WRHOUSNG_PRCS_DT
              ,B.STTS_CD
              ,B.DLVY_STTS_CD
@@ -1104,18 +1115,18 @@
             INNER JOIN  TB_THA_PACKAGE_LEND_APLY B
             ON A.APLYID = B.APLYID
             INNER JOIN TB_THA_PACKAGE_LEND_RND C
-            ON A.RNDID = C.RNDID 
+            ON A.RNDID = C.RNDID
             INNER JOIN TB_THA_PACKAGE_LEND_RCRIT D
-            ON C.RCRITID = D.RCRITID  
+            ON C.RCRITID = D.RCRITID
             INNER JOIN TB_THA_PACKAGEINDVD E
             ON A.PACKAGEINDVDID = E.PACKAGEINDVDID
             INNER JOIN TB_CMM_INST F
-            ON B.INSTID = F.INSTID  
-        WHERE 1=1 
+            ON B.INSTID = F.INSTID
+        WHERE 1=1
           AND B.STTS_CD = '231102'
           AND B.DLVY_STTS_CD  = '230102'
           AND A.WRHOUSNG_PRCS_DT IS NULL
-          AND A.WRHOUSNG_PICID IS NULL 
+          AND A.WRHOUSNG_PICID IS NULL
            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'nm'">
               AND D.RCRIT_NM LIKE CONCAT('%',#{searchKeyword},'%')
            </if>
@@ -1126,7 +1137,7 @@
               AND A.PACKAGEINDVDID = #{packageindvdid}
               ORDER BY A.REG_DT DESC
            </if>
-           
+
         <if test='packageindvdid == null or packageindvdid == "" or packageindvdid == 0 '>
             <include refid="PaginationMapper.footer"/>
         </if>
@@ -1134,21 +1145,21 @@
    <!-- 교구 점검 양식 문항/보기 리스트 호출  -->
    <select id="selectFormExidList" parameterType="map" resultType="map">
           /* LendDao.selectFormExidList */
-          SELECT 
-              B.ARTCLID artclid 
-              ,B.FORMID formid  
-              ,B.ORDR   ordr 
-              ,B.CN     cn 
+          SELECT
+              B.ARTCLID artclid
+              ,B.FORMID formid
+              ,B.ORDR   ordr
+              ,B.CN     cn
               ,group_concat(concat(C.ORDR,'/',C.EXID,'/',C.CN) ORDER BY C.ORDR ASC) excn
             FROM
               TB_THA_PACKAGEINDVD_CHCK_FORM A
-              INNER JOIN TB_THA_PACKAGEINDVD_CHCK_ARTCL B 
-              ON A.FORMID = B.FORMID 
+              INNER JOIN TB_THA_PACKAGEINDVD_CHCK_ARTCL B
+              ON A.FORMID = B.FORMID
               INNER JOIN TB_THA_PACKAGEINDVD_CHCK_ARTCL_EX C
-              ON B.ARTCLID = C.ARTCLID 
+              ON B.ARTCLID = C.ARTCLID
            WHERE 1=1
              AND A.FORMID  = #{formid}
-             GROUP BY B.ARTCLID 
+             GROUP BY B.ARTCLID
              ORDER BY B.ORDR ASC
    </select>
    <!-- 꾸러미 개체 점검 교구 등록 -->
@@ -1181,8 +1192,8 @@
    <update id="updateLendAplyWrhousng" parameterType="LendPackageindvdChckVo" >
         /* LendDao.updateLendAplyWrhousng */
         UPDATE TB_THA_PACKAGE_LEND_APLY_DLIVY
-           SET 
-             WRHOUSNG_PRCS_DT  = NOW(),            
+           SET
+             WRHOUSNG_PRCS_DT  = NOW(),
              WRHOUSNG_PICID    = #{user.userid }
          WHERE APLYID = #{aplyid}
            AND RNDID  = #{rndid }
@@ -1194,11 +1205,110 @@
           CASE WHEN  COUNT(A.PACKAGEINDVDID) > 0 THEN 'Y'
                ELSE 'N'
           END
-         FROM 
+         FROM
            TB_THA_PACKAGE_LEND_APLY_DLIVY A
         WHERE 1=1
           AND A.RNDID = #{rndid}
           AND A.PACKAGEINDVDID = #{packageindvdid}
    </select>
-   
+
+    <!-- 삭제한 꾸러미 출고 삭제 -->
+    <delete id="deleteLendAplyDlivy" parameterType="LendAplyVo">
+        /* LendDao.deleteLendAplyDlivy */
+        DELETE FROM TB_THA_PACKAGE_LEND_APLY_DLIVY
+        WHERE APLYID = #{aplyid}
+          AND RNDID = #{rndid}
+    </delete>
+
+   <!-- 입고 확인 꾸러미 개체 목록 호출-->
+   <select id="selectHealthChckPackageindvdList" parameterType="LendAplyVo" resultType="LendAplyVo">
+        /* LendDao.selectHealthChckPackageindvdList */
+        <include refid="PaginationMapper.header"/>
+         SELECT
+             D.RCRIT_NM
+             ,A.APLYID
+             ,A.PACKAGEINDVDID
+             ,B.RNDID
+             ,B.LEND_BGNG_DE
+             ,B.LEND_END_DE
+             ,C.ORDR
+             ,B.DLVY_ADDR
+             ,B.DLVY_ADDR_DTL
+             ,B.PACKAGEID
+             ,E.PACKAGEINDVD_NM AS PACKAGE_NM
+             ,E.INDVDNO
+             ,A.WRHOUSNG_PRCS_DT
+             ,B.STTS_CD
+             ,B.DLVY_STTS_CD
+             ,A.REG_DT
+             ,F.INSTID
+             ,F.INST_NM
+          FROM
+            TB_THA_PACKAGE_LEND_APLY_DLIVY A
+            INNER JOIN  TB_THA_PACKAGE_LEND_APLY B
+            ON A.APLYID = B.APLYID
+            INNER JOIN TB_THA_PACKAGE_LEND_RND C
+            ON A.RNDID = C.RNDID
+            INNER JOIN TB_THA_PACKAGE_LEND_RCRIT D
+            ON C.RCRITID = D.RCRITID
+            INNER JOIN TB_THA_PACKAGEINDVD E
+            ON A.PACKAGEINDVDID = E.PACKAGEINDVDID
+            INNER JOIN TB_CMM_INST F
+            ON B.INSTID = F.INSTID
+        WHERE 1=1
+          AND B.STTS_CD = '231102'
+          AND B.DLVY_STTS_CD  = '230102'
+          AND A.WRHOUSNG_PRCS_DT IS NULL
+          AND A.WRHOUSNG_PICID IS NULL
+           <if test="searchKeyword != null and searchKeyword != '' and searchType == 'nm'">
+              AND D.RCRIT_NM LIKE CONCAT('%',#{searchKeyword},'%')
+           </if>
+           <if test="searchKeyword != null and searchKeyword != '' and searchType == 'number'">
+              AND E.INDVDNO = #{searchKeyword}
+           </if>
+           <if test="packageindvdid != null and packageindvdid != '' ">
+              AND A.PACKAGEINDVDID = #{packageindvdid}
+              ORDER BY A.REG_DT DESC
+           </if>
+
+           <include refid="PaginationMapper.footer"/>
+   </select>
+
+   <!-- 위생체크용 꾸러미 개체 목록 호출-->
+   <select id="selectPackageindvdListForHealthChck" parameterType="PackageindvdVo" resultType="PackageindvdVo">
+        /* LendDao.selectPackageindvdListForHealthChck */
+           <if test='packageindvdid == null or packageindvdid == "" or packageindvdid == 0 '>
+                <include refid="PaginationMapper.header"/>
+           </if>
+             SELECT
+                 PACKAGEINDVDID
+                 ,INDVDNO
+                 ,PACKAGEINDVD_NM
+                 ,PACKAGEID
+                 ,STTS_CD
+                 ,PRDUCT_STTS_CD
+                 ,USE_YN
+                 ,MDFCN_DT
+                 ,MDFRID
+                 ,REG_DT
+                 ,RGTRID
+               FROM
+                 tb_tha_packageindvd
+              WHERE 1=1
+                AND USE_YN = 'Y'
+             <if test="searchKeyword != null and searchKeyword != '' and searchType == 'nm'">
+                AND PACKAGEINDVD_NM LIKE CONCAT('%',#{searchKeyword},'%')
+             </if>
+             <if test="searchKeyword != null and searchKeyword != '' and searchType == 'number'">
+                AND INDVDNO = #{searchKeyword}
+             </if>
+             <if test="packageindvdid != null and packageindvdid != '' ">
+                AND PACKAGEINDVDID = #{packageindvdid}
+             </if>
+
+           <if test='packageindvdid == null or packageindvdid == "" or packageindvdid == 0 '>
+                <include refid="PaginationMapper.footer"/>
+           </if>
+     </select>
+
 </mapper>
