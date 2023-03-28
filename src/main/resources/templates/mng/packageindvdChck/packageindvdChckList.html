@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/mng/mainLayout">
+<body>
+
+<div layout:fragment="content">
+
+    <!-- Page-body start -->
+    <div class="page-body">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-block-small">
+                        <form id="searchForm" name="searchForm" onsubmit="return false;">
+                            <div class="row">
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
+                                        <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                            <select name="searchType" id="searchType" class="form-select form-control">
+                                                <option value="">- 선택 -</option>
+                                                <option value="nm">담당자명</option>
+                                            </select>
+                                            <input type="text" class="form-control" aria-label="Text input with dropdown button" name="searchKeyword" id="searchKeyword"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>꾸러미</strong></div>
+                                        <div class="col-sm-12">
+                                            <select class="js-example-basic-single col-sm-12">
+                                                <option value="" disabled selected>-선택-</option>
+                                                <optgroup label="Developer">
+                                                    <option value="AL">Alabama</option>
+                                                    <option value="WY">Wyoming</option>
+                                                </optgroup>
+                                                <optgroup label="Designer">
+                                                    <option value="WY">Peter</option>
+                                                    <option value="WY">Hanry Die</option>
+                                                    <option value="WY">John Doe</option>
+                                                </optgroup>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>대여모집</strong></div>
+                                        <div class="col-sm-12">
+                                            <select class="js-example-basic-single col-sm-12">
+                                                <option value="" disabled selected>-선택-</option>
+                                                <optgroup label="Developer">
+                                                    <option value="AL">Alabama</option>
+                                                    <option value="WY">Wyoming</option>
+                                                </optgroup>
+                                                <optgroup label="Designer">
+                                                    <option value="WY">Peter</option>
+                                                    <option value="WY">Hanry Die</option>
+                                                    <option value="WY">John Doe</option>
+                                                </optgroup>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>점검종류</strong></div>
+                                        <div class="col-sm-12">
+                                            <span kattr:select_code="chckCd" grpCd="239" firstOptTxt="-전체 -" isAdmin="true"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchPeriod"><strong>공동구매 접수기간</strong></label>
+                                        <div class="col-sm-12">
+                                            <input type="text" name="searchPeriod" class="form-control form-control-sm" value="" id="searchPeriod">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-1 p-t-20 text-center border-top">
+                                <button class="btn btn-disabled m-r-5" onclick="fn_init()">초기화</button>
+                                <button class="btn btn-primary" onclick="fn_searchForm()">검색</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!--임시그리드-->
+            <div class="col-12">
+                <div class="card">
+                    <div class="row p-20 p-b-0">
+                        <div class="col-12 col-md-8 mb-2 mb-md-0">
+                            <h5><strong>꾸러미 점검 검색 결과</strong></h5>
+                        </div>
+                    </div>
+                    <div class="card-block-small">
+                        <table id="gridTable" class="table-responsive"></table>
+                        <div id="pagerContainer" class="text-center"></div>
+                    </div>
+                </div>
+            </div>
+            <!--//임시그리드-->
+
+            <!-- 콘텐츠 영역 -->
+            <div class="col-12">
+                <div id="contentPanel"></div>
+            </div>
+        </div>
+    </div>
+    <!-- Page-body end -->
+
+    <script type="text/javascript" src="/files/bower_components/moment/min/moment.min.js"></script>
+    <script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
+
+    <script th:inline="javascript">
+        let packegeIndvdChckGridHelper;
+        let listUrl = '/mng/packageindvdChck/selectPackageindvdChckList.do';
+        let detailUrl = '/mng/packageindvdChck/packageindvdChckDetail.html';
+
+        $(function () {
+            packegeIndvdChckGridHelper = new GridHelper('gridTable', 'contentPanel');
+            initDateRangePicker();
+
+            $('#gridTable').jsGrid({
+                height: "auto",
+                width: "100%",
+                autoload: true,
+                sorting: false,
+                paging: true,
+                pagerContainer: "#pagerContainer",
+                pagerFormat: "{first} {prev} {pages} {next} {last}",
+                pagePrevText: "이전",
+                pageNextText: "다음",
+                pageFirstText: " < 처음 ㅣ",
+                pageLastText: " | 마지막 >",
+                pageSize: 10,
+                pageButtonCount: 10,
+                pageLoading: true,
+                pageIndex: 1,
+                noDataContent: "데이터가 없습니다.",
+                controller: {
+                    loadData: function (filter) {
+                        let data = $.Deferred();
+
+                        let formData = $('#searchForm').serializeArray();
+                        let params = [
+                            {name: "pageNumber", value: filter.pageIndex},
+                            {name: "rowPerPage", value: filter.pageSize},
+                            {"searchBgngDt": $.trim($('#searchPeriod').val().split("~")[0])},
+                            {"searchEndDt": $.trim($('#searchPeriod').val().split("~")[1])},
+                        ]
+
+                        if (filter.sortField != undefined) {
+                            params.push({name: "orderField", value: mapCamelCaseToUnderscore(filter.sortField)});
+                            params.push({name: "orderDirection", value: filter.sortOrder});
+                        } else {
+                            params.push({name: "orderField", value: 'reg_dt'});
+                        }
+
+                        formData = formData.concat(params);
+
+                        $.ajax({
+                            type: "GET",
+                            contentType: "application/json; charset=utf-8",
+                            url: listUrl,
+                            dataType: "json",
+                            data: formData,
+                        }).done(function (response) {
+                            var da = {
+                                data: escapeGridData(response.list)
+                                , itemsCount: response.totalCount
+                            };
+                            data.resolve(da);
+                        });
+                        return data.promise();
+                    },
+                },
+                fields: [
+                    {title: 'No.', name: 'rowNumber', type: "number", width: "80", align: "center", sorting: false},
+                    {title: '꾸러미', name: 'packageindvdNm', type: "text", width: "250"},
+                    {title: '개체아이디', name: 'indvdno', type: "text", width: "150", align: "center", sorting: false},
+                    {title: '점검종류', name: 'chckCdNm', type: "text", width: "120", align: "center"},
+                    {title: '담당자', name: 'picNm', type: "text", width: "150", align: "center"},
+                    {title: '점검일시', name: 'chckDe', type: "text", width: "120", align: "center", sorting: false},
+                    {title: '대여모집(차수)', type: "text", width: "120", align: "center", itemTemplate: (value, item) => `${!!item.rndid ? `${item.rcritNm}(${item.ordr}차)` : ''}`},
+                    {title: '신청기관', type: "text", width: "120", align: "center", itemTemplate: (value, item) => `${!!item.instNm ? `${item.instNm}(${item.aplcntNm})` : ''}`},
+                ],
+                /*[# sec:authorize-url="/mng/packageindvdChck/packageindvdChckDetail.html"]*/
+                rowClick: function (args) {
+                    packegeIndvdChckGridHelper.loadContent(detailUrl + "?chckid=" + args.item.chckid);
+                }
+                /*[/]*/
+            })
+        });
+
+
+        let initDateRangePicker = () => {
+            $("#searchPeriod").daterangepicker({
+                autoUpdateInput: false
+                , locale: {
+                    format: "YYYY-MM-DD"
+                }
+            });
+
+            $("#searchPeriod").on("apply.daterangepicker", function (e, picker) {
+                $(this).val(picker.startDate.format("YYYY-MM-DD") + " ~ " + picker.endDate.format("YYYY-MM-DD"));
+            });
+        }
+
+    </script>
+</div>
+</body>
+</html>

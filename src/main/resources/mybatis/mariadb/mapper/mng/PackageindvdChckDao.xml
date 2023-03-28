@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!--
+	SQL File Name : PackageIndvdChckDaoImpl.xml
+	Description : 꾸러미개체 점검 관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.packageindvdChck.model.PackageindvdChckDao">
+    <select id="selectPackageindvdChckList" resultType="com.kbrainc.plum.mng.packageindvdChck.model.PackageindvdChckVo">
+        <include refid="PaginationMapper.header"/>
+            SELECT
+                A.CHCK_CD /* 점검 종류 */
+                , A.CHCKID
+                , A.CHCK_DE /* 점검 일시 */
+                , A.APLYID
+                , B.PACKAGEINDVD_NM /* 꾸러미개체 이름 */
+                , B.INDVDNO
+                , C.NM AS PIC_NM /* 담당자 이름 */
+                , A.REG_DT
+                , A.RNDID
+                , D.RCRIT_NM /* 대여모집 이름 */
+                , D.ORDR /* 대여모집 차시 */
+                , E.INST_NM /* 신청자 이름 */
+                , E.APLCNT_NM/* 기관 이름 */
+            FROM TB_THA_PACKAGEINDVD_CHCK A
+            INNER JOIN TB_THA_PACKAGEINDVD B
+                ON A.PACKAGEINDVDID = B.PACKAGEINDVDID
+            INNER JOIN TB_CMM_USER C
+                ON A.PICID = C.USERID
+            LEFT OUTER JOIN (
+                SELECT BB.RCRIT_NM, AA.RNDID, AA.ORDR
+                FROM TB_THA_PACKAGE_LEND_RND AA
+                INNER JOIN TB_THA_PACKAGE_LEND_RCRIT BB
+                    ON AA.RCRITID = BB.RCRITID
+            ) D
+                ON A.RNDID = D.RNDID
+            INNER JOIN TB_THA_PACKAGE_LEND_APLY E
+                ON A.APLYID = E.APLYID
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <select id="selectPackageindvdChck" resultType="com.kbrainc.plum.mng.packageindvdChck.model.PackageindvdChckVo">
+        SELECT
+            A.CHCK_CD /* 점검 종류 */
+             , A.CHCKID
+             , A.CHCK_DE /* 점검 일시 */
+             , A.APLYID
+             , A.FORMID
+             , A.PACKAGEINDVDID
+             , B.PACKAGEINDVD_NM /* 꾸러미개체 이름 */
+             , B.INDVDNO
+             , C.NM AS PIC_NM /* 담당자 이름 */
+             , A.REG_DT
+             , A.RNDID
+             , D.RCRIT_NM /* 대여모집 이름 */
+             , D.ORDR /* 대여모집 차시 */
+             , E.INST_NM /* 신청자 이름 */
+             , E.APLCNT_NM/* 기관 이름 */
+        FROM TB_THA_PACKAGEINDVD_CHCK A
+        INNER JOIN TB_THA_PACKAGEINDVD B
+            ON A.PACKAGEINDVDID = B.PACKAGEINDVDID
+        INNER JOIN TB_CMM_USER C
+            ON A.PICID = C.USERID
+        LEFT OUTER JOIN (
+            SELECT BB.RCRIT_NM, AA.RNDID, AA.ORDR
+            FROM TB_THA_PACKAGE_LEND_RND AA
+            INNER JOIN TB_THA_PACKAGE_LEND_RCRIT BB
+                ON AA.RCRITID = BB.RCRITID
+        ) D
+            ON A.RNDID = D.RNDID
+        INNER JOIN TB_THA_PACKAGE_LEND_APLY E
+            ON A.APLYID = E.APLYID
+        WHERE A.CHCKID = #{chckid}
+    </select>
+
+    <select id="selectPackageindvdTchaidList" resultType="com.kbrainc.plum.mng.packageindvdChck.model.PackageindvdTchaidVo">
+        SELECT
+            A.PACKAGEINDVDID
+             ,A.TCHAIDID
+             ,A.QNTY_CMPSTN
+             ,A.MDFCN_DT
+             ,A.MDFRID
+             ,A.REG_DT
+             ,A.RGTRID
+             ,B.TCHAID_NM
+             ,B.CMPNT_NMS
+             ,B.QNTY_INVNTRY
+        FROM
+            TB_THA_PACKAGEINDVD_TCHAID_CMPSTN A
+        INNER JOIN (
+            SELECT
+                A.TCHAIDID
+                 ,A.TCHAID_NM
+                 ,A.QNTY_INVNTRY
+                 ,group_concat(concat(' ',C.CMPNT_NM,' ',B.QNTY_CMPSTN,'개'))  AS CMPNT_NMS
+            FROM
+                TB_THA_TCHAID A
+                    INNER JOIN TB_THA_TCHAID_CMPNT_CMPSTN B
+                               ON A.TCHAIDID = B.TCHAIDID
+                    INNER JOIN TB_THA_TCHAID_CMPNT C
+                               ON B.CMPNTID = C.CMPNTID
+            WHERE 1=1
+            GROUP BY A.TCHAIDID
+        ) B
+        ON A.TCHAIDID =B.TCHAIDID
+        WHERE PACKAGEINDVDID = #{packageindvdid}
+    </select>
+
+    <select id="selectPackageindvdChckAnsList" resultType="com.kbrainc.plum.mng.packageindvdChck.model.PackageindvdChckAnsVo">
+        SELECT CHCKID, ARTCLID, TCHAIDID, EXID, EX_CN, ACTN_MTTR
+        FROM TB_THA_PACKAGEINDVD_CHCK_ANS
+        WHERE CHCKID = #{chckid}
+    </select>
+    <select id="selectPackageindvdChckArtclList" resultType="com.kbrainc.plum.mng.packageindvdChck.model.PackageindvdChckArtclVo">
+        SELECT
+               B.ARTCLID
+             , B.FORMID
+             , B.ORDR
+             , B.CN
+             , group_concat(concat(C.ORDR,'/',C.EXID,'/',C.CN) ORDER BY C.ORDR ASC) EX_CN
+        FROM
+            TB_THA_PACKAGEINDVD_CHCK_FORM A
+            INNER JOIN TB_THA_PACKAGEINDVD_CHCK_ARTCL B
+                ON A.FORMID = B.FORMID
+            INNER JOIN TB_THA_PACKAGEINDVD_CHCK_ARTCL_EX C
+                ON B.ARTCLID = C.ARTCLID
+        WHERE
+            A.FORMID  = #{formid}
+        GROUP BY B.ARTCLID, B.ORDR
+        ORDER BY B.ORDR ASC
+    </select>
+
+</mapper>
