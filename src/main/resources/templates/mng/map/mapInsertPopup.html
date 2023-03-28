@@ -1,0 +1,290 @@
+<style>
+.hide
+{
+   display:none;
+}
+.red
+{
+color: red;
+}
+</style>
+<form role="form" id ="mapInsertPopForm" name="mapInsertPopForm" >
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content type_2" style="width: 1000px;">
+            <div class="modal-header">
+                <h4 class="modal-title">지도기반 데이터 일괄등록</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-block-small">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="mb-3 form-group">
+                                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>구분</strong></div>
+                                    <select class="form-select form-select-sm form-control-sm" id="resrceSeCd" name="resrceSeCd">
+                                        <option value="238101">기관</option>
+                                        <option value="238102">환경교육시설</option>
+                                        <option value="238103104">교육프로그램 > 환경교육 프로그램</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="m-b-20 row align-items-end">
+                            <div class="col-sm">
+                                <div class="mb-0 form-group">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="p_excelFile"><strong>일괄등록파일 업로드</strong></label>
+                                    <div class="col-sm-12">
+                                        <input type="file" class="form-control form-control-sm" id="p_excelFile" name="p_excelFile" value="" onchange="getFilePath(this.value);" />
+                                        <input type="text" value="" readonly title="파일위치" class="ipath" id="excelPath" style="display: none;" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-auto btn-group-sm mt-1 mt-sm-0">
+                                <button type="button" class="btn btn-primary" onclick="fn_doExcelCheck()">데이터 정합성 체크</button>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <p class="mb-2"><strong>&#8251; 주의사항</strong></p>
+                            <p class="mb-1">1. 구분을 선택 후 일괄등록을 진행하셔야 합니다.</p>
+                            <p class="mb-1">2. 엑셀파일 저장 시 엑셀 형식으로 저장하여 사용할 것.</p>
+                            <p class="mb-1">3. 샘플 양식 폼을 변경할 시 치명적인 오류가 발생합니다. </p>
+                            <p class="mb-1">4. 샘플 파일을 참고하여 작성하여 주십시요.(<a href="javascript:void(0)" class="text-danger">기관/환경교육시설 샘플파일다운로드</a>, <a href="javascript:void(0)" class="text-danger">교육프로그램 샘플파일다운로드</a>) </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card m-b-10">
+                    <div class="card-block-small">
+                        <div class="row">
+                            <div class="col-12">
+                                <table id="resultGrid" class="table-responsive"></table>
+                                <div id="resultPager" class="text-center"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary waves-effect waves-light" id="regBtn">일괄등록</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script th:inline="javascript">
+
+
+    var resultGrid = new GridHelper("resultGrid");
+
+    $(function(){
+
+    	$("#mapInsertPopForm #resrceSeCd").on("change",function(e){
+
+    		if(this.value == "234103104"){
+
+    		}else{
+
+    		}
+
+    	});
+    })
+
+
+    function initGrid(){
+    	$("#resultGrid").jsGrid("destroy");
+    }
+    function fn_doExcelCheck(){
+
+        var f = document.mapInsertPopForm;
+
+        if(f.p_excelFile.value == undefined || f.p_excelFile.value =="" ) {
+            alert("파일을 등록해 주십시오."); //파일을 등록해 주십시오.
+            return;
+        }
+
+        var excelfile =f.p_excelFile.value;
+        var extStr = excelfile.slice(excelfile.indexOf(".") + 1).toLowerCase(); //파일 확장자를 잘라내고, 비교를 위해 소문자로 만듭니다.
+        var regex = /\.(xls|xlsx)$/;
+        if (!regex.test(excelfile)) {
+            alert('엑셀 파일만 등록 가능합니다.'); //엑셀 파일만 등록 가능합니다.
+            return;
+        }
+        var param = $("#mapInsertPopForm").serialize();
+
+//         if(displayWorkProgress()){
+//             $.ajax({
+//                 url : "/mng/map/insertMapListExcel.do",
+//                 type: 'POST',
+//                 cache : false,
+//                 dataType: 'json',
+//                 data : data,
+//                 success : function (data){
+
+//                     if(data.result=="success"){
+//                         alert(data.msg);
+//                         gridHelper1.resetListContent();
+//                     }else{
+//                         alert(data.msg);
+//                     }
+//                     closeWorkProgress();
+//                 }
+//             });
+//         }
+
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+        var param = $("#mapInsertPopForm").serialize();
+        var options = {
+            url: "/mng/map/mapExcelDataCheck.do",
+            type: "POST",
+            cache: false,
+            dataType: "json",
+            data: param,
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader(header, token);
+            },
+            success: function(response) {
+            	debugger;
+                setGrid(response.checkList, response.validYn);
+            },
+            error: function(response) {
+                // console.log(response);
+            }
+        };
+        $("#mapInsertPopForm").ajaxSubmit(options);
+    }
+
+    function setGrid(list) {
+
+        var dataList = [];
+        for(var i = 0, len = list.length; i < len; i++) {
+            var data = list[i];
+            dataList.push({
+            	resrceSeCd : $("#mapInsertPopForm #resrceSeCd").val()
+              , resrceNm   : data[0]
+              , hmpg       : data[1]
+              , telno      : data[2]
+              , addr       : data[3]
+              , addrDtl    : data[4]
+              , ctprvnCd   : data[6]
+              , result     : data[7]
+            });
+        }
+
+        $("#resultGrid").jsGrid({
+            data: dataList,
+            height: "auto",
+            width: "100%",
+            autoload: true,
+            sorting: false,
+            paging: true,
+            pagerContainer: "#resultPager",
+            pagerFormat: "{first} {prev} {pages} {next} {last}",
+            pagePrevText: "이전",
+            pageNextText: "다음",
+            pageFirstText: "< 처음 ㅣ",
+            pageLastText: "ㅣ 마지막 >",
+            noDataContent: "데이터가 없습니다.",
+            pageSize: 10,
+            pageButtonCount: 10,
+            pageLoading: true,
+            pageIndex: 1,
+            fields: [
+                {name: "ctprvnCd", css:'hide'}
+              , {name: "resrceSeCd", css:'hide'}
+              , {title: "지역(시도)코드", name: "ctprvnCd"   , type: "text", width: "150", align: "center"}
+              , {title: "환경자원명"    , name: "resrceNm"   , type: "text", width: "200", align: "left"}
+              , {title: "홈페이지"      , name: "hmpg"       , type: "text", width: "100", align: "left"}
+              , {title: "전화번호"      , name: "telno"      , type: "text", width: "100", align: "center"}
+              , {title: "주소"          , name: "addr"       , type: "text", width: "200", align: "left"}
+              , {title: "상세주소"      , name: "addrDtl"    , type: "text", width: "200", align: "left"}
+              , {title: "결과"          , name: "result"     , type: "text", width: "300", align: "left"
+            	    , itemTemplate:function(value,item){
+            	    	debugger;
+
+            	    	if(value!="정상"){
+            	    		this.css='red';
+            	    		$("#regBtn").attr('disabled', true);
+            	    	}else{
+            	    		this.css='blue';
+            	    	}
+            	    	   return value;
+            	    }
+            	}
+            ]
+        });
+
+        if(validYn == "Y") {
+            this.uploadDataList = dataList;
+            $("#submitBtn").removeClass("disabled");
+        }
+    }
+
+    function checkResultTag(data){
+
+        var checkList = data.excelList;
+        var successYn = data.successYn;
+        var tag = "";
+
+        if( checkList != undefined ){
+            for(var i=0; i< checkList.length; i++){
+                var dataList = checkList[i];
+                if(dataList != undefined){
+                    tag +="<tr>";
+                    for(var j=0; j<dataList.length;j++){
+                        tag +="<td";
+                        if(j == dataList.length-1){
+                            tag += " id='result_"+ i +"' style='color:red'"
+                        }
+                        tag+=">"+dataList[j]+"</td>";
+                    }
+                    tag +="</tr>";
+                }
+            }
+        }
+
+        jQuery("#resultList").html(tag);
+        jQuery("#boardView").show();
+        jQuery("#btnArea").show();
+        if(successYn == "N"){
+            jQuery("#doSave").hide();
+        }else{
+            jQuery("#doSave").show();
+        }
+    }
+
+    function fn_doExcelWrite(){
+
+    	debugger;
+    	return;
+        var options = {
+            url : "/mng/map/mapExcelUpload.do",
+            type: 'post',
+            cache : false,
+            dataType: 'json',
+            data : jQuery("#mapInsertPopForm").serialize(),
+            success : function(data){
+                alert(data.msg);
+                window.close();
+                if(data.result){
+                    window.opener.fn_searchForm();
+                }
+            },
+            error : function(err){
+            }
+        };
+
+        jQuery('#mapInsertPopForm').ajaxSubmit(options);
+    }
+
+    function getFilePath(filePath){
+
+        var set_filePath = filePath;
+        jQuery("#excelPath").val(set_filePath);
+    }
+
+</script>

@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+    layout:decorator="layout/front/subLayout" >
+<body>
+    <div layout:fragment="content">
+        <form id="operRsltInsertForm" name="operRsltInsertForm" th:action="@{/front/dsgnPrgrm/aplyDsctnList.html}" method="post">
+            <input type="hidden" id="cyclid" name="cyclid" th:value="${operRsltInfo.cyclid}">
+            <input type="hidden" id="rsltCyclid" name="rsltCyclid" th:value="${operRsltInfo.rsltCyclid}">
+            <input type="hidden" id="mode" name="mode" th:value="${mode}">
+
+            <!-- content -->
+            <div class="tab-content tab-sub dropDown">
+                <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true"></button>
+                <ul class="tab-list tab-list-pc target" role="tablist">
+                    <li class="tab"><a th:href="@{/front/dsgnMng/dsgnMngDetailForm.html?aplcntid=}+${aplcntid}" role="tab">지정내역</a></li>
+                    <li class="tab"><a th:href="@{/front/dsgnMng/chgDsctnForm.html?aplcntid=}+${aplcntid}" role="tab" >변경내역</a></li>
+                    <li class="tab active"><a id="operRsltTab" th:href="@{/front/dsgnMng/operRsltForm.html?aplcntid=}+${aplcntid}" role="tab" >운영결과</a></li>
+                    <li class="tab"><a th:href="@{/front/dsgnMng/implmntIdntyForm.html?aplcntid=}+${aplcntid}" role="tab" >이행확인</a></li>
+                    <li class="tab"><a th:href="@{/front/dsgnMng/objcAplyForm.html?aplcntid=}+${aplcntid}" role="tab" >이의신청</a></li>
+                </ul>
+            </div>
+
+            <div class="table-caption">
+                <div class="left">
+                    <h3 class="sub-title">기본정보</h3>
+                </div>
+            </div>
+
+            <div class="table-row">
+                <table>
+                    <caption>기본정보  - 지정프로그램명, 지정번호, 기관명, 기관유형,  지정기간, 제출일</caption>
+                    <colgroup>
+                        <col style="width:140px;">
+                        <col>
+                        <col style="width:140px;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th scope="row">지정프로그램명</th>
+                            <td>[[${operRsltInfo.prgrmNm}]]</td>
+                            <th scope="row">지정번호</th>
+                            <td>[[${operRsltInfo.dsgnNo}]]</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">기관명</th>
+                            <td>[[${operRsltInfo.instNm}]]</td>
+                            <th scope="row">기관유형</th>
+                            <td>[[${operRsltInfo.instTypeCdNm}]]</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">지정기간</th>
+                            <td>[[${operRsltInfo.dsgnPrd}]]</td>
+                            <th scope="row">제출일</th>
+                            <td>[[${#dates.format(operRsltInfo.regDt, 'yyyy-MM-dd HH:mm')}]]</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+            <div class="table-caption">
+                <div class="left">
+                    <h3 class="sub-title">프로그램 개요</h3>
+                    <h4 class="dot-title">책임개발자</h4>
+                </div>
+            </div>
+
+            <div class="table-row">
+                <table>
+                    <caption>책임개발자 - 이름, 전화번호, 이메일, 휴대전화번호</caption>
+                    <colgroup>
+                        <col style="width:140px;">
+                        <col>
+                        <col style="width:140px;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th scope="row">이름</th>
+                            <td><input type="text" title="이름" placeholder="이름을 입력해 주세요." id="snrstfdvlprNm" name="snrstfdvlprNm" th:value="${operRsltInfo.snrstfdvlprNm}"></td>
+                            <th scope="row">전화번호</th>
+                            <td><input type="tel" title="전화번호" placeholder="전화번호를 입력해 주세요." id="snrstfdvlprTelno" name="snrstfdvlprTelno" th:value="${operRsltInfo.snrstfdvlprTelno}"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">이메일</th>
+                            <td><input type="email" title="이메일" placeholder="이메일을 입력해 주세요." id="snrstfdvlprEml" name="snrstfdvlprEml" th:value="${operRsltInfo.snrstfdvlprEml}"></td>
+                            <th scope="row">휴대전화번호</th>
+                            <td><input type="tel" title="휴대전화번호" placeholder="휴대전화번호를 입력해 주세요." id="snrstfdvlprMoblphon" name="snrstfdvlprMoblphon" th:value="${operRsltInfo.snrstfdvlprMoblphon}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-caption">
+                <div class="left">
+                    <h4 class="dot-title">운영실무자</h4>
+                </div>
+            </div>
+
+            <div class="table-row">
+                <table>
+                    <caption>운영실무자 - 이름, 전화번호, 이메일, 휴대전화번호, 운영형태, 숙박여부,(실외활동)보험가입여부, 변경여부, 교육대상, 교육인원, 활동장소, 참가비용, 교육시간, 안전사고유무, 프로그램 운영시기</caption>
+                    <colgroup>
+                        <col style="width:140px;">
+                        <col>
+                        <col style="width:140px;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th scope="row">이름</th>
+                            <td><input type="text" title="이름" placeholder="이름을 입력해 주세요." id="picNm" name="picNm" th:value="${operRsltInfo.picNm}"></td>
+                            <th scope="row">전화번호</th>
+                            <td><input type="tel" title="전화번호" placeholder="전화번호를 입력해 주세요." id="picTelno" name="picTelno" th:value="${operRsltInfo.picTelno}"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">이메일</th>
+                            <td><input type="email" title="이메일" placeholder="이메일을 입력해 주세요." id="picEml" name="picEml" th:value="${operRsltInfo.picEml}"></td>
+                            <th scope="row">휴대전화번호</th>
+                            <td><input type="tel" title="휴대전화번호" placeholder="휴대전화번호를 입력해 주세요." id="picMoblphon" name="picMoblphon" th:value="${operRsltInfo.picMoblphon}"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">운영형태</th>
+                            <td>
+                                <span kattr:radio_code="prgrmTypeCd" th:attr="grpCd=120, selectedCd=${operRsltInfo.prgrmTypeCd}">
+                            </td>
+                            <th scope="row">숙박여부</th>
+                            <td>
+                                <span kattr:radio_yn="styYn" label1="숙박" label2="비숙박" th:attr="defaultVal=${operRsltInfo.styYn== null ? 'N':operRsltInfo.styYn}" ></span>
+                                <span class="form-input mo-flex-wrap">
+                                    <input type="number" class="ar" title="박" style="flex:0 0 50px;width:50px;" id="styNight" name="styNight" th:value="${operRsltInfo.styNight}">
+                                    <div class="bul">박</div>
+                                    <input type="number" class="ar" title="일" style="flex:0 0 50px;width:50px;" id="styDaytm" name="styDaytm" th:value="${operRsltInfo.styDaytm}">
+                                    <div class="bul">일</div>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">(실외활동) <br> 보험가입여부</th>
+                            <td>
+                                <span kattr:radio_yn="insrncJoinYn" label1="가입" label2="미가입" th:attr="defaultVal=${operRsltInfo.insrncJoinYn== Y ? 'Y':operRsltInfo.insrncJoinYn}" ></span>
+                                <input type="text" title="보험사유" id="insrncRsn" name="insrncRsn" th:value="${operRsltInfo.insrncRsn}">
+                            </td>
+                            <th scope="row">변경여부</th>
+                            <td>
+                                <span kattr:radio_yn="chgYn" label1="변경됨" label2="변경 없음" th:attr="defaultVal=${operRsltInfo.chgYn== 'Y' ? 'Y':operRsltInfo.chgYn}" ></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">교육대상</th>
+                            <td>
+                                <div class="form-check-list">
+                                    <label class="inp"><input type="checkbox" value="Y" name="infnt"   id="infnt" th:checked="${operRsltInfo.infnt== 'Y'}"><b>유아</b></label>
+                                    <label class="inp"><input type="checkbox" value="Y" name="schboy"  id="schboy" th:checked="${operRsltInfo.schboy == 'Y'}"><b>초등</b></label>
+                                    <label class="inp"><input type="checkbox" value="Y" name="msklsd"  id="msklsd" th:checked="${operRsltInfo.msklsd == 'Y'}"><b>중등</b></label>
+                                    <label class="inp"><input type="checkbox" value="Y" name="hgschst" id="hgschst" th:checked="${operRsltInfo.hgschst == 'Y'}"><b>고등</b></label>
+                                    <label class="inp"><input type="checkbox" value="Y" name="adult"   id="adult" th:checked="${operRsltInfo.adult== 'Y'}"><b>성인</b></label>
+                                    <label class="inp"><input type="checkbox" value="Y" name="wholAge" id="wholAge" th:checked="${operRsltInfo.wholAge== 'Y'}"><b>전연령</b></label>
+                                </div>
+                            </td>
+                            <th scope="row">교육인원</th>
+                            <td>
+                                <div class="form-input mo-flex-wrap">
+                                    <input type="number" class="ar" title="교육인원" style="flex:0 0 100px;width:100px;" name="eduNope" id="eduNope" th:value="${operRsltInfo.eduNope}">
+                                    <div class="bul">명</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">활동장소</th>
+                            <td><input type="text" title="활동장소" placeholder="활동장소를 입력해 주세요." id="actvtPlc" name="actvtPlc" th:value="${operRsltInfo.actvtPlc}"></td>
+                            <th scope="row">참가비용</th>
+                            <td>
+                                <span kattr:radio_yn="pchrgYn" label1="유료" label2="무료" th:attr="defaultVal=${operRsltInfo.etrfee > 0 ? 'Y' : 'N'}" ></span>
+                                <span class="form-input mo-flex-wrap">
+                                    <input type="number" class="ar" title="참가비" style="flex:0 0 100px;width:100px;" name="etrfee" id="etrfee" th:value="${operRsltInfo.etrfee}">
+                                    <div class="bul">원(1인당 비용)</div>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">교육시간</th>
+                            <td>
+                                <div class="form-input mo-flex-wrap">
+                                    <input type="number" class="ar" title="교육시간 회" style="flex:0 0 50px;width:50px;" id="eduCnt" name="eduCnt" th:value="${operRsltInfo.eduCnt}">
+                                    <div class="bul">회</div>
+                                    <input type="number" class="ar" title="교육시간 시간" style="flex:0 0 50px;width:50px;" id="eduHr" name="eduHr" th:value="${operRsltInfo.eduHr}">
+                                    <div class="bul">시간</div>
+                                    <input type="number" class="ar" title="교육시간 분" style="flex:0 0 50px;width:50px;" id="eduMnt" name="eduMnt" th:value="${operRsltInfo.eduMnt}">
+                                    <div class="bul">분</div>
+                                </div>
+                            </td>
+                            <th scope="row">안전사고유무</th>
+                            <td>
+                                <span kattr:radio_yn="sftyacdntEnnc" label1="있음" label2="없음" th:attr="defaultVal=${operRsltInfo.sftyacdntEnnc== 'Y' ? 'Y':'N'}" ></span>
+<!--                                 <div class="form-check-list"> -->
+<!--                                     <label class="inp"><input type="radio"><b>있음</b></label> -->
+<!--                                     <label class="inp"><input type="radio"><b>없음</b></label> -->
+<!--                                 </div> -->
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">프로그램 운영시기</th>
+                            <td colspan="3">
+                                <div class="form-check-list">
+                                    <label class="inp"><input type="checkbox" name="jan"  value="Y" id="jan"  th:checked = "${operRsltInfo.jan  =='Y'}"><b>1월</b></label>
+                                    <label class="inp"><input type="checkbox" name="feb"  value="Y" id="feb"  th:checked = "${operRsltInfo.feb  =='Y'}"><b>2월</b></label>
+                                    <label class="inp"><input type="checkbox" name="mar"  value="Y" id="mar"  th:checked = "${operRsltInfo.mar  =='Y'}"><b>3월</b></label>
+                                    <label class="inp"><input type="checkbox" name="apr"  value="Y" id="apr"  th:checked = "${operRsltInfo.apr  =='Y'}"><b>4월</b></label>
+                                    <label class="inp"><input type="checkbox" name="may"  value="Y" id="may"  th:checked = "${operRsltInfo.may  =='Y'}"><b>5월</b></label>
+                                    <label class="inp"><input type="checkbox" name="june" value="Y" id="june" th:checked = "${operRsltInfo.june =='Y'}"><b>6월</b></label>
+                                    <label class="inp"><input type="checkbox" name="july" value="Y" id="july" th:checked = "${operRsltInfo.july =='Y'}"><b>7월</b></label>
+                                    <label class="inp"><input type="checkbox" name="aug"  value="Y" id="aug"  th:checked = "${operRsltInfo.aug  =='Y'}"><b>8월</b></label>
+                                    <label class="inp"><input type="checkbox" name="sept" value="Y" id="sept" th:checked = "${operRsltInfo.sept =='Y'}"><b>9월</b></label>
+                                    <label class="inp"><input type="checkbox" name="oct"  value="Y" id="oct"  th:checked = "${operRsltInfo.oct  =='Y'}"><b>10월</b></label>
+                                    <label class="inp"><input type="checkbox" name="nov"  value="Y" id="nov"  th:checked = "${operRsltInfo.nov  =='Y'}"><b>11월</b></label>
+                                    <label class="inp"><input type="checkbox" name="dcm"  value="Y" id="dcm"  th:checked = "${operRsltInfo.dcm  =='Y'}"><b>12월</b></label>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+            <div class="table-caption">
+                <div class="left">
+                    <h3 class="sub-title">프로그램 운영실적</h3>
+                </div>
+            </div>
+
+            <div class="table-col table-layout-auto table-col-scroll">
+
+                <table>
+                    <caption>프로그램 운영실적 - 실시일자, 교육실적 세부내용(대상, 시간(h), 인원(명), 횟수(회), 총 시간(h), 총 인원(명), 지도자 배치 비율), 설정</caption>
+                    <colgroup>
+                        <col>
+                        <col style="width:15%;">
+                        <col style="width:10%;">
+                        <col style="width:10%;">
+                        <col style="width:10%;">
+                        <col>
+                        <col>
+                        <col>
+                        <col>
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th scope="col" rowspan="2">실시일자</th>
+                            <th scope="colgroup" colspan="7">상태</th>
+                            <th scope="col" rowspan="2">설정</th>
+                        </tr>
+                        <tr>
+                            <th scope="col">대상</th>
+                            <th scope="col">시간(h)</th>
+                            <th scope="col">인원(명)</th>
+                            <th scope="col">횟수(회)</th>
+                            <th scope="col">총 시간(h)</th>
+                            <th scope="col">총 인원(명)</th>
+                            <th scope="col">지도자 배치 비율</th>
+                        </tr>
+                    </thead>
+                    <tbody id="prfmncTbody">
+                    </tbody><tfoot>
+                        <tr>
+                            <th scope="row" colspan="4">합계</th>
+                            <td id="cntSum"      name="cntSum"  >0회</td>
+                            <td id="wholHrSum"   name="wholHrSum"   >0시간</td>
+                            <td id="wholNopeSum" name="wholNopeSum" >0명</td>
+                            <td colspan="2">-</td>
+                        </tr>
+                        <tr>
+                            <th scope="rowgroup" colspan="4" rowspan="2">활동기록확인서 발급여부(초·중·고등학생일 경우 발급가능)</th>
+                            <th scope="row">발급여부</th>
+                            <td colspan="4">
+                                <span kattr:radio_yn="issuYn" label1="발급" label2="미발급" th:attr="defaultVal=${operRsltInfo.issuYn== 'Y' ? 'Y':'N'}" ></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">발급건수</th>
+                            <td colspan="4">
+                                <div class="form-input mo-flex-wrap">
+                                    <input type="number" class="ar" title="발급 회" style="flex:0 0 50px;width:100px;" id="issuNocs" name="issuNocs" th:value="${operRsltInfo.issuNocs}">
+                                    <div class="bul">회</div>
+                                    <div class="bul">(총</div>
+                                    <input type="number" class="ar" title="발급건수" style="flex:0 0 50px;width:100px;" id="issuSum" name="issuSum" th:value="${operRsltInfo.issuSum}">
+                                    <div class="bul"> 건 발급)</div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="table-caption">
+                <div class="left">
+                    <h3 class="sub-title">프로그램 운영 성과</h3>
+                </div>
+            </div>
+
+            <div class="table-combi table-layout-auto table-combi-scroll">
+
+                <table>
+                    <caption>프로그램 운영 성과 - 영역(프로그램(프로그램 우수성, 운영관리, 평가), 지도자(자격 및 배치), 교육활동 환경(안전관리),첨부파일), 세부내용 (구체적으로 기술 요망 / 증빙자료 제출 필수)</caption>
+                    <colgroup>
+                        <col>
+                        <col>
+                        <col>
+                        <col>
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th scope="col" colspan="2">영역</th>
+                            <th scope="col">세부내용 (구체적으로 기술 요망 / 증빙자료 제출 필수)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="rowgroup" rowspan="3">프로그램</th>
+                            <th scope="row">프로그램 우수성</th>
+                            <td>
+                                <textarea title="프로그램 우수성" id="prgrmDstnctn" name="prgrmDstnctn" >[[${operRsltInfo.prgrmDstnctn}]]</textarea>
+                                <div class="desc ar size"><span>0</span> / 1,000자</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">운영관리</th>
+                            <td>
+                                <textarea title="운영관리" id="operMng" name="operMng" >[[${operRsltInfo.operMng}]]</textarea>
+                                <div class="desc ar size"><span>0</span> / 1,000자</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">평가</th>
+                            <td>
+                                <textarea title="평가" id="evl" name="evl" >[[${operRsltInfo.evl}]]</textarea>
+                                <div class="desc ar size"><span>0</span> / 1,000자</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">지도자</th>
+                            <th scope="row">자격 및 배치</th>
+                            <td>
+                                <textarea title="자격 및 배치" id="qlfcPostng" name="qlfcPostng" >[[${operRsltInfo.qlfcPostng}]]</textarea>
+                                <div class="desc ar size"><span>0</span> / 1,000자</div>
+                            </td>
+                        </tr
+                        ><tr>
+                            <th scope="row">교육활동 퐌경</th>
+                            <th scope="row">안전관리</th>
+                            <td>
+                                <textarea title="안전관리" id="sftyMng" name="sftyMng" >[[${operRsltInfo.sftyMng}]]</textarea>
+                                <div class="desc ar size"><span>0</span> / 1,000자</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">첨부파일</th>
+                            <td colspan="2">
+                                <div class="form-input-file">
+                                    <label class="form-input">
+                                        <input type="file" id="multiFileInput" name="files" class="blind" multiple="multiple" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부" maxcount="5">
+                                        <span class="btn-medium btn-gray" id="fileBtn">파일선택</span>
+                                    </label>
+                                    <div class="upload-response">
+                                        <div id="multipleFileUploadError"></div>
+                                        <div id="multipleFileUploadSuccess">
+                                        <th:block th:if="${fileList != null}">
+                                            <div th:each="item : ${fileList}" th:id="${item.fileid}" class="col-auto">
+                                                <ul th:if="${item.orginlFileNm != null}">
+                                                    <li th:fileid='${item.fileid}'
+                                                        th:fileIdntfcKey="${item.fileIdntfcKey}"
+                                                        th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))"
+                                                        class='label label-inverse'
+                                                        th:data_ext="${#strings.replace(item.ext, '.', '')}">
+                                                        <th:block th:text="${item.orginlFileNm}" />&nbsp;&nbsp;
+                                                        <a th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="fn_deleteFileList(this.name, this.dataset.idntfcKey)" class='text-white'>
+                                                        <th:block th:text="${mode=='read'?'' :'X'}"></th:block></a>
+                                                    </li>
+                                                </ul>
+                                                <p>등록 가능 확장자 : jpg, jpeg, png, gif, hwp, doc, docx, xls, xlsx, pdf, txt, zip</p>
+                                            </div>
+                                        </th:block>
+                                        <input type="hidden" id="filegrpid" name="filegrpid" th:value="${(operRsltInfo.filegrpid == '' or operRsltInfo.filegrpid == null) ? 0 : operRsltInfo.filegrpid}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-caption">
+                <div class="left">
+                    <h3 class="sub-title">차년도 운영계획</h3>
+                </div>
+            </div>
+
+            <div class="table-combi table-layout-auto table-combi-scroll">
+
+                <table>
+                    <caption>차년도 운영계획 - 영역, 세부내용 (구체적으로 기술 요망 / 증빙자료 제출 필수)</caption>
+                    <colgroup>
+                        <col>
+                        <col>
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th scope="col">영역</th>
+                            <th scope="col">세부내용 (구체적으로 기술 요망 / 증빙자료 제출 필수)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">프로그램</th>
+                            <td>
+                                <textarea title="프로그램" id="nextYrPrgrm" name="nextYrPrgrm" >[[${operRsltInfo.nextYrPrgrm}]]</textarea>
+                                <div class="desc ar size"><span>0</span> / 1,000자</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">지도자</th>
+                            <td>
+                                <textarea title="지도자" id="nextYrLdr" name="nextYrLdr" >[[${operRsltInfo.nextYrLdr}]]</textarea>
+                                <div class="desc ar size"><span>0</span> / 1,000자</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">교육활동 환경</th>
+                            <td>
+                                <textarea title="교육활동 환경" id="nextYrEduEnv" name="nextYrEduEnv" >[[${operRsltInfo.nextYrEduEnv}]]</textarea>
+                                <div class="desc ar size"><span>0</span> / 1,000자</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="btn-wrap">
+                <div class="right">
+                    <button type="button" class="btn-medium btn-gray" id="listBtn" onclick="operRsltInsert.goList()">목록</button>
+                    <button type="button" class="btn-medium btn-gray" id="cancleBtn" onclick="operRsltInsert.cancle()">취소</button>
+                    <button type="button" class="btn-medium btn-green" id="sbmsnBtn" onclick="operRsltInsert.doSbmsn()">제출</button>
+                </div>
+            </div>
+            <!-- //content -->
+        </form>
+        <script th:inline="javascript">
+        var prfmncList = /*[[${prfmncList}]]*/ null;
+
+        var atchfileCnt = 5;
+        var uploadFileCnt = 0;
+
+        var operRsltInsert = {
+        	insertUrl : "/front/dsgnMng/insertOperRslt.do",
+
+
+        	init(){
+        		this.setPrfmncList();
+
+        		$("#listBtn").hide();
+        		//조회 모드
+        		if($("#mode").val() =="read"){
+            		$("#operRsltInsertForm input, textArea ").prop('readonly', true);
+
+            		$('input[type=radio], input[type=checkbox]').click(function (event){
+            		       event.preventDefault();
+            		       event.stopPropagation();
+            		});
+
+            		$("#cancleBtn , #sbmsnBtn, #fileBtn, #prfmncBtnAdd, #prfmncBtnDel").hide();
+            		$("#listBtn").show();
+        		}
+        	},
+
+        	setPrfmncList(){
+                var html = "";
+
+                var list = prfmncList;
+                var vCntSum      = 0;
+                var vWholHrSum   = 0;
+                var vWholNopeSum = 0;
+
+                list.forEach(function (item, idx) {
+                	vCntSum      += item.cnt      !=null ? Number(item.cnt     ) : 0;
+                	vWholHrSum   += item.wholHr   !=null ? Number(item.wholHr  ) : 0;
+                	vWholNopeSum += item.wholNope !=null ? Number(item.wholNope) : 0;
+
+                    html += `<tr id="prfmncTr${idx+1}">
+                    	     <td><input type="date"   title="실시일자"   id="oprtnDe"  name="oprtnDe"  value="${item.oprtnDe}"></td>
+                             <td><input type="text"   title="대상"       id="trgt"     name="trgt"     value="${item.trgt}"></td>
+                             <td><input type="number" title="시간(h)"    id="hr"       name="hr"       value="${item.hr}"></td>
+                             <td><input type="number" title="인원(명)"   id="nope"     name="nope"     value="${item.nope}"></td>
+                             <td><input type="number" title="횟수(회)"   id="cnt"      name="cnt"      value="${item.cnt}"></td>
+                             <td><input type="number" title="총시간(h)"  id="wholHr"   name="wholHr"   value="${item.wholHr}"></td>
+                             <td><input type="number" title="총인원(명)" id="wholNope" name="wholNope" value="${item.wholNope}"></td>
+                             <td><input type="number" title="지도자 배치 비율" id="ldrPostngRt" name="ldrPostngRt" value="${item.ldrPostngRt}"></td>
+                             <td>
+                                 <div class="btn-calc">
+
+                                     ${idx > 1 ? `<button type="button" id="prfmncBtnAdd" class="btn-minus-table" onclick="operRsltInsert.delPrfmnc(${idx+1})" title="열 삭제"></button>`:``}
+
+                                     <button type="button" class="btn-plus-table" id="prfmncBtnDel" onclick="operRsltInsert.addPrfmnc(${idx+1})" title="열 추가"></button>
+                                 </div>
+                             </td>
+                             </tr>
+                             `
+                    $("#prfmncTbody").append(html);
+
+                });
+
+                $("#cntSum"     ).prop("innerText",vCntSum      + "회" );
+                $("#wholHrSum"  ).prop("innerText",vWholHrSum   + "시간" );
+                $("#wholNopeSum").prop("innerText",vWholNopeSum + "명" );
+        	},
+
+        	addPrfmnc(idx){
+        		var html="";
+        		idx = idx+1;
+        		html += `<tr id="prfmncTr${idx+1}">
+        			<td><input type="date"   title="실시일자"   id="oprtnDe"  name="oprtnDe" value=""></td>
+                    <td><input type="text"   title="대상"       id="trgt"     name="trgt" value=""></td>
+                    <td><input type="number" title="시간(h)"    id="hr"       name="hr" value=""></td>
+                    <td><input type="number" title="인원(명)"   id="nope"     name="nope" value=""></td>
+                    <td><input type="number" title="횟수(회)"   id="cnt"      name="cnt" value=""></td>
+                    <td><input type="number" title="총시간(h)"  id="wholHr"   name="wholHr" value=""></td>
+                    <td><input type="number" title="총인원(명)" id="wholNope" name="wholNope" value=""></td>
+                    <td><input type="number" title="지도자 배치 비율" id="ldrPostngRt" name="ldrPostngRt" ></td>
+                    <td>
+                        <div class="btn-calc">
+
+                            ${idx!=1?`<button type="button" class="btn-minus-table" onclick="operRsltInsert.delPrfmnc(${idx+1})" title="열 삭제"></button>`:``}
+
+                            <button type="button" class="btn-plus-table"  onclick="operRsltInsert.addPrfmnc(${idx+1})" title="열 추가"></button>
+                        </div>
+                    </td>
+                    </tr>
+                    `
+           $("#prfmncTbody").append(html);
+        	},
+
+        	delPrfmnc(idx){
+
+        	},
+
+        	goList(){
+        		$("#operRsltTab").get(0).click();
+        	},
+
+        	cancle(){
+                if(!confirm("취소 하시겠습니까?")){return;}
+                $("#operRsltTab").get(0).click();
+            },
+        	doSbmsn(){
+
+        		//var param = $("#operRsltInsertForm").serializeArray();
+
+        		var param={};
+
+        		$("#operRsltInsertForm input, textArea").each(function(idx,item){ param[item.id]=item.value; });
+
+        		param["prgrmTypeCd"]=$("[id^=prgrmTypeCd]:checked").val();
+        		param["sftyacdntEnnc"]=$("[id^=sftyacdntEnnc]:checked").val();
+        		param["styYn"]=$("[id^=styYn]:checked").val();
+        		param["issuYn"]=$("[id^=issuYn]:checked").val();
+        		//debugger;return;
+
+        		$("#prfmncTbody [id^=oprtnDe] ").each(function(idx,item){ param["operPrfmncLst[" + idx+ "].oprtnDe" ]=item.value; });
+        		$("#prfmncTbody [id^=trgt]    ").each(function(idx,item){ param["operPrfmncLst[" + idx+ "].trgt"    ]=item.value; });
+        		$("#prfmncTbody [id^=hr]      ").each(function(idx,item){ param["operPrfmncLst[" + idx+ "].hr"      ]=item.value; });
+        		$("#prfmncTbody [id^=nope]    ").each(function(idx,item){ param["operPrfmncLst[" + idx+ "].nope"    ]=item.value; });
+        		$("#prfmncTbody [id^=cnt]     ").each(function(idx,item){ param["operPrfmncLst[" + idx+ "].cnt"     ]=item.value; });
+        		$("#prfmncTbody [id^=wholHr]  ").each(function(idx,item){ param["operPrfmncLst[" + idx+ "].wholHr"  ]=item.value; });
+        		$("#prfmncTbody [id^=wholNope]").each(function(idx,item){ param["operPrfmncLst[" + idx+ "].wholNope"]=item.value; });
+
+
+
+        		if(displayWorkProgress(true)) {
+                    $.ajax({
+                        url : operRsltInsert.insertUrl
+                        , type: "POST"
+                        , cache: false
+                        , dataType: "json"
+                        , data: param
+                        , success: function(response) {
+                            if(response.result == "success") {
+                                alert(response.msg);
+                                $("#operRsltTab").get(0).click();
+                            } else {
+                                alert(response.msg);
+                            }
+                            closeWorkProgress();
+                        }
+                    });
+                }
+        	}
+        }
+
+        $(function () {
+
+        	operRsltInsert.init()
+////////////////
+            validator = $("#operRsltInsertForm").validate({
+                ignore: [],
+                rules: {
+                    splmntDmndCn: { maxlength:1000 }
+                  , prgrmChgCn  : { maxlength:1000 }
+                  , bgtChgCn    : { maxlength:1000 }
+                  , ldrChgCn    : { maxlength:1000 }
+                  , eduEnvChgCn : { maxlength:1000 }
+                  , aplcntid    : { maxlength:1000 }
+                } ,
+                messages: {
+                    splmntDmndCn: { maxlength:"변경시 : 변경내용 은 1000자를 넘을 수 없습니다."  }
+                  , bgtChgCn    : { maxlength:"활동프로그램 세부내용 : 변경내용 은 1000자를 넘을 수 없습니다."  }
+                  , ldrChgCn    : { maxlength:"예산변경 : 변경내용 은 1000자를 넘을 수 없습니다."  }
+                  , eduEnvChgCn : { maxlength:"지도자영역 : 변경내용 은 1000자를 넘을 수 없습니다."  }
+                  , aplcntid    : { maxlength:"교육활동환경 : 변경내용 은 1000자를 넘을 수 없습니다."  }
+                  , prgrmChgCn  : { maxlength:"변경사유 : 변경내용 은 1000자를 넘을 수 없습니다."  }
+                }
+
+            });
+////////////////
+            $("textArea").keyup(function (e) {
+                var inTxt = $(this).val();
+                if($("#"+this.id).next().prop("class")=="desc ar size"){
+                    $("#"+this.id).next().children().prop("innerHTML",inTxt.length);
+                }
+            });
+
+            $("textArea").trigger("keyup");
+////////////////
+            $('#prfmncTbody').on("change", function(event) {
+            	var id = event.originalEvent.target.id;
+
+                var scr = 0;
+                var unit = "";
+            	if(id=="cnt" || id=="wholHr"|| id=="wholNope"){
+                	$('#prfmncTbody [id^='+id+']').each(function(idx,item){
+                		scr+=Number(item.value);
+                	});
+
+                	unit = id=="cnt" ? "회" : id=="whoHr" ? "시간" : id=="whoNope" ? "명" : "";
+                    $("#"+id+"Sum").prop("innerText",scr + unit);
+            	}
+            });
+
+////////////////
+            // 파일업로드
+            $('#multiFileInput').on("change", function(event) {
+
+                var objFile = document.querySelector('#multiFileInput');
+                var formData = new FormData();
+                var content = "";
+
+                for( i = 0 ; i < objFile.files.length ; i++) {
+                    if(uploadFileCnt >= atchfileCnt){
+                        alert("첨부파일은  "+atchfileCnt+ " 개 까지 가능합니다." ); break;
+                    } else {
+                        formData.append("files", objFile.files[i]);
+                        uploadFileCnt++;
+                    }
+                }
+
+                formData.append("filegrpid", $("#filegrpid").val());
+                formData.append("filegrpNm", "asgsysSrng_file");
+
+                if(uploadFileCnt > 0){
+                    $.ajax({
+                        url : '/uploadMultipleFiles.do',
+                        processData : false,
+                        contentType : false,
+                        data : formData,
+                        type : 'POST',
+                        success : function(response) {
+                            if(response.result == 'fail'){
+                                alert(response.msg);
+                            }else{
+                                if($("#filegrpid").val()=='0' || $("#filegrpid").val()==''  || $("#filegrpid").val()==null){
+                                    $("#filegrpid").val( response[0].filegrpid );
+                                }
+
+                                for(i = 0 ;i < response.length; i++ ){
+                                    content = '<ul>';
+                                    content +=  '<li class="file-block" data_ext="'+response[i].fileExtsn.replace(".", '')+'" id="'+response[i].fileid+'"><span class="name">'+response[i].orginlFileNm
+                                    content += '&nbsp;&nbsp;<a href="javascript:void(0)" onclick=uploadFileCnt--;fn_deleteFileList("'+response[i].fileid+'","'+response[i].fileIdntfcKey+'")>X</a></span></li>'
+                                    content += '</ul>';
+                                    $('#multipleFileUploadSuccess').append(content);
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+     // 파일삭제
+        function fn_deleteFileList(fileid, fileIdntfcKey){
+            if(!confirm("파일을 삭제하시겠습니까?")){return;}
+            fn_deleteFile(fileid, fileIdntfcKey);
+            $("#"+fileid).remove();
+        }
+
+        // 파일삭제
+        function fn_deleteFile(fileid, fileIdntfcKey){
+            var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey;
+            $.ajax({
+                url : deleteFileUrl,
+                type: 'GET',
+                cache : false,
+                dataType: 'json',
+                success : function (data){
+                    if(data.result=="success"){
+                        $("#"+fileid).remove();
+                        alert("파일삭제가 완료 되었습니다.");
+                    }else{
+                        alert("파일삭제중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+                    }
+                },
+                error : function (error){
+                }
+            });
+        }
+
+
+        </script>
+    </div>
+</body>
+</html>

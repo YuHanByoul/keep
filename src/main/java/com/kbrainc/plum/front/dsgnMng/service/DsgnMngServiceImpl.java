@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.front.dsgnMng.model.DsgnMngDao;
 import com.kbrainc.plum.front.dsgnMng.model.DsgnMngVo;
-import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngDao;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
@@ -75,8 +74,63 @@ public class DsgnMngServiceImpl extends PlumAbstractServiceImpl implements DsgnM
 	* @throws Exception
 	* @return List<DsgnMngVo>
 	*/
+	@Override
 	public List<DsgnMngVo> selectOperRsltList(DsgnMngVo dsgnMngVo) throws Exception {
 		return dsgnMngDao.selectOperRsltList(dsgnMngVo);
+	}
+
+	/**
+	* 운영결과상세 조회
+	*
+	* @Title : selectOperRslt
+	* @Description : 운영결과상세 조회
+	* @param dsgnMngVo
+	* @return
+	* @throws Exception
+	* @return DsgnMngVo
+	*/
+	@Override
+	public DsgnMngVo selectOperRslt(DsgnMngVo dsgnMngVo) throws Exception {
+		return dsgnMngDao.selectOperRslt(dsgnMngVo);
+	}
+
+	/**
+	* 운영결과 등록
+	*
+	* @Title : insertOperRslt
+	* @Description : 운영결과 등록
+	* @param dsgnMngVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	@Override
+	@Transactional
+	public int insertOperRslt(DsgnMngVo dsgnMngVo) throws Exception {
+		int ret=0;
+		if(dsgnMngVo.getRsltCyclid() != null && dsgnMngVo.getRsltCyclid() !=0 ) {
+			ret+=dsgnMngDao.updateOperRslt(dsgnMngVo);
+		}else {
+			ret+=dsgnMngDao.insertOperRslt(dsgnMngVo);
+		}
+		return ret;
+
+		//dsgnMngVo.get
+	}
+
+	/**
+	* 운영결과실적 목록 조회
+	*
+	* @Title : selectOperRsltPrfmncList
+	* @Description : 운영결과실적 목록 조회
+	* @param dsgnMngVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnMngVo>
+	*/
+	@Override
+	public List<DsgnMngVo> selectOperRsltPrfmncList(DsgnMngVo dsgnMngVo) throws Exception{
+		return dsgnMngDao.selectOperRsltPrfmncList(dsgnMngVo);
 	}
 
 	/**
@@ -158,7 +212,6 @@ public class DsgnMngServiceImpl extends PlumAbstractServiceImpl implements DsgnM
 	* @return int
 	*/
 	@Override
-	@Transactional
 	public int deleteObjcAplyForm(DsgnMngVo dsgnMngVo) throws Exception{
 		return dsgnMngDao.deleteObjcAplyForm(dsgnMngVo);
 	}
@@ -176,6 +229,133 @@ public class DsgnMngServiceImpl extends PlumAbstractServiceImpl implements DsgnM
 	@Override
 	public DsgnMngVo selectObjcAply(DsgnMngVo dsgnMngVo) throws Exception {
 		return dsgnMngDao.selectObjcAply(dsgnMngVo);
+	}
+
+	/**
+	* 보안요청 조회
+	*
+	* @Title : selectSplmntDmnd
+	* @Description : 보안요청 조회
+	* @param dsgnMngVo
+	* @return
+	* @throws Exception
+	* @return DsgnMngVo
+	*/
+	@Override
+	public DsgnMngVo selectSplmntDmnd(DsgnMngVo dsgnMngVo) throws Exception {
+		return dsgnMngDao.selectSplmntDmnd(dsgnMngVo);
+	}
+
+	/**
+	* 보안계획 조회
+	*
+	* @Title : selectSplmntPlan
+	* @Description : 보안계획 조회
+	* @param dsgnMngVo
+	* @return
+	* @throws Exception
+	* @return DsgnMngVo
+	*/
+	@Override
+	public DsgnMngVo selectSplmntPlan(DsgnMngVo dsgnMngVo) throws Exception {
+		return dsgnMngDao.selectSplmntPlan(dsgnMngVo);
+	}
+
+	/**
+	* 보안계획 등록
+	*
+	* @Title : insertImprvPlanForm
+	* @Description : 보안계획 등록
+	* @param dsgnMngVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	@Override
+	@Transactional
+	public int insertImprvPlanForm(DsgnMngVo dsgnMngVo) throws Exception{
+		int ret=0;
+		if(dsgnMngVo.getPlanid() != null && dsgnMngVo.getPlanid() != 0) {
+			ret += dsgnMngDao.updateImprvPlanForm(dsgnMngVo);
+		}else {
+			ret += dsgnMngDao.insertImprvPlanForm(dsgnMngVo);
+		}
+		return ret;
+	}
+
+	/**
+	* 변경신청상세 조회
+	*
+	* @Title : selectChgAply
+	* @Description : 변경신청상세 조회
+	* @param dsgnMngVo
+	* @return
+	* @throws Exception
+	* @return DsgnMngVo
+	*/
+	@Override
+	public DsgnMngVo selectChgAply(DsgnMngVo dsgnMngVo) throws Exception{
+		return dsgnMngDao.selectChgAply(dsgnMngVo);
+	}
+
+	/**
+	* 파일 목록 조회
+	*
+	* @Title : selectFileList
+	* @Description : 파일 목록 조회
+	* @param dsgnMngVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnMngVo>
+	*/
+	@Override
+	public List<DsgnMngVo> selectFileList(DsgnMngVo dsgnMngVo) throws Exception{
+		return dsgnMngDao.selectFileList(dsgnMngVo);
+	}
+
+	/**
+	* 변경신청 수정
+	*
+	* @Title : updateChgAply
+	* @Description : 변경신청 수정
+	* @param dsgnMngVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	@Override
+	public int updateChgAply(DsgnMngVo dsgnMngVo) throws Exception{
+		return dsgnMngDao.updateChgAply(dsgnMngVo);
+	}
+
+	/**
+	 * 변경신청 등록
+	 *
+	 * @Title : insertChgAply
+	 * @Description : 변경신청 등록
+	 * @param dsgnMngVo
+	 * @return
+	 * @throws Exception
+	 * @return int
+	 */
+	@Override
+	public int insertChgAply(DsgnMngVo dsgnMngVo) throws Exception{
+		return dsgnMngDao.insertChgAply(dsgnMngVo);
+	}
+
+	/**
+	* 변경신청 삭제
+	*
+	* @Title : deleteChgAply
+	* @Description : 변경신청 삭제
+	* @param dsgnMngVo
+	* @return
+	* @throws Exception
+	* @return boolean
+	*/
+	@Override
+	public boolean deleteChgAply(DsgnMngVo dsgnMngVo) throws Exception {
+		return dsgnMngDao.deleteChgAply(dsgnMngVo);
 	}
 
 }

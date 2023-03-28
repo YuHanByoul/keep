@@ -203,7 +203,8 @@ public class ClclnDsctnVo extends ParentRequestVo {
     
     /** 첨부파일 관련*/
     private Integer atchFilegrpid;
-    private String atchFileIdntfcKey;
-    private String atchOrginlFileNm;    
+    private Integer fileid;
+    private String fileIdntfcKey;
+    private String orginlFileNm;    
     
 }

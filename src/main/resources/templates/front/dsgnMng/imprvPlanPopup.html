@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+</head>
+<body>
+    <form id="imprvPlanPopFrom" >
+        <div class="layer-popup layer-large" data-layer-id="imprvPlanPopup">
+            <input type="hidden" id="popSe" name="popSe" th:value="${popSe}">
+            <input type="hidden" id="dmndid" name="dmndid" th:value="${splmntPlan.dmndid}">
+            <input type="hidden" id="planid" name="planid" th:value="${splmntPlan.planid}">
+            <input type="hidden" id="aplcntid" name="aplcntid" th:value="${splmntPlan.aplcntid}">
+
+            <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+            <div class="layer-wrap">
+                <div class="layer-header">
+                    <strong class="tit">보완개선계획서</strong>
+                    <button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
+                </div>
+                <div class="layer-content">
+
+                    <div class="table-row table-row-mo">
+                        <table>
+                            <caption>보완개선계획서 - 보완개선요청</caption>
+                            <colgroup>
+                                <col style="width:140px;">
+                                <col>
+                            </colgroup>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">보완개선요청</th>
+                                    <td>[[${splmntPlan.dmndCn}]]</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="table-row table-row-mo mt10">
+                        <table>
+                            <caption>보완개선계획서 - 책임개발자 총괄의견, 보완개선계획</caption>
+                            <colgroup>
+                                <col style="width:140px;">
+                                <col>
+                            </colgroup>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">책임개발자 총괄의견</th>
+                                    <td>
+                                        <textarea title="책임개발자 총괄의견" id="smrizeOpnn" name="smrizeOpnn">[[${splmntPlan.smrizeOpnn}]]</textarea>
+                                        <div class="desc ar size"><span>0</span> / 1,000자</div>
+                                        <p class="feedback"></p>
+
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <th scope="row">보완개선계획</th>
+                                    <td>
+                                        <textarea title="보완개선계획" id="cn" name="cn">[[${splmntPlan.cn}]]</textarea>
+                                        <div class="desc ar size"><span>0</span> / 1,000자</div>
+                                        <p class="feedback"></p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="table-row table-row-mo mt10">
+                        <table>
+                            <caption>보완개선계획서 - 첨부파일</caption>
+                            <colgroup>
+                                <col style="width:140px;">
+                                <col>
+                            </colgroup>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">첨부파일</th>
+                                    <td>
+                                        <div class="form-input-file">
+                                            <label class="form-input" id="fileBtn">
+                                                <input type="file" id="multiFileInput" name="files" class="blind" multiple="multiple" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부" maxcount="5">
+                                                <span class="btn-medium btn-gray" >파일선택</span>
+                                            </label>
+                                            <div class="upload-response">
+                                                <div id="multipleFileUploadError"></div>
+                                                <div id="multipleFileUploadSuccess">
+                                                <th:block th:if="${fileList != null}">
+                                                    <div th:each="item : ${fileList}" th:id="${item.fileid}" class="col-auto">
+                                                        <ul th:if="${item.orginlFileNm != null}">
+                                                            <li th:fileid='${item.fileid}'
+                                                                th:fileIdntfcKey="${item.fileIdntfcKey}"
+                                                                th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))"
+                                                                class='label label-inverse'
+                                                                th:data_ext="${#strings.replace(item.fileExtsn, '.', '')}">
+                                                                <th:block th:text="${item.orginlFileNm}" />&nbsp;&nbsp;
+                                                                <a th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="fn_deleteFileList(this.name, this.dataset.idntfcKey)" class='text-white'>
+                                                                <th:block th:text="X"></th:block></a>
+                                                            </li>
+                                                        </ul>
+                                                        <p>등록 가능 확장자 : jpg, jpeg, png, gif, hwp, doc, docx, xls, xlsx, pdf, txt, zip</p>
+                                                    </div>
+                                                </th:block>
+                                                </div>
+                                            </div>
+                                            <input type="hidden" id="filegrpid" name="filegrpid" th:value="${(splmntPlan.filegrpid == '' or splmntPlan.filegrpid == null) ? 0 : splmntPlan.filegrpid}"/>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+                <div class="layer-footer">
+                    <div class="btn-wrap">
+                        <div class="center">
+                            <button type="button" class="btn-medium btn-gray" data-layer-close>닫기</button>
+                            <button type="button" class="btn-medium btn-green" onclick="imprvPlanPop.objcReg()">저장</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <script th:inline="javascript">
+
+    var imprvPlanPop ={
+    	insertUrl : "/front/dsgnMng/insertImprvPlanForm.do",
+
+    	se : $("#popSe").val(),
+
+    	init(){
+
+    		if("read"== imprvPlanPop.se){
+    			$("#smrizeOpnn").attr("readonly","readonly");
+    			$("#cn").attr("readonly","readonly");
+    			$("#fileBtn").hide();
+            }
+
+    	},
+    	objcReg(url){
+
+    		if(!$("#imprvPlanPopFrom").valid()) return false;
+    		imprvPlanPop.doAjax(imprvPlanPop.insertUrl);
+    	},
+
+    	doAjax(url){
+
+
+    		if (displayWorkProgress(true)) {
+
+    			if(imprvPlanPop.se=="reg"){
+    				$("#aplySttsCd").val("129101");    //신청
+    			}
+
+                let formData = $('#imprvPlanPopFrom').serializeArray();
+
+                $.ajax({
+                	url : url,
+                    type: 'POST',
+                    cache : false,
+                    dataType: 'json',
+                    data: formData,
+                    success : function (data){
+                        if(data.result=="success"){
+                        	alert(data.msg);
+                        	layerPopup.close({target:'imprvPlanPopup'});
+                        	$("#implmntIdntyTab").get(0).click();
+                        }else{
+                            alert(data.msg);
+                        }
+                    },
+                    error : function (error){
+                    }
+                });
+            }
+    	}
+    };
+
+    $(function() {
+    	$("textArea").keyup(function (e) {
+            var inTxt = $(this).val();
+            if($("#"+this.id).next().prop("class")=="desc ar size"){
+                $("#"+this.id).next().children().prop("innerHTML",inTxt.length);
+            }
+        });
+
+        $("textArea").trigger("keyup");
+    	validator = $("#imprvPlanPopFrom").validate({
+            ignore: [],
+            rules: {
+                smrizeOpnn : { maxlength:1000 }
+              , cn         : { maxlength:1000 }
+            } ,
+            messages: {
+                smrizeOpnn : { maxlength:"책임개발자 총괄의견 은 1000자를 넘을 수 없습니다."  }
+              , cn         : { maxlength:"보완개선계획 은 1000자를 넘을 수 없습니다."  }
+             }
+        });
+
+        // 파일업로드
+        $('#multiFileInput').on("change", function(event) {
+        	debugger;
+            var objFile = document.querySelector('#multiFileInput');
+            var formData = new FormData();
+            var content = "";
+
+            for( i = 0 ; i < objFile.files.length ; i++) {
+                if(uploadFileCnt >= atchfileCnt){
+                    alert("첨부파일은  "+atchfileCnt+ " 개 까지 가능합니다." ); break;
+                } else {
+                    formData.append("files", objFile.files[i]);
+                    uploadFileCnt++;
+                }
+            }
+
+            formData.append("filegrpid", $("#filegrpid").val());
+            formData.append("filegrpNm", "asgsysSrng_file");
+
+            if(uploadFileCnt > 0){
+                $.ajax({
+                    url : '/uploadMultipleFiles.do',
+                    processData : false,
+                    contentType : false,
+                    data : formData,
+                    type : 'POST',
+                    success : function(response) {
+                        if(response.result == 'fail'){
+                            alert(response.msg);
+                        }else{
+                            if($("#filegrpid").val()=='0' || $("#filegrpid").val()==''  || $("#filegrpid").val()==null){
+                                $("#filegrpid").val( response[0].filegrpid );
+                            }
+
+                            for(i = 0 ;i < response.length; i++ ){
+                                content = '<ul>';
+                                content +=  '<li class="file-block" data_ext="'+response[i].fileExtsn.replace(".", '')+'" id="'+response[i].fileid+'"><span class="name">'+response[i].orginlFileNm
+                                content += '&nbsp;&nbsp;<a href="javascript:void(0)" onclick=uploadFileCnt--;fn_deleteFileList("'+response[i].fileid+'","'+response[i].fileIdntfcKey+'")>X</a></span></li>'
+                                content += '</ul>';
+                                $('#multipleFileUploadSuccess').append(content);
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+        imprvPlanPop.init();
+    });
+
+
+    var atchfileCnt = 5;
+    var uploadFileCnt = 0;
+
+    // 파일삭제
+    function fn_deleteFileList(fileid, fileIdntfcKey){
+        if(!confirm("파일을 삭제하시겠습니까?")){return;}
+        fn_deleteFile(fileid, fileIdntfcKey);
+        $("#"+fileid).remove();
+    }
+
+    // 파일삭제
+    function fn_deleteFile(fileid, fileIdntfcKey){
+        var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey;
+        $.ajax({
+            url : deleteFileUrl,
+            type: 'GET',
+            cache : false,
+            dataType: 'json',
+            success : function (data){
+                if(data.result=="success"){
+                    $("#"+fileid).remove();
+                    alert("파일삭제가 완료 되었습니다.");
+                }else{
+                    alert("파일삭제중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+                }
+            },
+            error : function (error){
+            }
+        });
+    }
+
+    </script>
+</body>
+</html>

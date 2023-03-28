@@ -34,7 +34,6 @@ import java.util.List;
 @Data
 public class MyExprtVo extends CommonExprtVo {
     private String exprtTypeCdNm;
-
     private String moblphonRlsYn;
     private String telnoRlsYn;
     private String emlRlsYn;
@@ -48,6 +47,8 @@ public class MyExprtVo extends CommonExprtVo {
     private String trgtCdNm;
     private String actvtRgnCdNm;
     private String exprtField;
+    private String flds;
+
 
     public void setExprtTypeCd(String exprtTypeCd) {
         this.exprtTypeCd = exprtTypeCd;

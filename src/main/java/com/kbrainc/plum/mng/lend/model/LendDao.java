@@ -7,6 +7,11 @@ import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 import java.util.List;
 import java.util.Map;
 
+import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
+
+import com.kbrainc.plum.mng.pack.model.PackageVo;
+import com.kbrainc.plum.mng.pack.model.PackageindvdVo;
+
 /**
  * 
  * 대여 모집 관리 DAO 클래스. 
@@ -290,6 +295,91 @@ public interface LendDao {
      * @throws Exception 예외
      */
     public int insertLendAplyDlivy(LendAplyVo lendAplyVo) throws Exception;
+
+    /**************입고 관리 **************/
+    /**
+     * 대여 신청 출고 상태 (입고)수정
+     *
+     * @Title       : updateLendAplyDlivy
+     * @Description :대여 신청 출고 상태 (입고)수정
+     * @param LendAplyVo 객체
+     * @return int  목록
+     * @throws Exception 예외
+     */
+    public int updateLendAplyDlivy(LendAplyVo lendAplyVo) throws Exception;
+    /**
+     * 꾸러미 개체 점검 등록
+     *
+     * @Title       : insertLendPackageindvdChck
+     * @Description :꾸러미 개체 점검 등록
+     * @param LendAplyVo 객체
+     * @return int  목록
+     * @throws Exception 예외
+     */
+    public int insertLendPackageindvdChck(LendPackageindvdChckVo lendPackageindvdChckVo) throws Exception;
+    /**
+     * 꾸러미 개체 점검 답변 등록
+     *
+     * @Title       : insertLendPackageindvdChckAns
+     * @Description :꾸러미 개체 점검 답변 등록
+     * @param LendAplyVo 객체
+     * @return int  목록
+     * @throws Exception 예외
+     */
+    public int insertLendPackageindvdChckAns(LendPackageindvdChckVo lendPackageindvdChckVo) throws Exception;
+    /**
+     * 입고 확인 꾸러미 개체 목록 호출
+     *
+     * @Title       : selectLendPackageindvdList
+     * @Description :입고 확인 꾸러미 개체 목록 호출
+     * @param LendAplyVo 객체
+     * @return int  목록
+     * @throws Exception 예외
+     */
+    public List<LendAplyVo> selectLendPackageindvdList(LendAplyVo lendAplyVo) throws Exception;
+    /**
+     * 교구 점검 양식 문항/보기 리스트 호출
+     *
+     * @Title       : selectFormExidList
+     * @Description :교구 점검 양식 문항/보기 리스트 호출
+     * @param LendAplyVo 객체
+     * @return int  목록
+     * @throws Exception 예외
+     */
+    public List<Map<String,Object>> selectFormExidList(Map<String,Object> parmaMap) throws Exception;
+    /**
+     * 꾸러미 개체 점검 교구 등록
+     *
+     * @Title       : insertPackageindvdChckTchaid
+     * @Description : 꾸러미 개체 점검 교구 등록
+     * @param LendPackageindvdChckVo 객체
+     * @return int  목록
+     * @throws Exception 예외
+     */
+    public int insertPackageindvdChckTchaid(LendPackageindvdChckVo lendPackageindvdChckVo) throws Exception;
+    /**
+     * 대여 신청 입고 수정 처리
+     *
+     * @Title       : updateLendAplyWrhousng
+     * @Description : 꾸러미 개체 점검 교구 등록
+     * @param LendPackageindvdChckVo 객체
+     * @return int  목록
+     * @throws Exception 예외
+     */
+    public int updateLendAplyWrhousng(LendPackageindvdChckVo LendPackageindvdChckVo) throws Exception;
+    /**
+     * 대여차시 별 이미 승인 된 꾸러미 개체 여부 확인
+     *
+     * @Title       : isThereRndPackageindvdYn
+     * @Description : 대여차시 별 이미 승인 된 꾸러미 개체 여부 확인
+     * @param LendPackageindvdChckVo 객체
+     * @return int  목록
+     * @throws Exception 예외
+     */
+    public String isThereRndPackageindvdYn(LendAplyVo lendAplyVo) throws Exception;
+
+
+
 
     /**
      * 삭제한 꾸러미 출고 삭제

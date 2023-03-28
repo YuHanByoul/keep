@@ -25,24 +25,25 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
+import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.front.bizAply.model.BudgetVo;
+import com.kbrainc.plum.front.bizAply.model.CapabilityResultVo;
 import com.kbrainc.plum.front.bizAply.model.CapabilityVo;
+import com.kbrainc.plum.front.bizAply.model.OperRndVo;
 import com.kbrainc.plum.front.bizAply.model.OperVo;
+import com.kbrainc.plum.front.bizAply.model.PrgrmEvlVo;
+import com.kbrainc.plum.front.bizAply.model.PrgrmInfoOutlineVo;
 import com.kbrainc.plum.front.bizAply.model.ProcPlanVo;
 import com.kbrainc.plum.front.bizAply.model.ProgramInfoVo;
 import com.kbrainc.plum.front.bizAply.model.ReqMngVo;
 import com.kbrainc.plum.front.bizAply.model.ReqUserVo;
 import com.kbrainc.plum.front.bizAply.model.SafetyMngVo;
-import com.kbrainc.plum.front.bizAply.model.SmrLeaderVo;
-import com.kbrainc.plum.front.bizAply.service.ReqMngService;
-import com.kbrainc.plum.front.bizAply.model.OperRndVo;
-import com.kbrainc.plum.front.bizAply.model.PrgrmEvlVo;
 import com.kbrainc.plum.front.bizAply.model.SmrLeaderAcbgVo;
 import com.kbrainc.plum.front.bizAply.model.SmrLeaderCarrVo;
 import com.kbrainc.plum.front.bizAply.model.SmrLeaderJobVo;
 import com.kbrainc.plum.front.bizAply.model.SmrLeaderLicVo;
-import com.kbrainc.plum.front.bizAply.model.PrgrmInfoOutlineVo;
-import com.kbrainc.plum.front.bizAply.model.CapabilityResultVo;
+import com.kbrainc.plum.front.bizAply.model.SmrLeaderVo;
+import com.kbrainc.plum.front.bizAply.service.ReqMngService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
@@ -73,6 +74,9 @@ public class ReqMngController {
     
     @Autowired
     private FileService fileService;
+    
+    @Autowired
+    private CommonService commonService;
     
     /**
     * 공모신청 화면으로 이동. 
@@ -260,6 +264,7 @@ public class ReqMngController {
                  detail = reqMngService.userBaseInfoDetail(reqUserVo);                 
              }
              
+             model.addAttribute("sidoList", commonService.selectAlowedCtprvnList());
              model.addAttribute("mode", reqUserVo.getMode());
              model.addAttribute("pcntstid", reqUserVo.getPcntstid());
              model.addAttribute("pcntstNm", StringUtils.isEmpty(reqUserVo.getPcntstNm()) ? detail.getPcntstNm() : reqUserVo.getPcntstNm());

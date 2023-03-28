@@ -69,6 +69,54 @@
         <include refid="PaginationMapper.footer"/>
     </select>
 
+    <!-- 변경신청상세 조회 -->
+    <select id="selectChgAply" parameterType="front.dsgnMngVo" resultType="front.dsgnMngVo">
+        /* front.DsgnMngDao.selectChgAply */
+        SELECT
+            A.APLYID              /*신청아이디*/
+          , B.PRGRM_NM
+          , AA.DSGN_NO
+          , B.INST_NM
+          , CONCAT(AA.DSGN_BGNG_DE, " ~ ", AA.DSGN_END_DE)    DSGN_PRD
+          , A.PRGRMID             /*프로그램아이디*/
+          , A.SAMENSS_YN          /*동일_여부*/
+          , A.SAMENSS_CN          /*동일_내용*/
+          , A.PRGRM_CHG_YN        /*프로그램_변경_여부*/
+          , A.PRGRM_CHG_CN        /*프로그램_변경_내용*/
+          , A.BGT_CHG_YN          /*예산_변경_여부*/
+          , A.BGT_CHG_CN          /*예산_변경_내용*/
+          , A.LDR_CHG_YN          /*지도자_변경_여부*/
+          , A.LDR_CHG_CN          /*지도자_변경_내용*/
+          , A.EDU_ENV_CHG_YN      /*교육_환경_변경_여부*/
+          , A.EDU_ENV_CHG_CN      /*교육_환경_변경_내용*/
+          , A.CHG_RSN             /*변경_사유*/
+          , A.FILEGRPID           /*파일그룹아이디*/
+          , A.APLCNTID            /*신청자아이디*/
+          , A.APLY_STTS_CD        /*신청_상태_코드*/
+          , A.SPLMNT_DMND_CN      /*보완_요청_내용*/
+          , A.STTS_MDFCN_DT       /*상태_수정_일시*/
+          , A.MDFCN_DT            /*수정_일시*/
+          , A.MDFRID              /*수정자아이디*/
+        FROM TB_ASS_CHG_APLY A
+        INNER JOIN
+            TB_ASS_PRGRM B ON A.PRGRMID = B.PRGRMID
+        INNER JOIN
+            TB_ASS_DSGN_HSTRY AA
+        INNER JOIN(
+            SELECT
+               MAX(HSTRYID) AS HSTRYID
+              , PRGRMID
+            FROM
+                TB_ASS_DSGN_HSTRY
+            WHERE 1=1
+            GROUP BY PRGRMID
+        ) BB ON AA.PRGRMID = BB.PRGRMID
+            AND AA.HSTRYID = BB.HSTRYID
+        WHERE 1=1
+        AND A.APLYID = #{aplyid}
+        GROUP BY A.PRGRMID
+    </select>
+
     <!-- 운영결과 목록 조회 -->
     <select id="selectOperRsltList" parameterType="front.dsgnMngVo" resultType="front.dsgnMngVo">
         /* front.DsgnMngDao.selectOperRsltList */
@@ -76,15 +124,22 @@
             SELECT
                 A.PRGRMID
               , A.CYCLID
+              , D.CYCLID AS RSLT_CYCLID
               , C.DSGN_NO
               , B.PRGRM_NM
-              , CASE WHEN D.CYCLID IS NOT NULL
-                     THEN '운영결과'
-                     WHEN A.STTS_CD = '128101'
-                     THEN '-'
-                     WHEN D.CYCLID IS NULL
-                     THEN '대기중'
+              , CASE WHEN NOW() <![CDATA[ < ]]> A.SBMSN_BGNG_DE THEN '대기중'
+                     WHEN NOW() <![CDATA[ > ]]> A.SBMSN_END_DE THEN '조회'
+                     WHEN NOW() BETWEEN A.SBMSN_BGNG_DE AND A.SBMSN_END_DE
+                     THEN CASE WHEN D.CYCLID IS NULL THEN '등록'
+                               WHEN D.CYCLID IS NOT NULL THEN '수정'
+                          END
                 END    AS OPER_REG
+              , CASE WHEN NOW() <![CDATA[ < ]]> A.SBMSN_BGNG_DE THEN '-'
+                     WHEN NOW() BETWEEN A.SBMSN_BGNG_DE AND A.SBMSN_END_DE
+                     THEN CASE WHEN D.CYCLID   IS NULL THEN '-'
+                               WHEN D.CYCLID  IS NOT NULL THEN '제출완료'
+                          END
+                END    AS STTS_CD_NM
               , A.SBMSN_BGNG_DE
               , A.SBMSN_END_DE
               , CONCAT(A.SBMSN_BGNG_DE, ' ~ ', A.SBMSN_END_DE)    SBMSN_PRD
@@ -110,33 +165,353 @@
         <include refid="PaginationMapper.footer"/>
     </select>
 
-    <!-- 운영결과 목록 조회 -->
+    <!-- 운영결과 상세 조회 -->
+    <select id="selectOperRslt" parameterType="front.dsgnMngVo" resultType="front.dsgnMngVo">
+        /* front.DsgnMngDao.selectOperRslt */
+            SELECT
+                A.CYCLID
+              , C.DSGN_NO
+              , B.PRGRM_NM
+              , B.INST_NM
+              , B.INST_TYPE_CD
+              , CONCAT(B.DSGN_BGNG_DE , ' ~ ' , B.DSGN_END_DE)    AS DSGN_PRD
+              , CD.CD_NM         AS INST_TYPE_CD_NM
+              , D.CYCLID         AS RSLT_CYCLID
+              , D.SNRSTFDVLPR_NM         /*책임개발자_이름*/
+              , D.SNRSTFDVLPR_EML        /*책임개발자_이메일*/
+              , D.SNRSTFDVLPR_TELNO      /*책임개발자_전화번호*/
+              , D.SNRSTFDVLPR_MOBLPHON   /*책임개발자_휴대폰번호*/
+              , D.PIC_NM                 /*담당자_이름*/
+              , D.PIC_EML                /*담당자_이메일*/
+              , D.PIC_TELNO              /*담당자_전화번호*/
+              , D.PIC_MOBLPHON           /*담당자_휴대폰번호*/
+              , D.PRGRM_TYPE_CD          /*프로그램_유형_코드*/
+              , D.STY_YN                 /*숙박_여부*/
+              , D.STY_NIGHT
+              , D.STY_DAYTM
+              , D.INSRNC_JOIN_YN         /*보험_가입_여부*/
+              , D.INSRNC_RSN             /*보험_사유*/
+              , D.CHG_YN                 /*변경_여부*/
+              , D.INFNT                  /*유아*/
+              , D.SCHBOY                 /*초등학생*/
+              , D.MSKLSD                 /*중학생*/
+              , D.HGSCHST                /*고등학생*/
+              , D.ADULT                  /*성인*/
+              , D.WHOL_AGE               /*전체_연령*/
+              , D.EDU_NOPE               /*교육_인원수*/
+              , D.ACTVT_PLC              /*활동_장소*/
+              , D.ETRFEE                 /*참가비*/
+              , D.EDU_CNT                /*교육_횟수*/
+              , D.EDU_HR                 /*교육_시간*/
+              , D.EDU_MNT                /*교육_분*/
+              , D.SFTYACDNT_ENNC         /*안전사고_유무*/
+              , D.JAN                    /*1월*/
+              , D.FEB                    /*2월*/
+              , D.MAR                    /*3월*/
+              , D.APR                    /*4월*/
+              , D.MAY                    /*5월*/
+              , D.JUNE                   /*6월*/
+              , D.JULY                   /*7월*/
+              , D.AUG                    /*8월*/
+              , D.SEPT                   /*9월*/
+              , D.OCT                    /*10월*/
+              , D.NOV                    /*11월*/
+              , D.DCM                    /*12월*/
+              , D.WHOL_MM                /*전체_월*/
+              , D.ISSU_YN                /*발급_여부*/
+              , D.ISSU_NOCS              /*발급_건수*/
+              , D.ISSU_SUM               /*발급_합계*/
+              , D.PRGRM_DSTNCTN          /*프로그램_우수성*/
+              , D.OPER_MNG               /*운영_관리*/
+              , D.EVL                    /*평가*/
+              , D.QLFC_POSTNG            /*자격_배치*/
+              , D.SFTY_MNG               /*안전_관리*/
+              , D.FILEGRPID              /*파일그룹아이디*/
+              , D.NEXT_YR_PRGRM          /*다음_연도_프로그램*/
+              , D.NEXT_YR_LDR            /*다음_연도_지도자*/
+              , D.NEXT_YR_EDU_ENV        /*다음_연도_교육_환경*/
+              , D.REG_DT
+            FROM TB_ASS_OPER_RSLT_CYCL A
+            INNER JOIN TB_ASS_PRGRM B ON A.PRGRMID = B.PRGRMID
+            INNER JOIN (
+                SELECT
+                    PRGRMID
+                  , MAX(DSGN_NO) AS DSGN_NO
+                  , MAX(HSTRYID) AS HSTRYID
+                FROM
+                    TB_ASS_DSGN_HSTRY
+                GROUP BY PRGRMID
+            ) C ON A.PRGRMID = C.PRGRMID
+            LEFT OUTER JOIN
+                TB_ASS_OPER_RSLT D ON A.CYCLID = D.CYCLID
+            LEFT OUTER JOIN TB_CMM_CD CD ON B.INST_TYPE_CD =CD.CD
+        WHERE A.CYCLID = #{cyclid}
+    </select>
+
+    <!-- 운영결과 등록 -->
+    <insert id="insertOperRslt" parameterType="front.dsgnMngVo">
+        /* front.DsgnMngDao.insertOperRslt*/
+        INSERT INTO TB_ASS_OPER_RSLT
+        (
+              CYCLID
+            , SNRSTFDVLPR_NM
+            , SNRSTFDVLPR_EML
+            , SNRSTFDVLPR_TELNO
+            , SNRSTFDVLPR_MOBLPHON
+            , PIC_NM
+            , PIC_EML
+            , PIC_TELNO
+            , PIC_MOBLPHON
+            , PRGRM_TYPE_CD
+            , STY_YN
+            , D.STY_NIGHT
+            , D.STY_DAYTM
+            , INSRNC_JOIN_YN
+            , INSRNC_RSN
+            , CHG_YN
+            , INFNT
+            , SCHBOY
+            , MSKLSD
+            , HGSCHST
+            , ADULT
+            , WHOL_AGE
+            , EDU_NOPE
+            , ACTVT_PLC
+            , ETRFEE
+            , EDU_CNT
+            , EDU_HR
+            , EDU_MNT
+            , SFTYACDNT_ENNC
+            , JAN
+            , FEB
+            , MAR
+            , APR
+            , MAY
+            , JUNE
+            , JULY
+            , AUG
+            , SEPT
+            , OCT
+            , NOV
+            , DCM
+            , WHOL_MM
+            , ISSU_YN
+            , ISSU_NOCS
+            , ISSU_SUM
+            , PRGRM_DSTNCTN
+            , OPER_MNG
+            , EVL
+            , QLFC_POSTNG
+            , SFTY_MNG
+            , FILEGRPID
+            , NEXT_YR_PRGRM
+            , NEXT_YR_LDR
+            , NEXT_YR_EDU_ENV
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES
+        (
+              #{cyclid}                    /*차수아이디*/
+            , #{snrstfdvlprNm}             /*책임개발자_이름*/
+            , #{snrstfdvlprEml}            /*책임개발자_이메일*/
+            , #{snrstfdvlprTelno}          /*책임개발자_전화번호*/
+            , #{snrstfdvlprMoblphon}       /*책임개발자_휴대폰번호*/
+            , #{picNm}                     /*담당자_이름*/
+            , #{picEml}                    /*담당자_이메일*/
+            , #{picTelno}                  /*담당자_전화번호*/
+            , #{picMoblphon}               /*담당자_휴대폰번호*/
+            , #{prgrmTypeCd}               /*프로그램_유형_코드*/
+            , #{styYn}                     /*숙박_여부*/
+            , #{styNight}
+            , #{styDaytm}
+            , #{insrncJoinYn}              /*보험_가입_여부*/
+            , #{insrncRsn}                 /*보험_사유*/
+            , #{chgYn}                     /*변경_여부*/
+            , #{infnt}                     /*유아*/
+            , #{schboy}                    /*초등학생*/
+            , #{msklsd}                    /*중학생*/
+            , #{hgschst}                   /*고등학생*/
+            , #{adult}                     /*성인*/
+            , #{wholAge}                   /*전체_연령*/
+            , #{eduNope}                   /*교육_인원수*/
+            , #{actvtPlc}                  /*활동_장소*/
+            , #{etrfee}                    /*참가비*/
+            , #{eduCnt}                    /*교육_횟수*/
+            , #{eduHr}                     /*교육_시간*/
+            , #{eduMnt}                    /*교육_분*/
+            , #{sftyacdntEnnc}             /*안전사고_유무*/
+            , #{jan}                       /*1월*/
+            , #{feb}                       /*2월*/
+            , #{mar}                       /*3월*/
+            , #{apr}                       /*4월*/
+            , #{may}                       /*5월*/
+            , #{june}                      /*6월*/
+            , #{july}                      /*7월*/
+            , #{aug}                       /*8월*/
+            , #{sept}                      /*9월*/
+            , #{oct}                       /*10월*/
+            , #{nov}                       /*11월*/
+            , #{dcm}                       /*12월*/
+            , #{wholMm}                    /*전체_월*/
+            , #{issuYn}                    /*발급_여부*/
+            , #{issuNocs}                  /*발급_건수*/
+            , #{issuSum}                   /*발급_합계*/
+            , #{prgrmDstnctn}              /*프로그램_우수성*/
+            , #{operMng}                   /*운영_관리*/
+            , #{evl}                       /*평가*/
+            , #{qlfcPostng}                /*자격_배치*/
+            , #{sftyMng}                   /*안전_관리*/
+            , #{filegrpid}                 /*파일그룹아이디*/
+            , #{nextYrPrgrm}               /*다음_연도_프로그램*/
+            , #{nextYrLdr}                 /*다음_연도_지도자*/
+            , #{nextYrEduEnv}              /*다음_연도_교육_환경*/
+            , NOW()                        /*수정_일시*/
+            , #{user.userid}               /*수정자아이디*/
+            , NOW()                        /*등록_일시*/
+            , #{user.userid}              /*등록자아이디*/
+        )
+    </insert>
+
+    <update id="updateOperRslt">
+        UPDATE TB_ASS_OPER_RSLT SET
+            SNRSTFDVLPR_NM       = #{snrstfdvlprNm}             /*책임개발자_이름*/
+          , SNRSTFDVLPR_EML      = #{snrstfdvlprEml}            /*책임개발자_이메일*/
+          , SNRSTFDVLPR_TELNO    = #{snrstfdvlprTelno}          /*책임개발자_전화번호*/
+          , SNRSTFDVLPR_MOBLPHON = #{snrstfdvlprMoblphon}       /*책임개발자_휴대폰번호*/
+          , PIC_NM               = #{picNm}                     /*담당자_이름*/
+          , PIC_EML              = #{picEml}                    /*담당자_이메일*/
+          , PIC_TELNO            = #{picTelno}                  /*담당자_전화번호*/
+          , PIC_MOBLPHON         = #{picMoblphon}               /*담당자_휴대폰번호*/
+          , PRGRM_TYPE_CD        = #{prgrmTypeCd}               /*프로그램_유형_코드*/
+          , STY_YN               = #{styYn}                     /*숙박_여부*/
+          , STY_NIGHT            = #{styNight}
+          , STY_DAYTM            = #{styDaytm}
+          , INSRNC_JOIN_YN       = #{insrncJoinYn}              /*보험_가입_여부*/
+          , INSRNC_RSN           = #{insrncRsn}                 /*보험_사유*/
+          , CHG_YN               = #{chgYn}                     /*변경_여부*/
+          , INFNT                = #{infnt}                     /*유아*/
+          , SCHBOY               = #{schboy}                    /*초등학생*/
+          , MSKLSD               = #{msklsd}                    /*중학생*/
+          , HGSCHST              = #{hgschst}                   /*고등학생*/
+          , ADULT                = #{adult}                     /*성인*/
+          , WHOL_AGE             = #{wholAge}                   /*전체_연령*/
+          , EDU_NOPE             = #{eduNope}                   /*교육_인원수*/
+          , ACTVT_PLC            = #{actvtPlc}                  /*활동_장소*/
+          , ETRFEE               = #{etrfee}                    /*참가비*/
+          , EDU_CNT              = #{eduCnt}                    /*교육_횟수*/
+          , EDU_HR               = #{eduHr}                     /*교육_시간*/
+          , EDU_MNT              = #{eduMnt}                    /*교육_분*/
+          , SFTYACDNT_ENNC       = #{sftyacdntEnnc}             /*안전사고_유무*/
+          , JAN                  = #{jan}                       /*1월*/
+          , FEB                  = #{feb}                       /*2월*/
+          , MAR                  = #{mar}                       /*3월*/
+          , APR                  = #{apr}                       /*4월*/
+          , MAY                  = #{may}                       /*5월*/
+          , JUNE                 = #{june}                      /*6월*/
+          , JULY                 = #{july}                      /*7월*/
+          , AUG                  = #{aug}                       /*8월*/
+          , SEPT                 = #{sept}                      /*9월*/
+          , OCT                  = #{oct}                       /*10월*/
+          , NOV                  = #{nov}                       /*11월*/
+          , DCM                  = #{dcm}                       /*12월*/
+          , WHOL_MM              = #{wholMm}                    /*전체_월*/
+          , ISSU_YN              = #{issuYn}                    /*발급_여부*/
+          , ISSU_NOCS            = #{issuNocs}                  /*발급_건수*/
+          , ISSU_SUM             = #{issuSum}                   /*발급_합계*/
+          , PRGRM_DSTNCTN        = #{prgrmDstnctn}              /*프로그램_우수성*/
+          , OPER_MNG             = #{operMng}                   /*운영_관리*/
+          , EVL                  = #{evl}                       /*평가*/
+          , QLFC_POSTNG          = #{qlfcPostng}                /*자격_배치*/
+          , SFTY_MNG             = #{sftyMng}                   /*안전_관리*/
+          , FILEGRPID            = #{filegrpid}                 /*파일그룹아이디*/
+          , NEXT_YR_PRGRM        = #{nextYrPrgrm}               /*다음_연도_프로그램*/
+          , NEXT_YR_LDR          = #{nextYrLdr}                 /*다음_연도_지도자*/
+          , NEXT_YR_EDU_ENV      = #{nextYrEduEnv}              /*다음_연도_교육_환경*/
+          , MDFCN_DT             = NOW()                        /*수정_일시*/
+          , MDFRID               = #{user.userid}               /*수정자아이디*/
+        WHERE CYCLID = #{cyclid}                    /*차수아이디*/
+    </update>
+
+    <!-- 운영결과 운영실적 목록조회 -->
+    <select id="selectOperRsltPrfmncList" parameterType="front.dsgnMngVo" resultType="front.dsgnMngVo">
+        SELECT
+            B.PRFMNCID
+          , A.CYCLID
+          , B.OPRTN_DE
+          , B.TRGT
+          , B.HR
+          , B.NOPE
+          , B.CNT
+          , B.WHOL_HR
+          , B.WHOL_NOPE
+          , B.LDR_POSTNG_RT
+          , B.MDFCN_DT
+          , B.MDFRID
+          , B.REG_DT
+          , B.RGTRID
+        FROM
+            TB_ASS_OPER_RSLT A
+        LEFT OUTER JOIN
+            TB_ASS_OPER_RSLT_PRFMNC B ON A.CYCLID = B.CYCLID
+        WHERE A.CYCLID = #{cyclid}
+        ORDER BY B.PRFMNCID
+    </select>
+
+    <!-- 이행확인 목록 조회 -->
     <select id="selectImplmntIdntyList" parameterType="front.dsgnMngVo" resultType="front.dsgnMngVo">
         /* front.DsgnMngDao.selectImplmntIdntyList */
         <include refid="PaginationMapper.header"/>
-        SELECT A.SRNGID
-          , B.CYCLID
-          , C.PRGRMID
-          , D.HSTRYID
-          , D.DSGN_NO
-          , E.PRGRM_NM
-          , A.VST_DE
-          , C.STTS_CD
-          , F.DMNDID
-          , G.PLANID
-          , A.MDFCN_DT
-        FROM TB_ASS_IMPLMNT_IDNTY_SRNG A
-        INNER JOIN TB_ASS_OPER_RSLT B ON A.CYCLID = B.CYCLID
-        INNER JOIN TB_ASS_OPER_RSLT_CYCL C ON B.CYCLID = C.CYCLID
-        INNER JOIN TB_ASS_DSGN_HSTRY D ON C.PRGRMID = D.PRGRMID
-        INNER JOIN TB_ASS_PRGRM E ON D.PRGRMID = E.PRGRMID
-        LEFT OUTER JOIN TB_ASS_SPLMNT_DMND F ON A.SRNGID = F.SRNGID
-        LEFT OUTER JOIN TB_ASS_SPLMNT_PLAN G ON F.DMNDID = G.DMNDID
-        WHERE 1=1
+        SELECT A.HSTRYID
+          , A.PRGRMID
+          , A.DSGN_NO
+          , C.PRGRM_NM
+          , C.APLCNTID
+          , D.STTS_CD
+          , F.VST_DE
+          , CASE WHEN D.STTS_CD = '128104'
+                  THEN CASE WHEN F.GRD_CD IS NOT NULL THEN '심사완료'
+                             WHEN G.DMNDID IS NULL THEN '이행심사'
+                             WHEN G.DMNDID IS NOT NULL
+                             THEN CASE WHEN H.PLANID IS NULL THEN '보완개선요청'
+                                        WHEN H.PLANID IS NOT NULL THEN '보완개선계획'
+                                   END
+                       END
+            END STTS_CD_NM
+          , CASE WHEN D.STTS_CD = '128104'
+                  THEN CASE WHEN F.GRD_CD IS NOT NULL THEN '조회'
+                             WHEN G.DMNDID IS NULL THEN '-'
+                             WHEN G.DMNDID IS NOT NULL
+                             THEN CASE WHEN H.PLANID IS NULL THEN '등록'
+                                        WHEN H.PLANID IS NOT NULL THEN '수정'
+                                   END
+                       END
+            END BTN_SE
+          , E.CYCLID
+          , F.SRNGID
+          , G.DMNDID
+          , H.PLANID
+        FROM TB_ASS_DSGN_HSTRY A
+        INNER JOIN
+        (
+            SELECT
+                MAX(HSTRYID) AS HSTRYID
+              , PRGRMID
+            FROM
+                TB_ASS_DSGN_HSTRY
+            GROUP BY PRGRMID
+        ) B ON A.PRGRMID = B.PRGRMID AND A.HSTRYID = B.HSTRYID
+        INNER JOIN TB_ASS_PRGRM C ON A.PRGRMID = C.PRGRMID
+        INNER JOIN TB_ASS_OPER_RSLT_CYCL D ON A.PRGRMID = D.PRGRMID AND NOW() BETWEEN D.SBMSN_BGNG_DE AND D.SBMSN_END_DE
+        LEFT OUTER JOIN TB_ASS_OPER_RSLT E ON D.CYCLID = E.CYCLID
+        LEFT OUTER JOIN TB_ASS_IMPLMNT_IDNTY_SRNG F ON E.CYCLID = F.CYCLID
+        LEFT OUTER JOIN TB_ASS_SPLMNT_DMND G ON F.SRNGID = G.SRNGID
+        LEFT OUTER JOIN TB_ASS_SPLMNT_PLAN H ON G.DMNDID = H.DMNDID
+        ORDER BY  A.DSGN_NO DESC
         <if test="user.userid != null and user.userid != ''">
 <!--             AND B.APLCNTID = #{user.userid} -->
         </if>
-        GROUP BY A.SRNGID
         <include refid="PaginationMapper.footer"/>
     </select>
 
@@ -174,18 +549,110 @@
         <include refid="PaginationMapper.footer"/>
     </select>
 
+    <!-- 보완요청 -->
+    <select id="selectSplmntDmnd" parameterType="front.dsgnMngVo" resultType="front.dsgnMngVo">
+        /* front.DsgnMngDao.selectSplmntDmnd*/
+        SELECT
+           A.DMNDID           /*요청아이디*/
+         , A.SRNGID           /*심사아이디*/
+         , A.DMND_CN          /*요청_내용*/
+         , A.DMND_DCMNT       /*요청_서류*/
+         , A.DMND_CMPTN_DE    /*요청_완료_일자*/
+         , B.PLANID           /*계획아이디*/
+         , B.DMNDID           /*요청아이디*/
+         , B.SMRIZE_OPNN      /*총괄_의견*/
+         , B.CN               /*내용*/
+         , B.FILEGRPID        /*파일그룹아이디*/
+        FROM TB_ASS_SPLMNT_DMND A
+        LEFT OUTER JOIN
+            TB_ASS_SPLMNT_PLAN B ON A.DMNDID = B.DMNDID
+        WHERE A.DMNDID = ${dmndid}
+    </select>
+
+    <!-- 보완요청 -->
+    <select id="selectSplmntPlan" parameterType="front.dsgnMngVo" resultType="front.dsgnMngVo">
+        /* front.DsgnMngDao.selectSplmntPlan*/
+        SELECT
+            PLANID        /*계획아이디*/
+          , DMNDID        /*요청아이디*/
+          , SMRIZE_OPNN   /*총괄_의견*/
+          , CN            /*내용*/
+          , FILEGRPID     /*파일그룹아이디*/
+          , MDFCN_DT      /*수정_일시*/
+          , MDFRID        /*수정자아이디*/
+          , REG_DT        /*등록_일시*/
+          , RGTRID        /*등록자아이디*/
+        FROM
+            TB_ASS_SPLMNT_PLAN
+        WHERE 1=1
+        AND PLANID = ${planid}
+    </select>
+
+    <!-- 보완계획 등록 -->
+    <insert id="insertImprvPlanForm" parameterType="front.dsgnMngVo">
+        /* front.DsgnPrgrmDao.insertImprvPlanForm*/
+        INSERT INTO TB_ASS_SPLMNT_PLAN
+        (
+            DMNDID
+          , SMRIZE_OPNN
+          , CN
+          , FILEGRPID
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        ) VALUES
+        (
+            #{dmndid    }
+          , #{smrizeOpnn}
+          , #{cn        }
+          , #{filegrpid }
+          , NOW()            /*수정일시*/
+          , #{user.userid}   /*수정자아이디*/
+          , NOW()            /*등록일시*/
+          , #{user.userid}   /*등록자아이디*/
+        )
+    </insert>
+
+    <!-- 보완계획 수정 -->
+    <update id="updateImprvPlanForm" parameterType="front.dsgnMngVo">
+        /* front.DsgnPrgrmDao.updateImprvPlanForm*/
+        UPDATE TB_ASS_SPLMNT_PLAN SET
+            SMRIZE_OPNN  = #{smrizeOpnn}
+          , CN           = #{cn}
+          , FILEGRPID    = #{filegrpid}
+          , MDFCN_DT     = now()
+          , MDFRID       = #{user.userid}
+        WHERE 1=1
+        AND PLANID = #{planid}
+    </update>
+
+
     <!-- 지정프로그램 목록 조회 -->
     <select id="dsgnPrgrmList" parameterType="front.dsgnMngVo" resultType="front.dsgnMngVo">
         /* front.DsgnMngDao.dsgnPrgrmList*/
         SELECT
             A.PRGRMID
-          , MAX(B.HSTRYID)    AS HSTRYID
           , A.PRGRM_NM
+          , B.HSTRYID
         FROM TB_ASS_PRGRM A
-        INNER JOIN TB_ASS_DSGN_HSTRY B ON A.PRGRMID = B.PRGRMID
-        GROUP BY A.PRGRMID
+        INNER JOIN
+        (
+            SELECT
+                MAX(HSTRYID)    AS HSTRYID
+              , PRGRMID
+            FROM
+                TB_ASS_DSGN_HSTRY
+            WHERE 1=1
+            GROUP BY PRGRMID
+        ) B ON A.PRGRMID= B.PRGRMID
+        WHERE 1=1
+        <if test="aplcntid != null and aplcntid != ''">
+            AND A.APLCNTID = #{aplcntid}
+        </if>
     </select>
 
+    <!-- 이의신청 등록-->
     <insert id="insertObjcAplyForm" parameterType="front.dsgnMngVo">
         /* front.DsgnPrgrmDao.insertObjcAplyForm*/
         INSERT INTO TB_ASS_OBJC_APLY
@@ -219,12 +686,14 @@
         )
     </insert>
 
+    <!-- 이의신청 삭제 -->
     <delete id="deleteObjcAplyForm" parameterType="front.dsgnMngVo">
         /* front.DsgnPrgrmDao.deleteObjcAplyForm*/
         DELETE FROM TB_ASS_OBJC_APLY
         WHERE APLYID = #{aplyid}     /*신청아이디*/
     </delete>
 
+    <!-- 이의신청 조회 -->
     <select id="selectObjcAply" parameterType="front.dsgnMngVo" resultType="front.dsgnMngVo">
         /* front.DsgnPrgrmDao.selectObjcAply*/
         SELECT
@@ -234,6 +703,7 @@
          , A.CN              /*내용*/
          , A.APLCNTID        /*신청자아이디*/
          , A.ANS             /*답변*/
+         , A.APLY_STTS_CD    STTS_CD /*신청_상태_코드*/
          , A.APLY_STTS_CD    /*신청_상태_코드*/
          , A.PICID           /*담당자아이디*/
          , A.ANS_DT          /*답변_일시*/
@@ -247,6 +717,7 @@
             A.APLYID = #{aplyid}
     </select>
 
+    <!-- 이의신청 수정 -->
     <update id="updateObjcAplyForm" parameterType="front.dsgnMngVo">
         /* front.DsgnPrgrmDao.updateObjcAplyForm*/
         UPDATE TB_ASS_OBJC_APLY SET
@@ -262,5 +733,107 @@
         WHERE 1=1
         AND APLYID       = #{aplyid}   /*신청아이디*/
     </update>
+
+        <!-- 이의신청 조회 -->
+    <select id="selectFileList" parameterType="front.dsgnMngVo" resultType="front.dsgnMngVo">
+        /* front.DsgnPrgrmDao.selectFileList*/
+        SELECT
+            A.FILEGRPID
+          , A.FILEID
+          , A.FILE_IDNTFC_KEY
+          , A.ORGINL_FILE_NM
+          , LOWER(TRIM(LEADING '.' FROM A.FILE_EXTSN)) AS EXT
+        FROM TB_CMM_FILE A
+        WHERE FILEGRPID = #{filegrpid}
+    </select>
+
+    <!-- 변경신청 수정 -->
+    <update id="updateChgAply" parameterType="front.dsgnMngVo">
+        /* front.DsgnPrgrmDao.updateChgAply*/
+        UPDATE TB_ASS_CHG_APLY
+        SET
+            SAMENSS_YN       = #{samenssYn   }
+          , SAMENSS_CN       = #{samenssCn   }
+          , PRGRM_CHG_YN     = #{prgrmChgYn  }
+          , PRGRM_CHG_CN     = #{prgrmChgCn  }
+          , BGT_CHG_YN       = #{bgtChgYn    }
+          , BGT_CHG_CN       = #{bgtChgCn    }
+          , LDR_CHG_YN       = #{ldrChgYn    }
+          , LDR_CHG_CN       = #{ldrChgCn    }
+          , EDU_ENV_CHG_YN   = #{eduEnvChgYn }
+          , EDU_ENV_CHG_CN   = #{eduEnvChgCn }
+          , CHG_RSN          = #{chgRsn      }
+          , FILEGRPID        = #{filegrpid   }
+          , APLCNTID         = #{aplcntid    }
+          , APLY_STTS_CD     = #{aplySttsCd  }
+          , SPLMNT_DMND_CN   = #{splmntDmndCn}
+          <if test="sttsMdfcnDt != null and sttsMdfcnDt != ''">
+          , STTS_MDFCN_DT    = #{sttsMdfcnDt }
+          </if>
+          , MDFCN_DT         = NOW()
+          , MDFRID           = #{user.userid}
+          , REG_DT           = NOW()
+          , RGTRID           = #{user.userid}
+        WHERE
+            APLYID = #{aplyid}
+    </update>
+
+    <!-- 변경신청 등록 -->
+    <update id="insertChgAply" parameterType="front.dsgnMngVo">
+        /* front.DsgnPrgrmDao.insertChgAply*/
+        INSERT INTO TB_ASS_CHG_APLY
+        (
+            PRGRMID
+          , SAMENSS_YN
+          , SAMENSS_CN
+          , PRGRM_CHG_YN
+          , PRGRM_CHG_CN
+          , BGT_CHG_YN
+          , BGT_CHG_CN
+          , LDR_CHG_YN
+          , LDR_CHG_CN
+          , EDU_ENV_CHG_YN
+          , EDU_ENV_CHG_CN
+          , CHG_RSN
+          , FILEGRPID
+          , APLCNTID
+          , APLY_STTS_CD
+          , SPLMNT_DMND_CN
+          , STTS_MDFCN_DT
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        ) VALUES (
+            #{prgrmid     }
+          , #{samenssYn   }
+          , #{samenssCn   }
+          , #{prgrmChgYn  }
+          , #{prgrmChgCn  }
+          , #{bgtChgYn    }
+          , #{bgtChgCn    }
+          , #{ldrChgYn    }
+          , #{ldrChgCn    }
+          , #{eduEnvChgYn }
+          , #{eduEnvChgCn }
+          , #{chgRsn      }
+          , #{filegrpid   }
+          , #{aplcntid    }
+          , #{aplySttsCd  }
+          , #{splmntDmndCn}
+          , #{sttsMdfcnDt }
+          , NOW()
+          , #{user.userid}
+          , NOW()
+          , #{user.userid}
+        )
+    </update>
+
+    <delete id="deleteChgAply" parameterType="front.dsgnMngVo">
+        /* front.DsgnPrgrmDao.deleteChgAply*/
+        DELETE FROM TB_ASS_CHG_APLY
+        WHERE APLYID= #{aplyid}
+    </delete>
+
 
 </mapper>

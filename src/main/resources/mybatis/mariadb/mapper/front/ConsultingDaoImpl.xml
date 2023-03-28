@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : DelvryDaoImpl.xml
+	Description : 마이페이지 > 체험환경 > 컨설팅 내역
+-->
+<mapper namespace="com.kbrainc.plum.front.cnsltng.model.ConsultingDao">
+    
+    <!-- 컨설팅 내역 목록 조회 -->
+    <select id="selectCnsltngList" parameterType="ConsultingVo" resultType="ConsultingVo">
+        /* ConsultingDao.selectCnsltngList */
+        <include refid="PaginationMapper.header"/>
+        SELECT 
+            TCC.CD_NM AS FLD_NM
+            , TSP.PCNTST_NM 
+            , TSA.PRGRM_NM 
+            , TSAC.CNSLTNGID
+            , CASE WHEN TSAC.RSLT IS NOT NULL THEN '컨설팅완료' ELSE '컨설팅전' END AS CNSLTNG_STTS
+            , DATE_FORMAT(TSAC.VST_DT, '%Y-%m-%d') AS VST_DT 
+            , TSAC.RSLT 
+            , TSAC.CN_BFR 
+            , TSAC.CN_AFTR 
+            , TSA.REG_DT 
+            , TSA.MDFCN_DT 
+        FROM TB_SPB_PCNTST TSP 
+        INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID 
+        LEFT OUTER JOIN TB_SPB_APLY_CNSLTNG TSAC ON TSAC.APLYID = TSA.APLYID
+        LEFT OUTER JOIN TB_CMM_CD TCC ON TCC.CD = TSP.FLD_CD 
+        WHERE TSAC.CNSLTNGID IS NOT NULL
+        AND TSA.USERID = #{user.userid}
+        <if test="user.loginUserType == 'P'.toString()">
+        AND TSP.FLD_CD IN ('173105','173106')
+        </if>
+        <if test="user.loginUserType == 'I'.toString()">
+        AND TSP.FLD_CD NOT IN ('173105','173106')
+        </if>
+        <if test="cnsltngid != null and cnsltngid != ''">
+            AND CNSLTNGID = #{cnsltngid}
+        </if>
+        <if test="searchFldCd != null and searchFldCd != ''">
+            AND TSP.FLD_CD = #{searchFldCd}
+        </if>
+        <if test="searchPcntstNm != null and searchPcntstNm != ''">
+            AND TSP.PCNTST_NM LIKE CONCAT('%',#{searchPcntstNm},'%')
+        </if>
+        <if test="searchPrgrmNm != null and searchPrgrmNm != ''">
+            AND PRGRM_NM LIKE CONCAT('%',#{searchPrgrmNm},'%')
+        </if>
+        <if test="searchSttsCd != null and searchSttsCd != ''">
+            <if test="searchSttsCd == 'B'.toString()">
+            AND TSAC.RSLT IS NULL
+            </if>
+            <if test="searchSttsCd == 'S'.toString()">
+            AND TSAC.RSLT IS NOT NULL
+            </if>
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+</mapper>

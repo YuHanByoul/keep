@@ -156,7 +156,7 @@
         </if>
         <!-- 지정일 검색시작일  -->
         <if test="searchStartDsgnDe != null and searchStartDsgnDe != ''">
-            AND A.A.DSGN_BGNG_DE >= #{searchStartDsgnDe}
+            AND A.DSGN_BGNG_DE >= #{searchStartDsgnDe}
         </if>
         <!-- 지정일 검색종료일  -->
         <if test="searchEndDsgnDe  != null and searchEndDsgnDe != ''">
@@ -244,8 +244,9 @@
         SELECT
             A.PRGRMID
           , A.PRGRM_NM         /*프로그램명 */
---          , '' AS AA           /*서류심사점수 */
---          , '' AS BB           /*현장점검점수 */
+          , (F.SCR +  D.SCR) FINAL_SCR        /*지원단 점수*/
+          , (F.SCR +  E.SCR) DCMNT_SRNG_SRC   /*신청자 자가진단 점수(서류심사) */
+          , (F.SCR +  D.SCR)-(F.SCR +  E.SCR)   VST_CHK_SRC /*방문점검 점수(현장점검) */
           , B.EDU_NOPE         /*교육인원 */
           , B.EDU_CNT          /*교육시간_회*/
           , B.EDU_HR           /*교육시간_시간 */
@@ -272,6 +273,7 @@
           , B.APPRO                           /*적절성 */
           , B.DSTNCTN                         /*우수성 */
           , B.EDU_CN                          /*교육내용 */
+          , D.CHKLST_RSLT_CN                  /*현장점검 총평*/
         FROM
             TB_ASS_PRGRM A
             LEFT OUTER JOIN TB_ASS_PRGRM_DSTNCTN B ON A.PRGRMID = B.PRGRMID
@@ -281,7 +283,7 @@
             LEFT OUTER JOIN  TB_ASS_PRGRM_EDU_SBJCT EDU ON A.PRGRMID = EDU.PRGRMID
             LEFT OUTER JOIN TB_CMM_CD EDUCD ON EDU.EDU_SBJCT_CD = EDUCD.CD
             LEFT OUTER JOIN
-             (
+            (
                 SELECT PRGRMID
                       , GROUP_CONCAT(DSGN_NO separator ',')    GRP_DSGN_NO
                       , DSGN_CYCL
@@ -290,7 +292,26 @@
                  WHERE 1=1
                    AND STTS_CD = 132101
                  ORDER BY DSGN_CYCL DESC
-             ) C ON A.PRGRMID = C.PRGRMID
+            ) C ON A.PRGRMID = C.PRGRMID
+            LEFT OUTER JOIN
+            (
+                SELECT * FROM TB_ASS_CHKLST_SBMSN
+                WHERE PRGRMID = #{prgrmid}
+                AND SBMSN_SE_CD ='Y'
+            ) D ON A.PRGRMID = D.PRGRMID    /*지원단 심사*/
+            LEFT OUTER JOIN
+            (
+                SELECT * FROM TB_ASS_CHKLST_SBMSN
+                WHERE PRGRMID = #{prgrmid}
+                AND SBMSN_SE_CD ='N'
+            ) E ON A.PRGRMID = E.PRGRMID    /*신청자 자가진단*/
+            LEFT OUTER JOIN
+            (
+                SELECT ROUND(SUM(SCR)/COUNT(USERID),2) SCR
+                , PRGRMID
+                FROM TB_ASS_SRNG_SBMSN
+                WHERE PRGRMID = #{prgrmid}
+            ) F ON A.PRGRMID = F.PRGRMID    /*심사위원심사*/
         WHERE 1=1
         AND   A.STTS_CD = 111111
         AND   A.PRGRMID = #{prgrmid}
@@ -883,6 +904,132 @@
         WHERE A.CYCLID = #{cyclid}
     </select>
 
+    <!-- 운영결과 등록 -->
+    <insert id="insertOperRslt" parameterType="DsgnPrgrmVo">
+        /* DsgnPrgrmDao.insertOperRslt*/
+        INSERT INTO TB_ASS_OPER_RSLT
+        (
+              CYCLID
+            , SNRSTFDVLPR_NM
+            , SNRSTFDVLPR_EML
+            , SNRSTFDVLPR_TELNO
+            , SNRSTFDVLPR_MOBLPHON
+            , PIC_NM
+            , PIC_EML
+            , PIC_TELNO
+            , PIC_MOBLPHON
+            , PRGRM_TYPE_CD
+            , STY_YN
+            , D.STY_NIGHT
+            , D.STY_DAYTM
+            , INSRNC_JOIN_YN
+            , INSRNC_RSN
+            , CHG_YN
+            , INFNT
+            , SCHBOY
+            , MSKLSD
+            , HGSCHST
+            , ADULT
+            , WHOL_AGE
+            , EDU_NOPE
+            , ACTVT_PLC
+            , ETRFEE
+            , EDU_CNT
+            , EDU_HR
+            , EDU_MNT
+            , SFTYACDNT_ENNC
+            , JAN
+            , FEB
+            , MAR
+            , APR
+            , MAY
+            , JUNE
+            , JULY
+            , AUG
+            , SEPT
+            , OCT
+            , NOV
+            , DCM
+            , WHOL_MM
+            , ISSU_YN
+            , ISSU_NOCS
+            , ISSU_SUM
+            , PRGRM_DSTNCTN
+            , OPER_MNG
+            , EVL
+            , QLFC_POSTNG
+            , SFTY_MNG
+            , FILEGRPID
+            , NEXT_YR_PRGRM
+            , NEXT_YR_LDR
+            , NEXT_YR_EDU_ENV
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES
+        (
+              #{cyclid}                    /*차수아이디*/
+            , #{snrstfdvlprNm}             /*책임개발자_이름*/
+            , #{snrstfdvlprEml}            /*책임개발자_이메일*/
+            , #{snrstfdvlprTelno}          /*책임개발자_전화번호*/
+            , #{snrstfdvlprMoblphon}       /*책임개발자_휴대폰번호*/
+            , #{picNm}                     /*담당자_이름*/
+            , #{picEml}                    /*담당자_이메일*/
+            , #{picTelno}                  /*담당자_전화번호*/
+            , #{picMoblphon}               /*담당자_휴대폰번호*/
+            , #{prgrmTypeCd}               /*프로그램_유형_코드*/
+            , #{styYn}                     /*숙박_여부*/
+            , #{styNight}
+            , #{styDaytm}
+            , #{insrncJoinYn}              /*보험_가입_여부*/
+            , #{insrncRsn}                 /*보험_사유*/
+            , #{chgYn}                     /*변경_여부*/
+            , #{infnt}                     /*유아*/
+            , #{schboy}                    /*초등학생*/
+            , #{msklsd}                    /*중학생*/
+            , #{hgschst}                   /*고등학생*/
+            , #{adult}                     /*성인*/
+            , #{wholAge}                   /*전체_연령*/
+            , #{eduNope}                   /*교육_인원수*/
+            , #{actvtPlc}                  /*활동_장소*/
+            , #{etrfee}                    /*참가비*/
+            , #{eduCnt}                    /*교육_횟수*/
+            , #{eduHr}                     /*교육_시간*/
+            , #{eduMnt}                    /*교육_분*/
+            , #{sftyacdntEnnc}             /*안전사고_유무*/
+            , #{jan}                       /*1월*/
+            , #{feb}                       /*2월*/
+            , #{mar}                       /*3월*/
+            , #{apr}                       /*4월*/
+            , #{may}                       /*5월*/
+            , #{june}                      /*6월*/
+            , #{july}                      /*7월*/
+            , #{aug}                       /*8월*/
+            , #{sept}                      /*9월*/
+            , #{oct}                       /*10월*/
+            , #{nov}                       /*11월*/
+            , #{dcm}                       /*12월*/
+            , #{wholMm}                    /*전체_월*/
+            , #{issuYn}                    /*발급_여부*/
+            , #{issuNocs}                  /*발급_건수*/
+            , #{issuSum}                   /*발급_합계*/
+            , #{prgrmDstnctn}              /*프로그램_우수성*/
+            , #{operMng}                   /*운영_관리*/
+            , #{evl}                       /*평가*/
+            , #{qlfcPostng}                /*자격_배치*/
+            , #{sftyMng}                   /*안전_관리*/
+            , #{filegrpid}                 /*파일그룹아이디*/
+            , #{nextYrPrgrm}               /*다음_연도_프로그램*/
+            , #{nextYrLdr}                 /*다음_연도_지도자*/
+            , #{nextYrEduEnv}              /*다음_연도_교육_환경*/
+            , NOW()                        /*수정_일시*/
+            , #{user.userid}               /*수정자아이디*/
+            , NOW()                        /*등록_일시*/
+            , #{user.userid}              /*등록자아이디*/
+        )
+    </insert>
+
     <!-- 운영결과 수정-->
     <update id="updateOperRslt" parameterType="DsgnPrgrmVo" >
     /* DsgnPrgrmDao.updateOperRslt*/
@@ -977,19 +1124,50 @@
             TB_ASS_OPER_RSLT A
         LEFT OUTER JOIN
             TB_ASS_OPER_RSLT_PRFMNC B ON A.CYCLID = B.CYCLID
-        WHERE 1=1
         WHERE A.CYCLID = #{cyclid}
         ORDER BY B.PRFMNCID
     </select>
-
-
-
     <!-- 운영결과 운영성과 조회 -->
 
+    <!-- 운영실적 등록-->
+    <insert id="insertOperPrfmnc" parameterType="OperPrfmncVo" >
+        /* DsgnPrgrmDao.insertOperPrfmnc*/
+        INSERT INTO TB_ASS_OPER_RSLT_PRFMNC
+        (
+              CYCLID
+            , OPRTN_DE
+            , TRGT
+            , HR
+            , NOPE
+            , CNT
+            , WHOL_HR
+            , WHOL_NOPE
+            , LDR_POSTNG_RT
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+            ) VALUES (
+              #{cyclid     }
+            , #{oprtnDe    }
+            , #{trgt       }
+            , #{hr         }
+            , #{nope       }
+            , #{cnt        }
+            , #{wholHr     }
+            , #{wholNope   }
+            , #{ldrPostngRt}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
 
-
-
-
-
+    <delete id="deleteOperPrfmnc" parameterType="DsgnPrgrmVo" >
+        /* DsgnPrgrmDao.insertOperPrfmnc*/
+        DELETE FROM TB_ASS_OPER_RSLT_PRFMNC
+        WHERE CYCLID = #{cyclid}
+    </delete>
 
 </mapper>

@@ -30,7 +30,7 @@
             , IFNULL(TCC2.CD_NM, '제출전') AS EXCCLC_STTS_NM
             , (SELECT MAX(SPLMNTID) FROM TB_SPB_EXCCLC_SPLMNT TSDAS WHERE TSA.APLYID = TSDAS.APLYID) AS SPLMNTID
             , CASE WHEN TSA.EXCCLC_STTS_CD IS NULL AND NOW() <![CDATA[>]]> TSP.EXCCLC_REPORT_BGNG_DT AND NOW() <![CDATA[<]]> TSP.EXCCLC_REPORT_END_DT THEN 'C'
-                WHEN TSA.EXCCLC_STTS_CD IN ('203101','203103','203104') AND NOW() <![CDATA[>]]> TSP.EXCCLC_REPORT_BGNG_DT AND NOW() <![CDATA[<]]> TSP.EXCCLC_REPORT_END_DT THEN 'U'
+                WHEN TSA.EXCCLC_STTS_CD != '203106' AND NOW() <![CDATA[>]]> TSP.EXCCLC_REPORT_BGNG_DT AND NOW() <![CDATA[<]]> TSP.EXCCLC_REPORT_END_DT THEN 'U'
                 WHEN TSA.EXCCLC_STTS_CD = '203106' OR NOW() <![CDATA[>]]> TSP.EXCCLC_REPORT_END_DT THEN 'R'
                 ELSE '-' END AS CRUD_BTN
             , DATE_FORMAT(TSP.EXCCLC_REPORT_BGNG_DT, '%Y-%m-%d %H:%i') AS EXCCLC_REPORT_BGNG_DT
@@ -76,6 +76,9 @@
         <if test="searchPrgrmNm != null and searchPrgrmNm != ''">
             AND PRGRM_NM LIKE CONCAT('%',#{searchPrgrmNm},'%')
         </if>
+        <if test="searchSttsCd != null and searchSttsCd != ''">
+            AND IF(TSA.EXCCLC_STTS_CD IS NULL, '203101', TSA.EXCCLC_STTS_CD) = #{searchSttsCd}
+        </if>
         <include refid="PaginationMapper.footer"/>
     </select>
     
@@ -113,6 +116,9 @@
             , TSED.RGTRID
             , TSED.APLYID
             , CASE WHEN SE_CD = '210101' THEN 'fc-blue' ELSE 'fc-red' END AS COLOR
+            , F.FILEID
+            , F.FILE_IDNTFC_KEY 
+            , F.ORGINL_FILE_NM 
         FROM TB_SPB_PCNTST TSP 
             INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID 
             INNER JOIN TB_SPB_EXCUT_DSCTN TSED ON TSA.APLYID = TSED.APLYID
@@ -120,6 +126,7 @@
             LEFT OUTER JOIN TB_CMM_CD TCC2 ON TSED.UTZTN_SECD = TCC2.CD
             LEFT OUTER JOIN TB_CMM_CD TCC3 ON TSED.DPST_SECD = TCC3.CD
             LEFT OUTER JOIN TB_CMM_CD TCC4 ON TSED.PRUF_KND_CD = TCC4.CD
+            LEFT OUTER JOIN TB_CMM_FILE F ON F.FILEGRPID = TSED.ATCH_FILEGRPID 
         WHERE TSED.APLYID = #{aplyid}
         <if test="dsctnid != null and dsctnid != ''">
             AND DSCTNID = #{dsctnid}
@@ -223,60 +230,65 @@
     <!-- 집행내역 개요서 -->
     <select id="selectClclnDsctnOutlList" parameterType="ClclnVo" resultType="front.ClclnDsctnVo">
         /* ClclnDao.selectClclnDsctnOutlList */
-        SELECT 
-            GROUP_NUM
-            , ROWSPAN
+        WITH T1 AS (
+            SELECT DISTINCT 
+                TCC.CD AS ARTCL_UPPER_CD
+                , B.CD AS ARTCL_CD
+                , TCC.CD_NM AS ARTCL_UPPER_NM
+                , B.CD_NM AS ARTCL_NM
+                , (SELECT AMT FROM TB_SPB_DELVRY_APLY_COMPUT TSDAC 
+                    INNER JOIN TB_SPB_DELVRY_APLY TSDA ON TSDA.DELVRY_APLYID = TSDAC.DELVRY_APLYID AND B.CD = TSDAC.EXPITM_CD
+                    WHERE TSDA.APLYID = #{aplyid}
+                ) AS AMT
+                , IFNULL(SUM(T.AMT) OVER (PARTITION BY B.CD), 0) AS MINUS_SUM 
+                , COUNT(T.ARTCL_CD) OVER (PARTITION BY B.CD) AS CNT
+                , TCC.ORD AS ORD 
+                , B.ORD AS SCND_ORD
+            FROM TB_CMM_CD B
+                INNER JOIN TB_CMM_CD TCC ON TCC.CD = B.UPPR_CD
+                LEFT OUTER JOIN TB_SPB_EXCUT_DSCTN T ON T.ARTCL_CD = B.CD AND T.SE_CD = '210102' AND T.APLYID = #{aplyid}
+            WHERE 1 = 1 
+            AND B.CDGRPID = '218'
+            <choose>
+                <when test="fldCd == '173106'"><!-- 그린캠퍼스 -->
+            AND B.UPPR_CD = '218301'
+                </when>
+                <when test="fldCd == '173105'"><!-- 교사학습공동체 -->
+            AND B.UPPR_CD = '218401'
+                </when>
+                <when test="fldCd == '173104'"><!-- 환경동아리 -->
+            AND B.UPPR_CD = '218201'
+                </when>
+                <when test="fldCd == '173107'"><!-- 환경교육 우수학교 -->
+            AND B.UPPR_CD = '218501'
+                </when>
+                <otherwise><!-- 생애주기, 종교인, 학습공동체 -->
+            AND B.UPPR_CD IN ('218101','218121','218141')
+                </otherwise>
+            </choose>
+        )
+        SELECT ROW_NUMBER() OVER (PARTITION BY ARTCL_UPPER_NM ORDER BY ARTCL_UPPER_NM IS NULL, ORD, ARTCL_NM IS NULL, SCND_ORD) AS GROUP_NUM
+            , COUNT(ARTCL_NM) OVER (PARTITION BY ARTCL_UPPER_NM) AS ROWSPAN
             , ARTCL_UPPER_NM
             , ARTCL_NM
             , FORMAT(AMT, 0) AS AMT
             , FORMAT(MINUS_SUM, 0) AS MINUS_SUM
             , CNT
             , FORMAT(AMT - MINUS_SUM, 0) AS NOW_AMT
-            , CLCLN_RATE
+            , ROUND(IFNULL(MINUS_SUM, 0) / AMT * 100, 1) AS CLCLN_RATE
         FROM (
-            SELECT ROW_NUMBER() OVER (PARTITION BY ARTCL_UPPER_NM ORDER BY ARTCL_UPPER_NM IS NULL, ARTCL_NM IS NULL) AS GROUP_NUM
-                , COUNT(ARTCL_NM) OVER (PARTITION BY ARTCL_UPPER_NM) AS ROWSPAN
-                , T.*
-                , ROUND(IFNULL(MINUS_SUM, 0) / AMT * 100, 1) AS CLCLN_RATE
-            FROM (
-                SELECT  
-                    TCC.CD_NM AS ARTCL_UPPER_NM
-                    , B.CD_NM AS ARTCL_NM
-                    , SUM(TSDAC.AMT) AS AMT 
-                    , SUM(T.AMT) AS MINUS_SUM 
-                    , COUNT(T.ARTCL_CD) AS CNT
-                    , TCC.ORD AS ORD 
-                    , B.ORD AS SCND_ORD
-                FROM TB_CMM_CD B
-                    INNER JOIN TB_SPB_EXCUT_DSCTN T ON T.ARTCL_CD = B.CD
-                    INNER JOIN TB_SPB_DELVRY_APLY TSDA ON T.APLYID = TSDA.APLYID
-                    INNER JOIN TB_SPB_DELVRY_APLY_COMPUT TSDAC ON TSDA.DELVRY_APLYID = TSDAC.DELVRY_APLYID AND T.ARTCL_CD = TSDAC.EXPITM_CD 
-                    INNER JOIN TB_CMM_CD TCC ON TCC.CD = B.UPPR_CD 
-                WHERE 1 = 1 
-                AND B.CDGRPID = '218'
-                <choose>
-                    <when test="fldCd == '173106'"><!-- 그린캠퍼스 -->
-                AND B.UPPR_CD = '218301'
-                    </when>
-                    <when test="fldCd == '173105'"><!-- 교사학습공동체 -->
-                AND B.UPPR_CD = '218401'
-                    </when>
-                    <when test="fldCd == '173104'"><!-- 환경동아리 -->
-                AND B.UPPR_CD = '218201'
-                    </when>
-                    <when test="fldCd == '173107'"><!-- 환경교육 우수학교 -->
-                AND B.UPPR_CD = '218501'
-                    </when>
-                    <otherwise><!-- 생애주기, 종교인, 학습공동체 -->
-                AND B.UPPR_CD IN ('218101','218121','218141')
-                    </otherwise>
-                </choose>
-                AND T.APLYID = #{aplyid}
-                AND T.SE_CD = '210102'
-                GROUP BY TCC.CD_NM, B.CD_NM WITH ROLLUP
-            ) T
-            ORDER BY ARTCL_UPPER_NM IS NULL, ORD, ARTCL_NM IS NULL, SCND_ORD
+            SELECT 
+                ARTCL_UPPER_NM
+                , ARTCL_NM
+                , SUM(AMT) AS AMT
+                , SUM(MINUS_SUM) AS MINUS_SUM
+                , SUM(CNT) AS CNT
+                , ORD
+                , SCND_ORD
+            FROM T1
+            GROUP BY ARTCL_UPPER_NM, ARTCL_NM WITH ROLLUP
         ) T
+        ORDER BY ARTCL_UPPER_NM IS NULL, ORD, ARTCL_NM IS NULL, SCND_ORD
     </select>
     
     <!-- 잔액/이자관리 탭 조회 -->
@@ -347,15 +359,49 @@
         ORDER BY SE_CD DESC, GROUP_NUM
     </select>
 
-    <!-- 정산내역관리 보완요청 수정 -->
-    <update id="updateExcclcSplmnt" parameterType="SupplementVo">
+    <!--  보완요청 상세 조회-->
+    <select id="selectSplmntInfo" parameterType="front.SupplementVo" resultType="front.SupplementVo">
+        /* ClclnDao.selectSplmntInfo */
+        SELECT
+            SPLMNTID
+            , APLYID 
+            , DMND_CN
+            , ANS_STTS_CD
+            , ANS_CN
+        FROM
+            TB_SPB_EXCCLC_SPLMNT
+        WHERE
+            SPLMNTID = #{splmntid}
+    </select>
+    
+    <!-- 보완요청 업데이트 -->
+    <update id="updateSplmnt" parameterType="front.SupplementVo">
         /* ClclnDao.updateSplmnt */
         UPDATE TB_SPB_EXCCLC_SPLMNT SET
             ANS_CN = #{ansCn}
-            , ANS_STTS_CD = #{ansSttsCd}
+            , ANS_STTS_CD = '201102'
+            , ANSWRRID = #{user.userid}
             , ANS_DT = NOW()
             , MDFCN_DT = NOW()
             , MDFRID = #{user.userid}
-        WHERE SPLMNTID = #{splmntid}
-    </update>            
+        WHERE 
+            SPLMNTID = #{splmntid}
+    </update>
+    
+    <!-- 정산보고서 제출 / 보완요청 답변등록 -->
+    <update id="updateStts" parameterType="front.SupplementVo">
+        /* ClclnDao.updateStts */
+        UPDATE TB_SPB_APLY SET
+            EXCCLC_STTS_CD = #{ansSttsCd}
+            <if test="bnkbFileid != null and bnkbFileid != ''">
+            , BNKB_FILEID = #{bnkbFileid}
+            </if>
+            <if test="excclcAtchFilegrpid != null and excclcAtchFilegrpid != ''">
+            , EXCCLC_ATCH_FILEGRPID = #{excclcAtchFilegrpid}
+            </if>
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE 
+            APLYID = #{aplyid}
+    </update>           
 </mapper>

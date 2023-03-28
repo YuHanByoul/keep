@@ -168,7 +168,7 @@
     });
     
     function selectPackList() {
-        if (displayWorkProgress(true)){
+        if (displayWorkProgress()){
             $.ajax({
                 url : "/mng/eduResrce/selectPackageindvdList.do", 
                 cache : false,
@@ -199,39 +199,43 @@
         var dataArr = data.split("/");
         choosePackageindvd(dataArr[0],dataArr[1]);
     }
-
+    
     function choosePackageindvd(packageindvdid,indvdno){
 
     	var targetVal = $("#packageindvd"+params.ordr).val();
         if( targetVal!= null && targetVal!="" && targetVal > 0) {return;}
-
+        
     	var selectedVal1 = $("#packageindvd1").val();
     	var selectedVal2 = $("#packageindvd2").val();
-
+    	
     	if(selectedVal1 == packageindvdid || selectedVal2 == packageindvdid){
             alert("이미 선택 된 꾸러미 개체입니다.");
             return;	
         }
         
-        if (displayWorkProgress()){
+        if(displayWorkProgress()){
             $.ajax({
-                url : "/mng/eduResrce/selectPackageindvdList.do", 
+                url : "/mng/eduResrce/checkPackageindvdValidation.do", 
                 cache : false,
                 dataType : 'json',
-                data : {
-                       packageid : lendAplyInfo.packageid
-                       ,packageindvdid :packageindvdid
-                },
+                data : { packageid       : lendAplyInfo.packageid
+                         ,rndid          : lendAplyInfo.rndid
+                         ,packageindvdid : packageindvdid 
+                       },
                 success : function(data) {
-                    if(data.totalCount == 0) {
+                    
+                    if(data.isOtherPackageYn == 'Y') {
                         alert("신청 꾸러미의 개체가 아닙니다.");
                         startQR();
+                    }if(data.duplicationPackInSameRndYn == 'Y') {
+                        alert("동일 대여모집 차시에 이미 승인된 꾸러미 개체입니다.");
+                        startQR();
                     }else{
-                        var packageindvdStr = '<span class="label label-inverse" id="packOrd'
+                        var packageindvdStr  = '<span class="label label-inverse" id="packOrd'
                             packageindvdStr += params.ordr+'">'+indvdno
-                            packageindvdStr +='<a href="javascript:removePackageIndvd('+params.ordr+')" class="text-white">X</a></span>';
-	                        $("#packageindvd"+params.ordr).val(packageindvdid);
-	                        $("#packageSpan"+params.ordr).append(packageindvdStr);
+                            packageindvdStr += '<a href="javascript:removePackageIndvd('+params.ordr+')" class="text-white">X</a></span>';
+	                    $("#packageindvd"+params.ordr).val(packageindvdid);
+	                    $("#packageSpan"+params.ordr).append(packageindvdStr);
                         closeQRModal();
                     }
                     closeWorkProgress();
@@ -239,8 +243,8 @@
             });
         }
     }
-
-    
 </script>
+
+
 
 

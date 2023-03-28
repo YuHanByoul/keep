@@ -336,7 +336,7 @@
         <include refid="searchCondition2"/>
     </select>
 
-    <!-- 중간보고상태코드 수정 -->
+    <!-- 보고 제출 처리 상태코드 수정 -->
     <update id="updateRptSttsCd" >
         /* BizRptDao.updateRptSttsCd */
         UPDATE TB_SPB_REPORT SET
@@ -347,6 +347,16 @@
         <foreach item="item" collection="reportids" open="(" close=")" separator=",">
             #{item}
         </foreach>
+    </update>
+
+    <!-- 보고상태코드 수정 -->
+    <update id="updateReportSttsCd" >
+        /* BizRptDao.updateReportSttsCd*/
+        UPDATE TB_SPB_REPORT SET
+            REPORT_STTS_CD = #{reportSttsCd}    /*제출상태코드 : 완료*/
+          , MDFCN_DT = NOW()
+          , MDFRID   = #{user.userid}
+        WHERE REPORTID = #{reportid}
     </update>
 
     <!-- 중간보고제출 상세 조회 -->
@@ -361,8 +371,12 @@
           , B.INST_NM           /*기관명*/
           , B.PRGRM_NM
           , CONCAT(USR.NM,"(",USR.ACNT ,")")    AS USER_NM_ACNT /*신청자 명(ID)*/
+          /* TB_ASS_REPORT 테이블로 변경
           , D.EDU_TRGT
           , D.ESSNTL_SBJCT_NM
+          */
+          , A.TRGT
+          , A.SBJCT
           , A.REG_DT
           , A.REPORT_STTS_CD    /*제출(보고)상태*/
           , A.ETC_CN

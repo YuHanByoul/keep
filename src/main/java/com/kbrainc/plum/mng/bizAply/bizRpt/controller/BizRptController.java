@@ -530,7 +530,7 @@ public class BizRptController {
 	 */
 	@RequestMapping(value = "/mng/bizAply/bizRpt/rsltRptMngDetailForm.html")
 	public String rsltRptMngDetailForm(BizRptVo bizRptVo, Model model) throws Exception {
-//		model.addAttribute("bizMngInfo", bizRptService.selectRsltRptMng(bizRptVo));
+		model.addAttribute("bizMngInfo", bizRptService.selectRsltRptMng(bizRptVo));
 		return "mng/bizAply/bizRpt/rsltRptMngDetail";
 	}
 

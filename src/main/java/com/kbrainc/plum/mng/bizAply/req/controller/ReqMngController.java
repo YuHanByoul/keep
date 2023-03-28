@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
+import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.mng.bizAply.req.model.BudgetVo;
 import com.kbrainc.plum.mng.bizAply.req.model.CapabilityResultVo;
 import com.kbrainc.plum.mng.bizAply.req.model.CapabilityVo;
@@ -74,6 +75,8 @@ public class ReqMngController {
     @Autowired
     private FileService fileService;
     
+    @Autowired
+    private CommonService commonService;
     
     /**
     * 신청관리 화면으로 이동. 
@@ -289,6 +292,7 @@ public class ReqMngController {
             model.addAttribute("fldCd", reqUserVo.getFldCd());
         }
         
+        model.addAttribute("sidoList", commonService.selectAlowedCtprvnList());
         model.addAttribute("reqUserVo", detailReqUserVo);
         
         return returnPage;

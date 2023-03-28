@@ -14,13 +14,13 @@
             <div class="layer-dimmed" title="레이어팝업 닫기"></div>
             <div class="layer-wrap">
                 <div class="layer-header">
-                    <strong class="tit">[[${popSe} != 'mng' ? '이의신청' : '이의신청 수락(거절) 사유']]</strong>
+                    <strong class="tit">[[${popSe} != 'read' ? '이의신청' : '이의신청 수락(거절) 사유']]</strong>
                     <button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
                 </div>
                 <div class="layer-content">
                     <div class="table-row table-row-mo">
                         <table>
-                            <caption>[[${popSe == 'reg' ? '이의신청' : '이의신청 수락(거절) 사유 - 프로그램 선택, 제목, 이의신청, 답변'}]]</caption>
+                            <caption>[[${popSe != 'read' ? '이의신청' : '이의신청 수락(거절) 사유 - 프로그램 선택, 제목, 이의신청, 답변'}]]</caption>
                             <colgroup>
                                 <col style="width:140px;">
                                 <col>
@@ -39,21 +39,20 @@
                                 <tr>
                                     <th scope="row">제목</th>
                                     <td>
-                                        <input type="text" title="제목" placeholder="제목을 입력해주세요." id="ttl" name="ttl" th:value="${popInfo.ttl==null?'':popInfo.ttl}" >
+                                        <input type="text" title="제목" placeholder="제목을 입력해주세요." id="ttl" name="ttl" th:value="${popInfo.ttl==null?'':popInfo.ttl}"  th:readonly="${popSe} == read ? 'readonly' ">
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row">이의신청</th>
                                     <td>
-                                        <textarea title="이의신청" id="cn" name="cn" >[[${popInfo.cn==null?'':popInfo.cn}]]</textarea>
+                                        <textarea title="이의신청" id="cn" name="cn" th:readonly="${popSe} == read ? 'readonly' ">[[${popInfo.cn==null?'':popInfo.cn}]]</textarea>
                                         <div class="desc ar size"><span>0</span> / 300자</div>
                                     </td>
                                 </tr>
-
-                                <tr th:attr="hidden=${'reg' !=popSe? 'hidden': ''}">
+                                <tr id="ansTr">
                                     <th scope="row">답변</th>
                                     <td>
-                                        <textarea title="답변" id="ans" name="ans" >[[${popInfo.ans==null?'':popInfo.ans}]]</textarea>
+                                        <textarea title="답변" id="ans" name="ans" readonly>[[${popInfo.ans==null?'':popInfo.ans}]]</textarea>
                                     </td>
                                 </tr>
                             </tbody>
@@ -104,11 +103,20 @@
     		if("reg"== objcAplyPop.se){
                 $("#regBtn").show();
                 $("#delBtn").hide();
+                $("#ansTr").hide();
 
             }
+
     		if("mod"== objcAplyPop.se){
                 $("#regBtn").show();
                 $("#delBtn").show();
+                $("#ansTr").hide();
+            }
+
+    		if("read"== objcAplyPop.se){
+                $("#delBtn").show();
+                $("#regBtn").hide();
+                $("#ansTr").show();
             }
     	},
     	objcReg(url){
@@ -154,6 +162,14 @@
 
     $(function () {
     	objcAplyPop.init();
+    	$("textArea").keyup(function (e) {
+            var inTxt = $(this).val();
+            if($("#"+this.id).next().prop("class")=="desc ar size"){
+                $("#"+this.id).next().children().prop("innerHTML",inTxt.length);
+            }
+        });
+
+        $("textArea").trigger("keyup");
     });
 
     </script>

@@ -33,6 +33,7 @@ public class ClclnVo extends ParentRequestVo {
     private String searchFldCd;
     private String searchPcntstNm;
     private String searchPrgrmNm;
+    private String searchSttsCd;
     
     /** 집행내역 검색 조건 */
     private String searchUtztnSecd;
