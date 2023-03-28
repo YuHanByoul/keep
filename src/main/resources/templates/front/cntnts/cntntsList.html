@@ -46,10 +46,10 @@
 					<div class="form-body">
 						<div class="form-input">
 	                        <select name="searchMainTypeCd" id="searchTypeCd_1" title="콘텐츠 유형" onchange="setSearchSelectBox.setNextDepth(164,this.value,'searchTypeCd_2')">
-	                            <option value="" selected>- 전체 -</option>
+	                            <option value="">- 전체 -</option>
 	                        </select>
 	                        <select name="searchMdleTypeCd" id="searchTypeCd_2" title="콘텐츠 유형 상세" style="flex:auto">
-	                            <option value="" selected>- 전체 -</option>
+	                            <option value="">- 전체 -</option>
 	                        </select>									
 						</div>
 					</div>
@@ -101,32 +101,41 @@
 			</div>
 			<div id="tab-list1" class="tabpanel" role="tabpanel" aria-labelledby="list-tab1">
 
-				<div class="table-col table-layout-auto table-col-mo">
-					<table>
-						<caption>프로그램 - 번호, 주제, 제목, 콘텐츠 유형,  대상, 등록일, 조회수</caption>
-						<colgroup>
-							<col style="width:6%;">
-							<col style="width:18%;">
-							<col>
-							<col style="width:18%;">
-							<col style="width:15%;">
-							<col style="width:10%;">
-							<col style="width:6%;">
-						</colgroup>
-						<thead>
-							<tr>
-								<th scope="col">번호</th>
-								<th scope="col">주제</th>
-								<th scope="col">제목</th>
-								<th scope="col">콘텐츠 유형</th>
-								<th scope="col">대상</th>
-								<th scope="col">등록일</th>
-								<th scope="col">조회수</th>
-							</tr>
-						</thead>
-						<tbody id="list-area">
-						</tbody>
-					</table>
+				<div class="pc-only">
+					<div class="table-col table-layout-auto">
+						<table>
+							<caption>프로그램 - 번호, 주제, 제목, 콘텐츠 유형,  대상, 등록일, 조회수</caption>
+							<colgroup>
+								<col style="width:6%;">
+								<col style="width:18%;">
+								<col>
+								<col style="width:18%;">
+								<col style="width:15%;">
+								<col style="width:10%;">
+								<col style="width:6%;">
+							</colgroup>
+							<thead>
+								<tr>
+									<th scope="col">번호</th>
+									<th scope="col">주제</th>
+									<th scope="col">제목</th>
+									<th scope="col">콘텐츠 유형</th>
+									<th scope="col">대상</th>
+									<th scope="col">등록일</th>
+									<th scope="col">조회수</th>
+								</tr>
+							</thead>
+							<tbody id="pc-list-area">
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				<div class="mo-only">
+					<div class="table-list">
+						<ul id="mo-list-area">
+						</ul>
+					</div>
 				</div>
 
 				<div id="pagination2" aria-label="pagination">
@@ -137,7 +146,8 @@
 	
 		<script th:inline="javascript">	
 		var mainEduSbjctCd = /*[[${mainEduSbjctCd}]]*/ null;
-		var eduSbjctCd = /*[[${eduSbjctCd}]]*/ null;
+		var eduSbjctCd = /*[[${eduSbjctCd}]]*/ null;	
+		
 		var getCodeListUrl = "/mng/customAttr/grpCodeList.do";
 		
 		var setSearchSelectBox = {
@@ -167,8 +177,8 @@
 			   	var nextTarget = cntArr[0]+"_"+nextCnt;
 			   	
 			    var html ="<select id='"+targetId+"' onchange=setSearchSelectBox.setNextDepth('"+grpcd+"',this.value,'"+nextTarget+"')>";
-			        html +="    <option value=''>- 전체 -</option>";
-		    	   
+			        html +=`<option value="all">- 전체 -</option>`;
+			        
 		  		for(var i=0 ; i < list.length;i++){
 		  			if(list[i].cd==selected){
 		   				html +="    <option value="+list[i].cd+" selected>"+ list[i].cdNm+ "</option>";
@@ -190,10 +200,11 @@
 			}
 		}
 		
-    	setSearchSelectBox.fn_getNextDepthList(155 , 0, 'searchEduSbjctCd_1', mainEduSbjctCd);
-		setSearchSelectBox.fn_getNextDepthList(155, mainEduSbjctCd,'searchEduSbjctCd_2', eduSbjctCd);
+		console.log(mainEduSbjctCd, eduSbjctCd)
+		setSearchSelectBox.fn_getNextDepthList(155 , 0, 'searchEduSbjctCd_1', mainEduSbjctCd);
+		setSearchSelectBox.setNextDepth(155, 155102,'searchEduSbjctCd_2', 155102101);
 		
-		setSearchSelectBox.fn_getNextDepthList(164 , 0, 'searchTypeCd_1', "");
+		setSearchSelectBox.fn_getNextDepthList(164 , 0, 'searchTypeCd_1', " ");
 		
         var cntnts = {
                 listUrl: '/front/cntnts/selectCntntsList.do',
@@ -207,7 +218,7 @@
                     this.selectCntntsList();
                 },
 
-                moveToDetail() {
+                moveToDetail(cntntsid) {
                     if (this.userid == null) {
                         alert('로그인 후 이용하실 수 있습니다.');
                         return;
@@ -233,7 +244,7 @@
                 	
                     $('#pageNumber').val('1');
                 	$('#card-table').removeClass();
-                    $('#card-table').addClass('card-list card-list-n3');
+                    $('#card-table').addClass('card-list card-list-n4');
                     this.selectCntntsList();
                 },
 
@@ -248,7 +259,7 @@
     				$("#startDt").val('');
     				$("#endDt").val('');
                 	$('#card-table').removeClass();
-                    $('#card-table').addClass('card-list card-list-n3');
+                    $('#card-table').addClass('card-list card-list-n4');
     				this.selectCntntsList();
                 },
 
@@ -269,33 +280,36 @@
                     }
                 },
 
-                moveToDetail(cntntsid) {
-                    var f = document.forms.searchForm ;
-                    f.cntntsid.value=cntntsid;
-                    f.action = this.detailUrl;
-                    f.submit();
-                },
-
                 makeListHtml(data) {
                     var cardListHtml = "";
-                    var listHtml = "";
+                    var pc_listHtml = "";
+                    var mo_listHtml = "";
+                    
                     if (data.list == null || data.list.length <= 0) {
-                    	listHtml += `
+                    	pc_listHtml += `
                         <tr>
                             <td class="nodata" colSpan="7">
-                                <p><span class="icon icon-notice bg-black9"></span>등록된 내용이 없습니다</p>
+                                <p><span class="icon icon-notice bg-black9"></span>등록된 콘텐츠가 없습니다</p>
                             </td>
                         </tr>
                         `;
                         
+                    	mo_listHtml += `
+						<li class="block">
+							<div class="nodata">
+								<p><span class="icon icon-notice bg-black9"></span>등록된 콘텐츠가 없습니다.</p>
+							</div>
+						</li>
+                        `;                        
+                        
                         $('#card-table').removeClass();
                         $('#card-table').addClass('nodata');
                         cardListHtml += `
-            				<p><span class="icon icon-notice bg-black9"></span>등록된 내용이 없습니다</p>
+            				<p><span class="icon icon-notice bg-black9"></span>등록된 콘텐츠가 없습니다</p>
                         `;
                     } else {
                         data.list.forEach(function(item) {
-                        	listHtml += `
+                        	pc_listHtml += `
                             <tr>
                             <td>${item.rowNumber}</td>
                             <td>${item.eduSbjctCd}</td>
@@ -306,6 +320,43 @@
    							<td>${item.hits}</td>
    							<tr>
    							`;
+   							
+                        	mo_listHtml += `
+    						<li class="block">
+								<div class="tbody">
+									<dl>
+										<div class="list">
+											<dt>번호</dt>
+											<dd>${item.rowNumber}</dd>
+										</div>
+										<div class="list">
+											<dt>주제</dt>
+											<dd>${item.eduSbjctCd}</dd>
+										</div>
+										<div class="list">
+											<dt>제목</dt>
+											<dd><a href="javascript:void(0)" onclick="cntnts.moveToDetail(${item.cntntsid})" class="link ellipsis">${item.ttl}</a></dd>
+										</div>
+										<div class="list">
+											<dt>콘텐츠 유형</dt>
+											<dd>${item.typeCd}</dd>
+										</div>
+										<div class="list">
+											<dt>대상</dt>
+											<dd>${item.eduTrgtCd}</dd>
+										</div>
+										<div class="list">
+											<dt>등록일</dt>
+											<dd>${item.regDt}</dd>
+										</div>
+										<div class="list">
+											<dt>조회수</dt>
+											<dd>${item.hits}</dd>
+										</div>
+									</dl>
+								</div>
+							</li>
+   							`;   							
    							
    							if(`${item.mainTypeCd}` == '교육영상'){
    	                            cardListHtml += `
@@ -343,7 +394,8 @@
                         });
                     }
                     $('#cardList-area').html(cardListHtml);	
-                    $('#list-area').html(listHtml);
+                    $('#pc-list-area').html(pc_listHtml);
+                    $('#mo-list-area').html(mo_listHtml);
                     $("#pagination1").html(data.pagination);
                     $("#pagination2").html(data.pagination);
                     $("#totalCount").html(data.totalCount);

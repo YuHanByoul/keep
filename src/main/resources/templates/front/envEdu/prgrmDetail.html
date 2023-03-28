@@ -8,7 +8,7 @@
 	
 				<!-- content -->
 				<div class="product-wrap">
-					<div class="thumb-swiper">
+					<div class="thumb-swiper" th:if="!${eduPhotoFileList}">
 						<div class="swiper gallery-thumb">
 							<div class="swiper-wrapper">
 								<th:block th:each="item : ${eduPhotoFileList}">
@@ -160,68 +160,135 @@
 					<h3 class="sub-title">해당 기관 지정 프로그램 목록</h3>
 				</div>
 
-				<div class="table-col table-layout-auto table-col-mo">
-					<table>
-						<caption>프로그램 - 지정번호, 프로그램명, 교육주제, 숙박유형, 교육대상, 참가비(1인)</caption>
-						<colgroup>
-							<col style="width:11%;">
-							<col>
-							<col style="width:19%;">
-							<col style="width:13%;">
-							<col style="width:17%;">
-							<col style="width:12%;">
-						</colgroup>
-						<thead>
-							<tr>
-								<th scope="col">지정번호</th>
-								<th scope="col">프로그램명</th>
-								<th scope="col">교육주제</th>
-								<th scope="col">숙박유형</th>
-								<th scope="col">교육대상</th>
-								<th scope="col">참가비(1인)</th>
-							</tr>
-						</thead>
-						<tbody>
+				<div class="pc-only">
+					<div class="table-col table-layout-auto">
+						<table>
+							<caption>프로그램 - 지정번호, 프로그램명, 교육주제, 숙박유형, 교육대상, 참가비(1인)</caption>
+							<colgroup>
+								<col style="width:11%;">
+								<col>
+								<col style="width:19%;">
+								<col style="width:13%;">
+								<col style="width:17%;">
+								<col style="width:12%;">
+							</colgroup>
+							<thead>
+								<tr>
+									<th scope="col">지정번호</th>
+									<th scope="col">프로그램명</th>
+									<th scope="col">교육주제</th>
+									<th scope="col">숙박유형</th>
+									<th scope="col">교육대상</th>
+									<th scope="col">참가비(1인)</th>
+								</tr>
+							</thead>
+							<tbody>
+								<th:block th:if="${prgrmList != 'null'}">
+									<th:block th:each="item : ${prgrmList}">
+									<tr>
+										<td><th:block th:text="${item.dsgnNo}"/></td>
+										<td class="al article"><a href="#" class="link ellipsis"><th:block th:text="${item.prgrmNm}" /></a></td>
+										<td><th:block th:text="${item.eduSbjctCdNm}" /></td>
+										<td>
+											<th:block th:if="${prgrm.styYn} == 'Y'">
+												숙박
+											</th:block>
+											<th:block th:unless="${prgrm.styYn} == 'Y'">
+											 	비숙박
+											</th:block>
+										</td>
+										<td><th:block th:text="${item.eduTarget}" /></td>
+										<td><th:block th:text="${item.etrfee}" /></td>
+									</tr>
+									</th:block>
+								</th:block>
+								<th:block th:unless="${prgrmList != 'null'}">
+									<tr>
+										<td class="nodata" colspan="6">
+											<p><span class="icon icon-notice bg-black9"></span>등록된 프로그램이 없습니다.</p>
+										</td>
+									</tr>
+								</th:block>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				
+				<div class="mo-only">
+					<div class="table-list">
+						<ul>
 							<th:block th:if="${prgrmList != 'null'}">
 								<th:block th:each="item : ${prgrmList}">
-								<tr>
-									<td><th:block th:text="${item.dsgnNo}" /></td>
-									<td class="al article"><a href="#" class="link ellipsis"><th:block th:text="${item.prgrmNm}" /></a></td>
-									<td><th:block th:text="${item.eduSbjctCdNm}" /></td>
-									<td>
-										<th:block th:if="${prgrm.styYn} == 'Y'">
-											숙박
-										</th:block>
-										<th:block th:unless="${prgrm.styYn} == 'Y'">
-										 	비숙박
-										</th:block>									
-									</td>
-									<td><th:block th:text="${item.eduTarget}" /></td>
-									<td><th:block th:text="${item.etrfee}" /></td>
-								</tr>
+									<li class="block">
+										<div class="tbody">
+											<dl>
+												<div class="list">
+													<dt>지정번호</dt>
+													<dd th:text="${item.dsgnNo}"></dd>
+												</div>
+												<div class="list">
+													<dt>프로그램명</dt>
+													<dd><a href="javascript:void(0)" th:onclick="moveToDetail([[${item.prgrmid}]])" class="link ellipsis"><th:block th:text="${item.prgrmNm}"/></a></dd>
+												</div>
+												<div class="list">
+													<dt>교육주제</dt>
+													<dd th:text="${item.eduSbjctCdNm}"></dd>
+												</div>
+												<div class="list">
+													<dt>숙박유형</dt>
+													<dd>
+														<th:block th:if="${prgrm.styYn} == 'Y'">
+															숙박
+														</th:block>
+														<th:block th:unless="${prgrm.styYn} == 'Y'">
+														 	비숙박
+														</th:block>														
+													</dd>
+												</div>
+												<div class="list">
+													<dt>교육대상</dt>
+													<dd th:text="${item.eduTarget}"></dd>
+												</div>
+												<div class="list">
+													<dt>참가비(1인)</dt>
+													<dd th:text="${item.etrfee}"></dd>
+												</div>
+											</dl>
+										</div>
+									</li>
 								</th:block>
 							</th:block>
 							<th:block th:unless="${prgrmList != 'null'}">
-								<tr>
-									<td class="nodata" colspan="6">
-										<p><span class="icon icon-notice bg-black9"></span>등록된 프로그램이 없습니다</p>
-									</td>
-								</tr>
+								<li class="block">
+									<div class="nodata">
+										<p><span class="icon icon-notice bg-black9"></span>등록된 프로그램이 없습니다.</p>
+									</div>
+								</li>
 							</th:block>
-						</tbody>
-					</table>
+						</ul>
+					</div>
 				</div>
 
 				<div class="btn-wrap">
 					<div class="center">
-						<button type="button" class="btn-medium btn-gray" onclick="moveToDetail();">목록</button>
+						<button type="button" class="btn-medium btn-gray" th:onclick="moveToList();">목록</button>
 					</div>
 				</div>
 				<!-- //content -->
 	
-		<script th:inline="javascript">			
-	        function moveToDetail() {
-	            location.href = '/front/envEdu/prgrmListForm.html';
+		<script th:inline="javascript">
+			var eduSbjctCd = /*[[${eduSbjctCd}]]*/ null;
+		
+	        function moveToList() {
+	        	if(eduSbjctCd != null){
+	        		location.href = '/front/envEdu/'+eduSbjctCd+'/prgrmListForm.html';
+	        	}else{
+	        		location.href = '/front/envEdu/prgrmListForm.html';
+	        	}
+	        }
+	        
+	        function moveToDetail(prgrmid) {
+	        	location.href = '/front/envEdu/prgrmDetailForm.html?prgrmid='+prgrmid;
 	        }
 	        
 			var swiper = new Swiper(".gallery-list", {

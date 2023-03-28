@@ -92,36 +92,45 @@
 			</div>
 
 			<div id="tab-list1" class="tabpanel" role="tabpanel" aria-labelledby="list-tab1">
-				<div class="table-col table-layout-auto table-col-mo">
-					<table>
-						<caption>우수환경도서 - 번호, 주제, 제목, 작가(글), 작가(그림), 출판사, 대상, 등록일, 조회수</caption>
-						<colgroup>
-							<col style="width:6%;">
-							<col style="width:11%;">
-							<col>
-							<col style="width:16%;">
-							<col style="width:10%;">
-							<col style="width:10%;">
-							<col style="width:10%;">
-							<col style="width:10%;">
-						</colgroup>
-						<thead>
-							<tr>
-								<th scope="col">번호</th>
-								<th scope="col">주제</th>
-								<th scope="col">제목</th>
-								<th scope="col">작가(글)</th>
-								<th scope="col">작가(그림)</th>
-								<th scope="col">출판사</th>
-								<th scope="col">대상</th>
-								<th scope="col">등록일</th>
-								<th scope="col">조회수</th>
-							</tr>
-						</thead>
-						<tbody id="list-area">
-						</tbody>
-					</table>
+				<div class="pc-only">
+					<div class="table-col table-layout-auto">
+						<table>
+							<caption>우수환경도서 - 번호, 주제, 제목, 작가(글), 작가(그림), 출판사, 대상, 등록일, 조회수</caption>
+							<colgroup>
+								<col style="width:6%;">
+								<col style="width:11%;">
+								<col>
+								<col style="width:16%;">
+								<col style="width:10%;">
+								<col style="width:10%;">
+								<col style="width:10%;">
+								<col style="width:10%;">
+							</colgroup>
+							<thead>
+								<tr>
+									<th scope="col">번호</th>
+									<th scope="col">주제</th>
+									<th scope="col">제목</th>
+									<th scope="col">작가(글)</th>
+									<th scope="col">작가(그림)</th>
+									<th scope="col">출판사</th>
+									<th scope="col">대상</th>
+									<th scope="col">등록일</th>
+									<th scope="col">조회수</th>
+								</tr>
+							</thead>
+							<tbody id="pc-list-area">
+							</tbody>
+						</table>
+					</div>
 				</div>
+				
+				<div class="mo-only">
+					<div class="table-list">
+						<ul id="mo-list-area">
+						</ul>
+					</div>
+				</div>				
 
 				<div id="pagination2" aria-label="pagination">
 				</div>
@@ -227,15 +236,25 @@
 
                 makeListHtml(data) {
                     var cardListHtml = "";
-                    var listHtml = "";
+                    var pc_listHtml = "";
+                    var mo_listHtml = "";
+                    
                     if (data.list == null || data.list.length <= 0) {
-                    	listHtml += `
+                    	pc_listHtml += `
                         <tr>
                             <td class="nodata" colSpan="9">
                                 <p><span class="icon icon-notice bg-black9"></span>등록된 내용이 없습니다</p>
                             </td>
                         </tr>
                         `;
+                        
+                    	mo_listHtml += `
+						<li class="block">
+							<div class="nodata">
+								<p><span class="icon icon-notice bg-black9"></span>등록된 프로그램이 없습니다.</p>
+							</div>
+						</li>
+                        `;                        
                         
                         $('#card-table').removeClass();
                         $('#card-table').addClass('nodata');
@@ -244,7 +263,7 @@
                         `;
                     } else {
                         data.list.forEach(function(item) {
-                        	listHtml += `
+                        	pc_listHtml += `
                             <tr>
                             <td>${item.rowNumber}</td>
                             <td>${item.eduSbjctCd}</td>
@@ -257,6 +276,51 @@
    							<td>${item.hits}</td>
    							<tr>
    							`;
+   							
+                        	mo_listHtml += `
+   							<li class="block">
+								<div class="tbody">
+									<dl>
+										<div class="list">
+											<dt>번호</dt>
+											<dd>${item.rowNumber}</dd>
+										</div>
+										<div class="list">
+											<dt>주제</dt>
+											<dd>${item.eduSbjctCd}</dd>
+										</div>
+										<div class="list">
+											<dt>제목</dt>
+											<dd><a href="javascript:void(0)" onclick="book.moveToDetail(${item.bookid})" class="link ellipsis">${item.ttl}</a></dd>
+										</div>
+										<div class="list">
+											<dt>작가(글)</dt>
+											<dd>${item.writr}</dd>
+										</div>
+										<div class="list">
+											<dt>작가(그림)</dt>
+											<dd>${item.plscmpn}</dd>
+										</div>
+										<div class="list">
+											<dt>출판사</dt>
+											<dd>${item.plscmpn}</dd>
+										</div>
+										<div class="list">
+											<dt>대상</dt>
+											<dd>${item.eduTrgtCd}</dd>
+										</div>
+										<div class="list">
+											<dt>등록일</dt>
+											<dd>${item.regDt}</dd>
+										</div>
+										<div class="list">
+											<dt>조회수</dt>
+											<dd>${item.hits}</dd>
+										</div>
+									</dl>
+								</div>
+							</li>
+   							`;   							
    							
                             cardListHtml += `
                              <li>
@@ -275,7 +339,8 @@
                         });
                     }
                     $('#cardList-area').html(cardListHtml);	
-                    $('#list-area').html(listHtml);
+                    $('#pc-list-area').html(pc_listHtml);
+                    $('#mo-list-area').html(mo_listHtml);
                     $("#pagination1").html(data.pagination);
                     $("#pagination2").html(data.pagination);
                     $("#totalCount").html(data.totalCount);

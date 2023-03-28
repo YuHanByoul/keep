@@ -1,12 +1,14 @@
 package com.kbrainc.plum.front.instInfo.controller;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
 import org.apache.ibatis.type.Alias;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +20,7 @@ import com.kbrainc.plum.front.instInfo.service.InstInfoService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.util.StringUtil;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 
 /**
@@ -177,6 +180,12 @@ public class InstInfoController {
         List<InstPicVo> result = null;
         instPicVo.setInstid(userVo.getInstid());
         result =  instInfoService.selectPicSearchList(instPicVo);
+        
+        for (int i = 0; i < result.size(); i++) {
+            result.get(i).setNm(StringUtil.maskingName(result.get(i).getNm()));
+            result.get(i).setAcnt(StringUtil.maskingAccount(result.get(i).getAcnt()));
+            result.get(i).setMoblphon(StringUtil.maskingMobilePhone(result.get(i).getMoblphon())); 
+        }
         
         if (result.size() > 0) {
             resultMap.put("totalCount", (result.get(0).getTotalCount()));
