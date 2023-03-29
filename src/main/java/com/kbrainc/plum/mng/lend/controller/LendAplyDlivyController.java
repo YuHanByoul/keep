@@ -155,7 +155,7 @@ public class LendAplyDlivyController {
         int retVal = 0;
 
         lendAplyVo.setUser(user);
-        //retVal = lendService.updateLendAplyDlivyProc(lendAplyVo);
+        retVal = lendService.updateLendAplyDlivyProc(lendAplyVo);
 
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -177,8 +177,9 @@ public class LendAplyDlivyController {
      * @return string
      */
     @RequestMapping(value = "/mng/lendAplyDlivy/packageIndvdSearchPopup.html")
-    public String packageIndvdSearchPopup(LendAplyVo lendAplyVo,Model model){
+    public String packageIndvdSearchPopup(LendAplyVo lendAplyVo,Model model, Integer idx){
         model.addAttribute("params", lendAplyVo);
+        model.addAttribute("idx", idx);
         return "mng/lendAplyDlivy/packageIndvdSearchPopup";
     }
 

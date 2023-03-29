@@ -162,7 +162,15 @@
                 <div class="mb-0 form-group">
                     <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>대표 이미지</strong></label>
                     <div class="col-12">
-                        <div id="rprsImgFileUploader"></div>
+                       <input type="file" id="jntpurchsRprsImgFile" name="jntpurchsRprsImgFile" class="form-control form-control-sm"/>
+                    </div>
+                    <div class="mt-2 row">
+                        <div class="col-auto">
+                        <input type="hidden" id="rprsImgFilegrpid" name="rprsImgFilegrpid" value="0"/>
+                        <input type="hidden" id="rprsImgFileid" name="rprsImgFileid" />
+                         <!-- 파일 명 및 삭제 버튼 영역-->
+                        <span id="rprsImgFileArea"></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -170,7 +178,15 @@
                 <div class="mb-0 form-group">
                     <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>상세 이미지</strong></label>
                     <div class="col-12">
-                        <div id="dtlImgFileUploader"></div>
+                       <input type="file" multiple id="jntpurchsDtlImgFile" name="jntpurchsDtlImgFile" class="form-control form-control-sm"/>
+                    </div>
+                    <div class="mt-2 row">
+                        <div class="col-auto">
+                        <input type="hidden" id="dtlImgFilegrpid" name="dtlImgFilegrpid" value="0"/>
+                        <input type="hidden" id="dtlImgImgFileid" name="dtlImgImgFileid" />
+                         <!-- 파일 명 및 삭제 버튼 영역-->
+                        <span id="dtlImgFileArea"></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -180,7 +196,15 @@
                 <div class="mb-0 form-group">
                     <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>지도안</strong></label>
                     <div class="col-12">
-                        <div id="mapFileUploader"></div>
+                       <input type="file" id="jntpurchsMapFile" name="jntpurchsMapFile" class="form-control form-control-sm"/>
+                    </div>
+                    <div class="mt-2 row">
+                        <div class="col-auto">
+                        <input type="hidden" id="mapFileid" name="mapFileid" value="0"/>
+                        <input type="hidden" id="mapFilegrpid" name="mapFilegrpid" />
+                         <!-- 파일 명 및 삭제 버튼 영역-->
+                        <span id="mapFileArea"></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -188,7 +212,15 @@
                 <div class="mb-0 form-group">
                     <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육사진</strong></label>
                     <div class="col-12">
-                        <div id="eduPhotoFileUploader"></div>
+                       <input type="file" multiple id="jntpurchsEduPhotoFile" name="jntpurchsEduPhotoFile" class="form-control form-control-sm"/>
+                    </div>
+                    <div class="mt-2 row">
+                        <div class="col-auto">
+                        <input type="hidden" id="eduPhotoFilegrpid" name="eduPhotoFilegrpid" value="0"/>
+                        <input type="hidden" id="eduPhotoFileid" name="eduPhotoFileid" />
+                         <!-- 파일 명 및 삭제 버튼 영역-->
+                        <span id="eduPhotoFileArea"></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -274,10 +306,6 @@
         
         , init: function() {
             jntpurchs.mode = "insert";
-            fileUploader($("#rprsImgFileUploader"), "jntpurchsRprsImgFile", "rprsImgFileid", null, {accept: ".jpeg,.jpg,image/png,image/gif"});
-            fileUploader($("#dtlImgFileUploader"), "jntpurchsDtlImgFile", "dtlImgFilegrpid", null, {multiple: true, accept: ".jpeg,.jpg,image/png,image/gif"});
-            fileUploader($("#mapFileUploader"), "pdf_view_file", "mapFilegrpid", null, {accept: ".pdf"});
-            fileUploader($("#eduPhotoFileUploader"), "jntpurchsEduPhotoFile", "eduPhotoFilegrpid", null, {multiple: true, accept: ".jpeg,.jpg,image/png,image/gif"});
             
             this.amtTmplat = $(".amt-row").clone();
             this.dtlCnEditor = CKEDITOR.replace("dtlCn");
@@ -319,6 +347,118 @@
                 e.preventDefault();
                 $(this).closest(".amt-row").remove();
                 _this.setAmtBtn();
+            });
+            
+            // 싱글파일
+            $("#jntpurchsRprsImgFile, #jntpurchsMapFile").on("change", function(e) {
+                var fileInput = e.target;
+                var inputid = $(e.target).attr("id");
+                var grpid = inputid == "jntpurchsRprsImgFile" ? "rprsImgFilegrpid" : "mapFileid";
+                var fileid = inputid == "jntpurchsRprsImgFile" ? "rprsImgFileid" : "mapFilegrpid"; 
+                var areaid = inputid == "jntpurchsRprsImgFile" ? "rprsImgFileArea" : "mapFileArea";
+                var formData = new FormData();
+                formData.append("file", fileInput.files[0]); 
+                formData.append("filegrpNm", inputid);
+                
+                if($("#" + grpid).val() != "") {
+                    formData.append("Filegrpid", $("#" + grpid).val());
+                } 
+                
+                if(displayWorkProgress()) {
+                    $.ajax({
+                        url: '/uploadFile.do'
+                        , processData: false
+                        , contentType: false
+                        , data: formData
+                        , type: "POST"
+                        , success: function(response) {
+                            if(response.result == "fail") {
+                                alert(response.msg);
+                            } else if(response.filegrpid != undefined && response.filegrpid != "") {
+                                $("#" + grpid).val(response.filegrpid);
+                                $("#" + fileid).val(response.fileid);
+                                var displayFile = '<span id="' + inputid + response.fileid + '" class="label label-inverse">' + response.orginlFileNm;
+                                displayFile += ' &nbsp;&nbsp;&nbsp;<a href="javascript:jntpurchsInsert.removeFile(' + "'" + inputid + response.fileid + "', "; 
+                                displayFile += response.fileid + ", '" + response.fileIdntfcKey + "'" + ');" class="text-white">X</a>';
+                                displayFile += '</span>';
+                                $("#" + areaid).html(displayFile);
+                            }
+                            jntpurchsInsert.initFileInput(inputid);
+                            closeWorkProgress();
+                        }
+                    });
+                }
+            });
+            
+            // 멀티파일
+            $("#jntpurchsDtlImgFile, #jntpurchsEduPhotoFile").on("change", function(e) {
+                var fileInput = e.target;
+                var inputid = $(e.target).attr("id");
+                var grpid = inputid == "jntpurchsDtlImgFile" ? "dtlImgFilegrpid" : "eduPhotoFilegrpid";
+                var fileid = inputid == "jntpurchsDtlImgFile" ? "dtlImgFileid" : "eduPhotoFileid";
+                var areaid = inputid == "jntpurchsDtlImgFile" ? "dtlImgFileArea" : "eduPhotoFileArea";
+                var formData = new FormData();
+                for(var i = 0; i < fileInput.files.length; i++) {
+                    formData.append("files", fileInput.files[i]);
+                }
+                formData.append("filegrpNm", inputid);
+                formData.append("filegrpid", $("#" + grpid).val());
+                
+                if(displayWorkProgress()) {
+                    $.ajax({
+                        url: '/uploadMultipleFiles.do'
+                        , processData: false
+                        , contentType: false
+                        , data: formData
+                        , type: "POST"
+                        , success: function(response) {
+                            if(response.result == "fail") {
+                                alert(response.msg);
+                            } else {
+                                if($("#" + grpid).val() == "0" || $("#" + grpid).val() == "" || $("#" + grpid).val() == null) {
+                                    $("#" + grpid).val(response[0].filegrpid);
+                                }
+                                var displayFile = "";
+                                for(var i = 0; i < response.length; i++) {
+                                    displayFile = '<span id="' + inputid + response[i].fileid + '" class="label label-inverse">' + response[i].orginlFileNm;
+                                    displayFile += ' &nbsp;&nbsp;&nbsp;<a href="javascript:jntpurchsInsert.removeFile(' + "'" + inputid + response[i].fileid + "', "; 
+                                    displayFile += response[i].fileid + ", '" + response[i].fileIdntfcKey + "'" + ');" class="text-white">X</a>';
+                                    displayFile += '</span>';
+                                    $("#" + areaid).append(displayFile);                                    
+                                }
+                            }
+                            jntpurchsInsert.initFileInput(inputid);
+                            closeWorkProgress();
+                        }
+                    });
+                }
+            });
+        }
+        
+        , initFileInput: function(inputid) {
+            if(detectBrowser() == "other") {
+                $("#" + inputid).val("");
+            } else {
+                $("#" + inputid).replaceWith($("#" + inputid).clone(true));
+            }
+        }
+        
+        , removeFile: function(inputid, fileid, fileIdntfcKey) {
+            $("#" + inputid).remove();
+            jntpurchsInsert.deleteFile(fileid, fileIdntfcKey);
+        }
+        
+        , deleteFile: function(fileid, fileIdntfcKey) {
+            var path = "/deleteFile.do?fileid=" + fileid + "&file_idntfc_key=" + fileIdntfcKey;
+            $.ajax({
+                url: path
+                , type: "GET"
+                , cache: false
+                , dataType: "json"
+                , success: function(result) {
+                }
+                , error: function(error) {
+                }
             });
         }
         

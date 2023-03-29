@@ -132,7 +132,7 @@ public class LendWrhousngController {
     public Map<String, Object> modifyPackageindvdStts(@RequestBody LendPackageindvdChckVo lendPackageindvdChckVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         lendPackageindvdChckVo.setUser(user);
-        resultMap = lendService.wrhounsngProcess(lendPackageindvdChckVo);
+        resultMap = lendService.wrhounsngChckProcess(lendPackageindvdChckVo);
         return resultMap;
     }
     

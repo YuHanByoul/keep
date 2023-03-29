@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+    layout:decorator="layout/front/subLayout" >
+<body>
+    <div layout:fragment="content">
+        <form id="aplyInfoForm" name="aplyInfoForm" >
+            <input type="hidden" id="cnsltngid" name="cnsltngid" th:value="${aplyInfo.cnsltngid}">
+            <input type="hidden" id="prgrmid" name="prgrmid" th:value="${aplyInfo.prgrmid}">
+            <input type="hidden" id="sttsCd" name="sttsCd" th:value="${aplyInfo.sttsCd}">
+            <input type="hidden" id="instNm"       name="instNm"       th:value="${aplyInfo.instNm      }">
+            <input type="hidden" id="instTypeCd"   name="instTypeCd"   th:value="${aplyInfo.instTypeCd  }">
+            <input type="hidden" id="instid"       name="instid"       th:value="${aplyInfo.instid      }">
+            <input type="hidden" id="userid"       name="userid"       th:value="${aplyInfo.userid      }">
+            <input type="hidden" id="userNm"       name="userNm"       th:value="${aplyInfo.userNm      }">
+            <input type="hidden" id="instTypeCdNm" name="instTypeCdNm" th:value="${aplyInfo.instTypeCdNm}">
+            <input type="hidden" id="picTelno"     name="picTelno"     th:value="${aplyInfo.picTelno    }">
+            <input type="hidden" id="nm"           name="nm"           th:value="${aplyInfo.nm          }">
+            <input type="hidden" id="acnt"         name="acnt"         th:value="${aplyInfo.acnt        }">
+            <input type="hidden" id="instPicNm"    name="instPicNm"    th:value="${aplyInfo.instPicNm   }">
+            <input type="hidden" id="picMoblphon"  name="picMoblphon"  th:value="${aplyInfo.picMoblphon }">
+            <input type="hidden" id="picEml"       name="picEml"       th:value="${aplyInfo.picEml      }">
+            <input type="hidden" id="addr"         name="addr"         th:value="${aplyInfo.addr        }">
+            <input type="hidden" id="addrDtl"      name="addrDtl"      th:value="${aplyInfo.addrDtl     }">
+            <input type="hidden" id="addrZip"      name="addrZip"      th:value="${aplyInfo.addrZip     }">
+
+            <!-- content -->
+            <div class="tab-content tab-sub dropDown">
+                <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true"></button>
+                <ul class="tab-list target" role="tablist">
+                    <li class="tab active"><button aria-controls="tab-subpanel01" id="tab-sub01" role="tab">신청정보</button></li>
+                    <li class="tab"><button aria-controls="tab-subpanel02" id="tab-sub02" role="tab">컨설팅평가</button></li>
+                </ul>
+                <div id="tab-subpanel01" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub01">
+
+                    <div class="table-caption">
+                        <div class="left">
+                            <h3 class="sub-title">신청기관정보</h3>
+                        </div>
+                    </div>
+
+                    <div class="table-row">
+                        <table>
+                            <caption>신청기관정보  - 공동구매모집명, 교구명, 교구유형, 교육주제, 교육대상, 교육유형, 모둠구성, 구매수량, 총 신청수량, 예상 금액 (개당), 신청일, 신청상태</caption>
+                            <colgroup>
+                                <col style="width:140px;">
+                                <col>
+                                <col style="width:140px;">
+                                <col>
+                            </colgroup>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">기관명</th>
+                                    <td>[[${aplyInfo.instNm}]]</td>
+                                    <th scope="row">기관유형</th>
+                                    <td>[[${aplyInfo.instTypeCdNm}]]</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">기관 연락처</th>
+                                    <td>[[${aplyInfo.picTelno}]]</td>
+                                    <th scope="row">기관 담당자명</th>
+                                    <td>[[${aplyInfo.instPicNm}]]</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">담당자 연락처</th>
+                                    <td>[[${aplyInfo.picMoblphon}]]</td>
+                                    <th scope="row">담당자 이메일</th>
+                                    <td>[[${aplyInfo.picEml}]]</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">기관주소</th>
+                                    <td colspan="3">[[${aplyInfo.addrAll}]]</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="table-caption">
+                        <div class="left">
+                            <h3 class="sub-title">컨설팅 신청 내용</h3>
+                        </div>
+                    </div>
+
+
+                    <div class="table-row table-row-mo">
+                        <table>
+                            <caption>컨설팅 신청 내용  - 프로그램명, 컨설팅유형, 희망 현장방문일, 프로그램 영역, 지도자 영역, 기타영역, 첨부파일</caption>
+                            <colgroup>
+                                <col style="width:140px;">
+                                <col>
+                            </colgroup>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">프로그램명</th>
+                                    <td>
+                                        <input type="text" title="프로그램명" placeholder="프로그램명을 입력해주세요." id="prgmNm" name="prgrmNm" >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">컨설팅유형</th>
+                                    <td>
+                                        <span kattr:radio_code="cnsltngKndCd" th:attr="grpCd=130, selectedCd=${aplyInfo.cnsltngKndCd}">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">희망 현장방문일</th>
+                                    <td>
+                                        <div class="form-input mo-flex-wrap">
+                                            <strong class="label">1차</strong>
+                                            <div class="form-input">
+                                                <input type="date" title="1차 희망 현장 방문일" id="hopeDe1" name ="hopeDe1" th:value="${aplyInfo.hopeDe1}">
+                                            </div>
+                                            <div class="form-input">
+                                                <span kattr:radio_yn="hopeDe1AmPmCd" label1="오전" label2="오후" th:attr="defaultVal=${aplyInfo.hopeDe1AmPmCd=='AM'?'Y':'N'}" >
+                                            </div>
+                                        </div>
+                                        <div class="form-input mo-flex-wrap mt10">
+                                            <strong class="label">2차</strong>
+                                            <div class="form-input">
+                                                <input type="date" title="2차 희망 현장 방문일" id="hopeDe2" name ="hopeDe2" th:value="${aplyInfo.hopeDe2}">
+                                            </div>
+                                            <div class="form-input">
+                                                <span kattr:radio_yn="hopeDe2AmPmCd" label1="오전" label2="오후" th:attr="defaultVal=${aplyInfo.hopeDe2AmPmCd=='AM'?'Y':'N'}" >
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tr>
+                                    <th scope="row">프로그램 영역</th>
+                                    <td>
+                                        <textarea title="프로그램 영역" id="prgrm" name="prgrm" >[[${aplyInfo.prgrm}]]</textarea>
+                                        <div class="desc ar size"><span>0</span> / 1,000자</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">지도자 영역</th>
+                                    <td>
+                                        <textarea title="지도자 영역" id="ldr" name="ldr" >[[${aplyInfo.ldr}]]</textarea>
+                                        <div class="desc ar size"><span>0</span> / 1,000자</div>
+                                    </td>
+                                </tr>
+                                </tr>
+                                    <th scope="row">기타영역</th>
+                                    <td>
+                                        <textarea title="기타영역" id="etc" name="etc" >[[${aplyInfo.etc}]]</textarea>
+                                        <div class="desc ar size"><span>0</span> / 1,000자</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">첨부파일</th>
+                                    <td>
+                                        <div class="form-input-file">
+                                            <label class="form-input">
+                                                <input type="file" id="multiFileInput" name="files" class="blind" multiple="multiple" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부" maxcount="5">
+                                                <span class="btn-medium btn-gray">파일선택</span>
+                                            </label>
+                                            <div class="upload-response">
+                                                <div id="multipleFileUploadError"></div>
+                                                <div id="multipleFileUploadSuccess">
+                                                <th:block th:if="${fileList != null}">
+                                                    <div th:each="item : ${fileList}" th:id="${item.fileid}" class="col-auto">
+                                                        <ul th:if="${item.orginlFileNm != null}">
+                                                            <li th:fileid='${item.fileid}'
+                                                                th:fileIdntfcKey="${item.fileIdntfcKey}"
+                                                                th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))"
+                                                                class='label label-inverse'
+                                                                th:data_ext="${#strings.replace(item.ext, '.', '')}">
+                                                                <th:block th:text="${item.orginlFileNm}" />&nbsp;&nbsp;
+                                                                <a th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="fn_deleteFileList(this.name, this.dataset.idntfcKey)" class='text-white'>
+                                                                <th:block th:text="X"></th:block></a>
+                                                            </li>
+                                                        </ul>
+                                                        <p>등록 가능 확장자 : jpg, jpeg, png, gif, hwp, doc, docx, xls, xlsx, pdf, txt, zip</p>
+                                                    </div>
+                                                </th:block>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+<!--
+                    <div class="table-row table-row-mo">
+                        <table>
+                            <caption>컨설팅 신청 내용  - 프로그램명, 컨설팅유형, 희망 현장방문일, 프로그램 영역, 지도자 영역, 기타영역, 첨부파일, 진행상태</caption>
+                            <colgroup>
+                                <col style="width:140px;">
+                                <col>
+                            </colgroup>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">프로그램명</th>
+                                    <td>숲과 숨쉬는 음악 자연 치유</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">컨설팅유형</th>
+                                    <td>
+                                        <div class="form-check-list">
+                                            <label class="inp"><input type="radio"><b>증빙서류 작성</b></label>
+                                            <label class="inp"><input type="radio"><b>현장방문(신청 후 최소 10일 이후에 가능)</b></label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">희망 현장방문일</th>
+                                    <td>
+                                        <div class="form-input mo-flex-wrap">
+                                            <strong class="label">1차</strong>
+                                            <div class="form-input">
+                                                <input type="date" title="1차 희망 현장 방문일">
+                                            </div>
+                                            <div class="form-input">
+                                                <div class="form-check-list">
+                                                    <label class="inp"><input type="radio"><b>오전</b></label>
+                                                    <label class="inp"><input type="radio"><b>오후</b></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-input mo-flex-wrap mt10">
+                                            <strong class="label">2차</strong>
+                                            <div class="form-input">
+                                                <input type="date" title="2차 희망 현장 방문일">
+                                            </div>
+                                            <div class="form-input">
+                                                <div class="form-check-list">
+                                                    <label class="inp"><input type="radio"><b>오전</b></label>
+                                                    <label class="inp"><input type="radio"><b>오후</b></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">프로그램 영역</th>
+                                    <td>
+                                        <textarea title="프로그램 영역" readonly>프로그램 영역 입력 내용 표시</textarea>
+                                        <div class="desc ar size"><span>0</span> / 1,000자</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">지도자 영역</th>
+                                    <td>
+                                        <textarea title="지도자 영역" readonly>지도자 영역 입력 내용 표시</textarea>
+                                        <div class="desc ar size"><span>0</span> / 1,000자</div>
+                                    </td>
+                                </tr>
+                                </tr>
+                                    <th scope="row">기타영역</th>
+                                    <td>
+                                        <textarea title="기타영역" readonly>기타영역 입력 내용 표시</textarea>
+                                        <div class="desc ar size"><span>0</span> / 1,000자</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">첨부파일</th>
+                                    <td>
+                                        <div class="form-input-file">
+                                            <label class="form-input">
+                                                <input type="file" class="blind" multiple="multiple" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부" maxcount="10">
+                                                <span class="btn-medium btn-gray">파일선택</span>
+                                            </label>
+                                            <ul>
+                                                <li class="file-block" data_ext="xlsx"><span class="name">EPAFP_DE_433__메뉴구조도_v1.5_230103.xlsx</span><button type="button" class="file-delete" title="삭제"><span class="icon icon-circle-close"></span></button></li>
+                                                <li class="file-block" data_ext="png"><span class="name">ex-doc.png</span><button type="button" class="file-delete" title="삭제"><span class="icon icon-circle-close"></span></button></li>
+                                                <li class="file-block" data_ext="hwp"><span class="name">빈 문서 1.hwp</span><button type="button" class="file-delete" title="삭제"><span class="icon icon-circle-close"></span></button></li>
+                                                <li class="file-block" data_ext="pdf"><span class="name">현금영수증 __ 네이버페이.pdf</span><button type="button" class="file-delete" title="삭제"><span class="icon icon-circle-close"></span></button></li>
+                                                <li class="file-block" data_ext="docx"><span class="name">가입신청 취소 요청서.docx</span><button type="button" class="file-delete" title="삭제"><span class="icon icon-circle-close"></span></button></li>
+                                                <li class="file-block" data_ext="zip"><span class="name">WinMerge-2.16.24-Setup.zip</span><button type="button" class="file-delete" title="삭제"><span class="icon icon-circle-close"></span></button></li>
+                                                <li class="file-block" data_ext="txt"><span class="name">WinMerge-2.16.24-Setup.txt</span><button type="button" class="file-delete" title="삭제"><span class="icon icon-circle-close"></span></button></li>
+                                                <li class="file-block" data_ext="ppt"><span class="name">WinMerge-2.16.24-Setup.txt</span><button type="button" class="file-delete" title="삭제"><span class="icon icon-circle-close"></span></button></li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">진행상태</th>
+                                    <td>신청완료</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+ -->
+
+                    <div class="table-caption">
+                        <div class="left">
+                            <h3 class="sub-title">컨설팅 매칭</h3>
+                        </div>
+                    </div>
+
+                    <div class="table-row table-row-mo">
+                        <table>
+                            <caption>컨설팅 매칭  - 컨설팅 담당자, 컨설팅 현장방문일시</caption>
+                            <colgroup>
+                                <col style="width:140px;">
+                                <col>
+                            </colgroup>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">컨설팅 담당자</th>
+                                    <td>홍길동</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">컨설팅 현장방문일시</th>
+                                    <td>2023-05-31 10:00 ~ 12:00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="btn-wrap">
+                        <div class="center">
+                            <button type="button" class="btn-medium btn-gray">신청취소</button>
+                            <button type="button" class="btn-medium btn-gray">목록</button>
+                            <button type="button" class="btn-medium btn-green">저장</button>
+                        </div>
+                    </div>
+
+                </div>
+                <div id="tab-subpanel02" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub02">
+
+                    <div class="box-desc-list bg7 mb45">
+                        <strong class="box-desc-tit"><div class="icon icon-notice bg-black3"></div>지정제신청 컨설팅 설문조사</strong>
+                        <ul>
+                            <li>본 설문은 지정제신청 컨설팅에 대한 만족도를 알아보기 위해 실시하고자 합니다.</li>
+                            <li>귀하께서 작성하시는 모든 응답은 지정사무국에서 서비스 품질 및 컨설팅 전문성 제고를 위해 사용되며, 외부에 일체 공개되지 않습니다.</li>
+                            <li>귀하의 소중한 의견은 환경교육프로그램 지정제 발전의 밑거름이 됩니다. 성실한 답변 부탁드립니다.</li>
+                        </ul>
+                    </div>
+
+                    <div class="table-combi table-combi-scroll">
+                        <table>
+                            <caption>지정제신청 컨설팅 설문조사 - 문항/보기, 문항 평가(매우 그렇지 않다:1, 그렇지 않다:2, 그렇지 않은 편이다:3, 보통이다:4, 그런 편이다:5, 그렇다:6, 매우 그렇다:7), 선설팅 서비스에 대한 추가 의견 (선택)</caption>
+                            <colgroup>
+                                <col style="width:6%;">
+                                <col style="width:29%;">
+                                <col>
+                                <col>
+                                <col>
+                                <col>
+                                <col>
+                                <col>
+                                <col>
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th scope="colgroup" rowspan="2" colspan="2">문항 / 보기</th>
+                                    <th scope="col">매우 <br> 그렇지 않다</th>
+                                    <th scope="col">그렇지 <br> 않다</th>
+                                    <th scope="col">그렇지 <br> 않은  편이다</th>
+                                    <th scope="col">보통이다</th>
+                                    <th scope="col">그런 <br> 편이다</th>
+                                    <th scope="col">그렇다</th>
+                                    <th scope="col">매우 <br> 그렇다</th>
+                                </tr>
+                                <tr>
+                                    <th scope="col">1</th>
+                                    <th scope="col">2</th>
+                                    <th scope="col">3</th>
+                                    <th scope="col">4</th>
+                                    <th scope="col">5</th>
+                                    <th scope="col">6</th>
+                                    <th scope="col">7</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="item , idx : ${qitemList}">
+                                    <th scope="row">[[${idx.count}]]</th>
+                                    <th scope="row" class="al">[[${item.cn}]]</th>
+                                    <td th:each="rdo , idx2 : ${item.exampleList}">
+                                        <label class="inp vm"><input type="radio" th:title="${rdo.cn}" th:name="${'ans' + item.qitemid}" th:scr="${item.scr}"></label>
+                                    </td>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th scope="row" colspan="2" class="bg5">컨설팅 서비스에 대한 추가 의견 (선택)</th>
+                                    <td colspan="7" class="bg-white">
+                                        <textarea title="선설팅 서비스에 대한 추가 의견 (선택)">[[${aplyInfo.prgrmNm}]]</textarea>
+                                        <div class="desc ar size"><span>0</span> / 1,000자</div>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <div class="btn-wrap">
+                        <div class="center">
+                            <button type="button" class="btn-medium btn-gray">목록</button>
+                            <button type="button" class="btn-medium btn-green" onclick="doEvl()">평가완료</button>
+                            <button type="button" class="btn-medium btn-gray">평가종료</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- //content -->
+        </form>
+        <script th:inline="javascript">
+        var atchfileCnt = 5;
+        var uploadFileCnt = 0;
+
+            var aplyInfo = {
+            	goListUrl:"/front/dsgnMng/cnsltngMngList.html",
+            	goEvlUrl:"/front/dsgnMng/cnsltngEvlForm.html",
+            	insertUrl:"/front/dsgnMng/insertCnsltngAply.do",
+            	deleteUrl:"/front/dsgnMng/deleteCnsltngAply.do",
+            	updateUrl:"/front/dsgnMng/updateCnsltngAply.do",
+
+            	init(){
+
+            		if($("#cnsltngid").val()!=null && $("#cnsltngid").val()!=''){
+            			//dtl,mod
+                		if($("#sttsCd").val()=='131101'){    //신청완료
+                			//$("saveBtn").hide();
+                		}else if($("#sttsCd").val()=='131102'){    //배정완료
+//                 			$("#delBtn").hide();
+                			$("cancleBtn").hide();
+                			$("saveBtn").hide();
+                		}
+            		}else{
+            			//reg
+            		    $("cancleBtn").hide();
+            			//alert("등록 " + $("#cnsltngid").val());
+            		}
+
+            	},
+            	doEvl(){
+            		var isValid = true;
+                    var qitemid, typeCd;
+                    var ansDscrp, ans, isChecked;
+                    var ansList = [];
+                    var ansData;
+
+                    $("[data-qitemid]").each(function(index, item) {
+                        ansData = {};
+                        qitemid = $(item).attr("data-qitemid");
+                        typeCd = $(item).attr("data-qitemType");
+                        ansData.qitemid = qitemid;
+                        if(typeCd == "107104") { // 단답형
+                            ansDscrp = $(item).find("input[name='ans" + qitemid + "']").val();
+                            if(!ansDscrp) {
+                                isValid = false;
+                                return false;
+                            }
+                            ansData.ansDscrp = ansDscrp;
+                        } else if(typeCd == "107105") { // 서술형
+                            ansDscrp = $(item).find("textarea[name='ans" + qitemid + "']").val();
+                            if(!ansDscrp) {
+                                isValid = false;
+                                return false;
+                            }
+                            ansData.ansDscrp = ansDscrp;
+                        } else {
+                            isChecked = $(item).find("input[name='ans" + qitemid + "']").is(":checked");
+                            if(!isChecked) {
+                                isValid = false;
+                                return false;
+                            }
+                            ans = $(item).find("input[name='ans" + qitemid + "']:checked");
+                            if(typeCd == "107102") { // 복수선택형
+                                ansData.ans = ans.map(function() { return this.value; }).get().join(",");
+                            } else if(typeCd == "107106") { // 혼합형
+                                ansData.ans = ans.val();
+                                if(ans.attr("data-etcYn") == "Y") {
+                                    ansData.ansDscrp = $(item).find("textarea[name='etc" + qitemid + "']").val();///////////////
+                                }
+                            } else if(typeCd == "107103") { // 척도형
+                                ansData.ans = ans.val();
+                                ansData.scale = ans.val();
+                                ansData.scr = ans.attr("data-scr");
+                            } else { // OX형, 선택형
+                                ansData.ans = ans.val();
+                            }
+                        }
+                        ansList.push(ansData);
+                    });
+
+                    var params = {
+                        srvyid: $("input[name='srvyid']").val()
+                        , ansList: JSON.stringify(ansList)
+                    };
+
+                    if(!isValid) {
+                        alert("평가를 모두 완료후에 제출해주세요. ");
+                        return false;
+                    }
+
+                    if(confirm("설문을 제출하시겠습니까?")) {
+                        if(displayWorkProgress(true)) {
+                            $.ajax({
+                                url : "/front/srvy/insertSrvySbmsn.do"
+                                , type: "POST"
+                                , cache: false
+                                , dataType: "json"
+                                , data: params
+                                , success: function(response) {
+                                    if(response.result == "success") {
+                                        alert(response.msg);
+                                        if(opener.srvy) {
+                                            opener.srvy.onLoadData();
+                                        }
+                                        window.close();
+                                    } else {
+                                        alert(response.msg);
+                                    }
+                                    closeWorkProgress();
+                                }
+                            });
+                        }
+                    }
+            	},
+            	delAply() {
+                    var id=$("#aplyid").val();
+
+                     $.ajax({
+                    	 url: "/front/dsgnMng/deleteChgAply.do?aplyid="+id,
+                         type: 'GET',
+                         cache: false,
+                         dataType: 'json',
+                         success: function (data) {
+                             if(data.result=="success"){
+                                 alert(data.msg);
+                                 $("#chgDsctnTab").get(0).click();
+                             }else{
+                                 alert(data.msg);
+                             }
+                             closeWorkProgress();
+                         }
+                    });
+            	},
+
+            	goList(){
+            		aplyInfo.movePage(aplyInfo.goListUrl);
+            	},
+
+            	movePage(url) {
+            		var f = document.forms.aplyInfoForm;
+                    f.action = url;
+                    f.submit();
+            	},
+
+            	doSave(){
+
+            		if(displayWorkProgress(true)) {
+            			var url="";
+            			if($("#cnsltngid").val()!=null && $("#cnsltngid").val() !=""){
+            				url= aplyInfo.updateUrl;
+            			}else{
+            				url= aplyInfo.insertUrl;
+            			}
+
+            			var data = $("#aplyInfoForm").serialize();
+
+                        $.ajax({
+                            url : url
+                            , type: "POST"
+                            , cache: false
+                            , dataType: "json"
+                            , data: data
+                            , success: function(response) {
+                                if(response.result == "success") {
+                                    alert(response.msg);
+                                    $("#operRsltTab").get(0).click();
+                                } else {
+                                    alert(response.msg);
+                                }
+                                closeWorkProgress();
+                            }
+                        });
+                    }
+            	}
+            }
+
+            $(function(){
+            	aplyInfo.init();
+
+            	// 파일업로드
+                $('#multiFileInput').on("change", function(event) {
+                    debugger;
+                    var objFile = document.querySelector('#multiFileInput');
+                    var formData = new FormData();
+                    var content = "";
+
+                    for( i = 0 ; i < objFile.files.length ; i++) {
+                        if(uploadFileCnt >= atchfileCnt){
+                            alert("첨부파일은  "+atchfileCnt+ " 개 까지 가능합니다." ); break;
+                        } else {
+                            formData.append("files", objFile.files[i]);
+                            uploadFileCnt++;
+                        }
+                    }
+
+
+                 formData.append("filegrpNm", "asgsysSrng_file");
+
+                    if(uploadFileCnt > 0){
+                        $.ajax({
+                            url : '/uploadMultipleFiles.do',
+                            processData : false,
+                            contentType : false,
+                            data : formData,
+                            type : 'POST',
+                            success : function(response) {
+                                if(response.result == 'fail'){
+                                    alert(response.msg);
+                                }else{
+                                    if($("#filegrpid").val()=='0' || $("#filegrpid").val()==''  || $("#filegrpid").val()==null){
+                                        $("#filegrpid").val( response[0].filegrpid );
+                                    }
+
+                                    for(i = 0 ;i < response.length; i++ ){
+                                        content = '<ul>';
+                                        content +=  '<li class="file-block" data_ext="'+response[i].fileExtsn.replace(".", '')+'" id="'+response[i].fileid+'"><span class="name">'+response[i].orginlFileNm
+                                        content += '&nbsp;&nbsp;<a href="javascript:void(0)" onclick=uploadFileCnt--;fn_deleteFileList("'+response[i].fileid+'","'+response[i].fileIdntfcKey+'")>X</a></span></li>'
+                                        content += '</ul>';
+                                        $('#multipleFileUploadSuccess').append(content);
+                                    }
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
+            // 파일삭제
+            function fn_deleteFileList(fileid, fileIdntfcKey){
+                if(!confirm("파일을 삭제하시겠습니까?")){return;}
+                fn_deleteFile(fileid, fileIdntfcKey);
+                $("#"+fileid).remove();
+            }
+
+            // 파일삭제
+            function fn_deleteFile(fileid, fileIdntfcKey){
+                var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey;
+                $.ajax({
+                    url : deleteFileUrl,
+                    type: 'GET',
+                    cache : false,
+                    dataType: 'json',
+                    success : function (data){
+                        if(data.result=="success"){
+                            $("#"+fileid).remove();
+                            alert("파일삭제가 완료 되었습니다.");
+                        }else{
+                            alert("파일삭제중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+                        }
+                    },
+                    error : function (error){
+                    }
+                });
+            }
+
+        </script>
+    </div>
+</body>
+</html>

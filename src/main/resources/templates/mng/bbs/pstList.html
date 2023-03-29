@@ -55,7 +55,9 @@
                          <button class="btn btn-primary" onclick="fn_searchForm()" >검색</button>
                      </div>
                  </div>
+                 
                  <input id="bbsid" name ="bbsid" type="hidden" th:value ="${bbsid}">
+                 <input id="rowPerPage" name ="rowPerPage" type="hidden" value ="10">
            </form>
            </div>
            <!-- //필터 부분 -->
@@ -105,6 +107,7 @@
     var gridHelper1;
 	/*<![CDATA[*/ 
 	var bbsid = /*[[ ${bbsid} ]]*/null; 
+	var codeMap = /*[[ ${codeMap} ]]*/null; 
 	/*]]>*/
     var selectedItems = [];
     var clickedItem ;
@@ -128,7 +131,13 @@
     	 if($("#bbsCl").val() == null || $("#bbsCl").val() == ""){
 	    	alert("검색 할 게시판 종류를 선택해 주십시오.");
 	    	return;
-    	 } 
+    	 }
+    	 var selectedBbsItem =  codeMap.filter(function(bbs){ if(bbs.bbsid==$("#bbsCl").val())return bbs; })
+    	 
+    	 $("#rowPerPage").val(10);
+    	 if(selectedBbsItem!=null && selectedBbsItem.rowPerPage!=null &&selectedBbsItem.rowPerPage >=0){
+	    	 $("#rowPerPage").val(selectedBbsItem.rowPerPage);
+         }
 		 $("#bbsid").val($("#bbsCl").val());
 		 writeJsGridData();
 		 gridHelper1.resetListContent();
@@ -171,12 +180,13 @@
     	        controller: {
     	            loadData: function (filter) {
     	            	var data = $.Deferred();
+    	            	filter.rowPerPage = $("#rowPerPage").val();
     	            	var params = {
     	            			 "bbsid"         : $('#bbsSearchForm #bbsid').val()
     	            			,"searchType"    : $('#bbsSearchForm #searchType').val()
     	            			,"searchKeyword" : $('#bbsSearchForm #searchKeyword').val()
     	            			,"pageNumber"    : filter.pageIndex
-    	            			,"rowPerPage"    : filter.pageSize
+    	            			,"rowPerPage"    : $("#rowPerPage").val()
     	            			,"orderField"    : filter.sortField
     	            			,"orderDirection":  "asc" //filter.sortOrder
     	            	}

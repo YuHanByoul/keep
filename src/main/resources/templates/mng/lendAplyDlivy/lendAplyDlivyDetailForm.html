@@ -193,25 +193,32 @@
                 <h3 class="sub-title"><strong>출고정보</strong></h3>
             </div>
             <div class="card-block-small p-t-0">
-                <div th:if="${aplyDlivyList.size() > 0}" th:each="item : ${aplyDlivyList}" class="row align-items-end mb-3 indvd-no">
+                <div th:if="${aplyDlivyList.size() > 0}" th:each="item : ${aplyDlivyList}" class="row align-items-end mb-3 indvd-no" th:id="${'packageIndvdNo' + itemStat.count}">
                     <div class="col-auto">
-                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" onclick="fn_openSearchModal();" ><i class="icofont icofont-check-circled"></i>개체선택</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" th:onclick="fn_openSearchModal([[${itemStat.count}]]);" ><i class="icofont icofont-check-circled"></i>개체선택</button>
                     </div>
-                    <div class="col ps-0">
+                    <div class="col ps-0 package-indvd-id-body">
+                        <input type="hidden" name="packageindvdids" class="package-indvd-id" th:value="${item.packageindvdid}"/>
                         <span class="label label-inverse">
-                            [[${item.indvdno}]]  <a class="text-white delete-btn">X</a>
+                            <span>[[${item.indvdno}]]</span> <a class="text-white delete-btn cursor-pointer">X</a>
                         </span>
-                        <input type="hidden" class="package-indvd-id" th:value="${item.packageindvdid}"/>
                     </div>
                 </div>
-
+                <div th:unless="${aplyDlivyList.size() > 0}" th:each="item : ${#numbers.sequence(1,lendAplyInfo.qnty)}" class="row align-items-end mb-3 indvd-no" th:id="${'packageIndvdNo' + itemStat.count}">
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" th:onclick="fn_openSearchModal([[${itemStat.count}]]);" ><i class="icofont icofont-check-circled"></i>개체선택</button>
+                    </div>
+                    <div class="col ps-0 package-indvd-id-body">
+                        <input type="hidden" name="packageindvdids" class="package-indvd-id" />
+                    </div>
+                </div>
 
                 <div class="row">
                     <div class="col-sm-6 col-lg-3 mb-3">
                         <div class="mb-0 form-group required">
                             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>택배사</strong></label>
                             <div class="col-12">
-                                <th:block kattr:select_code="hdryInstCd" grpCd="235" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true"></th:block>
+                                <th:block kattr:select_code="hdryInstCd" grpCd="235" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true" th:attr="selectedCd=${lendAplyInfo.hdryInstCd}"></th:block>
                             </div>
                         </div>
                     </div>
@@ -239,24 +246,32 @@
     </div>
 
     <input type="hidden" id="aplyid"   name="aplyid"    th:value="${lendAplyInfo.aplyid}" />
-    <input type="hidden" id="dlvySttsCd"  th:value="${lendAplyInfo.dlvySttsCd}" />
+    <input type="hidden" id="rndid"   name="rndid"    th:value="${lendAplyInfo.rndid}" />
+    <input type="hidden" id="packSttsCd"   name="packSttsCd" value="216102" />
+    <input type="hidden" id="dlvySttsCd"  name="dlvySttsCd" value="230102" />
+    <input type="hidden" id="packageid"  th:value="${lendAplyInfo.packageid}" />
 </form>
+
+<div class="clone-indvd" style="display: none;">
+    <span class="label label-inverse">
+        <span></span><a class="text-white delete-btn cursor-pointer">X</a>
+    </span>
+</div>
+
 
 <div class="modal fade" id="packageIndvdSearchPopup" aria-hidden="true" data-bs-backdrop="static"></div>
 
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script type="text/javascript" src="/files/assets/pages/advance-elements/select2-custom.js"></script>
 <script th:inline="javascript">
-    var dlvySttsCd = $('#dlvySttsCd').val();
-    var packageindvdidParam = "";
-    var packageindvdid = "";
+    var dlvySttsCd = /*[[${lendAplyInfo.dlvySttsCd}]]*/null;
     var deletePackageindvdid = "";
 
     $(function (){
         $('.delete-btn').on('click', function (){
             deletePackageindvdid += '&deletePackageindvdids='+$(this).parent().siblings('.package-indvd-id').val();
-            $(this).closest('.indvd-no').remove();
-            console.log(deletePackageindvdid);
+            $(this).closest('.package-indvd-id-body').find('.package-indvd-id').val('');
+            $(this).closest('.label-inverse').remove();
         });
     })
 
@@ -273,17 +288,19 @@
     });
 
     function savePrc(){
-        $('input[name=packageindvdid]').each(function (item){
+        let indvdValid = true;
+        $('input[name=packageindvdids]').each(function (item){
             let indvdid = $(this).val();
             if(indvdid === ''){
-                alert("개체선택을 해주세요.");
-                return;
+                indvdValid = false;
             }
-            packageindvdid += '&packageindvdids='+indvdid;
         });
+        if(!indvdValid){
+            alert("개체선택을 해주세요.");
+            return;
+        }
         if(!$('#dlivyForm').valid()) return;
         let data = $('#dlivyForm').serialize();
-        data += packageindvdid;
         data += deletePackageindvdid;
         if(!confirm(dlvySttsCd === '230101' ? '출고처리하겠습니까?' : '출고정보를 수정하겠습니까?')) return;
         if(displayWorkProgress()) {
@@ -311,16 +328,41 @@
     var userAddModal;
     var instManagerSearchModal;
 
-    function fn_openSearchModal(){
-        $('input[name=packageindvdid]').each(function (item){
+    function fn_openSearchModal(idx){
+        const idxParam = '&idx='+idx;
+        const packageid = '&packageid='+$("#packageid").val();
+        let packageindvdidParam = '';
+        $('input[name=packageindvdids]').each(function (item){
             packageindvdidParam += '&packageindvdids='+ $(this).val();
         });
-        var url = popupUrl + packageindvdidParam;
+        var url = popupUrl + idxParam + packageid + packageindvdidParam;
         $("#packageIndvdSearchPopup").load(url, function(response, status, xhr) {
             if (status == "success") {
                 instManagerSearchModal = new bootstrap.Modal($('#packageIndvdSearchPopup'));
                 instManagerSearchModal.show();
             }
         });
+    }
+
+    function fn_packageChose(idx){
+        const $modalBody = $("#packageListBody");
+        const $checked = $modalBody.find(".singleRadiobox:checked");
+        const $cloneIndvd = $('.clone-indvd .label');
+        const $appendBody = $('#packageIndvdNo'+idx);
+        const no = $checked.data('indvdno');
+        const id = $checked.data('packageindvdid');
+        if ($checked.length === 0) {
+            alert("개체을 선택해주세요.");
+            return;
+        }
+
+        let $item = $cloneIndvd.clone(true);
+        if($appendBody.find('.package-indvd-id-body').children().length > 1){
+            $appendBody.find('.package-indvd-id-body').children().last().remove();
+        }
+        $appendBody.find('.package-indvd-id-body').append($item);
+        $appendBody.find('input[name=packageindvdids]').val(id);
+        $appendBody.find('.label-inverse span').text(no);
+        instManagerSearchModal.hide();
     }
 </script>

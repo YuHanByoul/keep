@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" 
     xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
     xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
-    layout:decorator="layout/mng/mobileMainLayout" 
+    layout:decorator="layout/mng/mobileSubLayout" 
 >
 <body>
 <div layout:fragment="content">
@@ -51,8 +51,8 @@
               
               <div id="chck_area" >
               <div class="mb-3">
-                  <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>정검일자</strong></div>
-                  <input type="date" class="form-control form-control-sm" id="chckDe" name="chckDe">
+                  <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>점검일자</strong></div>
+                  <input type="date" class="form-control form-control-sm" id="chckDe" name="chckDe" th:value="${#calendars.format(#calendars.createNow(),'yyyy-MM-dd')}">
               </div>
               <div class="table-responsive position-relative">
               
@@ -143,7 +143,7 @@
               <div class="row form-group required mb-3">
                   <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="popupContents"><strong>내용 입력</strong></label>
                   <div class="col-sm-12">
-                      <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="이상 내용" id="cn" name="cn"></textarea>
+                      <textarea rows="3" cols="3" class="form-control form-control-sm" placeholder="이상 내용" id="cn" name="cn"></textarea>
                   </div>
               </div>
               <div class="form-group mb-3 ">
@@ -219,9 +219,9 @@
       </div>
   </div>
   
-  <input type="text" id="aplyid" name="aplyid" > 
-  <input type="text" id="rndid" name="rndid" > 
-  <input type="text" id="packageindvdid" name="packageindvdid"  > 
+  <input type="hidden" id="aplyid" name="aplyid" > 
+  <input type="hidden" id="rndid" name="rndid" > 
+  <input type="hidden" id="packageindvdid" name="packageindvdid"  > 
   
   <!-- Page-body end -->
 
@@ -244,11 +244,6 @@
     var modalUrl = "/mng/eduResrce/selectPackageindvdPopup.html"
         
     $(function(){
-        
-        console.log(packList);
-        console.log(artclExList);
-        console.log(tchaidlist);
-        
         initPage(); 
         selectAplyInfo();
     });
@@ -395,9 +390,9 @@
             		chckDe : $("#chckDe").val()
             		,lendPackageindvdChkAnsList : ansArr
             		,lendPackageindvdChckTchaidList : chckTchaidArr
+            		,healthCheck : "Y"
             }
             params = Object.assign(params, healthChckParam)
-            params.modifyStts = 'H' //기본 (위생 점검 O, 이상처리 X(정상), 입고 처리 O)
        }
         
        //healthCheck
@@ -405,9 +400,15 @@
        var isNormal = $("[name='wrhousngStts']:checked").val();
 
        if(isNormal == 'N'){
-               
-    	   if($("#cn").val()==null ||$("#cn").val()=="" ){
+           let cn = $("#cn").val();
+           if(cn==null ||cn=="" ){
               alert("이상 내용을 입력해주십시오.");
+              showErrorMark("#cn");
+              return;
+           }
+           
+           if(cn.length >=500 ){
+              alert("이상 내용은 500자 이상 입력 하시 수 없습니다.");
               showErrorMark("#cn");
               return;
            }
@@ -463,7 +464,7 @@
            }
     	   params = Object.assign(params, addParams);
        }
-       
+
        if(displayWorkProgress()){
             $.ajax({
                 url : "/mng/wrhousng/modifyPackageindvdStts.do",
@@ -476,8 +477,8 @@
                 success : function (data){
                     if(data.result=="success"){
                         alert(data.msg);
-                        location.href="/mng/eduResrce/dlvyList.html";
-                        //location.href="/main.html";
+                        //location.href="/mng/eduResrce/dlvyList.html";
+                        location.href="/main.html";
                     }else{
                         alert(data.msg);
                     }

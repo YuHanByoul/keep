@@ -920,18 +920,65 @@ public class AsgsysSrngController {
     }
 
     /**
-    * @Title : prgrmLdr
+    * @Title : ldrQlfcForm
     * @Description : 심사위원/지원단-지도자의자격및배치 탭
     * @param AsgsysSrngVo객체
     * @param model 모델객체
     * @return String 이동화면경로
     * @throws Exception 예외
     */
-    @RequestMapping(value = "/mng/asgsysSrng/prgrmLdr.html")
+    @RequestMapping(value = "/mng/asgsysSrng/ldrQlfcForm.html")
     public String prgrmLdrForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
 
-    	return "mng/asgsysSrng/prgrmLdr";
+		//책임개발자 목록 조회
+		model.addAttribute("ldrList", asgsysSrngService.selectLdrList(asgsysSrngVo));
+		//책임개발자 이력 조회
+		model.addAttribute("snrstfdvlprHstry", asgsysSrngService.selectSnrstfdvlprHstry(asgsysSrngVo));
+		//책임개발자 학력사항 목록 조회
+		model.addAttribute("acbgList", asgsysSrngService.selectSnrstfdvlprAcbgList(asgsysSrngVo));
+		//책임개발자 경력사항 목록 조회
+		model.addAttribute("careerList", asgsysSrngService.selectSnrstfdvlprCareerList(asgsysSrngVo));
+		//책임개발자 자격사항 목록 조회
+		model.addAttribute("qlfcList", asgsysSrngService.selectSnrstfdvlprQlfcList(asgsysSrngVo));
+
+    	return "mng/asgsysSrng/ldrQlfcForm";
     }
+
+    /**
+    * 지도자의자격및배치 등록
+    *
+    * @Title : insertSprtgrpSrng
+    * @Description : 지도자의자격및배치 등록
+    * @param asgsysSrngVo
+    * @param user
+    * @param request
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/mng/asgsysSrng/insertPrgrmLdrQlfc.do")
+    @ResponseBody
+    public Map<String, Object> insertSprtgrpSrng(@Valid AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user) throws Exception {
+
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+    	asgsysSrngVo.setUser(user);
+
+    	int retVal = 0;
+
+    	retVal+=asgsysSrngService.insertLdrQlfcForm(asgsysSrngVo);
+
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "저장에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "저장에 실패했습니다.");
+        }
+
+        return resultMap;
+    }
+
 
     /**
     * @Title : sftyMngForm
