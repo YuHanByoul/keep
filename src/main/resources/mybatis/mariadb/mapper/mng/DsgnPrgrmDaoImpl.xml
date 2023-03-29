@@ -1170,4 +1170,34 @@
         WHERE CYCLID = #{cyclid}
     </delete>
 
+    <!-- 지원단 캘린더 목록 조회 -->
+    <select id="selectSprtgrpClndrList" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
+        SELECT
+            A.PRGRMID
+          , A.PRGRM_NM
+          , A.INST_NM
+          , B.VST_DE
+          , B.VST_HR
+          , B.VST_MNT
+          , B.SPRTGRPID
+          , CONCAT(C.NM, '(', C.ACNT, ')')    AS SPRTGRP_NM_ACNT
+          , C.NM
+          , CONCAT(B.VST_DE , ' ', B.VST_HR  ,' : ',  B.VST_MNT)    AS VST_DE
+        FROM
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+            TB_ASS_SPRTGRP_SRNG B ON A.PRGRMID = B.PRGRMID
+        LEFT OUTER JOIN
+            TB_CMM_USER C ON B.SPRTGRPID = C.USERID
+        WHERE 1=1
+        <if test="searchAplyStartDt != null and searchAplyStartDt != '' ">
+            AND B.VST_DE <![CDATA[>=]]> #{searchAplyStartDt}
+        </if>
+        <if test="searchAplyEndDt != null and searchAplyEndDt != '' ">
+            AND   B.VST_DE <![CDATA[<=]]> #{searchAplyEndDt}
+        </if>
+        ORDER BY VST_DE, VST_HR, VST_MNT
+    </select>
+
+
 </mapper>

@@ -694,7 +694,20 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date lastSbmsnDt;
 
+    /** 지원단아이디 */
+    private Integer sprtgrpid;
 
+    /** 심사위원 이름계정*/
+    private String  sprtgrpNmAcnt;
+
+    /** 사용 여부 */
+    private String useYn;
+
+    /** 검색.신청 시작 일자*/
+    private String searchAplyStartDt;
+
+    /** 검색.신청 종료 일자*/
+    private String searchAplyEndDt;
 
     /** 체크 값 */
     private String chkVal;

@@ -622,11 +622,10 @@ public class AsgsysSrngController {
     		eduPhotoFileList = asgsysSrngService.selectEvdncDcmntFileList(fileVo);
 
     	}
-    	for(int i=1; i < 4; i++) {    //교육사진 3개 고정
+    	for(int i=1; i < 4; i++) {    //교육사진 3개
 
     		if(eduPhotoFileList.size() == (i-1)) {
 
-    			logger.info("@@ size : " + eduPhotoFileList.size() + "  @@ idx : " + i);
     			FileVo rowVo = new FileVo();
     			rowVo.setFileIdntfcKey("");
     			eduPhotoFileList.add((i-1), rowVo);
@@ -1444,7 +1443,6 @@ public class AsgsysSrngController {
 		asgsysSrngService.jdgsSrngListExcelDown(asgsysSrngVo, response, request);
 	}
 
-	///mng/asgsysSrng/jdgsSrngForm.html
 	/**
      * @Title : dsgnSrngDetailForm
      * @Description : 심사위원심사 상세 화면이동
@@ -1458,11 +1456,32 @@ public class AsgsysSrngController {
     	DsgnSrngFormVo dsgnSrngFormVo = new DsgnSrngFormVo();
     	AsgsysSrngVo jdgsSrngInfo = asgsysSrngService.selectJdgsSrngDetail(asgsysSrngVo);
 
-
     	model.addAttribute("jdgsSrngInfo", jdgsSrngInfo);
 
+    	//신청 첨부파일
+    	if (!StringUtil.nvl(jdgsSrngInfo.getAplyFilegrpid()).equals("") && !StringUtil.nvl(jdgsSrngInfo.getAplyFilegrpid()).equals(0)) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(jdgsSrngInfo.getAplyFilegrpid());
+
+            model.addAttribute("aplyFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
+
+        } else {
+            model.addAttribute("aplyFileList", Collections.emptyList());
+        }
+
+    	//사전인증 첨부파일
+    	if (!StringUtil.nvl(jdgsSrngInfo.getBfrCertFilegrpid()).equals("") && !StringUtil.nvl(jdgsSrngInfo.getBfrCertFilegrpid()).equals(0)) {
+    		FileVo fileVo = new FileVo();
+    		fileVo.setFilegrpid(jdgsSrngInfo.getBfrCertFilegrpid());
+
+    		model.addAttribute("bfrCertFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
+
+    	} else {
+    		model.addAttribute("bfrCertFileList", Collections.emptyList());
+    	}
+
     	BeanUtils.copyProperties(jdgsSrngInfo, dsgnSrngFormVo);
-    	logger.info(dsgnSrngFormVo.toString())                    ;
+    	logger.info(dsgnSrngFormVo.toString());
     	model.addAttribute("dsgnSrgnFormList", asgsysSrngService.selectDsgnSrgnFormList(dsgnSrngFormVo));
 
     	//심사양식 목록 조회

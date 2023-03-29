@@ -1,0 +1,202 @@
+<!-- Calender css -->
+<link rel="stylesheet" type="text/css" href="/files/bower_components/fullcalendar/dist/fullcalendar.css">
+<link rel="stylesheet" type="text/css" href="/files/bower_components/fullcalendar/dist/fullcalendar.print.css" media="print">
+<!-- calender js -->
+<script type="text/javascript" src="/files/bower_components/moment/min/moment.min.js"></script>
+<script type="text/javascript" src="/files/bower_components/fullcalendar/dist/fullcalendar.min.js"></script>
+<style>
+.hide
+{
+   display:none;
+}
+.select-calendar-color
+{
+  background-color: #0ac282 !important;
+  border-color: #7CFC00 !important;
+}
+/* 일요일_빨간색 */
+.fc-sun .fc-day-number {
+  color: red;
+  text-decoration: none;
+}
+/* 토요일_파란색 */
+.fc-sat .fc-day-number {
+  color: blue;
+  text-decoration: none;
+}
+.fc-unthemed td.fc-today {
+  background-color : #fcf8e3 !important;
+}
+.fc-content .fc-title {
+    padding: 0 1px;
+    white-space: normal;
+}
+</style>
+<form id ="sprtgrpCalenderFrm">
+    <div class="modal-dialog modal-lg" role="document">
+       <div class="modal-content type_2">
+           <div class="modal-header">
+               <h4 class="modal-title">심사일정 캘린더</h4>
+               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                   <span aria-hidden="true"></span>
+               </button>
+           </div>
+           <div class="modal-body">
+               <div class="card m-b-10">
+                   <div class="card-block-small">
+                       <div class="col-12">
+                           <div class="calendar-body" id="calendar">
+                       </div>
+                   </div>
+               </div>
+           </div>
+       </div>
+   </div>
+</form>
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script type="text/javascript" src="/js/common/jsgrid-master/dist/jsgrid.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+<script th:inline="javascript">
+
+    $(function() {
+        fn_makeCalendarEvent();
+    });
+
+    $('#calendar').fullCalendar({
+        plugins : [ 'interaction', 'dayGrid',  'resourceTimeline' ],
+        locale : 'ko',
+        defaultView : 'month',
+        //defaultDate : moment(new Date()),
+        defaultDate: moment().format("YYYY-MM-DD"),
+        initialDate : '2023-02-16',
+        editable : false,
+        disable : false,
+        droppable: false,
+        eventLimit: 4,
+        displayEventTime: true,
+        firstDay: 0,
+        fixedWeekCount :false ,
+        height: "auto",
+        //contentHeight    : "1500px",
+        monthNames      : ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"],
+        monthNamesShort : ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"],
+        dayNames        : ["일요일","월요일","화요일","수요일","목요일","금요일","토요일"],
+        dayNamesShort   : ["일","월","화","수","목","금","토"],
+        header : {
+            left: 'prev,next,today',
+            center: 'title',
+            right  : ''
+        },
+        eventLimitText: "건 더보기",
+        views: {month: {titleFormat: 'YYYY년 M월'}},
+/*            header: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'month'
+        },*/
+/*            defaultDate: moment().format("YYYY-MM-DD"),
+        navLinks: true, // can click day/week names to navigate views
+        businessHours: true, // display business hours
+        editable: true,
+        droppable: true, // this allows things to be dropped onto the calendar
+        drop: function() {
+            // is the "remove after drop" checkbox checked?
+            if ($('#checkbox2').is(':checked')) {
+                // if so, remove the element from the "Draggable Events" list
+                $(this).remove();
+            }
+        },*/
+        dayClick: function(date, jsEvent, view) {
+        },
+
+        eventRender:function (event,element){
+debugger;
+            //일정에 hover시 요약
+            element.popover({
+              title: $('<div />', {
+                class: 'popoverTitleCalendar',
+                text: event.title
+              }).css({
+//                 'background': event.backgroundColor,
+                'background': '#F3F781',
+                'color': 'white'
+              }),
+              content: $('<div />', { class: 'popoverInfoCalendar' }).append('<div class="popoverDescCalendar"><b>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</b></div>'),
+
+              trigger: 'hover',
+              placement: 'top',
+              html: true,
+              container: 'body'
+            });
+        },
+        eventPositioned: function(info){
+              $(".fc-event-container").on('click', 'div', function (e) {
+                  $('.area').css("background-color", '#FFFFFF'); //기존 이벤트제목 배경색 투명처리.
+                  $(this).addClass('area');//배경색을 입힐 타겟 지정용 클래스명 삽입.
+                  $(this).css("background-color", '#F3F781'); //현재 클릭된 요소의 배경색 변경처리.
+                });
+         },
+        eventClick: function(calEvent, jsEvent, view) {
+            $('.select-calendar-color').each(function() {
+                $(this).removeClass("select-calendar-color");
+            });
+            $(this).toggleClass('select-calendar-color');
+            eventClickSelectItem = calEvent.id;
+        },
+        dayRender: function(date, cell) {
+        },
+        //캘린더 렌더링 이후
+        viewRender: function(view, element){
+
+        }
+
+    });
+
+    function fn_makeCalendarEvent(){
+        $("#calendar").fullCalendar("getDate");
+//         /*
+        if(displayWorkProgress()){
+            // ajax 처리로 데이터를 로딩 시킨다..
+            var ym = $("#ym").val();
+            var searchSchdlId = $("#searchSchdlId").val();
+            var p_events = { events: [] };
+             $.ajax({
+                url : "/mng/dsgnPrgrm/selectSprtgrpClndrList.do",
+                type: "GET",
+                dataType: 'json',
+                data : {
+                    "ym" : ym,
+                    "searchSchdlId" : searchSchdlId
+                },
+                success : function (data){
+                	let list = data.list;
+
+                    var schdul_events = { events: []};
+                    var idx=1;
+
+                    list.forEach(function(item,index){
+                    	p_events.events.push({
+                            title            : item.vstHr+':' +item.vstMnt+ ' ' +item.nm
+                          , start            : item.vstDe
+                          , end              : item.vstDe
+//                           , borderColor      : item.de
+//                           , backgroundCol    : item.borderColor
+//                           , textColor        : item.backgroundColor
+                          , prgrmNm          : item.prgrmNm
+                          , instNm           : item.instNm
+                          , vstDe            : item.vstDe
+                          , sprtgrpNmAcnt    : item.sprtgrpNmAcnt
+                       })
+                   });
+                   $("#calendar").fullCalendar('removeEventSources');
+                   $("#calendar").fullCalendar('addEventSource', p_events);
+
+                   closeWorkProgress();
+                   }
+            });
+        }
+//         */
+    }
+
+</script>
+
