@@ -27,10 +27,10 @@
                                 <div class="input-group input-group-sm input-group-dropdown mb-0">
 
                                     <select name="searchType" id="searchType" class="form-select form-control ">
-	                                    <option value="">- 전체 -</option>
-	                                    <option value="prgrmNm">프로그램명</option>
-	                                    <option value="instNm">기관명</option>
-	                                    <option value="dsgnNo">지정번호</option>
+                                      <option value="">- 전체 -</option>
+                                      <option value="prgrmNm">프로그램명</option>
+                                      <option value="instNm">기관명</option>
+                                      <option value="dsgnNo">지정번호</option>
                                     </select>
                                     <input type="text" name="searchKeyword" id="searchKeyword" class="form-control" aria-label="Text input with dropdown button">
                                 </div>
@@ -40,7 +40,7 @@
                             <div class="mb-0 form-group row">
                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>지정상태</strong></span>
                                 <div class="col-sm-12">
-	                                <span kattr:select_code="searchSttsCd" th:attr="grpCd=132" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true">
+                                  <span kattr:select_code="searchSttsCd" th:attr="grpCd=132" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true">
                                 </div>
                             </div>
                         </div>
@@ -63,10 +63,10 @@
                         <div class="col-lg-3 col-md-6 mb-3">
                             <div class="mb-0 form-group row">
                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>차수</strong></span>
-					 			<div class="col-sm-12">
-					 				<input class="form-control form-control-sm" name="searchDsgnCycl" id="searchDsgnCycl" type="text" />
-					 			</div>
-					 	  </div>
+                 <div class="col-sm-12">
+                   <input class="form-control form-control-sm" name="searchDsgnCycl" id="searchDsgnCycl" type="text" />
+                 </div>
+               </div>
                         </div>
                     </div>
                     <!-- //키워드 filter -->
@@ -87,10 +87,10 @@
                     </div>
                     <div class="col-12 col-md-6 text-right">
                         <th:block sec:authorize-url="/mng/dsgnPrgrm/selectDsgnPrgrmList.do">
-                            <button type="button" class="btn btn-primary waves-effect waves-light m-r-5"  onclick='fn_openBlackListModal()'>심사일정 캘린더</button>
+                            <button type="button" class="btn btn-primary waves-effect waves-light m-r-5"  onclick='openSrngCalenderModal()'>심사일정 캘린더</button>
                         </th:block>
                         <th:block sec:authorize-url="/mng/dsgnPrgrm/selectDsgnPrgrmList.do">
-                            <button type="button" class="btn btn-primary waves-effect waves-light m-r-5" onclick='fn_clearBlackList()' >엑셀다운로드</button>
+                            <button type="button" class="btn btn-primary waves-effect waves-light m-r-5" onclick='clearBlackList()' >엑셀다운로드</button>
                         </th:block>
                     </div>
                 </div>
@@ -113,28 +113,31 @@
 <!-- 지정정보 변경 팝업 -->
 <div class="modal fade" id="dsgnInfoChgListPopup" aria-hidden="true" data-bs-backdrop="static"></div>
 
+<!-- 심사일정 팝업 -->
+<div class="modal fade" id="srngCalenderPopup" aria-hidden="true" data-bs-backdrop="static"></div>
+
 <script th:inline="javascript">
-	var gridHelper1;
+  var gridHelper1;
 
-	$(function(){
-	    gridHelper1 = new GridHelper('jsGrid','contentPanel');
-	    writeJsGridData();
-	});
+  $(function(){
+      gridHelper1 = new GridHelper('jsGrid','contentPanel');
+      writeJsGridData();
+  });
 
-	function fn_init() {
-		$("#searchKeyword").val("");
-		$("#searchType").val("");
-		$("#searchSttsCd").val("");
-		$("#searchStartDsgnDe").val("");
-		$("#searchEndDsgnDe").val("");
-		$("#searchDsgnCycl").val("");
-	}
-	//검색버튼
+  function fn_init() {
+    $("#searchKeyword").val("");
+    $("#searchType").val("");
+    $("#searchSttsCd").val("");
+    $("#searchStartDsgnDe").val("");
+    $("#searchEndDsgnDe").val("");
+    $("#searchDsgnCycl").val("");
+  }
+  //검색버튼
     function fn_searchForm(){
         gridHelper1.resetListContent();
     }
 
-	//목록
+  //목록
     function writeJsGridData(){
         $("#jsGrid").jsGrid({
             height: "auto",
@@ -171,7 +174,7 @@
                     }else{
                         params.push({name: "orderField", value: 'dsgn_bgng_de'});
                     }
-debugger;
+
                     formData = formData.concat(params);
 
                     $.ajax({
@@ -214,38 +217,38 @@ debugger;
                 var detailUrl = "/mng/dsgnPrgrm/dsgnPrgrmDetailForm.html?prgrmid=" + args.item.prgrmid+"&hstryid="+args.item.hstryid;
                 //프로그램명 클릭 - 상세전환
                 if(args.event.target.cellIndex==5){
-                	detailUrl+="&tabIndex=1";
-	                gridHelper1.loadContent(detailUrl);
-	                gridHelper1.rowClick(args);
+                  detailUrl+="&tabIndex=1";
+                  gridHelper1.loadContent(detailUrl);
+                  gridHelper1.rowClick(args);
                 }
 
                 //지정상태 클릭 - 지정정보 변경 모달 팝업
                 else if(args.event.target.cellIndex==7){
 
-                	openDsgnInfoChgModal(args);
+                  openDsgnInfoChgModal(args);
                 }
                 //변경신청 클릭 - 변경신청 tab으로 화면 전환
                 else if(args.event.target.cellIndex==8){
-                	detailUrl+="&tabIndex=2";
-                	gridHelper1.loadContent(detailUrl);
+                  detailUrl+="&tabIndex=2";
+                  gridHelper1.loadContent(detailUrl);
                     gridHelper1.rowClick(args);
                 }
                 //운영결과 클릭 - 운영결과 tab으로 화면 전환
                 else if(args.event.target.cellIndex==9){
-                	detailUrl+="&tabIndex=3";
-                	gridHelper1.loadContent(detailUrl);
+                  detailUrl+="&tabIndex=3";
+                  gridHelper1.loadContent(detailUrl);
                     gridHelper1.rowClick(args);
                 }
                 //이행심사 클릭 - 이행심사 tab으로 화면 전환
                 else if(args.event.target.cellIndex==10){
-                	detailUrl+="&tabIndex=4";
-                	gridHelper1.loadContent(detailUrl);
+                  detailUrl+="&tabIndex=4";
+                  gridHelper1.loadContent(detailUrl);
                     gridHelper1.rowClick(args);
                 }
                 //이의신청 클릭 - 이의신청 tab으로 화면 전환
                 else if(args.event.target.cellIndex==11){
-                	detailUrl+="&tabIndex=5";
-                	gridHelper1.loadContent(detailUrl);
+                  detailUrl+="&tabIndex=5";
+                  gridHelper1.loadContent(detailUrl);
                     gridHelper1.rowClick(args);
                 }
 
@@ -295,12 +298,27 @@ debugger;
         });
     }
 
+    //fn_openSrngCalender
+    //담당자 변경 팝업
+    var srngCalenderModal;
+    var openSrngCalenderModal = () => {
+
+        var url = "/mng/dsgnPrgrm/sprtgrpCalenderPopup.html";    //회원검색
+
+        $("#srngCalenderPopup").load(url, function(response, status, xhr) {
+            if (status == "success") {
+            	srngCalenderModal = new bootstrap.Modal($('#srngCalenderPopup'));
+            	srngCalenderModal.show();
+            }
+        });
+    }
+
   //지정 정보 변경/재지정
     var dsgnInfoChgListModal;
     var openDsgnInfoChgModal = (args) => {
 
-    	var vPrgrmid = args.item.prgrmid;
-    	var vHstryid = args.item.hstryid;
+      var vPrgrmid = args.item.prgrmid;
+      var vHstryid = args.item.hstryid;
         var url ="/mng/dsgnPrgrm/dsgnInfoChgPopup.html?prgrmid="+vPrgrmid+"&hstryid="+vHstryid+"&callSe=dsgnInfoChgA";
 
         $("#dsgnInfoChgListPopup").load(url, function(response, status, xhr) {

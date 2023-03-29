@@ -340,18 +340,36 @@ public class DsgnPrgrmController {
 	public String prgrmDstnctnForm(DsgnPrgrmVo dsgnPrgrmVo, Model model, @UserInfo UserVo user) throws Exception {
 
 		dsgnPrgrmVo.setUser(user);
+		FileVo fileVo = new FileVo();
+		List<FileVo> eduPhotoFileList =null;
 
-		model.addAttribute("aplyInfo", dsgnPrgrmService.selectAplyInfo(dsgnPrgrmVo));        //신청정보
+		DsgnPrgrmVo aplyInfo         = dsgnPrgrmService.selectAplyInfo(dsgnPrgrmVo);
 		List<DsgnPrgrmVo> schdlList  = dsgnPrgrmService.selectPrgrmSchdlList(dsgnPrgrmVo);   //프로그램 일정 목록
     	List<DsgnPrgrmVo> planList   = dsgnPrgrmService.selectPlanList(dsgnPrgrmVo);         //프로그램 대처 계획
     	List<DsgnPrgrmVo> csltngList = dsgnPrgrmService.selectCsltngList(dsgnPrgrmVo);       //컨설팅목록
     	List<DsgnPrgrmVo> sbjctList  = dsgnPrgrmService.selectEduSbjctList(dsgnPrgrmVo);     //교육주제
 
+    	//교육사진 그룹 조회
+    	if (aplyInfo.getEduPhotoFilegrpid() != null && !aplyInfo.getEduPhotoFilegrpid().equals(0)) {
+    		fileVo.setFilegrpid(aplyInfo.getEduPhotoFilegrpid());
+    		eduPhotoFileList = asgsysSrngService.selectEvdncDcmntFileList(fileVo);
+    	}
+//    	for(int i=1; i < 4; i++) {    //교육사진 3개
+//    		if(eduPhotoFileList.size() == (i-1)) {
+//    			FileVo rowVo = new FileVo();
+//    			rowVo.setFileIdntfcKey("");
+//    			eduPhotoFileList.add((i-1), rowVo);
+//    		}
+//    	}
+
+    	model.addAttribute("aplyInfo", aplyInfo);        //신청정보
 		model.addAttribute("schdlList", schdlList);
 		model.addAttribute("planList", planList );
 		model.addAttribute("csltngList", csltngList );
 		model.addAttribute("sbjctList", sbjctList );
 		model.addAttribute("opner", dsgnPrgrmVo.getOpner());
+
+    	model.addAttribute("eduPhotoFileList", eduPhotoFileList);
 
 		return "front/dsgnPrgrm/prgrmDstnctnForm";
 	}
@@ -383,7 +401,6 @@ public class DsgnPrgrmController {
 		asgsysSrngVo.setEduSbjctCdLst(dsgnPrgrmVo.getEduSbjctCdLst());
 
 		retVal+=asgsysSrngService.insertPrgrmDstnctn(asgsysSrngVo);
-		retVal+=dsgnPrgrmService.updateAssPrgrm(dsgnPrgrmVo);
 
     	if (retVal > 0) {
     		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);

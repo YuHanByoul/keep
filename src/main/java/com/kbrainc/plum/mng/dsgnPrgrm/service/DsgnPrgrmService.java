@@ -382,6 +382,18 @@ public interface DsgnPrgrmService {
 	*/
 	public DsgnPrgrmVo selectDsgnOutl(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
+	/**
+	* 심사일정캘린더 목록 조회
+	*
+	* @Title : selectSprtgrpClndrList
+	* @Description : 심사일정캘린더 목록 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnPrgrmVo>
+	*/
+	public List<DsgnPrgrmVo> selectSprtgrpClndrList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
 
 
 }

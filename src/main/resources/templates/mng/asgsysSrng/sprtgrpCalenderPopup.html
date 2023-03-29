@@ -1,3 +1,31 @@
+<style>
+.hide
+{
+   display:none;
+}
+.select-calendar-color
+{
+  background-color: #0ac282 !important;
+}
+/* 일요일_빨간색 */
+.fc-sun .fc-day-number {
+  color: red;
+  text-decoration: none;
+}
+/* 토요일_파란색 */
+.fc-sat .fc-day-number {
+  color: blue;
+  text-decoration: none;
+}
+.fc-unthemed td.fc-today {
+  background-color : #fcf8e3 !important;
+}
+.fc-content .fc-title {
+    padding: 0 1px;
+    white-space: normal;
+}
+</style>
+
 <form id="sprtgrpCalenderFrm">
    <div class="modal-dialog modal-lg" role="document">
        <div class="modal-content type_2">
@@ -25,8 +53,12 @@
    </div>
 </form>
 
-<link rel="stylesheet" href="/files/bower_components/fullcalendar/dist/fullcalendar.css" />
-<link rel="stylesheet" href="/files/bower_components/fullcalendar/dist/fullcalendar.print.min.css" media="print"/>
+<!-- Calender css -->
+<link rel="stylesheet" type="text/css" href="/files/bower_components/fullcalendar/dist/fullcalendar.css">
+<link rel="stylesheet" type="text/css" href="/files/bower_components/fullcalendar/dist/fullcalendar.print.css" media="print">
+<!-- calender js -->
+<script type="text/javascript" src="/files/bower_components/moment/min/moment.min.js"></script>
+<script type="text/javascript" src="/files/bower_components/fullcalendar/dist/fullcalendar.min.js"></script>
 
 <script th:inline="javascript">
 
@@ -39,19 +71,14 @@ var sttsArr=[];
 $(function(){
 
 	$("#calendar") .on("mouseover","[name=vstSchdl]",function(e) {
-
 		var trgtId = e.currentTarget.id;
-
 		$("#"+trgtId).children().last().attr("style","display:show")
 
     });
 
 	$("#calendar") .on("mouseout","[name=vstSchdl]",function(e) {
-
         var trgtId = e.currentTarget.id;
-
         $("#"+trgtId).children().last().attr("style","display:none");
-
     });
 
 
@@ -77,7 +104,7 @@ function initFullCalendar(){
         editable : false,
         disable : false,
         droppable: false,
-        eventLimit: 5,
+        eventLimit: 4,
         displayEventTime: true,
         firstDay: 0,
         fixedWeekCount :false ,
@@ -94,6 +121,7 @@ function initFullCalendar(){
             right  : ''
 
         },
+        eventLimitText: "건 더보기",
         views: {month: {titleFormat: 'YYYY년 M월'}},
 
         customButtons: {
@@ -116,67 +144,59 @@ function initFullCalendar(){
 
         dayClick: function(date, jsEvent, view) {
 
-            if($(jsEvent.target).attr("for")){
-                //체크 박스 이벤트 중복 방지
-                return false;
-            }else{
-                var chkDay = moment(date).format("YYYY-MM-DD")
-                if($("#rsvt_stts"+chkDay).val()=='N'){
-                    singleChoiceModal(chkDay);
-                }
-            }
+//             if($(jsEvent.target).attr("for")){
+//                 //체크 박스 이벤트 중복 방지
+//                 return false;
+//             }else{
+//                 var chkDay = moment(date).format("YYYY-MM-DD")
+//                 if($("#rsvt_stts"+chkDay).val()=='N'){
+//                     singleChoiceModal(chkDay);
+//                 }
+//             }
         },
 
         eventRender:function (event,element){
-            //console.log(event);
-        },
+        	debugger;
+        	element.popover({
+                title: $('<div />', {
+                  class: 'popoverTitleCalendar',
+                  text: event.title
+                }).css({
+                  'background': "#fcf8e3",
+                  'color': 'white'
+                }),
+                content: $('<div />', {
+                    class: 'popoverInfoCalendar'
+                  })//.append('<p><strong>등록자:</strong> ' + event.id + '</p>')
+//                   .append('<p><strong>구분:</strong> ' + event.type + '</p>')
+//                   .append('<p><strong>시간:</strong> ' + getDisplayEventDate(event) + '</p>')
+                  .append('<div class="popoverDescCalendar"><b>' + event.title + '</b></div>'),
+                /*delay: {
+                      show: "800",
+                      hide: "50"
+                },*/
+                trigger: 'hover',
+                placement: 'top',
+                html: true,
+                container: 'body'
+              });
+          },
+          eventPositioned: function(info){
+                $(".fc-event-container").on('click', 'div', function (e) {
+                    $('.area').css("background-color", '#FFFFFF'); //기존 이벤트제목 배경색 투명처리.
+                    $(this).addClass('area');//배경색을 입힐 타겟 지정용 클래스명 삽입.
+                    $(this).css("background-color", '#F3F781'); //현재 클릭된 요소의 배경색 변경처리.
+                  });
+           },
 
         eventClick: function(calEvent, jsEvent, view) {
-            console.log(calEvent);
-            var cellStts = $("#rsvt_stts"+calEvent.de).val();
-            if(cellStts=='R'){
-                var modifyKind = (calEvent.utztnSeCd =='169101')? 'MS':'MR';
-                openRsvtModifyModal(modifyKind,calEvent.de);
-            }
+        	 $('.select-calendar-color').each(function() {
+                 $(this).removeClass("select-calendar-color");
+             });
+             $(this).toggleClass('select-calendar-color');
+             eventClickSelectItem = calEvent.id;
+
         },
-
-        dayRender: function(date, cell) {
-        },
-        //캘린더 렌더링 이후
-        viewRender: function(view, element){
-
-            var redirect_dt = "";
-
-            element.find(".fc-day-number").each(function(item){
-
-                var year_month_str = moment($("#calendar").fullCalendar("getDate")).format("YYYYMM")
-
-                let cell_dt      = $(this).parent().attr("data-date");
-                let thisMonthDay =  moment(cell_dt).format("YYYYMM")
-                let cellDay      =  moment(cell_dt).format("YYYYMMDD")
-                let day          =  moment(cell_dt).format("D")
-
-                let rsvtHtml ='   <div id="calendarDay'+cellDay+'">'
-                    rsvtHtml +=       day
-                    rsvtHtml +='  </div>'
-//                     rsvtHtml +='     <div class="border-checkbox-section">'
-//                     rsvtHtml +='         <div class="border-checkbox-group">'
-//                     rsvtHtml +='             <input class="border-checkbox checkDay" type="checkbox" name="calendarDay'+cell_dt+'" id="calendarDay'+cell_dt+'"  value="'+cell_dt+'">'
-//                     rsvtHtml +='             <label class="form-label border-checkbox-label" data-value="label"  for="calendarDay'+cell_dt+'"><span class="d-none">'+day+'</span></label>'
-//                     rsvtHtml +='         </div>'
-//                     rsvtHtml +='     </div>'
-
-//                     rsvtHtml +='    <a class="fc-day-grid-event fc-h-event fc-event fc-start fc-end fc-draggable" style="background-color: #FC6180; border-color: #FC6180; color: #fff">'
-//                     rsvtHtml +='        <div class="fc-content">                                                                                                                        '
-//                     rsvtHtml +='            <span class="fc-title">Business Lunch</span>                                                                                                '
-//                     rsvtHtml +='        </div>                                                                                                                                          '
-//                     rsvtHtml +='    </a>                                                                                                                                                '
-
-                $(this).html("<span>"+rsvtHtml+"</span>");
-
-            })
-
-        }
     });
 }
 
@@ -208,8 +228,6 @@ function makeCalendarEvent(gotoYYYYMM){
             dataType: 'json',
             data : params,
             success : function (data){
-
-
                 let list = data.list;
 
                 if(list.length > 0){
@@ -217,8 +235,22 @@ function makeCalendarEvent(gotoYYYYMM){
                     var schdul_events = { events: []};
                     var idx=1;
 
-                    list.forEach(function(item){
+                    list.forEach(function(item,index){
 
+                    	schdul_events.events.push({
+                            //title: item.prgrmNm
+                            title           : item.vstHr+':'+item.vstMnt+' '+item.nm
+                          , start           : item.vstDe
+                          , end             : item.vstDe
+//                           , borderColor     :"#FC6180"
+//                           , backgroundColor :"#fcf8e3"
+//                           , textColor       :"#FFF"
+                          , prgrmNm         :item.prgrmNm
+                          , instNm          :item.instNm
+                          , vstDe           :item.vstDe
+                          , sprtgrpNmAcnt   :item.sprtgrpNmAcnt
+                        });
+/*
                     	var de = item.vstDe.replaceAll("-","");
                         var vHtml ="";
 
@@ -236,7 +268,7 @@ function makeCalendarEvent(gotoYYYYMM){
 
                         $("#calendarDay"+de).append(vHtml);
                         idx++;
-
+                    	*/
                     })
 
 

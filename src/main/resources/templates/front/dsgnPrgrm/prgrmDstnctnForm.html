@@ -32,12 +32,18 @@
                     <strong class="tit">프로그램 정보 항목</strong>
                     <div class="sticky-steps">
                         <ul>
-                            <li class="active"><a th:href="@{/front/dsgnPrgrm/prgrmDstnctnForm.html?prgrmid=}+${aplyInfo.prgrmid}" >프로그램 우수성</a></li>
-                            <li><a th:href="@{/front/dsgnPrgrm/prgrmOperMngForm.html?prgrmid=}+${aplyInfo.prgrmid}" >프로그램 운영관리</a></li>
-                            <li><a th:href="@{/front/dsgnPrgrm/prgrmEvlForm.html?prgrmid=}+${aplyInfo.prgrmid}" >프로그램 평가</a></li>
-                            <li><a th:href="@{/front/dsgnPrgrm/ldrQlfcForm.html?prgrmid=}+${aplyInfo.prgrmid}" >지도자의 자격 및 배치</a></li>
-                            <li><a th:href="@{/front/dsgnPrgrm/sftyMngForm.html?prgrmid=}+${aplyInfo.prgrmid}" >안전관리</a></li>
-                            <li><a th:href="@{/front/dsgnPrgrm/chkListForm.html?prgrmid=}+${aplyInfo.prgrmid}" >체크리스트</a></li>
+<!--                             <li class="active"><a th:href="@{/front/dsgnPrgrm/prgrmDstnctnForm.html?prgrmid=}+${aplyInfo.prgrmid}" >프로그램 우수성</a></li> -->
+<!--                             <li><a th:href="@{/front/dsgnPrgrm/prgrmOperMngForm.html?prgrmid=}+${aplyInfo.prgrmid}" >프로그램 운영관리</a></li> -->
+<!--                             <li><a th:href="@{/front/dsgnPrgrm/prgrmEvlForm.html?prgrmid=}+${aplyInfo.prgrmid}" >프로그램 평가</a></li> -->
+<!--                             <li><a th:href="@{/front/dsgnPrgrm/ldrQlfcForm.html?prgrmid=}+${aplyInfo.prgrmid}" >지도자의 자격 및 배치</a></li> -->
+<!--                             <li><a th:href="@{/front/dsgnPrgrm/sftyMngForm.html?prgrmid=}+${aplyInfo.prgrmid}" >안전관리</a></li> -->
+<!--                             <li><a th:href="@{/front/dsgnPrgrm/chkListForm.html?prgrmid=}+${aplyInfo.prgrmid}" >체크리스트</a></li> -->
+                            <li class="active"><a>프로그램 우수성</a></li>
+                            <li>               <a>프로그램 운영관리</a></li>
+                            <li>               <a>프로그램 평가</a></li>
+                            <li>               <a>지도자의 자격 및 배치</a></li>
+                            <li>               <a>안전관리</a></li>
+                            <li>               <a>체크리스트</a></li>
                         </ul>
                         <div class="btn-wrap">
                             <div class="center">
@@ -243,25 +249,28 @@
                                         <label class="form-input">
                                             <input id="multiFileInput" type="file" class="blind" multiple="multiple" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부" maxcount="3"> <span class="btn-medium btn-gray">파일선택</span>
                                         </label>
-                                        <ul th:if="${fileList != null}">
-                                        </ul>
-
                                         <div class="upload-response">
                                             <div id="multipleFileUploadError"></div>
                                             <div id="multipleFileUploadSuccess">
-                                                <th:block th:if="${fileList != null}" th:each="file : ${fileList}">
-                                                    <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}">
-                                                        <span class="name">
-                                                            <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
-                                                               th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
-                                                                [[${file.orginlFileNm}]]
-                                                            </a>
-                                                        </span>
-                                                    </li>
-                                                </th:block>
+                                            <th:block th:if="${eduPhotoFileList != null}">
+                                                <div th:each="item : ${eduPhotoFileList}" th:id="${item.fileid}" class="col-auto">
+                                                    <ul th:if="${item.orginlFileNm != null}">
+                                                        <li th:fileid='${item.fileid}' th:id='fileid + ${item.fileid}'
+                                                            th:fileIdntfcKey="${item.fileIdntfcKey}"
+                                                            th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))"
+                                                            class='label label-inverse'
+                                                            th:data_ext="${#strings.replace(item.fileExtsn, '.', '')}">
+                                                            <th:block th:text="${item.orginlFileNm}" />&nbsp;&nbsp;
+                                                            <a th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="fn_deleteFileList(this.name, this.dataset.idntfcKey)" class='text-white'>
+                                                            <th:block th:text="X"></th:block></a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </th:block>
                                             </div>
                                         </div>
-                                        <input type="hidden"  id = "filegrpid" name = "filegrpid" th:value="${(aplyInfo.filegrpid == '' or aplyInfo.filegrpid == null) ? 0 : aplyInfo.filegrpid}"/>
+
+                                        <input type="hidden"  id = "eduPhotoFilegrpid" name = "eduPhotoFilegrpid" th:value="${(aplyInfo.eduPhotoFilegrpid == '' or aplyInfo.eduPhotoFilegrpid == null) ? 0 : aplyInfo.eduPhotoFilegrpid}"/>
                                         <input type="text" id="chkFile" name="chkFile" value="" style="display: none;">
 
                                         <p class="feedback"></p>
@@ -614,7 +623,6 @@
                 $("[id^=planPrgrmNm]").each(function(index, item)  { param["emrgcyActnPlanLst[" + index + "].prgrmNm"     ] = item.value; });    //프로그램명
 
                 //숙박여부와 프로그램우수성의 운영형태로 체크리스트의 운영형태를 판단하여 체크리스트 결정
-
                 if($("#operFrmCd").val() == "120104") {
                 	param["chkOperFrmCd"] = "145102";
                 }
@@ -635,7 +643,9 @@
                     if (!validCbxGrp($("#eduTrgtTd")  , "교육대상을 입력해 주십시오.")) return false;
 
                     //첨부파일
-                    if($("[id^=inputFiles]").length==0){
+                    var fileCnt = $("[fileid],[id^=fileid]").length;
+                    if(fileCnt==0){
+                    	//$("[fileid]").length
                     	var msg="첨부파일을 입력해 주십시오";
                     	if (!$("#fileTd").find(".feedback.invalid").length) {
                             $("#fileTd").append(`<p class="feedback invalid">${msg}</p>`);
@@ -800,7 +810,6 @@
                         	$("#cnsltngid").val("");
                             $("#cnsltngid").prop("readonly",false);
                         }
-
                     }
 
                     //숙박여부
@@ -829,7 +838,7 @@
                         uploadFileCnt++;
                     }
 
-                    formData.append("filegrpid", $("#filegrpid").val());
+                    formData.append("filegrpid", $("#eduPhotoFilegrpid").val());
                     formData.append("filegrpNm", "dstnctnEduPhoto_file");
 
                     if(uploadFileCnt >0 ){
@@ -844,18 +853,16 @@
                                 if(response.result == 'fail'){
                                     alert(response.msg);
                                 }else{
-                                    if($("#filegrpid").val()=='0' || $("#filegrpid").val()==''  || $("#filegrpid").val()==null){
-                                        $("#filegrpid").val( response[0].filegrpid );
+                                    if($("#eduPhotoFilegrpid").val()=='0' || $("#eduPhotoFilegrpid").val()==''  || $("#eduPhotoFilegrpid").val()==null){
+                                        $("#eduPhotoFilegrpid").val( response[0].filegrpid );
                                     }
 
                                     for(i = 0 ;i < response.length; i++ ){
-
-                                        content = "<div class ='' id='inputFiles"+response[i].fileid+"'>"+response[i].orginlFileNm ;
+                                        content = '<ul>';
+                                        content +=  '<li class="file-block" data_ext="'+response[i].fileExtsn.replace(".", '')+'" id="fileid'+response[i].fileid+'"><span class="name">'+response[i].orginlFileNm
                                         content += '&nbsp;&nbsp;<a href="javascript:void(0)" onclick=uploadFileCnt--;fn_deleteFileList("'+response[i].fileid+'","'+response[i].fileIdntfcKey+'")>X</a></span></li>'
                                         content += '</ul>';
                                         $('#multipleFileUploadSuccess').append(content);
-
-                                        if(i==0)$("#chkFile").val(response[i].fileid);
                                     }
                                 }
                             }
@@ -876,7 +883,9 @@
 
                 if(!confirm("파일을 삭제하시겠습니까?")){return;}
                 fn_deleteFile(fileid, fileIdntfcKey);
-                $("#inputFiles"+fileid).remove();
+
+                //$("#"+fileid).remove();
+                $("#fileid"+fileid).remove();
 
             }
 
