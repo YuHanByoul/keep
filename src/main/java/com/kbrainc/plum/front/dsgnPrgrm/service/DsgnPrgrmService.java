@@ -143,6 +143,19 @@ public interface DsgnPrgrmService {
 	public int insertPrgrmDstnctnForm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 	/**
+	* 교육주제 목록 조회
+	*
+	* @Title : selectEduSbjctList
+	* @Description : 교육주제 목록 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnPrgrmVo>
+	*/
+	public List<DsgnPrgrmVo> selectEduSbjctList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+
+	/**
 	* 대처계획 목록 조회
 	*
 	* @Title : selectPlanList

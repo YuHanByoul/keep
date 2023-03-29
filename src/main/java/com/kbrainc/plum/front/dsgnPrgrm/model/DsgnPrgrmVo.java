@@ -252,7 +252,10 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     /** 운영일정 */
     private String targetMm;
 
-    /** 교육주제 */
+    /** 교육주제 코드*/
+    private String eduSbjctCd;
+
+    /** 교육주제 코드 명*/
     private String eduSbjctCdNm;
 
     /** 교육_시간 */

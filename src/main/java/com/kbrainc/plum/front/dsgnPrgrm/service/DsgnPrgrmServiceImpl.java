@@ -113,6 +113,21 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	}
 
 	/**
+	* 교육주제 목록 조회
+	*
+	* @Title : selectEduSbjctList
+	* @Description : 교육주제 목록 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnPrgrmVo>
+	*/
+	public List<DsgnPrgrmVo> selectEduSbjctList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
+		return dsgnPrgrmDao.selectEduSbjctList(dsgnPrgrmVo);
+	}
+
+
+	/**
 	* 대처계획 목록 조회
 	*
 	* @Title : selectPlanList

@@ -74,6 +74,18 @@ public interface DsgnPrgrmDao {
 	public List<DsgnPrgrmVo> selectInstPrgrmList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 	/**
+	* 교육주제 목록 조회
+	*
+	* @Title : selectEduSbjctList
+	* @Description : 교육주제 목록 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnPrgrmVo>
+	*/
+	public List<DsgnPrgrmVo> selectEduSbjctList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
 	* 프로그램 운영일정 목록조회
 	*
 	* @Title : selectPrgrmSchdlList

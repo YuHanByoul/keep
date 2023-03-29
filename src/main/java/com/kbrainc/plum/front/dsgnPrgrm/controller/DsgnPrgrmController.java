@@ -8,7 +8,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.apache.ibatis.type.Alias;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileServiceImpl;
 import com.kbrainc.plum.cmm.service.CommonService;
-import com.kbrainc.plum.front.dsgnMng.model.DsgnMngVo;
 import com.kbrainc.plum.front.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.front.dsgnPrgrm.service.DsgnPrgrmService;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
@@ -343,32 +341,26 @@ public class DsgnPrgrmController {
 
 		dsgnPrgrmVo.setUser(user);
 
-		//신청정보
-		model.addAttribute("aplyInfo", dsgnPrgrmService.selectAplyInfo(dsgnPrgrmVo));
-
-		//프로그램 일정 목록
-		List<DsgnPrgrmVo> schdlList = dsgnPrgrmService.selectPrgrmSchdlList(dsgnPrgrmVo);
-
-		//프로그램 대처 계획
-    	List<DsgnPrgrmVo> planList  = dsgnPrgrmService.selectPlanList(dsgnPrgrmVo);
-
-    	//컨설팅목록
-    	List<DsgnPrgrmVo> csltngList  = dsgnPrgrmService.selectCsltngList(dsgnPrgrmVo);
+		model.addAttribute("aplyInfo", dsgnPrgrmService.selectAplyInfo(dsgnPrgrmVo));        //신청정보
+		List<DsgnPrgrmVo> schdlList  = dsgnPrgrmService.selectPrgrmSchdlList(dsgnPrgrmVo);   //프로그램 일정 목록
+    	List<DsgnPrgrmVo> planList   = dsgnPrgrmService.selectPlanList(dsgnPrgrmVo);         //프로그램 대처 계획
+    	List<DsgnPrgrmVo> csltngList = dsgnPrgrmService.selectCsltngList(dsgnPrgrmVo);       //컨설팅목록
+    	List<DsgnPrgrmVo> sbjctList  = dsgnPrgrmService.selectEduSbjctList(dsgnPrgrmVo);     //교육주제
 
 		model.addAttribute("schdlList", schdlList);
 		model.addAttribute("planList", planList );
 		model.addAttribute("csltngList", csltngList );
+		model.addAttribute("sbjctList", sbjctList );
 		model.addAttribute("opner", dsgnPrgrmVo.getOpner());
 
 		return "front/dsgnPrgrm/prgrmDstnctnForm";
 	}
 
-
 	/**
 	* 프로그램 우수성 등록
 	*
 	* @Title : insertPrgrmDstnctnForm
-	* @Description : TODO
+	* @Description : 프로그램 우수성 등록
 	* @param dsgnPrgrmVo
 	* @param bindingResult1
 	* @param user
@@ -388,6 +380,7 @@ public class DsgnPrgrmController {
 
 		AsgsysSrngVo asgsysSrngVo = new AsgsysSrngVo();
 		BeanUtils.copyProperties(dsgnPrgrmVo, asgsysSrngVo);
+		asgsysSrngVo.setEduSbjctCdLst(dsgnPrgrmVo.getEduSbjctCdLst());
 
 		retVal+=asgsysSrngService.insertPrgrmDstnctn(asgsysSrngVo);
 		retVal+=dsgnPrgrmService.updateAssPrgrm(dsgnPrgrmVo);
