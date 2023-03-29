@@ -25,7 +25,11 @@
                     , A.INST_NM AS INST_NM
                     , NULL AS PRGRM_NM
                     , A.TELNO 
-                    , A.HMPG AS HMPG 
+                    , CASE 
+                        WHEN (LENGTH(A.HMPG) <![CDATA[<]]> 1 OR A.HMPG IS NULL) THEN NULL
+                        WHEN INSTR(A.HMPG, '://') > 0 THEN A.HMPG
+                        ELSE CONCAT('https://', A.HMPG)
+                    END AS HMPG  
                     , A.ADDR 
                     , A.ADDR_DTL 
                     , NULL AS EDU_NOPE
@@ -47,13 +51,17 @@
                     , C.FCLT_NM AS INST_NM
                     , NULL AS PRGRM_NM
                     , NULL AS TELNO 
-                    , C.EXTNL_URL AS HMPG 
+                    , CASE 
+                        WHEN (LENGTH(C.EXTNL_URL) <![CDATA[<]]> 1 OR C.EXTNL_URL IS NULL) THEN NULL
+                        WHEN INSTR(C.EXTNL_URL, '://') > 0 THEN C.EXTNL_URL
+                        ELSE CONCAT('https://', C.EXTNL_URL)
+                    END AS HMPG  
                     , C.ADDR 
                     , C.ADDR_DTL 
                     , NULL AS EDU_NOPE
                     , NULL AS PRGRM_TRGT
                     , NULL AS PRGRM_SJCT
-                    , 2 AS ORDR
+                    , 3 AS ORDR
                     , C.REG_DT 
                 FROM TB_FCL_FCLT C
                 WHERE C.USE_YN = 'Y'
@@ -73,7 +81,7 @@
                     , D.EDU_NOPE 
                     , GROUP_CONCAT(DISTINCT H.CD_NM ORDER BY H.CD SEPARATOR ', ') AS PRGRM_TRGT
                     , GROUP_CONCAT(DISTINCT J.CD_NM ORDER BY J.CD SEPARATOR ', ') AS PRGRM_SJCT
-                    , 3 AS ORDR
+                    , 5 AS ORDR
                     , D.REG_DT 
                 FROM TB_EDU_INFNT_PRGRM D
                     LEFT JOIN TB_EDU_CLSSRM E ON D.CLSSRMID = E.CLSSRMID 
@@ -100,7 +108,7 @@
                     , K.EDU_NOPE 
                     , GROUP_CONCAT(DISTINCT O.CD_NM ORDER BY O.CD SEPARATOR ', ') AS PRGRM_TRGT
                     , GROUP_CONCAT(DISTINCT Q.CD_NM ORDER BY Q.CD SEPARATOR ', ') AS PRGRM_SJCT
-                    , 4 AS ORDR
+                    , 6 AS ORDR
                     , K.REG_DT 
                 FROM TB_EDU_MVMN_PRGRM K
                     LEFT JOIN TB_EDU_SAREA L ON K.SAREAID = L.SAREAID 
@@ -113,7 +121,7 @@
                 GROUP BY K.PRGRMID 
                 UNION ALL 
                 SELECT 
-                    R.PRGRMID 
+                    R.PRGRMID AS ID
                     , '프로그램' AS TYPE
                     , NULL AS CATEGORY_CD
                     , '우수 환경교육 프로그램' AS CATEGORY_NM
@@ -147,7 +155,7 @@
                             )
                     END AS PRGRM_TRGT
                     , GROUP_CONCAT(DISTINCT U.CD_NM ORDER BY U.CD SEPARATOR ', ') AS PRGRM_SJCT
-                    , 5 AS ORDR
+                    , 7 AS ORDR
                     , R.REG_DT
                 FROM TB_ASS_PRGRM R
                     LEFT JOIN TB_ASS_PRGRM_DSTNCTN S ON R.PRGRMID = S.PRGRMID
@@ -156,6 +164,42 @@
                     LEFT JOIN TB_CMM_INST V ON R.INSTID = V.INSTID 
                 WHERE STTS_CD = '111111'
                 GROUP BY R.PRGRMID 
+                UNION ALL
+                SELECT 
+                    MIR.RESRCEID AS ID
+                    , CASE 
+                        WHEN CD.CD = '238101' THEN CD.CD_NM 
+                        WHEN CD.CD = '238102' THEN '시설'
+                        WHEN CD.UPPR_CD = '238103' THEN '프로그램' 
+                    END AS TYPE
+                    , MIR.RESRCE_SE_CD AS CATEGORY_CD
+                    , CASE 
+                        WHEN CD.UPPR_CD = '238103' THEN '환경교육 프로그램' 
+                        ELSE CD.CD_NM 
+                    END AS CATEGORY_NM
+                    , NULL AS INSTID
+                    , MIR.INST_NM 
+                    , MIR.RESRCE_NM AS PRGRM_NM 
+                    , NULL AS TELNO 
+                    , CASE 
+                        WHEN (LENGTH(MIR.HMPG) <![CDATA[<]]> 1 OR MIR.HMPG IS NULL) THEN NULL
+                        WHEN INSTR(MIR.HMPG, '://') > 0 THEN MIR.HMPG
+                        ELSE CONCAT('https://', MIR.HMPG)
+                    END AS HMPG  
+                    , MIR.ADDR 
+                    , MIR.ADDR_DTL 
+                    , MIR.EDU_NOPE 
+                    , MIR.EDU_TRGT AS PRGRM_TRGT
+                    , MIR.EDU_SBJCT AS PRGRM_SJCT
+                    , CASE 
+                        WHEN CD.CD = '238101' THEN 2
+                        WHEN CD.CD = '238102' THEN 4
+                        WHEN CD.UPPR_CD = '238103' THEN 8
+                    END AS ORDR
+                    , MIR.REG_DT 
+                FROM TB_CMM_MAP_INDICT_RESRCE MIR
+                    LEFT OUTER JOIN TB_CMM_CD CD ON MIR.RESRCE_SE_CD = CD.CD
+                WHERE MIR.USE_YN = 'Y'
             ) DL
             WHERE 
                 DL.ADDR IS NOT NULL
@@ -342,6 +386,43 @@
                     LEFT JOIN TB_CMM_INST V ON R.INSTID = V.INSTID 
                 WHERE STTS_CD = '111111'
                 GROUP BY R.PRGRMID 
+                UNION ALL
+                SELECT 
+                    MIR.RESRCEID AS PRGRMID
+                    , CASE 
+                        WHEN CD.CD = '238101' THEN CD.CD_NM 
+                        WHEN CD.CD = '238102' THEN '시설'
+                        WHEN CD.UPPR_CD = '238103' THEN '프로그램' 
+                    END AS TYPE
+                    , MIR.RESRCE_SE_CD AS CATEGORY_CD
+                    , CASE 
+                        WHEN CD.UPPR_CD = '238103' THEN '환경교육 프로그램' 
+                        ELSE CD.CD_NM 
+                    END AS CATEGORY_NM
+                    , NULL AS INSTID
+                    , MIR.INST_NM 
+                    , MIR.RESRCE_NM 
+                    , NULL AS TELNO 
+                    , CASE 
+                        WHEN (LENGTH(MIR.HMPG) <![CDATA[<]]>  1 OR MIR.HMPG IS NULL) THEN NULL
+                        WHEN INSTR(MIR.HMPG, '://') > 0 THEN MIR.HMPG
+                        ELSE CONCAT('https://', MIR.HMPG)
+                    END AS HMPG  
+                    , MIR.ADDR 
+                    , MIR.ADDR_DTL 
+                    , MIR.EDU_NOPE 
+                    , MIR.EDU_TRGT AS PRGRM_TRGT
+                    , MIR.EDU_SBJCT AS PRGRM_SJCT
+                    , CASE 
+                        WHEN CD.CD = '238101' THEN 2
+                        WHEN CD.CD = '238102' THEN 4
+                        WHEN CD.UPPR_CD = '238103' THEN 8
+                    END AS ORDR
+                    , MIR.REG_DT 
+                FROM TB_CMM_MAP_INDICT_RESRCE MIR
+                    LEFT OUTER JOIN TB_CMM_CD CD ON MIR.RESRCE_SE_CD = CD.CD
+                WHERE MIR.USE_YN = 'Y'
+                    AND LENGTH(MIR.ADDR) > 0 
             ) DL
             WHERE 
                 DL.ADDR IS NOT NULL 
