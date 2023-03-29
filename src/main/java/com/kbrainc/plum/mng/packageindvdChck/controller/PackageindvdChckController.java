@@ -1,5 +1,8 @@
 package com.kbrainc.plum.mng.packageindvdChck.controller;
 
+import com.kbrainc.plum.mng.lend.model.LendVo;
+import com.kbrainc.plum.mng.lend.service.LendService;
+import com.kbrainc.plum.mng.pack.model.PackageVo;
 import com.kbrainc.plum.mng.packageindvdChck.model.PackageindvdChckAnsVo;
 import com.kbrainc.plum.mng.packageindvdChck.model.PackageindvdChckArtclVo;
 import com.kbrainc.plum.mng.packageindvdChck.model.PackageindvdChckVo;
@@ -37,6 +40,8 @@ public class PackageindvdChckController {
     @Autowired
     private PackageindvdChckService packageindvdChckService;
 
+    @Autowired
+    private LendService lendService;
 
     /**
      * 꾸러미 개체 점검 목록 화면
@@ -47,21 +52,49 @@ public class PackageindvdChckController {
      * @Description : 꾸러미 개체 점검 목록 화면
      */
     @GetMapping("/packageindvdChckList.html")
-    public String packageindvdChckList() throws Exception {
+    public String packageindvdChckList(Model model) throws Exception {
+        PackageVo packageVo = new PackageVo();
+        LendVo lenVo = new LendVo();
+
+        model.addAttribute("lendList", lendService.selectLendRcritList(lenVo));
+        model.addAttribute("packageList", lendService.selectPackageList(packageVo));
+
         return "/mng/packageindvdChck/packageindvdChckList";
     }
 
+    /**
+     * 꾸러미 개체 점검 상세 화면
+     *
+     * @param packageindvdChckVo
+     * @param model
+     * @return string
+     * @throws Exception
+     * @Title : packageindvdChckDetail
+     * @Description : 꾸러미 개체 점검 상세 화면
+     */
     @GetMapping("/packageindvdChckDetail.html")
     public String packageindvdChckDetail(PackageindvdChckVo packageindvdChckVo, Model model) throws Exception {
         PackageindvdChckVo packageindvdChck = packageindvdChckService.selectPackageindvdChck(packageindvdChckVo);
-        List<PackageindvdTchaidVo> packageindvdTchaids = packageindvdChckService.selectPackageindvdTchaidList(packageindvdChck); //꾸러미객체에 해당하는 교구 리스트
-        List<PackageindvdChckArtclVo> packageindvdChckArtcls = packageindvdChckService.selectPackageindvdChckArtclList(packageindvdChck); // 양식리스트
+        List<PackageindvdTchaidVo> packageindvdTchaids = packageindvdChckService.selectPackageindvdTchaidList(packageindvdChck); //꾸러미객체 교구 리스트
+        List<PackageindvdChckArtclVo> packageindvdChckArtcls = packageindvdChckService.selectPackageindvdChckArtclList(packageindvdChck); // 양식 리스트
+        List<PackageindvdChckAnsVo> packageindvdChckAns = packageindvdChckService.selectPackageindvdChckAnsList(packageindvdChck); //점검 답변 리스트
 
-        List<PackageindvdChckAnsVo> packageindvdChckAns = packageindvdChckService.selectPackageindvdChckAnsList(packageindvdChck);
+        for (PackageindvdChckArtclVo packageindvdChckArtcl : packageindvdChckArtcls) {
+            String[] split = packageindvdChckArtcl.getExCn().split(",");
+            for (String s : split) {
+                packageindvdChckArtcl.getArtclExList().add(s);
+            }
+
+            for (PackageindvdChckAnsVo packageindvdChckAn : packageindvdChckAns) {
+                if (packageindvdChckAn.getArtclid().equals(packageindvdChckArtcl.getArtclid())) {
+                    packageindvdChckArtcl.getCheckedExList().add(packageindvdChckAn.getExid());
+                    packageindvdChckArtcl.getActnMttrList().add(packageindvdChckAn.getActnMttr());
+                }
+            }
+        }
 
         model.addAttribute("packageindvdChck", packageindvdChck); //꾸러미 점검 정보
         model.addAttribute("packageindvdTchaids", packageindvdTchaids); //꾸러미 교구 리스트
-        model.addAttribute("packageindvdChckAns", packageindvdChckAns);
         model.addAttribute("packageindvdChckArtcls", packageindvdChckArtcls);
 
         return "/mng/packageindvdChck/packageindvdChckDetail";
@@ -77,8 +110,8 @@ public class PackageindvdChckController {
      */
     @GetMapping("/selectPackageindvdChckList.do")
     @ResponseBody
-    public Map<String,Object> selectPackageindvdChckList(PackageindvdChckVo packageIndvdChckVo) throws Exception {
-        Map<String,Object> result = new HashMap<>();
+    public Map<String, Object> selectPackageindvdChckList(PackageindvdChckVo packageIndvdChckVo) throws Exception {
+        Map<String, Object> result = new HashMap<>();
 
         List<PackageindvdChckVo> list = packageindvdChckService.selectPackageindvdChckList(packageIndvdChckVo);
 

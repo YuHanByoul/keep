@@ -21,47 +21,30 @@
                                         <div class="input-group input-group-sm input-group-dropdown mb-0">
                                             <select name="searchType" id="searchType" class="form-select form-control">
                                                 <option value="">- 선택 -</option>
-                                                <option value="nm">담당자명</option>
+                                                <option value="picNm">담당자명</option>
                                             </select>
                                             <input type="text" class="form-control" aria-label="Text input with dropdown button" name="searchKeyword" id="searchKeyword"/>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-lg-3 col-md-6 mb-3">
-                                    <div class="mb-0 form-group row">
-                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>꾸러미</strong></div>
-                                        <div class="col-sm-12">
-                                            <select class="js-example-basic-single col-sm-12">
-                                                <option value="" disabled selected>-선택-</option>
-                                                <optgroup label="Developer">
-                                                    <option value="AL">Alabama</option>
-                                                    <option value="WY">Wyoming</option>
-                                                </optgroup>
-                                                <optgroup label="Designer">
-                                                    <option value="WY">Peter</option>
-                                                    <option value="WY">Hanry Die</option>
-                                                    <option value="WY">John Doe</option>
-                                                </optgroup>
-                                            </select>
+                                    <div class="mb-2 form-group required">
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchPackageid"><strong>꾸러미 선택</strong></label>
+                                        <div class="col-12">
+                                            <input type="text" class="cmpnt-input" selectsearchcondition="searchPackageid" id="searchPackageid" name="searchPackageid"
+                                                   style="position:absolute;width:0px;margin:0px;padding:0px;visibility:hidden;">
+                                            <select class="select2-hidden-accessible" name="selectPackageid" id="selectPackageid" tabindex="-1" aria-hidden="true"></select>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="col-lg-3 col-md-6 mb-3">
-                                    <div class="mb-0 form-group row">
-                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>대여모집</strong></div>
-                                        <div class="col-sm-12">
-                                            <select class="js-example-basic-single col-sm-12">
-                                                <option value="" disabled selected>-선택-</option>
-                                                <optgroup label="Developer">
-                                                    <option value="AL">Alabama</option>
-                                                    <option value="WY">Wyoming</option>
-                                                </optgroup>
-                                                <optgroup label="Designer">
-                                                    <option value="WY">Peter</option>
-                                                    <option value="WY">Hanry Die</option>
-                                                    <option value="WY">John Doe</option>
-                                                </optgroup>
-                                            </select>
+                                    <div class="mb-2 form-group ">
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchRcritid"><strong>대여모집</strong></label>
+                                        <div class="col-12">
+                                            <input type="text" class="cmpnt-input" selectsearchcondition="searchRcritid" id="searchRcritid" name="searchRcritid"
+                                                   style="position:absolute;width:0px;margin:0px;padding:0px;visibility:hidden;">
+                                            <select class="select2-hidden-accessible" name="selectRcritid" id="selectRcritid" tabindex="-1" aria-hidden="true"></select>
                                         </div>
                                     </div>
                                 </div>
@@ -78,16 +61,18 @@
 
                                 <div class="col-lg-3 col-md-6 mb-3">
                                     <div class="mb-0 form-group row">
-                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchPeriod"><strong>공동구매 접수기간</strong></label>
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchPeriod"><strong>점검기간</strong></label>
                                         <div class="col-sm-12">
                                             <input type="text" name="searchPeriod" class="form-control form-control-sm" value="" id="searchPeriod">
+                                            <input type="hidden" id="searchBgngDt"name="searchBgngDt" >
+                                            <input type="hidden" id="searchEndDt"name="searchEndDt" >
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="mt-1 p-t-20 text-center border-top">
-                                <button class="btn btn-disabled m-r-5" onclick="fn_init()">초기화</button>
-                                <button class="btn btn-primary" onclick="fn_searchForm()">검색</button>
+                                <button class="btn btn-disabled m-r-5" onclick="searchInit()">초기화</button>
+                                <button class="btn btn-primary" onclick="search()">검색</button>
                             </div>
                         </form>
                     </div>
@@ -102,8 +87,12 @@
                         </div>
                     </div>
                     <div class="card-block-small">
-                        <table id="gridTable" class="table-responsive"></table>
-                        <div id="pagerContainer" class="text-center"></div>
+                        <div class="dt-responsive table-responsive">
+                            <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                                <table id="gridTable" class="table-responsive"></table>
+                                <div id="pagerContainer" class="text-center"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -117,6 +106,7 @@
     </div>
     <!-- Page-body end -->
 
+    <script type="text/javascript" src="/files/assets/pages/advance-elements/select2-custom.js"></script>
     <script type="text/javascript" src="/files/bower_components/moment/min/moment.min.js"></script>
     <script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
     <link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
@@ -125,10 +115,14 @@
         let packegeIndvdChckGridHelper;
         let listUrl = '/mng/packageindvdChck/selectPackageindvdChckList.do';
         let detailUrl = '/mng/packageindvdChck/packageindvdChckDetail.html';
+        let packageList = /*[[${packageList}]]*/null;
+        let lendList = /*[[${lendList}]]*/null;
 
         $(function () {
             packegeIndvdChckGridHelper = new GridHelper('gridTable', 'contentPanel');
             initDateRangePicker();
+            setPackageSelectBox();
+            setLendSelectBox();
 
             $('#gridTable').jsGrid({
                 height: "auto",
@@ -155,8 +149,8 @@
                         let params = [
                             {name: "pageNumber", value: filter.pageIndex},
                             {name: "rowPerPage", value: filter.pageSize},
-                            {"searchBgngDt": $.trim($('#searchPeriod').val().split("~")[0])},
-                            {"searchEndDt": $.trim($('#searchPeriod').val().split("~")[1])},
+                            {"searchBgngDt": $('#searchBgngDt').val()},
+                            {"searchEndDt": $('#searchEndDt').val()},
                         ]
 
                         if (filter.sortField != undefined) {
@@ -185,34 +179,112 @@
                     },
                 },
                 fields: [
-                    {title: 'No.', name: 'rowNumber', type: "number", width: "80", align: "center", sorting: false},
+                    {title: 'No.', name: 'rowNumber', type: "number", width: "80", align: "center"},
                     {title: '꾸러미', name: 'packageindvdNm', type: "text", width: "250"},
-                    {title: '개체아이디', name: 'indvdno', type: "text", width: "150", align: "center", sorting: false},
+                    {title: '개체아이디', name: 'indvdno', type: "text", width: "150", align: "center"},
                     {title: '점검종류', name: 'chckCdNm', type: "text", width: "120", align: "center"},
                     {title: '담당자', name: 'picNm', type: "text", width: "150", align: "center"},
-                    {title: '점검일시', name: 'chckDe', type: "text", width: "120", align: "center", sorting: false},
-                    {title: '대여모집(차수)', type: "text", width: "120", align: "center", itemTemplate: (value, item) => `${!!item.rndid ? `${item.rcritNm}(${item.ordr}차)` : ''}`},
-                    {title: '신청기관', type: "text", width: "120", align: "center", itemTemplate: (value, item) => `${!!item.instNm ? `${item.instNm}(${item.aplcntNm})` : ''}`},
+                    {title: '점검일시', name: 'regDt', type: "text", width: "120", align: "center"},
+                    {title: '대여모집(차수)', type: "text", width: "120", align: "center" , name: 'rcritNm'},
+                    {title: '신청기관', type: "text", width: "120", align: "center", name: 'instNm'},
                 ],
                 /*[# sec:authorize-url="/mng/packageindvdChck/packageindvdChckDetail.html"]*/
                 rowClick: function (args) {
                     packegeIndvdChckGridHelper.loadContent(detailUrl + "?chckid=" + args.item.chckid);
+                    packegeIndvdChckGridHelper.rowClick(args);
                 }
                 /*[/]*/
             })
         });
 
-
-        let initDateRangePicker = () => {
-            $("#searchPeriod").daterangepicker({
-                autoUpdateInput: false
-                , locale: {
-                    format: "YYYY-MM-DD"
+        let setPackageSelectBox = () => {
+            var selectList = [{id: ' ', text: '- 선택 -', value: '', option: "selected"}];
+            packageList.forEach(function (item) {
+                selectList.push({
+                    'id': item.packageid, 'text': item.packageNm, 'value': item.packageid, 'packageindvdCnt': item.packageindvdCnt
+                })
+            })
+            $('#selectPackageid').select2({
+                language: {
+                    noResults: function () {
+                        return '검색결과가 없습니다.';
+                    }
+                },
+                data: selectList,
+                templateSelection: function (item) {
+                    document.getElementById('searchPackageid').value = item.value;
+                    return item.text;
                 }
             });
+            $('#selectPackageid').val(' ').trigger('change');
+        }
 
-            $("#searchPeriod").on("apply.daterangepicker", function (e, picker) {
-                $(this).val(picker.startDate.format("YYYY-MM-DD") + " ~ " + picker.endDate.format("YYYY-MM-DD"));
+        let setLendSelectBox = () => {
+            var selectList = [{id: ' ', text: '- 선택 -', value: '', option: "selected"}];
+            lendList.forEach(function (item) {
+                selectList.push({
+                    'id': item.rcritid, 'text': item.rcritNm, 'value': item.rcritid
+                })
+            })
+            $('#selectRcritid').select2({
+                language: {
+                    noResults: function () {
+                        return '검색결과가 없습니다.';
+                    }
+                },
+                data: selectList,
+                templateSelection: function (item) {
+                    document.getElementById('searchRcritid').value = item.value;
+                    return item.text;
+                }
+            });
+            $('#selectRcritid').val(' ').trigger('change');
+        }
+
+        let searchInit = () => {
+            $("#searchKeyword , #searchType, #chckCd, #searchPeriod").val('');
+            $("#selectRcritid, #selectPackageid").val(' ').trigger('change')
+        }
+
+        let search = () => {
+            let searchKeyword = $('#searchKeyword').val();
+            let searchType = $('#searchType').val();
+
+            if(searchType !=null && searchType !=""){
+                if(searchKeyword==null || searchKeyword==""){
+                    alert("검색어를 입력해주십시오");
+                    return;
+                }
+            }else{
+                if(searchKeyword != null && searchKeyword!=""){
+                    alert("검색조건을 입력해주십시오");
+                    return;
+                }
+            }
+
+            packegeIndvdChckGridHelper.resetListContent();
+
+        }
+
+        let initDateRangePicker = () => {
+
+            $("#searchPeriod").daterangepicker({
+                opens: 'left',
+                locale: {
+                    "separator": " ~ ",                     // 시작일시와 종료일시 구분자
+                    "format": 'YYYY-MM-DD',     // 일시 노출 포맷
+                    "applyLabel": "적용",                    // 확인 버튼 텍스트
+                    "cancelLabel": "취소",                   // 취소 버튼 텍스트
+                    "daysOfWeek": ["일", "월", "화", "수", "목", "금", "토"],
+                    "monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"]
+                }
+            }, function(start, end, label) {
+                console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+            });
+            $("#searchPeriod").on('apply.daterangepicker', function(ev, picker) {
+                $("#searchBgngDt").val(picker.startDate.format('YYYY-MM-DD'));
+                $("#searchEndDt").val(picker.endDate.format('YYYY-MM-DD'));
+                $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
             });
         }
 

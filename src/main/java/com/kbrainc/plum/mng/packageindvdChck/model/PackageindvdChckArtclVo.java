@@ -2,6 +2,9 @@ package com.kbrainc.plum.mng.packageindvdChck.model;
 
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 체크리스트 항목
  *
@@ -24,4 +27,7 @@ public class PackageindvdChckArtclVo {
     private Integer ordr;
     private String cn;
     private String exCn;
+    private List<String> artclExList = new ArrayList<>();
+    private List<Integer> checkedExList = new ArrayList<>();
+    private List<String> actnMttrList = new ArrayList<>();
 }

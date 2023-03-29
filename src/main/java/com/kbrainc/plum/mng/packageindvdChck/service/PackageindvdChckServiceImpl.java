@@ -56,16 +56,43 @@ public class PackageindvdChckServiceImpl extends PlumAbstractServiceImpl impleme
         return packageindvdChckDao.selectPackageindvdChck(packageindvdChckVo);
     }
 
+    /**
+     * 꾸러미개체 교구 목록 조회
+     *
+     * @param packageindvdChckVo
+     * @return list
+     * @throws Exception
+     * @Title : selectPackageindvdTchaidList
+     * @Description : 꾸러미개체 교구 목록 조회
+     */
     @Override
     public List<PackageindvdTchaidVo> selectPackageindvdTchaidList(PackageindvdChckVo packageindvdChckVo) throws Exception {
         return packageindvdChckDao.selectPackageindvdTchaidList(packageindvdChckVo);
     }
 
+    /**
+     * 꾸러미개체 점검 답변 목록 조회
+     *
+     * @param packageindvdChckVo
+     * @return list
+     * @throws Exception
+     * @Title : selectPackageindvdChckAnsList
+     * @Description : 꾸러미개체 점검 답변 목록 조회
+     */
     @Override
     public List<PackageindvdChckAnsVo> selectPackageindvdChckAnsList(PackageindvdChckVo packageindvdChckVo) throws Exception {
         return packageindvdChckDao.selectPackageindvdChckAnsList(packageindvdChckVo);
     }
 
+    /**
+     * 꾸러미개체 체크리스트 조회
+     *
+     * @param packageindvdChckVo
+     * @return list
+     * @throws Exception
+     * @Title : selectPackageindvdChckArtclList
+     * @Description : 꾸러미개체 체크리스트 조회
+     */
     @Override
     public List<PackageindvdChckArtclVo> selectPackageindvdChckArtclList(PackageindvdChckVo packageindvdChckVo) throws Exception {
         return packageindvdChckDao.selectPackageindvdChckArtclList(packageindvdChckVo);

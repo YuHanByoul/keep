@@ -23,7 +23,6 @@ import java.util.Date;
  */
 @Data
 public class PackageindvdTchaidVo {
-
     /** 로그인사용자정보 */
     private UserVo user;
 
