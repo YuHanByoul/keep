@@ -760,6 +760,19 @@ public interface AsgsysSrngDao {
 	*/
 	public List<AsgsysSrngVo> selectCheckList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
+
+	/**
+	* 체크리스트아이디 조회
+	*
+	* @Title : getCheckListId
+	* @Description : 체크리스트아이디 조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return String
+	*/
+	public Integer getCheckListId(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
 	/**
 	* 체크리스트제출 등록
 	*
@@ -771,6 +784,18 @@ public interface AsgsysSrngDao {
 	* @return int
 	*/
 	public int insertChklstSbmsn(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 체크리스트 제출 조회
+	*
+	* @Title : selectChkListSbmsn
+	* @Description : 체크리스트 제출 조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return AsgsysSrngVo
+	*/
+	public AsgsysSrngVo selectChkListSbmsn(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
 	* 지원단심사 등록
@@ -793,6 +818,7 @@ public interface AsgsysSrngDao {
 	 * @throws Exception
 	 */
 	public int updateSprtgrpOpnn(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
 
 	/**
 	* 체크리스트 key count 조회
@@ -1076,7 +1102,28 @@ public interface AsgsysSrngDao {
 	 */
 	public int deleteJdgsSrngOrdrAns(DsgnSrngFormVo dsgnSrngFormVo) throws Exception;
 
+	/**
+	* 지정프로그램 조회
+	*
+	* @Title : selectPrgrm
+	* @Description : 지정프로그램 조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return AsgsysSrngVo
+	*/
+	public AsgsysSrngVo selectPrgrm(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
-
+	/**
+	* 지정프로그램 수정
+	*
+	* @Title : updatePrgrm
+	* @Description : 지정프로그램 수정
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int updatePrgrm(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 }

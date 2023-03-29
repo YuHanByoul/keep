@@ -1,5 +1,6 @@
 package com.kbrainc.plum.mng.map.controller;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,10 +14,14 @@ import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kbrainc.plum.front.srvy.model.SrvySbmsnAnsVo;
 import com.kbrainc.plum.mng.example.excel.service.ExcelService;
 import com.kbrainc.plum.mng.map.model.MapVo;
 import com.kbrainc.plum.mng.map.service.MapService;
@@ -215,34 +220,84 @@ public class MapController {
         return "mng/map/mapInsertPopup";
     }
 
+
 	/**
-	 * 회원정보 엑셀 데이터 정합성 체크
-	 */
+	* 지도기반데이터 엑셀 정합성 체크
+	*
+	* @Title : mapExcelDataCheck
+	* @Description : 지도기반데이터 엑셀 정합성 체크
+	* @param multiRequest
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	* @return Map<String,Object>
+	*/
 	@RequestMapping("/mng/map/mapExcelDataCheck.do")
     @ResponseBody
-	public Map<String,Object> mapExcelDataCheck (MultipartHttpServletRequest multiRequest, HttpServletResponse response, ModelMap model)throws Exception{
+	public Map<String,Object> mapExcelDataCheck (MultipartHttpServletRequest multiRequest, HttpServletResponse response, MapVo mapVo)throws Exception{
 
 		Map<String,Object> map = new HashMap();
 		MultipartFile file = multiRequest.getFile("p_excelFile");
 		ArrayList excelList = null;
 		//엑셀내용을 리스트로
 		String oriFilename = null;
-		if (file != null) {
-		    oriFilename = file.getOriginalFilename();
-		}
-		if (oriFilename != null) {
-    		if(oriFilename.indexOf(".xlsx") >-1){
-    			excelList = ExcelUtil.getExcelPoiArrayList(file.getInputStream());
-    		}else if(oriFilename.indexOf(".xls") >-1){
-    			excelList = ExcelUtil.getExcelJxlArrayList(file.getInputStream());
-    		}
-		}
 
-		Map<String,Object> result = mapService.mapExcelDatalValidationCheck(excelList);//엑셀 체크
+		try {
+			if (file != null) {
+			    oriFilename = file.getOriginalFilename();
+			}
+			if (oriFilename != null) {
+	    		if(oriFilename.indexOf(".xlsx") >-1){
+	    			excelList = ExcelUtil.getExcelPoiArrayList(file.getInputStream());
+	    		}else if(oriFilename.indexOf(".xls") >-1){
+	    			excelList = ExcelUtil.getExcelJxlArrayList(file.getInputStream());
+	    		}
+			}
 
-		map.put("checkList" ,(ArrayList)result.get("checkList"));
+			String resrceSeCd = mapVo.getResrceSeCd();
+			Map<String,Object> result = mapService.mapExcelDatalValidationCheck(excelList,resrceSeCd);//엑셀 체크
 
+			map.put("checkList" ,(ArrayList)result.get("checkList"));
+		} catch (IndexOutOfBoundsException e) {
+			map.put("msg" ,"엑셀 정합성 체크중에 에러가 발생하였습니다. 양식을 확인 하여 주십시오");
+        } catch (Exception e) {
+        	map.put("msg" ,"엑셀 정합성 체크중에 에러가 발생하였습니다.");
+        }
 		return map;
 	}
+
+	/**
+	* 지도기반데이터 목록 엑셀 등록
+	*
+	* @Title : insertMapListExcel
+	* @Description : 지도기반데이터 목록 엑셀 등록
+	* @param mapList
+	* @param user
+	* @return
+	* @throws Exception
+	* @return Map<String,Object>
+	*/
+	@RequestMapping(value = "/mng/map/insertMapListExcel.do")
+    @ResponseBody
+    public Map<String, Object> insertMapListExcel(@RequestParam("mapList") String mapList , @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+
+        ObjectMapper mapper = new ObjectMapper();
+        List<MapVo> mapVoList = mapper.readValue(mapList, new TypeReference<>(){});
+
+        int retVal = 0;
+        retVal = mapService.insertMapList(mapVoList, user);
+
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "등록에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "등록에 실패했습니다.");
+        }
+
+        return resultMap;
+    }
 
 }

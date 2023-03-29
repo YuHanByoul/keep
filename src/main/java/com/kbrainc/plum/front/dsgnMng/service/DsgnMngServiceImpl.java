@@ -358,4 +358,93 @@ public class DsgnMngServiceImpl extends PlumAbstractServiceImpl implements DsgnM
 		return dsgnMngDao.deleteChgAply(dsgnMngVo);
 	}
 
+	/**
+	* 컨설팅관리 목록 조회
+	*
+	* @Title : selectCnsltngMngList
+	* @Description : 컨설팅관리 목록 조회
+	* @param dsgnMngVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnMngVo>
+	*/
+	@Override
+	public List<DsgnMngVo> selectCnsltngMngList(DsgnMngVo dsgnMngVo) throws Exception {
+		return dsgnMngDao.selectCnsltngMngList(dsgnMngVo);
+	}
+
+	/**
+	* (컨설팅)신청정보 조회
+	*
+	* @Title : selectAplyInfo
+	* @Description : (컨설팅)신청정보 조회
+	* @param dsgnMngVo
+	* @return
+	* @throws Exception
+	* @return DsgnMngVo
+	*/
+	@Override
+	public DsgnMngVo selectAplyInfo(DsgnMngVo dsgnMngVo) throws Exception {
+		return dsgnMngDao.selectAplyInfo(dsgnMngVo);
+	}
+
+	/**
+	* 컨설팅 신청 등록
+	*
+	* @Title : insertCnsltngAply
+	* @Description : 컨설팅 신청 등록
+	* @param dsgnMngVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	@Override
+	public int insertCnsltngAply(DsgnMngVo dsgnMngVo) throws Exception {
+		return dsgnMngDao.insertCnsltngAply(dsgnMngVo);
+	}
+
+	/**
+	 * 컨설팅 신청 수정
+	 *
+	 * @Title : updateCnsltngAply
+	 * @Description : 컨설팅 신청 수정
+	 * @param dsgnMngVo
+	 * @return
+	 * @throws Exception
+	 * @return int
+	 */
+	@Override
+	public int updateCnsltngAply(DsgnMngVo dsgnMngVo) throws Exception {
+		DsgnMngVo aplyInfo = null;
+		aplyInfo = dsgnMngDao.selectAplyInfo(dsgnMngVo);
+		aplyInfo.setCnsltngKndCd (dsgnMngVo.getCnsltngKndCd ());
+		aplyInfo.setHopeDe1      (dsgnMngVo.getHopeDe1      ());
+		aplyInfo.setHopeDe1AmPmCd(dsgnMngVo.getHopeDe1AmPmCd());
+		aplyInfo.setHopeDe2      (dsgnMngVo.getHopeDe2      ());
+		aplyInfo.setHopeDe2AmPmCd(dsgnMngVo.getHopeDe2AmPmCd());
+		aplyInfo.setPrgrm        (dsgnMngVo.getPrgrm        ());
+		aplyInfo.setLdr          (dsgnMngVo.getLdr          ());
+		aplyInfo.setEtc          (dsgnMngVo.getEtc          ());
+		aplyInfo.setFilegrpid    (dsgnMngVo.getFilegrpid    ());
+		aplyInfo.setSttsCd       (dsgnMngVo.getSttsCd       ());
+		aplyInfo.setUser(dsgnMngVo.getUser());
+		return dsgnMngDao.updateCnsltngAply(aplyInfo);
+	}
+
+	/**
+	* 컨설팅신청 삭제
+	*
+	* @Title : deleteCnsltngAply
+	* @Description : 컨설팅신청 삭제
+	* @param dsgnMngVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	@Override
+	public int deleteCnsltngAply(DsgnMngVo dsgnMngVo) throws Exception {
+		return dsgnMngDao.deleteCnsltngAply(dsgnMngVo);
+	}
+
+
 }

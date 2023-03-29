@@ -8,6 +8,7 @@ import com.kbrainc.plum.mng.pack.model.PackageindvdVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+import com.kbrainc.plum.rte.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -416,10 +417,12 @@ public class LendServiceImpl extends PlumAbstractServiceImpl implements LendServ
 
         String[] insertPackageindvd = lendAplyVo.getPackageindvdids();
         String[] deletePackageindvd = lendAplyVo.getDeletePackageindvdids();
-        //꾸러미 입고 상태 변경
-        lendAplyVo.setPackageindvdids(deletePackageindvd);
-        lendAplyVo.setPackSttsCd("216101");
-        resInt += lendDao.updatePackageindvdStts(lendAplyVo);
+        if(deletePackageindvd != null){
+            //꾸러미 입고 상태 변경
+            lendAplyVo.setPackageindvdids(deletePackageindvd);
+            lendAplyVo.setPackSttsCd("216101");
+            resInt += lendDao.updatePackageindvdStts(lendAplyVo);
+        }
         //꾸러미 출고 상태 변경
         lendAplyVo.setPackageindvdids(insertPackageindvd);
         lendAplyVo.setPackSttsCd("216102");
@@ -496,17 +499,16 @@ public class LendServiceImpl extends PlumAbstractServiceImpl implements LendServ
     }
 
     /**
-     * 입고 처리 (점검 등록 및 이상처리 등)
+     * 입고 점검 처리 (점검 등록 및 이상처리 등)
      *
-     * @Title       : selectFormExidList
-     * @Description :교구 점검 양식 문항/보기 리스트 호출
-     * @param LendAplyVo 객체
+     * @Title       : healthChckProcess 
+     * @Description :입고 점검 처리 (점검 등록 및 이상처리 등) 
+     * @param LendPackageindvdChckVo 객체
      * @return int  목록
      * @throws Exception 예외
      */
     @Transactional
-    public Map<String,Object> wrhounsngProcess(LendPackageindvdChckVo lendPackageindvdChckVo) throws Exception{
-
+    public Map<String,Object> wrhounsngChckProcess(LendPackageindvdChckVo lendPackageindvdChckVo) throws Exception{
         Map<String,Object> result = new HashMap();
 
         Integer resInt = 0 ;
@@ -520,15 +522,13 @@ public class LendServiceImpl extends PlumAbstractServiceImpl implements LendServ
         packageindvdVo.setUser(user);
         packageindvdVo.setPackageindvdid(packageindvdid);
         packageindvdVo.setPackageindvdTchaidCmpstnVoList(lendPackageindvdChckVo.getPackageindvdTchaidCmpstnVoList());
-
-
-        //'C' // (위생 점검 O, 이상등록 O, 이상->정상처리 교구개수등록 O, 입고 처리 O)
-        //'S' // (위생 점검 O, 이상등록 O, 이상->정상처리 상태변경 O,    입고 처리 O)
-
-        if(lendPackageindvdChckVo.getModifyStts().equals("S")
-                || lendPackageindvdChckVo.getModifyStts().equals("C")
-                || lendPackageindvdChckVo.getModifyStts().equals("A")) {
-
+        
+        //이상처리
+        if(StringUtil.isNotNull(lendPackageindvdChckVo.getModifyStts()) &&
+              (  lendPackageindvdChckVo.getModifyStts().equals("S") 
+                || lendPackageindvdChckVo.getModifyStts().equals("C") 
+                || lendPackageindvdChckVo.getModifyStts().equals("A"))
+              ) {
             if(lendPackageindvdChckVo.getModifyStts().equals("C")) {
                 //교구 재고 확인
                 if (packageDao.selectInvtryOverYn(packageindvdVo).equals("Y")) {
@@ -558,31 +558,126 @@ public class LendServiceImpl extends PlumAbstractServiceImpl implements LendServ
             packageindvdAbnrmlVolVo.setNrmltPrcsPicid(Integer.parseInt(user.getUserid()));
             resInt += packageDao.insertPackageindvdAbnrml(packageindvdAbnrmlVolVo);
         }
-
         //위생점검
-        if(!lendPackageindvdChckVo.getModifyStts().equals("B")) {
-
-            //점검 및 답변 등록
-            lendPackageindvdChckVo.setAbnrmlid(packageindvdAbnrmlVolVo.getAbnrmlid());
-            resInt += lendDao.insertLendPackageindvdChck(lendPackageindvdChckVo);
-            //개체 점검 교구 등록
-            resInt += lendDao.insertPackageindvdChckTchaid(lendPackageindvdChckVo);
-            //답변 등록
-            resInt += lendDao.insertLendPackageindvdChckAns(lendPackageindvdChckVo);
+        if(StringUtil.isNotNull(lendPackageindvdChckVo.getHealthCheck()) 
+                && lendPackageindvdChckVo.getHealthCheck().equals("Y")) {
+                
+                //점검 및 답변 등록
+                lendPackageindvdChckVo.setAbnrmlid(packageindvdAbnrmlVolVo.getAbnrmlid());
+                resInt += lendDao.insertLendPackageindvdChck(lendPackageindvdChckVo);
+                //개체 점검 교구 등록
+                resInt += lendDao.insertPackageindvdChckTchaid(lendPackageindvdChckVo);
+                //답변 등록
+                resInt += lendDao.insertLendPackageindvdChckAns(lendPackageindvdChckVo);
         }
-
 
         //입고 처리
         resInt += lendDao.updateLendAplyWrhousng(lendPackageindvdChckVo);
         //꾸러미 개체 상태 입출고상태 및 정상/이상 처리 업데이트
         String prductSttsCd = (lendPackageindvdChckVo.getModifyStts().equals("A"))? "217102":"217101";
-        packageindvdVo.setSttsCd("216101");//입고
         packageindvdVo.setPrductSttsCd(prductSttsCd);//정상/이상상태
+        resInt += lendDao.updateLendAplyWrhousng(lendPackageindvdChckVo);
+        result.put("msg", "입고 처리 되었습니다.");
+        packageindvdVo.setSttsCd("216101");//입고
+        
         resInt += packageDao.updatePackageindvd(packageindvdVo);
 
         result.put("resInt", resInt);
         result.put("result", Constant.REST_API_RESULT_SUCCESS);
-        result.put("msg", "입고 처리 되었습니다.");
+        
+        return result;
+    }
+    /**
+     * 위생점검 처리 (점검 등록 및 이상처리 등)
+     *
+     * @Title       : healthChckProcess 
+     * @Description :위생점검 처리 (점검 등록 및 이상처리 등) 
+     * @param LendPackageindvdChckVo 객체
+     * @return int  목록
+     * @throws Exception 예외
+     */
+    @Transactional
+    public Map<String,Object> healthChckProcess(LendPackageindvdChckVo lendPackageindvdChckVo) throws Exception{
+        
+        Map<String,Object> result = new HashMap();
+        
+        Integer resInt = 0 ;
+        Integer packageindvdid = lendPackageindvdChckVo.getPackageindvdid();
+        Integer aplyid = lendPackageindvdChckVo.getAplyid();
+        Integer rndid = lendPackageindvdChckVo.getRndid();
+        
+        UserVo user= lendPackageindvdChckVo.getUser();
+        PackageindvdAbnrmlVo packageindvdAbnrmlVolVo = new PackageindvdAbnrmlVo();
+        PackageindvdVo packageindvdVo = new PackageindvdVo();
+        packageindvdVo.setUser(user);
+        packageindvdVo.setPackageindvdid(packageindvdid);
+        packageindvdVo.setPackageindvdTchaidCmpstnVoList(lendPackageindvdChckVo.getPackageindvdTchaidCmpstnVoList());
+        
+        //이상처리
+        if(StringUtil.isNotNull(lendPackageindvdChckVo.getModifyStts()) &&
+              (  lendPackageindvdChckVo.getModifyStts().equals("S") 
+                || lendPackageindvdChckVo.getModifyStts().equals("C") 
+                || lendPackageindvdChckVo.getModifyStts().equals("A"))
+              ) {
+            
+            if(lendPackageindvdChckVo.getModifyStts().equals("C")) {
+                //교구 재고 확인 
+                if (packageDao.selectInvtryOverYn(packageindvdVo).equals("Y")) {
+                    result.put("result", Constant.REST_API_RESULT_FAIL);
+                    result.put("msg", "교구 재고를 확인하여주십시오.");
+                    return result;
+                }
+                //교구 재고 일괄 감량
+                resInt += packageDao.updateTchaidQntyForPackageindvdNormalize(packageindvdVo);
+                //망실 내역 저장
+                resInt += packageDao.insertPackageindvdTchaidCmpstnDsctnByList(packageindvdVo);
+                //기존 교구 수량보다 많을시 구성 업데이트 
+                resInt += packageDao.updateTchaidCmpstnForPackageindvdNormalize(packageindvdVo);
+            }
+            
+            //이상 테이블 인서트(정상처리로 인서트)
+            packageindvdAbnrmlVolVo.setUser(user);
+            packageindvdAbnrmlVolVo.setAplyid(aplyid);
+            packageindvdAbnrmlVolVo.setPackageindvdid(packageindvdid);
+            packageindvdAbnrmlVolVo.setRndid(rndid);
+            packageindvdAbnrmlVolVo.setCn(lendPackageindvdChckVo.getCn());
+            
+            if(lendPackageindvdChckVo.getModifyStts().equals("S") || lendPackageindvdChckVo.getModifyStts().equals("C")) {
+                packageindvdAbnrmlVolVo.setNrmltYn("Y");
+                packageindvdAbnrmlVolVo.setNrmltPrcsYn("Y");
+            }
+            packageindvdAbnrmlVolVo.setNrmltPrcsPicid(Integer.parseInt(user.getUserid()));
+            resInt += packageDao.insertPackageindvdAbnrml(packageindvdAbnrmlVolVo);
+            
+            String prductSttsCd = (lendPackageindvdChckVo.getModifyStts().equals("A"))? "217102":"217101";
+            packageindvdVo.setPrductSttsCd(prductSttsCd);//정상/이상상태
+            resInt += packageDao.updatePackageindvd(packageindvdVo);
+        }
+        
+        //위생점검
+        if(StringUtil.isNotNull(lendPackageindvdChckVo.getHealthCheck()) 
+                && lendPackageindvdChckVo.getHealthCheck().equals("Y")) {
+            
+            //점검 및 답변 등록
+            lendPackageindvdChckVo.setAbnrmlid(packageindvdAbnrmlVolVo.getAbnrmlid());
+            resInt += lendDao.insertLendPackageindvdChck(lendPackageindvdChckVo);
+            //개체 점검 교구 등록
+            resInt += lendDao.insertPackageindvdChckTchaid(lendPackageindvdChckVo);
+            //답변 등록 
+            resInt += lendDao.insertLendPackageindvdChckAns(lendPackageindvdChckVo);
+        }
+        
+        if(StringUtil.isNotNull(lendPackageindvdChckVo.getSttsCheck()) 
+                && lendPackageindvdChckVo.getSttsCheck().equals("Y")) {
+            packageindvdVo.setSttsCd(lendPackageindvdChckVo.getSttsCd()); 
+            resInt += packageDao.updatePackageindvd(packageindvdVo);
+        }
+        //위생점검 관리 (개체 입출고 상태)
+        
+        
+        result.put("resInt", resInt);
+        result.put("msg", "점검 처리 되었습니다.");
+        result.put("result", Constant.REST_API_RESULT_SUCCESS);
         return result;
     }
 
@@ -598,12 +693,16 @@ public class LendServiceImpl extends PlumAbstractServiceImpl implements LendServ
     public String isThereRndPackageindvdYn(LendAplyVo lendAplyVo) throws Exception{
         return lendDao.isThereRndPackageindvdYn(lendAplyVo);
     }
-
-
+    /**
+     * 위생체크용 꾸러미 개체 목록 호출
+     *
+     * @Title       : selectPackageindvdListForHealthChck 
+     * @Description : 위생체크용 꾸러미 개체 목록 호출 
+     * @param PackageindvdVo 객체
+     * @return List<PackageindvdVo>  목록
+     * @throws Exception 예외
+     */
+    public List<PackageindvdVo> selectPackageindvdListForHealthChck(PackageindvdVo packageindvdVo) throws Exception{
+        return lendDao.selectPackageindvdListForHealthChck(packageindvdVo);
+    }
 }
-
-
-
-
-
-

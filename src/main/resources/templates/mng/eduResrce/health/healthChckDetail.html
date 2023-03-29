@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/mng/mobileSubLayout" 
+>
+<body>
+<div layout:fragment="content">
+<!-- Switch component css -->
+<link rel="stylesheet" type="text/css" href="/files/bower_components/switchery/dist/switchery.min.css">
+<link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
+
+  <!-- Page-body start -->
+  <div class="page-body">
+      <div class="card position-relative">
+          <div class="card-block">
+              <ul class="desc-list">
+                  <li class="border-0 p-0"><!-- [230321] class 추가 -->
+                      <h5><strong id="packageNm" >[[${packageindvdInfo.packageindvdNm}]] ([[${packageindvdInfo.indvdno}]]) </strong></h5>
+                      <dl class="align-items-center">
+                          <dt>상태 : </dt>
+                          <dd>[ [[${packageindvdInfo.sttsCdNm}]] ]  [ [[${packageindvdInfo.prductSttsCdNm}]] 꾸러미 ] </dd>
+                      </dl>
+                  </li>
+              </ul>
+          </div>
+      </div>
+      <div class="card">
+          <div class="card-header p-b-0">
+              <h3 class="sub-title"><strong>위생&middot;안전 점검표</strong></h3>
+          </div>
+          <div class="card-block-small pt-0">
+              <div class="mb-md-4">
+                  <input type="checkbox" class="js-single" name="chckYn" id="chckYn"  checked/>
+              </div>
+              <div id="chck_area" >
+              <div class="mb-3">
+                  <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>점검일자</strong></div>
+                  <input type="date" class="form-control form-control-sm" id="chckDe" name="chckDe"  th:value="${#calendars.format(#calendars.createNow(),'yyyy-MM-dd')}">
+              </div>
+              <div class="table-responsive position-relative">
+              
+                  <table class="table table-framed table-bordered td-wrap" style="table-layout:fixed;">
+                      <colgroup>
+                          <col style="width:160px;">
+                          <col style="width:230px;" th:each="item:${tchaidlist}">
+                      </colgroup>
+                      <thead>
+                      <tr class="border-bottom-inverse">
+                          <th class="text-left v-middle">교구명</th>
+                          <th class="text-left v-middle" th:each="item:${tchaidlist}">[[${item.tchaidNm}]] ([[${item.qntyCmpstn}]]개) </th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <tr>
+                          <th class="text-left v-middle">구성품</th>
+                          <td class="text-left v-middle" th:each="item:${tchaidlist}" >[[${item.cmpntNms}]]</td>
+                      </tr>
+                      <th:block th:each="article,stat:${artclExList}" >
+                      <tr >
+                          <th class="text-left v-middle">[[${article.ordr}]]. [[${article.cn}]]</th>
+                          <th:block th:each="item:${tchaidlist}" th:with="exid = ${#strings.arraySplit(article.excn,',')} ">
+                          <td class="text-left v-middle">
+                              <div class="d-flex">
+                                  <div class="col ms-1" th:each="ex,i:${exid}"  th:with="exArr = ${#strings.arraySplit(ex,'/')} ">
+                                      <input type="radio" class="btn-check"  autocomplete="off"
+                                             th:name="${item.tchaidid}+'question'+${article.artclid}"  
+                                             th:id="${item.tchaidid}+'option'+${exArr[1]}" 
+                                             th:value="${exArr[1]}" 
+                                             th:checked ="${  (i.index == 0 and exArr[1] == '9') or (i.index == 1 and exArr[1] != '10')  }"
+                                             th:cn ="${exArr[2]}"  
+                                             >
+                                      <label class="btn btn-sm btn-disabled d-block" th:for="${item.tchaidid}+'option'+${exArr[1]}"><i class="icofont icofont-check-circled"></i>
+                                      [[${exArr[2]}]]
+                                      </label>
+                                  </div>
+                              </div>
+                          </td>
+                          </th:block>
+                      </tr>
+                      <tr>
+                          <th class="text-left v-middle">[[${article.ordr}]]-1. 조치사항</th>
+                          <th:block th:each="item:${tchaidlist}" >
+                          <td class="text-left v-middle">
+                              <input type="text" class="form-control form-control-sm" th:name="${item.tchaidid}+'measure'+${article.artclid}" th:id="${item.tchaidid}+'measure'+${article.artclid}" placeholder="">
+                          </td>
+                          </th:block>
+                      </tr>
+                      </th:block>
+                      </tbody>
+                  </table>
+                  </div>
+              </div>
+              
+          </div>
+      </div>
+
+      <div class="card">
+          <div class="card-header p-b-0">
+              <h3 class="sub-title"><strong>꾸러미개체 관리</strong></h3>
+          </div>
+          <div class="card-block-small pt-0">
+          
+              <div class="form-group mb-3 ">
+                  <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="popupContents"><strong>꾸러미 개체 입출고 상태 변경</strong></label>
+                  <div class="row justify-content-between">
+                      <div class="col-auto mb-1">
+                          <input type="checkbox" class="js-single" name="sttsChangeProcess" id="sttsChangeProcess" />
+                      </div>
+                      
+                      <div class="col-auto " >
+                          <div class="d-inline-block">
+                              <input type="radio" class="btn-check" name="sttsCd" id="sttsCd1" autocomplete="off" value="216101" disabled checked>
+                              <label class="btn btn-sm btn-disabled d-block" for="sttsCd1"><i class="icofont icofont-check-circled"></i>입고</label>
+                          </div>
+                          <div class="d-inline-block">
+                              <input type="radio" class="btn-check" name="sttsCd" id="sttsCd2" autocomplete="off" value="216102" disabled>
+                              <label class="btn btn-sm btn-disabled d-block" for="sttsCd2"><i class="icofont icofont-check-circled"></i>출고</label>
+                          </div>
+                      </div>
+                      
+                  </div>
+              </div>
+          
+              <div class="mb-3">
+                  <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>꾸러미 개체 이상 등록</strong></div>
+                  <div>
+                      <div class="col-auto mb-1">
+                          <input type="checkbox" class="js-single" name="wrhousngStts" id="wrhousngStts" />
+                      </div>
+                  </div>
+              </div>
+              
+              <div id="abnrmlArea" style="display:none;">
+              <div class="row form-group required mb-3">
+                  <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="popupContents"><strong>내용 입력</strong></label>
+                  <div class="col-sm-12">
+                      <textarea rows="3" cols="3" class="form-control form-control-sm" placeholder="이상 내용" id="cn" name="cn"></textarea>
+                  </div>
+              </div>
+              
+              <div class="form-group mb-3 ">
+                  <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="popupContents"><strong>직접 이상처리(처리시 해당 꾸러미개체는 정상상태처리 됩니다.)</strong></label>
+                  <div class="row justify-content-between">
+                      <div class="col-auto mb-1">
+                          <input type="checkbox" class="js-single-small" name="directAbnrmlProcess" id="directAbnrmlProcess" />
+                      </div>
+                      
+                      <div class="col-auto " >
+                          <div class="d-inline-block">
+                              <input type="radio" class="btn-check" name="selectAbnrmlMethod" id="options92a" autocomplete="off" value="cnt" disabled checked>
+                              <label class="btn btn-sm btn-disabled d-block" for="options92a"><i class="icofont icofont-check-circled"></i>교구수량추가</label>
+                          </div>
+                          <div class="d-inline-block">
+                              <input type="radio" class="btn-check" name="selectAbnrmlMethod" id="options92b" autocomplete="off" value="stts" disabled>
+                              <label class="btn btn-sm btn-disabled d-block" for="options92b"><i class="icofont icofont-check-circled"></i>상태변경</label>
+                          </div>
+                      </div>
+                      
+                  </div>
+              </div>
+              
+              <div id="onDierctProcess" style="display:none">
+              
+	              <div class="mb-3 abnrml-cnt" style="display:block;">
+	              <th:block th:each="item:${tchaidlist}" > 
+		              <div class="form-group mb-3">
+		                  <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong> [[${item.tchaidNm}]]   
+		                      (<span th:id="'qntyInvntry'+${item.tchaidid}" th:data-qntyInvntry="${item.qntyInvntry}" >[[${item.qntyInvntry}]]</span>)
+		                  </strong></div>
+		                  <div class="input-group input-group-sm input-group-dropdown mb-0" style="width:120px;">
+		                      <div class="input-group-text btn btn-primary" th:tchaidid="${item.tchaidid}"    onclick="decreaseCnt(this.getAttribute('tchaidid'))">-</div>
+		                      <input type="text" class="form-control text-center cnt-form" th:id="${item.tchaidid}+'tachiadCnt'"     th:aria-label="${item.tchaidNm}+'수량 입력'" value="0">
+		                      <div class="input-group-text btn btn-primary" th:tchaidid="${item.tchaidid}"    onclick="increaseCnt(this.getAttribute('tchaidid'))" >+</div>
+		                  </div>
+		              </div>
+	              </th:block>
+	              </div>
+	              
+	              <div class="mb-3 abnrml-stts" style="display:none;">
+	                  <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>꾸러미 상태 변경</strong></div>
+	                  <div>
+	                      <div class="d-inline-block">
+	                          <input type="radio" class="btn-check" name="options93" id="options93a" autocomplete="off" checked>
+	                          <label class="btn btn-sm btn-disabled d-block" for="options93a"><i class="icofont icofont-check-circled" ></i>정상</label>
+	                      </div>
+	                      <div class="d-inline-block">
+	                          <input type="radio" class="btn-check" name="options93" id="options93b" autocomplete="off" disabled>
+	                          <label class="btn btn-sm btn-disabled d-block" for="options93b"><i class="icofont icofont-check-circled"></i>이상</label>
+	                      </div>
+	                  </div>
+	              </div>
+	              
+              </div>
+              
+              </div>
+              
+          </div>
+      </div>
+
+
+
+
+      <div class="card-block-small row justify-content-between">
+          <div class="col-auto">
+              <button type="button" class="btn btn-disabled" onclick="javascript:location.href='/mng/health/healthchckList.html'">취소</button>
+          </div>
+          <div class="col-auto">
+              <button type="button" class="btn btn-primary" onclick="saveWrhousng()" >점검 확인</button>
+          </div>
+      </div>
+  </div>
+  
+  <input type="hidden" id="packageindvdid" name="packageindvdid"  th:value="${packageindvdInfo.packageindvdid}"> 
+  
+  <!-- Page-body end -->
+
+<!--모달 팝업  -->
+<div class="modal fade" id="lendPackageindvdModal"  data-bs-backdrop="static"></div>
+<script type="text/javascript" src="/js/validator/jquery.validate.js"></script>    
+<script type="text/javascript" src="/js/validator/jquery.validate.add.js"></script>    
+<script type="text/javascript" src="/js/validator/jquery.validate.setting.js"></script>
+
+<!-- Switch component js -->
+<script type="text/javascript" src="/files/bower_components/switchery/dist/switchery.min.js"></script>
+
+
+<script th:inline="javascript">
+	/*<![CDATA[*/ 
+	var artclExList = /*[[${artclExList}]]*/null; 
+	var tchaidlist = /*[[${tchaidlist}]]*/null; 
+	/*]]>*/
+    var modalUrl = "/mng/eduResrce/selectPackageindvdPopup.html"
+        
+    $(function(){
+        initPage();
+    });
+
+    initPage =()=>{
+
+        $("#mobile-btn-back").html("<a class='btn-back' href='/mng/health/healthchckList.html'><i class='fa fa-angle-left'></i></a>");
+        
+        //스위치 UI
+        var elemsingleSmallList = document.querySelectorAll('.js-single');
+        for(var i=0; i < elemsingleSmallList.length; i++){
+            switchCherryArr[elemsingleSmallList[i].getAttribute('id')]  = new Switchery(elemsingleSmallList[i], { color: '#4680ff', jackColor: '#fff'});
+        }
+        if(switchCherryCallback != undefined && typeof switchCherryCallback === 'function'){
+            switchCherryCallback();
+        }
+        
+        //위생안전점검 event bind
+        $("#chckYn").on("change",function(){
+              let isChecked = $(this).is(":checked");
+              (isChecked)?  $("#chck_area").show():$("#chck_area").hide();
+        })
+        
+        //입출고 상태 변경 event bind
+        $("#sttsChangeProcess").change(function(){
+              if($(this).is(":checked")){
+                  $("input[name='sttsCd']").attr("disabled",false);
+              }else{
+                  $("input[name='sttsCd']").attr("disabled",true);
+              }
+        })
+        
+        //입고 상태 event bind
+        $("#wrhousngStts").change(function(){
+              if($(this).is(":checked")){
+            	  $("#abnrmlArea").show();
+              }else{
+            	  $("#abnrmlArea").hide();
+              }
+        })
+        //직접 이상처리 event bind
+        $("#directAbnrmlProcess").change(function(){
+              if($(this).is(":checked")){
+                  $("input[name='selectAbnrmlMethod']").attr("disabled",false);
+                  $("#onDierctProcess").show();
+              }else{
+                  $("input[name='selectAbnrmlMethod']").attr("disabled",true);
+                  $("#onDierctProcess").hide();
+              }
+        })
+        //교구수량추가/상태변경 event bind
+        $("input[name='selectAbnrmlMethod']").change(function(){
+             if($(this).val()=='cnt'){
+                 $(".abnrml-cnt").show();
+                 $(".abnrml-stts").hide();
+             }else{
+                 $(".abnrml-cnt").hide();
+                 $(".abnrml-stts").show();
+             }
+        })
+    }
+    decreaseCnt =(tchaidid)=>{
+        var qntyInvntry = Number($("#qntyInvntry"+tchaidid).attr('data-qntyInvntry'));
+        var curNum = Number($("#"+tchaidid+"tachiadCnt").val());
+        var futureNum = curNum-1; 
+        if(curNum == 0){return};
+        if(qntyInvntry < futureNum) {return};
+        $("#"+tchaidid+"tachiadCnt").val(futureNum);
+        $("#qntyInvntry"+tchaidid).text(qntyInvntry-futureNum);
+     }
+     increaseCnt =(tchaidid)=>{
+         var qntyInvntry = Number($("#qntyInvntry"+tchaidid).attr('data-qntyInvntry'));
+         var curNum = Number($("#"+tchaidid+"tachiadCnt").val());
+         var futureNum = curNum+1;
+         if(qntyInvntry < futureNum) {return};
+         $("#"+tchaidid+"tachiadCnt").val(futureNum);
+         $("#qntyInvntry"+tchaidid).text(qntyInvntry-futureNum);
+     }
+     function saveWrhousng(){
+
+    	var healthCheck = $("#chckYn").is(":checked");
+        var chckTchaidArr = [];
+        var ansArr = [];
+        var params ;
+        
+        //기본
+        params = {
+                    formid          : 1
+                    ,packageindvdid  : $("#packageindvdid").val()
+                    ,chckCd          : '239103'
+        }
+
+        //입출고 상태 추가  
+        if($("#sttsChangeProcess").is(":checked")){
+        	params = Object.assign(params, {
+        		sttsCd :   $("input[name='sttsCd']:checked").val()
+        		,sttsCheck :'Y'
+            	});
+        }
+        
+    	if(healthCheck){
+        	
+    		tchaidlist.forEach(function(tchaid){
+        		var frmNum = tchaid.tchaidid;
+        		chckTchaidArr.push(
+                	{ tchaidid : frmNum
+            	      , qnty   : tchaid.qntyCmpstn
+        		      , cmpnt  :  tchaid.cmpntNms
+        		    }
+           		 )
+           		 
+        		artclExList.forEach(function(article){
+            		
+        			var exid     = $("[name='"+frmNum+'question'+article.artclid+"']:checked").val();
+        			var excn     = $("[name='"+frmNum+'question'+article.artclid+"']:checked").attr("cn");
+        			var actnMttr = $("[id='"+frmNum+'measure'+article.artclid+"']").val();
+
+        			ansArr.push(
+	                	{ tchaidid  : frmNum
+		                  ,artclid  : article.artclid
+		                  ,exid     : exid
+		                  ,actnMttr : actnMttr
+		                  ,exCn     : excn
+	        		    }
+	           		 )
+            	})
+        	})
+        	if($("#chckDe").val()==null ||$("#chckDe").val()=="" ){
+            	alert("점검 일자를 입력해주십시오.");
+            	showErrorMark("#chckDe");
+            	return;
+            }
+
+            var healthChckParam = {
+            		chckDe : $("#chckDe").val()
+            		,lendPackageindvdChkAnsList : ansArr
+            		,lendPackageindvdChckTchaidList : chckTchaidArr
+                    ,healthCheck : "Y"
+            }
+            params = Object.assign(params, healthChckParam)
+       }
+        
+       //healthCheck
+       // 정상/이상 처리 
+       var isAbnormal = $("[name='wrhousngStts']").is(":checked");
+
+       if(isAbnormal){
+           let cn = $("#cn").val();
+    	   if(cn==null ||cn=="" ){
+              alert("이상 내용을 입력해주십시오.");
+              showErrorMark("#cn");
+              return;
+           }
+           
+    	   if(cn.length >=500 ){
+              alert("이상 내용은 500자 이상 입력 하시 수 없습니다.");
+              showErrorMark("#cn");
+              return;
+           }
+           
+           var abnormalParam;
+
+           params = Object.assign(params, {cn : $("#cn").val()} ); 
+           params.modifyStts = 'A' //기본 (위생 점검 O, 이상처리 O(이상), 입고 처리 O)
+
+           var addParams;
+           if($("#directAbnrmlProcess").is(":checked") && $("input[name='selectAbnrmlMethod']:checked").val()=='cnt' ){
+               
+        	   var isAllzero = true;
+               var abnrmlCntArr=[];
+               
+        	   tchaidlist.forEach(function(item){
+                   var id = item.tchaidid;
+                   var curNum = Number($("#"+id+"tachiadCnt").val());
+                   if(curNum > 0){
+                       isAllzero = false;
+                       abnrmlCntArr.push({
+                            tchaidid : id
+                           ,packageindvdid:item.packageindvdid
+                           ,qntyCmpstn : curNum
+                       })
+                   }
+               })
+               
+               if(isAllzero){
+                   alert("교구 수량이 추가 되지 않았습니다.");
+            	   tchaidlist.forEach(function(item){    
+                       var id = item.tchaidid;
+                       showErrorMark("#"+id+"tachiadCnt");
+                   })
+                   return;
+               }
+               
+        	   addParams={
+                	   
+                         packageindvdid:tchaidlist[0].packageindvdid
+                        ,packageindvdTchaidCmpstnVoList :abnrmlCntArr
+                        ,mode:"cnt"
+                      }
+               
+               params.modifyStts = 'C' //  이상처리 O(이상-> 정상 : 교구개수등록 O)
+               
+           }else if($("#directAbnrmlProcess").is(":checked") && $("input[name='selectAbnrmlMethod']:checked").val()=='stts' ){
+        	   addParams={
+        			   packageindvdid:tchaidlist[0].packageindvdid
+                       ,mode:"stts"
+                      }
+               params.modifyStts = 'S' //이상처리 O(이상-> 정상 :상태변경 O))
+           }
+    	   params = Object.assign(params, addParams);
+       }
+       
+       if( !$("#sttsChangeProcess").is(":checked") && !isAbnormal && !healthCheck){
+           alert("위생 점검 또는 꾸러미 상태 변경 및 이상처리중 한가지 이상 선택 해야 합니다.")
+           return;
+       }
+
+       if(displayWorkProgress()){
+            $.ajax({
+                url : "/mng/health/healthChck.do",
+                type: 'POST',
+                cache : false,
+                traditional : true, //필수
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                data : JSON.stringify(params),
+                success : function (data){
+                    if(data.result=="success"){
+                        alert(data.msg);
+                        //location.href="/mng/health/healthchckList.html";
+                        location.href="/main.html";
+                    }else{
+                        alert(data.msg);
+                    }
+                    closeWorkProgress();
+                }
+            });
+        }
+    }
+  </script>
+</div> 
+</body>
+</html>
