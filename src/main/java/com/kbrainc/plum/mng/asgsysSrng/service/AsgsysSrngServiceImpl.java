@@ -1185,11 +1185,11 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     @Transactional
     public int updateAssChklst(AsgsysSrngVo asgsysSrngVo) throws Exception {
     	int ret=0;
-
-
+    	String preSeCd="";
+    	int ordrAns=1;
+    	ChklstAnsVo ordrAnsVo = new ChklstAnsVo();
 
     	if (asgsysSrngVo.getSbmsnid() != null && !asgsysSrngVo.getSbmsnid().equals(0)) {
-
     		//체크리스트 제출 수정
     		ret = asgsysSrngDao.updateChklstSbmsn(asgsysSrngVo);
 
@@ -1198,21 +1198,35 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     		ret = asgsysSrngDao.insertChklstSbmsn(asgsysSrngVo);
     	}
 
-
-    	AsgsysSrngVo SbmsnInfo = asgsysSrngDao.selectDsgnAplyDtlInfo(asgsysSrngVo);
+    	AsgsysSrngVo sbmsnInfo = asgsysSrngDao.selectChkListSbmsn(asgsysSrngVo);
 
     	//체크리스트 답변 수정
     	List<ChklstAnsVo> lst = asgsysSrngVo.getAnsLst();
+
+    	ordrAnsVo.setSbmsnid(sbmsnInfo.getSbmsnid());
+    	asgsysSrngDao.deleteChklstSeOrdrAnsList(ordrAnsVo);
+
     	for(ChklstAnsVo vo : lst) {
 
     		vo.setUser(asgsysSrngVo.getUser());
-    		vo.setSbmsnid(SbmsnInfo.getSbmsnid());
+    		vo.setSbmsnid(sbmsnInfo.getSbmsnid());
 
     		if(1 == asgsysSrngDao.selectKeyCntChklstAns(vo)) {
     			ret += asgsysSrngDao.updateChklstAns(vo);
     		}else if(0 == asgsysSrngDao.selectKeyCntChklstAns(vo)) {
     			ret += asgsysSrngDao.insertChklstAns(vo);
     		}
+
+    		if(!vo.getSeCd().equals(preSeCd)) {
+    			ordrAnsVo.setSbmsnid(vo.getSbmsnid());
+    			ordrAnsVo.setSeCd(vo.getSeCd());
+    			ordrAnsVo.setOrdr(ordrAns);
+    			ordrAnsVo.setUser(vo.getUser());
+    			ret+=asgsysSrngDao.insertChklstSeOrdrAnsList(ordrAnsVo);
+    			ordrAns++;
+    			preSeCd=vo.getSeCd();
+    		}
+
     	}
 
 		return ret;
@@ -1360,9 +1374,23 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     @Transactional
 	public int insertPrgrmDstnctn(AsgsysSrngVo asgsysSrngVo) throws Exception {
     	int ret=0;
+    	Integer chklstid =null;
+    	AsgsysSrngVo assPrgrmVo =null;
 
     	//프로그램 우수성 등록
     	ret += asgsysSrngDao.insertPrgrmDstnctn(asgsysSrngVo);
+
+    	//지정프로그램 수정
+    	chklstid = asgsysSrngDao.getCheckListId(asgsysSrngVo);
+
+    	if(null != chklstid ) {
+    		assPrgrmVo = asgsysSrngDao.selectPrgrm(asgsysSrngVo);
+    		assPrgrmVo.setChklstid(chklstid);
+    	}
+    	assPrgrmVo.setPrgrmNm(asgsysSrngVo.getPrgrmNm());
+    	assPrgrmVo.setCnsltngPrgrsYn(asgsysSrngVo.getCnsltngPrgrsYn());
+    	assPrgrmVo.setCnsltngKndCd(asgsysSrngVo.getCnsltngKndCd());
+    	ret += asgsysSrngDao.updatePrgrm(assPrgrmVo);
 
     	//프로그램_일정 저장*/
     	List<PrgrmSchdlVo> schdLst = asgsysSrngVo.getPrgrmSchdlLst();
@@ -1434,10 +1462,23 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     @Transactional
     public int updatePrgrmDstnctn(AsgsysSrngVo asgsysSrngVo) throws Exception {
     	int ret=0;
+    	Integer chklstid=null;
+    	AsgsysSrngVo assPrgrmVo = null;
 
     	//프로그램_일정 저장*/
     	List<PrgrmSchdlVo> schdLst = asgsysSrngVo.getPrgrmSchdlLst();
 
+    	//지정프로그램 수정
+    	chklstid = asgsysSrngDao.getCheckListId(asgsysSrngVo);
+
+    	if(null != chklstid ) {
+    		assPrgrmVo = asgsysSrngDao.selectPrgrm(asgsysSrngVo);
+    		assPrgrmVo.setChklstid(chklstid);
+    	}
+    	assPrgrmVo.setPrgrmNm(asgsysSrngVo.getPrgrmNm());
+    	assPrgrmVo.setCnsltngPrgrsYn(asgsysSrngVo.getCnsltngPrgrsYn());
+    	assPrgrmVo.setCnsltngKndCd(asgsysSrngVo.getCnsltngKndCd());
+    	ret += asgsysSrngDao.updatePrgrm(assPrgrmVo);
 
     	if( schdLst != null && 0 < schdLst.size()) {
 

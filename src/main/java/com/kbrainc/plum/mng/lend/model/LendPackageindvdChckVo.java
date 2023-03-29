@@ -107,7 +107,16 @@ public class LendPackageindvdChckVo extends ParentRequestVo {
     /** 둥록수정 모드 */
     private String modifyStts;
     
-    public void setSttsCd(String chckCd) throws Exception{
+    /** 꾸러미 입출고코드(등록용) */
+    private String sttsCd;
+    
+    /** 꾸러미 위생점검 여부 (등록용) */
+    private String healthCheck ;
+    
+    /** 입출고 상태변경 여부 (등록용) */
+    private String sttsCheck ;
+    
+    public void setChckCd(String chckCd) throws Exception{
         this.chckCd = chckCd;
         if(CommonUtil.isEmpty(this.chckCdNm)) { 
             try {

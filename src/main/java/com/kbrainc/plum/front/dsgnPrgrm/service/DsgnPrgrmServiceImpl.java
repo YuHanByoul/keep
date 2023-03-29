@@ -113,6 +113,21 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	}
 
 	/**
+	* 교육주제 목록 조회
+	*
+	* @Title : selectEduSbjctList
+	* @Description : 교육주제 목록 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnPrgrmVo>
+	*/
+	public List<DsgnPrgrmVo> selectEduSbjctList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
+		return dsgnPrgrmDao.selectEduSbjctList(dsgnPrgrmVo);
+	}
+
+
+	/**
 	* 대처계획 목록 조회
 	*
 	* @Title : selectPlanList
@@ -321,6 +336,21 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	@Override
 	public List<DsgnPrgrmVo> selectQitemList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
 		return dsgnPrgrmDao.selectQitemList(dsgnPrgrmVo);
+	}
+
+	/**
+	* 체크리스트 답변 목록 조회
+	*
+	* @Title : selectChkAnsList
+	* @Description : 체크리스트 답변 목록 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnPrgrmVo>
+	*/
+	@Override
+	public List<DsgnPrgrmVo> selectChkAnsList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
+		return dsgnPrgrmDao.selectChkAnsList(dsgnPrgrmVo);
 	}
 
 	/**

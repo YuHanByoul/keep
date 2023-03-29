@@ -30,7 +30,7 @@ public class MapVo extends ParentRequestVo {
     private Integer resrceid;
 
     /** 자원 구분 코드*/
-    private Integer resrceSeCd;
+    private String resrceSeCd;
 
     /** 자원 구분 코드 명*/
     private String resrceSeCdNm;
@@ -73,14 +73,14 @@ public class MapVo extends ParentRequestVo {
 
     /** 수정 일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
-    private Date mdfcnDt;
+    private String mdfcnDt;
 
     /** 수정자아이디 */
     private Integer mdfrid;
 
     /** 등록 일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
-    private Date regDt;
+    private String regDt;
 
     /** 등록자아이디 */
     private Integer rgtrid;

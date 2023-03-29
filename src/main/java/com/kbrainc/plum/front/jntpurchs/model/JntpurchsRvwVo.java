@@ -8,6 +8,7 @@ import org.apache.ibatis.type.Alias;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.util.StringUtil;
 
 import lombok.Data;
 
@@ -49,6 +50,10 @@ public class JntpurchsRvwVo extends ParentRequestVo {
     /** 후기 점수 */
     private Integer rvwScr;
     
+    /** 계정 마스킹 */
+    public void setAcnt(String acnt) {
+        this.acnt = StringUtil.maskingAccount(acnt);
+    }
     
     /** 후기 등록일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
