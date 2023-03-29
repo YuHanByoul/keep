@@ -62,6 +62,8 @@ public class CommonUtil {
     
     public static String serverCookieDomain = applicationConfig.getString("server.servlet.session.cookie.domain");
     
+    public static String chatbotUrl = applicationConfig.getString("chatbot.host");
+    
     /**
      * @Title : getBean
      * @Description : 특정 bean을 가져오는 함수
