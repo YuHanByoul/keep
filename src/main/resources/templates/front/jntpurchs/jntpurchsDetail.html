@@ -81,10 +81,10 @@
                         <div class="list">
                             <dt>현재까지 신청된 총 수량</dt>
                             <dd>
-                                <th:block th:if="${jntpurchsInfo.qntyWholLmtYn == 'Y'}">
+                                <th:block th:if="${jntpurchsInfo.qntyWholLmtYn == 'N'}">
                                 <span class="fc-blue" id="orderQnty">0개</span> / <span id="qntyWhol">0</span>개 
                                 </th:block>
-                                <th:block th:unless="${jntpurchsInfo.qntyWholLmtYn == 'Y'}">
+                                <th:block th:unless="${jntpurchsInfo.qntyWholLmtYn == 'N'}">
                                 <span class="fc-blue" id="orderQnty">0개</span> / 제한없음                                
                                 </th:block>
                             </dd> 
@@ -199,8 +199,8 @@
                         <span class="acc-trigger mo-flex-wrap">
                             <span class="name" th:text="${item.acnt}"></span>
                             <span class="rate" th:title="${'별점' + item.rvwScr}">
-                            <th:block th:each="num : ${#numbers.sequence(1, #lists.size(rvwList) + 2)}">
-                                <span class="icon icon-star" th:title="${'별' + num}"></span>
+                            <th:block th:each="num : ${#numbers.sequence(1, item.rvwScr)}">
+                                <span class="icon icon-star" th:title="${'별점' + num}"></span>
                             </th:block>
                             </span>
                         </span>
@@ -436,13 +436,13 @@
                    var orderQnty = this.jntpurchsInfo.orderQnty;
                    var remainQnty = qntyWhol - orderQnty;
                    $("#orderQnty").text(addComma3(orderQnty) + "개");
-                    if(qntyWholLmtYn == "Y" && qntyLmtYn == "Y") { // 수량/구매 제한
+                    if(qntyWholLmtYn == "N" && qntyLmtYn == "N") { // 수량/구매 제한
                         $("#qntyWhol").text(addComma3(qntyWhol));
                         $("#qnty").prop("max", Math.min(remainQnty, qntyLmt));
-                    } else if(qntyWholLmtYn == "Y" && qntyLmtYn == "N") { // 수량 제한
+                    } else if(qntyWholLmtYn == "N" && qntyLmtYn == "Y") { // 수량 제한
                         $("#qntyWhol").text(addComma3(qntyWhol));
                         $("#qnty").prop("max", remainQnty);
-                    } else if(qntyWholLmtYn == "N" && qntyLmtYn == "Y") { // 구매 제한
+                    } else if(qntyWholLmtYn == "Y" && qntyLmtYn == "N") { // 구매 제한
                         $("#qnty").prop("max", qntyLmt);
                     } else { // 제한없음
                         $("#qnty").prop("max", 100000000);
