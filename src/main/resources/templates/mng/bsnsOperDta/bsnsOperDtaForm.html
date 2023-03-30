@@ -1,0 +1,359 @@
+<div class="card">
+    <div class="card-header p-b-0">
+        <h3 class="sub-title"><strong>기본 정보</strong></h3>
+    </div>
+
+    <form method="post" id="registerForm" name="registerForm" onsubmit="return false;">
+
+        <div class="card-block-small p-t-0">
+            <div class="row">
+                <div class="col-lg-6 mb-3">
+                    <div class="mb-0 form-group required">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>분류</strong></div>
+                        <div class="border-checkbox-section" id="testTag">
+                            <span kattr:check_code="clsfCds" grpCd="227" isAdmin="true"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-3">
+                    <div class="mb-0 form-group">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="yy"><strong>발행년도</strong></label>
+                        <div class="col-12">
+                            <input type="number" class="form-control form-control-sm" name="yy" id="yy" th:value="${bsnsOperDta.yy}" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 mb-3">
+                    <div class="mb-0 form-group required">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="instNm"><strong>운영기관</strong></label>
+                        <div class="row">
+                            <div class="col">
+                                <input type="text" class="form-control form-control-sm" name="instNm" id="instNm" readonly th:value="${bsnsOperDta.instNm}" />
+                            </div>
+                            <div class="col-auto p-l-0">
+                                <button type="button" class="btn btn-inverse btn-sm" onclick="openInstSearchPopup()">
+                                    기관검색
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-3">
+                    <div class="mb-0 form-group required">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>저작권</strong></div>
+                        <select name="" class="form-select form-select-sm">
+                            <option value="" disabled="" selected="">-선택-</option>
+                            <option value="opt1">Type 1</option>
+                            <option value="opt2">Type 2</option>
+                            <option value="opt3">Type 3</option>
+                            <option value="opt4">Type 4</option>
+                            <option value="opt5">Type 5</option>
+                            <option value="opt6">Type 6</option>
+                            <option value="opt7">Type 7</option>
+                            <option value="opt8">Type 8</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 mb-3">
+                    <div class="mb-0 form-group">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="pdfFile"><strong>PDF 파일</strong></label>
+                        <div class="col-12">
+                            <input type="file" name="pdfFile" id="pdfFile" multiple accept="image/jpeg,image/gif,image/png,application/pdf" class="form-control form-control-sm"/>
+                        </div>
+                        <div class="mt-2 row">
+                            <div class="col-auto">
+                                <div id="pdfFileUploadError"></div>
+                                <div id="pdfFileUploadSuccess">
+                                    <th:block th:if="${bsnsOperDta.pdfFileList}">
+                                        <th:block th:each="file : ${bsnsOperDta.pdfFileList}" th:id="${file.fileid}">
+                                            <span class='label label-inverse' th:id="${file.fileid}">[[${file.orginlFileNm}]]
+                                                <a class='text-white' href="javascript:void(0)"
+                                                   th:name="${file.fileid}" th:attr="data-idntfc-key=${file.fileIdntfcKey}"
+                                                   th:onclick="deleteFile(this.name, this.dataset.idntfcKey)">X
+                                                </a>
+                                            </span>
+                                        </th:block>
+                                    </th:block>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="pdfFileid" name="pdfFileid" th:value="${bsnsOperDta.pdfFileid == null ? 0 : bsnsOperDta.pdfFileid }"/>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 mb-3">
+                    <div class="mb-0 form-group required">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="ttl"><strong>제목</strong></label>
+                        <div class="col-12">
+                            <input type="text" class="form-control form-control-sm" name="ttl" id="ttl" th:value="${bsnsOperDta.ttl}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 mb-3">
+                    <div class="mb-0 form-group required">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cn"><strong>내용</strong></label>
+                        <div class="col-12">
+                            <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="Default textarea" id="cn" name="cn">
+                                <th:block th:text="${bsnsOperDta.cn}"></th:block>
+                            </textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 mb-3">
+                    <div class="mb-0 form-group">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="atchFile"><strong>첨부파일</strong></label>
+                        <div class="col-12">
+                            <input type="file" name="atchFile" id="atchFile" multiple accept="image/jpeg,image/gif,image/png,application/pdf" class="form-control form-control-sm"/>
+                        </div>
+                        <div class="mt-2 row">
+                            <div class="col-auto">
+                                <div id="atchFileUploadError"></div>
+                                <div id="atchFileUploadSuccess">
+                                    <th:block th:if="${bsnsOperDta.atchFileList}">
+                                        <th:block th:each="file : ${bsnsOperDta.atchFileList}" th:id="${file.fileid}">
+                                            <span class='label label-inverse' th:id="${file.fileid}"> [[${file.orginlFileNm}]]
+                                                <a class='text-white' href="javascript:void(0)"
+                                                   th:name="${file.fileid}" th:attr="data-idntfc-key=${file.fileIdntfcKey}"
+                                                   th:onclick="deleteFile(this.name, this.dataset.idntfcKey)">X
+                                                </a>
+                                            </span>
+                                        </th:block>
+                                    </th:block>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="atchFilegrpid" name="atchFilegrpid" th:value="${bsnsOperDta.atchFilegrpid == null ? 0 : bsnsOperDta.atchFilegrpid }"/>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-lg-6 mb-3">
+                    <div class="mb-0 form-group">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="regD"><strong>등록일</strong></label>
+                        <div class="col-12">
+                            <input type="text" class="form-control form-control-sm" name="regD" id="regD" readonly
+                                   th:value="${bsnsOperDta.regDt != null? #dates.format(bsnsOperDta.regDt,'yyyy-MM-dd') : #dates.format(#dates.createNow(), 'yyyy-MM-dd')}"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6 mb-3">
+                    <div class="mb-0 form-group">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="rgtrNm"><strong>작성자ID(이름)</strong></label>
+                        <div class="col-12">
+                            <input type="text" class="form-control form-control-sm" name="rgtrNm" id="rgtrNm" readonly
+                                   th:value="${bsnsOperDta.rgtrNm != null ? bsnsOperDta.rgtrNm : bsnsOperDta.user.nm}"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-block-small">
+            <button type='button' class="btn btn-disabled m-r-5" onclick="bsnsOperDtaGridHelper.toggleContent()">취소</button>
+            <th:block sec:authorize-url="/mng/bsnsOperDta/insertBsnsOperDta.do">
+                <button type='button' class="btn btn-primary" onclick="insertBsnsOperDta()">저장</button>
+            </th:block>
+        </div>
+
+        <input type="hidden" name="instid" id="instid" th:value="${bsnsOperDta.instid != null ? bsnsOperDta.instid : ''}"/>
+        <input type="hidden" name="rgtrid" id="rgtrid" th:value="${bsnsOperDta.rgtrid != null ? bsnsOperDta.rgtrid : ''}"/>
+        <input type="hidden" name="dtaid" id="dtaid" th:value="${bsnsOperDta.dtaid != null ? bsnsOperDta.dtaid : ''}"/>
+    </form>
+
+    <script th:inline="javascript">
+
+        let editor = CKEDITOR.replace('cn', {enterMode: CKEDITOR.ENTER_BR});
+        let insertBsnsOperDta = () => {
+            if ($('input[name=clsfCds]:checked').length == 0) {
+                alert('분류를 선택해 주십시오.');
+                return;
+            }
+
+            let editorData = editor.getData();
+            $("#cn").val(editorData);
+
+            if (!$('#registerForm').valid()) {
+                return;
+            }
+
+            let url = '/mng/bsnsOperDta/insertBsnsOperDta.do';
+
+            if(!!$('#dtaid').val()) {
+                url = '/mng/bsnsOperDta/updateBsnsOperDta.do';
+            }
+
+            if (url == '/mng/bsnsOperDta/insertBsnsOperDta.do') {
+                var isSec = false;
+                /*[# sec:authorize-url="/mng/bsnsOperDta/insertBsnsOperDta.do"]*/
+                isSec = true;
+                /*[/]*/
+                if (!isSec) {
+                    alert('접근권한이 없습니다.');
+                    return;
+                }
+            }
+            else if (url == '/mng/bsnsOperDta/updateBsnsOperDta.do') {
+                var isSec = false;
+                /*[# sec:authorize-url="/mng/bsnsOperDta/updateBsnsOperDta.do"]*/
+                isSec = true;
+                /*[/]*/
+                if (!isSec) {
+                    alert('접근권한이 없습니다.');
+                    return;
+                }
+            }
+
+            if(displayWorkProgress()) {
+                $.ajax({
+                    method: 'post',
+                    url: url,
+                    dataType: 'json',
+                    data: $('#registerForm').serializeArray(),
+                    success: function (response) {
+                        alert(response.msg);
+                        closeWorkProgress();
+                        if(response.result == "success") {
+                            bsnsOperDtaGridHelper.resetPageContent();
+                        }
+                    }
+                });
+            }
+        }
+
+        let validateForm = () => {
+            $('#registerForm').validate({
+                ignore: [],
+                rules: {
+                    ttl: {required: true, maxlength: 100},
+                    cn: {required: true},
+                    instNm: {required: true}
+                },
+                messages: {
+                    ttl: {required: '제목을 입력해 주십시오.', maxlength: '제목은 100자를 넘을 수 없습니다.'},
+                    cn: {required: '내용을 입력해 주십시오.'},
+                    instNm: {required: '기관을 선택해 주십시오.'}
+                }
+            });
+        }
+
+        $(function () {
+            pdfFileEvent();
+            atchFileEvent();
+            validateForm();
+        })
+
+        let pdfFileEvent = () => {
+            $('#pdfFile').on("change", function (event) {
+
+                var objFile = document.querySelector('#pdfFile');
+                var formData = new FormData();
+                var content = "";
+
+                for (i = 0; i < objFile.files.length; i++) {
+                    formData.append("files", objFile.files[i]);
+                }
+
+                formData.append("filegrpid", $("#pdfFileid").val());
+                formData.append("filegrpNm", "pdf_view_file");
+
+                if (displayWorkProgress()) {
+                    $.ajax({
+                        url: '/uploadMultipleFiles.do',
+                        processData: false,
+                        contentType: false,
+                        data: formData,
+                        type: 'POST',
+                        success: function (response) {
+                            if (response.result == 'fail') {
+                                alert(response.msg);
+                            } else {
+                                if ($("#pdfFileid").val() == '0' || $("#pdfFileid").val() == '' || $("#pdfFileid").val() == null) {
+                                    $("#pdfFileid").val(response[0].filegrpid);
+                                }
+                                for (i = 0; i < response.length; i++) {
+                                    content = "<span class ='label label-inverse' id='" + response[i].fileid + "'>" + response[i].orginlFileNm;
+                                    content += "<a class='text-white' href=javascript:deleteFile('" + response[i].fileid + "','" + response[i].fileIdntfcKey + "')>X</a></span>";
+                                    $('#pdfFileUploadSuccess').append(content);
+                                }
+                            }
+                            closeWorkProgress();
+                        }
+                    })
+
+                    if (detectBrowser() == "other") {
+                        $("#pdfFile").val("");
+                    } else {
+                        $("#pdfFile").replaceWith($("#pdfFile").clone(true))
+                    }
+                }
+            });
+        }
+
+        let atchFileEvent = () => {
+            $('#atchFile').on("change", function (event) {
+
+                var objFile = document.querySelector('#atchFile');
+                var formData = new FormData();
+                var content = "";
+
+                for (i = 0; i < objFile.files.length; i++) {
+                    formData.append("files", objFile.files[i]);
+                }
+
+                formData.append("filegrpid", $("#atchFilegrpid").val());
+                formData.append("filegrpNm", "bsnsOperDta_file");
+
+                if (displayWorkProgress()) {
+                    $.ajax({
+                        url: '/uploadMultipleFiles.do',
+                        processData: false,
+                        contentType: false,
+                        data: formData,
+                        type: 'POST',
+                        success: function (response) {
+                            if (response.result == 'fail') {
+                                alert(response.msg);
+                            } else {
+                                if ($("#atchFilegrpid").val() == '0' || $("#atchFilegrpid").val() == '' || $("#atchFilegrpid").val() == null) {
+                                    $("#atchFilegrpid").val(response[0].filegrpid);
+                                }
+                                for (i = 0; i < response.length; i++) {
+                                    content = "<span class ='label label-inverse' id='" + response[i].fileid + "'>" + response[i].orginlFileNm;
+                                    content += "<a class='text-white' href=javascript:deleteFile('" + response[i].fileid + "','" + response[i].fileIdntfcKey + "')>X</a></span>";
+                                    $('#atchFileUploadSuccess').append(content);
+                                }
+                            }
+                            closeWorkProgress();
+                        }
+                    })
+
+                    if (detectBrowser() == "other") {
+                        $("#atchFile").val("");
+                    } else {
+                        $("#atchFile").replaceWith($("#atchFile").clone(true))
+                    }
+                }
+            });
+        }
+
+        let openInstSearchPopup = () => {
+            var url = "/mng/bsnsOperDta/instSearchPopup.html";
+            $("#instSearchPopup").load(url, function (response, status, xhr) {
+                if (status == "success") {
+                    instSearchPopup = new bootstrap.Modal($('#instSearchPopup'));
+                    instSearchPopup.show();
+                }
+            });
+        }
+
+    </script>
+</div>

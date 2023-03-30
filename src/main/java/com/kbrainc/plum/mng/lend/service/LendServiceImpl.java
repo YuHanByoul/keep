@@ -501,7 +501,7 @@ public class LendServiceImpl extends PlumAbstractServiceImpl implements LendServ
     /**
      * 입고 점검 처리 (점검 등록 및 이상처리 등)
      *
-     * @Title       : healthChckProcess 
+     * @Title       : wrhounsngChckProcess 
      * @Description :입고 점검 처리 (점검 등록 및 이상처리 등) 
      * @param LendPackageindvdChckVo 객체
      * @return int  목록
@@ -673,8 +673,6 @@ public class LendServiceImpl extends PlumAbstractServiceImpl implements LendServ
             resInt += packageDao.updatePackageindvd(packageindvdVo);
         }
         //위생점검 관리 (개체 입출고 상태)
-        
-        
         result.put("resInt", resInt);
         result.put("msg", "점검 처리 되었습니다.");
         result.put("result", Constant.REST_API_RESULT_SUCCESS);
