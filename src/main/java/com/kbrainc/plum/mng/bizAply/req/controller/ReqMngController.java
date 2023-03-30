@@ -1266,4 +1266,44 @@ public class ReqMngController {
         
         return resultMap;
     }
+    
+    /**
+    * 심사마감 / 마감취소. 
+    *
+    * @Title : updateSrngEnd
+    * @Description : TODO
+    * @param reqUserVo
+    * @param bindingResult
+    * @param user
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+     */
+    @RequestMapping(value="/mng/bizAply/req/updateSrngEnd.do")
+    @ResponseBody
+    public Map<String, Object> updateSrngEnd(@Valid ReqUserVo reqUserVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+        
+        reqUserVo.setUser(user);
+        
+        int retVal = this.reqMngService.updateSrngEnd(reqUserVo);
+        
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "수정에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "수정에 실패했습니다.");
+        }
+        
+        return resultMap;
+    }
 }

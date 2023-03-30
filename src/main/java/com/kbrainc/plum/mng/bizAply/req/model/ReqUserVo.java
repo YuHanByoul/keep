@@ -234,6 +234,9 @@ public class ReqUserVo extends ParentRequestVo {
     /** 심사 종료 여부 */
     private String srngEndYn;
     
+    /** 2차 심사 종료 여부 */
+    private String scndSrngEndYn;
+    
     /** 수정일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date mdfcnDt;
@@ -261,6 +264,27 @@ public class ReqUserVo extends ParentRequestVo {
     private String srngFormidScnd;
     
     private String formid;
+    
+    /** 차수 */
+    private Integer cycl;
+    
+    /** 인원수 제한 사용여부 */
+    private String nopeLmtUseYn;
+    
+    /** 인원수 제한 */
+    private Integer nopeLmt;
+    
+    /** 최저 기준 평균점수 사용여부 1차 */
+    private String lwetCrtrScrUseYnFirst;
+    
+    /** 최저 기준 평균점수 1차 */
+    private String lwetCrtrScrFirst;
+    
+    /** 최저 기준 평균점수 사용여부 2차 */
+    private String lwetCrtrScrUseYnScnd;
+    
+    /** 최저 기준 평균점수 2차 */
+    private String lwetCrtrScrScnd;
     
     /** 온라인 심사유형 코드 */
     private String onlnSrngTypeCd;
