@@ -220,13 +220,8 @@ function deleteFile(fileid, fileIdntfcKey) {
 
 jQuery(function (){
     $('.open-msg-btn').on('click',function (){
-        const {target, trgtId, userId} = $(this).data();
-        if(userId === null) {
-            alert('로그인 후 이용해주세요.');
-            return;
-        }else{
-            layerPopup.open({target, callback: msgSendFormInit(target, trgtId)});
-        }
+        const {target, trgtId} = $(this).data();
+        layerPopup.open({target, callback: msgSendFormInit(target, trgtId)});
     });
     $('#msgForm textarea[name=cn]').on('keyup input', function() {
         $(this).parent().find('#txtSize').text($(this).val().length);
@@ -288,11 +283,11 @@ function msgAddBtn(){
 
     $listMsgAddBtn.each(function (){
         let $cloneBody = $clone.clone(true);
-        let {trgtId, userId} = $(this).data();
+        let {trgtId} = $(this).data();
         let maskName = $(this).text();
         $(this).text('').append(
             $cloneBody.find('.user-name-span > span').text(maskName).end()
-                .find('.open-msg-btn').data({'trgt-id':trgtId,"user-id":userId}).end()
+                .find('.open-msg-btn').data({'trgt-id':trgtId}).end()
         );
     });
 }
