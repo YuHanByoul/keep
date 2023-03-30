@@ -153,10 +153,9 @@ public class LendServiceImpl extends PlumAbstractServiceImpl implements LendServ
         LendRndVo lendRndVo = new LendRndVo();
         lendRndVo.setDeleteIds(lendVo.getDeleteIds());
         
-        resInt +=lendDao.deleteLendRndPackageindvd(lendRndVo);
+        //resInt +=lendDao.deleteLendRndPackageindvd(lendRndVo);
         resInt +=lendDao.deleteLendRnd(lendRndVo);
         resInt +=lendDao.deleteLend(lendVo);
-        
         return resInt;
     }
     /**

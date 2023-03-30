@@ -54,7 +54,6 @@
                       dataType: "json",
                       data: params,
                     }).done(function(response){
-                        
                         var da = {
                                 data : escapeGridData(response.list)
                                 ,itemsCount : response.totalCount
@@ -68,19 +67,12 @@
                  { title: 'No.'      ,name: 'rowNumber' ,type: "number", width : "80", align:"center",  sorting :false }
                 ,{ title: '내역'      ,type: "text" , width: "1000", align:"left" 
                     ,itemTemplate: function(value, item){
+                    	var sttsStr = (Number(item.WRHOUSNG_ABNRML_CD) > 0)? "이상 !":"정상 ";
                         var returnStr = " [";
-                            if(item.WDCD =='D'){
-	                            returnStr += "<span style='red'>출고</span>";
-                            }else{
-	                            returnStr += "<span style='blue'>입고</span>";
-                            }
-                            returnStr += "] ["+item.PRCS_DT+"] [담당자:"+item.NM+"]";
-                            if(item.WDCD =='D'){
-	                            returnStr += " ["+item.RCRIT_NM+"] ["+item.DLVY_ADDR+" "+item.DLVY_ADDR_DTL+"]"
-                            }else{
-                            	var sttsStr = (Number(itm.WRHOUSNG_ABNRML_CD) > 0)? "이상 ":"정상 ";
-	                            returnStr += " ["+sttsStr+" 입고]";
-                            }
+                        returnStr += (item.WDCD =='D')?  "<span style='color:red;'>출고</span>":"<span style='color:blue;'>입고</span>"; 
+                        returnStr += "] ["+item.PRCS_DT+"] [담당자:"+item.NM+"]";
+                        returnStr += (item.WDCD =='D')?  (item.RCRIT_NM===undefined)? "":" ["+item.RCRIT_NM+"] ":"";
+                        returnStr += (item.WDCD =='D')? " ["+item.DLVY_ADDR+" "+item.DLVY_ADDR_DTL+"]":" ["+sttsStr+" 입고]"; 
                         return returnStr; 
                     }
                  } 
