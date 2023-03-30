@@ -128,6 +128,8 @@ const gnb = {
 			$headerHeight = $header.outerHeight();
 			$headerOffsetTop = $header.offset().top;
 			gnb.headerResize();
+			gnb.onScroll();
+
 		}
 
 		if ($WINDOW_MODE === MOBILE) {
@@ -284,7 +286,7 @@ const gnb = {
 	},
 	headerResize : function () {
 		if ($WINDOW_MODE === DESKTOP) {
-			if ($headerOffsetTop > 0) {
+			if ($headerOffsetTop > 145) {
 				$html.addClass('header-medium');
 			} else {
 				$html.removeClass('header-medium');
@@ -439,7 +441,7 @@ const formStyle = {
 					$(el).css('height', 'auto').css('height', el.scrollHeight + offset);
 					$(el).addClass('areaResize')
 				};
-				$(this).on('keyup input', function() {
+				$(document).on('keyup input', 'textarea', function () {
 					resizeTextarea(this);
 				});
 			}
@@ -830,7 +832,7 @@ const tabContent = {
 			// 기존 탭 패널 비활성화
 			$('#' + $(this).attr('aria-controls')).siblings('.tabpanel').removeClass('active');
 			if ($(this).is('button')) {
-				//history.pushState({}, "", "#" + $(this).attr('id'))
+				history.pushState({}, "", "#" + $(this).attr('id'))
 			}
 		})
 	},
@@ -1185,8 +1187,19 @@ $(document).ready(function() {
 			var vsCode = "vscode://file///C:/KEEP_PORTAL_HTML"; //source file 경로
 			var vsCodeHref = '<a class="vscodepath" href=' + '"' + vsCode + current_path + '"></a>';
 			$('body').after(vsCodeHref);
+
+			var serverUrl = "http://192.168.0.6:9008"; //source file 경로
+			var serverHref = '<a class="serverUrl" href=' + '"' + serverUrl + current_path + '"></a>';
+			$('body').after(serverHref);
 		}
+		if (localhost.indexOf('http://192.168.0.6:9008') === 0) { //vscode liveServer port
+			var serverUrl = "http://127.0.0.1:5500"; //source file 경로
+			var serverHref = '<a class="serverUrl" href=' + '"' + serverUrl + current_path + '"></a>';
+			$('body').after(serverHref);
+		}
+
 	})
+	
 });
 
 const popupCenter = ({url, title, w, h, l, t}) => {
