@@ -69,8 +69,6 @@ public class DsgnPrgrmController {
     /**********************************************************************************
      * 지정프로그램
      **********************************************************************************/
-
-
 	/**
 	* 지정번호 중복 조회
 	*
@@ -132,6 +130,44 @@ public class DsgnPrgrmController {
 
         return resultMap;
     }
+
+    /**
+    * 심사일정 캘린더 팝업
+    *
+    * @Title : sprtgrpCalenderPopup
+    * @Description : 심사일정 캘린더 팝업
+    * @return
+    * @throws Exception
+    * @return String
+    */
+    @RequestMapping(value = "/mng/dsgnPrgrm/sprtgrpCalenderPopup.html")
+    public String sprtgrpCalenderPopup() throws Exception {
+        return "mng/dsgnPrgrm/sprtgrpCalenderPopup";
+    }
+
+    /**
+     * 지원단 캘린더 목록 조회
+     *
+     * @Title : selectSprtgrpClndrList
+     * @Description : 지원단 캘린더 목록 조회
+     * @param asgsysSrngVo
+     * @return
+     * @throws Exception
+     * @return Map<String,Object>
+     */
+     @RequestMapping(value = "/mng/dsgnPrgrm/selectSprtgrpClndrList.do")
+     @ResponseBody
+     public Map<String, Object> selectSprtgrpClndrList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+
+     	Map<String, Object> resultMap = new HashMap<String, Object>();
+     	List<DsgnPrgrmVo> result = null;
+
+     	result = dsgnPrgrmServiceImpl.selectSprtgrpClndrList(dsgnPrgrmVo);
+     	//todo 캘린더 조회
+         resultMap.put("list", result);
+         return resultMap;
+     }
+
 
     /**
      * @Title : dsgnPrgrmDetailForm

@@ -1793,8 +1793,8 @@
                , C.STY_DAYTM
                , C.OPER_FRM_CD
                , NULLIF(E.PRGRMID,'N') AS SFTY_MNG_YN
-    --         , '첨부파일'
-    --         , '증빙서류'
+               , B.FILEGRPID  AS APLY_FILEGRPID
+               , E.BFR_CERT_FILEGRPID
                , A.SRNG_STTS_CD
                , A.REG_DT       /*배정일*/
                , F.SRNG_OPNN    /*심사의견*/
@@ -2076,55 +2076,77 @@
     <select id="selectSrngScrList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
         SELECT
             A.PRGRMID
-          , A.JDGSID
-          , B.SBMSNID
-          , B.FORMID
-          , B.USERID
-          , (SELECT NM FROM TB_CMM_USER WHERE USERID = A.JDGSID ) AS JDGS_NM
-          , B.SBMSN_DT
-          , CASE WHEN 0 <![CDATA[<]]> SUM(COL_VAL1) OVER() THEN IFNULL(COL_VAL1,0) END AS COL_VAL1
-          , CASE WHEN 0 <![CDATA[<]]> SUM(COL_VAL2) OVER() THEN IFNULL(COL_VAL2,0) END AS COL_VAL2
-          , CASE WHEN 0 <![CDATA[<]]> SUM(COL_VAL3) OVER() THEN IFNULL(COL_VAL3,0) END AS COL_VAL3
-          , CASE WHEN 0 <![CDATA[<]]> SUM(COL_VAL4) OVER() THEN IFNULL(COL_VAL4,0) END AS COL_VAL4
-          , CASE WHEN 0 <![CDATA[<]]> SUM(COL_VAL5) OVER() THEN IFNULL(COL_VAL5,0) END AS COL_VAL5
-          , CASE WHEN 0 <![CDATA[<]]> SUM(COL_VAL6) OVER() THEN IFNULL(COL_VAL6,0) END AS COL_VAL6
-          , B.SCR    AS SUM_SCR
-          , ROUND(SUM(SCR) / COUNT(A.JDGSID),2)          AS SUM_AVG
-          , B.SRNG_OPNN
-        FROM
-            TB_ASS_PRGRM_JDGS A
-        LEFT OUTER JOIN
-            TB_ASS_SRNG_SBMSN B ON A.PRGRMID =B.PRGRMID AND A.JDGSID = B.USERID
+          , AA.JDGSID
+          , AA.SBMSNID
+          , AA.FORMID
+          , AA.USERID
+          , AA.JDGS_NM
+          , AA.SBMSN_DT
+          , AA.COL_VAL1
+          , AA.COL_VAL2
+          , AA.COL_VAL3
+          , AA.COL_VAL4
+          , AA.COL_VAL5
+          , AA.COL_VAL6
+          , AA.SUM_SCR
+          , AA.SUM_AVG
+          , AA.SRNG_OPNN
+        FROM TB_ASS_PRGRM A
         LEFT OUTER JOIN
         (
             SELECT
-                 AA.SBMSNID
-               , SUM(CASE WHEN AA.DSGNCRTR_CD = '149101' THEN AA.SCR END) AS COL_VAL1
-               , SUM(CASE WHEN AA.DSGNCRTR_CD = '149102' THEN AA.SCR END) AS COL_VAL2
-               , SUM(CASE WHEN AA.DSGNCRTR_CD = '149103' THEN AA.SCR END) AS COL_VAL3
-               , SUM(CASE WHEN AA.DSGNCRTR_CD = '149104' THEN AA.SCR END) AS COL_VAL4
-               , SUM(CASE WHEN AA.DSGNCRTR_CD = '149105' THEN AA.SCR END) AS COL_VAL5
-               , SUM(CASE WHEN AA.DSGNCRTR_CD = '149106' THEN AA.SCR END) AS COL_VAL6
-               , SUM(CASE WHEN AA.DSGNCRTR_CD = '149107' THEN AA.SCR END) AS COL_VAL7
-               , SUM(CASE WHEN AA.DSGNCRTR_CD = '149108' THEN AA.SCR END) AS COL_VAL8
-               , SUM(CASE WHEN AA.DSGNCRTR_CD = '149109' THEN AA.SCR END) AS COL_VAL9
-               , SUM(CASE WHEN AA.DSGNCRTR_CD = '149110' THEN AA.SCR END) AS COL_VAL10
+                A.PRGRMID
+              , A.JDGSID
+              , B.SBMSNID
+              , B.FORMID
+              , B.USERID
+              , (SELECT NM FROM TB_CMM_USER WHERE USERID = A.JDGSID ) AS JDGS_NM
+              , B.SBMSN_DT
+              , CASE WHEN 0 <![CDATA[<]]> SUM(COL_VAL1) OVER() THEN IFNULL(COL_VAL1,0) END AS COL_VAL1
+              , CASE WHEN 0 <![CDATA[<]]> SUM(COL_VAL2) OVER() THEN IFNULL(COL_VAL2,0) END AS COL_VAL2
+              , CASE WHEN 0 <![CDATA[<]]> SUM(COL_VAL3) OVER() THEN IFNULL(COL_VAL3,0) END AS COL_VAL3
+              , CASE WHEN 0 <![CDATA[<]]> SUM(COL_VAL4) OVER() THEN IFNULL(COL_VAL4,0) END AS COL_VAL4
+              , CASE WHEN 0 <![CDATA[<]]> SUM(COL_VAL5) OVER() THEN IFNULL(COL_VAL5,0) END AS COL_VAL5
+              , CASE WHEN 0 <![CDATA[<]]> SUM(COL_VAL6) OVER() THEN IFNULL(COL_VAL6,0) END AS COL_VAL6
+              , B.SCR    AS SUM_SCR
+              , ROUND(SUM(SCR) / COUNT(A.JDGSID),2)          AS SUM_AVG
+              , B.SRNG_OPNN
             FROM
+                TB_ASS_PRGRM_JDGS A
+            LEFT OUTER JOIN
+                TB_ASS_SRNG_SBMSN B ON A.PRGRMID =B.PRGRMID AND A.JDGSID = B.USERID
+            LEFT OUTER JOIN
             (
                 SELECT
-                     SBMSNID
-                   , DSGNCRTR_CD
-                   , SUM(SCR) SCR
+                     AA.SBMSNID
+                   , SUM(CASE WHEN AA.DSGNCRTR_CD = '149101' THEN AA.SCR END) AS COL_VAL1
+                   , SUM(CASE WHEN AA.DSGNCRTR_CD = '149102' THEN AA.SCR END) AS COL_VAL2
+                   , SUM(CASE WHEN AA.DSGNCRTR_CD = '149103' THEN AA.SCR END) AS COL_VAL3
+                   , SUM(CASE WHEN AA.DSGNCRTR_CD = '149104' THEN AA.SCR END) AS COL_VAL4
+                   , SUM(CASE WHEN AA.DSGNCRTR_CD = '149105' THEN AA.SCR END) AS COL_VAL5
+                   , SUM(CASE WHEN AA.DSGNCRTR_CD = '149106' THEN AA.SCR END) AS COL_VAL6
+                   , SUM(CASE WHEN AA.DSGNCRTR_CD = '149107' THEN AA.SCR END) AS COL_VAL7
+                   , SUM(CASE WHEN AA.DSGNCRTR_CD = '149108' THEN AA.SCR END) AS COL_VAL8
+                   , SUM(CASE WHEN AA.DSGNCRTR_CD = '149109' THEN AA.SCR END) AS COL_VAL9
+                   , SUM(CASE WHEN AA.DSGNCRTR_CD = '149110' THEN AA.SCR END) AS COL_VAL10
                 FROM
-                TB_ASS_SRNG_ANS
-                GROUP BY SBMSNID, DSGNCRTR_CD
-            ) AA
-            GROUP BY SBMSNID
-        ) C ON B.SBMSNID = C.SBMSNID
-        WHERE
-            A.PRGRMID = #{prgrmid}
-        GROUP BY
-            A.JDGSID
+                (
+                    SELECT
+                         SBMSNID
+                       , DSGNCRTR_CD
+                       , SUM(SCR) SCR
+                    FROM
+                    TB_ASS_SRNG_ANS
+                    GROUP BY SBMSNID, DSGNCRTR_CD
+                ) AA
+                GROUP BY SBMSNID
+            ) C ON B.SBMSNID = C.SBMSNID
+            WHERE
+                A.PRGRMID = #{prgrmid}
+            GROUP BY
+                A.JDGSID
+        ) AA ON A.PRGRMID = AA.PRGRMID
+        WHERE A.PRGRMID = #{prgrmid}
     </select>
 
     <!-- 심사위원심사 답변 등록 -->
@@ -2289,8 +2311,8 @@
               , C.STY_DAYTM
               , C.OPER_FRM_CD
               , IFNULL(E.PRGRMID,'N') AS SFTY_MNG_YN
-    --        , '첨부파일'
-    --        , '증빙서류'
+              , B.FILEGRPID  AS APLY_FILEGRPID
+              , E.BFR_CERT_FILEGRPID
               , CONCAT(A.VST_DE , " " , A.VST_HR , ":" , A.VST_MNT) AS VST_DT
               , B.CHKLSTID
               , G.CHKLST_RSLT_CN

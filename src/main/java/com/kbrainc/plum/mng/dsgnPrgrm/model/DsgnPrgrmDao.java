@@ -1,10 +1,10 @@
 package com.kbrainc.plum.mng.dsgnPrgrm.model;
 
-import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
-
 import java.util.List;
 
 import javax.validation.Valid;
+
+import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 /**
  *
@@ -426,6 +426,18 @@ public interface DsgnPrgrmDao {
 	* @return DsgnPrgrmVo
 	*/
 	public DsgnPrgrmVo selectDsgnOutl(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 심사일정캘린더 목록 조회
+	*
+	* @Title : selectSprtgrpClndrList
+	* @Description : 심사일정캘린더 목록 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnPrgrmVo>
+	*/
+	public List<DsgnPrgrmVo> selectSprtgrpClndrList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 
 

@@ -566,4 +566,19 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 		return dsgnPrgrmDao.selectDsgnOutl(dsgnPrgrmVo);
 	}
 
+	/**
+	* 심사일정캘린더 목록 조회
+	*
+	* @Title : selectSprtgrpClndrList
+	* @Description : 심사일정캘린더 목록 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnPrgrmVo>
+	*/
+	@Override
+	public List<DsgnPrgrmVo> selectSprtgrpClndrList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		return dsgnPrgrmDao.selectSprtgrpClndrList(dsgnPrgrmVo);
+	}
+
 }

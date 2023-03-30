@@ -104,3 +104,7 @@ function fn_setPopupCookie2(id){
     $.cookie("commonPop_cookie_checkCookie"+id, "Y", {expires:1, path: '/'});
     layerPopup.close({target:'layer'+id, callback: function(){ if(modals[0] != undefined) {layerPopup.open(modals[0]);modals.shift();}}});
 }
+
+function fn_chatbotOpen(id, url){
+    window.open(url + "/chatbot/counsel/ChatbotCounsel.do?loginId="+id, "chatbotPopup", "height=790,width=480")
+}
