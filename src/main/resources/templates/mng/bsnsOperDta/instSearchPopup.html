@@ -1,0 +1,160 @@
+<!-- [팝업] 기관검색 -->
+<style>
+    .hide {
+        display: none;
+    }
+</style>
+<div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content type_2">
+        <form id="instSearchPopupForm" name="instSearchPopupForm" onsubmit="return false;">
+            <div class="modal-header">
+                <h4 class="modal-title">기관검색</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-block-small">
+                        <div class="row">
+                            <div class="col-12 col-lg-4 mb-3">
+                                <div class="mb-0 form-group">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="instNm"><strong>기관명</strong></label>
+                                    <div class="col-12">
+                                        <input type="text" class="form-control form-control-sm" aria-label="Text input with dropdown button" name="instNm"
+                                               id="instNm"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-1 p-t-20 text-center border-top">
+                            <button type='button' class="btn btn-disabled m-r-5" onclick="searchPopupInit()">초기화</button>
+                            <button type='button' class="btn btn-primary" onclick="searchPopup()">검색</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card m-b-10">
+                    <div class="card-block-small">
+                        <div class="row">
+                            <div class="col-12">
+                                <table id="instSearchPopupJsGrid" class="table-responsive"></table>
+                                <div id="instSearchPopupListPager" class="text-center"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary waves-effect waves-light" onclick="chooseInst()">선택</button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- // [팝업] 기관검색 -->
+
+<script th:inline="javascript">
+    var selectedInst = null;
+    var instSearchPopupGridHelper;
+    var searchPopup = () => {
+        instSearchPopupGridHelper.resetListContent();
+    }
+
+    var searchPopupInit = () => {
+        ('#popupInstNm').val('');
+    }
+
+    $(function () {
+        instSearchPopupGridHelper = new GridHelper('instSearchPopupJsGrid');
+
+        $("#instSearchPopupJsGrid").jsGrid({
+            height: "auto",
+            width: "100%",
+            autoload: true,
+            sorting: false,
+            paging: true,
+            pagerContainer: "#instSearchPopupListPager",
+            pagerFormat: "{first} {prev} {pages} {next} {last}",
+            pagePrevText: "이전",
+            pageNextText: "다음",
+            pageFirstText: " < 처음 ㅣ",
+            pageLastText: " | 마지막 >",
+            pageSize: 10,
+            pageButtonCount: 10,
+            pageLoading: true,
+            pageIndex: 1,
+            noDataContent: "데이터가 없습니다.",
+            controller: {
+                loadData: function (filter) {
+                    var data = $.Deferred();
+
+                    var formData = $('#instSearchPopupForm').serializeArray();
+                    var params = [
+                        {name: "pageNumber", value: filter.pageIndex},
+                        {name: "rowPerPage", value: filter.pageSize},
+                    ]
+
+                    if (filter.sortField != undefined) {
+                        params.push({name: "orderField", value: mapCamelCaseToUnderscore(filter.sortField)});
+                        params.push({name: "orderDirection", value: filter.sortOrder});
+                    } else {
+                        params.push({name: "orderField", value: 'reg_dt'});
+                    }
+
+                    formData = formData.concat(params);
+
+                    $.ajax({
+                        type: "GET",
+                        url: '/mng/bsnsOperDta/selectInstList.do',
+                        dataType: "json",
+                        data: formData,
+                    }).done(function (response) {
+                        var da = {
+                            data: escapeGridData(response.list)
+                            , itemsCount: response.totalCount
+                        };
+                        data.resolve(da);
+                    });
+                    return data.promise();
+                },
+            },
+            fields: [
+                {
+                    itemTemplate: function (_, item) {
+                        return $("<input>").attr("type", "radio").attr("class", "singleCheckbox3").attr("name", "memchk")
+                            .attr("value", item.instid).attr("id", "chk_" + item.instid)
+                    },
+                    align: "center",
+                    width: "30",
+                    sorting: false
+                }
+                , {name: 'instid', css: 'hide'}
+                , {title: '기관명', name: 'instNm', type: "text", width: "200", align: "center"}
+                , {title: '사업자등록번호', name: 'brno', type: "text", width: "150", align: "center"}
+                , {title: '대표자명', name: 'rprsvNm', type: "text", width: "100", align: "center"}
+                , {title: '지역', name: 'sidoNm', type: "text", width: "150", align: "center"}
+            ],
+            rowClick: function (args) {
+                selectedInst = args.item;
+                $("#chk_" + args.item.instid).prop("checked", true);
+            },
+            onPageChanged: function (args) {
+                selectedInst = [];
+            }
+        })
+    });
+
+    var chooseInst = () =>{
+
+        if(selectedInst == null){
+            alert("기관을 선택해주세요");
+            return;
+        }
+
+        $("#instid").val(selectedInst.instid);
+        $("#instNm").val(selectedInst.instNm);
+        instSearchPopup.hide();
+        selectedInst=null;
+
+    }
+
+</script>
