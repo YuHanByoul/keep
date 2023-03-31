@@ -773,6 +773,10 @@ public class DsgnPrgrmController {
         //체크리스트 등록
         retVal = asgsysSrngService.updateAssChklst(asgsysSrngVo);
 
+        if(asgsysSrngVo.getSttsCd().equals("111102")){
+        	retVal = asgsysSrngService.updatePrgrSttsCd(asgsysSrngVo);
+        }
+
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
             resultMap.put("msg", "등록에 성공하였습니다.");

@@ -706,6 +706,18 @@ public interface AsgsysSrngService {
 
 	public List<AsgsysSrngVo> selectSrngFormList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
+	/**
+	* 전문가(심사위원) 목록 조회
+	*
+	* @Title : selectjdgsList
+	* @Description : 전문가(심사위원) 목록 조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<AsgsysSrngVo>
+	*/
+	public List<AsgsysSrngVo> selectjdgsList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
 
 
 
