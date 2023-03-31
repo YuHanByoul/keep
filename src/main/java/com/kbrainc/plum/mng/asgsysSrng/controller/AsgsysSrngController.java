@@ -1401,7 +1401,10 @@ public class AsgsysSrngController {
     * @throws Exception 예외
     */
    @RequestMapping(value = "/mng/asgsysSrng/jdgsSrngMainForm.html")
-   public String jdgsSrngMainForm() throws Exception {
+   public String jdgsSrngMainForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
+
+	 //심사위원 목록 조회
+	   model.addAttribute("list",asgsysSrngService.selectjdgsList(asgsysSrngVo));
        return "mng/asgsysSrng/jdgsSrngMain";
    }
 

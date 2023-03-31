@@ -1604,12 +1604,14 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 
     		for(int i=0; i < tokens.size(); i++) {
     			asgsysSrngVo.setJdgsid(tokens.get(i));
+    			asgsysSrngVo.setSrngSttsCd("114102");   //배정전->심사전
     			ret = asgsysSrngDao.insertPicJdgs(asgsysSrngVo);
     		}
     	}
 
     	if("sprtgrp".equals( asgsysSrngVo.getMode())) {
 
+    		asgsysSrngVo.setSrgnSttsCd("114102");    //배정전->심사전
     		ret = asgsysSrngDao.insertPicSprtgrp(asgsysSrngVo);
 
 
@@ -1672,6 +1674,20 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     @Override
 	public List<AsgsysSrngVo> selectSrngFormList(AsgsysSrngVo asgsysSrngVo) throws Exception{
 		return asgsysSrngDao.selectSrngFormList(asgsysSrngVo);
+	}
+
+	/**
+	* 전문가(심사위원) 목록 조회
+	*
+	* @Title : selectjdgsList
+	* @Description : 전문가(심사위원) 목록 조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<AsgsysSrngVo>
+	*/
+	public List<AsgsysSrngVo> selectjdgsList(AsgsysSrngVo asgsysSrngVo) throws Exception{
+		return asgsysSrngDao.selectjdgsList(asgsysSrngVo);
 	}
 
 

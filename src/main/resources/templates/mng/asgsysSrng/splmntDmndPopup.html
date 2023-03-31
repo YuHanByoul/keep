@@ -24,7 +24,7 @@
                         <div class="mb-2 form-group row required">
                             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="appointedApprovalPopupDegree"><strong>내용</strong></label>
                             <div class="col-12">
-                                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="Default textarea" id="opnnCn" name="opnnCn"><th:block th:text="${splmntDmndInfo.opnnCn}"></textarea>
+                                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="" id="opnnCn" name="opnnCn"><th:block th:text="${splmntDmndInfo.opnnCn}"></textarea>
                             </div>
                         </div>
                     </div>
@@ -42,27 +42,27 @@
 var url="/mng/asgsysSrng/";
 
 function fn_initSplmntDmndPopup() {
-
-    //서류요청
+debugger;
+    //보완요청
     if("splmntDmnd" == $("#mode").val()) {
 
     	$("#splmntDmndSttsCd").attr("disabled",true);
     	if("" != $("#popSsttsCd").val()){
     		$("#splmntDmndSttsCd").val($("#popSsttsCd").val());
-    		$("#deleteBtn").show();
+    		$("#deleteBtn").hide();
     	}
     }
-    //보완요청
+    //서류요청
     else if("dcmntDmnd" != $("#mode").val()) {
     	$("#splmntDmndSttsCd").attr("disabled",false);
-    	$("#deleteBtn").hide();
+    	$("#deleteBtn").show();
     }
 }
 
-var validator= $("#chgAplyDtlPopupFrm").validate(
+var validator= $("#splmntDmndFrm").validate(
     {
         rules    : { opnnCn : { required: true, maxlength: 400 } }
-      , messages : { opnnCn : { required:"변경사유를 입력해 주십시오." , maxlength: '의견 내용은 1000자를 넘을 수 없습니다.' } }
+      , messages : { opnnCn : { required:"의견 내용 입력해 주십시오." , maxlength: '의견 내용은 1000자를 넘을 수 없습니다.' } }
     })
 
 
@@ -74,9 +74,12 @@ function saveSplmntDmnd() {
 		vUrl = url + "insertSplmntDmnd.do"
 	}else{
 		//update
-		vUrl = url +"updateSplmntDmnd.do"
+		vUrl = url + "updateSplmntDmnd.do"
 	}
+
+	if(!($("#splmntDmndFrm").valid())) return;
 	if(!confirm("저장 하시겠습니까?")){return;}
+
 
 	var data = {
             "prgrmid"      : $("#popPrgrmid").val()
@@ -84,8 +87,6 @@ function saveSplmntDmnd() {
           , "sttsCd"       : $("#splmntDmndSttsCd").val()
           , "opnnCn"       : $("#opnnCn").val()
     }
-
-    debugger;
 
     $.ajax({
         url : vUrl,
