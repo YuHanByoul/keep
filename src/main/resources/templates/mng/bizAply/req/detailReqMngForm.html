@@ -102,7 +102,7 @@
             <div class="col-12 col-md-6 text-right">
                 <button id="scndScrnCancelBtn" type="button" class="btn btn-disabled m-r-5" onclick="fn_srngEndCancel('2');">2차 심사마감 취소</button>
                 <button id="scndScrnEndBtn" type="button" class="btn btn-primary m-r-5" onclick="fn_srngEnd('2');">2차 심사마감</button>
-                <button type="button" class="btn btn-primary m-r-5" th:if="${reqMngVo.onlnSrngTypeCd == '177102'}" onclick="fn_scndSrngTaget();">2차 심사 대상</button>
+                <button id="scndTrgtBtn" type="button" class="btn btn-primary m-r-5" th:if="${reqMngVo.onlnSrngTypeCd == '177102'}" onclick="fn_scndSrngTaget('Y');">2차 심사 대상</button>
                 <button id="scrnCancelBtn" type="button" class="btn btn-disabled m-r-5" onclick="fn_srngEndCancel('1');"><th:block th:if="${reqMngVo.onlnSrngTypeCd == '177102'}">1차 </th:block>심사마감 취소</button>
                 <button id="scrnEndBtn" type="button" class="btn btn-primary m-r-5" onclick="fn_srngEnd('1');"><th:block th:if="${reqMngVo.onlnSrngTypeCd == '177102'}">1차 </th:block>심사마감</button>
                 <button type="button" class="btn btn-disabled m-r-5" onclick="slctnSttsUpdate('193103');">미선정</button>
@@ -125,6 +125,7 @@
 </div>
 
 <form id="srngResultForm" name="srngResultForm">
+    <input type="hidden" id="aplyid" name="aplyid" value=""/>
     <input type="hidden" id="aplyids" name="aplyids" value=""/>
     <input type="hidden" id="slctnSttsCd" name="slctnSttsCd" value=""/>
     <input type="hidden" id="scndSrngTrgtYn" name="scndSrngTrgtYn" value=""/>
@@ -156,6 +157,7 @@
         gridHelper3 = new GridHelper('jsGrid2','contentPanel2');
         $("#scndScrnEndBtn").hide();
         $("#scndScrnCancelBtn").hide();
+        $("#scndTrgtBtn").hide();
         
         $("#selectDate").daterangepicker({
             autoUpdateInput: false,
@@ -185,9 +187,11 @@
 	        if (scndSrngEndYn == 'Y') {
 	        	$("#scndScrnCancelBtn").show();
 	        	$("#scndScrnEndBtn").hide();
+	        	$("#scndTrgtBtn").hide();
 	        } else {
 	        	$("#scndScrnCancelBtn").hide();
-		        $("#scndScrnEndBtn").show();        	
+		        $("#scndScrnEndBtn").show();
+		        $("#scndTrgtBtn").show();
 	        }
         }
         
@@ -293,7 +297,11 @@
                             }
                         }
                 }
-                , { title: '2차점수'   ,name: 'scndScr'    ,type: "text"  , width: "100" , align:"center", css : onlnSrngTypeCd == '177101' ? 'hide' : '' }
+                , { title: '2차점수'   ,name: 'scndScr'    ,type: "text"  , width: "100" , align:"center", css : onlnSrngTypeCd == '177101' ? 'hide' : '',
+                		itemTemplate: function(value, item) {
+                			return value == '대상취소' ? '<a href="javascript:;" onclick="fn_scndSrngTaget(\'N\', \'' + item.aplyid + '\')">' + value + '</a>' : value;
+                		}
+                }
                 , { title: '2차등급'   ,name: 'scndGrd'    ,type: "text"  , width: "100" , align:"center", css : onlnSrngTypeCd == '177101' ? 'hide' : '' }
                 , { title: '2차순위'   ,name: 'scndRkng'    ,type: "text"  , width: "100" , align:"center", css : onlnSrngTypeCd == '177101' ? 'hide' : '' }
                 , { title: '선정결과'   ,name: 'slctnSttsNm'    ,type: "text"  , width: "100" , align:"center"}
@@ -411,13 +419,15 @@
             success : function (data){
                 if(data.result=="success"){
                     alert(data.msg);
-                    gridHelper3.resetListContent();
+                    gridHelper1.resetListContent();
+//                     gridHelper3.resetListContent();
                     if (num == "1") {
                         $("#scrnCancelBtn").show();
                         $("#scrnEndBtn").hide();                        
                     } else {
                         $("#scndScrnCancelBtn").show();
                         $("#scndScrnEndBtn").hide();
+                        $("#scndTrgtBtn").hide();
                     }
                 }else{
                     alert(data.msg);
@@ -449,13 +459,15 @@
             success : function (data){
                 if(data.result=="success"){
                     alert(data.msg);
-                    gridHelper3.resetListContent();
+                    gridHelper1.resetListContent();
+//                     gridHelper3.resetListContent();
                     if (num == "1") {
                         $("#scrnCancelBtn").hide();
                         $("#scrnEndBtn").show();                    	
                     } else {
 	                    $("#scndScrnCancelBtn").hide();
 	                    $("#scndScrnEndBtn").show();
+	                    $("#scndTrgtBtn").show();
                     }
                 }else{
                     alert(data.msg);
@@ -466,17 +478,23 @@
     }
     
     // 2차 심사대상 선정
-    function fn_scndSrngTaget() {
+    function fn_scndSrngTaget(flag, aplyid) {
     	if (srngEndYn != "Y") {
             alert("1차 심사마감 전입니다.");
             return;
         }
-    	if (selectedItems.length == 0) {
+    	if (selectedItems.length == 0 && (aplyid == undefined || aplyid == null)) {
             alert("항목을 선택하세요.");
             return;
         }
-    	$("#aplyids").val(selectedItems);
-    	$("#scndSrngTrgtYn").val("Y");
+    	if (aplyid != undefined && aplyid != null) {
+    		if(!confirm("2차심사대상에서 취소 하시겠습니까?")) return;
+            $("#aplyid").val(aplyid);
+    	} else {
+	    	if(!confirm("선택하신 항목을 2차심사대상으로 선정 하시겠습니까?")) return;
+	    	$("#aplyids").val(selectedItems);
+    	}
+    	$("#scndSrngTrgtYn").val(flag);
         var data =  $("#srngResultForm").serialize();
         setSrngResult(data);
     }
@@ -493,11 +511,14 @@
                 success : function (data){
                     if(data.result=="success"){
                         alert(data.msg);
-                        gridHelper3.resetListContent();
+                        gridHelper1.resetListContent();
+//                         gridHelper3.resetListContent();
                     }else{
                         alert(data.msg);
                     }
                     $("#scndSrngTrgtYn").val("");
+                    $("#slctnSttsCd").val("");
+                    $("#aplyid").val("");
                     closeWorkProgress();
                 }
             });
