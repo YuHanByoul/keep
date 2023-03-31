@@ -789,6 +789,7 @@ public class ReqMngServiceImpl extends PlumAbstractServiceImpl implements ReqMng
         return reqMngDao.selectScheduleList(reqMngVo);
     }
 
+    @Transactional
     @Override
     public int updateSrngScore(ReqUserVo reqUserVo) throws Exception {
         // TODO Auto-generated method stub
@@ -802,6 +803,34 @@ public class ReqMngServiceImpl extends PlumAbstractServiceImpl implements ReqMng
                 result += reqMngDao.updateSrngScore(vo);
             }
         }
+        return result;
+    }
+
+    @Transactional
+    @Override
+    public int updateSrngEnd(ReqUserVo reqUserVo) throws Exception {
+        // TODO Auto-generated method stub
+        int result = 0;
+        
+        List<ReqUserVo> list = reqMngDao.selectScoreList(reqUserVo);
+        if (CollectionUtils.isNotEmpty(list)) {
+            ReqUserVo paramVo = null;
+            for (ReqUserVo vo : list) {
+                paramVo = new ReqUserVo();
+                paramVo.setUser(reqUserVo.getUser());
+                paramVo.setAplyid(vo.getAplyid());
+                if ("Y".equals(reqUserVo.getSrngEndYn()) || "Y".equals(reqUserVo.getScndSrngEndYn())) {
+                    paramVo.setFirstScr(vo.getFirstScr());
+                    paramVo.setFirstRkng(vo.getFirstRkng());
+                    paramVo.setFirstGrd(vo.getFirstGrd());
+                }
+                paramVo.setSrngEndYn(reqUserVo.getSrngEndYn());
+                paramVo.setScndSrngEndYn(reqUserVo.getScndSrngEndYn());
+
+                result += reqMngDao.updateSrngScore(paramVo);
+            }
+        }
+        
         return result;
     }
 }

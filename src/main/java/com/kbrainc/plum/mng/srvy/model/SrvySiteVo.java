@@ -1,9 +1,6 @@
-package com.kbrainc.plum.mng.qestnr.model;
+package com.kbrainc.plum.mng.srvy.model;
 
 import java.util.Date;
-
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.SerializationUtils;
 
@@ -15,28 +12,28 @@ import lombok.Data;
 
 /**
  * 
- * 설문지Vo 클래스
+ * 홈페이지설문 대상사이트Vo 클래스
  *
  * <pre>
- * com.kbrainc.plum.mng.qestnr.model
- * - QestnrVo.java
+ * com.kbrainc.plum.mng.srvy.model
+ * - SrvySiteVo.java
  * </pre> 
  *
- * @ClassName : QestnrVo
- * @Description : 설문지Vo 클래스 
+ * @ClassName : SrvySiteVo
+ * @Description : 설문Vo 클래스 
  * @author : KBRAINC
- * @date : 2022. 11. 29.
+ * @date : 2023. 03. 29.
  * @Version : 
  * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
  */
 @Data
-public class QestnrVo extends ParentRequestVo {
+public class SrvySiteVo extends ParentRequestVo {
     
     /** 로그인 사용자 정보 */
     private UserVo user;
     
-    /** 설문지 아이디 */
-    private int qestnrid;
+    /** 설문 아이디 */
+    private int srvyid;
     
     /** 사이트 아이디 */
     private int siteid;
@@ -50,38 +47,11 @@ public class QestnrVo extends ParentRequestVo {
     /** 도메인 */
     private String hmpg;
     
-    /** 사이트 검색 */
-    private String siteSearchType;
-    private String siteSearchKeyword;
+    /** 대상사이트 등록 아이디 목록 */
+    private String[] insertSiteids;
     
-    /** 설문지 종류 코드 */
-    @NotEmpty(message = "설문지 종류를 선택해주세요.")
-    private String qestnrKndCd;
-    
-    /** 설문지 종류 코드명 */
-    private String qestnrKndCdNm;
-    
-    /** 설문지 이름 */
-    @NotEmpty(message = "설문지명을 입력해주세요.")
-    @Size(max = 20, message = "설문지명은 20자 이하여야 합니다.")
-    private String qestnrNm;
-    
-    /** 설명 */
-    @NotEmpty(message = "설문지 설명을 입력해주세요.")
-    @Size(max = 400, message = "설문지 설명은 400자 이하여야 합니다.")
-    private String expln;
-    
-    /** 사용 여부 */
-    private String useYn;
-    
-    /** 문항수 */
-    private int qitemCnt;
-    
-    /** 검색 사이트 아이디 */
-    private String searchSiteid;
-    
-    /** 검색 설문 종류 */
-    private String searchQestnrKndCd;
+    /** 대상사이트 삭제 아이디 목록 */
+    private String[] deleteSiteids;
     
     /** 수정일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")

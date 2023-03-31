@@ -759,4 +759,16 @@ public interface ReqMngDao {
     * @return int
      */
     int updateSrngScore(ReqUserVo reqUserVo) throws Exception;
+    
+    /**
+    * 점수 산정 
+    *
+    * @Title : selectScoreList
+    * @Description : TODO
+    * @param reqUserVo
+    * @return
+    * @throws Exception
+    * @return List<ReqUserVo>
+     */
+    List<ReqUserVo> selectScoreList(ReqUserVo reqUserVo) throws Exception;
 }

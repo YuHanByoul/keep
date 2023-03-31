@@ -5,6 +5,7 @@
         <form id="dstnctnForm" name="dstnctnForm" th:action="@{/front/dsgnPrgrm/prgrmEvlForm.html}" method="post">
         <input type="hidden"  id="prgrmid" name="prgrmid" th:value="${aplyInfo.prgrmid}" />
         <input type="hidden"  id="dstnctnid" name="dstnctnid" th:value="${aplyInfo.dstnctnid}" />
+        <input type="hidden"  id="sttsCd" name="sttsCd" th:value="${aplyInfo.sttsCd}" />
         <input type="hidden"  id="opner" name="opner" th:value="${opner==null ?'':opner}" />
 
         <div class="steps" id="steps" th:if="${opner!='myPage'}">
@@ -379,7 +380,7 @@
                                         <input type="number" title="분" style="flex: 1 1 100%; width: 0;" th:id="'endMnt'+${i.count}" th:name="'endMnt'+${i.count}" th:value="${schd.endMnt}">
                                     </div>
                                 </td>
-                                <td><input type="text" title="세부 단위 프로그램 명" th:id="schdlPrgrmNm+${i.count}" name="schdlPrgrmNm+${i.count}" th:value="${schd.prgrmNm}"></td>
+                                <td><input type="text" title="세부 단위 프로그램 명" th:id="prgrmNm+${i.count}" name="prgrmNm+${i.count}" th:value="${schd.prgrmNm}"></td>
                                 <td><input type="text" title="관련교육과정" th:id="crs+${i.count}" th:name="crs+${i.count}" th:value="${schd.crs}"></td>
                                 <td class="ac">
                                     <button th:if="${i.count} > 1" type="button" class="btn-remove-table" title="열 삭제" th:id="'delSchdlBtn'+${i.count}" th:onclick="'delSchdl(' + ${i.count} + ')' ">
@@ -596,11 +597,11 @@
                     if(index!=0) param["eduSbjctCdLst"] += ","+item.value;
                 });
 
-                $("[id^=bgngMnt]").each(function(index, item)      { param["prgrmSchdlLst[" + index + "].bgngMnt"] = item.value; });    //시작 분
-                $("[id^=endHr]").each(function(index, item)        { param["prgrmSchdlLst[" + index + "].endHr"  ] = item.value; });    //종료 시간
-                $("[id^=endMnt]").each(function(index, item)       { param["prgrmSchdlLst[" + index + "].endMnt" ] = item.value; });    //종료 분
-                $("[id^=schdlPrgrmNm]").each(function(index, item) { param["prgrmSchdlLst[" + index + "].prgrmNm"] = item.value; });    //프로그램명
-                $("[id^=crs]").each(function(index, item)          { param["prgrmSchdlLst[" + index + "].crs"    ] = item.value; });    //과정
+                $("#schdlBody [id^=bgngMnt]").each(function(index, item) { param["prgrmSchdlLst[" + index + "].bgngMnt"] = item.value; });    //시작 분
+                $("#schdlBody [id^=endHr]").each(function(index, item)   { param["prgrmSchdlLst[" + index + "].endHr"  ] = item.value; });    //종료 시간
+                $("#schdlBody [id^=endMnt]").each(function(index, item)  { param["prgrmSchdlLst[" + index + "].endMnt" ] = item.value; });    //종료 분
+                $("#schdlBody [id^=prgrmNm]").each(function(index, item) { param["prgrmSchdlLst[" + index + "].prgrmNm"] = item.value; });    //프로그램명
+                $("#schdlBody [id^=crs]").each(function(index, item)     { param["prgrmSchdlLst[" + index + "].crs"    ] = item.value; });    //과정
 
                 $("#dstnctnForm input").each(function(index, item) {
 
@@ -884,7 +885,6 @@
                 if(!confirm("파일을 삭제하시겠습니까?")){return;}
                 fn_deleteFile(fileid, fileIdntfcKey);
 
-                //$("#"+fileid).remove();
                 $("#fileid"+fileid).remove();
 
             }

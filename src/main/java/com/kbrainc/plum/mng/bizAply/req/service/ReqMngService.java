@@ -565,4 +565,16 @@ public interface ReqMngService {
      * @return int
       */
     int updateSrngScore(ReqUserVo reqUserVo) throws Exception;
+    
+    /**
+    * 점수 산정 
+    *
+    * @Title : updateSrngEnd
+    * @Description : TODO
+    * @param reqUserVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int updateSrngEnd(ReqUserVo reqUserVo) throws Exception;
 }

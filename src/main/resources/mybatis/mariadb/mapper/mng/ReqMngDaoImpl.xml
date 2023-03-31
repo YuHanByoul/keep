@@ -130,6 +130,8 @@
             , ONLN_SRNG_TYPE_NM
             , SUM(CASE WHEN SLCTN_STTS_CD = '193102' THEN 1 ELSE 0 END) AS SLCTN_Y_CNT
             , SUM(CASE WHEN SLCTN_STTS_CD = '193103' THEN 1 ELSE 0 END) AS SLCTN_N_CNT
+            , SRNG_END_YN
+            , SCND_SRNG_END_YN
             , REG_DT
             , MDFCN_DT
         FROM (
@@ -156,12 +158,14 @@
                 , CONCAT(DATE_FORMAT(TSP.SRNG_BGNG_DT, '%Y-%m-%d'), ' - ', DATE_FORMAT(TSP.SRNG_END_DT, '%Y-%m-%d')) AS SRNG_DT
                 , (SELECT APLYNO_CNT FROM CNT_FIRST CNT WHERE CNT.PCNTSTID = TSP.PCNTSTID) AS APLYNO_CNT
                 , CONCAT((SELECT SRNG_CNT FROM CNT_FIRST CNT WHERE CNT.PCNTSTID = TSP.PCNTSTID), ' / ', (SELECT APLYNO_CNT FROM CNT_FIRST CNT WHERE CNT.PCNTSTID = TSP.PCNTSTID)) AS FRT_SRNG_CNT
-                , CONCAT(IFNULL((SELECT SRNG_CNT FROM CNT_SECOND CNT WHERE CNT.PCNTSTID = TSP.PCNTSTID), 0), ' / ', IFNULL((SELECT APLYNO_CNT FROM CNT_SECOND CNT WHERE CNT.PCNTSTID = TSP.PCNTSTID), 0)) AS SCD_SRNG_CNT
+                , IF(TSP.ONLN_SRNG_TYPE_CD = '177101', '-', CONCAT(IFNULL((SELECT SRNG_CNT FROM CNT_SECOND CNT WHERE CNT.PCNTSTID = TSP.PCNTSTID), 0), ' / ', IFNULL((SELECT APLYNO_CNT FROM CNT_SECOND CNT WHERE CNT.PCNTSTID = TSP.PCNTSTID), 0))) AS SCD_SRNG_CNT
                 , SLCTN_STTS_CD
                 , TSP.SRNG_FORMID_FIRST
                 , TSP.SRNG_FORMID_SCND
                 , TSP.ONLN_SRNG_TYPE_CD
                 , TCCB.CD_NM AS ONLN_SRNG_TYPE_NM
+                , MAX(SRNG_END_YN) OVER (PARTITION BY TSP.PCNTSTID) AS SRNG_END_YN
+                , MAX(SCND_SRNG_END_YN) OVER (PARTITION BY TSP.PCNTSTID) AS SCND_SRNG_END_YN
                 , TSP.REG_DT
                 , TSP.MDFCN_DT
             FROM
@@ -225,6 +229,8 @@
             , SRNG_FORMID_SCND
             , ONLN_SRNG_TYPE_CD
             , ONLN_SRNG_TYPE_NM
+            , SRNG_END_YN
+            , SCND_SRNG_END_YN
             , REG_DT
             , MDFCN_DT
         <if test="excelYn != 'Y'.toString()">
@@ -306,27 +312,32 @@
             , SCND_GRD
             , SCND_RKNG
             , SRNG_END_YN
+            , SCND_SRNG_END_YN
             , REG_DT
             , MDFCN_DT
             , FILEGRPID1
             , FILEGRPID2
             , FILEGRPID3
             , ONLN_SRNG_TYPE_CD
+            , LWET_CRTR_SCR_USE_YN_FIRST
+            , LWET_CRTR_SCR_USE_YN_SCND
+            , LWET_CRTR_SCR_FIRST
+            , LWET_CRTR_SCR_SCND
+            , NOPE_LMT_USE_YN
+            , NOPE_LMT
         FROM (
             SELECT 
                 TSA.PCNTSTID
                 , TSA.APLYID
                 , TSA.APLYNO 
                 , TSA.APLY_STTS_CD
-                , TCCA.CD_NM AS APLY_STTS_NM
+                , IFNULL(TSAS.CD_NM, TCCA.CD_NM) AS APLY_STTS_NM
                 , TSA.INST_NM 
                 , CONCAT(U.NM, '(', U.ACNT, ')') AS USER_NM 
                 , TSA.APLCNT_NM 
                 , TSA.PRGRM_NM 
                 , TSA.REG_DE 
-                , CASE WHEN NOW() <![CDATA[ > ]]> SRNG_END_DT OR 
-                    ((SELECT SRNG_CNT FROM CNT_FIRST CNT WHERE CNT.APLYID = TSA.APLYID) = (SELECT APLYNO_CNT FROM CNT_FIRST CNT WHERE CNT.APLYID = TSA.APLYID)
-                        AND IFNULL((SELECT SRNG_CNT FROM CNT_SECOND CNT WHERE CNT.APLYID = TSA.APLYID), 0) = IFNULL((SELECT APLYNO_CNT FROM CNT_SECOND CNT WHERE CNT.APLYID = TSA.APLYID), 0)) 
+                , CASE WHEN NOW() <![CDATA[ > ]]> SRNG_END_DT OR (IF(TSP.ONLN_SRNG_TYPE_CD = '177101', TSA.SRNG_END_YN = 'Y', IF(TSA.SCND_SRNG_TRGT_YN = 'Y', TSA.SRNG_END_YN = 'Y' AND TSA.SCND_SRNG_END_YN = 'Y', TSA.SRNG_END_YN = 'Y')))
                         THEN '심사완료'
                     ELSE '심사전'
                     END AS SRNG_STTS_NM
@@ -339,16 +350,33 @@
                 , IFNULL(SCND_GRD, '-') AS SCND_GRD
                 , IFNULL(SCND_RKNG, '-') AS SCND_RKNG 
                 , SRNG_END_YN
+                , SCND_SRNG_END_YN
                 , TSA.REG_DT
                 , TSA.MDFCN_DT
                 , FILEGRPID1
                 , FILEGRPID2
                 , FILEGRPID3
                 , TSP.ONLN_SRNG_TYPE_CD
+                , LWET_CRTR_SCR_USE_YN_FIRST
+                , LWET_CRTR_SCR_USE_YN_SCND
+                , LWET_CRTR_SCR_FIRST
+                , LWET_CRTR_SCR_SCND
+                , NOPE_LMT_USE_YN
+                , NOPE_LMT
             FROM 
                 TB_SPB_PCNTST TSP 
                 INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID 
                 INNER JOIN TB_CMM_USER U ON TSA.USERID = U.USERID 
+                LEFT OUTER JOIN (
+                    SELECT 
+                        SPLMNTID
+                        , APLYID 
+                        , ANS_STTS_CD
+                        , B.CD_NM
+                    FROM 
+                        TB_SPB_APLY_SPLMNT A
+                        LEFT OUTER JOIN TB_CMM_CD B ON A.ANS_STTS_CD = B.CD) TSAS ON TSAS.APLYID = TSA.APLYID 
+                        AND SPLMNTID = (SELECT MAX(SPLMNTID) FROM TB_SPB_APLY_SPLMNT TSAS WHERE TSAS.APLYID = TSA.APLYID)
                 LEFT OUTER JOIN TB_CMM_CD TCCA ON TSA.APLY_STTS_CD = TCCA.CD
                 LEFT OUTER JOIN TB_CMM_CD TCCB ON TSA.SLCTN_STTS_CD = TCCB.CD
             WHERE 1 = 1
@@ -1746,8 +1774,8 @@
             , TCU.NM 
             , IFNULL(DATE_FORMAT(TSSS.SBMSN_DT, '%Y-%m-%d'), '-') AS SBMSN_DT
             , IFNULL(TSSS.SCR, '-') AS SCR
-            , IFNULL(TOT_SCR, '-') AS TOT_SCR
-            , ROUND(IFNULL(TSSS.SCR / COUNT(TSJ.JDGSID) OVER (PARTITION BY TSJ.PCNTSTID), 0), 1) AS AVG_SCR
+            , IFNULL(SUM(TSSS.SCR) OVER (PARTITION BY TSA.APLYID), '-') AS TOT_SCR
+            , ROUND(IFNULL(SUM(TSSS.SCR) OVER (PARTITION BY TSA.APLYID) / COUNT(TSJ.JDGSID) OVER (PARTITION BY TSJ.PCNTSTID), 0), 1) AS AVG_SCR
             , IFNULL(TSA.FIRST_GRD, '-') AS FIRST_GRD
             , IFNULL(TSA.FIRST_RKNG, '-') AS FIRST_RKNG 
             , IFNULL(TSA.SCND_GRD, '-') AS SCND_GRD
@@ -1849,6 +1877,7 @@
     
     <!-- 심사 정보 수정 -->
     <update id="updateSrngScore" parameterType="ReqUserVo">
+        /* ReqMngDao.updateSrngScore */
         UPDATE TB_SPB_APLY SET
             MDFCN_DT = NOW()
             , MDFRID = #{user.userid}
@@ -1876,10 +1905,71 @@
             <if test="srngEndYn != null and srngEndYn != ''">
             , SRNG_END_YN = #{srngEndYn}
             </if>
+            <if test="scndSrngEndYn != null and scndSrngEndYn != ''">
+            , SCND_SRNG_END_YN = #{scndSrngEndYn}
+            </if>
             <if test="slctnSttsCd != null and slctnSttsCd != ''">
             , SLCTN_STTS_CD = #{slctnSttsCd}
             </if>
         WHERE APLYID = #{aplyid}
     </update>
     
+    <!-- 점수 산정 -->    
+    <select id="selectScoreList" parameterType="ReqUserVo" resultType="ReqUserVo">
+        /* ReqMngDao.selectScoreList */
+        <![CDATA[
+        WITH SCORE_CARD AS (
+            SELECT
+                PCNTSTID
+                , GRD_NM
+                , TOTAL_CNT
+                , RT 
+                , CASE WHEN STD_CNT = 0 THEN 0 ELSE SUM(HIGH_SCORE) OVER (PARTITION BY PCNTSTID ORDER BY GRD_NM) END AS HIGH_SCORE
+                , STD_CNT
+                , LOW_SCORE
+            FROM (
+                SELECT
+                    COUNT(TSA.APLYID) AS TOTAL_CNT
+                    , TSSGS.PCNTSTID
+                    , TSSGS.GRD_NM 
+                    , TSSGS.RT
+                    , IFNULL(LAG(ROUND(COUNT(TSA.APLYID) * TSSGS.RT / 100)) OVER (ORDER BY TSSGS.GRD_NM), 1) AS HIGH_SCORE
+                    , ROUND(COUNT(TSA.APLYID) * TSSGS.RT / 100) AS STD_CNT
+                    , SUM(ROUND(COUNT(TSA.APLYID) * TSSGS.RT / 100)) OVER (PARTITION BY TSSGS.PCNTSTID ORDER BY TSSGS.GRD_NM) AS LOW_SCORE 
+                FROM TB_SPB_SRNG_GRD_STNG TSSGS
+                INNER JOIN TB_SPB_APLY TSA ON TSSGS.PCNTSTID = TSA.PCNTSTID 
+                WHERE TSSGS.PCNTSTID = #{pcntstid}
+                GROUP BY TSSGS.PCNTSTID
+                    , TSSGS.GRD_NM 
+                    , TSSGS.RT 
+            ) T
+        )
+        SELECT 
+            APLYID
+            , FIRST_SCR
+            , FIRST_RKNG
+            , (SELECT GRD_NM FROM SCORE_CARD SC WHERE SC.PCNTSTID = PCNTSTID AND SC.LOW_SCORE >= FIRST_RKNG AND SC.HIGH_SCORE <= FIRST_RKNG) AS FIRST_GRD
+        FROM (
+            SELECT 
+                APLYID
+                , FIRST_SCR
+                , RANK() OVER (ORDER BY FIRST_SCR DESC) AS FIRST_RKNG
+            FROM (
+                SELECT
+                    TSP.PCNTSTID
+                    , TSA.APLYID
+                    , ROUND(IFNULL(SUM(TSSS.SCR) / COUNT(TSJ.JDGSID), '-'), 1) AS FIRST_SCR
+                FROM TB_SPB_PCNTST TSP
+                    INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID 
+                    INNER JOIN TB_SPB_JDGS TSJ ON TSA.PCNTSTID = TSJ.PCNTSTID
+                    INNER JOIN TB_CMM_USER TCU ON TCU.USERID = TSJ.JDGSID
+                    LEFT OUTER JOIN TB_SPB_SRNG_SBMSN TSSS ON TSSS.USERID = TSJ.JDGSID AND TSSS.APLYID = TSA.APLYID AND TSSS.FORMID = IF(TSJ.CYCL = 1, TSP.SRNG_FORMID_FIRST, TSP.SRNG_FORMID_SCND)
+                WHERE 1 = 1
+                AND TSP.PCNTSTID = #{pcntstid}
+                AND TSJ.CYCL = #{cycl}
+                GROUP BY TSP.PCNTSTID, TSA.APLYID 
+            ) T
+        ) T
+        ]]>
+    </select>
 </mapper>

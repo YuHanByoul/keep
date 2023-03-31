@@ -42,12 +42,19 @@
             A.SITEID
             , A.SITE_NM
             , B.INST_NM
+            , B.HMPG
         FROM
             TB_CMM_SITE A
         INNER JOIN
             TB_CMM_INST B ON (B.INSTID = A.INSTID)
         WHERE
             A.USE_YN = 'Y'
+        <if test="siteSearchKeyword != null and siteSearchKeyword != '' and siteSearchType == 'siteNm'">
+            AND A.SITE_NM LIKE CONCAT('%',#{siteSearchKeyword},'%')
+        </if>
+        <if test="siteSearchKeyword != null and siteSearchKeyword != '' and siteSearchType == 'instNm'">
+            AND B.INST_NM LIKE CONCAT('%',#{siteSearchKeyword},'%')
+        </if>            
     </select>
     
     <!-- 설문지 목록 조회 -->

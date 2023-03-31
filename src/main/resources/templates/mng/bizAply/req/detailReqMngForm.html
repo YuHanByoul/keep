@@ -100,6 +100,11 @@
                 <h5><strong>신청자 검색결과</strong></h5>
             </div>
             <div class="col-12 col-md-6 text-right">
+                <button id="scndScrnCancelBtn" type="button" class="btn btn-disabled m-r-5" onclick="fn_srngEndCancel('2');">2차 심사마감 취소</button>
+                <button id="scndScrnEndBtn" type="button" class="btn btn-primary m-r-5" onclick="fn_srngEnd('2');">2차 심사마감</button>
+                <button type="button" class="btn btn-primary m-r-5" th:if="${reqMngVo.onlnSrngTypeCd == '177102'}" onclick="fn_scndSrngTaget();">2차 심사 대상</button>
+                <button id="scrnCancelBtn" type="button" class="btn btn-disabled m-r-5" onclick="fn_srngEndCancel('1');"><th:block th:if="${reqMngVo.onlnSrngTypeCd == '177102'}">1차 </th:block>심사마감 취소</button>
+                <button id="scrnEndBtn" type="button" class="btn btn-primary m-r-5" onclick="fn_srngEnd('1');"><th:block th:if="${reqMngVo.onlnSrngTypeCd == '177102'}">1차 </th:block>심사마감</button>
                 <button type="button" class="btn btn-disabled m-r-5" onclick="slctnSttsUpdate('193103');">미선정</button>
                 <button type="button" class="btn btn-inverse m-r-5" onclick="slctnSttsUpdate('193102');">선정</button>
                 <th:block sec:authorize-url="/mng/bizAply/req/reqUserListExcelDownload.do">
@@ -122,6 +127,7 @@
 <form id="srngResultForm" name="srngResultForm">
     <input type="hidden" id="aplyids" name="aplyids" value=""/>
     <input type="hidden" id="slctnSttsCd" name="slctnSttsCd" value=""/>
+    <input type="hidden" id="scndSrngTrgtYn" name="scndSrngTrgtYn" value=""/>
 </form>
 <div class="col-12">
     <div id="contentPanel2"></div>
@@ -141,10 +147,15 @@
     var fldCd = /*[[${reqMngVo.fldCd}]]*/null;
     var onlnSrngTypeCd = /*[[${reqMngVo.onlnSrngTypeCd}]]*/null;
     var srngSttsNm = /*[[${reqMngVo.srngSttsNm}]]*/null;
+    var srngEndYn = /*[[${reqMngVo.srngEndYn}]]*/null;
+    var scndSrngEndYn = /*[[${reqMngVo.scndSrngEndYn}]]*/null;
+    var pcntstid = /*[[${reqMngVo.pcntstid}]]*/null;
     /*]]>*/
     
     $(function(){
         gridHelper3 = new GridHelper('jsGrid2','contentPanel2');
+        $("#scndScrnEndBtn").hide();
+        $("#scndScrnCancelBtn").hide();
         
         $("#selectDate").daterangepicker({
             autoUpdateInput: false,
@@ -162,6 +173,23 @@
         $("#selectDate").on('cancel.daterangepicker', function(ev, picker) {
             $(this).val('');
         });
+        
+        if (srngEndYn == 'Y') {
+        	$("#scrnCancelBtn").show();
+        	$("#scrnEndBtn").hide();
+        } else {
+        	$("#scrnCancelBtn").hide();
+	        $("#scrnEndBtn").show();
+        }
+        if (onlnSrngTypeCd == '177102') {
+	        if (scndSrngEndYn == 'Y') {
+	        	$("#scndScrnCancelBtn").show();
+	        	$("#scndScrnEndBtn").hide();
+	        } else {
+	        	$("#scndScrnCancelBtn").hide();
+		        $("#scndScrnEndBtn").show();        	
+	        }
+        }
         
         $("#jsGrid2").jsGrid({
             height: "auto",
@@ -243,12 +271,28 @@
                 , { title: '접수일시'   ,name: 'regDe'   ,type: "text"  , width: "100" , align:"center"}
                 , { title: '심사상태'   ,name: 'srngSttsNm'    ,type: "text"  , width: "100" , align:"center"}
                 , { title: onlnSrngTypeCd == '177101' ? '점수' : '1차점수'  ,name: 'frstScr'    ,type: "text"  , width: "100" , align:"center", 
-//                 		itemTemplate: function(value, item) { 
-//                 			return "<div style='color:red'>" + value + "</div>" 
-//                 		}
+                		itemTemplate: function(value, item) { 
+                			if (item.lwetCrtrScrUseYnFirst == 'Y' && Number(item.lwetCrtrScrFirst) <= Number(value)) {
+	                			return "<div style='color:blue'>" + value + "</div>"; 
+                			} else if (item.lwetCrtrScrUseYnFirst == 'Y' && Number(item.lwetCrtrScrFirst) > Number(value)) {
+                				return "<div style='color:red'>" + value + "</div>";
+                			} else {
+                				return value;
+                			}
+                		}
                 }
                 , { title: onlnSrngTypeCd == '177101' ? '등급' : '1차등급'  ,name: 'firstGrd'    ,type: "text"  , width: "100" , align:"center"}
-                , { title: onlnSrngTypeCd == '177101' ? '순위' : '1차순위'  ,name: 'firstRkng'    ,type: "text"  , width: "100" , align:"center"}
+                , { title: onlnSrngTypeCd == '177101' ? '순위' : '1차순위'  ,name: 'firstRkng'    ,type: "text"  , width: "100" , align:"center",
+                		itemTemplate: function(value, item) { 
+                            if (item.nopeLmtUseYn == 'Y' && Number(item.nopeLmt) >= Number(value)) {
+                                return "<div style='color:blue'>" + value + "</div>"; 
+                            } else if (item.nopeLmtUseYn == 'Y' && Number(item.nopeLmt) < Number(value)) {
+                                return "<div style='color:red'>" + value + "</div>";
+                            } else {
+                                return value;
+                            }
+                        }
+                }
                 , { title: '2차점수'   ,name: 'scndScr'    ,type: "text"  , width: "100" , align:"center", css : onlnSrngTypeCd == '177101' ? 'hide' : '' }
                 , { title: '2차등급'   ,name: 'scndGrd'    ,type: "text"  , width: "100" , align:"center", css : onlnSrngTypeCd == '177101' ? 'hide' : '' }
                 , { title: '2차순위'   ,name: 'scndRkng'    ,type: "text"  , width: "100" , align:"center", css : onlnSrngTypeCd == '177101' ? 'hide' : '' }
@@ -342,8 +386,104 @@
         $("#slctnSttsCd").val(sttsCd);
         $("#aplyids").val(selectedItems);
         var data =  $("#srngResultForm").serialize();
-        console.log(selectedItems);
-        if(displayWorkProgress(true)){
+        setSrngResult(data);
+    }
+    
+    // 심사마감
+    function fn_srngEnd(num) {
+    	var cycl = onlnSrngTypeCd == "177101" ? "" : (num == "1" ? "1차 " : "2차 ");
+    	if (num == "2" && srngEndYn != "Y") {
+    		alert("1차 심사마감 전입니다.");
+    		return;
+    	}
+    	if (!confirm(cycl + "심사마감 하시겠습니까?")) return;
+    	$.ajax({
+            url : "/mng/bizAply/req/updateSrngEnd.do",
+            type: 'POST',
+            cache : false,
+            dataType: 'json',
+            data : {
+            	pcntstid: pcntstid
+            	, cycl: num
+            	, srngEndYn: num == "1" ? "Y" : ""
+            	, scndSrngEndYn: num == "2" ? "Y" : ""
+            },
+            success : function (data){
+                if(data.result=="success"){
+                    alert(data.msg);
+                    gridHelper3.resetListContent();
+                    if (num == "1") {
+                        $("#scrnCancelBtn").show();
+                        $("#scrnEndBtn").hide();                        
+                    } else {
+                        $("#scndScrnCancelBtn").show();
+                        $("#scndScrnEndBtn").hide();
+                    }
+                }else{
+                    alert(data.msg);
+                }
+                closeWorkProgress();
+            }
+        });
+    }
+    
+    // 심사마감 취소
+    function fn_srngEndCancel(num) {
+    	var cycl = onlnSrngTypeCd == "177101" ? "" : (num == "1" ? "1차 " : "2차 ");
+    	if (num == "2" && srngEndYn != "Y") {
+            alert("1차 심사마감 전입니다.");
+            return;
+        }
+    	if (!confirm(cycl + "심사마감 취소 하시겠습니까?")) return;
+        $.ajax({
+            url : "/mng/bizAply/req/updateSrngEnd.do",
+            type: 'POST',
+            cache : false,
+            dataType: 'json',
+            data : {
+                pcntstid: pcntstid
+                , cycl: num
+                , srngEndYn: num == "1" ? "N" : ""
+                , scndSrngEndYn: num == "2" ? "N" : ""
+            },
+            success : function (data){
+                if(data.result=="success"){
+                    alert(data.msg);
+                    gridHelper3.resetListContent();
+                    if (num == "1") {
+                        $("#scrnCancelBtn").hide();
+                        $("#scrnEndBtn").show();                    	
+                    } else {
+	                    $("#scndScrnCancelBtn").hide();
+	                    $("#scndScrnEndBtn").show();
+                    }
+                }else{
+                    alert(data.msg);
+                }
+                closeWorkProgress();
+            }
+        });
+    }
+    
+    // 2차 심사대상 선정
+    function fn_scndSrngTaget() {
+    	if (srngEndYn != "Y") {
+            alert("1차 심사마감 전입니다.");
+            return;
+        }
+    	if (selectedItems.length == 0) {
+            alert("항목을 선택하세요.");
+            return;
+        }
+    	$("#aplyids").val(selectedItems);
+    	$("#scndSrngTrgtYn").val("Y");
+        var data =  $("#srngResultForm").serialize();
+        setSrngResult(data);
+    }
+    
+    // 심사결과 저장
+    function setSrngResult(data) {
+    	if(displayWorkProgress(true)){
             $.ajax({
                 url : "/mng/bizAply/req/updateSrngScore.do",
                 type: 'POST',
@@ -357,11 +497,13 @@
                     }else{
                         alert(data.msg);
                     }
+                    $("#scndSrngTrgtYn").val("");
                     closeWorkProgress();
                 }
             });
         }
     }
+    
 </script>
 
 <script src="/js/ckeditor/ckeditor.js"></script>
