@@ -52,5 +52,54 @@ public class SearchServiceImpl extends PlumAbstractServiceImpl implements Search
         return response;
     }
     
+    /**
+    * 일간 인기 검색어 조회
+    *
+    * @Title : getTrndKeywordDay
+    * @Description : 일간 인기 검색어 조회
+    * @return Map<String, Object> 조회결과
+    * @throws Exception 예외
+    */
+    @Override
+    public Map<String, Object> getTrndKeywordDay() throws Exception {
+        String path = String.format("%s/extensions/QuerySetExtensionExample?&gtype=trndD&nget=10", searchServerUrl);
+        ResponseEntity<String> responseEntityStr = restTemplate.postForEntity(path, null, String.class); 
+        Map<String, Object> response = new ObjectMapper().readValue(responseEntityStr.getBody(), Map.class);
+        
+        return response;
+    }
     
+    /**
+    * 주간 인기 검색어 조회
+    *
+    * @Title : getTrndKeywordWeek
+    * @Description : 주간 인기 검색어 조회
+    * @return Map<String, Object> 조회결과
+    * @throws Exception 예외
+    */
+    @Override
+    public Map<String, Object> getTrndKeywordWeek() throws Exception {
+        String path = String.format("%s/extensions/QuerySetExtensionExample?&gtype=trndW&nget=10", searchServerUrl);
+        ResponseEntity<String> responseEntityStr = restTemplate.postForEntity(path, null, String.class); 
+        Map<String, Object> response = new ObjectMapper().readValue(responseEntityStr.getBody(), Map.class);
+        
+        return response;
+    }
+    
+    /**
+    * 월간 인기 검색어 조회
+    *
+    * @Title : getTrndKeywordMonth
+    * @Description : 월간 인기 검색어 조회
+    * @return Map<String, Object> 조회결과
+    * @throws Exception 예외
+    */
+    @Override
+    public Map<String, Object> getTrndKeywordMonth() throws Exception {
+        String path = String.format("%s/extensions/QuerySetExtensionExample?&gtype=trndM&nget=10", searchServerUrl);
+        ResponseEntity<String> responseEntityStr = restTemplate.postForEntity(path, null, String.class); 
+        Map<String, Object> response = new ObjectMapper().readValue(responseEntityStr.getBody(), Map.class);
+        
+        return response;
+    }
 }

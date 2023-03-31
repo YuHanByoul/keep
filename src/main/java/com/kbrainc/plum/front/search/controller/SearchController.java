@@ -1,6 +1,7 @@
 package com.kbrainc.plum.front.search.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -85,10 +86,10 @@ public class SearchController {
     }
     
     /**
-    * 검색어 자동완성 목록 반환.
+    * 검색어 자동완성 목록 조회.
     *
     * @Title : autocomplete
-    * @Description : 검색어 자동완성 목록 반환
+    * @Description : 검색어 자동완성 목록 조회
     * @param keyword 검색어
     * @return List 자동완성 목록
     */
@@ -103,6 +104,32 @@ public class SearchController {
         }
         
         return smartWordList;
+    }
+    
+    /**
+    * 인기 검색어 조회.
+    *
+    * @Title : autocomplete
+    * @Description : 인기 검색어 조회
+    * @return List 인기검색어 일간/주간/월간 목록
+    */
+    @RequestMapping(value = "/search/trndKeyword", method = RequestMethod.GET)
+    @ResponseBody
+    public Map trndKeyword() throws Exception {
+        Map<String, Object> trndMap = new HashMap<String, Object>(); 
+        Map<String, Object> keywordDay = searchService.getTrndKeywordDay();
+        Map<String, Object> keywordWeek = searchService.getTrndKeywordWeek();
+        Map<String, Object> keywordMonth = searchService.getTrndKeywordMonth();
+        
+        List<Map<String, String>> keywordDayList = (ArrayList<Map<String, String>>) (((ArrayList<Map<String, Object>>) ((Map<String, Object>) keywordDay.get("resultSet")).get("result")).get(0).get("resultDocuments"));
+        List<Map<String, String>> keywordWeekList = (ArrayList<Map<String, String>>) (((ArrayList<Map<String, Object>>) ((Map<String, Object>) keywordWeek.get("resultSet")).get("result")).get(0).get("resultDocuments"));
+        List<Map<String, String>> keywordMonthList = (ArrayList<Map<String, String>>) (((ArrayList<Map<String, Object>>) ((Map<String, Object>) keywordMonth.get("resultSet")).get("result")).get(0).get("resultDocuments"));
+        
+        trndMap.put("DAY", keywordDayList);
+        trndMap.put("WEEK", keywordWeekList);
+        trndMap.put("MONTH", keywordMonthList);
+        
+        return trndMap;
     }
     
     
