@@ -7,6 +7,293 @@
 -->
 <mapper namespace="com.kbrainc.plum.mng.srvy.model.SrvyDao">
     
+    <!-- 홈페이지설문 목록 조회 -->
+    <select id="selectHomeSrvyList" parameterType="SrvyVo" resultType="SrvyVo">
+        /* SrvyDao.selectHomeSrvyList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.SRVYID
+            , A.QESTNRID
+            , A.SRVY_NM
+            , A.USE_YN
+            , A.REG_DT
+            , A.BGNG_DE
+            , A.END_DE
+            , B.QESTNR_NM
+            , COUNT(C.QESTNRID) AS QITEM_CNT
+            , IFNULL(D.SITE_CNT, 0) AS SITE_CNT
+        FROM
+            TB_CMM_SRVY A
+        LEFT OUTER JOIN
+            TB_CMM_QESTNR B ON (B.QESTNRID = A.QESTNRID)
+        LEFT OUTER JOIN
+            TB_CMM_QESTNR_QITEM C ON (C.QESTNRID = B.QESTNRID)
+        LEFT OUTER JOIN (
+            SELECT
+                SRVYID
+                , COUNT(SITEID) AS SITE_CNT
+            FROM
+                TB_CMM_SRVY_SITE
+            GROUP BY
+                SRVYID
+        ) D ON (D.SRVYID = A.SRVYID)
+        WHERE 
+            B.QESTNR_KND_CD = '110107'
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'srvyNm'">
+            AND A.SRVY_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        GROUP BY
+            A.SRVYID, A.QESTNRID
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 홈페이지설문 등록 -->
+    <insert id="insertHomeSrvy" parameterType="SrvyVo" useGeneratedKeys="true" keyProperty="srvyid">
+        /* SrvyDao.insertHomeSrvy */
+        INSERT INTO TB_CMM_SRVY (
+            SRVYID
+            , QESTNRID
+            , SRVY_NM
+            , EXPLN
+            , BGNG_DE
+            , END_DE
+            , USE_YN
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{srvyid}
+            , #{qestnrid}
+            , #{srvyNm}
+            , #{expln}
+            , #{bgngDe}
+            , #{endDe}
+            , #{useYn}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    
+    <!-- 홈페이지설문 대상사이트 목록 조회 -->
+    <select id="selectSrvySiteList"  parameterType="SrvySiteVo" resultType="SrvySiteVo">
+        /* SrvyDao.selectSrvySiteList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.SITEID
+            , A.SRVYID
+            , B.SITE_NM
+            , C.INST_NM
+            , C.HMPG
+            , A.REG_DT
+        FROM
+            TB_CMM_SRVY_SITE A
+        LEFT OUTER JOIN
+            TB_CMM_SITE B ON (B.SITEID = A.SITEID)
+        LEFT OUTER JOIN
+            TB_CMM_INST C ON (C.INSTID = B.INSTID)
+        WHERE
+            A.SRVYID = #{srvyid}
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 홈페이지설문 대상사이트 등록 -->
+    <insert id="insertSrvySite" parameterType="SrvySiteVo">
+        /* SrvyDao.insertSrvySite */
+        INSERT INTO TB_CMM_SRVY_SITE (
+            SITEID
+            , SRVYID
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES 
+        <foreach item="item" collection="insertSiteids"  separator=",">
+        (
+            #{item}
+            , #{srvyid}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+            MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+            , REG_DT = NOW()
+            , RGTRID = #{user.userid}
+    </insert>
+    
+    <!-- 홈페이지설문 대상사이트 삭제 -->
+    <delete id="deleteSrvySite" parameterType="SrvySiteVo">
+        /* SrvyDao.deleteSrvySite */
+        DELETE 
+            FROM TB_CMM_SRVY_SITE
+        WHERE
+            SRVYID = #{srvyid} 
+            AND SITEID IN
+        <foreach item="item" collection="deleteSiteids" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+    
+    <!-- 홈페이지설문 업데이트 -->
+    <update id="updateHomeSrvy" parameterType="SrvyVo">
+        /* SrvyDao.updateHomeSrvy */
+        UPDATE TB_CMM_SRVY SET
+            QESTNRID = #{qestnrid}
+            , SRVY_NM = #{srvyNm}
+            , EXPLN = #{expln}
+            , BGNG_DE = #{bgngDe}
+            , END_DE = #{endDe}
+            , USE_YN = #{useYn}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE 
+            SRVYID = #{srvyid}
+    </update>
+    
+    <!-- 유아환경교육설문 목록 조회 -->
+    <select id="selectEnvEduSrvyList" parameterType="SrvyVo" resultType="SrvyVo">
+        /* SrvyDao.selectAplcntEnvEduSrvyList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.SRVYID
+            , A.QESTNRID
+            , A.SRVY_NM
+            , A.USE_YN
+            , A.REG_DT
+            , B.QESTNR_NM
+            , COUNT(C.QESTNRID) AS QITEM_CNT
+            , IFNULL(D.PRGRM_CNT, 0) AS PRGRM_CNT
+        FROM
+            TB_CMM_SRVY A
+        LEFT OUTER JOIN
+            TB_CMM_QESTNR B ON (B.QESTNRID = A.QESTNRID)
+        LEFT OUTER JOIN
+            TB_CMM_QESTNR_QITEM C ON (C.QESTNRID = B.QESTNRID)
+        LEFT OUTER JOIN (
+            SELECT
+                APLCNT_DGSTFN_SRVYID
+                , COUNT(PRGRMID) AS PRGRM_CNT
+            FROM
+                TB_EDU_INFNT_PRGRM
+            WHERE
+                USE_YN = 'Y'
+                AND APLCNT_DGSTFN_SRVYID IS NOT NULL
+                AND APLCNT_DGSTFN_SRVYID <![CDATA[<>]]> 0
+            GROUP BY
+                APLCNT_DGSTFN_SRVYID
+        ) D ON (D.APLCNT_DGSTFN_SRVYID = A.SRVYID)
+        WHERE
+             B.QESTNR_KND_CD = #{qestnrKndCd}
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'srvyNm'">
+            AND A.SRVY_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        GROUP BY
+            A.SRVYID, A.QESTNRID
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 푸름이아동환경교실 목록 조회 -->
+    <select id="selectEnvClassroomSrvyList" parameterType="SrvyVo" resultType="SrvyVo">
+        /* SrvyDao.selectAplcntEnvEduSrvyList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.SRVYID
+            , A.QESTNRID
+            , A.SRVY_NM
+            , A.USE_YN
+            , A.REG_DT
+            , B.QESTNR_NM
+            , COUNT(C.QESTNRID) AS QITEM_CNT
+            , IFNULL(D.PRGRM_CNT, 0) AS PRGRM_CNT
+        FROM
+            TB_CMM_SRVY A
+        LEFT OUTER JOIN
+            TB_CMM_QESTNR B ON (B.QESTNRID = A.QESTNRID)
+        LEFT OUTER JOIN
+            TB_CMM_QESTNR_QITEM C ON (C.QESTNRID = B.QESTNRID)
+        LEFT OUTER JOIN (
+            SELECT
+                APLCNT_DGSTFN_SRVYID
+                , COUNT(PRGRMID) AS PRGRM_CNT
+            FROM
+                TB_EDU_MVMN_PRGRM
+            WHERE
+                USE_YN = 'Y'
+                AND APLCNT_DGSTFN_SRVYID IS NOT NULL
+                AND APLCNT_DGSTFN_SRVYID <![CDATA[<>]]> 0
+            GROUP BY
+                APLCNT_DGSTFN_SRVYID
+        ) D ON (D.APLCNT_DGSTFN_SRVYID = A.SRVYID)
+        WHERE
+             B.QESTNR_KND_CD = #{qestnrKndCd}
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'srvyNm'">
+            AND A.SRVY_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        GROUP BY
+            A.SRVYID, A.QESTNRID
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 유아환경교육/푸름이아동환경교실 설문 등록 -->
+    <insert id="insertEnvSrvy" parameterType="SrvyVo" useGeneratedKeys="true" keyProperty="srvyid">
+        /* SrvyDao.insertHomeSrvy */
+        INSERT INTO TB_CMM_SRVY (
+            SRVYID
+            , QESTNRID
+            , SRVY_NM
+            , EXPLN
+            , AFTR_DAYCNT
+            , BFR_DAYCNT
+            , USE_YN
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{srvyid}
+            , #{qestnrid}
+            , #{srvyNm}
+            , #{expln}
+            , #{aftrDaycnt}
+            , #{bfrDaycnt}
+            , #{useYn}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    
+    <!-- 유아환경교육/푸름이아동환경교실 설문 업데이트 -->
+    <update id="updateEnvSrvy" parameterType="SrvyVo">
+        /* SrvyDao.updateHomeSrvy */
+        UPDATE TB_CMM_SRVY SET
+            QESTNRID = #{qestnrid}
+            , SRVY_NM = #{srvyNm}
+            , EXPLN = #{expln}
+            , AFTR_DAYCNT = #{aftrDaycnt}
+            , BFR_DAYCNT = #{bfrDaycnt}
+            , USE_YN = #{useYn}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE 
+            SRVYID = #{srvyid}
+    </update>
+    
+    
+    
+    
+    
+    
+    
+    
+    
     <!-- 대상자설문 등록 -->
     <insert id="insertTrprSrvy" parameterType="SrvyVo" useGeneratedKeys="true" keyProperty="srvyid">
         /* SrvyDao.insertTrprSrvy */
@@ -65,7 +352,7 @@
             A.STTS_CD = 1
             AND A.DEL_YN = 'N'
             AND A.BLCKLST_YN = 'N'
-            AND (C.KND_CD = 'U' OR C.KND_CD IS NULL)
+            AND (C.KND_CD NOT IN ('C', 'A') OR C.KND_CD IS NULL)
     </insert>
     
     <!-- 설문지 목록 조회 -->
@@ -203,7 +490,7 @@
             AND D.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
         </if>
         <if test="indvdlMbrYn != null and indvdlMbrYn != '' and indvdlMbrYn.equalsIgnoreCase('Y')">
-            AND (C.KND_CD = 'U' OR C.KND_CD IS NULL)
+            AND (C.KND_CD NOT IN ('C', 'A') OR C.KND_CD IS NULL)
         </if>
         <if test="indvdlMbrYn != null and indvdlMbrYn != '' and indvdlMbrYn.equalsIgnoreCase('N')">
             AND C.KND_CD = '-1'
