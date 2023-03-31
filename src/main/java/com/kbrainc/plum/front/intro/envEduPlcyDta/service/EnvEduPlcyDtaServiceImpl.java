@@ -71,7 +71,7 @@ public class EnvEduPlcyDtaServiceImpl extends PlumAbstractServiceImpl implements
         BsnsOperDtaVo bsnsOperDta = envEduPlcyDtaDao.selectBsnsOperDta(bsnsOperDtaVo);
         if (bsnsOperDta.getPdfFileid() != null && !bsnsOperDta.getPdfFileid().equals(0)) {
             FileVo fileVo = new FileVo();
-            fileVo.setFilegrpid(bsnsOperDta.getAtchFilegrpid());
+            fileVo.setFilegrpid(bsnsOperDta.getPdfFileid());
             ArrayList<FileVo> fileList = fileDao.getFileList(fileVo);
             bsnsOperDta.setPdfFileList(fileList);
         }

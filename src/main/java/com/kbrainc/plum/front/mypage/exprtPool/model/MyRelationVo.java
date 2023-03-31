@@ -2,12 +2,12 @@ package com.kbrainc.plum.front.mypage.exprtPool.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.cmm.file.model.FileVo;
-import com.kbrainc.plum.front.exprtPool.lctrDmnd.model.ExprtVo;
 import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.ResCodeService;
 import com.kbrainc.plum.rte.util.CommonUtil;
+import com.kbrainc.plum.rte.util.StringUtil;
 import lombok.Data;
 
 import java.util.Date;
@@ -55,6 +55,14 @@ public class MyRelationVo extends ParentRequestVo {
     private Date regDt;
     private String reviewYn;
     private String lctrEndYn;
+
+    public void setNm(String nm) {
+        this.nm = StringUtil.maskingName(nm);
+    }
+
+    public void setMoblphon(String moblphon) {
+        this.moblphon = StringUtil.maskingMobilePhone(moblphon);
+    }
 
     public void setExprtTypeCd(String exprtTypeCd) {
         this.exprtTypeCd = exprtTypeCd;
