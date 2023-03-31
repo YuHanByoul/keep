@@ -122,4 +122,10 @@ public class ReqMngVo extends ParentRequestVo {
     
     /** 심사 종료시간 */
     private String srngEndTm;
+    
+    /** 심사 종료 여부 */
+    private String srngEndYn;
+    
+    /** 2차 심사 종료 여부 */
+    private String scndSrngEndYn;
 }

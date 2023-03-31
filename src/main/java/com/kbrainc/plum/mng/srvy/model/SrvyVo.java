@@ -56,6 +56,9 @@ public class SrvyVo extends ParentRequestVo {
     /** 기관수 */
     private int instCnt; 
     
+    /** 사이트수 */
+    private int siteCnt;
+    
     /** 설문명 */
     @NotEmpty(message = "설문명을 입력해주세요.")
     @Size(max = 20, message = "설문명은 20자 이하여야 합니다.")
@@ -70,11 +73,9 @@ public class SrvyVo extends ParentRequestVo {
     private String srvyPrdCd;
     
     /** 시작 일자 */
-    @NotEmpty(message = "설문 시작일을 입력해주세요.")
     private String bgngDe;
     
     /** 종료 일자 */
-    @NotEmpty(message = "설문 종료일을 입력해주세요.")
     private String endDe;
     
     /** 이후 일수 */
@@ -99,7 +100,7 @@ public class SrvyVo extends ParentRequestVo {
     private String defaultSrvyYn;
     
     /** 컨설팅수 */
-    private String cnsltngCnt;
+    private int cnsltngCnt;
     
     /** 컨설팅 아이디 */
     private int cnsltngid;
@@ -107,6 +108,8 @@ public class SrvyVo extends ParentRequestVo {
     /** 프로그램명 */
     private String prgrmNm;
     
+    /** 프로그램 수 */
+    private int prgrmCnt;
     
     /** 수정일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")

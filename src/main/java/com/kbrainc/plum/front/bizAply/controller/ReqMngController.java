@@ -156,7 +156,7 @@ public class ReqMngController {
          }
          
          model.addAttribute("detail", detail);
-         model.addAttribute("userType", user.getLoginUserType());
+         model.addAttribute("userType", user == null ? "" : user.getLoginUserType());
          
          return "front/reqMng/reqMngDetail";
      }

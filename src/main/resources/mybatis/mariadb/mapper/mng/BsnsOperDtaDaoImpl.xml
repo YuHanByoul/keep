@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!--
+	SQL File Name : BsnsOperDtaDaoImpl.xml
+	Description : 사업운영자료 관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.bsnsOperDta.model.BsnsOperDtaDao">
+    <select id="selectBsnsOperDtaList" resultType="com.kbrainc.plum.mng.bsnsOperDta.model.BsnsOperDtaVo">
+        <include refid="PaginationMapper.header"/>
+            SELECT
+                A.DTAID
+                , A.TTL
+                , C.INST_NM
+                , A.REG_DT
+                , A.HITS
+                , B.CLSF_CDS
+            FROM TB_CMM_BSNS_OPER_DTA A
+            INNER JOIN
+                (
+                    SELECT DTAID, GROUP_CONCAT(CLSF_CD) CLSF_CDS
+                    FROM TB_CMM_BSNS_OPER_DTA_CLSF_MAPNG
+                    GROUP BY DTAID
+                ) B
+                ON B.DTAID = A.DTAID
+            INNER JOIN TB_CMM_INST C
+                ON A.INSTID = C.INSTID
+            WHERE 1=1
+            <if test="searchKeyword != null and searchKeyword != ''">
+                <if test="searchType == 'ttl'">
+
+                </if>
+                <if test="searchType == 'cn'">
+
+                </if>
+            </if>
+
+            <if test="instNm != null and instNm !=''">
+
+            </if>
+
+            <if test="searchBgngDt != null and searchBgngDt != ''">
+
+            </if>
+            <if test="searchEndDt != null and searchEndDt != ''">
+
+            </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <select id="selectBsnsOperDta" resultType="com.kbrainc.plum.mng.bsnsOperDta.model.BsnsOperDtaVo">
+        SELECT
+            A.DTAID
+             , A.YY
+             , A.INSTID
+             , C.INST_NM
+             , A.TTL
+             , A.CN
+             , A.REG_DT
+             , A.PDF_FILEID
+             , A.ATCH_FILEGRPID
+             , A.HITS
+             , A.RGTRID
+             , B.CLSF_CDS
+             , D.NM AS RGTR_NM
+        FROM TB_CMM_BSNS_OPER_DTA A
+        INNER JOIN
+        (
+             SELECT DTAID, GROUP_CONCAT(CLSF_CD) CLSF_CDS
+             FROM TB_CMM_BSNS_OPER_DTA_CLSF_MAPNG
+             GROUP BY DTAID
+        ) B
+            ON B.DTAID = A.DTAID
+        INNER JOIN TB_CMM_INST C
+            ON A.INSTID = C.INSTID
+        INNER JOIN TB_CMM_USER D
+            ON A.RGTRID = D.USERID
+        WHERE A.DTAID = #{dtaid}
+    </select>
+
+    <insert id="insertBsnsOperDta" useGeneratedKeys="true" keyProperty="dtaid">
+        INSERT INTO TB_CMM_BSNS_OPER_DTA(
+            YY
+            , INSTID
+            , TTL
+            , CN
+            , PDF_FILEID
+            , ATCH_FILEGRPID
+            , HITS
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        )
+        VALUES(
+            #{yy}
+            , #{instid}
+            , #{ttl}
+            , #{cn}
+            , #{pdfFileid}
+            , #{atchFilegrpid}
+            , 0
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+
+    <update id="updateBsnsOperDta">
+        UPDATE TB_CMM_BSNS_OPER_DTA
+        SET
+            YY = #{yy}
+            , INSTID = #{instid}
+            , TTL = #{ttl}
+            , CN = #{cn}
+            , PDF_FILEID = #{pdfFileid}
+            , ATCH_FILEGRPID = #{atchFilegrpid}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE DTAID = #{dtaid}
+    </update>
+
+    <delete id="deleteBsnsOperDta">
+        DELETE FROM TB_CMM_BSNS_OPER_DTA
+        WHERE DTAID = #{dtaid}
+    </delete>
+
+    <insert id="insertBsnsOperClsfMapping">
+        INSERT INTO TB_CMM_BSNS_OPER_DTA_CLSF_MAPNG
+        (
+             DTAID
+             , CLSF_CD
+             , REG_DT
+             , RGTRID
+         ) VALUES
+           <foreach collection="clsfCds" item="clsfCd" separator=",">
+           (
+               #{dtaid}
+               , #{clsfCd}
+               , NOW()
+               , #{user.userid}
+           )
+           </foreach>
+    </insert>
+
+    <delete id="deleteBsnsOperClsfMapping">
+        DELETE FROM TB_CMM_BSNS_OPER_DTA_CLSF_MAPNG
+        WHERE DTAID = #{dtaid}
+    </delete>
+
+</mapper>

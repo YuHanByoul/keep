@@ -8,9 +8,7 @@
     <form id="sftyMngForm" name="sftyMngForm" th:action="@{/front/dsgnPrgrm/chkListForm.html}" method="post">
         <input type="hidden" id="prgrmid" name="prgrmid" th:value="${aplyInfo.prgrmid}">
         <input type="hidden" id="sftyMngId" name="sftyMngId" th:value="${aplyInfo.sftyMngId}">
-        <input type="hidden" id="filegrpid" name="filegrpid" th:value="${aplyInfo.filegrpid == null or aplyInfo.filegrpid == ''}? 0: ${aplyInfo.filegrpid}"/>
-        <input type="hidden" id="bfrCertFilegrpid" name="bfrCertFilegrpid" th:value="${aplyInfo.bfrCertFilegrpid == null or aplyInfo.bfrCertFilegrpid == ''}? 0: ${aplyInfo.bfrCertFilegrpid}"/>
-        <input type="hidden"  id="opner" name="opner" th:value="${opner==null ?'':opner}" />
+        <input type="hidden" id="opner" name="opner" th:value="${opner==null ?'':opner}" />
 
         <!-- content -->
         <div class="steps" id="steps" th:if="${opner!='myPage'}">
@@ -89,14 +87,36 @@
                         </colgroup>
                         <tbody>
                             <tr>
-                                <th scope="col">첨부파일</th>
+                                <th scope="col">첨부파일<span class="ast">*</span></th>
                                 <td>
                                     <div class="form-input-file">
+
                                         <label class="form-input">
-                                            <input type="file" class="blind" multiple="multiple" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부" maxcount="10">
+                                            <input id="multiFileInput1" name="files" type="file" multiple class="blind" title="파일첨부" maxcount="5" style="display: none;"
+                                                   th:attr="accept=${acceptUploadFileExt}">
                                             <span class="btn-medium btn-gray">파일선택</span>
                                         </label>
-                                        <ul></ul>
+                                        <div class="upload-response">
+                                            <div id="multipleFileUploadError"></div>
+                                            <div id="multipleFileUploadSuccess1">
+                                            <th:block th:if="${mnlFileList != null}">
+                                                <div th:each="item : ${mnlFileList}" th:id="${item.fileid}" class="col-auto">
+                                                    <ul th:if="${item.orginlFileNm != null}">
+                                                        <li th:fileid='${item.fileid}'
+                                                            th:fileIdntfcKey="${item.fileIdntfcKey}"
+                                                            th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))"
+                                                            class='label label-inverse'
+                                                            th:data_ext="${#strings.replace(item.fileExtsn, '.', '')}">
+                                                            <th:block th:text="${item.orginlFileNm}" />&nbsp;&nbsp;
+                                                            <a th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="fn_deleteFileList(this.name, this.dataset.idntfcKey)" class='text-white'>
+                                                            <th:block th:text="X"></th:block></a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </th:block>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" id="filegrpid" name="filegrpid" th:value="${(aplyInfo.filegrpid == '' or aplyInfo.filegrpid == null) ? 0 : aplyInfo.filegrpid}"/>
                                     </div>
                                 </td>
                             </tr>
@@ -141,7 +161,6 @@
                         </tbody>
                     </table>
                 </div>
-
 
                 <div class="table-caption">
                     <div class="left">
@@ -205,12 +224,31 @@
                             <tr>
                                 <th scope="col">첨부파일</th>
                                 <td>
-                                    <div class="form-input-file">
-                                        <label class="form-input">
-                                            <input type="file" class="blind" multiple="multiple" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부" maxcount="10">
-                                            <span class="btn-medium btn-gray">파일선택</span>
+                                    <div class="form-input-file" >
+                                        <label class="form-input" readonly="readonly" >
+                                            <input id="multiFileInput2" name="files" type="file" multiple class="blind" title="파일첨부" maxcount="10" style="display: none;" th:attr="accept=${acceptUploadFileExt}" >
+                                            <span class="btn-medium btn-gray" id="bfrCertYnSpan">파일선택</span>
                                         </label>
-                                        <ul></ul>
+                                        <ul id="multipleFileUploadSuccess2">
+                                        <th:block th:if="${bfrCertFileList != null}">
+                                            <th:block th:each="file : ${bfrCertFileList}">
+                                                <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}" th:id="${file.fileid}">
+                                                    <span class="name">
+                                                        <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                                           th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                            [[${file.orginlFileNm}]]
+                                                        </a>
+                                                    </span>
+                                                    <button type="button" class="file-delete" title="삭제" th:name="${file.fileid}"
+                                                            th:attr="data-file-idntfc-key=${file.fileIdntfcKey}, data-id=${file.fileid}"
+                                                            th:onclick="deleteFile(this.name, this.dataset.fileIdntfcKey)">
+                                                        <span class="icon icon-circle-close"></span>
+                                                    </button>
+                                                </li>
+                                            </th:block>
+                                        </th:block>
+                                    </ul>
+                                    <input type="hidden" id="bfrCertFilegrpid" name="bfrCertFilegrpid" th:value="${aplyInfo.bfrCertFilegrpid == null or aplyInfo.bfrCertFilegrpid == ''}? 0: ${aplyInfo.bfrCertFilegrpid}"/>
                                     </div>
                                 </td>
                             </tr>
@@ -243,12 +281,47 @@
         var prevUrl = "/front/dsgnPrgrm/ldrQlfcForm.html";    //지도자 의 자격 및 배치
         var reUrl = "/front/dsgnPrgrm/sftyMngForm.html";      //안전관리
 
+        var uploadFileCnt=0;
+
+        function validate(){
+
+            $("#sftyMngForm").validate({
+                 ignore: [],
+                 rules: {
+                     filegrpid : { required: true }
+                 },
+                 messages: {
+                	 filegrpid : { required: "안전관리 메뉴얼 첨부파일을 입력해 주십시오."}
+                 }
+              });
+
+          }
+
         function goPrev(){
             document.dstnctnForm.action = prevUrl
             $("#sftyMngForm").submit();
         }
 
         function goNext(){
+
+            //if(!$("#sftyMngForm").valid()) return false;
+
+        	//첨부파일
+            var fileCnt = $("#multipleFileUploadSuccess1 [data_ext]").length;
+            if(fileCnt==0){
+                //$("[fileid]").length
+                var msg="첨부파일을 입력해 주십시오";
+                if (!$("#multipleFileUploadSuccess1").find(".feedback.invalid").length) {
+                    $("#multipleFileUploadSuccess1").append(`<p class="feedback invalid">${msg}</p>`);
+                }
+                var offset = $("#multipleFileUploadSuccess1").offset();
+                $('html, body').animate({scrollTop : offset.top - 300}, 300);
+                $("#multipleFileUploadSuccess1").focus();
+                return false;
+            } else {
+                $("#multipleFileUploadSuccess1").find(".feedback.invalid").remove();
+            }
+
             doSave("next");
         }
 
@@ -286,6 +359,8 @@
 
         $(function() {
 
+        	validate();
+
             $("textArea").keyup(function (e) {
                 var inTxt = $(this).val();
                 if($("#"+this.id).next().prop("class")=="desc ar size"){
@@ -293,7 +368,96 @@
                 }
             });
             $("textArea").trigger("keyup");
+
+
+            $("[id^=bfrCertYn]").on("change",function(e){
+
+            	if(this.value=='Y'){
+            		$("#multiFileInput2").prop("disabled",false);
+            	}else{
+            		$("#multiFileInput2").prop("disabled",true);
+            	}
+            });
         });
+
+        // 파일업로드
+        $('#multiFileInput1,#multiFileInput2').on("change", function(event) {
+
+        	var trgtGrpid = (this.id == "multiFileInput1") ? "filegrpid" : "bfrCertFilegrpid";
+
+            var objFile = document.querySelector('#'+this.id);
+            var formData = new FormData();
+            var content = "";
+
+            for( i = 0 ; i < objFile.files.length ; i++) {
+                formData.append("files", objFile.files[i]);
+                uploadFileCnt++;
+            }
+
+            formData.append("filegrpid", $("#"+trgtGrpid).val());
+            formData.append("filegrpNm", "asgsysSrng_file");
+
+            if(uploadFileCnt > 0){
+                $.ajax({
+                    url : '/uploadMultipleFiles.do',
+                    processData : false,
+                    contentType : false,
+                    data : formData,
+                    type : 'POST',
+                    success : function(response) {
+
+                        if(response.result == 'fail'){
+                            alert(response.msg);
+                        }else{
+                        	if($("#"+trgtGrpid).val()=='0' || $("#"+trgtGrpid).val()==''  || $("#"+trgtGrpid).val()==null){
+                                $("#"+trgtGrpid).val( response[0].filegrpid );
+                            }
+
+                            for(i = 0 ;i < response.length; i++ ){
+                                content = '<ul>';
+                                content +=  '<li class="file-block" data_ext="'+response[i].fileExtsn.replace(".", '')+'" id="'+response[i].fileid+'"><span class="name">'+response[i].orginlFileNm
+                                content += '&nbsp;&nbsp;<a href="javascript:void(0)" onclick=uploadFileCnt--;fn_deleteFileList("'+response[i].fileid+'","'+response[i].fileIdntfcKey+'")>X</a></span></li>'
+                                content += '</ul>';
+                                if(trgtGrpid == "filegrpid") {
+                                    $('#multipleFileUploadSuccess1').append(content);
+                                }else{
+                                    $('#multipleFileUploadSuccess2').append(content);
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+        // 파일삭제
+        function fn_deleteFileList(fileid, fileIdntfcKey){
+            if(!confirm("파일을 삭제하시겠습니까?")){return;}
+            fn_deleteFile(fileid, fileIdntfcKey);
+            $("#"+fileid).remove();
+        }
+
+        // 파일삭제
+        function fn_deleteFile(fileid, fileIdntfcKey){
+            var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey;
+            $.ajax({
+                url : deleteFileUrl,
+                type: 'GET',
+                cache : false,
+                dataType: 'json',
+                success : function (data){
+                    if(data.result=="success"){
+                        $("#"+fileid).remove();
+                        alert("파일삭제가 완료 되었습니다.");
+                    }else{
+                        alert("파일삭제중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+                    }
+                },
+                error : function (error){
+                }
+            });
+        }
+
         </script>
     </div>
 

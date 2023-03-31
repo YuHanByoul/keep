@@ -85,7 +85,7 @@ public class PackageindvdChckVo extends ParentRequestVo {
     private String rcritNm;
 
     /** 기관 이름 */
-    private String idnstNm;
+    private String instNm;
 
     /** 신청자 이름 */
     private String aplcntNm;

@@ -516,8 +516,8 @@ function fn_getNextDepthList(grpcd , upprcd, selId, cd){
 
 
 //교육주제 코드 목록
-function setEduJbjct(){
-    var cdLst = $("#eduSbjctCdLst").val().split(",");
+function setEduJbjct(lst){
+    var cdLst = lst.split(",");
     var cd      ="";
     var grpcd   ="";
     var upprcd  =0;
@@ -527,7 +527,6 @@ function setEduJbjct(){
     var selSubId = "sub_";
     var idx = 0;
     var subcd ="";
-
 
     if(cdLst.length > 0 && cdLst[0] != ""){
         for( idx=0; idx < cdLst.length; idx++) {
@@ -543,7 +542,7 @@ function setEduJbjct(){
             setNextDepth(grpcd,cd,selSubId,subcd);
         }
     }else{
-    	fn_getNextDepthList("155" , upprcd, selId+"1", "");
+    	fn_getNextDepthList("155" , upprcd, selId, "");
     	setNextDepth(grpcd,cd,selSubId,subcd);
 
     }
@@ -555,20 +554,23 @@ function writeHtml(grpcd,selId,list,cd){
     var vHtml ="";
     var selSubId ="";
 
-    var idx = selId.substring(selId.length-1, selId.length);
+    //var idx = selId.substring(selId.length-1, selId.length);
+    var idx = $("[id^=sbjctSelDiv]").length+1;
 
     if(selId.startsWith("sub")) {
+
     	vHtml += "        <select id='"+selId+"' name='sub_eduSbjctSel' class='form-select form-select-sm form-control-sm'>";
     	vHtml +="           <option  >전체</option>";
-	if(list.length > 0){
-    	for(var i=0 ; i < list.length;i++) {
-            if(list[i].cd==cd){
-                vHtml +="    <option value="+list[i].cd+" selected>"+ list[i].cdNm+ "</option>";
-            }else{
-                vHtml +="    <option value="+list[i].cd+">"+ list[i].cdNm+ "</option>";
+
+    	if(list.length > 0){
+        	for(var i=0 ; i < list.length;i++) {
+                if(list[i].cd==cd){
+                    vHtml +="    <option value="+list[i].cd+" selected>"+ list[i].cdNm+ "</option>";
+                }else{
+                    vHtml +="    <option value="+list[i].cd+">"+ list[i].cdNm+ "</option>";
+                }
             }
         }
-    }
     	vHtml += "      </select>";
 
     	$("#"+selId).html(vHtml);
@@ -577,14 +579,9 @@ function writeHtml(grpcd,selId,list,cd){
         selSubId = "sub_"+selId;
 
 
-        if(idx == "1"){
-            vHtml += "<div class='row'>";
-        }else{
-            vHtml += "<div class='row mt-1'>";
-        }
-
+            vHtml += "<div id='sbjctSelDiv"+idx+"' class='row mt-1'>";
             vHtml += "    <div class='col-sm'>                                                                                                                                                            ";
-            vHtml += "      <select id='"+selId+"' name='eduSbjctSel' class='form-select form-select-sm form-control-sm' value='"+cd+"' onchange=setNextDepth("+grpcd+",this.value,'"+selSubId+"') >";
+            vHtml += "      <select id='"+selId+idx+"' name='eduSbjctSel' class='form-select form-select-sm form-control-sm' value='"+cd+"' onchange=setNextDepth("+grpcd+",this.value,'"+selSubId+idx+"') >";
             vHtml +="           <option  >전체</option>";
 
             if(list.length > 0){
@@ -598,12 +595,12 @@ function writeHtml(grpcd,selId,list,cd){
                     vHtml += "      </select>";
                     vHtml += "    </div>                                                                                                                                                                          ";
                     vHtml += "    <div class='col-sm mt-1 mt-sm-0'>                                                                                                                                               ";
-                    vHtml += "        <select id='"+selSubId+"' name='sub_eduSbjctSel' class='form-select form-select-sm form-control-sm'></select>                                          ";
+                    vHtml += "        <select id='"+selSubId+idx+"' name='sub_eduSbjctSel' class='form-select form-select-sm form-control-sm'></select>                                          ";
                     vHtml += "    </div>                                                                                                                                                                          ";
                     vHtml += "    <div class='mt-1 mt-sm-0' style='width:100px;'>                                                                                                                                 ";
-                    vHtml += "        <button type='button' class='input-group-text btn btn-primary btn-sm' onclick='eduSbjctAdd()'>+</button>                                                                    ";
-                if(idx != "1"){
-                    vHtml += "        <button type='button' class='input-group-text btn btn-primary btn-sm' onclick='eduSbjctBtnDel'>-</button>";
+                    vHtml += "        <button type='button' class='input-group-text btn btn-primary btn-sm' onclick='eduSbjctAdd("+idx+")'>+</button>                                                                    ";
+                if(idx > 1){
+                    vHtml += "        <button type='button' class='input-group-text btn btn-primary btn-sm' onclick='eduSbjctBtnDel("+idx+")'>-</button>";
                 }
                     vHtml += '        </div>';
                     vHtml += '    </div>';
@@ -632,22 +629,15 @@ function setSubSel(){
     }
 }
 
-function eduSbjctAdd(){
-	//var html;
-	//var trIdx = $("[id^=schdlTr]").length + 1;
-    //
-    //html +="<tr id='schdlTr" + trIdx + "'>                                                                                                               ";
-    //
-    //$("#schdlTbody").append(html);
-
+function eduSbjctAdd(id){
+	setEduJbjct("155");
 };
-function eduSbjctBtnDel(){
 
+function eduSbjctBtnDel(idx){
+	$("#sbjctSelDiv"+idx).remove();
 };
 
 function readImage() {
-
-
 	for(var i=0; i < veduPhotoFileList.length; i++){
 		if(veduPhotoFileList[i].fileid==0){
 			$("#delFileDiv"+(i+1)).hide();
@@ -658,8 +648,6 @@ function readImage() {
 
 		}
 	}
-
-
 }
 
 
@@ -874,7 +862,7 @@ function prgrmDstnctnSaveBtn() {
     //교육주제
     $("[id^=sub_eduSbjctSel]").each(function(index, item) {
 
-        if(item.value=="전체"){
+        if(item.value=="전체"||item.value=="" ){
             alert("선택하지 않은 교육주제항목이 있습니다.");
             $("#"+item.id).focus();
             return;
@@ -896,6 +884,18 @@ function prgrmDstnctnSaveBtn() {
     $("[id^=endMnt]").each(function(index, item)       { param["prgrmSchdlLst[" + index + "].endMnt" ] = item.value; });    //종료 분
     $("[id^=schdlPrgrmNm]").each(function(index, item) { param["prgrmSchdlLst[" + index + "].prgrmNm"] = item.value; });    //프로그램명
     $("[id^=crs]").each(function(index, item)          { param["prgrmSchdlLst[" + index + "].crs"    ] = item.value; });    //과정
+
+    //숙박여부와 프로그램우수성의 운영형태로 체크리스트의 운영형태를 판단하여 체크리스트 결정
+    if($("#operFrmCd").val() == "120104") {
+        param["chkOperFrmCd"] = "145102";
+    }
+    else if ($("#operFrmCd").val() != "120104"){
+        if($("#styYn").val()=="Y"){
+            param["chkOperFrmCd"] = "145100";
+        }else{
+            param["chkOperFrmCd"] = "145101";
+        }
+    }
 
     if(!confirm("저장 하시겠습니까?")){return;}
     var vprgrmKey = $("#prgrmKey").val();
@@ -961,8 +961,9 @@ function initPrgrmDstnctn(){
 	//교육사진 set
 	readImage();
 
-	//교육주제 set
-	setEduJbjct();
+
+
+	setEduJbjct($("#eduSbjctCdLst").val());
 
     $('#jdsgTab1Link').addClass("active");
 
