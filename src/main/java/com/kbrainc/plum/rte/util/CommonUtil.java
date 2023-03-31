@@ -64,6 +64,8 @@ public class CommonUtil {
     
     public static String chatbotUrl = applicationConfig.getString("chatbot.host");
     
+    public static String reportingUrl = applicationConfig.getString("reporting.host");
+    
     /**
      * @Title : getBean
      * @Description : 특정 bean을 가져오는 함수

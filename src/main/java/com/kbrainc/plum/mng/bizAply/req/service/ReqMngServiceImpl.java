@@ -800,8 +800,11 @@ public class ReqMngServiceImpl extends PlumAbstractServiceImpl implements ReqMng
                 vo.setUser(reqUserVo.getUser());
                 vo.setAplyid(Integer.valueOf(aplyid));
                 vo.setSlctnSttsCd(reqUserVo.getSlctnSttsCd());
+                vo.setScndSrngTrgtYn(reqUserVo.getScndSrngTrgtYn());
                 result += reqMngDao.updateSrngScore(vo);
             }
+        } else {
+            result = reqMngDao.updateSrngScore(reqUserVo);
         }
         return result;
     }
@@ -819,10 +822,15 @@ public class ReqMngServiceImpl extends PlumAbstractServiceImpl implements ReqMng
                 paramVo = new ReqUserVo();
                 paramVo.setUser(reqUserVo.getUser());
                 paramVo.setAplyid(vo.getAplyid());
-                if ("Y".equals(reqUserVo.getSrngEndYn()) || "Y".equals(reqUserVo.getScndSrngEndYn())) {
+                if ("Y".equals(reqUserVo.getSrngEndYn())) { 
                     paramVo.setFirstScr(vo.getFirstScr());
                     paramVo.setFirstRkng(vo.getFirstRkng());
                     paramVo.setFirstGrd(vo.getFirstGrd());
+                }
+                if ("Y".equals(reqUserVo.getScndSrngEndYn())) {
+                    paramVo.setScndScr(vo.getFirstScr());
+                    paramVo.setScndRkng(vo.getFirstRkng());
+                    paramVo.setScndGrd(vo.getFirstGrd());
                 }
                 paramVo.setSrngEndYn(reqUserVo.getSrngEndYn());
                 paramVo.setScndSrngEndYn(reqUserVo.getScndSrngEndYn());

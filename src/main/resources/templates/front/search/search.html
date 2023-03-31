@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/nolnbSubLayout">
+<body>
+<div layout:fragment="content">
+    <form class="block toggleParent">
+        <div class="search-filter search-filter-suggest mb10">
+            <div class="form-input mo-flex-wrap">
+                <div class="form-input">
+                    <select title="검색어" style="width:auto;flex:auto;">
+                        <option value="all">전체</option>
+                        <option value="제목">프로그램·콘텐츠</option>
+                        <option value="제목">참여·신청</option>
+                        <option value="제목">알림·문의</option>
+                        <option value="제목">메뉴</option>
+                        <option value="제목">첨부파일</option>
+                    </select>
+                    <div class="form-input search-suggest-position pb0">
+                        <input type="search" title="검색어" class="mr0" placeholder="검색어를 입력해 주세요.">
+                    </div>
+                </div>
+                <div class="search-filter-submit mo-flex-wrap">
+                    <div class="form-input">
+                        <button type="button" class="btn-medium btn-green btn-before-search">검색</button>
+                        <button type="reset" class="btn-medium btn-green btn-after-toggle toggleTrigger">상세검색</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="toggleTarget">
+            <div class="search-filter">
+                <div class="form-input-wrap">
+                    <div class="form-row">
+                        <div class="form-header"><strong class="label">검색기간</strong></div>
+                        <div class="form-body">
+                            <div class="form-input">
+                                <input type="date" title="시작일">
+                                <div class="bul">~</div>
+                                <input type="date" title="종료일">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-header"><strong class="label">검색 제외 단어</strong></div>
+                        <div class="form-body">
+                            <div class="form-input mo-flex-wrap">
+                                <input type="text" title="검색 제외 단어" data-width="290" class="mo-flex-auto">
+                                <div class="bul fc-black6">특정단어 제외 후 검색</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-header"><strong class="label">주제</strong></div>
+                        <div class="form-body">
+                            <div class="form-check-list">
+                                <label class="inp"><input type="checkbox"><b>소음</b></label>
+                                <label class="inp"><input type="checkbox"><b>폐기물 및 자원순환</b></label>
+                                <label class="inp"><input type="checkbox"><b>환경보건</b></label>
+                                <label class="inp"><input type="checkbox"><b>물</b></label>
+                                <label class="inp"><input type="checkbox"><b>토양</b></label>
+                                <label class="inp"><input type="checkbox"><b>생태계</b></label>
+                                <label class="inp"><input type="checkbox"><b>기후변화 및 탄소중립</b></label>
+                                <label class="inp"><input type="checkbox"><b>대기</b></label>
+                                <label class="inp"><input type="checkbox"><b>에너지</b></label>
+                                <label class="inp"><input type="checkbox"><b>지속가능발전</b></label>
+                                <label class="inp"><input type="checkbox"><b>생명윤리</b></label>
+                                <label class="inp"><input type="checkbox"><b>11월</b></label>
+                                <label class="inp"><input type="checkbox"><b>12월</b></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-header"><strong class="label">대상</strong></div>
+                        <div class="form-body">
+                            <div class="form-check-list">
+                                <label class="inp"><input type="checkbox"><b>유아기(7세이하)</b></label>
+                                <label class="inp"><input type="checkbox"><b>아동기(8~13세)</b></label>
+                                <label class="inp"><input type="checkbox"><b>청소년기(14~19세)</b></label>
+                                <label class="inp"><input type="checkbox"><b>성인기(20세 이상)</b></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-header"><strong class="label">유형</strong></div>
+                        <div class="form-body">
+                            <div class="form-check-list">
+                                <label class="inp"><input type="checkbox"><b>전체</b></label>
+                                <label class="inp"><input type="checkbox"><b>교육지도안</b></label>
+                                <label class="inp"><input type="checkbox"><b>인포그래픽</b></label>
+                                <label class="inp"><input type="checkbox"><b>카드뉴스</b></label>
+                                <label class="inp"><input type="checkbox"><b>학습자료</b></label>
+                                <label class="inp"><input type="checkbox"><b>기타</b></label>
+                            </div>
+                            <div class="form-check-list">
+                                <label class="inp"><input type="checkbox"><b>전체</b></label>
+                                <label class="inp"><input type="checkbox"><b>교육영상</b></label>
+                                <label class="inp"><input type="checkbox"><b>홍보영상</b></label>
+                                <label class="inp"><input type="checkbox"><b>강연영상</b></label>
+                                <label class="inp"><input type="checkbox"><b>포럼 및 세미나</b></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-header"><strong class="label">지역</strong></div>
+                        <div class="form-body">
+                            <div class="form-check-list">
+                                <label class="inp"><input type="checkbox"><b>전체</b></label>
+                                <label class="inp"><input type="checkbox"><b>서울특별시</b></label>
+                                <label class="inp"><input type="checkbox"><b>부산광역시</b></label>
+                                <label class="inp"><input type="checkbox"><b>대전광역시</b></label>
+                                <label class="inp"><input type="checkbox"><b>대구광역시</b></label>
+                                <label class="inp"><input type="checkbox"><b>인천광역시</b></label>
+                                <label class="inp"><input type="checkbox"><b>광주광역시</b></label>
+                                <label class="inp"><input type="checkbox"><b>울산광역시</b></label>
+                                <label class="inp"><input type="checkbox"><b>세종특별자치시</b></label>
+                                <label class="inp"><input type="checkbox"><b>경기도</b></label>
+                                <label class="inp"><input type="checkbox"><b>강원도</b></label>
+                                <label class="inp"><input type="checkbox"><b>충청북도</b></label>
+                                <label class="inp"><input type="checkbox"><b>충청남도</b></label>
+                                <label class="inp"><input type="checkbox"><b>경상북도</b></label>
+                                <label class="inp"><input type="checkbox"><b>경상남도</b></label>
+                                <label class="inp"><input type="checkbox"><b>전라북도</b></label>
+                                <label class="inp"><input type="checkbox"><b>전라남도</b></label>
+                                <label class="inp"><input type="checkbox"><b>제주특별자치도</b></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="search-filter-submit">
+                    <button type="reset" class="btn-medium btn-gray btn-before-refresh">초기화</button>
+                    <button type="button" class="btn-medium btn-green btn-before-search">검색</button>
+                </div>
+            </div>
+            
+        </div>
+
+        
+    </form>
+    
+    <div class="rank-list rank-tab-list mt45">
+        <div class="tab-content">
+            <dl>
+                <dt>인기검색어</dt>
+                <dd>
+                    <ul class="tab-list tab-text-list" role="tablist">
+                        <li class="active"><button type="button" role="tab" aria-controls="tab-rank1" id="rank-tab1" aria-selected="true">일간</button></li>
+                        <li><button type="button" role="tab" aria-controls="tab-rank2" id="rank-tab2" aria-selected="false">주간</button></li>
+                        <li><button type="button" role="tab" aria-controls="tab-rank3" id="rank-tab3" aria-selected="false">월간</button></li>
+                    </ul>
+                </dd>
+            </dl>
+            <div id="tab-rank1" class="tabpanel" role="tabpanel" aria-labelledby="rank-tab1">
+                <div class="list-inner">
+                    <ul>
+                        <li><a href="#">1꾸러미 06_Zero Hit</a></li>
+                        <li><a href="#">1꾸러미 06_Zero Hit</a></li>
+                        <li><a href="#">1꾸러미 06_Zero Hit</a></li>
+                        <li><a href="#">1꾸러미 06_Zero Hit</a></li>
+                        <li><a href="#">1꾸러미 06_Zero Hit</a></li>
+                        <li><a href="#">1꾸러미 06_Zero Hit</a></li>
+                        <li><a href="#">1꾸러미 06_Zero Hit</a></li>
+                        <li><a href="#">1꾸러미 06_Zero Hit</a></li>
+                        <li><a href="#">1꾸러미 06_Zero Hit</a></li>
+                        <li><a href="#">1꾸러미 06_Zero Hit</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div id="tab-rank2" class="tabpanel" role="tabpanel" aria-labelledby="rank-tab2">
+                <div class="list-inner">
+                    <ul>
+                        <li><a href="#">2꾸러미 06_Zero Hit</a></li>
+                        <li><a href="#">2꾸러미 06_Zero Hit</a></li>
+                        <li><a href="#">2꾸러미 06_Zero Hit</a></li>
+                        <li><a href="#">2꾸러미 06_Zero Hit</a></li>
+                        <li><a href="#">2꾸러미 06_Zero Hit</a></li>
+                        <li><a href="#">2꾸러미 06_Zero Hit</a></li>
+                        <li><a href="#">2꾸러미 06_Zero Hit</a></li>
+                        <li><a href="#">2꾸러미 06_Zero Hit</a></li>
+                        <li><a href="#">2꾸러미 06_Zero Hit</a></li>
+                        <li><a href="#">2꾸러미 06_Zero Hit</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div id="tab-rank3" class="tabpanel" role="tabpanel" aria-labelledby="rank-tab3">
+                <div class="list-inner">
+                    <ul>
+                        <li><a href="#">3꾸러미 06_Zero Hit</a></li>
+                        <li><a href="#">3꾸러미 06_Zero Hit</a></li>
+                        <li><a href="#">3꾸러미 06_Zero Hit</a></li>
+                        <li><a href="#">3꾸러미 06_Zero Hit</a></li>
+                        <li><a href="#">3꾸러미 06_Zero Hit</a></li>
+                        <li><a href="#">3꾸러미 06_Zero Hit</a></li>
+                        <li><a href="#">3꾸러미 06_Zero Hit</a></li>
+                        <li><a href="#">3꾸러미 06_Zero Hit</a></li>
+                        <li><a href="#">3꾸러미 06_Zero Hit</a></li>
+                        <li><a href="#">3꾸러미 06_Zero Hit</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="table-caption flex-nowrap table-border-bottom">
+        <div class="left">
+            <p><b>&lsquo;교구&rsquo;</b>에 대한 검색 결과입니다. (총 <b>1,640</b> 건)</p>
+        </div>
+        <div class="right">
+            <div class="sort-tab">
+                <ul role="tablist">
+                    <li class="active"><a href="#" role="tab" aria-selected="true">정확도순</a></li>
+                    <li><a href="#" role="tab">최신순</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-content tab-sub dropDown">
+        <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">전체 <span class="fw-400 ml5">(1,640)</span></button>
+        <ul class="tab-list target" role="tablist">
+            <li class="tab active"><button aria-controls="tab-subpanel01" id="tab-sub01" role="tab">전체 <span class="fw-400 ml5">(1,640)</span></button></li>
+            <li class="tab"><button aria-controls="tab-subpanel02" id="tab-sub02" role="tab">프로그램&middot;콘텐츠 <span class="fw-400 ml5">(758)</span></button></li>
+            <li class="tab"><button aria-controls="tab-subpanel03" id="tab-sub03" role="tab">참여&middot;신청 <span class="fw-400 ml5">(165)</span></button></li>
+            <li class="tab"><button aria-controls="tab-subpanel04" id="tab-sub04" role="tab">알림&middot;문의 <span class="fw-400 ml5">(251)</span></button></li>
+            <li class="tab"><button aria-controls="tab-subpanel05" id="tab-sub05" role="tab">메뉴 <span class="fw-400 ml5">(2)</span></button></li>
+            <li class="tab"><button aria-controls="tab-subpanel06" id="tab-sub06" role="tab">첨부파일 <span class="fw-400 ml5">(75)</span></button></li>
+        </ul>
+        <div id="tab-subpanel01" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub01">
+
+            <div class="search-page-result">
+                <div class="nodata bg3">
+                    <p class="fc-black6"><span class="icon icon-notice bg-black6"></span>검색된 내용이 없습니다.</p>
+                </div>
+                <div class="table-caption">
+                    <div class="left">
+                        <h3 class="sub-title">프로그램·콘텐츠 (758)</h3>
+                    </div>
+                    <div class="right">
+                        <a href="#" class="btn-small btn-outline-black">검색결과 더보기</a>
+                    </div>
+                </div>
+                
+                <ul>
+                    <li>
+                        <a href="#">
+                            <strong class="title">환경교육 <i>교구</i> 세트 공동구매 신청</strong>
+                            <span class="text">&ldquo;보드게임 <i>교구</i> 설명 영상_초등용&rdquo;</span>
+                            <span class="info">
+                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램·콘텐츠 &gt; 교구 &gt; 환경교육 교구 공동구매</span>
+                                <span class="date">2022-10-12</span>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="#">
+                            <strong class="title">환경교육 <i>교구</i> A-01 대여</strong>
+                            <span class="text">유아용 누리과정 환경<i>교구</i>는 안내책자의 10종 <i>교구</i> 중, 3번 8번(총 6종)만 대여하고 있습니다</span>
+                            <span class="info">
+                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램ㆍ콘텐츠 &gt; 교구 &gt; 환경교육 교구 대여  </span>
+                                <span class="date">2022-09-24</span>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="#">
+                            <strong class="title">[환경교육<i>교구</i>] 공동구매 신청 안내 (7/31)
+                            </strong>
+                            <span class="text">...1. 유아용 5종<i>교구</i> : 16 (34개 더 필요) 2. 나의 먹이는 어디에 : 18 (유력/200개 미만 시 추가비용 발생) 3. 분리배출 비석치기 : 63  (137개 더 필요) 4. 나도 국제협력전문가 : 10 (유력/20개 미만 시 추가비용 발생) 5. 기타 : -우리참나무 –촉감으로찾기 –곤충스탬프 -올해 제작 예정인 습지관련 교구 –기후변화생물지표퍼즐 : 30 –화석연료뚝빙고...
+                                </span>
+                            <span class="info">
+                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 알림ㆍ문의 &gt; 새 소식 &gt; 공지사항</span>
+                                <span class="date">2022-09-13</span>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            
+                <div class="table-caption">
+                    <div class="left">
+                        <h3 class="sub-title">참여ㆍ신청 (165)</h3>
+                    </div>
+                    <div class="right">
+                        <a href="#" class="btn-small btn-outline-black">검색결과 더보기</a>
+                    </div>
+                </div>
+
+                <ul>
+                    <li>
+                        <a href="#">
+                            <strong class="title">환경교육 <i>교구</i> 세트 공동구매 신청</strong>
+                            <span class="text">&ldquo;보드게임 <i>교구</i> 설명 영상_초등용&rdquo;</span>
+                            <span class="info">
+                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램·콘텐츠 &gt; 교구 &gt; 환경교육 교구 공동구매</span>
+                                <span class="date">2022-10-12</span>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="#">
+                            <strong class="title">환경교육 <i>교구</i> A-01 대여</strong>
+                            <span class="text">유아용 누리과정 환경<i>교구</i>는 안내책자의 10종 <i>교구</i> 중, 3번 8번(총 6종)만 대여하고 있습니다</span>
+                            <span class="info">
+                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램ㆍ콘텐츠 &gt; 교구 &gt; 환경교육 교구 대여  </span>
+                                <span class="date">2022-09-24</span>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="#">
+                            <strong class="title">[환경교육<i>교구</i>] 공동구매 신청 안내 (7/31)
+                            </strong>
+                            <span class="text">...1. 유아용 5종<i>교구</i> : 16 (34개 더 필요) 2. 나의 먹이는 어디에 : 18 (유력/200개 미만 시 추가비용 발생) 3. 분리배출 비석치기 : 63  (137개 더 필요) 4. 나도 국제협력전문가 : 10 (유력/20개 미만 시 추가비용 발생) 5. 기타 : -우리참나무 –촉감으로찾기 –곤충스탬프 -올해 제작 예정인 습지관련 교구 –기후변화생물지표퍼즐 : 30 –화석연료뚝빙고...
+                                </span>
+                            <span class="info">
+                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 알림ㆍ문의 &gt; 새 소식 &gt; 공지사항</span>
+                                <span class="date">2022-09-13</span>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="table-caption">
+                    <div class="left">
+                        <h3 class="sub-title">알림ㆍ문의 (758)</h3>
+                    </div>
+                    <div class="right">
+                        <a href="#" class="btn-small btn-outline-black">검색결과 더보기</a>
+                    </div>
+                </div>
+
+                <ul>
+                    <li>
+                        <a href="#">
+                            <strong class="title">환경교육 <i>교구</i> 세트 공동구매 신청</strong>
+                            <span class="text">&ldquo;보드게임 <i>교구</i> 설명 영상_초등용&rdquo;</span>
+                            <span class="info">
+                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램·콘텐츠 &gt; 교구 &gt; 환경교육 교구 공동구매</span>
+                                <span class="date">2022-10-12</span>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="#">
+                            <strong class="title">환경교육 <i>교구</i> A-01 대여</strong>
+                            <span class="text">유아용 누리과정 환경<i>교구</i>는 안내책자의 10종 <i>교구</i> 중, 3번 8번(총 6종)만 대여하고 있습니다</span>
+                            <span class="info">
+                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램ㆍ콘텐츠 &gt; 교구 &gt; 환경교육 교구 대여  </span>
+                                <span class="date">2022-09-24</span>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="#">
+                            <strong class="title">[환경교육<i>교구</i>] 공동구매 신청 안내 (7/31)
+                            </strong>
+                            <span class="text">...1. 유아용 5종<i>교구</i> : 16 (34개 더 필요) 2. 나의 먹이는 어디에 : 18 (유력/200개 미만 시 추가비용 발생) 3. 분리배출 비석치기 : 63  (137개 더 필요) 4. 나도 국제협력전문가 : 10 (유력/20개 미만 시 추가비용 발생) 5. 기타 : -우리참나무 –촉감으로찾기 –곤충스탬프 -올해 제작 예정인 습지관련 교구 –기후변화생물지표퍼즐 : 30 –화석연료뚝빙고...
+                                </span>
+                            <span class="info">
+                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 알림ㆍ문의 &gt; 새 소식 &gt; 공지사항</span>
+                                <span class="date">2022-09-13</span>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="table-caption">
+                    <div class="left">
+                        <h3 class="sub-title">메뉴 (758)</h3>
+                    </div>
+                    <div class="right">
+                        <a href="#" class="btn-small btn-outline-black">검색결과 더보기</a>
+                    </div>
+                </div>
+
+                <ul>
+                    <li>
+                        <a href="#">
+                            <strong class="title">국가 환경교육 통합 플랫폼 &gt; 프로그램·콘텐츠 &gt; <i>교구</i> &gt; 환경교육 <i>교구</i> 대여</strong>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <strong class="title">국가 환경교육 통합 플랫폼 &gt; 프로그램·콘텐츠 &gt; <i>교구</i> &gt; 환경교육 <i>교구</i> 대여</strong>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="table-caption">
+                    <div class="left">
+                        <h3 class="sub-title">첨부파일 (758)</h3>
+                    </div>
+                    <div class="right">
+                        <a href="#" class="btn-small btn-outline-black">검색결과 더보기</a>
+                    </div>
+                </div>
+
+                <ul>
+                    <li>
+                        <a href="#">
+                            <strong class="title">환경교육 <i>교구</i> 세트 공동구매 신청</strong>
+                            <span class="text">&ldquo;보드게임 <i>교구</i> 설명 영상_초등용&rdquo;</span>
+                            <span class="info">
+                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램·콘텐츠 &gt; 교구 &gt; 환경교육 교구 공동구매</span>
+                                <span class="date">2022-10-12</span>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="#">
+                            <strong class="title">환경교육 <i>교구</i> A-01 대여</strong>
+                            <span class="text">유아용 누리과정 환경<i>교구</i>는 안내책자의 10종 <i>교구</i> 중, 3번 8번(총 6종)만 대여하고 있습니다</span>
+                            <span class="info">
+                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램ㆍ콘텐츠 &gt; 교구 &gt; 환경교육 교구 대여  </span>
+                                <span class="date">2022-09-24</span>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="#">
+                            <strong class="title">[환경교육<i>교구</i>] 공동구매 신청 안내 (7/31)
+                            </strong>
+                            <span class="text">...1. 유아용 5종<i>교구</i> : 16 (34개 더 필요) 2. 나의 먹이는 어디에 : 18 (유력/200개 미만 시 추가비용 발생) 3. 분리배출 비석치기 : 63  (137개 더 필요) 4. 나도 국제협력전문가 : 10 (유력/20개 미만 시 추가비용 발생) 5. 기타 : -우리참나무 –촉감으로찾기 –곤충스탬프 -올해 제작 예정인 습지관련 교구 –기후변화생물지표퍼즐 : 30 –화석연료뚝빙고...
+                                </span>
+                            <span class="info">
+                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 알림ㆍ문의 &gt; 새 소식 &gt; 공지사항</span>
+                                <span class="date">2022-09-13</span>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+
+            </div>
+
+            
+
+        </div>
+
+        <div id="tab-subpanel02" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub02">
+            
+            <div class="search-page-result">
+                <div class="table-caption">
+                    <div class="left">
+                        <h3 class="sub-title">프로그램·콘텐츠 (758)</h3>
+                    </div>
+                    <div class="right">
+                        <a href="#" class="btn-small btn-outline-black">검색결과 더보기</a>
+                    </div>
+                </div>
+                
+                <ul>
+                    <li>
+                        <a href="#">
+                            <strong class="title">환경교육 <i>교구</i> 세트 공동구매 신청</strong>
+                            <span class="text">&ldquo;보드게임 <i>교구</i> 설명 영상_초등용&rdquo;</span>
+                            <span class="info">
+                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램·콘텐츠 &gt; 교구 &gt; 환경교육 교구 공동구매</span>
+                                <span class="date">2022-10-12</span>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="#">
+                            <strong class="title">환경교육 <i>교구</i> A-01 대여</strong>
+                            <span class="text">유아용 누리과정 환경<i>교구</i>는 안내책자의 10종 <i>교구</i> 중, 3번 8번(총 6종)만 대여하고 있습니다</span>
+                            <span class="info">
+                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램ㆍ콘텐츠 &gt; 교구 &gt; 환경교육 교구 대여  </span>
+                                <span class="date">2022-09-24</span>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="#">
+                            <strong class="title">[환경교육<i>교구</i>] 공동구매 신청 안내 (7/31)
+                            </strong>
+                            <span class="text">...1. 유아용 5종<i>교구</i> : 16 (34개 더 필요) 2. 나의 먹이는 어디에 : 18 (유력/200개 미만 시 추가비용 발생) 3. 분리배출 비석치기 : 63  (137개 더 필요) 4. 나도 국제협력전문가 : 10 (유력/20개 미만 시 추가비용 발생) 5. 기타 : -우리참나무 –촉감으로찾기 –곤충스탬프 -올해 제작 예정인 습지관련 교구 –기후변화생물지표퍼즐 : 30 –화석연료뚝빙고...
+                                </span>
+                            <span class="info">
+                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 알림ㆍ문의 &gt; 새 소식 &gt; 공지사항</span>
+                                <span class="date">2022-09-13</span>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="pagination" aria-label="pagination">
+                <button type="button" class="first" title="처음"></button>
+                <button type="button" class="prev" title="이전"></button>
+                <button type="button" class="active" title="현재 페이지">1</button>
+                <button type="button">2</button>
+                <button type="button">3</button>
+                <button type="button">4</button>
+                <button type="button">5</button>
+                <button type="button">6</button>
+                <button type="button">7</button>
+                <button type="button">8</button>
+                <button type="button">9</button>
+                <button type="button">10</button>
+                <button type="button" class="next" title="다음"></button>
+                <button type="button" class="last" title="마지막"></button>
+            </div>
+
+        </div>
+        <div id="tab-subpanel03" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub03">
+            
+            <div class="search-page-result">
+            
+                <div class="table-caption">
+                    <div class="left">
+                        <h3 class="sub-title">참여ㆍ신청 (758)</h3>
+                    </div>
+                    <div class="right">
+                        <a href="#" class="btn-small btn-outline-black">검색결과 더보기</a>
+                    </div>
+                </div>
+
+                <ul>
+                    <li>
+                        <a href="#">
+                            <strong class="title">환경교육 <i>교구</i> 세트 공동구매 신청</strong>
+                            <span class="text">&ldquo;보드게임 <i>교구</i> 설명 영상_초등용&rdquo;</span>
+                            <span class="info">
+                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램·콘텐츠 &gt; 교구 &gt; 환경교육 교구 공동구매</span>
+                                <span class="date">2022-10-12</span>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="#">
+                            <strong class="title">환경교육 <i>교구</i> A-01 대여</strong>
+                            <span class="text">유아용 누리과정 환경<i>교구</i>는 안내책자의 10종 <i>교구</i> 중, 3번 8번(총 6종)만 대여하고 있습니다</span>
+                            <span class="info">
+                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램ㆍ콘텐츠 &gt; 교구 &gt; 환경교육 교구 대여  </span>
+                                <span class="date">2022-09-24</span>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="#">
+                            <strong class="title">[환경교육<i>교구</i>] 공동구매 신청 안내 (7/31)
+                            </strong>
+                            <span class="text">...1. 유아용 5종<i>교구</i> : 16 (34개 더 필요) 2. 나의 먹이는 어디에 : 18 (유력/200개 미만 시 추가비용 발생) 3. 분리배출 비석치기 : 63  (137개 더 필요) 4. 나도 국제협력전문가 : 10 (유력/20개 미만 시 추가비용 발생) 5. 기타 : -우리참나무 –촉감으로찾기 –곤충스탬프 -올해 제작 예정인 습지관련 교구 –기후변화생물지표퍼즐 : 30 –화석연료뚝빙고...
+                                </span>
+                            <span class="info">
+                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 알림ㆍ문의 &gt; 새 소식 &gt; 공지사항</span>
+                                <span class="date">2022-09-13</span>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="pagination" aria-label="pagination">
+                <button type="button" class="first" title="처음"></button>
+                <button type="button" class="prev" title="이전"></button>
+                <button type="button" class="active" title="현재 페이지">1</button>
+                <button type="button">2</button>
+                <button type="button">3</button>
+                <button type="button">4</button>
+                <button type="button">5</button>
+                <button type="button">6</button>
+                <button type="button">7</button>
+                <button type="button">8</button>
+                <button type="button">9</button>
+                <button type="button">10</button>
+                <button type="button" class="next" title="다음"></button>
+                <button type="button" class="last" title="마지막"></button>
+            </div>
+
+        </div>
+        <div id="tab-subpanel04" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub04">
+            
+            <div class="search-page-result">
+                <div class="table-caption">
+                    <div class="left">
+                        <h3 class="sub-title">알림ㆍ문의 (758)</h3>
+                    </div>
+                    <div class="right">
+                        <a href="#" class="btn-small btn-outline-black">검색결과 더보기</a>
+                    </div>
+                </div>
+
+                <ul>
+                    <li>
+                        <a href="#">
+                            <strong class="title">환경교육 <i>교구</i> 세트 공동구매 신청</strong>
+                            <span class="text">&ldquo;보드게임 <i>교구</i> 설명 영상_초등용&rdquo;</span>
+                            <span class="info">
+                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램·콘텐츠 &gt; 교구 &gt; 환경교육 교구 공동구매</span>
+                                <span class="date">2022-10-12</span>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="#">
+                            <strong class="title">환경교육 <i>교구</i> A-01 대여</strong>
+                            <span class="text">유아용 누리과정 환경<i>교구</i>는 안내책자의 10종 <i>교구</i> 중, 3번 8번(총 6종)만 대여하고 있습니다</span>
+                            <span class="info">
+                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램ㆍ콘텐츠 &gt; 교구 &gt; 환경교육 교구 대여  </span>
+                                <span class="date">2022-09-24</span>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="#">
+                            <strong class="title">[환경교육<i>교구</i>] 공동구매 신청 안내 (7/31)
+                            </strong>
+                            <span class="text">...1. 유아용 5종<i>교구</i> : 16 (34개 더 필요) 2. 나의 먹이는 어디에 : 18 (유력/200개 미만 시 추가비용 발생) 3. 분리배출 비석치기 : 63  (137개 더 필요) 4. 나도 국제협력전문가 : 10 (유력/20개 미만 시 추가비용 발생) 5. 기타 : -우리참나무 –촉감으로찾기 –곤충스탬프 -올해 제작 예정인 습지관련 교구 –기후변화생물지표퍼즐 : 30 –화석연료뚝빙고...
+                                </span>
+                            <span class="info">
+                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 알림ㆍ문의 &gt; 새 소식 &gt; 공지사항</span>
+                                <span class="date">2022-09-13</span>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+
+            </div>
+
+            <div class="pagination" aria-label="pagination">
+                <button type="button" class="first" title="처음"></button>
+                <button type="button" class="prev" title="이전"></button>
+                <button type="button" class="active" title="현재 페이지">1</button>
+                <button type="button">2</button>
+                <button type="button">3</button>
+                <button type="button">4</button>
+                <button type="button">5</button>
+                <button type="button">6</button>
+                <button type="button">7</button>
+                <button type="button">8</button>
+                <button type="button">9</button>
+                <button type="button">10</button>
+                <button type="button" class="next" title="다음"></button>
+                <button type="button" class="last" title="마지막"></button>
+            </div>
+
+        </div>
+        <div id="tab-subpanel05" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub05">
+            
+            <div class="search-page-result">
+                <div class="table-caption">
+                    <div class="left">
+                        <h3 class="sub-title">메뉴 (758)</h3>
+                    </div>
+                    <div class="right">
+                        <a href="#" class="btn-small btn-outline-black">검색결과 더보기</a>
+                    </div>
+                </div>
+
+                <ul>
+                    <li>
+                        <a href="#">
+                            <strong class="title">환경교육 <i>교구</i> 세트 공동구매 신청</strong>
+                            <span class="text">&ldquo;보드게임 <i>교구</i> 설명 영상_초등용&rdquo;</span>
+                            <span class="info">
+                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램·콘텐츠 &gt; 교구 &gt; 환경교육 교구 공동구매</span>
+                                <span class="date">2022-10-12</span>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="#">
+                            <strong class="title">환경교육 <i>교구</i> A-01 대여</strong>
+                            <span class="text">유아용 누리과정 환경<i>교구</i>는 안내책자의 10종 <i>교구</i> 중, 3번 8번(총 6종)만 대여하고 있습니다</span>
+                            <span class="info">
+                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램ㆍ콘텐츠 &gt; 교구 &gt; 환경교육 교구 대여  </span>
+                                <span class="date">2022-09-24</span>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="#">
+                            <strong class="title">[환경교육<i>교구</i>] 공동구매 신청 안내 (7/31)
+                            </strong>
+                            <span class="text">...1. 유아용 5종<i>교구</i> : 16 (34개 더 필요) 2. 나의 먹이는 어디에 : 18 (유력/200개 미만 시 추가비용 발생) 3. 분리배출 비석치기 : 63  (137개 더 필요) 4. 나도 국제협력전문가 : 10 (유력/20개 미만 시 추가비용 발생) 5. 기타 : -우리참나무 –촉감으로찾기 –곤충스탬프 -올해 제작 예정인 습지관련 교구 –기후변화생물지표퍼즐 : 30 –화석연료뚝빙고...
+                                </span>
+                            <span class="info">
+                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 알림ㆍ문의 &gt; 새 소식 &gt; 공지사항</span>
+                                <span class="date">2022-09-13</span>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="pagination" aria-label="pagination">
+                <button type="button" class="first" title="처음"></button>
+                <button type="button" class="prev" title="이전"></button>
+                <button type="button" class="active" title="현재 페이지">1</button>
+                <button type="button">2</button>
+                <button type="button">3</button>
+                <button type="button">4</button>
+                <button type="button">5</button>
+                <button type="button">6</button>
+                <button type="button">7</button>
+                <button type="button">8</button>
+                <button type="button">9</button>
+                <button type="button">10</button>
+                <button type="button" class="next" title="다음"></button>
+                <button type="button" class="last" title="마지막"></button>
+            </div>
+
+        </div>
+
+        
+        <div id="tab-subpanel06" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub06">
+            
+            <div class="search-page-result">
+                <div class="table-caption">
+                    <div class="left">
+                        <h3 class="sub-title">첨부파일 (758)</h3>
+                    </div>
+                    <div class="right">
+                        <a href="#" class="btn-small btn-outline-black">검색결과 더보기</a>
+                    </div>
+                </div>
+
+                <ul>
+                    <li>
+                        <a href="#">
+                            <strong class="title">환경교육 <i>교구</i> 세트 공동구매 신청</strong>
+                            <span class="text">&ldquo;보드게임 <i>교구</i> 설명 영상_초등용&rdquo;</span>
+                            <span class="info">
+                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램·콘텐츠 &gt; 교구 &gt; 환경교육 교구 공동구매</span>
+                                <span class="date">2022-10-12</span>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="#">
+                            <strong class="title">환경교육 <i>교구</i> A-01 대여</strong>
+                            <span class="text">유아용 누리과정 환경<i>교구</i>는 안내책자의 10종 <i>교구</i> 중, 3번 8번(총 6종)만 대여하고 있습니다</span>
+                            <span class="info">
+                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램ㆍ콘텐츠 &gt; 교구 &gt; 환경교육 교구 대여  </span>
+                                <span class="date">2022-09-24</span>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="#">
+                            <strong class="title">[환경교육<i>교구</i>] 공동구매 신청 안내 (7/31)
+                            </strong>
+                            <span class="text">...1. 유아용 5종<i>교구</i> : 16 (34개 더 필요) 2. 나의 먹이는 어디에 : 18 (유력/200개 미만 시 추가비용 발생) 3. 분리배출 비석치기 : 63  (137개 더 필요) 4. 나도 국제협력전문가 : 10 (유력/20개 미만 시 추가비용 발생) 5. 기타 : -우리참나무 –촉감으로찾기 –곤충스탬프 -올해 제작 예정인 습지관련 교구 –기후변화생물지표퍼즐 : 30 –화석연료뚝빙고...
+                                </span>
+                            <span class="info">
+                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 알림ㆍ문의 &gt; 새 소식 &gt; 공지사항</span>
+                                <span class="date">2022-09-13</span>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="pagination" aria-label="pagination">
+                <button type="button" class="first" title="처음"></button>
+                <button type="button" class="prev" title="이전"></button>
+                <button type="button" class="active" title="현재 페이지">1</button>
+                <button type="button">2</button>
+                <button type="button">3</button>
+                <button type="button">4</button>
+                <button type="button">5</button>
+                <button type="button">6</button>
+                <button type="button">7</button>
+                <button type="button">8</button>
+                <button type="button">9</button>
+                <button type="button">10</button>
+                <button type="button" class="next" title="다음"></button>
+                <button type="button" class="last" title="마지막"></button>
+            </div>
+
+        </div>
+    </div>
+    
+    
+</div>
+
+</body>
+</html>

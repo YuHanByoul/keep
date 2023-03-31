@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,15 +102,10 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
         int retVal = 0;
         retVal += memberDao.insertMember(memberVo);
         
-        memberDao.deleteEnvfld(memberVo);
-        memberDao.deleteItrstfld(memberVo);
-        //간편로그인 차후 필요시 사용
-        //memberDao.deletetEsylgn(memberVo);
-        
-       if(memberVo.getEnvfldCds()!=null & memberVo.getEnvfldCds().length > 0) {
+       if(!Objects.isNull(memberVo.getEnvfldCds()) && memberVo.getEnvfldCds().length > 0) {
            retVal += memberDao.insertEnvfld(memberVo);
        }
-       if(memberVo.getItrstfldCds()!=null & memberVo.getItrstfldCds().length > 0) {
+       if(!Objects.isNull(memberVo.getItrstfldCds()) && memberVo.getItrstfldCds().length > 0) {
            retVal += memberDao.insertItrstfld(memberVo);
        }
        //간편로그인 차후 필요시 사용

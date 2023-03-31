@@ -48,6 +48,21 @@
         jQuery("#form_menu").attr("target","");
     }
 
+
+    function searchEnterkey(keyword) {
+        if (window.event.keyCode == 13) {
+            search(keyword);
+        }
+    }
+    
+    function search() {
+        var keyword = $("#search-input").val();
+        if(keyword == ''){
+            return;
+        }
+        alert('준비중 입니다.');
+        //location.href = `/search.html?keyword=${keyword}`;
+    }
 </script>
 
 <form name="form_menu" id="form_menu" th:action="@{/}" method="get" onsubmit="return false;">
@@ -68,14 +83,14 @@
             <div class="header-search-wrap">
                 <div class="header-search">
                     <div class="header-search-innner">
-                        <input type="search" title="키워드 입력" class="search-input" id="search-input" placeholder="찾고 싶은 키워드를 입력해 주세요.">
+                        <input type="search" title="키워드 입력" class="search-input" id="search-input" placeholder="찾고 싶은 키워드를 입력해 주세요." onkeyup="searchEnterkey(this.value)">
                     </div>
                     <div class="header-search-btn">
                         <div class="suggest-wrap">
-                            <button type="button" class="btn-suggest" title="추천 검색어">
+                            <button type="button" class="btn-suggest" title="인기 검색어">
                                 <span class="blind">
-                                    <span class="on" aria-hidden="false">추천 검색어 열기</span>
-                                    <span class="off" aria-hidden="true">추천 검색어 닫기</span>
+                                    <span class="on" aria-hidden="false">인기 검색어 열기</span>
+                                    <span class="off" aria-hidden="true">인기 검색어 닫기</span>
                                 </span>
                             </button>
                             <div class="search-suggest">
@@ -135,7 +150,7 @@
                                 </div>
                             </div>
                         </div>
-                        <button type="button" class="btn-search" title="검색"></button>
+                        <button type="button" class="btn-search" title="검색" onclick="search()"></button>
                     </div>
                 </div>
             </div>
@@ -338,45 +353,68 @@
 </script>
 
 <script>
+    
+    $(function() {
+        $(document).off('click', '.search-suggest-list .list .keyword');
+        const searchInput = $('.header-search input[type=search]');
+        $('.search-suggest-list .list .keyword').on('click', function (e) {
+            e.preventDefault();
+            searchInput.val(e.target.innerText);
+            search();
+        });
+        
+        $(document).off('click', '.header-search .btn-suggest');
+        $('.header-search .btn-suggest').on('click', function (e) {
+            if ($('.header-search').hasClass('suggest-active')) {
+                $('.header-search').removeClass('suggest-active')
+            } else {
+                // 인기검색어 조회
+                if(displayWorkProgress(true)){
+                    $.ajax({
+                        url : "/search/trndKeyword",
+                        cache : false,
+                        dataType: 'json',
+                        success : function (data){
+                            console.log(data);
+                            $('.header-search').addClass('suggest-active');
+                            closeWorkProgress();
+                        },
+                        error :function(){
+                        }
+                    });
+                }
+            }
+        });
+    });
+    
     // header search autocomplete
     const autoCompleteJS = new autoComplete({
         selector: "#search-input",
         data: {
-            src:  [
-                {"keyword": "환경보전1환경보전1환경보전1환경보전1"},
-                {"keyword": "환경보전2"},
-                {"keyword": "환경보전2"},
-                {"keyword": "환경보전2"},
-                {"keyword": "환경보전2"},
-                {"keyword": "환경보전2"},
-                {"keyword": "환경보전2"},
-                {"keyword": "환경보전2"},
-                {"keyword": "환경보전2"},
-                {"keyword": "환경보전2"},
-                {"keyword": "환경보전2"},
-                {"keyword": "환경보전2"},
-                {"keyword": "환경보전2"},
-                {"keyword": "환경보전2"},
-                {"keyword": "환경보전2"},
-                {"keyword": "환경보전2"},
-                {"keyword": "환경보전2"},
-                {"keyword": "환경보전3"}
-            ],
-            keys: ["keyword"],
+            src: async (query) => {
+              try {
+                const source = await fetch(`/search/autocomplete?keyword=${query}`);
+                const data = await source.json();
+                return data;
+              } catch (error) {
+                return error;
+              }
+            },
+            keys: ["KEYWORD","CHOSUNG"],
             cache: false,
         },
         resultsList: {
-            maxResults: 10,
+            maxResults: 10
         },
         resultItem: {
             tag: "li",
             element: (item, data) => {
-                item.innerHTML = `<span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">${data.match}</span>`;
-                const link = document.createElement('a')
-                item.appendChild(link);
-                link.target = "_blank"
-                link.href = data.value.link;
-                link.textContent  = data.value.link;
+                $('.header-search').removeClass('suggest-active');
+                if(data.key == "KEYWORD") {
+                    item.innerHTML = `<a href="javascript:search()"><span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">${data.match}</span></a>`;
+                } else {
+                    item.innerHTML = `<a href="javascript:search()"><span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">${data.value.KEYWORD}</span></a>`;
+                }
             },
             highlight: true
         },
@@ -384,8 +422,9 @@
         events: {
             input: {
                 selection: (event) => {
-                    const selection = event.detail.selection.value.keyword;
+                    const selection = event.detail.selection.value.KEYWORD;
                     autoCompleteJS.input.value = selection;
+                    search();
                 }
             }
         }
