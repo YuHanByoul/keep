@@ -133,7 +133,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/js/pdfjs/**/*",
         		"/example/**/*",
         		"/js/ckeditor/**/*",
-        		"/old/**/*"
+        		"/old/**/*",
+        		"/search/*" // 통합검색
         ); // 시큐리티를 적용하지 않을 자원들
     }
 
