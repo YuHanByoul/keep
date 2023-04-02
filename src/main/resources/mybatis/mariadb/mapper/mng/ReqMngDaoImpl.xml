@@ -73,99 +73,94 @@
         <if test="excelYn != 'Y'.toString()">
             <include refid="PaginationMapper.header"/>
         </if>
+        <![CDATA[
         WITH CNT_FIRST AS (
             SELECT 
-                DISTINCT 
-                TSP.PCNTSTID
-                , TSA.APLYID
-                , TSJ.CYCL
-                , COUNT(TSA.APLYID) AS APLYNO_CNT   -- 곰오의 신청자 수
-                , COUNT(TSA.APLYID) OVER (PARTITION BY TSP.PCNTSTID, TSA.APLYID) AS JDGS_CNT    -- 차수별 심사위원 수
-                , COUNT(TSSS.SBMSNID) OVER (PARTITION BY TSP.PCNTSTID, TSA.APLYID, TSJ.CYCL) AS SRNG_CNT    -- 신청자 별 심사위원의 심사건수
-                , SUM(TSSS.SCR) OVER (PARTITION BY TSP.PCNTSTID, TSA.APLYID, TSJ.CYCL) AS SCR
-            FROM TB_SPB_PCNTST TSP 
-                INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID
-                INNER JOIN TB_SPB_JDGS TSJ ON TSA.PCNTSTID = TSJ.PCNTSTID
-                LEFT OUTER JOIN TB_SPB_SRNG_SBMSN TSSS ON TSSS.USERID = TSJ.JDGSID AND TSSS.APLYID = TSA.APLYID AND TSSS.FORMID = TSP.SRNG_FORMID_FIRST AND TSSS.SBMSN_DT IS NOT NULL 
-            WHERE 1 = 1
-            AND TSJ.CYCL = 1
-            GROUP BY TSP.PCNTSTID
-                , TSJ.JDGSID 
-                , TSJ.CYCL
+                PCNTSTID
+                , CYCL
+                , SUM(APLYNO_CNT) AS APLYNO_CNT
+                , SUM(SRNG_CNT) AS SRNG_CNT
+                , SUM(SLCTN_Y_CNT) AS SLCTN_Y_CNT
+                , SUM(SLCTN_N_CNT) AS SLCTN_N_CNT
+            FROM (
+                SELECT 
+                    TSP.PCNTSTID
+                    , TSJ.CYCL
+                    , COUNT(DISTINCT TSA.APLYID) AS APLYNO_CNT   -- 곰오의 신청자 수
+                    , CASE WHEN COUNT(TSJ.JDGSID) = COUNT(TSSS.APLYID) THEN 1 ELSE 0 END AS SRNG_CNT    -- 신청자 별 전체 심사위원의 심사건수
+                    , CASE WHEN TSA.SLCTN_STTS_CD = '193102' THEN 1 ELSE 0 END AS SLCTN_Y_CNT   -- 선정 건수
+                    , CASE WHEN TSA.SLCTN_STTS_CD = '193103' THEN 1 ELSE 0 END AS SLCTN_N_CNT   -- 선정탈락 건수
+                FROM TB_SPB_PCNTST TSP 
+                    INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID
+                    INNER JOIN TB_SPB_JDGS TSJ ON TSA.PCNTSTID = TSJ.PCNTSTID
+                    LEFT OUTER JOIN TB_SPB_SRNG_SBMSN TSSS ON TSSS.USERID = TSJ.JDGSID AND TSSS.APLYID = TSA.APLYID AND TSSS.FORMID = TSP.SRNG_FORMID_FIRST AND TSSS.SBMSN_DT IS NOT NULL 
+                WHERE 1 = 1
+                AND TSJ.CYCL = 1
+                GROUP BY TSP.PCNTSTID
+                    , TSJ.CYCL
+                    , TSA.APLYID
+            ) T
+            GROUP BY PCNTSTID
+                , CYCL
         ), CNT_SECOND AS (
             SELECT 
-                DISTINCT 
-                TSP.PCNTSTID
-                , TSA.APLYID
-                , TSJ.CYCL
-                , COUNT(TSA.APLYID) AS APLYNO_CNT   -- 곰오의 신청자 수
-                , COUNT(TSA.APLYID) OVER (PARTITION BY TSP.PCNTSTID, TSA.APLYID) AS JDGS_CNT    -- 차수별 심사위원 수
-                , COUNT(TSSS.SBMSNID) OVER (PARTITION BY TSP.PCNTSTID, TSA.APLYID, TSJ.CYCL) AS SRNG_CNT    -- 신청자 별 심사위원의 심사건수
-                , SUM(TSSS.SCR) OVER (PARTITION BY TSP.PCNTSTID, TSA.APLYID, TSJ.CYCL) AS SCR
-            FROM TB_SPB_PCNTST TSP 
-                INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID AND TSA.SCND_SRNG_TRGT_YN = 'Y'
-                INNER JOIN TB_SPB_JDGS TSJ ON TSA.PCNTSTID = TSJ.PCNTSTID
-                LEFT OUTER JOIN TB_SPB_SRNG_SBMSN TSSS ON TSSS.USERID = TSJ.JDGSID AND TSSS.APLYID = TSA.APLYID AND TSSS.FORMID = TSP.SRNG_FORMID_SCND AND TSSS.SBMSN_DT IS NOT NULL 
-            WHERE 1 = 1
-            AND TSJ.CYCL = 2
-            GROUP BY TSP.PCNTSTID
-                , TSJ.JDGSID 
-                , TSJ.CYCL
+                PCNTSTID
+                , CYCL
+                , SUM(APLYNO_CNT) AS APLYNO_CNT
+                , SUM(SRNG_CNT) AS SRNG_CNT
+                , SUM(SLCTN_Y_CNT) AS SLCTN_Y_CNT
+                , SUM(SLCTN_N_CNT) AS SLCTN_N_CNT
+            FROM (
+                SELECT 
+                    TSP.PCNTSTID
+                    , TSJ.CYCL
+                    , COUNT(DISTINCT TSA.APLYID) AS APLYNO_CNT   -- 곰오의 신청자 수
+                    , CASE WHEN COUNT(TSJ.JDGSID) = COUNT(TSSS.APLYID) THEN 1 ELSE 0 END AS SRNG_CNT    -- 신청자 별 전체 심사위원의 심사건수
+                    , CASE WHEN TSA.SLCTN_STTS_CD = '193102' THEN 1 ELSE 0 END AS SLCTN_Y_CNT   -- 선정 건수
+                    , CASE WHEN TSA.SLCTN_STTS_CD = '193103' THEN 1 ELSE 0 END AS SLCTN_N_CNT   -- 선정탈락 건수
+                FROM TB_SPB_PCNTST TSP 
+                    INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID AND TSA.SCND_SRNG_TRGT_YN = 'Y'
+                    INNER JOIN TB_SPB_JDGS TSJ ON TSA.PCNTSTID = TSJ.PCNTSTID
+                    LEFT OUTER JOIN TB_SPB_SRNG_SBMSN TSSS ON TSSS.USERID = TSJ.JDGSID AND TSSS.APLYID = TSA.APLYID AND TSSS.FORMID = TSP.SRNG_FORMID_SCND AND TSSS.SBMSN_DT IS NOT NULL 
+                WHERE 1 = 1
+                AND TSJ.CYCL = 2
+                GROUP BY TSP.PCNTSTID
+                    , TSJ.CYCL
+                    , TSA.APLYID
+            ) T
+            GROUP BY PCNTSTID
+                , CYCL
         )
-        SELECT 
-            PCNTSTID
-            , FLD_CD
-            , FLD_NM
-            , PCNTST_NM
-            , APLY_STTS_NM
-            , SRNG_STTS_NM
-            , APLY_DT
-            , SRNG_DT
-            , APLYNO_CNT
-            , FRT_SRNG_CNT
-            , SCD_SRNG_CNT
-            , SRNG_FORMID_FIRST
-            , SRNG_FORMID_SCND
-            , ONLN_SRNG_TYPE_CD
-            , ONLN_SRNG_TYPE_NM
-            , SUM(CASE WHEN SLCTN_STTS_CD = '193102' THEN 1 ELSE 0 END) AS SLCTN_Y_CNT
-            , SUM(CASE WHEN SLCTN_STTS_CD = '193103' THEN 1 ELSE 0 END) AS SLCTN_N_CNT
-            , SRNG_END_YN
-            , SCND_SRNG_END_YN
-            , REG_DT
-            , MDFCN_DT
+        SELECT T.*
         FROM (
-            SELECT 
+            SELECT DISTINCT 
                 TSP.PCNTSTID
                 , FLD_CD
                 , TCCA.CD_NM AS FLD_NM
                 , TSP.PCNTST_NM
-                <![CDATA[
                 , CASE WHEN NOW() < APLY_BGNG_DT THEN '신청전' 
                             WHEN NOW() >= APLY_BGNG_DT AND  NOW() <= APLY_END_DT THEN '신청중'
                             WHEN NOW() > APLY_END_DT THEN '신청완료'
                             ELSE ''
                             END AS APLY_STTS_NM
-                , CASE WHEN NOW() < SRNG_BGNG_DT THEN '심사전' 
+                , CASE WHEN NOW() < SRNG_BGNG_DT THEN '심사전'                
+                    WHEN NOW() > SRNG_END_DT OR (FRST.SRNG_CNT = FRST.APLYNO_CNT AND IFNULL(SCND.SRNG_CNT, 0) = IFNULL(SCND.APLYNO_CNT, 0)) THEN '심사완료'
                     WHEN NOW() >= SRNG_BGNG_DT AND  NOW() <= SRNG_END_DT THEN '심사중'
-                    WHEN NOW() > SRNG_END_DT OR ((SELECT SRNG_CNT FROM CNT_FIRST CNT WHERE CNT.PCNTSTID = TSP.PCNTSTID) = (SELECT APLYNO_CNT FROM CNT_FIRST CNT WHERE CNT.PCNTSTID = TSP.PCNTSTID)
-                                            AND IFNULL((SELECT SRNG_CNT FROM CNT_SECOND CNT WHERE CNT.PCNTSTID = TSP.PCNTSTID), 0) = IFNULL((SELECT APLYNO_CNT FROM CNT_SECOND CNT WHERE CNT.PCNTSTID = TSP.PCNTSTID), 0)) 
-                        THEN '심사완료'
                     ELSE ''
                     END AS SRNG_STTS_NM
-                ]]>
                 , CONCAT(DATE_FORMAT(TSP.APLY_BGNG_DT, '%Y-%m-%d'), ' - ', DATE_FORMAT(TSP.APLY_END_DT, '%Y-%m-%d')) AS APLY_DT
                 , CONCAT(DATE_FORMAT(TSP.SRNG_BGNG_DT, '%Y-%m-%d'), ' - ', DATE_FORMAT(TSP.SRNG_END_DT, '%Y-%m-%d')) AS SRNG_DT
-                , (SELECT APLYNO_CNT FROM CNT_FIRST CNT WHERE CNT.PCNTSTID = TSP.PCNTSTID) AS APLYNO_CNT
-                , CONCAT((SELECT SRNG_CNT FROM CNT_FIRST CNT WHERE CNT.PCNTSTID = TSP.PCNTSTID), ' / ', (SELECT APLYNO_CNT FROM CNT_FIRST CNT WHERE CNT.PCNTSTID = TSP.PCNTSTID)) AS FRT_SRNG_CNT
-                , IF(TSP.ONLN_SRNG_TYPE_CD = '177101', '-', CONCAT(IFNULL((SELECT SRNG_CNT FROM CNT_SECOND CNT WHERE CNT.PCNTSTID = TSP.PCNTSTID), 0), ' / ', IFNULL((SELECT APLYNO_CNT FROM CNT_SECOND CNT WHERE CNT.PCNTSTID = TSP.PCNTSTID), 0))) AS SCD_SRNG_CNT
-                , SLCTN_STTS_CD
+                , FRST.APLYNO_CNT
+                , CONCAT(FRST.SRNG_CNT, ' / ', FRST.APLYNO_CNT) AS FRT_SRNG_CNT
+                , IF(TSP.ONLN_SRNG_TYPE_CD = '177101', '-', CONCAT(IFNULL(SCND.SRNG_CNT, 0), ' / ', IFNULL(SCND.APLYNO_CNT, 0))) AS SCD_SRNG_CNT
                 , TSP.SRNG_FORMID_FIRST
                 , TSP.SRNG_FORMID_SCND
                 , TSP.ONLN_SRNG_TYPE_CD
                 , TCCB.CD_NM AS ONLN_SRNG_TYPE_NM
-                , MAX(SRNG_END_YN) OVER (PARTITION BY TSP.PCNTSTID) AS SRNG_END_YN
-                , MAX(SCND_SRNG_END_YN) OVER (PARTITION BY TSP.PCNTSTID) AS SCND_SRNG_END_YN
+                , IFNULL(IF(TSP.ONLN_SRNG_TYPE_CD = '177101', FRST.SLCTN_Y_CNT, SCND.SLCTN_Y_CNT), 0) AS SLCTN_Y_CNT
+                , IFNULL(IF(TSP.ONLN_SRNG_TYPE_CD = '177101', FRST.SLCTN_N_CNT, FRST.SLCTN_N_CNT+SCND.SLCTN_N_CNT), 0) AS SLCTN_N_CNT
+                , MIN(SRNG_END_YN) OVER (PARTITION BY TSP.PCNTSTID) AS SRNG_END_YN
+                , MIN(SCND_SRNG_END_YN) OVER (PARTITION BY TSP.PCNTSTID) AS SCND_SRNG_END_YN
                 , TSP.REG_DT
                 , TSP.MDFCN_DT
             FROM
@@ -174,32 +169,19 @@
                 LEFT OUTER JOIN TB_CMM_CD TCCA ON TSP.FLD_CD = TCCA.CD
                 LEFT OUTER JOIN TB_CMM_CD TCCB ON TSP.ONLN_SRNG_TYPE_CD = TCCB.CD
                 INNER JOIN TB_SPB_JDGS TSJ ON TSA.PCNTSTID = TSJ.PCNTSTID
+                LEFT OUTER JOIN CNT_FIRST FRST ON FRST.PCNTSTID = TSP.PCNTSTID
+                LEFT OUTER JOIN CNT_SECOND SCND ON SCND.PCNTSTID = TSP.PCNTSTID
             WHERE 1 = 1
-            <include refid="reqMngSearchCondition"/>
+        ]]>
             <if test="pcntstid != null and pcntstid != ''">
             AND TSP.PCNTSTID = #{pcntstid}
             </if>
             <if test="jdgsid != null and jdgsid != ''">
             AND TSJ.JDGSID = #{jdgsid}
             </if>
-            GROUP BY 
-                TSP.PCNTSTID
-                , FLD_CD
-                , TCCA.CD_NM
-                , TSP.PCNTST_NM
-                , APLY_BGNG_DT
-                , APLY_END_DT
-                , SRNG_BGNG_DT
-                , SRNG_END_DT
-                , SLCTN_STTS_CD
-                , TSP.SRNG_FORMID_FIRST
-                , TSP.SRNG_FORMID_SCND
-                , TSP.ONLN_SRNG_TYPE_CD
-                , TCCB.CD_NM
-                , TSP.REG_DT
-                , TSP.MDFCN_DT
         ) T
         WHERE 1 = 1
+            <include refid="reqMngSearchCondition"/>
         <if test="searchSrngStts != null and searchSrngStts != ''">
             <choose>
                 <when test="searchSrngStts == 'before'">
@@ -213,26 +195,6 @@
                 </when>
             </choose>            
         </if>
-        GROUP BY 
-            PCNTSTID
-            , FLD_CD
-            , FLD_NM
-            , PCNTST_NM
-            , APLY_STTS_NM
-            , SRNG_STTS_NM
-            , APLY_DT
-            , SRNG_DT
-            , APLYNO_CNT
-            , FRT_SRNG_CNT
-            , SCD_SRNG_CNT
-            , SRNG_FORMID_FIRST
-            , SRNG_FORMID_SCND
-            , ONLN_SRNG_TYPE_CD
-            , ONLN_SRNG_TYPE_NM
-            , SRNG_END_YN
-            , SCND_SRNG_END_YN
-            , REG_DT
-            , MDFCN_DT
         <if test="excelYn != 'Y'.toString()">
             <include refid="PaginationMapper.footer"/>
         </if>
@@ -244,16 +206,13 @@
         <if test="excelYn != 'Y'.toString()">
             <include refid="PaginationMapper.header"/>
         </if>
+        <![CDATA[
         WITH CNT_FIRST AS (
             SELECT 
-                DISTINCT 
                 TSP.PCNTSTID
-                , TSA.APLYID
                 , TSJ.CYCL
-                , COUNT(TSA.APLYID) AS APLYNO_CNT   -- 곰오의 신청자 수
-                , COUNT(TSA.APLYID) OVER (PARTITION BY TSP.PCNTSTID, TSA.APLYID) AS JDGS_CNT    -- 차수별 심사위원 수
-                , COUNT(TSSS.SBMSNID) OVER (PARTITION BY TSP.PCNTSTID, TSA.APLYID, TSJ.CYCL) AS SRNG_CNT    -- 신청자 별 심사위원의 심사건수
-                , SUM(TSSS.SCR) OVER (PARTITION BY TSP.PCNTSTID, TSA.APLYID, TSJ.CYCL) AS SCR
+                , TSA.APLYID
+                , CASE WHEN COUNT(TSJ.JDGSID) = COUNT(TSSS.APLYID) THEN 1 ELSE 0 END AS SRNG_CNT
             FROM TB_SPB_PCNTST TSP 
                 INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID
                 INNER JOIN TB_SPB_JDGS TSJ ON TSA.PCNTSTID = TSJ.PCNTSTID
@@ -261,18 +220,14 @@
             WHERE 1 = 1
             AND TSJ.CYCL = 1
             GROUP BY TSP.PCNTSTID
-                , TSJ.JDGSID 
                 , TSJ.CYCL
+                , TSA.APLYID
         ), CNT_SECOND AS (
             SELECT 
-                DISTINCT 
                 TSP.PCNTSTID
-                , TSA.APLYID
                 , TSJ.CYCL
-                , COUNT(TSA.APLYID) AS APLYNO_CNT   -- 곰오의 신청자 수
-                , COUNT(TSA.APLYID) OVER (PARTITION BY TSP.PCNTSTID, TSA.APLYID) AS JDGS_CNT    -- 차수별 심사위원 수
-                , COUNT(TSSS.SBMSNID) OVER (PARTITION BY TSP.PCNTSTID, TSA.APLYID, TSJ.CYCL) AS SRNG_CNT    -- 신청자 별 심사위원의 심사건수
-                , SUM(TSSS.SCR) OVER (PARTITION BY TSP.PCNTSTID, TSA.APLYID, TSJ.CYCL) AS SCR
+                , TSA.APLYID
+                , CASE WHEN COUNT(TSJ.JDGSID) = COUNT(TSSS.APLYID) THEN 1 ELSE 0 END AS SRNG_CNT
             FROM TB_SPB_PCNTST TSP 
                 INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID AND TSA.SCND_SRNG_TRGT_YN = 'Y'
                 INNER JOIN TB_SPB_JDGS TSJ ON TSA.PCNTSTID = TSJ.PCNTSTID
@@ -280,51 +235,10 @@
             WHERE 1 = 1
             AND TSJ.CYCL = 2
             GROUP BY TSP.PCNTSTID
-                , TSJ.JDGSID 
                 , TSJ.CYCL
+                , TSA.APLYID
         )
-        SELECT 
-            PCNTSTID
-            , APLYID
-            , APLYNO
-            , APLY_STTS_CD
-            , APLY_STTS_NM
-            , INST_NM
-            , APLCNT_NM
-            , USER_NM
-            , PRGRM_NM
-            , REG_DE
-            , SRNG_STTS_NM
-            , CASE WHEN SRNG_STTS_NM = '심사완료' THEN (SELECT SCR FROM CNT_FIRST CNT WHERE CNT.APLYID = T.APLYID) / (SELECT JDGS_CNT FROM CNT_FIRST CNT WHERE CNT.APLYID = T.APLYID)
-                ELSE '-' END AS FIRST_SCR
-            , CASE WHEN SRNG_STTS_NM = '심사완료' AND SCND_SRNG_TRGT_YN = 'Y' THEN (SELECT SCR FROM CNT_SECOND CNT WHERE CNT.APLYID = T.APLYID) / (SELECT JDGS_CNT FROM CNT_SECOND CNT WHERE CNT.APLYID = T.APLYID)
-                WHEN SCND_SRNG_TRGT_YN = 'Y' THEN '대상'
-                ELSE '-' END AS SECOND_SCR
-            , CASE WHEN SRNG_STTS_NM = '심사완료' THEN ((SELECT SCR FROM CNT_FIRST CNT WHERE CNT.APLYID = T.APLYID) + IFNULL((SELECT SCR FROM CNT_SECOND CNT WHERE CNT.APLYID = T.APLYID), 0)) / 
-                                                        IF((SELECT COUNT(1) FROM CNT_SECOND CNT WHERE CNT.APLYID = T.APLYID) <![CDATA[ > ]]> 0, 2, 1)
-                ELSE '-' END AS TOTAL_SCR
-            , IFNULL(SLCTN_STTS_NM, '-') AS SLCTN_STTS_NM
-            , SCND_SRNG_TRGT_YN
-            , FRST_SCR
-            , FIRST_GRD
-            , FIRST_RKNG
-            , SCND_SCR
-            , SCND_GRD
-            , SCND_RKNG
-            , SRNG_END_YN
-            , SCND_SRNG_END_YN
-            , REG_DT
-            , MDFCN_DT
-            , FILEGRPID1
-            , FILEGRPID2
-            , FILEGRPID3
-            , ONLN_SRNG_TYPE_CD
-            , LWET_CRTR_SCR_USE_YN_FIRST
-            , LWET_CRTR_SCR_USE_YN_SCND
-            , LWET_CRTR_SCR_FIRST
-            , LWET_CRTR_SCR_SCND
-            , NOPE_LMT_USE_YN
-            , NOPE_LMT
+        SELECT DISTINCT T.* 
         FROM (
             SELECT 
                 TSA.PCNTSTID
@@ -337,16 +251,16 @@
                 , TSA.APLCNT_NM 
                 , TSA.PRGRM_NM 
                 , TSA.REG_DE 
-                , CASE WHEN NOW() <![CDATA[ > ]]> SRNG_END_DT OR (IF(TSP.ONLN_SRNG_TYPE_CD = '177101', TSA.SRNG_END_YN = 'Y', IF(TSA.SCND_SRNG_TRGT_YN = 'Y', TSA.SRNG_END_YN = 'Y' AND TSA.SCND_SRNG_END_YN = 'Y', TSA.SRNG_END_YN = 'Y')))
+                , CASE WHEN NOW()   >   SRNG_END_DT OR (IF(TSP.ONLN_SRNG_TYPE_CD = '177101', FRST.SRNG_CNT = 1 AND SRNG_END_YN = 'Y', IF(TSA.SCND_SRNG_TRGT_YN = 'Y', FRST.SRNG_CNT = 1 AND SCND.SRNG_CNT = 1 AND SCND_SRNG_END_YN = 'Y', FRST.SRNG_CNT = 1 AND SRNG_END_YN = 'Y')))
                         THEN '심사완료'
                     ELSE '심사전'
                     END AS SRNG_STTS_NM
-                , IF(SLCTN_STTS_CD = '193101', '-', TCCB.CD_NM) AS SLCTN_STTS_NM
+                , IFNULL(IF(SLCTN_STTS_CD = '193101', '-', TCCB.CD_NM), '-') AS SLCTN_STTS_NM
                 , SCND_SRNG_TRGT_YN
                 , IFNULL(FIRST_SCR, '-') AS FRST_SCR
                 , IFNULL(FIRST_GRD, '-') AS FIRST_GRD
                 , IFNULL(FIRST_RKNG, '-') AS FIRST_RKNG
-                , IFNULL(SCND_SCR, '-') AS SCND_SCR
+                , IFNULL(IF(TSA.SCND_SRNG_TRGT_YN = 'Y' AND SCND_SRNG_END_YN != 'Y', '대상취소', SCND_SCR), '-') AS SCND_SCR
                 , IFNULL(SCND_GRD, '-') AS SCND_GRD
                 , IFNULL(SCND_RKNG, '-') AS SCND_RKNG 
                 , SRNG_END_YN
@@ -379,7 +293,10 @@
                         AND SPLMNTID = (SELECT MAX(SPLMNTID) FROM TB_SPB_APLY_SPLMNT TSAS WHERE TSAS.APLYID = TSA.APLYID)
                 LEFT OUTER JOIN TB_CMM_CD TCCA ON TSA.APLY_STTS_CD = TCCA.CD
                 LEFT OUTER JOIN TB_CMM_CD TCCB ON TSA.SLCTN_STTS_CD = TCCB.CD
+                LEFT OUTER JOIN CNT_FIRST FRST ON FRST.PCNTSTID = TSP.PCNTSTID AND FRST.APLYID = TSA.APLYID 
+                LEFT OUTER JOIN CNT_SECOND SCND ON SCND.PCNTSTID = TSP.PCNTSTID AND SCND.APLYID = TSA.APLYID 
             WHERE 1 = 1
+            ]]>
             AND TSA.PCNTSTID = #{pcntstid}
             <if test="searchAplySttsCd != '' and searchAplySttsCd != null">
             AND APLY_STTS_CD = #{searchAplySttsCd}
@@ -1948,28 +1865,33 @@
             APLYID
             , FIRST_SCR
             , FIRST_RKNG
-            , (SELECT GRD_NM FROM SCORE_CARD SC WHERE SC.PCNTSTID = PCNTSTID AND SC.LOW_SCORE >= FIRST_RKNG AND SC.HIGH_SCORE <= FIRST_RKNG) AS FIRST_GRD
+            , IF(SRNG_RT_USE_YN = 'Y', (SELECT GRD_NM FROM SCORE_CARD SC WHERE SC.PCNTSTID = PCNTSTID AND SC.LOW_SCORE >= FIRST_RKNG AND SC.HIGH_SCORE <= FIRST_RKNG), '') AS FIRST_GRD
         FROM (
             SELECT 
                 APLYID
                 , FIRST_SCR
+                , SRNG_RT_USE_YN
                 , RANK() OVER (ORDER BY FIRST_SCR DESC) AS FIRST_RKNG
             FROM (
                 SELECT
                     TSP.PCNTSTID
                     , TSA.APLYID
-                    , ROUND(IFNULL(SUM(TSSS.SCR) / COUNT(TSJ.JDGSID), '-'), 1) AS FIRST_SCR
+                    , TSP.SRNG_RT_USE_YN
+                    , ROUND(IFNULL(SUM(TSSS.SCR) / COUNT(TSJ.JDGSID), 0), 1) AS FIRST_SCR
                 FROM TB_SPB_PCNTST TSP
                     INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID 
                     INNER JOIN TB_SPB_JDGS TSJ ON TSA.PCNTSTID = TSJ.PCNTSTID
                     INNER JOIN TB_CMM_USER TCU ON TCU.USERID = TSJ.JDGSID
                     LEFT OUTER JOIN TB_SPB_SRNG_SBMSN TSSS ON TSSS.USERID = TSJ.JDGSID AND TSSS.APLYID = TSA.APLYID AND TSSS.FORMID = IF(TSJ.CYCL = 1, TSP.SRNG_FORMID_FIRST, TSP.SRNG_FORMID_SCND)
                 WHERE 1 = 1
+        ]]>
                 AND TSP.PCNTSTID = #{pcntstid}
                 AND TSJ.CYCL = #{cycl}
-                GROUP BY TSP.PCNTSTID, TSA.APLYID 
+                <if test="cycl == 2">
+                AND TSA.SCND_SRNG_TRGT_YN = 'Y'
+                </if>
+                GROUP BY TSP.PCNTSTID, TSA.APLYID, TSP.SRNG_RT_USE_YN 
             ) T
         ) T
-        ]]>
     </select>
 </mapper>

@@ -230,15 +230,15 @@ public class LctrDmndController {
 
         boolean checkAlreadyRegistedItrstExprt = lctrDmndService.checkAlreadyRegistedItrstExprt(exprtVo);
         if (checkAlreadyRegistedItrstExprt) {
-            response.put("msg", "이미 등록한 관심인력입니다. ");
+            response.put("msg", "이미 등록된 관심 전문가입니다. ");
             return response;
         }
 
         if (lctrDmndService.insertItrstExprt(exprtVo) > 0) {
-            response.put("msg", "관심인력으로 등록되었습니다.");
+            response.put("msg", "관심 전문가로 등록되었습니다.");
             response.put("success", true);
         } else
-            response.put("msg", "관심인력 등록이 실패하였습니다.");
+            response.put("msg", "관심 전문가 등록이 실패하였습니다.");
 
         return response;
     }
@@ -260,10 +260,10 @@ public class LctrDmndController {
         exprtVo.setUser(user);
 
         if (lctrDmndService.deleteItrstExprt(exprtVo) > 0) {
-            response.put("msg", "관심인력을 해제하였습니다.");
+            response.put("msg", "관심 전문가를 해제하였습니다.");
             response.put("success", true);
         } else
-            response.put("msg", "관심인력 해제가 실패하였습니다.");
+            response.put("msg", "관심 전문가 해제가 실패하였습니다.");
 
         return response;
     }

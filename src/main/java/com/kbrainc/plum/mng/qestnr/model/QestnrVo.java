@@ -47,6 +47,13 @@ public class QestnrVo extends ParentRequestVo {
     /** 기관명 */
     private String instNm;
     
+    /** 도메인 */
+    private String hmpg;
+    
+    /** 사이트 검색 */
+    private String siteSearchType;
+    private String siteSearchKeyword;
+    
     /** 설문지 종류 코드 */
     @NotEmpty(message = "설문지 종류를 선택해주세요.")
     private String qestnrKndCd;

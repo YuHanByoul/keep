@@ -210,4 +210,12 @@ public class ExampleController {
         
         return "example/code";
     }
+    
+    @RequestMapping(value = "/example/reporting.html")
+    public String reporting(HttpServletRequest request) throws Exception {
+        request.setAttribute("MENU_NAME", "Reporting");
+        request.setAttribute("MENU_NAVI", "예제 / Reporting 사용");
+        
+        return "example/reporting";
+    }
 }

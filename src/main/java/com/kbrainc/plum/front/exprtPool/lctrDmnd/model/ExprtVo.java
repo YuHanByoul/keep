@@ -7,6 +7,7 @@ import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.ResCodeService;
 import com.kbrainc.plum.rte.util.CommonUtil;
+import com.kbrainc.plum.rte.util.StringUtil;
 import lombok.Data;
 import org.apache.ibatis.type.Alias;
 
@@ -113,6 +114,14 @@ public class ExprtVo extends ParentRequestVo {
     private String exprtTypePath;
 
     private String flds;
+
+    public void setNm(String nm) {
+        this.nm = StringUtil.maskingName(nm);
+    }
+
+    public void setMoblphon(String moblphon) {
+        this.moblphon = StringUtil.maskingMobilePhone(moblphon);
+    }
 
     public void setExprtTypeCd(String exprtTypeCd) {
         this.exprtTypeCd = exprtTypeCd;

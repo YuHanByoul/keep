@@ -37,7 +37,7 @@
                        <div class="mb-2 form-group row">
                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="phoneNum"><strong>전화번호</strong></label>
                            <div class="col-sm-12">
-                               <input type="number" class="form-control form-control-sm" name="telno" id="telno" placeholder="전화번호" >
+                               <input type="text" class="form-control form-control-sm" name="telno" id="telno" placeholder="전화번호" >
                                <span class="messages"></span>
                            </div>
                        </div>
@@ -105,7 +105,7 @@
                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
                                   for="mobileNum"><strong>휴대전화</strong></label>
                            <div class="col-sm-12">
-                               <input type="number" class="form-control form-control-sm" name="moblphon" id="moblphon" placeholder="휴대폰번호">
+                               <input type="text" class="form-control form-control-sm" name="moblphon" id="moblphon" placeholder="휴대폰번호">
                                <span class="messages"></span>
                            </div>
                        </div>
@@ -274,6 +274,7 @@
 						}else{
 							checkId = $("#acnt").val();
 							isDuplicatedId=false;
+							console.log(checkId);
 						}
 					}
 					closeWorkProgress();
@@ -288,12 +289,13 @@
  		let year = today.getFullYear(); // 년도
  		let month = today.getMonth() + 1;  // 월
  		let date = today.getDate();  // 날짜
- 		let thisday =  year+""+month+""+date;
+ 		let monthStr = (month<10)? "0"+month : month;  // 월
+ 		let thisday =  year+""+monthStr+""+date;
  		let brdt = ($("#brdt").val()).replaceAll("-","");
-
+ 		
 	 	if(!($("#memberFrm").valid())) return;
 	 	
-	 	if(checkId !=  $("#acnt").val()){
+	 	if(isDuplicatedId ||checkId !=  $("#acnt").val()){
  	    	alert("아이디 중복 여부를 확인 해주시기 바랍니다.");
  	    	showErrorMark("#acnt"); 
  	    	return;
@@ -306,7 +308,7 @@
  	    	return;
  	    }
  	    
- 	    if(Number(brdt)  > Number(thisday)) {
+ 	    if(Number(brdt) > Number(thisday)) {
  	    	alert("생년월일은 금일보다 이전이어야 합니다."); 
  	    	showErrorMark("#brdt"); 
  	    	return;

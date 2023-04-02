@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html 
+xmlns:th="http://www.thymeleaf.org"
+style="height:100%">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" charset="utf-8"/>
+<script src="http://192.168.0.6:9003/oz80/ozhviewer/jquery-2.0.3.min.js"></script>
+<link rel="stylesheet" href="http://192.168.0.6:9003/oz80/ozhviewer/jquery-ui.css" type="text/css"/>
+<script src="http://192.168.0.6:9003/oz80/ozhviewer/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="http://192.168.0.6:9003/oz80/ozhviewer/ui.dynatree.css" type="text/css"/>
+<script type="text/javascript" src="http://192.168.0.6:9003/oz80/ozhviewer/jquery.dynatree.js" charset="utf-8"></script>
+<script type="text/javascript" src="http://192.168.0.6:9003/oz80/ozhviewer/OZJSViewer.js" charset="utf-8"></script>
+<!-- If you want to run the HTML5SVG viewer please change the OZJSViewer.js to OZJSSVGViewer.js.
+<script type="text/javascript" src="http://127.0.0.1:8080/ozrviewer/OZJSSVGViewer.js" charset="utf-8"></script>
+-->
+<!-- When using a PDF document or attaching a PDF file to a report, please set compatibility.js and pdf.js to be loaded.-->
+<script type="text/javascript" src="http://192.168.0.6:9003/oz80/ozhviewer/pdf_js/web/compatibility.js" charset="utf-8"></script>
+<script type="text/javascript" src="http://192.168.0.6:9003/oz80/ozhviewer/pdf_js/build/pdf.js" charset="utf-8"></script>
+<script type="text/javascript">
+	if (typeof PDFJS != "undefined") {
+		//cMapUrl must match the path of pdf.js file. If it is different from the default path, be sure to correct it.
+        PDFJS.cMapUrl = "http://192.168.0.6:9003/oz80/ozhviewer/pdf_js/web/cmaps/";
+        PDFJS.cMapPacked = true;
+    }
+</script>
+</head>
+<body style="width:98%;height:98%">	
+		<div id="OZViewer" style="width:98%;height:98%"></div>
+		<script type="text/javascript">
+			var json = {"Category":[{"CategoryID": 1,"CategoryName":"음료수","Description": "청량음료, 커피, 홍차, 맥주"},{"CategoryID":2,"CategoryName":"조미료","Description":"감미료, 향신료, 양념, 스프레드"}], "Product":[{"ProductID":75,"ProductName":"알파인 맥주","CategoryID":1,"QuantityPerUnit":"24 - 0.5 l bottles","UnitPrice":24000.0000,"UnitsInStock":125},{"ProductID":39,"ProductName":"OK 바닐라 셰이크","CategoryID":1,"QuantityPerUnit":"750 cc per bottle","UnitPrice":28000.0000,"UnitsInStock":69},{"ProductID":34,"ProductName":"태일 라이트 맥주","CategoryID":1,"QuantityPerUnit": "24 - 12 oz bottles","UnitPrice":34000.0000,"UnitsInStock":111},{"ProductID":65,"ProductName":"루이지애나 특산 후추","CategoryID":2,"QuantityPerUnit":"32 - 8 oz bottles","UnitPrice":21000.0000,"UnitsInStock":76},{"ProductID":61,"ProductName":"사계절 핫 소스","CategoryID":2,"QuantityPerUnit":"24 - 500 ml bottles","UnitPrice":28000.0000,"UnitsInStock":92},{"ProductID":6,"ProductName":"대양 특선 블루베리 잼","CategoryID":2,"QuantityPerUnit": "12 - 8 oz jars","UnitPrice":25000.0000,"UnitsInStock":120}]};
+			function SetOZParamters_OZViewer() {
+				var oz;
+				oz = document.getElementById("OZViewer");
+				oz.sendToActionScript("connection.servlet", "http://192.168.0.6:9003/oz80/server");
+				oz.sendToActionScript("connection.reportname","/jsonsample.ozr");
+				oz.sendToActionScript("connection.pcount","2");
+				oz.sendToActionScript("connection.args1","jsondata="+ JSON.stringify(json));
+				oz.sendToActionScript("connection.args2","viewerType=HTML5 Canvas Viewer");
+				oz.sendToActionScript("information.debug","true");
+		
+				//서버로부터 PDF 파일 저장 또는 인쇄 시 폰트 포함 관련.  
+				//oz.sendToActionScript("pdf.fontembedding", "true"); //pdf 폰트포함
+				//oz.sendToActionScript("pdf.fontembedding_subset", "true");  //pdf 폰트포함(subset)
+		
+				return true;
+			}
+			//HTML5 Canvas 사용하여 미리보기 후, 서버로부터 PDF 파일 저장 또는 인쇄관련. (HTML5SVG 는 기본설정으로 해당없음)
+			var opt = [];
+			//opt["print_exportfrom"] = "server"; //인쇄를 서버 또는 스케줄러(HTML5MNG)를 이용  server or scheduler
+		 	//opt["save_exportfrom"]  = {"pdf" : "server"}  //파일 저장을 서버 또는 스케줄러(HTML5MNG)를 이용   server or scheduler
+		
+			start_ozjs("OZViewer","https://192.168.0.6:9003/oz80/ozhviewer/", opt);
+		</script>
+</body>
+</html>

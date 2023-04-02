@@ -1,0 +1,217 @@
+<div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content type_2">
+        <div class="modal-header">
+            <h4 class="modal-title">사이트검색</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"></span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="card">
+                <div class="card-block-small">
+                    <div class="row">
+                        <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+                            <div class="mb-0 form-group">
+                                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
+                                <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                    <select name="siteSearchType" id="siteSearchType" class="form-select form-control form-control-sm">
+                                        <option value="">- 선택 -</option>
+                                        <option value="siteNm">사이트명</option>
+                                        <option value="instNm">기관명</option>
+                                    </select>
+                                    <input type="text" class="form-control form-control-sm" aria-label="Text input with dropdown button" name="siteSearchKeyword" id="siteSearchKeyword"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="m-t-20 text-center">
+                        <button class="btn btn-disabled m-r-5" onclick="siteListPopup.initSearch();">초기화</button>
+                        <button class="btn btn-primary" onclick="siteListPopup.onSearch();">검색</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card m-b-10">
+                <div class="card-block-small">
+                    <table id="siteGrid" class="table-responsive"></table>
+                    <div id="sitePager" class="text-center"></div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary waves-effect waves-light" onclick="siteListPopup.onInsertSite();">선택</button>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    var siteListPopup = {
+        listUrl: "/mng/srvy/selectSiteList.do",
+        selectedItems: [],
+        
+        init: function() {
+            siteGrid = new GridHelper("siteGrid");
+            this.setGrid();
+            this.registEvent();
+        },
+        
+        registEvent: function() {
+           // TODO
+        },
+        
+        initSearch: function() {
+             $("#siteSearchType, #siteSearchKeyword").val('');
+        },
+        
+        onSearch: function() {
+            siteGrid.resetListContent();
+        },
+        
+        setGrid: function() {
+            $("#siteGrid").jsGrid({
+                height: "auto",
+                width: "100%",
+                autoload: true,
+                sorting: false,
+                paging: true,
+                pagerContainer: "#sitePager",
+                pagerFormat: "{first} {prev} {pages} {next} {last}",
+                pagePrevText: "이전",
+                pageNextText: "다음",
+                pageFirstText: "< 처음 ㅣ",
+                pageLastText: "ㅣ 마지막 >",
+                noDataContent: "데이터가 없습니다.",
+                pageSize: 10,
+                pageButtonCount: 10,
+                pageLoading: true,
+                pageIndex: 1,
+                controller: {
+                    loadData: function(filter) {
+                        var data = $.Deferred();
+                        var params = {
+                            "siteSearchType": $('#siteSearchType').val(),
+                            "siteSearchKeyword": $('#siteSearchKeyword').val(),
+                            "pageNumber": filter.pageIndex,
+                            "rowPerPage": filter.pageSize,
+                            "orderField": "NM",
+                            "orderDirection": "asc"
+                        };
+                        $.ajax({
+                          type: "GET",
+                          contentType: "application/json; charset=utf-8",
+                          url: siteListPopup.listUrl,
+                          data: params,
+                          dataType: "json"
+                        }).done(function(response) {
+                            var da = {
+                                data : escapeGridData(response.list),
+                                itemsCount : response.totalCount
+                            };
+                            data.resolve(da);
+                        });
+                        
+                        return data.promise();
+                    }
+                },
+                fields: [
+                    {
+                        headerTemplate: function() {
+                            return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox").on("change", function() {
+                               siteListPopup.allSelectItem($(this).is(":checked"), $(this).parent().next().text()); 
+                            });
+                        },
+                        itemTemplate: function(value, item) {
+                            return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox").attr('siteid', item.siteid).prop("checked", $.inArray(item, siteListPopup.selectedItems) > -1).on("change", function() {
+                                $(this).is(":checked") ? siteListPopup.selectItem($(this).attr("siteid")) : siteListPopup.unselectItem($(this).attr("siteid"));
+                            });
+                        },
+                        align: "center", width: "30", sorting: false
+                    },
+                    {title: "사이트", name: "siteNm", type: "text", width: "150", align: "left", itemTemplate: function(value, item) {
+                        return value;
+                    }},
+                    {title: "기관", name: "instNm", type: "text", width: "150", align: "center", itemTemplate: function(value, item) {
+                        return value ? value : "-";
+                    }},
+                    {title: "도메인", name: "hmpg", type: "text", width: "100", align: "center", itemTemplate: function(value, item) {
+                        return value ? value : "-";
+                    }}
+                ]
+            });
+        },
+        
+        allSelectItem: function(isChecked) {
+            this.selectedItems = [];
+            if(isChecked) {
+                $('.singleCheckbox').each(function() {
+                    this.checked = true;
+                    siteListPopup.selectItem($(this).attr("siteid"));           
+                }); 
+            } else {
+                $('.singleCheckbox').each(function() {
+                    this.checked = false; 
+                    siteListPopup.unselectItem($(this).attr("siteid"));
+                });  
+                this.selectedItems = [];
+            }
+        },
+        
+        selectItem: function(qitemid) {
+            this.selectedItems.push(qitemid);
+            if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                $("#selectAllCheckbox").prop("checked", true);
+            } else {
+                $("#selectAllCheckbox").prop("checked", false);
+            }
+        },
+        
+        unselectItem: function(qitemid) {
+            this.selectedItems = $.grep(this.selectedItems, function(i) {
+                return i !== qitemid;
+            });
+            if(this.selectedItems.length == 0) {
+                $('#selectAllCheckbox').attr("checked", false);
+            }
+            if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                $("#selectAllCheckbox").prop("checked", true);
+            } else {
+                $("#selectAllCheckbox").prop("checked", false);
+            }
+        },
+        
+        onInsertSite: function() {
+            if(this.selectedItems.length == 0) {
+                alert("선택한 사이트가 없습니다.");
+                return false;
+            }
+            if(!confirm("선택하신 사이트를 추가 하시겠습니까?\n(이미 추가된 사이트는 추가 되지 않습니다.")) {
+                return false;
+            }
+            var param = {srvyid: homeSrvyUpdate.srvyid};
+            $(this.selectedItems).each(function(index, item) {
+                param["insertSiteids[" + index + "]"] = item;
+            });
+            if(displayWorkProgress()) {
+                $.ajax({
+                    url : "/mng/srvy/insertSrvySite.do",
+                    type: "POST",
+                    cache: false,
+                    dataType: "json",
+                    data: param,
+                    success: function(response) {
+                        if(response.result == "success") {
+                            siteListModal.hide();
+                            alert(response.msg);
+                            $("#srvyGrid").jsGrid("loadData");
+                            homeGrid.resetListContent();
+                        } else {
+                            alert(response.msg);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+    };
+    
+    siteListPopup.init();
+</script>

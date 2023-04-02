@@ -7,6 +7,7 @@ import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.ResCodeService;
 import com.kbrainc.plum.rte.util.CommonUtil;
+import com.kbrainc.plum.rte.util.StringUtil;
 import lombok.Data;
 import org.apache.ibatis.type.Alias;
 
@@ -67,10 +68,24 @@ public class MyLctrDmndVo extends ParentRequestVo {
 
     private String nm;
 
+    private String instNm;
+
     private String dmndSttsCdNm;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date regDt;
+
+    public void setMoblphon(String moblphon) {
+        this.moblphon = StringUtil.maskingMobilePhone(moblphon);
+    }
+
+    public void setNm(String nm) {
+        this.nm = StringUtil.maskingName(nm);
+    }
+
+    public void setAcnt(String acnt) {
+        this.acnt = StringUtil.maskingAccount(acnt);
+    }
 
     public void setDmndSttsCd(String dmndSttsCd) {
         this.dmndSttsCd = dmndSttsCd;
