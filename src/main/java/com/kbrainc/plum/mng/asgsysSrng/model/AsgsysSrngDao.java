@@ -1138,6 +1138,20 @@ public interface AsgsysSrngDao {
 	*/
 	public List<AsgsysSrngVo> selectjdgsList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
+	/**
+	* 심사 항목 목록 조회
+	*
+	* @Title : selectSrngQitemList
+	* @Description : 심사 항목 목록 조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<AsgsysSrngVo>
+	*/
+	public List<AsgsysSrngVo> selectSrngQitemList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+
+
 
 
 }

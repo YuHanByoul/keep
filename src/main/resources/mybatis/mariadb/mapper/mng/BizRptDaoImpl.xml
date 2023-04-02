@@ -273,8 +273,8 @@
     </select>
 
     <!-- 중간보고제출 목록조회 -->
-    <select id="selectMdlRptSbmsnList" parameterType="BizRptVo" resultType="BizRptVo">
-        /* BizRptDao.selectMdlRptSbmsnList */
+    <select id="selectRptSbmsnList" parameterType="BizRptVo" resultType="BizRptVo">
+        /* BizRptDao.selectRptSbmsnList */
         <include refid="PaginationMapper.header"/>
         SELECT
             A.APLYID
@@ -300,14 +300,14 @@
         LEFT OUTER JOIN TB_CMM_USER USR ON A.USERID = USR.USERID
         WHERE 1=1
         AND A.PCNTSTID = #{pcntstid}
-        AND C.REPORT_SE_CD = '204101'    /*보고서 구분 중간보고*/
+        AND C.REPORT_SE_CD = #{reportSeCd}
         <include refid="searchCondition2"/>
         <include refid="PaginationMapper.footer"/>
     </select>
 
     <!-- 중간보고제출 목록조회(엑셀) -->
-    <select id="selectMdlRptSbmsnListExcel" parameterType="BizRptVo" resultType="BizRptVo">
-        /* BizRptDao.selectMdlRptSbmsnListExcel */
+    <select id="selectRptSbmsnListExcel" parameterType="BizRptVo" resultType="BizRptVo">
+        /* BizRptDao.selectRptSbmsnListExcel */
         SELECT
             A.APLYID
           , B.DELVRY_APLYID
@@ -332,7 +332,7 @@
         LEFT OUTER JOIN TB_CMM_USER USR ON A.USERID = USR.USERID
         WHERE 1=1
         AND A.PCNTSTID = #{pcntstid}
-        AND C.REPORT_SE_CD = '204101'    /*보고서 구분 중간보고*/
+        AND C.REPORT_SE_CD = #{reportSeCd}
         <include refid="searchCondition2"/>
     </select>
 
@@ -561,6 +561,63 @@
         WHERE 1=1
         <include refid="searchCondition1"/>
         <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!-- 결과보고 상세조회 -->
+    <select id="selectRsltRptMng" resultType="BizRptVo">
+        /* BizRptDao.selectRsltRptMng*/
+        SELECT
+            A.PCNTSTID
+          , A.FLD_CD    /*분야 코드*/
+          , A.PCNTST_NM    /*공모 이름*/
+          ,''    /*진행 상태*/
+          , A.RSLT_REPORT_BGNG_DT    /*결과보고 시작일자*/
+          , A.RSLT_REPORT_END_DT    /*결과보고 종료일자*/
+          , CONCAT(A.RSLT_REPORT_BGNG_DT, '~', A.RSLT_REPORT_END_DT)   AS RSLT_REPORT_PRD
+          , CASE WHEN A.RSLT_REPORT_BGNG_DT <![CDATA[<]]>  NOW()  THEN '200101'
+                 WHEN A.RSLT_REPORT_BGNG_DT <![CDATA[>=]]> NOW()
+                 THEN CASE WHEN A.RSLT_REPORT_END_DT <![CDATA[<]]> NOW() THEN '200103'
+                           WHEN A.RSLT_REPORT_END_DT <![CDATA[>=]]> NOW() THEN '200102'
+                           ELSE ''
+                      END
+                 ELSE ''
+           END    AS PRGRS_STTS_CD    /*진행상태 코드*/
+          , B.SLCTN_BIZ_CNT    /*선정 사업*/
+          , CONCAT(B.REPORT_CNT, "/", B.SLCTN_BIZ_CNT)    AS SBMSN_CNT /*제출 건수*/
+          , A.CNSLTNG_USE_CD    /*컨설팅 대상*/
+          , A.REG_DT
+          , IF(A.RSLT_REPORT_BGNG_DT <![CDATA[<]]>  NOW(), '-',B.CNSLTNG_USE_CNT)    AS CNSLTNG_USE_CNT    /*컨설팅 대상 건수*/
+        FROM
+            TB_SPB_PCNTST A
+        LEFT OUTER JOIN
+        (
+            SELECT
+                COUNT(A.APLYID)    AS SLCTN_BIZ_CNT
+              , A.PCNTSTID
+              /* 보고구분코드 : 결과보고, 보고상태코드 : 제출완료 */
+              , COUNT(IF(B.REPORT_SE_CD = '204102' AND B.REPORT_STTS_CD <![CDATA[<>]]> '203101' ,1,NULL))    AS REPORT_CNT
+              , COUNT(C.APLYID_CNT)    AS CNSLTNG_USE_CNT
+            FROM
+                TB_SPB_APLY A
+            LEFT OUTER JOIN
+                TB_SPB_REPORT B ON A.APLYID =B.APLYID
+            LEFT OUTER JOIN    /*컨설팅*/
+            (
+                SELECT
+                    COUNT(1) APLYID_CNT
+                  , APLYID
+                FROM
+                    TB_SPB_APLY_CNSLTNG
+                GROUP BY
+                    APLYID
+            ) C ON B.APLYID = C.APLYID
+            WHERE
+                A.SLCTN_STTS_CD = '193102'    /* 선정 상태 코드 : 선정*/
+            GROUP BY
+                A.PCNTSTID
+        ) B ON A.PCNTSTID = B.PCNTSTID
+        WHERE 1=1
+        AND A.PCNTSTID = #{pcntstid}
     </select>
 
     <!-- 컨설팅 담당자 목록 조회 -->
@@ -858,6 +915,7 @@
             TB_CMM_USER USR ON A.USERID = USR.USERID
         WHERE 1=1
         AND A.APLYID = #{aplyid}
+        AND Z.DMNDID = #{dmndid}
     </select>
 
     <!-- 사업포기관리 수정 -->

@@ -63,16 +63,16 @@ public interface BizRptService {
 	public BizRptVo selectMdlRptMng(BizRptVo bizRptVo) throws Exception;
 
 	/**
-	* 중간보고제출 목록 조회
+	* 보고제출 목록 조회
 	*
-	* @Title : selectMdlRptSbmsnList
-	* @Description : 중간보고제출 목록 조회
+	* @Title : selectRptSbmsnList
+	* @Description : 보고제출 목록 조회
 	* @param bizRptVo
 	* @return
 	* @throws Exception
 	* @return List<BizRptVo>
 	*/
-	public List<BizRptVo> selectMdlRptSbmsnList(BizRptVo bizRptVo) throws Exception;
+	public List<BizRptVo> selectRptSbmsnList(BizRptVo bizRptVo) throws Exception;
 
 	/**
 	* 신청상태코드 수정
@@ -168,18 +168,6 @@ public interface BizRptService {
 	* @return BizRptVo
 	*/
 	public BizRptVo selectRsltRptMng(BizRptVo bizRptVo) throws Exception;
-
-	/**
-	* 결과보고제출 목록 조회
-	*
-	* @Title : selectRsltRptSbmsnList
-	* @Description : 결과보고제출 목록 조회
-	* @param bizRptVo
-	* @return
-	* @throws Exception
-	* @return List<BizRptVo>
-	*/
-	public List<BizRptVo> selectRsltRptSbmsnList(BizRptVo bizRptVo) throws Exception;
 
 	/**
 	* 컨설팅관리 목록 조회

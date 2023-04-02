@@ -413,6 +413,9 @@ public class AsgsysSrngController {
     	//신청정보조회
     	AsgsysSrngVo aplyInfo = asgsysSrngService.selectAplyInfo(asgsysSrngVo);
 
+    	//심사양식 조회
+    	aplyInfo.getOperFrmCd();
+
     	asgsysSrngVo.setFormid(aplyInfo.getFormid());
 
     	//운영형태코드 목록 조회
@@ -1452,13 +1455,15 @@ public class AsgsysSrngController {
      * @return String 이동화면경로
      * @throws Exception 예외
      */
-	//심사신청의 심사위원심사 탭과 name이 중복되어 Detail추가
     @RequestMapping(value = "/mng/asgsysSrng/jdgsSrngDetailForm.html")
-    public String jdgsSrngDetailForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
+    public String jdgsSrngDetailForm(AsgsysSrngVo asgsysSrngVo, Model model, @UserInfo UserVo user) throws Exception {
 
     	DsgnSrngFormVo dsgnSrngFormVo = new DsgnSrngFormVo();
     	AsgsysSrngVo jdgsSrngInfo = asgsysSrngService.selectJdgsSrngDetail(asgsysSrngVo);
 
+    	model.addAttribute("dsgnSrgnFormList",asgsysSrngService.selectSrngQitemList(jdgsSrngInfo));
+
+    	model.addAttribute("loginUserid", user.getUserid());
     	model.addAttribute("jdgsSrngInfo", jdgsSrngInfo);
 
     	//신청 첨부파일
@@ -1485,7 +1490,7 @@ public class AsgsysSrngController {
 
     	BeanUtils.copyProperties(jdgsSrngInfo, dsgnSrngFormVo);
     	logger.info(dsgnSrngFormVo.toString());
-    	model.addAttribute("dsgnSrgnFormList", asgsysSrngService.selectDsgnSrgnFormList(dsgnSrngFormVo));
+//    	model.addAttribute("dsgnSrgnFormList", asgsysSrngService.selectDsgnSrgnFormList(dsgnSrngFormVo));
 
     	//심사양식 목록 조회
     	model.addAttribute("srngFormList",asgsysSrngService.selectSrngFormQitemList(dsgnSrngFormVo));
@@ -1526,7 +1531,7 @@ public class AsgsysSrngController {
      */
     @RequestMapping(value = "/mng/asgsysSrng/updateJdgsSrngDetail.do")
     @ResponseBody
-    public Map<String, Object> updateJdgsSrngDetail(@Valid AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user, HttpServletRequest request) throws Exception {
+    public Map<String, Object> updateJdgsSrngDetail(AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user, HttpServletRequest request) throws Exception {
 
     	Map<String, Object> resultMap = new HashMap<>();
     	List<AsgsysSrngVo> result = null;
@@ -1536,16 +1541,11 @@ public class AsgsysSrngController {
     	asgsysSrngVo.setUser(user);
     	asgsysSrngVo.setUserIp(CommonUtil.getClientIp(request));
 
-    	logger.info("@@@@@@@@@@@@@@@ 1 ");
-
     	if(CommonUtil.isEmpty(asgsysSrngVo.getSbmsnid())) {
-    		logger.info("@@@@@@@@@@@@@@@ 2 ");
     		retVal = asgsysSrngService.insertJdgsSrngDetail(asgsysSrngVo);
     	}else {
-    		logger.info("@@@@@@@@@@@@@@@ 3 ");
     		retVal = asgsysSrngService.updateJdgsSrngDetail(asgsysSrngVo);
     	}
-    	logger.info("@@@@@@@@@@@@@@@ 4 ");
 
     	if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);

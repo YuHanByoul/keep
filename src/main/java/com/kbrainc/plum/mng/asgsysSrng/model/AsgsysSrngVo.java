@@ -45,8 +45,17 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	/** 호출화면 */
 	private String opner;
 
+	/** RANK */
+	private String rnk;
+
+	/** rowSpan */
+	private String rowSpan;
+
     /** 검색 진행상태 */
     private String searchSttsCd;
+
+    /** 검색 사용자아이디 */
+    private String searchUserid;
 
     /** 검색 자격증명 */
     private String searchCrtfctNm;
@@ -333,6 +342,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
 
 	/** 배점 id*/
 	private String altm;
+
+	/** 항목코드*/
+	private String dsgncrtrCd;
 
     /** 신청_일시 */
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd 00:00")
