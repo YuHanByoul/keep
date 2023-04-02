@@ -920,7 +920,6 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     public int updateJdgsSrngDetail(AsgsysSrngVo asgsysSrngVo) throws Exception {
     	int ret = 0;
 
-
     	List<DsgnSrngFormVo> dsgnSrngFormLst = asgsysSrngVo.getDsgnSrngFormLst();
 
     	asgsysSrngDao.deleteJdgsSrngAns(dsgnSrngFormLst.get(0));
@@ -935,8 +934,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     		}
     	}
 
-
-    	ret += asgsysSrngDao.updateJdgsSrngDetail(asgsysSrngVo);
+    	ret += asgsysSrngDao.updateJdgsSrngDetail(asgsysSrngVo);    //심사위원심사제출 수정
 
         return ret;
 	}
@@ -952,10 +950,21 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     */
     @Override
     @Transactional
-    public int insertJdgsSrngDetail(@Valid AsgsysSrngVo asgsysSrngVo) throws Exception {
-    	int retVal = 0;
-        retVal += asgsysSrngDao.insertJdgsSrngDetail(asgsysSrngVo);
-        return retVal;
+    public int insertJdgsSrngDetail(AsgsysSrngVo asgsysSrngVo) throws Exception {
+    	int ret = 0;
+
+    	List<DsgnSrngFormVo> dsgnSrngFormLst = asgsysSrngVo.getDsgnSrngFormLst();
+
+    	if( 0 < dsgnSrngFormLst.size()) {
+    		for(DsgnSrngFormVo dsgnSrngFormVo : dsgnSrngFormLst) {
+    			dsgnSrngFormVo.setUser(asgsysSrngVo.getUser());
+				ret += asgsysSrngDao.insertJdgsSrngAns(dsgnSrngFormVo);    //심사 답변 저장
+				ret += asgsysSrngDao.insertJdgsSrngOrdrAns(dsgnSrngFormVo);    //심사 순서 답변 저장
+    		}
+    	}
+
+        ret += asgsysSrngDao.insertJdgsSrngDetail(asgsysSrngVo);
+        return ret;
 	}
 
     /**
@@ -1690,7 +1699,19 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 		return asgsysSrngDao.selectjdgsList(asgsysSrngVo);
 	}
 
-
+	/**
+	* 심사 항목 목록 조회
+	*
+	* @Title : selectSrngQitemList
+	* @Description : 심사 항목 목록 조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<AsgsysSrngVo>
+	*/
+	public List<AsgsysSrngVo> selectSrngQitemList(AsgsysSrngVo asgsysSrngVo) throws Exception{
+		return asgsysSrngDao.selectSrngQitemList(asgsysSrngVo);
+	}
 
 
 }

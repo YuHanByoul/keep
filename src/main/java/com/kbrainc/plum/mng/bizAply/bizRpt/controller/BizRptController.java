@@ -147,7 +147,7 @@ public class BizRptController {
 
 		List<BizRptVo> result = null;
 
-		result = bizRptService.selectMdlRptSbmsnList(bizRptVo);
+		result = bizRptService.selectRptSbmsnList(bizRptVo);
 
 		if (result.size() > 0) {
 			resultMap.put("totalCount", (result.get(0).getTotalCount()));
@@ -551,7 +551,7 @@ public class BizRptController {
 
 		List<BizRptVo> result = null;
 
-//		result = bizRptService.selectRsltRptSbmsnList(bizRptVo);
+		result = bizRptService.selectRptSbmsnList(bizRptVo);
 
 		if (result.size() > 0) {
 			resultMap.put("totalCount", (result.get(0).getTotalCount()));
