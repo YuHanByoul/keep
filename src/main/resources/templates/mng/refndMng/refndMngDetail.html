@@ -1,0 +1,73 @@
+    
+    
+  <div class="card-header p-b-0">
+	    <ul class="nav nav-tabs tabs" role="tablist">
+	    
+	        <li class="nav-item" id="refnd_tab">
+	            <a class="nav-link refnd active" href="javascript:moveTab('refnd')"><strong>시설정보</strong></a>
+	        </li>
+	        
+	        <th:block th:if ="${spceList.size() > 0}">
+                <li class="nav-item" id="spce_tab">
+                    <a class="nav-link spce" href="javascript:moveTab('spce')"><strong>공간정보</strong></a>
+                </li>
+             </th:block>
+		    
+	    </ul>
+  </div>
+
+  <div class="tab-content tabs p-t-20" id="tab_content_area">
+  </div>
+
+<script th:inline="javascript">
+
+	/*<![CDATA[*/ 
+	var mode = /*[[${param.mode}]]*/null;
+	var refndid = /*[[${param.refndid}]]*/null;
+	/*]]>*/
+	var currentTab ="refnd";
+	var updateUrl ="/mng/refndMng/refndMngUpdate.html?refndid="+refndid;
+	var spceListUrl ="/mng/refndMng/refndMngSpceList.html?refndid="+refndid;
+	
+	 $(function(){
+
+       if(mode == "refnd"){
+           $("#tab_content_area").load(updateUrl);
+       }else{
+           $("#tab_content_area").load(spceListUrl);
+       }
+       setTimeout(function(){scrollIntoView('contentPanel');},100 )
+       
+   });
+	   
+   function initTab() {
+         var tabFlag = false;
+         if(tabFlag == false) {
+        	 moveTab("refnd");
+             tabFlag = true;
+         }
+         if(tabFlag == false) {
+        	 moveTab("spce");
+             tabFlag = true;
+         }
+   }
+   
+   var moveTab =(mode)=>{
+		
+		//if(mode==currentTab)return;
+		
+		$(".nav-link").removeClass("active");
+		
+		if(mode=="refnd"){
+			currentTab = "refnd"
+			$("#tab_content_area").load(updateUrl);
+		}else{
+			currentTab = "spce"
+			$("#tab_content_area").load(spceListUrl);
+		}
+		$("."+currentTab).addClass("active");
+       setTimeout(function(){scrollIntoView('contentPanel');},100 )  
+
+	}
+	    
+</script>

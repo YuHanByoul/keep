@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout/mng/mainLayout">
+
+<body>
+	<div layout:fragment="content">
+		<style>
+		.hide
+		{
+		   display:none;
+		}
+		</style>
+		
+		<div class="page-body">
+			<div class="row">
+			
+				<form name="searchFrm" id="searchFrm" action="" onsubmit="return false;" class="card">
+					<div class="card-block-small">
+						<!-- 키워드 filter -->
+						<div class="row">
+							<div class="col-lg-3 col-md-6 mb-3">
+								<div class="mb-0 form-group row">
+									<div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+										<strong>키워드</strong>
+									</div>
+									<div
+										class="input-group input-group-sm input-group-dropdown mb-0">
+										<select name="searchType" id="searchType"
+											class="form-select form-control">
+											<option value="fcltNm">시설</option>
+											<option value="instNm">운영기관</option>
+										</select> 
+										<input type="text" name="searchKeyword" id="searchKeyword" class="form-control">
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-3 col-md-6 mb-3">
+								<div class="mb-0 form-group row">
+									<div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+										<strong>예약신청방법</strong>
+									</div>
+									<div class="col-sm-12">
+                                        <span kattr:select_code="searchSeCd" name="searchSeCd" id="searchSeCd" grpCd="153" firstOptTxt="- 전체 -" addClass="input-sm" isAdmin="true">
+                                    </div>
+								</div>
+							</div>
+							<div class="col-lg-3 col-md-6 mb-3">
+								<div class="mb-0 form-group row">
+									<div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+										<strong>지역</strong>
+									</div>
+									<div class="col-sm-12">
+                                        <span kattr:select_code="searchRgnCd" name="searchRgnCd" id="searchRgnCd" grpCd="143" firstOptTxt="- 전체 -" addClass="input-sm" isAdmin="true">
+                                    </div>
+								</div>
+							</div>
+							<div class="col-lg-3 col-md-6 mb-3">
+                                <div class="mb-0 form-group row">
+                                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사용여부</strong></div>
+                                    <div class="col-12">
+                                        <select name="searchUseYn" id="searchUseYn" class="form-select form-select-sm form-control-sm">
+                                            <option value="">- 전체 -</option>
+                                            <option value="Y">사용</option>
+                                            <option value="N">미사용</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+						</div>
+						<!-- //키워드 filter -->
+						<!-- 키워드 filter-btn -->
+						<div class="m-t-20 text-center">
+							<button class="btn btn-disabled m-r-5" onclick="fn_init()">초기화</button>
+							<button type="submit" class="btn btn-primary" onclick="fn_searchForm()">검색</button>
+						</div>
+					</div>
+				</form>
+
+				<div class="card">
+					<div class="row p-20 p-b-0">
+						<div class="col-12 col-md-6">
+							<h5>
+								<strong>시설 검색결과</strong>
+							</h5>
+						</div>
+						<div class="col-12 col-md-6 text-right">
+							<button type="button" class="btn btn-primary waves-effect waves-light" onclick="fn_goInsertForm();">등록</button>
+						</div>
+					</div>
+					<div class="card-block">
+						<table id="jsGrid" class="table-responsive"></table>
+						<div id="listPager" class="text-center"></div>
+					</div>
+				</div>
+
+				<!-- Content Area -->
+				<div id="contentPanel" style="display: none" class="card"></div>
+			</div>
+		</div>
+
+		<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+		<script type="text/javascript" src="/js/common/jsgrid-master/dist/jsgrid.min.js"></script>
+		<script th:inline="javascript">
+			var selectedItems = [];
+			var gridHelper2;         
+			$(function(){
+				gridHelper2 = new GridHelper('jsGrid','contentPanel');
+				writeJsGridData();
+			});
+			
+			function fn_goInsertForm(){
+                var insertUrl = "/mng/fcltMng/fcltMngForm.html?mode=f"
+                    gridHelper2.loadContent(insertUrl);
+            }
+			
+		    function fn_searchForm(){
+		    	gridHelper2.resetListContent();
+		    }
+		    
+		    function fn_init() {
+		        $("#searchType").val('');
+		        $("#searchKeyword").val('');
+		        gridHelper2.resetListContent();
+		    }
+		        
+		    function writeJsGridData(){
+				$("#jsGrid").jsGrid({
+					height: "auto",
+				    width: "100%",
+				    autoload: true,
+				    sorting: false,
+				    paging: true,
+				    pagerContainer: "#listPager",
+				    pagerFormat: "{first} {prev} {pages} {next} {last}",
+				    pagePrevText: "이전",
+				    pageNextText: "다음",
+				    pageFirstText: " < 처음 ㅣ",
+				    pageLastText: " | 마지막 >",
+			        pageSize: 10,
+			        pageButtonCount: 10,
+			        pageLoading: true,
+			        pageIndex: 1,
+			        noDataContent: "데이터가 없습니다.",
+			        
+			        controller: {
+			            loadData: function (filter) {
+			            	var data = $.Deferred();
+			            	    	            	
+			            	var formData = $('#searchFrm').serializeArray();
+			            	var params = [
+			            			{name: "pageNumber", value: filter.pageIndex},
+			            			{name: "rowPerPage", value: filter.pageSize},
+			            	]
+			            	
+			            	if(filter.sortField != undefined){
+			            		params.push({name: "orderField", value: filter.sortField});
+		    					params.push({name: "orderDirection", value: filter.sortOrder});
+			            	}else{
+			            		params.push({name: "orderField", value: 'reg_dt'});
+			            	}
+		
+			            	formData = formData.concat(params);
+			            	
+			                $.ajax({
+			                  type: "GET",
+			                  contentType: "application/json; charset=utf-8",
+			                  url: "/mng/fcltMng/selectFcltMngList.do",
+			                  dataType: "json",
+			                  data: formData
+			                }).done(function(response){
+			                	var da = {
+		                                data : escapeGridData(response.list)
+		                                ,itemsCount : response.totalCount
+		                            };
+			                  data.resolve(da);
+			                });
+			                return data.promise();
+			            },
+			        },
+			        fields: [
+			        	{ name: 'fcltid', css: 'hide' }
+		                ,{ title: 'No.' ,name: 'rowNumber',    type: "number", width : "80", align:"center",  sorting :false }
+		                ,{ title: '운영기관'    ,name: 'instNm',    type: "text", width: "auto"}
+		                ,{ title: '시설'    ,name: 'fcltNm', type: "text", width: "150", align:"center" }
+		                ,{ title: '보유 공간 수'   ,name: 'ownCnt',   type: "text", width: "150", align:"center"  }
+		                ,{ title: '예약신청방법'   ,name: 'aplyMthdNm',   type: "text", width: "150", align:"center" }
+		                ,{ title: '지역' ,name: 'rgnNm',  type: "text", width: "150", align:"center" }
+		                ,{ title: '사용여부' ,name: 'useYn',  type: "text", width: "150", align:"center"
+		                  , itemTemplate: function(value, item){ if(value=='Y'){return "사용";}else{return "사용안함";} }
+		                 }
+		                ,{ title: '등록일' ,name: 'regDt',  type: "text", width: "150", align:"center" }
+			        ],
+			        rowClick: function(args) {
+			        	if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+			        	var detailUrl = "/mng/fcltMng/fcltMngDetail.html?mode=fclt&fcltid=" + args.item.fcltid; 
+			       	    gridHelper2.loadContent(detailUrl);
+			       	    gridHelper2.rowClick(args);
+			        },
+			        onPageChanged: function(args) {
+			            selectedItems = [];
+			        }
+		    	});
+		 		
+			    var selectItem = function(item) {
+				    selectedItems.push(item);
+				    if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+		                $("#selectAllCheckbox").prop("checked", true);
+		            } else {
+		                $("#selectAllCheckbox").prop("checked", false);
+		            }
+				};
+			     
+			    var unselectItem = function(item) {
+				    selectedItems = $.grep(selectedItems, function(i) {
+				    return i !== item;
+				    });
+				    if(selectedItems.length == 0) {
+				    	$('#selectAllCheckbox').attr('checked', false);
+				    }
+				    if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+		                $("#selectAllCheckbox").prop("checked", true);
+		            } else {
+		                $("#selectAllCheckbox").prop("checked", false);
+		            }
+			    };
+				
+			    $("#selectAllCheckbox").click(function(item) {
+			    	selectedItems = [];
+			    	if(this.checked) { // check select status
+			            $('.singleCheckbox').each(function() { 
+			                this.checked = true;   
+			                selectItem($(this).parent().next().text());           
+			            });	
+			        }else {
+			            $('.singleCheckbox').each(function() { 
+			                this.checked = false;      
+			                unselectItem(item);
+			            });  
+			            selectedItems = [];
+			        }
+			   	});
+			}
+		</script>
+
+		<script src="/js/ckeditor/ckeditor.js"></script>
+	</div>
+</body>
+</html>
