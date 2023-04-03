@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : FcltMngDaoImpl.xml
+	Description : 시설
+-->
+<mapper namespace="com.kbrainc.plum.mng.fcltMng.model.FcltMngDao">
+    
+    <!-- 시설 목록 조회 -->
+    <select id="selectFcltMngList" parameterType="FcltMngVo" resultType="FcltMngVo">
+        /* FcltMngDao.selectFcltMngList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+	        A.FCLTID
+            , A.FCLT_NM
+            , A.FCLT_NO
+            , A.INSTID
+            , A.ZIP
+            , A.ADDR
+            , A.ADDR_DTL
+            , A.RGN_CD
+            , A.APLY_MTHD_CD
+            , A.EXTNL_URL
+            , A.BANK_CD
+            , A.BACNT_NO
+            , A.DPSTR_NM
+            , A.RPRS_IMG_FILEID
+            , A.DTL_IMG_FILEGRPID
+            , A.GDNC_FILEID
+            , A.DTL_CN
+            , A.USE_YN
+            , A.MDFCN_DT
+            , A.MDFRID
+            , A.REG_DT
+            , A.RGTRID
+            , B.INST_NM
+            , C.CD_NM AS RGN_NM
+            , D.CD_NM AS APLY_MTHD_NM
+            , IFNULL(E.CNT, 0) AS OWN_CNT
+        FROM 
+            TB_FCL_FCLT A
+            LEFT OUTER JOIN TB_CMM_INST B ON A.INSTID = B.INSTID
+            LEFT OUTER JOIN (SELECT COUNT(*) AS CNT, FCLTID FROM TB_FCL_SPCE GROUP BY FCLTID) E ON A.FCLTID = E.FCLTID
+            INNER JOIN (
+                SELECT
+                    CD
+                    , CD_NM
+                FROM
+                    TB_CMM_CD
+                WHERE
+                    CDGRPID = 143
+            ) C ON (C.CD = A.RGN_CD)
+            INNER JOIN (
+                SELECT
+                    CD
+                    , CD_NM
+                FROM
+                    TB_CMM_CD
+                WHERE
+                    CDGRPID = 153
+            ) D ON (D.CD = A.APLY_MTHD_CD)
+        WHERE 
+            1=1
+            AND A.INSTID = B.INSTID
+            <if test="instid != null and instid != 0">
+            AND A.INSTID = #{instid}
+            </if>
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'fcltNm'">
+            AND A.FCLT_NM LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'instNm'">
+            AND B.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+            <if test="searchSeCd != null and searchSeCd != ''">
+            AND A.APLY_MTHD_CD = #{searchSeCd}
+            </if>
+            <if test="searchRgnCd != null and searchRgnCd != ''">
+            AND A.RGN_CD = #{searchRgnCd}
+            </if>
+            <if test="searchUseYn != null and searchUseYn != ''">
+            AND A.USE_YN = #{searchUseYn}
+            </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 시설명 중복 조회 -->
+    <select id="checkDuplicateFcltNm" parameterType="FcltMngVo" resultType="Int">
+        /* FcltMngDao.checkDuplicateFcltNm */
+        SELECT COUNT(*) AS DUP_CNT
+        FROM TB_FCL_FCLT
+        WHERE INSTID = #{instid}
+          AND FCLT_NM = #{fcltNm}
+    </select>
+    
+    <!-- 시설번호 생성 -->
+    <select id="selectFcltNo" parameterType="FcltMngVo" resultType="FcltMngVo">
+        /* FcltMngDao.selectFcltNo */
+        SELECT IFNULL(LPAD(MAX(FCLT_NO) + 1, 4, 0), '0001') AS FCLT_NO
+        FROM (
+                 SELECT RIGHT(FCLT_NO, 4) AS FCLT_NO
+                 FROM TB_FCL_FCLT
+                 WHERE FCLT_NO 
+                 LIKE CONCAT(#{fcltVal},'%')
+                 ) A
+    </select>
+    
+    <!-- 시설 등록 --> 
+    <insert id="insertFcltMng" parameterType="FcltMngVo" keyProperty="userid">
+        /* FcltMngDao.insertFcltMng */
+        INSERT INTO TB_FCL_FCLT (
+            FCLT_NM
+            , FCLT_NO
+            , INSTID
+            , ZIP
+            , ADDR
+            , ADDR_DTL
+            , RGN_CD
+            , APLY_MTHD_CD
+            , EXTNL_URL
+            , BANK_CD
+            , BACNT_NO
+            , DPSTR_NM
+            , RPRS_IMG_FILEID
+            , DTL_IMG_FILEGRPID
+            , GDNC_FILEID
+            , DTL_CN
+            , USE_YN
+            , REG_DT
+            , RGTRID
+            , MDFCN_DT
+            , MDFRID
+          )VALUES(
+            #{fcltNm}
+            ,#{fcltNo}
+            ,#{instid}
+            ,#{zip}
+            ,#{addr}
+            ,#{addrDtl}
+            ,#{rgnCd}
+            ,#{aplyMthdCd}
+            ,#{extnlUrl}
+            ,#{bankCd}
+            ,#{bacntNo}
+            ,#{dpstrNm}
+            ,#{rprsImgFileid}
+            ,#{dtlImgFilegrpid}
+            ,#{gdncFileid}
+            ,#{dtlCn}
+            ,#{useYn}
+            ,NOW()
+            ,#{user.userid}
+            ,NOW()
+            ,#{user.userid}
+          )
+    </insert>
+    
+    <!-- 시설 상세조회 -->
+    <select id="selectFcltMngInfo" parameterType="FcltMngVo" resultType="FcltMngVo"> 
+        /* FcltMngDao.selectFcltMngInfo */
+        SELECT
+            A.FCLTID
+            , A.FCLT_NM
+            , A.FCLT_NO
+            , A.INSTID
+            , A.ZIP
+            , A.ADDR
+            , A.ADDR_DTL
+            , A.RGN_CD
+            , A.APLY_MTHD_CD
+            , A.EXTNL_URL
+            , A.BANK_CD
+            , A.BACNT_NO
+            , A.DPSTR_NM
+            , A.RPRS_IMG_FILEID
+            , A.DTL_IMG_FILEGRPID
+            , A.GDNC_FILEID
+            , A.DTL_CN
+            , A.USE_YN
+            , A.MDFCN_DT
+            , A.MDFRID
+            , A.REG_DT
+            , A.RGTRID
+            , B.INST_NM
+            , C.CD_NM AS RGN_NM
+            , D.CD_NM AS APLY_MTHD_NM
+            , E.NM
+        FROM 
+            TB_FCL_FCLT A
+            LEFT OUTER JOIN TB_CMM_INST B ON A.INSTID = B.INSTID
+            LEFT OUTER JOIN TB_CMM_USER E ON A.RGTRID = E.USERID
+            INNER JOIN (
+                SELECT
+                    CD
+                    , CD_NM
+                FROM
+                    TB_CMM_CD
+                WHERE
+                    CDGRPID = 143
+            ) C ON (C.CD = A.RGN_CD)
+            INNER JOIN (
+                SELECT
+                    CD
+                    , CD_NM
+                FROM
+                    TB_CMM_CD
+                WHERE
+                    CDGRPID = 153
+            ) D ON (D.CD = A.APLY_MTHD_CD)
+        WHERE 
+            1=1
+            AND A.INSTID = B.INSTID
+       AND FCLTID = #{fcltid}
+    </select>
+    
+    <!-- 시설 수정 -->
+    <update id="updateFcltMng" parameterType="FcltMngVo" keyProperty="userid">
+        /* FcltMngDao.updateFcltMng */
+        UPDATE TB_FCL_FCLT SET
+                FCLT_NM                 = #{fcltNm}
+                ,INSTID                = #{instid} 
+                ,ZIP                    = #{zip} 
+                ,ADDR                    = #{addr} 
+                ,ADDR_DTL                 = #{addrDtl} 
+                ,RGN_CD               = #{rgnCd}
+                ,APLY_MTHD_CD                 = #{aplyMthdCd}
+                ,EXTNL_URL                 = #{extnlUrl}
+                ,BANK_CD                 = #{bankCd}
+                ,BACNT_NO                 = #{bacntNo}
+                ,DPSTR_NM                 = #{dpstrNm}
+                ,RPRS_IMG_FILEID                 = #{rprsImgFileid}
+                ,DTL_IMG_FILEGRPID                 = #{dtlImgFilegrpid}
+                ,GDNC_FILEID                 = #{gdncFileid}
+                ,DTL_CN                 = #{dtlCn}
+                ,USE_YN                 = #{useYn}
+                ,MDFCN_DT                 = NOW()
+                ,MDFRID                 = #{user.userid}
+         WHERE FCLTID = #{fcltid}
+    </update>
+    
+    <!-- 시설 삭제 -->
+    <delete id="deleteFcltMng" parameterType="FcltMngVo">
+        /* FcltMngDao.deleteFcltMng */
+		DELETE FROM TB_FCL_FCLT 
+        WHERE FCLTID = #{fcltid}
+    </delete>
+    
+</mapper>
