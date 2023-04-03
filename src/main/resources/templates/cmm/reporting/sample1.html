@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html 
+xmlns:th="http://www.thymeleaf.org"
+xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+style="height:100%">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" charset="utf-8"/>
+<script th:src="${T(com.kbrainc.plum.rte.util.CommonUtil).reportingUrl}+@{/oz80/ozhviewer/jquery-2.0.3.min.js}"></script>
+<link rel="stylesheet" th:href="${T(com.kbrainc.plum.rte.util.CommonUtil).reportingUrl}+@{/oz80/ozhviewer/jquery-ui.css}" type="text/css"/>
+<script th:src="${T(com.kbrainc.plum.rte.util.CommonUtil).reportingUrl}+@{/oz80/ozhviewer/jquery-ui.min.js}"></script>
+<link rel="stylesheet" th:href="${T(com.kbrainc.plum.rte.util.CommonUtil).reportingUrl}+@{/oz80/ozhviewer/ui.dynatree.css}" type="text/css"/>
+<script type="text/javascript" th:src="${T(com.kbrainc.plum.rte.util.CommonUtil).reportingUrl}+@{/oz80/ozhviewer/jquery.dynatree.js}" charset="utf-8"></script>
+<script type="text/javascript" th:src="${T(com.kbrainc.plum.rte.util.CommonUtil).reportingUrl}+@{/oz80/ozhviewer/OZJSViewer.js}" charset="utf-8"></script>
+</head>
+<body style="width:98%;height:98%">
+<div id="OZViewer" style="width:98%;height:98%"></div>
+<script th:inline="javascript">
+	/*[# th:if="${T(com.kbrainc.plum.rte.util.CommonUtil).reportingUrl}"]*/
+	var reportingUrl = /*[[${T(com.kbrainc.plum.rte.util.CommonUtil).reportingUrl}]]*/ null;
+    /*[/]*/
+	var id = /*[[${id}]]*/ null;
+	
+	function SetOZParamters_OZViewer(){
+		var oz;
+		oz = document.getElementById("OZViewer");
+		/*[# th:if="${T(com.kbrainc.plum.rte.util.CommonUtil).reportingUrl}"]*/
+		oz.sendToActionScript("connection.servlet", reportingUrl+"/oz80/server");
+		/*[/]*/
+		/*[# th:unless="${T(com.kbrainc.plum.rte.util.CommonUtil).reportingUrl}"]*/
+		oz.sendToActionScript("connection.servlet", "/oz80/server");
+		/*[/]*/
+		oz.sendToActionScript("connection.reportname", "/designated_program_outline.ozr");
+
+		oz.sendToActionScript("odi.odinames", "designated_program_outline");
+		oz.sendToActionScript("odi.designated_program_outline.pcount", "3");
+		oz.sendToActionScript("odi.designated_program_outline.ars1", "OZParam.PRGRMID="+id); // 해당 조회 id
+		oz.sendToActionScript("odi.designated_program_outline.ars2", "OZParam.STTS_CD=132101");		
+		oz.sendToActionScript("odi.designated_program_outline.ars3", "OZParam.SBMSN_SE_CD=Y");		
+		
+		
+		oz.sendToActionScript("pdf.fontembedding","true");	//필수, pdf저장시에 폰트정보 포함
+		oz.sendToActionScript("pdf.fontembedding_subset","true");	//폰트정보의 파일사이즈를 줄이기 위해서 필요
+
+		return true;
+	}
+	/*[# th:if="${T(com.kbrainc.plum.rte.util.CommonUtil).reportingUrl}"]*/
+	start_ozjs("OZViewer", reportingUrl+"/oz80/ozhviewer/");
+	/*[/]*/
+	/*[# th:unless="${T(com.kbrainc.plum.rte.util.CommonUtil).reportingUrl}"]*/
+	start_ozjs("OZViewer", "/oz80/ozhviewer/");
+	/*[/]*/
+	
+</script>
+</body>
+</html>
