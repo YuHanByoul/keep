@@ -13,7 +13,7 @@
             <input type="hidden" id="pageNumber" name="pageNumber" value="1">
             <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
             <input type="hidden" id="orderDirection" name="orderDirection" value="desc">
-            <input type="hidden" id="orderField" name="orderField" value="REG_DT">
+            <input type="hidden" id="orderField" name="orderField" value="END_DE">
         </form>
         
         <div id="pagination">
@@ -28,7 +28,7 @@
         <!-- //content -->
         <script th:inline="javascript">
             var srvy = {
-                listUrl: "/front/srvy/selectSrvyList.do"
+                listUrl: "/front/srvyHstry/selectSrvyHstryList.do"
                 
                 , init: function() {
                     this.onLoadData();
@@ -76,7 +76,9 @@
                 
                 , getListItem: function(data) {
                     var stts = data.sttsNm;
+                    var ctgry = data.srvyCtgry;
                     var btnTag = '';
+                    var ctgryTag = "";
                     if(stts == "설문참여") {
                         btnTag = '<div class="btn"><button type="button" class="btn-medium btn-blue" onclick="srvy.onSrvySbmsnInsertPopup(' + data.srvyid + ', ' + data.qestnrid + ');">설문참여</button></div>';
                     } else if(stts == "설문확인") {
@@ -84,8 +86,18 @@
                     } else if(stts == "기간종료") {
                         btnTag = '<div class="btn"><button type="button" class="btn-medium btn-end" disabled>기간종료</button></div>';
                     }
+                    if(ctgry == "일반") {
+                        ctgryTag = '<span class="tag tag-gray mb10">일반 설문</span>';
+                    } else if(ctgry == "유아") {
+                        ctgryTag = '<span class="tag tag-blue mb10">유아환경교육관 설문</span>';
+                    } else if(ctgry == "푸름이") {
+                        ctgryTag = '<span class="tag tag-green mb10">푸름이 이동환경교실 설문</span>';
+                    } else if(ctgry == "컨설팅") {
+                        ctgryTag = '<span class="tag tag-red mb10">지정 컨설팅 설문</span>';
+                    }
+                    
                     var item = '<li><dl>';
-                    item += '<dt>' + data.srvyNm + '</dt>';
+                    item += '<dt>' + ctgryTag + '<div>' + data.srvyNm + '</div></dt>';
                     item += '<dd>';
                     item += '<strong>설문참여기간</strong>';
                     item += '<span>' + data.bgngDe + ' ~ ' + data.endDe + '</span>';
