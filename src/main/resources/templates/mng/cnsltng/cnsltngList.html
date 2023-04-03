@@ -33,17 +33,21 @@
                          </div>
                          <div class="col-lg-3 mb-3">
                                <div class="mb-0 form-group row">
-                                   <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterSearchStartRequestDate"><strong>신청일 - 검색시작일</strong></label>
+                                   <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterSearchStartRequestDate"><strong>신청일</strong></label>
                                    <div class="col-sm-12">
-                                       <input class="form-control form-control-sm" type="date" name="searchRegStrtDt" id="searchRegStrtDt"/>
+                                       <input class="form-control form-control-sm" type="text" name="filterSearchSelectDate1" id="filterSearchSelectDate1"/>
+                                       <input  type="hidden" name="searchRegStrtDt" id="searchRegStrtDt"/>
+                                       <input  type="hidden" name="searchRegEndDt"  id="searchRegEndDt"/>
                                    </div>
                                </div>
                          </div>
                          <div class="col-lg-3 mb-3">
                                <div class="mb-0 form-group row">
-                                   <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" ><strong>신청일 - 검색종료일</strong></label>
+                                   <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" ><strong>현장 방문일</strong></label>
                                    <div class="col-sm-12">
-                                       <input class="form-control form-control-sm" name="searchRegEndDt" id="searchRegEndDt" type="date"/>
+                                       <input class="form-control form-control-sm" name="filterSearchSelectDate2" id="filterSearchSelectDate2" type="text"/>
+                                       <input type="hidden" name="searchHopeStrtDt" id="searchHopeStrtDt" />
+                                       <input type="hidden" name="searchHopeEndDt"  id="searchHopeEndDt" />
                                    </div>
                                </div>
                          </div>
@@ -66,22 +70,6 @@
                                  <span kattr:select_code="searchSttsCd" grpCd="131" isAdmin="true" firstOptTxt="- 전체 - "></span>
                                  </div>
                              </div>
-                         </div>
-                         <div class="col-lg-3 mb-3">
-                               <div class="mb-0 form-group row">
-                                   <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterSearchStartRequestDate"><strong>현장방문 - 검색시작일</strong></label>
-                                   <div class="col-sm-12">
-                                       <input class="form-control form-control-sm" type="date" name="searchHopeStrtDt" id="searchHopeStrtDt"/>
-                                   </div>
-                               </div>
-                         </div>
-                         <div class="col-lg-3 mb-2">
-                               <div class="mb-0 form-group row">
-                                   <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" ><strong>현장방문 - 검색종료일</strong></label>
-                                   <div class="col-sm-12">
-                                       <input class="form-control form-control-sm" name="searchHopeEndDt" id="searchHopeEndDt" type="date"/>
-                                   </div>
-                               </div>
                          </div>
                      </div>
                      <!-- //키워드 filter -->
@@ -126,17 +114,20 @@
       </div>
   </div>
   
+  <script type="text/javascript" src="/files/bower_components/handlebars/handlebars.min.js" charset="utf-8" ></script>
+  <link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+  <script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
   <script th:inline="javascript">
-
     var Pop = "";
     var gridHelper1 ;
     var menuModal;
     
     $(function(){
        gridHelper1 = new GridHelper('jsGrid','contentPanel');
+       initDataRangePicker();
        writeJsGridData()
     });
-
     function writeJsGridData(){
         
         $("#jsGrid").jsGrid({
@@ -156,13 +147,10 @@
             pageLoading: true,
             pageIndex: 1,
             noDataContent: "데이터가 없습니다.",
-            
             controller: {
                 loadData: function (filter) {
                     var data = $.Deferred();
-                    
                     var formData = $('#searchFrm').serializeArray();
-                    
                     var params = [
                             {name: "pageNumber", value: filter.pageIndex},
                             {name: "rowPerPage", value: filter.pageSize},
@@ -214,7 +202,38 @@
             /*[/]*/
         });
     }
-
+    initDataRangePicker=()=>{
+        
+        $("#filterSearchSelectDate1, #filterSearchSelectDate2").daterangepicker({
+            opens: 'left',
+            startDate : false,
+            endDate : false,
+            locale: {
+                "separator": " ~ ",                     // 시작일시와 종료일시 구분자
+                "format": 'YYYY-MM-DD',     // 일시 노출 포맷
+                "applyLabel": "적용",                    // 확인 버튼 텍스트
+                "cancelLabel": "취소",                   // 취소 버튼 텍스트
+                "daysOfWeek": ["일", "월", "화", "수", "목", "금", "토"],
+                "monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"]
+            }
+          }, function(start, end, label) {
+            console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+        });
+        
+        $("#filterSearchSelectDate1, #filterSearchSelectDate2 ").val("");
+        
+        $("#filterSearchSelectDate1").on('apply.daterangepicker', function(ev, picker) {
+            $("#searchRegStrtDt").val(picker.startDate.format('YYYY-MM-DD'));
+            $("#searchRegEndDt").val(picker.endDate.format('YYYY-MM-DD'));
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+        });
+        $("#filterSearchSelectDate2").on('apply.daterangepicker', function(ev, picker) {
+            $("#searchHopeStrtDt").val(picker.startDate.format('YYYY-MM-DD'));
+            $("#searchHopeEndDt").val(picker.endDate.format('YYYY-MM-DD'));
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+        });
+        
+    }
     function fn_init() {
         $("#searchInstNm").val('');
         $("#searchPrgrmNm").val('');
@@ -224,8 +243,9 @@
         $("#searchRegEndDt").val('');
         $("#searchHopeStrtDt").val('');
         $("#searchHopeEndDt").val('');
+        $("#filterSearchSelectDate1").val('');
+        $("#filterSearchSelectDate2").val('');
     }
-    
     function fn_searchForm(){
 
         var SearchRegStrtDt  = $("#searchRegStrtDt").val();
