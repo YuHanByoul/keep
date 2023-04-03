@@ -2,6 +2,7 @@ package com.kbrainc.plum.front.search.service;
 
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -29,8 +30,8 @@ import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 public class SearchServiceImpl extends PlumAbstractServiceImpl implements SearchService {
     
     /** 검색엔진 서버URL */
-    //@Value("${search.serverUrl}")
-    private String searchServerUrl = "http://100.100.24.109:5001"; // 프로퍼티 처리해야함.
+    @Value("${search.serverUrl}")
+    private String searchServerUrl;
     
     private final RestTemplate restTemplate = new RestTemplate();
     
