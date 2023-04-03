@@ -2020,7 +2020,7 @@ var safeActiveElement = $.ui.safeActiveElement = function( document ) {
 var safeBlur = $.ui.safeBlur = function( element ) {
 
 	// Support: IE9 - 10 only
-	// If the <body> is blurred, IE will switch windows, see #9420
+	// If the <body class="preload"> is blurred, IE will switch windows, see #9420
 	if ( element && element.nodeName.toLowerCase() !== "body" ) {
 		$( element ).trigger( "blur" );
 	}
