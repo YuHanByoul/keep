@@ -12,6 +12,7 @@ $(function (){
 	// uploadFile();
 	headerSearch.init();
 	asideScrollTop();
+	$('body').removeClass('preload');
 });
 
 let $WINDOW_MODE = '';
@@ -469,7 +470,7 @@ const formStyle = {
 		})
 	},
 	widthEnabled : function () {
-		$('.form-input input,.form-input select,.form-input textarea,.form-input-file').each(function () {
+		$('.form-input input,.form-input select, .form-input textarea, .form-input .label, .form-input-file').each(function () {
 			if ($(this).data('width')) {
 				$(this).css({
 					'width': $(this).data('width'),
@@ -479,7 +480,7 @@ const formStyle = {
 		})
 	},
 	widthDisabled : function () {
-		$('.form-input input,.form-input select,.form-input textarea,.form-input-file').each(function () {
+		$('.form-input input, .form-input select, .form-input textarea, .form-input .label, .form-input-file').each(function () {
 			if ($(this).data('width')) {
 				$(this).removeAttr('style');
 			}

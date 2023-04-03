@@ -139,64 +139,30 @@
         
     </form>
     
-    <div class="rank-list rank-tab-list mt45">
-        <div class="tab-content">
-            <dl>
-                <dt>인기검색어</dt>
-                <dd>
-                    <ul class="tab-list tab-text-list" role="tablist">
-                        <li class="active"><button type="button" role="tab" aria-controls="tab-rank1" id="rank-tab1" aria-selected="true">일간</button></li>
-                        <li><button type="button" role="tab" aria-controls="tab-rank2" id="rank-tab2" aria-selected="false">주간</button></li>
-                        <li><button type="button" role="tab" aria-controls="tab-rank3" id="rank-tab3" aria-selected="false">월간</button></li>
-                    </ul>
-                </dd>
-            </dl>
-            <div id="tab-rank1" class="tabpanel" role="tabpanel" aria-labelledby="rank-tab1">
-                <div class="list-inner">
-                    <ul>
-                        <li><a href="#">1꾸러미 06_Zero Hit</a></li>
-                        <li><a href="#">1꾸러미 06_Zero Hit</a></li>
-                        <li><a href="#">1꾸러미 06_Zero Hit</a></li>
-                        <li><a href="#">1꾸러미 06_Zero Hit</a></li>
-                        <li><a href="#">1꾸러미 06_Zero Hit</a></li>
-                        <li><a href="#">1꾸러미 06_Zero Hit</a></li>
-                        <li><a href="#">1꾸러미 06_Zero Hit</a></li>
-                        <li><a href="#">1꾸러미 06_Zero Hit</a></li>
-                        <li><a href="#">1꾸러미 06_Zero Hit</a></li>
-                        <li><a href="#">1꾸러미 06_Zero Hit</a></li>
-                    </ul>
+    <div class="pc-only">
+        <div class="rank-list rank-tab-list mt45">
+            <div class="tab-content">
+                <dl>
+                    <dt>인기검색어</dt>
+                    <dd>
+                        <ul class="tab-list tab-text-list" role="tablist">
+                            <li class="active"><button type="button" role="tab" aria-controls="tab-rank1" id="rank-tab1" aria-selected="true">일간</button></li>
+                            <li><button type="button" role="tab" aria-controls="tab-rank2" id="rank-tab2" aria-selected="false">주간</button></li>
+                            <li><button type="button" role="tab" aria-controls="tab-rank3" id="rank-tab3" aria-selected="false">월간</button></li>
+                        </ul>
+                    </dd>
+                </dl>
+                <div id="tab-rank1" class="tabpanel" role="tabpanel" aria-labelledby="rank-tab1">
+                    <div class="list-inner" id="tabRank1">
+                    </div>
                 </div>
-            </div>
-            <div id="tab-rank2" class="tabpanel" role="tabpanel" aria-labelledby="rank-tab2">
-                <div class="list-inner">
-                    <ul>
-                        <li><a href="#">2꾸러미 06_Zero Hit</a></li>
-                        <li><a href="#">2꾸러미 06_Zero Hit</a></li>
-                        <li><a href="#">2꾸러미 06_Zero Hit</a></li>
-                        <li><a href="#">2꾸러미 06_Zero Hit</a></li>
-                        <li><a href="#">2꾸러미 06_Zero Hit</a></li>
-                        <li><a href="#">2꾸러미 06_Zero Hit</a></li>
-                        <li><a href="#">2꾸러미 06_Zero Hit</a></li>
-                        <li><a href="#">2꾸러미 06_Zero Hit</a></li>
-                        <li><a href="#">2꾸러미 06_Zero Hit</a></li>
-                        <li><a href="#">2꾸러미 06_Zero Hit</a></li>
-                    </ul>
+                <div id="tab-rank2" class="tabpanel" role="tabpanel" aria-labelledby="rank-tab2">
+                    <div class="list-inner" id="tabRank2">
+                    </div>
                 </div>
-            </div>
-            <div id="tab-rank3" class="tabpanel" role="tabpanel" aria-labelledby="rank-tab3">
-                <div class="list-inner">
-                    <ul>
-                        <li><a href="#">3꾸러미 06_Zero Hit</a></li>
-                        <li><a href="#">3꾸러미 06_Zero Hit</a></li>
-                        <li><a href="#">3꾸러미 06_Zero Hit</a></li>
-                        <li><a href="#">3꾸러미 06_Zero Hit</a></li>
-                        <li><a href="#">3꾸러미 06_Zero Hit</a></li>
-                        <li><a href="#">3꾸러미 06_Zero Hit</a></li>
-                        <li><a href="#">3꾸러미 06_Zero Hit</a></li>
-                        <li><a href="#">3꾸러미 06_Zero Hit</a></li>
-                        <li><a href="#">3꾸러미 06_Zero Hit</a></li>
-                        <li><a href="#">3꾸러미 06_Zero Hit</a></li>
-                    </ul>
+                <div id="tab-rank3" class="tabpanel" role="tabpanel" aria-labelledby="rank-tab3">
+                    <div class="list-inner" id="tabRank3">
+                    </div>
                 </div>
             </div>
         </div>
@@ -790,7 +756,67 @@
 
         </div>
     </div>
+
+<script type="text/javascript">
+
+    $(function() {
+        // 인기검색어 조회
+        if(displayWorkProgress(true)){
+            $.ajax({
+                url : "/search/trndKeyword",
+                cache : false,
+                dataType: 'json',
+                success : function (data){
+                    $("#tabRank1").empty();
+                    $("#tabRank2").empty();
+                    $("#tabRank3").empty();
+                    
+                    if (data.DAY.length == 0){
+                        $("#tabRank1").html('<p>일간 인기 검색어가 없습니다.</p>');
+                    }else{
+                        var html = '';
+                        html += '<ul>';
+                        for(var i = 0; i < data.DAY.length; i++){
+                            html += `<li><a href="/search.html?keyword=${data.DAY[i]._KEYWORD}">${data.DAY[i]._KEYWORD}</a></li>`;            
+                        }
+                        html += '</ul>';
+                        $("#tabRank1").append(html);
+                    }
+                    
+                    if (data.WEEK.length == 0){
+                        $("#tabRank2").html('<p>주간 인기 검색어가 없습니다.</p>');
+                    }else{
+                        var html = '';
+                        html += '<ul>';
+                        for(var i = 0; i < data.WEEK.length; i++){
+                            html += `<li><a href="/search.html?keyword=${data.WEEK[i]._KEYWORD}">${data.WEEK[i]._KEYWORD}</a></li>`;            
+                        }
+                        html += '</ul>';
+                        $("#tabRank2").append(html);
+                    }
+                    
+                    if (data.MONTH.length == 0){
+                        $("#tabRank3").html('<p>월간 인기 검색어가 없습니다.</p>');
+                    }else{
+                        var html = '';
+                        html += '<ul>';
+                        for(var i = 0; i < data.MONTH.length; i++){
+                            html += `<li><a href="/search.html?keyword=${data.MONTH[i]._KEYWORD}">${data.MONTH[i]._KEYWORD}</a></li>`;            
+                        }
+                        html += '</ul>';                                
+                        $("#tabRank3").append(html);
+                    }
     
+                    closeWorkProgress();
+                },
+                error :function(){
+                }
+            });
+        }
+    });
+
+    
+</script> 
     
 </div>
 

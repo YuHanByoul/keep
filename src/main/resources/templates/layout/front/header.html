@@ -63,6 +63,11 @@
         alert('준비중 입니다.');
         //location.href = `/search.html?keyword=${keyword}`;
     }
+    
+    function searchKeyword(keyword) {
+        $("#search-input").val(keyword);
+        search();
+    }
 </script>
 
 <form name="form_menu" id="form_menu" th:action="@{/}" method="get" onsubmit="return false;">
@@ -104,46 +109,10 @@
                                                 <li class="tab"><button type="button" id="search-tab3" role="tab" aria-controls="search-tab-panel3">월간</button></li>
                                             </ul>
                                             <div id="search-tab-panel1" class="tabpanel" role="tabpanel" aria-labelledby="search-tab1">
-                                                <ul class="list">
-                                                    <li><button type="button" class="keyword"><span>1환경보전</span></button></li>
-                                                    <li><button type="button" class="keyword"><span>1환경교육</span></button></li>
-                                                    <li><button type="button" class="keyword"><span>1미세먼지</span></button></li>
-                                                    <li><button type="button" class="keyword"><span>1분리수거</span></button></li>
-                                                    <li><button type="button" class="keyword"><span>1체험학습</span></button></li>
-                                                    <li><button type="button" class="keyword"><span>1지침</span></button></li>
-                                                    <li><button type="button" class="keyword"><span>1법령</span></button></li>
-                                                    <li><button type="button" class="keyword"><span>1국가환경교육</span></button></li>
-                                                    <li><button type="button" class="keyword"><span>1지정제</span></button></li>
-                                                    <li><button type="button" class="keyword"><span>1교육 프로그램</span></button></li>
-                                                </ul>
                                             </div>
                                             <div id="search-tab-panel2" class="tabpanel" role="tabpanel" aria-labelledby="search-tab2">
-                                                <ul class="list">
-                                                    <li><button type="button" class="keyword"><span>2환경보전2환경보전2환경보전2환경보전</span></button></li>
-                                                    <li><button type="button" class="keyword"><span>2환경교육</span></button></li>
-                                                    <li><button type="button" class="keyword"><span>2미세먼지</span></button></li>
-                                                    <li><button type="button" class="keyword"><span>2분리수거</span></button></li>
-                                                    <li><button type="button" class="keyword"><span>2체험학습</span></button></li>
-                                                    <li><button type="button" class="keyword"><span>2지침</span></button></li>
-                                                    <li><button type="button" class="keyword"><span>2법령</span></button></li>
-                                                    <li><button type="button" class="keyword"><span>2국가환경교육</span></button></li>
-                                                    <li><button type="button" class="keyword"><span>2지정제</span></button></li>
-                                                    <li><button type="button" class="keyword"><span>2교육 프로그램</span></button></li>
-                                                </ul>
                                             </div>
                                             <div id="search-tab-panel3" class="tabpanel" role="tabpanel" aria-labelledby="search-tab3">
-                                                <ul class="list">
-                                                    <li><button type="button" class="keyword"><span>3환경보전</span></button></li>
-                                                    <li><button type="button" class="keyword"><span>3환경교육</span></button></li>
-                                                    <li><button type="button" class="keyword"><span>3미세먼지</span></button></li>
-                                                    <li><button type="button" class="keyword"><span>3분리수거</span></button></li>
-                                                    <li><button type="button" class="keyword"><span>3체험학습</span></button></li>
-                                                    <li><button type="button" class="keyword"><span>3지침</span></button></li>
-                                                    <li><button type="button" class="keyword"><span>3법령</span></button></li>
-                                                    <li><button type="button" class="keyword"><span>3국가환경교육</span></button></li>
-                                                    <li><button type="button" class="keyword"><span>3지정제</span></button></li>
-                                                    <li><button type="button" class="keyword"><span>3교육 프로그램</span></button></li>
-                                                </ul>
                                             </div>
                                         </div>
                                     </div>
@@ -375,7 +344,46 @@
                         cache : false,
                         dataType: 'json',
                         success : function (data){
-                            console.log(data);
+                            $("#search-tab-panel1").empty();
+                            $("#search-tab-panel2").empty();
+                            $("#search-tab-panel3").empty();
+                            
+                            if (data.DAY.length == 0){
+                                $("#search-tab-panel1").html('<p>일간 인기 검색어가 없습니다.</p>');
+                            }else{
+                                var html = '';
+                                html += '<ul class="list">';
+                                for(var i = 0; i < data.DAY.length; i++){
+                                    html += `<li><button type="button" class="keyword" onclick="searchKeyword('${data.DAY[i]._KEYWORD}')"><span>${data.DAY[i]._KEYWORD}</span></button></li>`;            
+                                }
+                                html += '</ul>';
+                                $("#search-tab-panel1").append(html);
+                            }
+                            
+                            if (data.WEEK.length == 0){
+                                $("#search-tab-panel2").html('<p>주간 인기 검색어가 없습니다.</p>');
+                            }else{
+                                var html = '';
+                                html += '<ul class="list">';
+                                for(var i = 0; i < data.WEEK.length; i++){
+                                    html += `<li><button type="button" class="keyword" onclick="searchKeyword('${data.WEEK[i]._KEYWORD}')"><span>${data.WEEK[i]._KEYWORD}</span></button></li>`;            
+                                }
+                                html += '</ul>';
+                                $("#search-tab-panel2").append(html);
+                            }
+                            
+                            if (data.MONTH.length == 0){
+                                $("#search-tab-panel3").html('<p>월간 인기 검색어가 없습니다.</p>');
+                            }else{
+                                var html = '';
+                                html += '<ul class="list">';
+                                for(var i = 0; i < data.MONTH.length; i++){
+                                    html += `<li><button type="button" class="keyword" onclick="searchKeyword('${data.MONTH[i]._KEYWORD}')"><span>${data.MONTH[i]._KEYWORD}</span></button></li>`;            
+                                }
+                                html += '</ul>';                                
+                                $("#search-tab-panel3").append(html);
+                            }
+
                             $('.header-search').addClass('suggest-active');
                             closeWorkProgress();
                         },

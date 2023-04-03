@@ -22,6 +22,7 @@ import com.kbrainc.plum.mng.example.excel.service.ExcelService;
 import com.kbrainc.plum.mng.qestnr.model.QestnrVo;
 import com.kbrainc.plum.mng.qestnr.model.QitemVo;
 import com.kbrainc.plum.mng.qestnr.service.QestnrServiceImpl;
+import com.kbrainc.plum.mng.srvy.model.EnvEduPrgrmVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyAnsVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyInstVo;
 import com.kbrainc.plum.mng.srvy.model.SrvySiteVo;
@@ -338,7 +339,9 @@ public class SrvyController {
     * @throws Exception 예외
     */
     @RequestMapping(value = "/mng/srvy/aplcntEnvEduSrvyInsertForm.html")
-    public String aplcntEnvEduSrvyInsertForm() throws Exception {
+    public String aplcntEnvEduSrvyInsertForm(SrvyVo srvyVo, Model model) throws Exception {
+        srvyVo.setQestnrKndCd("110103");
+        model.addAttribute("qestnrList", srvyService.selectQestnrList(srvyVo));
         return "mng/srvy/aplcntEnvEduSrvyInsert";
     }
     
@@ -352,7 +355,7 @@ public class SrvyController {
     */
     @RequestMapping(value = "/mng/srvy/aplcntEnvEduSrvyUpdateForm.html")
     public String aplcntEnvEduSrvyUpdateForm(SrvyVo srvyVo, Model model) throws Exception {
-        srvyVo.setQestnrKndCd("110105");
+        srvyVo.setQestnrKndCd("110103");
         model.addAttribute("qestnrList", srvyService.selectQestnrList(srvyVo));
         model.addAttribute("srvyInfo", srvyService.selectSrvyInfo(srvyVo));
         return "mng/srvy/aplcntEnvEduSrvyUpdate";
@@ -380,7 +383,9 @@ public class SrvyController {
       * @throws Exception 예외
       */
       @RequestMapping(value = "/mng/srvy/stdntEnvEduSrvyInsertForm.html")
-      public String stdntEnvEduSrvyInsertForm() throws Exception {
+      public String stdntEnvEduSrvyInsertForm(SrvyVo srvyVo, Model model) throws Exception {
+          srvyVo.setQestnrKndCd("110104");
+          model.addAttribute("qestnrList", srvyService.selectQestnrList(srvyVo));
           return "mng/srvy/stdntEnvEduSrvyInsert";
       }
      
@@ -394,7 +399,7 @@ public class SrvyController {
     */
     @RequestMapping(value = "/mng/srvy/stdntEnvEduSrvyUpdateForm.html")
     public String stdntEnvEduSrvyUpdateForm(SrvyVo srvyVo, Model model) throws Exception {
-        srvyVo.setQestnrKndCd("110106");
+        srvyVo.setQestnrKndCd("110104");
         model.addAttribute("qestnrList", srvyService.selectQestnrList(srvyVo));
         model.addAttribute("srvyInfo", srvyService.selectSrvyInfo(srvyVo));
         return "mng/srvy/stdntEnvEduSrvyUpdate";
@@ -422,7 +427,9 @@ public class SrvyController {
     * @throws Exception 예외
     */
     @RequestMapping(value = "/mng/srvy/aplcntEnvClassroomSrvyInsertForm.html")
-    public String aplcntEnvClassroomSrvyInsertForm() throws Exception {
+    public String aplcntEnvClassroomSrvyInsertForm(SrvyVo srvyVo, Model model) throws Exception {
+        srvyVo.setQestnrKndCd("110105");
+        model.addAttribute("qestnrList", srvyService.selectQestnrList(srvyVo));
         return "mng/srvy/aplcntEnvClassroomSrvyInsert";
     }
     
@@ -436,7 +443,7 @@ public class SrvyController {
     */
     @RequestMapping(value = "/mng/srvy/aplcntEnvClassroomSrvyUpdateForm.html")
     public String aplcntEnvClassroomSrvyUpdateForm(SrvyVo srvyVo, Model model) throws Exception {
-        srvyVo.setQestnrKndCd("110103");
+        srvyVo.setQestnrKndCd("110105");
         model.addAttribute("qestnrList", srvyService.selectQestnrList(srvyVo));
         model.addAttribute("srvyInfo", srvyService.selectSrvyInfo(srvyVo));
         return "mng/srvy/aplcntEnvClassroomSrvyUpdate";
@@ -464,7 +471,9 @@ public class SrvyController {
     * @throws Exception 예외
     */
     @RequestMapping(value = "/mng/srvy/stdntEnvClassroomSrvyInsertForm.html")
-    public String stdntEnvClassroomSrvyInsertForm() throws Exception {
+    public String stdntEnvClassroomSrvyInsertForm(SrvyVo srvyVo, Model model) throws Exception {
+        srvyVo.setQestnrKndCd("110106");
+        model.addAttribute("qestnrList", srvyService.selectQestnrList(srvyVo));
         return "mng/srvy/stdntEnvClassroomSrvyInsert";
     }
     
@@ -478,7 +487,7 @@ public class SrvyController {
     */
     @RequestMapping(value = "/mng/srvy/stdntEnvClassroomSrvyUpdateForm.html")
     public String stdntEnvClassroomSrvyUpdateForm(SrvyVo srvyVo, Model model) throws Exception {
-        srvyVo.setQestnrKndCd("110104");
+        srvyVo.setQestnrKndCd("110106");
         model.addAttribute("qestnrList", srvyService.selectQestnrList(srvyVo));
         model.addAttribute("srvyInfo", srvyService.selectSrvyInfo(srvyVo));
         return "mng/srvy/stdntEnvClassroomSrvyUpdate";
@@ -1571,6 +1580,81 @@ public class SrvyController {
     public Map<String, Object> selectEnvEduSrvyList(SrvyVo srvyVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         List<SrvyVo> result = srvyService.selectEnvEduSrvyList(srvyVo);
+                    
+        if(result.size() > 0) {
+            resultMap.put("totalCount", (result.get(0).getTotalCount()));
+        } else {
+            resultMap.put("totalCount", 0);
+        }
+        resultMap.put("list", result);
+            
+        return resultMap;
+    }
+    
+    /**
+    * 유아환경교육설문 대상프로그램 목록 조회
+    *
+    * @Title : selectEnvEduSrvyList
+    * @Description : 유아환경교육설문 대상프로그램 목록 조회
+    * @param srvyVo SrvyVo 객체
+    * @return Map<String, Object> 응답결과객체
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/srvy/selectEnvEduPrgrmList.do")
+    @ResponseBody
+    public Map<String, Object> selectEnvEduPrgrmList(SrvyVo srvyVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        List<EnvEduPrgrmVo> result = srvyService.selectEnvEduPrgrmList(srvyVo);
+                    
+        if(result.size() > 0) {
+            resultMap.put("totalCount", (result.get(0).getTotalCount()));
+        } else {
+            resultMap.put("totalCount", 0);
+        }
+        resultMap.put("list", result);
+            
+        return resultMap;
+    }
+    
+    /**
+    * 푸름이아동환경교실설문 목록 조회
+    *
+    * @Title : selectEnvClassroomSrvyList
+    * @Description : 푸름이아동환경교실설문 목록 조회
+    * @param srvyVo SrvyVo 객체
+    * @return Map<String, Object> 응답결과객체
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/srvy/selectEnvClassroomSrvyList.do")
+    @ResponseBody
+    public Map<String, Object> selectEnvClassroomSrvyList(SrvyVo srvyVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        List<SrvyVo> result = srvyService.selectEnvClassroomSrvyList(srvyVo);
+                    
+        if(result.size() > 0) {
+            resultMap.put("totalCount", (result.get(0).getTotalCount()));
+        } else {
+            resultMap.put("totalCount", 0);
+        }
+        resultMap.put("list", result);
+            
+        return resultMap;
+    }
+    
+    /**
+    * 푸름이아동환경교실설문 대상프로그램 목록 조회
+    *
+    * @Title : selectEnvClassroomPrgrmList
+    * @Description : 푸름이아동환경교실설문 대상프로그램 목록 조회
+    * @param srvyVo SrvyVo 객체
+    * @return Map<String, Object> 응답결과객체
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/srvy/selectEnvClassroomPrgrmList.do")
+    @ResponseBody
+    public Map<String, Object> selectEnvClassroomPrgrmList(SrvyVo srvyVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        List<EnvEduPrgrmVo> result = srvyService.selectEnvClassroomPrgrmList(srvyVo);
                     
         if(result.size() > 0) {
             resultMap.put("totalCount", (result.get(0).getTotalCount()));

@@ -13,6 +13,7 @@ import com.kbrainc.plum.mng.qestnr.model.QestnrDao;
 import com.kbrainc.plum.mng.qestnr.model.QestnrVo;
 import com.kbrainc.plum.mng.qestnr.model.QitemExVo;
 import com.kbrainc.plum.mng.qestnr.model.QitemVo;
+import com.kbrainc.plum.mng.srvy.model.EnvEduPrgrmVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyAnsVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyDao;
 import com.kbrainc.plum.mng.srvy.model.SrvyInstVo;
@@ -644,6 +645,20 @@ public class SrvyServiceImpl extends PlumAbstractServiceImpl implements SrvyServ
     }
     
     /**
+    * 유아환경교육설문 대상프로그램 목록 조회
+    *
+    * @Title : selectEnvEduPrgrmList
+    * @Description : 유아환경교육목록 대상프로그램 목록 조회
+    * @param srvyVo SrvyVo 객체
+    * @return List<EnvEduPrgrmVo> 유아환경교육설문 대상프로그램 목록
+    * @throws Exception 예외
+    */
+    @Override
+    public List<EnvEduPrgrmVo> selectEnvEduPrgrmList(SrvyVo srvyVo) throws Exception {
+        return srvyDao.selectEnvEduPrgrmList(srvyVo);
+    }
+    
+    /**
     * 푸름이아동환경교실설문 목록 조회
     *
     * @Title : selectEnvClassroomSrvyList
@@ -655,6 +670,20 @@ public class SrvyServiceImpl extends PlumAbstractServiceImpl implements SrvyServ
     @Override
     public List<SrvyVo> selectEnvClassroomSrvyList(SrvyVo srvyVo) throws Exception {
         return srvyDao.selectEnvClassroomSrvyList(srvyVo);
+    }
+    
+    /**
+    * 푸름이아동환경교실설문 대상프로그램 목록 조회
+    *
+    * @Title : selectEnvClassroomPrgrmList
+    * @Description : 푸름이아동환경교실설문 대상프로그램 목록 조회
+    * @param srvyVo SrvyVo 객체
+    * @return List<EnvEduPrgrmVo> 푸름이아동환경교실설문 대상프로그램 목록
+    * @throws Exception 예외
+    */
+    @Override
+    public List<EnvEduPrgrmVo> selectEnvClassroomPrgrmList(SrvyVo srvyVo) throws Exception {
+        return srvyDao.selectEnvClassroomPrgrmList(srvyVo);
     }
     
     /**
