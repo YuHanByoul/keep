@@ -1,0 +1,238 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+
+<div layout:fragment="content">
+    <div id="list-area">
+    </div>
+
+    <div class="pagination" aria-label="pagination">
+        <button type="button" class="first" title="처음"></button>
+        <button type="button" class="prev" title="이전"></button>
+        <button type="button" class="active" title="현재 페이지">1</button>
+        <button type="button">2</button>
+        <button type="button">3</button>
+        <button type="button">4</button>
+        <button type="button">5</button>
+        <button type="button">6</button>
+        <button type="button">7</button>
+        <button type="button">8</button>
+        <button type="button">9</button>
+        <button type="button">10</button>
+        <button type="button" class="next" title="다음"></button>
+        <button type="button" class="last" title="마지막"></button>
+    </div>
+
+    <form class="search-filter" id="searchForm" name="searchForm" onsubmit="return false;">
+        <input type="hidden" id="aplyid" name="aplyid" value="0">
+        <input type="hidden" id="rsvtdeid" name="rsvtdeid" value="0">
+        <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+        <input type="hidden" id="orderField" name="orderField" value="APLYID">
+        <input type="hidden" id="rowPerPage" name="rowPerPage" value="10"/>
+    </form>
+
+    <script th:inline="javascript">
+        var listUrl = "/front/mypage/mypageEnvReqst/selectMypageEnvReqstList.do";
+        var viewUrl = '/front/mypage/mypageEnvReqst/resveEnvView.html';
+        var formUrl = '/front/mypage/mypageEnvReqst/mypage/mypageEnvReqstForm.html';
+        var loginUserid = /*[[${loginUserid}]]*/null;
+
+        $(function () {
+            selectEnvReqstList();
+        });
+
+        function search() {
+            $('#pageNumber').val(1);
+            selectEnvReqstList();rhks
+        }
+
+        function searchInit() {
+            $('#searchKeyword, #clsfCd').val('');
+        }
+
+        function getDatesStartToLast(startDate, lastDate) {
+            var regex = RegExp(/^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/);
+            if(!(regex.test(startDate) && regex.test(lastDate))) return "Not Date Format";
+            var result = [];
+            var curDate = new Date(startDate);
+            while(curDate <= new Date(lastDate)) {
+                result.push(curDate.toISOString().split("T")[0]);
+                curDate.setDate(curDate.getDate() + 1);
+            }
+            return result;
+        }
+
+        function date2str(x, y) {
+            var z = {
+                m: x.getMonth() + 1,
+                d: x.getDate(),
+                H: x.getHours(),
+                M: x.getMinutes(),
+                S: x.getSeconds()
+            };
+
+            y = y.replace(/(m+|d+|H+|M+|S+)/g, function(v) {
+                return ((v.length > 1 ? "0" : "") + z[v.slice(-1)]).slice(-2)
+            });
+
+            return y.replace(/(y+)/g, function(v) {
+                return x.getFullYear().toString().slice(-v.length)
+            });
+        }
+
+        function parseDate(strDate) {
+            var _strDate = strDate;
+            var _dateObj = new Date(_strDate);
+            if (_dateObj.toString() == 'Invalid Date') {
+                _strDate = _strDate.split('.').join('-');
+                _dateObj = new Date(_strDate);
+            }
+            if (_dateObj.toString() == 'Invalid Date') {
+                var _parts = _strDate.split(' ');
+
+                var _dateParts = _parts[0];
+                _dateObj = new Date(_dateParts);
+
+                if (_parts.length > 1) {
+                    var _timeParts = _parts[1].split(':');
+                    _dateObj.setHours(_timeParts[0]);
+                    _dateObj.setMinutes(_timeParts[1]);
+                    if (_timeParts.length > 2) {
+                        _dateObj.setSeconds(_timeParts[2]);
+                    }
+                }
+            }
+
+            return _dateObj;
+        }
+
+        function selectEnvReqstList() {
+
+            if (displayWorkProgress(true)) {
+                $.ajax({
+                    url: listUrl,
+                    cache: false,
+                    dataType: 'json',
+                    data: formData = $('#searchForm').serializeArray(),
+                    type: 'GET',
+                    success: function (data) {
+                        $("#list-area").html(makeListHtml(data.list));
+                        $("#pagination").html(data.pagination);
+                        $("#total-count").html(data.totalCount);
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+
+        function makeListHtml(list) {
+            var html = "";
+            console.log(list);
+            if (list == null || list.length <= 0) {
+                html += `<div class="nodata">'+
+                            '<p><span class="icon icon-notice bg-black9"></span>등록된 환경교육시설이 없습니다.</p>'+
+                         '</div>`;
+            } else {
+                html +='<div class="card-list card-list-n2">\n' +
+                    '            <ul>';
+                list.forEach(function (item) {
+                    let selectedDatesList = [];
+                    let target1 = new Date(item.bgngDt);
+                    let target2 = new Date(item.endDt);
+                    if( !( target1.getFullYear() === target2.getFullYear() &&
+                        target1.getMonth() === target2.getMonth() &&
+                        target1.getDate()=== target2.getDate() ) ) {
+                        let dateList = getDatesStartToLast(date2str(parseDate(item.bgngDt), 'yyyy-mm-dd'), date2str(parseDate(item.endDt), 'yyyy-mm-dd'));
+                        selectedDatesList.push(date2str(parseDate(item.bgngDt), 'yyyy년 mm월 dd일'));
+                        selectedDatesList.push(date2str(parseDate(item.endDt), 'yyyy년 mm월 dd일'));
+                    }
+                    let finalDate = selectedDatesList.join(' ~ ');
+
+                    html += '<li>\n' +
+                '                <div>\n' +
+                '                    <div class="flag bg-green">입금대기</div>\n' +
+                '                    <div class="thumb" style="height:163px;"><img th:src="\'/downloadFileByFileid.do?fileid='+item.rprsImgFileid+'&file_idntfc_key='+item.fileIdntfcKey+'" th:alt="'+item.fcltNm+'"></div>\n' +
+                '                    <dl class="card-program-dot-list">\n' +
+                '                        <dt><a href="javascript:moveToView('+item.aplyid+', '+item.rsvtdeid+')" class="after-link">['+item.fcltNm+'] '+item.spceNm+'</a></dt>\n' +
+                '                        <dd>\n' +
+                '                            <ul class="dot-list fc-black3">\n' +
+                '                                <li class="d-flex">\n' +
+                '                                    <span class="tit">주소 :</span>\n' +
+                '                                    <span class="dc">'+item.addr+ ' '+item.addrDtl+'</span>\n' +
+                '                                </li>\n' +
+                '                                <li class="d-flex">\n' +
+                '                                    <span class="tit">인원 :</span>\n' +
+                '                                    <span class="dc">최대 '+item.maxNope+'인</span>\n' +
+                '                                </li>\n' +
+                '                                <li class="d-flex">\n' +
+                '                                    <span class="tit">면적 :</span>\n' +
+                '                                    <span class="dc">'+item.size+'평형</span>\n' +
+                '                                </li>\n' +
+                '                                <li class="d-flex">\n' +
+                '                                    <span class="tit">날짜 :</span>\n' +
+                '                                    <span class="dc">'+finalDate+'</span>\n' +
+                '                                </li>\n' +
+                '                                <li class="d-flex j-between">\n' +
+                '                                    <div class="d-flex">\n' +
+                '                                        <span class="tit">가격 :</span>\n' +
+                '                                        <span class="dc">100,000원</span>\n' +
+                '                                    </div>\n' +
+                '                                    <button type="button" class="btn-small btn-outline-blue">입금정보</button>\n' +
+                '                                </li>\n' +
+                '                            </ul>\n' +
+                '                        </dd>\n' +
+                '                    </dl>\n' +
+                '                </div>\n' +
+                '            </li>';
+                        //
+                        // '<li>\n' +
+                        // '                <a href="javascript:moveToView('+item.fcltid+')">\n' +
+                        // '                    <div class="thumb" style="height:163px;"><img th:src="\'/downloadFileByFileid.do?fileid='+item.rprsImgFileid+'&file_idntfc_key='+item.fileIdntfcKey+'" th:alt="'+item.fcltNm+'"></div>\n' +
+                        // '                    <dl class="card-cate-list">\n' +
+                        // '                        <dt>\n' +
+                        // '                            <div class="tag tag-blue">'+item.aplyMthdNm+'</div>\n' +
+                        // '                        </dt>\n' +
+                        // '                        <dd>\n' +
+                        // '                            <p class="ellipsis" data-ellipsis="2">'+item.fcltNm+'</p>\n' +
+                        // '                            <p class="fw-400">'+item.addr+ ' '+item.addrDtl+'</p>\n' +
+                        // '                        </dd>\n' +
+                        // '                    </dl>\n' +
+                        // '                </a>\n' +
+                        // '            </li>';
+                    /*html += `<tr>
+                                    <td>${item.rowNumber}</td>
+                                    <td>${item.prcsSttsCdNm}</td>
+                                    <td class="al article"><a href="javascript:void(0)" class="link ellipsis" onclick="moveToView(${item.prpslid}, ${canGoToDetail})">${item.ttl}</a></td>
+                                    <td>${item.clsfCdNm}</td>
+                                    <td>${item.acnt}</td>
+                                    <td>${item.rlsYn == 'Y' ? '공개' : '비공개'}</td>
+                                    <td>${item.regDt}</td>
+                                </tr>`;*/
+                })
+                html += '</ul>' +
+                    '</div>';
+            }
+            return html;
+        }
+
+        function moveToInsertForm() {
+            var f = document.forms.searchForm;
+            f.action = formUrl;
+            f.submit();
+        }
+
+        function moveToView(aplyid, rsvtdeid) {
+            var f = document.forms.searchForm;
+            f.aplyid.value = aplyid;
+            f.rsvtdeid.value = rsvtdeid;
+            f.action = viewUrl;
+            f.submit();
+        }
+
+        function goPage(num) {
+            $("#pageNumber").val(num);
+            selectEnvReqstList();
+        }
+    </script>
+</div>

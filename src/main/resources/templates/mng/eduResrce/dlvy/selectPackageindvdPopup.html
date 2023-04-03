@@ -61,6 +61,7 @@
 <script src="/js/common/handlebars/handlebars.helper.js"></script>
 
 <script type="text/javascript">
+
     // 스캔
     var videoPlay = null;
     var video = document.createElement("video");        
@@ -72,7 +73,7 @@
     var outputData = document.getElementById("outputData");
         
     function startScan() {
-
+        
         function drawLine(begin, end, color) {
             canvas.beginPath();
             canvas.moveTo(begin.x, begin.y);
@@ -167,8 +168,8 @@
 	var noDataMeg = '<li style="padding-top:25px; text-align:center;"><h5><strong>데이터가 없습니다.</a></strong></h5></li>';
     var packListTemplet = Handlebars.compile($("#packListTemplate").html());
     $(function(){
+    	startQR();
     	selectPackList();
-
     });
     
     function selectPackList() {
@@ -201,10 +202,10 @@
             return;
         }
         var dataArr = data.split("/");
-        choosePackageindvd(dataArr[0],dataArr[1]);
+        choosePackageindvd(dataArr[0],dataArr[1],"qrConnect");
     }
     
-    function choosePackageindvd(packageindvdid,indvdno){
+    function choosePackageindvd(packageindvdid,indvdno,isQrApproach){
 
     	var targetVal = $("#packageindvd"+params.ordr).val();
         if( targetVal!= null && targetVal!="" && targetVal > 0) {return;}
@@ -214,6 +215,10 @@
     	
     	if(selectedVal1 == packageindvdid || selectedVal2 == packageindvdid){
             alert("이미 선택 된 꾸러미 개체입니다.");
+            if(isQrApproach=="qrConnect"){
+            	cancelAnimationFrame(videoPlay);
+                startQR();
+            }
             return;	
         }
         
@@ -231,7 +236,7 @@
                     if(data.isOtherPackageYn == 'Y') {
                         alert("신청 꾸러미의 개체가 아닙니다.");
                         startQR();
-                    }if(data.duplicationPackInSameRndYn == 'Y') {
+                    }else if(data.duplicationPackInSameRndYn == 'Y') {
                         alert("동일 대여모집 차시에 이미 승인된 꾸러미 개체입니다.");
                         startQR();
                     }else{

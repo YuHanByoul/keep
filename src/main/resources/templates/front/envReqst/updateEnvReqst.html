@@ -1,0 +1,277 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+<div layout:fragment="content">
+    <link rel="stylesheet" href="/css/front/flatpickr.min.css">
+    <script src="/js/front/flatpickr.js"></script>
+    <script src="/js/front/flatpickr-locale-ko.js"></script>
+
+    <div class="table-caption">
+        <h3 class="sub-title">공간예약정보</h3>
+    </div>
+
+    <form id="envReqstUpdate" >
+        <input type="hidden" id="rsvtdeid" name="rsvtdeid" th:value="${rsvtdeid}">
+        <input type="hidden" id="startDate" name="startDate" th:value="${startDate}">
+        <input type="hidden" id="endDate" name="endDate" th:value="${endDate}">
+        <input type="hidden" id="nopeAdult" name="nopeAdult" th:value="${nopeAdult}">
+        <input type="hidden" id="nopeChil" name="nopeChil" th:value="${nopeChil}">
+        <input type="hidden" id="nopeInfnt" name="nopeInfnt" th:value="${nopeInfnt}">
+        <input type="hidden" id="utztnPrps" name="utztnPrps" th:value="${utztnPrps}">
+        <input type="hidden" id="bacntNo" name="bacntNo" th:value="${spceInfo.bacntNo}">
+        <input type="hidden" id="amt" name="amt" th:value="${amt}">
+        <div class="table-row">
+            <table>
+                <caption>공간예약정보 - 운영기관, 시설, 공간, 위치, 이용일시, 이용인원, 이용목적, 이용금액, 합계</caption>
+                <colgroup>
+                    <col style="width:140px;">
+                    <col>
+                    <col style="width:140px;">
+                    <col>
+                </colgroup>
+                <tbody>
+                <tr>
+                    <th scope="row">운영기관</th>
+                    <td th:text="${spceInfo.instNm}"></td>
+                    <th scope="row">시설</th>
+                    <td th:text="${spceInfo.fcltNm}">시설</td>
+                </tr>
+                <tr>
+                    <th scope="row">공간</th>
+                    <td th:text="${spceInfo.spceNm}">공간</td>
+                    <th scope="row">위치</th>
+                    <td th:text="${spceInfo.addr}+' '+${spceInfo.addrDtl}">서울특별시 마포구 성산동 137-3</td>
+                </tr>
+                <tr>
+                    <th scope="row">이용일시</th>
+                    <td th:text ="${startDate}+' ~ '+${endDate}"></td>
+                    <th scope="row">이용인원</th>
+                    <td th:text ="성인 +${nopeAdult}+'명, 아동'+${nopeChil}+'명, 유아'+${nopeInfnt}+'명'"></td>
+                </tr>
+                <tr>
+                    <th scope="row">이용목적</th>
+                    <td coslpan="3" th:text ="${utztnPrps}"></td>
+                </tr>
+                <tr>
+                    <th scope="row">이용금액</th>
+                    <td th:text ="${#numbers.formatInteger(amt, 0, 'COMMA') + '원'}"></td>
+                    <th scope="row">합계</th>
+                    <td th:text ="${#numbers.formatInteger(amt, 0, 'COMMA') + '원'}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-caption">
+            <div class="left">
+                <h3 class="sub-title">예약자 정보</h3>
+            </div>
+            <div class="right">
+                <p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
+            </div>
+        </div>
+
+        <div class="table-row table-row-mo">
+            <table>
+                <caption>예약자 정보 - 예약자명, 휴대전화, 이메일</caption>
+                <colgroup>
+                    <col style="width:140px;">
+                    <col>
+                    <col style="width:140px;">
+                    <col>
+                </colgroup>
+                <tbody>
+                <tr>
+                    <th scope="row">예약자명<i class="ast" title="필수입력">*</i></th>
+                    <td><input type="text" title="예약자명" id="aplcntNm" name="aplcntNm" placeholder="실명을 입력해주세요"></td>
+                    <th scope="row">휴대전화<i class="ast" title="필수입력">*</i></th>
+                    <td><input type="text" title="휴대전화" id="aplcntMoblphon" name="aplcntMoblphon" placeholder="휴대전화번호 입력"></td>
+                </tr>
+                <tr>
+                    <th scope="row">이메일<i class="ast" title="필수입력">*</i></th>
+                    <td colspan="3">
+                        <div class="form-input">
+                            <input type="email" title="이메일 아이디" id="eml1" placeholder="이메일 아이디 입력" data-width="160">
+                            <div class="bul">@</div>
+                            <input type="email" id="eml2" title="이메일 도메인" placeholder="이메일 도메인 입력" data-width="160">
+                            <select id="emailList" title="이메일 도메인" data-width="200">
+                                <option value="">직접입력</option>
+                                <option value="chol.com">chol.com</option>
+                                <option value="dreamwiz.com">dreamwiz.com</option>
+                                <option value="empal.com">empal.com</option>
+                                <option value="empas.com">empas.com</option>
+                                <option value="freechal.com">freechal.com</option>
+                                <option value="gmail.com">gmail.com</option>
+                                <option value="hanafos.com">hanafos.com</option>
+                                <option value="hanmail.net">hanmail.net</option>
+                                <option value="hanmir.com">hanmir.com</option>
+                                <option value="hitel.net">hitel.net</option>
+                                <option value="hotmail.com">hotmail.com</option>
+                                <option value="korea.com">korea.com</option>
+                                <option value="lycos.co.kr">lycos.co.kr</option>
+                                <option value="megapass.net">megapass.net</option>
+                                <option value="nate.com">nate.com</option>
+                                <option value="naver.com">naver.com</option>
+                                <option value="paran.com">paran.com</option>
+                                <option value="sayclub.net">sayclub.net</option>
+                                <option value="shinbiro.com">shinbiro.com</option>
+                                <option value="yahoo.co.kr">yahoo.co.kr</option>
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-caption">
+            <div class="left">
+                <h3 class="sub-title">결제정보</h3>
+            </div>
+            <div class="right">
+                <p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
+            </div>
+        </div>
+
+        <div class="table-row table-row-mo">
+            <table>
+                <caption>결제정보 - 결제방법, 입금계좌, 입금자명</caption>
+                <colgroup>
+                    <col style="width:140px;">
+                    <col>
+                    <col style="width:140px;">
+                    <col>
+                </colgroup>
+                <tbody>
+                <tr>
+                    <th scope="row">결제방법</th>
+                    <td>무통장입금</td>
+                    <th scope="row">입금계좌</th>
+                    <td th:text="${spceInfo.bankCdNm}+' '+${spceInfo.bacntNo}+' '+${spceInfo.dpstrNm}">농협 0000-000-0000 청소년교육재단</td>
+                </tr>
+                <tr>
+                    <th scope="row">입금자명<i class="ast" title="필수입력">*</i></th>
+                    <td colspan="3">
+                        <input type="text" title="입금자명" id="pyrNm" name="pyrNm" placeholder="입금자명 입력">
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+
+        <div class="btn-wrap">
+            <div class="center">
+                <button type="button" class="btn-medium btn-gray">이전</button>
+                <button type="button" class="btn-medium btn-green" onclick="fn_updateEnvReqst()">확인</button>
+            </div>
+        </div>
+    </form>
+
+    <script th:inline="javascript">
+        // 데이터 submit
+        function fn_updateEnvReqst(){
+
+            if( !checkData() ) return;
+
+            if(!confirm("저장하시겠습니까?")) return;
+
+            // let data =  $("#envReqstUpdate").serialize();
+            let email = $('#eml1').val()+'@'+$('#eml2').val();
+            let aplcntNm = $('#aplcntNm').val();
+            let aplcntMoblphon = $('#aplcntMoblphon').val();
+            let pyrNm = $('#pyrNm').val();
+
+            let rsvtdeids = JSON.parse(/*[[${rsvtdeid}]]*/null);
+
+            // data = data+'&aplcntEml='+email+'&rsvtdeidLen='+rsvtdeidLen;
+
+            var param = {
+                bgngDt: /*[[${startDate}]]*/null,
+                endDt: /*[[${endDate}]]*/null,
+                nopeAdult: /*[[${nopeAdult}]]*/null,
+                nopeChil: /*[[${nopeChil}]]*/null,
+                nopeInfnt: /*[[${nopeInfnt}]]*/null,
+                utztnPrps: /*[[${utztnPrps}]]*/null,
+                amt: /*[[${amt}]]*/null,
+                aplcntEml : email,
+                utztnSeCd : '169101',
+                bacntNo : /*[[${spceInfo.bacntNo}]]*/null,
+                aplcntNm : aplcntNm,
+                aplcntMoblphon : aplcntMoblphon,
+                pyrNm : pyrNm
+            };
+            /* 169101 숙박, 169102 대여 */
+            for( var i=0; i<rsvtdeids.length; i++ ){
+                param["rsvtdeids[" + i + "]"] = rsvtdeids[i].rsvtdeid;
+            }
+
+            if(displayWorkProgress()){
+                $.ajax({
+                    url : "/front/envReqst/resveEnvUpdate.do",
+                    type: 'POST',
+                    cache : false,
+                    dataType: 'json',
+                    data : param,
+                    success : function (data){
+                        if(data.result=="success"){
+                            console.log(data);
+                            moveToComplete();
+                            alert(data.msg);
+                        }else{
+                            alert(data.msg);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+
+        function checkData(){
+            let aplcntNm = $('#aplcntNm').val();
+            let aplcntMoblphon = $('#aplcntMoblphon').val();
+            let eml1 = $('#eml1').val();
+            let eml2 = $('#eml2').val();
+            let pyrNm = $('#pyrNm').val();
+
+            if( aplcntNm == '' ){
+                alert('예약자명을 입력해 주세요.');
+                return false;
+            }
+            if( aplcntMoblphon == '' ){
+                alert('예약자 휴대전화를 입력해 주세요.');
+                return false;
+            }
+            if( eml1 == '' ){
+                alert('이메일을 입력해 주세요.');
+                return false;
+            }
+            if( eml2 == '' ){
+                alert('이메일 주소를 입력해 주세요.');
+                return false;
+            }
+            if( pyrNm == '' ){
+                alert('입금자명을 입력해 주세요.');
+                return false;
+            }
+
+            return true;
+        }
+
+        function moveToComplete() {
+            location.href = '/front/envReqst/envReqstComplete.html';
+        }
+
+        $(function(){
+            $('#emailList').change(function(e){
+                var self = $(this);
+                var val = self.val();
+                $('input#eml2').val(val);
+            });
+
+
+        })
+    </script>
+</div>
