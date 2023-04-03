@@ -173,6 +173,13 @@
 		                                </tr>
 	                                </th:block>
 	                            </th:block>
+	                            <th:block th:if="${infntAplyEduClssRmList == 'null'}">
+		                            <tr>
+		                                <td class="nodata" colspan="8">
+		                                    <p><span class="icon icon-notice bg-black9"></span>동일 교육관 교육 프로그램이 없습니다.</p>
+		                                </td>
+		                            </tr>
+                               </th:block>
                             </tbody>
                         </table>
                     </div>
@@ -228,7 +235,7 @@
 		<script src="/js/front/flatpickr-locale-ko.js"></script>
 		<script th:inline="javascript">
            $(function() {
-           	infntAplyDetail.validateForm();
+           	//infntAplyDetail.validateForm();
            	infntAplyDetail.fn_makeCalendarEvent();
            });       
 		
@@ -237,6 +244,7 @@
 	            location.href = '/front/infntAply/infntAplyList.html';
 	        },
 	        moveToRegForm() {
+	        	if(!infntAplyDetail.valid()) return false;
 	        	$('#infntAplyForm').submit();
 	        },
 	        fn_makeCalendarEvent() {
@@ -381,14 +389,22 @@
                       }
                   });		        	
 	        },
-	        validateForm() {
+/* 	        validateForm() {
 	            $('#infntAplyForm').validate({
 	                rules: {
 	                	prgrmid: {required: true}
 	                    , tmeSchdlid: {required: true}
 	                }
 	            });
-	        }
+	        }, */
+	        valid() {
+                if($('[name=tmeSchdlid]').val() == "" || $('[name=tmeSchdlid]').val() == undefined) {
+                    alert("교육회차를 선택해 주세요.");
+                    return false;
+                } 
+                return true;
+            }
+            	        
 	    }
 		</script>
     </div>	

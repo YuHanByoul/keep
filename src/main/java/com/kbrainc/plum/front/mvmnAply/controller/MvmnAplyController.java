@@ -47,7 +47,7 @@ import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 public class MvmnAplyController {
 
     @Resource(name = "front.mvmnAplyServiceImpl")
-    private MvmnAplyService MvmnAplyService;
+    private MvmnAplyService mvmnAplyService;
     
     /**
     * 푸름이 이동환경교실 교육신청 게시글 목록 화면 이동
@@ -62,7 +62,7 @@ public class MvmnAplyController {
     */
     @RequestMapping(value="/front/mvmnAply/mvmnAplyList.html")
     public String mvmnAplyListForm(MvmnAplyVo mvmnAplyVo, Model model) throws Exception {
-        model.addAttribute("sareaList", MvmnAplyService.selectEduSareaList(mvmnAplyVo));
+        model.addAttribute("sareaList", mvmnAplyService.selectEduSareaList(mvmnAplyVo));
         
         return "front/mvmnAply/mvmnAplyList";
     }
@@ -79,11 +79,11 @@ public class MvmnAplyController {
     * @return String
     */
     @RequestMapping(value="/front/mvmnAply/mvmnAplyDetailForm.html")
-    public String mvmnAplyDetailForm(MvmnAplyVo mvmnAplyVo, Model model) throws Exception {
+    public String mvmnAplyDetailForm(MvmnAplyVo mvmnAplyVo, @UserInfo UserVo user, Model model) throws Exception {
         MvmnAplyVo mvmnAply = null;
-        mvmnAply = MvmnAplyService.selectMvmnAplyInfo(mvmnAplyVo);
+        mvmnAply = mvmnAplyService.selectMvmnAplyInfo(mvmnAplyVo);
         model.addAttribute("mvmnAply", mvmnAply);
-        model.addAttribute("sareaSignguList", MvmnAplyService.selectMvmnAplySignguList(mvmnAplyVo));
+        model.addAttribute("sareaSignguList", mvmnAplyService.selectMvmnAplySignguList(mvmnAplyVo));
         
         mvmnAplyVo.setInstid(mvmnAply.getInstid());
         mvmnAplyVo.setPrgrmid(mvmnAply.getPrgrmid());
@@ -92,18 +92,19 @@ public class MvmnAplyController {
         List<MvmnAplyVo> mvmnAplyTmeList = null;
         List<MvmnAplyVo> mvmnAplyEduSareaList = null;
         
-        eduPhotoFileList = MvmnAplyService.selectEduPhotoFileList(mvmnAplyVo);
+        eduPhotoFileList = mvmnAplyService.selectEduPhotoFileList(mvmnAplyVo);
         model.addAttribute("eduPhotoFileList", eduPhotoFileList);
+        model.addAttribute("user", user);
         
-        mvmnAplyTmeList =  MvmnAplyService.selectMvmnAplyTmeList(mvmnAplyVo);
-        //mvmnAplyList = MvmnAplyService.selectInstMvmnAplyList(mvmnAplyVo);
+        mvmnAplyTmeList =  mvmnAplyService.selectMvmnAplyTmeList(mvmnAplyVo);
+        //mvmnAplyList = mvmnAplyService.selectInstMvmnAplyList(mvmnAplyVo);
         if(mvmnAplyTmeList.size() <= 0) {
             model.addAttribute("mvmnAplyTmeList", "null");
         }else {
             model.addAttribute("mvmnAplyTmeList", mvmnAplyTmeList);
         }
 
-        mvmnAplyEduSareaList =  MvmnAplyService.selectMvmnAplyEduSareaList(mvmnAplyVo);
+        mvmnAplyEduSareaList =  mvmnAplyService.selectMvmnAplyEduSareaList(mvmnAplyVo);
         if(mvmnAplyEduSareaList.size() <= 0) {
             model.addAttribute("mvmnAplyEduSareaList", "null");
         }else {
@@ -129,7 +130,7 @@ public class MvmnAplyController {
         Map<String, Object> resultMap = new HashMap<>();
         List<MvmnAplyVo> result = null;
         
-        result =  MvmnAplyService.selectMvmnAplyList(mvmnAplyVo);
+        result =  mvmnAplyService.selectMvmnAplyList(mvmnAplyVo);
         
         if (result.size() > 0) {
             resultMap.put("totalCount", (result.get(0).getTotalCount()));
@@ -156,7 +157,7 @@ public class MvmnAplyController {
     @ResponseBody
     public List<MvmnAplyVo> selectMvmnAplyDeList(MvmnAplyVo mvmnAplyVo) throws Exception {
         List<MvmnAplyVo> result = null;
-        result =  MvmnAplyService.selectMvmnAplyDeList(mvmnAplyVo);
+        result =  mvmnAplyService.selectMvmnAplyDeList(mvmnAplyVo);
         return result;
     }
     
@@ -202,7 +203,7 @@ public class MvmnAplyController {
         
         MvmnAplyVo mvmnAplyRegVo = null;
         mvmnAplyVo.setUser(user);        
-        mvmnAplyRegVo = MvmnAplyService.selectMvmnAplyRegInfo(mvmnAplyVo);
+        mvmnAplyRegVo = mvmnAplyService.selectMvmnAplyRegInfo(mvmnAplyVo);
         model.addAttribute("mvmnAplyRegVo", mvmnAplyRegVo);
         
         List<Map<String, String>> listMap = new ArrayList<Map<String, String>>();
@@ -254,7 +255,7 @@ public class MvmnAplyController {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         int retVal = 0;
         
-        retVal = MvmnAplyService.insertMvmnAply(mvmnAplyVo);
+        retVal = mvmnAplyService.insertMvmnAply(mvmnAplyVo);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);

@@ -18,6 +18,7 @@ import com.kbrainc.plum.front.mypage.mvmnAplyHist.model.MvmnAplyHistVo;
 import com.kbrainc.plum.front.mypage.mvmnAplyHist.service.MvmnAplyHistService;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.util.StringUtil;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 
 /**
@@ -78,13 +79,13 @@ public class MvmnAplyHistController {
         
         List<Map<String, String>> listMap = new ArrayList<Map<String, String>>();
         
-        if(!"".equals(mvmnAplyHistRegVo.getTrgtCd())){
+        if(!"".equals(StringUtil.nvl(mvmnAplyHistRegVo.getTrgtCd(), ""))){
             String[] splitTrgtCdStr = mvmnAplyHistRegVo.getTrgtCd().split(",");
             String[] splitTrgtNmStr = mvmnAplyHistRegVo.getTrgtNm().split(",");
             for(int k=0; k<splitTrgtCdStr.length; k++){
                 Map<String, String> map = new HashMap<String, String>();
                 String trgtChk = "";
-                if(!"".equals(mvmnAplyHistRegVo.getTrgtCd())){
+                if(!"".equals(StringUtil.nvl(mvmnAplyHistRegVo.getTrgtCd(), ""))){
                     String[] splitEduTrgtCdStr = mvmnAplyHistRegVo.getTrgtCd().split(",");
                     for(int i=0; i<splitEduTrgtCdStr.length; i++){
                         if(splitEduTrgtCdStr[i].equals(splitTrgtCdStr[k])) {

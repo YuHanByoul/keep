@@ -34,7 +34,7 @@ import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 public class InfntAplyServiceImpl extends PlumAbstractServiceImpl implements InfntAplyService {
 
     @Resource(name = "front.infntAplyDao")
-    private InfntAplyDao InfntAplyDao;
+    private InfntAplyDao infntAplyDao;
 
     /**
     * 유아환경교육관 교육신청 게시글 목록 조회
@@ -48,7 +48,7 @@ public class InfntAplyServiceImpl extends PlumAbstractServiceImpl implements Inf
     */
     @Override
     public List<InfntAplyVo> selectInfntAplyList(InfntAplyVo infntAplyVo) throws Exception {
-        return InfntAplyDao.selectInfntAplyList(infntAplyVo);
+        return infntAplyDao.selectInfntAplyList(infntAplyVo);
     }
     
     /**
@@ -63,7 +63,7 @@ public class InfntAplyServiceImpl extends PlumAbstractServiceImpl implements Inf
     */
     @Override
     public InfntAplyVo selectInfntAplyInfo(InfntAplyVo infntAplyVo) throws Exception {
-        return InfntAplyDao.selectInfntAplyInfo(infntAplyVo);
+        return infntAplyDao.selectInfntAplyInfo(infntAplyVo);
     }
     
     /**
@@ -78,7 +78,7 @@ public class InfntAplyServiceImpl extends PlumAbstractServiceImpl implements Inf
     */
     @Override
     public List<InfntAplyVo> selectInfntAplyTmeList(InfntAplyVo infntAplyVo) throws Exception {
-        return InfntAplyDao.selectInfntAplyTmeList(infntAplyVo);
+        return infntAplyDao.selectInfntAplyTmeList(infntAplyVo);
     }
 
     /**
@@ -93,7 +93,7 @@ public class InfntAplyServiceImpl extends PlumAbstractServiceImpl implements Inf
      */
     @Override
     public List<InfntAplyVo> selectInfntAplyEduClssRmList(InfntAplyVo infntAplyVo) throws Exception {
-        return InfntAplyDao.selectInfntAplyEduClssRmList(infntAplyVo);
+        return infntAplyDao.selectInfntAplyEduClssRmList(infntAplyVo);
     }
     
     /**
@@ -108,7 +108,7 @@ public class InfntAplyServiceImpl extends PlumAbstractServiceImpl implements Inf
     */
     @Override
     public List<InfntAplyVo> selectEduPhotoFileList(InfntAplyVo infntAplyVo) throws Exception {
-        return InfntAplyDao.selectEduPhotoFileList(infntAplyVo);
+        return infntAplyDao.selectEduPhotoFileList(infntAplyVo);
     }
     
     /**
@@ -123,7 +123,7 @@ public class InfntAplyServiceImpl extends PlumAbstractServiceImpl implements Inf
     */
     @Override
     public List<InfntAplyVo> selectInfntAplyDeList(InfntAplyVo infntAplyVo) throws Exception {
-        return InfntAplyDao.selectInfntAplyDeList(infntAplyVo);
+        return infntAplyDao.selectInfntAplyDeList(infntAplyVo);
     } 
 
     /**
@@ -138,7 +138,7 @@ public class InfntAplyServiceImpl extends PlumAbstractServiceImpl implements Inf
     */
     @Override
     public InfntAplyVo selectInfntAplyRegInfo(InfntAplyVo infntAplyVo) throws Exception {
-        return InfntAplyDao.selectInfntAplyRegInfo(infntAplyVo);
+        return infntAplyDao.selectInfntAplyRegInfo(infntAplyVo);
     }
     
     /**
@@ -152,10 +152,10 @@ public class InfntAplyServiceImpl extends PlumAbstractServiceImpl implements Inf
     */
     public int insertInfntAply(InfntAplyVo infntAplyVo) throws Exception{
         int retVal = 0;
-        retVal += InfntAplyDao.insertInfntAply(infntAplyVo);
+        retVal += infntAplyDao.insertInfntAply(infntAplyVo);
         
         if(infntAplyVo.getTrgtCds()!=null & infntAplyVo.getTrgtCds().length > 0) {
-            retVal += InfntAplyDao.insertTrgtCd(infntAplyVo);
+            retVal += infntAplyDao.insertTrgtCd(infntAplyVo);
         }
         return retVal;
     }    
@@ -171,6 +171,6 @@ public class InfntAplyServiceImpl extends PlumAbstractServiceImpl implements Inf
      * @return List<InfntAplyVo>
      */
     public List<InfntAplyVo> selectInfntAplyHistList(InfntAplyVo infntAplyVo) throws Exception{
-        return InfntAplyDao.selectInfntAplyHistList(infntAplyVo);
+        return infntAplyDao.selectInfntAplyHistList(infntAplyVo);
     }        
 }

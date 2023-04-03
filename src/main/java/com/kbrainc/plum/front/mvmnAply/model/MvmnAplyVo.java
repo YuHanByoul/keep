@@ -82,6 +82,13 @@ public class MvmnAplyVo extends ParentRequestVo {
     private String waitCnt;
     /** 신청날짜 */
     private String de;
+    /** 지속교육(날짜) */
+    private String deDesc;
+    /** 지속교육(요일) */
+    private String weekDesc;
+    /** 지속교육 회차일정 저장용 */
+    private String tmeSchdlids;
+
     
     /** 개인정보 수집 이용동의 */
     @NotEmpty(message = "필수항목을 동의해야 교육신청이 가능합니다.")
@@ -223,6 +230,6 @@ public class MvmnAplyVo extends ParentRequestVo {
     private String searchSareaId;
     private String searchTrgtCd;
     private String searchOperFomCd;
-    private String searchClsfCd_1;
-    private String searchClsfCd_2;
+    private String searchClsfCd1;
+    private String searchClsfCd2;
 }

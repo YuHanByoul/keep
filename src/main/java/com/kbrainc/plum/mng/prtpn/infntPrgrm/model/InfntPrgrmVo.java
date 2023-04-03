@@ -151,8 +151,8 @@ public class InfntPrgrmVo extends ParentRequestVo {
     private String searchClssrmId;
     private String searchClsfCd;
     private String searchRcptMthdCd;
-    private String searchClsfCd_1;
-    private String searchClsfCd_2;
+    private String searchClsfCd1;
+    private String searchClsfCd2;
     private String searchUseYn;
     
     /** 첨부파일 관련*/

@@ -194,6 +194,6 @@ public class InfntAplyVo extends ParentRequestVo {
     private String searchKeyword;
     private String searchTrgtCd;
     private String searchCtprvnCd;
-    private String searchClsfCd_1;
-    private String searchClsfCd_2;
+    private String searchClsfCd1;
+    private String searchClsfCd2;
 }
