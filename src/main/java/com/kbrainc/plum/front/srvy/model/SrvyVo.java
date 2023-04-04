@@ -59,6 +59,9 @@ public class SrvyVo extends ParentRequestVo {
     /** 설문기간 코드 */
     private String srvyPrdCd;
     
+    /** 설문 제출일 String */
+    private String sbmsnDtStr;
+    
     /** 설문 제출일 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date sbmsnDt;
