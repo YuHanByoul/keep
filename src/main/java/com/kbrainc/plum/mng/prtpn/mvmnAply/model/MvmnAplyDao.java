@@ -69,7 +69,7 @@ public interface MvmnAplyDao {
     * @Title : insertMvmnAply
     * @Description : 교육신청관리 게시글 등록
     * @param mvmnAplyVo 교육신청관리 객체
-    * @throws Exception 예회
+    * @throws Exception 예외
     * @return int
     */
     public int insertMvmnAply(MvmnAplyVo mvmnAplyVo) throws Exception;
@@ -147,7 +147,7 @@ public interface MvmnAplyDao {
     * @Title : insertMvmnAply
     * @Description : 교육신청관리 회차 등록
     * @param mvmnAplyVo 교육신청관리 객체
-    * @throws Exception 예회
+    * @throws Exception 예외
     * @return int
     */
     public int insertMvmnAplyTme(MvmnAplyVo mvmnAplyVo) throws Exception;
@@ -251,5 +251,16 @@ public interface MvmnAplyDao {
     * @throws Exception
     */
     public List<MvmnAplyVo> mvmnAplyExcelDownList(MvmnAplyVo mvmnAplyVo) throws Exception;
+ 
+    /**
+    * 교육신청관리 신청일정 등록
+    *
+    * @Title : insertMvmnAplySchdl
+    * @Description : 교육신청관리 신청일정 등록
+    * @param mvmnAplyVo 교육신청관리 객체
+    * @throws Exception 예외
+    * @return int
+    */
+    public int insertMvmnAplySchdl(MvmnAplyVo mvmnAplyVo) throws Exception;
     
 }

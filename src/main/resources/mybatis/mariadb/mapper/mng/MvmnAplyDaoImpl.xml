@@ -253,7 +253,6 @@
         INSERT INTO TB_EDU_MVMN_PRGRM_APLY (
             INSTID
             , USERID
-            , TME_SCHDLID
             , ZIP
             , ADDR
             , ADDR_DTL
@@ -273,7 +272,6 @@
         SELECT 
             #{instid}
             ,#{aplyUserid}
-            ,#{tmeSchdlid}
             ,#{zip}
             ,#{addr}
             ,#{addrDtl}
@@ -293,7 +291,11 @@
           FROM TB_EDU_MVMN_PRGRM_TME_SCHDL A
           LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME B ON B.TMEID = A.TMEID
           LEFT OUTER JOIN TB_EDU_MVMN_PRGRM C ON C.PRGRMID = B.PRGRMID                
-          LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_APLY D ON D.TME_SCHDLID = #{tmeSchdlid}                 
+          LEFT OUTER JOIN (
+            SELECT T1.STTS_CD, T2.TME_SCHDLID 
+            FROM TB_EDU_MVMN_PRGRM_APLY T1
+               , TB_EDU_MVMN_PRGRM_APLY_SCHDL T2 
+            WHERE T1.APLYID = T2.APLYID) D ON D.TME_SCHDLID = #{tmeSchdlid}                 
          WHERE A.TME_SCHDLID = #{tmeSchdlid}    
     </insert>
         
@@ -467,5 +469,20 @@
                    AND A.EML LIKE CONCAT('%',#{searchKeyword},'%')
                 </if>
         <include refid="PaginationMapper.footer"/>
-    </select>    
+    </select>  
+    
+    <insert id="insertMvmnAplySchdl" parameterType="MvmnAplyVo">
+        /* MvmnAplyDao.insertMvmnAplySchdl */
+         INSERT INTO TB_EDU_MVMN_PRGRM_APLY_SCHDL(
+              APLYID
+              ,TME_SCHDLID
+              ,REG_DT
+              ,RGTRID
+         )VALUES(
+             #{aplyId}
+             ,#{tmeSchdlid}
+             ,NOW()
+             ,#{user.userid}
+         )
+    </insert>          
 </mapper>

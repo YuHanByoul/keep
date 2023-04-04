@@ -142,10 +142,10 @@
                 <li class="tab"><button aria-controls="tab-subpanel03" id="tab-sub03" role="tab">동일 교육관 교육 프로그램</button></li>
             </ul>
             <div id="tab-subpanel01" class="tabpanel active" role="tabpanel" aria-labelledby="tab-sub01">
-                <th:block th:text="${infntAply.eduExpln}"></th:block>
+                <p style="word-wrap: break-word;"><th:block th:text="${infntAply.eduExpln}"></th:block></p>
             </div>
             <div id="tab-subpanel02" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub02">
-                <th:block th:text="${infntAply.mttrat}"></th:block>
+                <p style="word-wrap: break-word;"><th:block th:text="${infntAply.mttrat}"></th:block></p>
             </div>
             <div id="tab-subpanel03" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub03">
                 <div class="pc-only">
@@ -234,18 +234,26 @@
 		<script src="/js/front/flatpickr.js"></script>
 		<script src="/js/front/flatpickr-locale-ko.js"></script>
 		<script th:inline="javascript">
-           $(function() {
-           	//infntAplyDetail.validateForm();
-           	infntAplyDetail.fn_makeCalendarEvent();
-           });       
-		
+        $(function() {
+        	//infntAplyDetail.validateForm();
+        	infntAplyDetail.fn_makeCalendarEvent();
+        });       
+        /*<![CDATA[*/
+        var user = /*[[${user}]]*/null;
+        /*]]>*/
         var infntAplyDetail = {			
 	        moveToList() {
 	            location.href = '/front/infntAply/infntAplyList.html';
 	        },
 	        moveToRegForm() {
 	        	if(!infntAplyDetail.valid()) return false;
-	        	$('#infntAplyForm').submit();
+	            var usrType = user != null ? user.loginUserType : "";
+
+	            if (usrType == 'I') {
+	                $('#infntAplyForm').submit();
+	            }else{
+	                alert("기관회원만 신청할 수 있습니다.");
+	            }
 	        },
 	        fn_makeCalendarEvent() {
                    var swiper = new Swiper(".gallery-list", {

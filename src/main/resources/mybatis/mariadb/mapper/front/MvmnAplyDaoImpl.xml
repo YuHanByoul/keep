@@ -150,13 +150,18 @@
                       , (SELECT COUNT(TA.APLYID) 
                            FROM TB_EDU_MVMN_PRGRM_APLY TA
                               , TB_EDU_MVMN_PRGRM_TME_SCHDL TB 
-                          WHERE TA.TME_SCHDLID = TB.TME_SCHDLID 
+                              , TB_EDU_MVMN_PRGRM_APLY_SCHDL TC                              
+                          WHERE TA.APLYID = TC.APLYID  
+                            AND TB.TME_SCHDLID = TC.TME_SCHDLID
                             AND TB.TMEID = A.TMEID) APLY_CNT
-                     ,(SELECT COUNT(TA.APLYID) 
-                         FROM TB_EDU_MVMN_PRGRM_APLY TA, TB_EDU_MVMN_PRGRM_TME_SCHDL TB 
-                        WHERE TA.TME_SCHDLID = TB.TME_SCHDLID 
-                          AND TA.STTS_CD = '180101'
-                          AND TB.TMEID = A.TMEID) WAIT_CNT    
+                      ,(SELECT COUNT(TA.APLYID) 
+                          FROM TB_EDU_MVMN_PRGRM_APLY TA
+                             , TB_EDU_MVMN_PRGRM_TME_SCHDL TB 
+                             , TB_EDU_MVMN_PRGRM_APLY_SCHDL TC
+                          WHERE TA.APLYID = TC.APLYID  
+                            AND TB.TME_SCHDLID = TC.TME_SCHDLID 
+                            AND TA.STTS_CD = '180101'
+                            AND TB.TMEID = A.TMEID) WAIT_CNT    
                   FROM TB_EDU_MVMN_PRGRM_TME A    
                   LEFT OUTER JOIN TB_EDU_MVMN_PRGRM B ON B.PRGRMID = A.PRGRMID
                   
@@ -211,7 +216,9 @@
                       , (SELECT COUNT(TA.APLYID)
                            FROM TB_EDU_MVMN_PRGRM_APLY TA
                               , TB_EDU_MVMN_PRGRM_TME_SCHDL TB 
-                          WHERE TA.TME_SCHDLID = TB.TME_SCHDLID 
+                              , TB_EDU_MVMN_PRGRM_APLY_SCHDL TC 
+                          WHERE TA.APLYID = TC.APLYID  
+                            AND TB.TME_SCHDLID = TC.TME_SCHDLID  
                             AND TB.TMEID = A.TMEID) APLY_CNT
                   FROM TB_EDU_MVMN_PRGRM_TME A    
                   LEFT OUTER JOIN TB_EDU_MVMN_PRGRM B ON B.PRGRMID = A.PRGRMID 
@@ -337,7 +344,11 @@
           FROM TB_EDU_MVMN_PRGRM_TME_SCHDL A
           LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME B ON B.TMEID = A.TMEID
           LEFT OUTER JOIN TB_EDU_MVMN_PRGRM C ON C.PRGRMID = B.PRGRMID                
-          LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_APLY D ON D.TME_SCHDLID = #{tmeSchdlid}                 
+          LEFT OUTER JOIN (
+            SELECT T1.STTS_CD, T2.TME_SCHDLID 
+            FROM TB_EDU_MVMN_PRGRM_APLY T1
+               , TB_EDU_MVMN_PRGRM_APLY_SCHDL T2 
+            WHERE T1.APLYID = T2.APLYID) D ON D.TME_SCHDLID = #{tmeSchdlid}                 
          WHERE A.TME_SCHDLID = #{tmeSchdlid}    
     </insert>    
     <!-- 푸름이 이동환경교실 교육신청 대상등록 -->
@@ -392,5 +403,19 @@
           AND C.SAREAID IS NOT NULL
           AND B.SAREAID IS NOT NULL
     </select>    
-        
+    
+    <insert id="insertMvmnAplySchdl" parameterType="front.MvmnAplyVo">
+        /* MvmnAplyDao.insertMvmnAplySchdl */
+         INSERT INTO TB_EDU_MVMN_PRGRM_APLY_SCHDL(
+              APLYID
+              ,TME_SCHDLID
+              ,REG_DT
+              ,RGTRID
+         )VALUES(
+             #{aplyid}
+             ,#{tmeSchdlid}
+             ,NOW()
+             ,#{user.userid}
+         )
+    </insert>          
 </mapper>
