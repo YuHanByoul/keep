@@ -39,6 +39,17 @@ public interface SrvyService {
     public List<SrvyVo> selectSrvyList(SrvyVo srvyVo) throws Exception;
     
     /**
+    * 설문 참여 목록 조회
+    *
+    * @Title : selectSrvyHstryList 
+    * @Description : 설문 참여 목록 조회
+    * @param srvyVo SrvyVo객체
+    * @return List<SrvyVo> 설문 참여 목록
+    * @throws Exception 예외
+    */
+    public List<SrvyVo> selectSrvyHstryList(SrvyVo srvyVo) throws Exception;
+    
+    /**
     * 설문 정보 조회
     *
     * @Title : selectSrvyInfo

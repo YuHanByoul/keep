@@ -44,8 +44,14 @@ public class SrvyVo extends ParentRequestVo {
     /** 설문지 아이디 */
     private int qestnrid;
     
+    /** 사이트 아이디 */
+    private int siteid;
+    
     /** 설문명 */
     private String srvyNm;
+    
+    /** 설문 분류 */
+    private String srvyCtgry;
     
     /** 설문 상태명 */
     private String sttsNm;
