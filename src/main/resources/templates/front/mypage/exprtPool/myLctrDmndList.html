@@ -3,135 +3,143 @@
       layout:decorator="layout/front/subLayout">
 
 <div layout:fragment="content">
-    <form class="search-filter" id="searchForm" name="searchForm">
-        <div class="form-input-wrap">
-            <div class="form-row">
-                <div class="form-header"><strong class="label">키워드</strong></div>
-                <div class="form-body">
-                    <div class="form-input">
-                        <select title="키워드" id="searchType" name="searchType">
-                            <option value="">- 전체 -</option>
-                            <option value="nm">신청자</option>
-                            <option value="acnt">아이디</option>
-                        </select>
-                        <input type="search" title="키워드" placeholder="키워드를 입력해 주세요." id="searchKeyword" name="searchKeyword">
+
+    <th:block th:unless="${user.userType != null and user.userType == 'E'}">
+        <div class="nodata">
+            <p><span class="icon icon-notice bg-black9"></span>전문가가 아닙니다.</p>
+        </div>
+    </th:block>
+
+    <th:block th:if="${user.userType != null and user.userType == 'E'}">
+        <form class="search-filter" id="searchForm" name="searchForm">
+            <div class="form-input-wrap">
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">키워드</strong></div>
+                    <div class="form-body">
+                        <div class="form-input">
+                            <select title="키워드" id="searchType" name="searchType">
+                                <option value="">- 전체 -</option>
+                                <option value="nm">신청자</option>
+                                <option value="acnt">아이디</option>
+                            </select>
+                            <input type="search" title="키워드" placeholder="키워드를 입력해 주세요." id="searchKeyword" name="searchKeyword">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">등록상태</strong></div>
+                    <div class="form-body">
+                        <span kattr:select_code="dmndSttsCd" grpCd="139" firstOptTxt="- 전체 -"></span>
                     </div>
                 </div>
             </div>
-            <div class="form-row">
-                <div class="form-header"><strong class="label">등록상태</strong></div>
-                <div class="form-body">
-                    <span kattr:select_code="dmndSttsCd" grpCd="139" firstOptTxt="- 전체 -"></span>
-                </div>
+            <div class="search-filter-submit">
+                <button type="reset" class="btn-medium btn-gray btn-before-refresh">초기화</button>
+                <button type="submit" class="btn-medium btn-green btn-before-search">검색</button>
+            </div>
+
+            <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
+            <input type="hidden" id="orderField" name="orderField" value="REG_DT">
+            <input type="hidden" id="dmndid" name="dmndid">
+        </form>
+
+        <div class="table-caption flex-nowrap">
+            <div class="left">
+                <p>총 <b id="totalCount">0</b> 건</p>
+            </div>
+            <div class="right">
+                <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage">
+                    <option value="10">10개씩 보기</option>
+                    <option value="50">50개씩 보기</option>
+                    <option value="100">100개씩 보기</option>
+                </select>
             </div>
         </div>
-        <div class="search-filter-submit">
-            <button type="reset" class="btn-medium btn-gray btn-before-refresh">초기화</button>
-            <button type="submit" class="btn-medium btn-green btn-before-search">검색</button>
+
+        <div class="pc-only">
+            <div class="table-col table-layout-auto">
+                <table>
+                    <caption>전문가 요청 관리 - 번호, 요청번호, 신청자, 아이디, 강의 시작 일시, 강의 종료 일시, 진행상태, 요청일</caption>
+                    <colgroup>
+                        <col>
+                        <col>
+                        <col style="width:22%;">
+                        <col>
+                        <col>
+                        <col>
+                        <col>
+                        <col>
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th scope="col">번호</th>
+                        <th scope="col">요청번호</th>
+                        <th scope="col">신청자</th>
+                        <th scope="col">아이디</th>
+                        <th scope="col">강의 시작 일시</th>
+                        <th scope="col">강의 종료 일시</th>
+                        <th scope="col">진행상태</th>
+                        <th scope="col">요청일</th>
+                    </tr>
+                    </thead>
+                    <tbody id="pcListArea">
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
-        <input type="hidden" id="orderField" name="orderField" value="REG_DT">
-        <input type="hidden" id="dmndid" name="dmndid">
-    </form>
-
-    <div class="table-caption flex-nowrap">
-        <div class="left">
-            <p>총 <b id="totalCount">0</b> 건</p>
+        <div class="mo-only">
+            <div class="table-list">
+                <ul id="moListArea">
+                </ul>
+            </div>
         </div>
-        <div class="right">
-            <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage">
-                <option value="10">10개씩 보기</option>
-                <option value="50">50개씩 보기</option>
-                <option value="100">100개씩 보기</option>
-            </select>
+
+        <div class="pagination" aria-label="pagination" id="pagination">
         </div>
-    </div>
 
-    <div class="pc-only">
-        <div class="table-col table-layout-auto">
-            <table>
-                <caption>전문가 요청 관리 - 번호, 요청번호, 신청자, 아이디, 강의 시작 일시, 강의 종료 일시, 진행상태, 요청일</caption>
-                <colgroup>
-                    <col>
-                    <col>
-                    <col style="width:22%;">
-                    <col>
-                    <col>
-                    <col>
-                    <col>
-                    <col>
-                </colgroup>
-                <thead>
-                <tr>
-                    <th scope="col">번호</th>
-                    <th scope="col">요청번호</th>
-                    <th scope="col">신청자</th>
-                    <th scope="col">아이디</th>
-                    <th scope="col">강의 시작 일시</th>
-                    <th scope="col">강의 종료 일시</th>
-                    <th scope="col">진행상태</th>
-                    <th scope="col">요청일</th>
-                </tr>
-                </thead>
-                <tbody id="pcListArea">
-                </tbody>
-            </table>
-        </div>
-    </div>
+        <script th:inline="javascript">
+            let detailUrl = '/front/mypage/exprtPool/lctrDmndDetail.html';
+            let listUrl = '/front/mypage/exprtPool/selectLctrDmndList.do';
+            let searchVo = /*[[${searchVo}]]*/null;
 
-    <div class="mo-only">
-        <div class="table-list">
-            <ul id="moListArea">
-            </ul>
-        </div>
-    </div>
-
-    <div class="pagination" aria-label="pagination" id="pagination">
-    </div>
-
-    <script th:inline="javascript">
-        let detailUrl = '/front/mypage/exprtPool/lctrDmndDetail.html';
-        let listUrl = '/front/mypage/exprtPool/selectLctrDmndList.do';
-        let searchVo = /*[[${searchVo}]]*/null;
-
-        let goToDetail = (dmndid) => {
-            let f = document.forms.searchForm;
-            f.dmndid.value = dmndid;
-            f.action = detailUrl;
-            f.submit();
-        }
-
-        let selectList = () => {
-            if (displayWorkProgress(true)) {
-                $.ajax({
-                    url: listUrl,
-                    cache: false,
-                    dataType: 'json',
-                    data: $('#searchForm').serializeArray(),
-                    type: 'GET',
-                    success: function (data) {
-                        $('#pcListArea').html(makeListHtmlForPc(data.list));
-                        $('#moListArea').html(makeListHtmlForMo(data.list));
-                        $('#pagination').html(data.pagination);
-                        $('#totalCount').html(data.totalCount);
-                        closeWorkProgress();
-                    }
-                });
+            let goToDetail = (dmndid) => {
+                let f = document.forms.searchForm;
+                f.dmndid.value = dmndid;
+                f.action = detailUrl;
+                f.submit();
             }
-        }
 
-        let makeListHtmlForPc = (list) => {
-            var html = "";
-            if (list == null || list.length <= 0) {
-                html += `<tr>
-                    <td class="nodata" colspan="8">
-                        <p><span class="icon icon-notice bg-black9"></span>요청 내용이 없습니다.</p>
-                    </td>
-                 </tr>`;
-            } else {
-                list.forEach(function (item) {
+            let selectList = () => {
+                if (displayWorkProgress(true)) {
+                    $.ajax({
+                        url: listUrl,
+                        cache: false,
+                        dataType: 'json',
+                        data: $('#searchForm').serializeArray(),
+                        type: 'GET',
+                        success: function (data) {
+                            $('#pcListArea').html(makeListHtmlForPc(data.list));
+                            $('#moListArea').html(makeListHtmlForMo(data.list));
+                            $('#pagination').html(data.pagination);
+                            $('#totalCount').html(data.totalCount);
+                            closeWorkProgress();
+                        }
+                    });
+                }
+            }
+
+            let makeListHtmlForPc = (list) => {
+                var html = "";
+                if (list == null || list.length <= 0) {
                     html += `<tr>
+                                <td class="nodata" colspan="8">
+                                    <p><span class="icon icon-notice bg-black9"></span>요청 내용이 없습니다.</p>
+                                </td>
+                             </tr>`;
+                } else {
+                    list.forEach(function (item) {
+                        html += `<tr>
                       <td>${item.rowNumber}</td>
                       <td>${item.dmndid}</td>
                       <td class="al article"><a class="link ellipsis" onclick="goToDetail(${item.dmndid})">${item.nm}</a></td>
@@ -143,22 +151,22 @@
                       <td>${item.dmndSttsCdNm}</td>
                       <td>${item.regDt}</td>
                   </tr> `;
-                });
-            }
-            return html;
-        };
+                    });
+                }
+                return html;
+            };
 
-        let makeListHtmlForMo = (list) => {
-            var html = "";
-            if (list == null || list.length <= 0) {
-                html += `<li class="block">
+            let makeListHtmlForMo = (list) => {
+                var html = "";
+                if (list == null || list.length <= 0) {
+                    html += `<li class="block">
                     <div class="nodata">
                       <p><span class="icon icon-notice bg-black9"></span>요청 내용이 없습니다.</p>
                     </div>
                     </li>`;
-            } else {
-                list.forEach(function (item) {
-                    html += `<li class="block">
+                } else {
+                    list.forEach(function (item) {
+                        html += `<li class="block">
                       <div class="tbody">
                         <dl>
                           <div class="list">
@@ -196,29 +204,32 @@
                         </dl>
                       </div>
                     </li>`;
-                });
-            }
-            return html;
-        };
+                    });
+                }
+                return html;
+            };
 
-        $(function () {
-            $('#searchType').val(searchVo.searchType);
-            $('#searchKeyword').val(searchVo.searchKeyword);
-            $('#dmndSttsCd').val(searchVo.dmndSttsCd);
-            $('#rowPerPage').val(searchVo.rowPerPage);
+            $(function () {
+                $('#searchType').val(searchVo.searchType);
+                $('#searchKeyword').val(searchVo.searchKeyword);
+                $('#dmndSttsCd').val(searchVo.dmndSttsCd);
+                $('#rowPerPage').val(searchVo.rowPerPage);
 
-            selectList();
-
-            $('#searchForm').on('submit', function (e) {
-                e.preventDefault();
                 selectList();
-            });
 
-            $('#selectRowPerPage').on('change', function (e) {
-                $('#rowPerPage').val($(this).val());
-            });
+                $('#searchForm').on('submit', function (e) {
+                    e.preventDefault();
+                    selectList();
+                });
 
-        })
+                $('#selectRowPerPage').on('change', function (e) {
+                    $('#rowPerPage').val($(this).val());
+                });
 
-    </script>
+            })
+
+        </script>
+    </th:block>
+
+
 </div>
