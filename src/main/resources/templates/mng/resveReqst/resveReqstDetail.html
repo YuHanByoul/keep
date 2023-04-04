@@ -1,0 +1,71 @@
+    
+    
+  <div class="card-header p-b-0">
+	    <ul class="nav nav-tabs tabs" role="tablist">
+	    
+	        <li class="nav-item" id="resveReqst_tab">
+	            <a class="nav-link resve active" href="javascript:moveTab('resve')"><strong>예약신청정보</strong></a>
+	        </li>
+	        
+            <li class="nav-item" id="hstry_tab">
+                <a class="nav-link hstry" href="javascript:moveTab('hstry')"><strong>상태변경이력</strong></a>
+            </li>
+
+	    </ul>
+  </div>
+
+  <div class="tab-content tabs p-t-20" id="tab_content_area">
+  </div>
+
+<script th:inline="javascript">
+
+	/*<![CDATA[*/ 
+	var mode = /*[[${param.mode}]]*/null;
+	var aplyid = /*[[${param.aplyid}]]*/null;
+	/*]]>*/
+	var currentTab ="resve";
+	var updateUrl ="/mng/resveReqst/resveReqstUpdate.html?aplyid="+aplyid;
+	var hstryListUrl ="/mng/resveReqst/resveReqstHstryList.html?aplyid="+aplyid;
+	
+	 $(function(){
+
+       if(mode == "resve"){
+           $("#tab_content_area").load(updateUrl);
+       }else{
+           $("#tab_content_area").load(hstryListUrl);
+       }
+       setTimeout(function(){scrollIntoView('contentPanel');},100 )
+       
+   });
+	   
+   function initTab() {
+         var tabFlag = false;
+         if(tabFlag == false) {
+        	 moveTab("resve");
+             tabFlag = true;
+         }
+         if(tabFlag == false) {
+        	 moveTab("hstry");
+             tabFlag = true;
+         }
+   }
+   
+   var moveTab =(mode)=>{
+		
+		//if(mode==currentTab)return;
+		
+		$(".nav-link").removeClass("active");
+		
+		if(mode=="resve"){
+			currentTab = "resve"
+			$("#tab_content_area").load(updateUrl);
+		}else{
+			currentTab = "hstry"
+			$("#tab_content_area").load(hstryListUrl);
+		}
+		$("."+currentTab).addClass("active");
+       setTimeout(function(){scrollIntoView('contentPanel');},100 )  
+
+	}
+	    
+</script>

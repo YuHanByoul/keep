@@ -5,8 +5,6 @@ package com.kbrainc.plum.front.bizAply.model;
 
 import java.util.Date;
 
-import javax.validation.constraints.NotEmpty;
-
 import org.apache.ibatis.type.Alias;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -83,7 +81,7 @@ public class ReqUserVo extends ParentRequestVo {
     private String instNm;
     
     /** 프로그램명 */
-    @NotEmpty(message = "프로그램명을 입력해주십시오.")
+//    @NotEmpty(message = "프로그램명을 입력해주십시오.")
     private String prgrmNm;
     
     /** 대표자명 */
@@ -129,7 +127,7 @@ public class ReqUserVo extends ParentRequestVo {
     private String aplyInstTelno;
     
     /** 기관 권역코드 */
-    @NotEmpty(message = "권역을 선택해주십시오.")
+//    @NotEmpty(message = "권역을 선택해주십시오.")
     private String instSareaCd;
     
     /** 기관 권역코드명 */
@@ -148,7 +146,7 @@ public class ReqUserVo extends ParentRequestVo {
     private String instAddrDtl;
     
     /** 지역코드 */
-    @NotEmpty(message = "지역을 선택해주십시오.")
+//    @NotEmpty(message = "지역을 선택해주십시오.")
     private String rgnCd;
     
     /** 지역코드명 */

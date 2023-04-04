@@ -60,6 +60,20 @@ public class SrvyServiceImpl extends PlumAbstractServiceImpl implements SrvyServ
     }
     
     /**
+    * 설문 참여 목록 조회
+    *
+    * @Title : selectSrvyHstryList
+    * @Description : 설문 참여 목록 조회
+    * @param srvyVo SrvyVo 객체
+    * @return List<srvyVo> 설문 참여 목록
+    * @throws Exception 예외
+    */
+    @Override
+    public List<SrvyVo> selectSrvyHstryList(SrvyVo srvyVo) throws Exception {
+        return srvyDao.selectSrvyHstryList(srvyVo);
+    }
+    
+    /**
     * 설문 정보 조회
     *
     * @Title : selectSrvyInfo

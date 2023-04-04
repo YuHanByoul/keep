@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" >
+<body>
+    <div layout:fragment="content">
+        <!-- content -->
+        <ul class="survey-list" id="srvyList">
+        </ul>
+        
+        <form id="searchForm" name="searchForm" onsubmit="return false;">
+            <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+            <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
+            <input type="hidden" id="orderDirection" name="orderDirection" value="desc">
+            <input type="hidden" id="orderField" name="orderField" value="END_DE">
+        </form>
+        
+        <div id="pagination">
+        </div>
+        
+        <div class="layer-popup layer-medium" data-layer-id="srvySbmsnInsertPopup">
+            <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+            <div class="layer-wrap" id="srvySbmsnInsertPopup">
+            </div>
+        </div>
+
+        <!-- //content -->
+        <script th:inline="javascript">
+            var srvy = {
+                listUrl: "/front/srvyHstry/selectSrvyHstryList.do"
+                
+                , init: function() {
+                    this.onLoadData();
+                    this.registEvent();                
+                }
+                
+                , registEvent: function() {
+                    // TODO
+                }
+                
+                , onLoadData: function() {
+                    if(displayWorkProgress(true)) {
+                        var param = $('#searchForm').serializeArray();
+                        $.ajax({
+                            url: srvy.listUrl
+                            , cache: false
+                            , dataType: "json"
+                            , data: param
+                            , type: "GET"
+                            , success: function(response) {
+                                srvy.setList(response);
+                                closeWorkProgress();
+                            }
+                        });
+                    }
+                }
+                
+                , setList: function(data) {
+                    $("#srvyList, #pagination").empty();
+                    if(data.totalCount == 0) {
+                        $("#srvyList").append(srvy.getNoData());
+                    } else {
+                        $(data.list).each(function(index, data) {
+                            $("#srvyList").append(srvy.getListItem(data));
+                        });                        
+                    }
+                    $("#pagination").html(data.pagination);
+                }
+                
+                , getNoData: function() {
+                    var el = '<li class="block"><div class="nodata" style="border: none;"><p><span class="icon icon-notice bg-black9"></span>등록된 설문이 없습니다.</p></div></li>';
+                    
+                    return el;
+                }
+                
+                , getListItem: function(data) {
+                    var stts = data.sttsNm;
+                    var ctgry = data.srvyCtgry;
+                    var btnTag = '';
+                    var ctgryTag = "";
+                    if(stts == "설문참여") {
+                        btnTag = '<div class="btn"><button type="button" class="btn-medium btn-blue" onclick="srvy.onSrvySbmsnInsertPopup(' + data.srvyid + ', ' + data.qestnrid + ');">설문참여</button></div>';
+                    } else if(stts == "설문확인") {
+                        btnTag = '<div class="btn"><button type="button" class="btn-medium btn-gray" onclick="srvy.onSrvySbmsnInfoPopup(' + data.srvyid + ', ' + data.qestnrid + ');">설문확인</button></div>';
+                    } else if(stts == "기간종료") {
+                        btnTag = '<div class="btn"><button type="button" class="btn-medium btn-end" disabled>기간종료</button></div>';
+                    }
+                    if(ctgry == "일반") {
+                        ctgryTag = '<span class="tag tag-gray mb10">일반 설문</span>';
+                    } else if(ctgry == "유아") {
+                        ctgryTag = '<span class="tag tag-blue mb10">유아환경교육관 설문</span>';
+                    } else if(ctgry == "푸름이") {
+                        ctgryTag = '<span class="tag tag-green mb10">푸름이 이동환경교실 설문</span>';
+                    } else if(ctgry == "컨설팅") {
+                        ctgryTag = '<span class="tag tag-red mb10">지정 컨설팅 설문</span>';
+                    }
+                    
+                    var item = '<li><dl>';
+                    item += '<dt>' + ctgryTag + '<div>' + data.srvyNm + '</div></dt>';
+                    item += '<dd>';
+                    item += '<strong>설문참여기간</strong>';
+                    item += '<span>' + data.bgngDe + ' ~ ' + data.endDe + '</span>';
+                    item += '</dd>';
+                    item += '</dl>';
+                    item += btnTag;
+                    item += '</li>';
+                    
+                    return item;
+                }
+                
+                , onSrvySbmsnInsertPopup: function(srvyid, qestnrid) {
+                    popupCenter({url: '/front/srvy/srvySbmsnInsertPopup.html?srvyid=' + srvyid + '&qestnrid=' + qestnrid, title: '설문조사', w: 1280, h: 1000, l: 0, t: 0});
+                }
+                
+                , onSrvySbmsnInfoPopup: function(srvyid, qestnrid) {
+                    popupCenter({url: '/front/srvy/srvySbmsnInfoPopup.html?srvyid=' + srvyid + '&qestnrid=' + qestnrid, title: '설문확인', w: 1280, h: 1000, l: 0, t: 0});
+                }
+            };
+            
+            function goPage(pageNumber) {
+                $("#pageNumber").val(pageNumber);
+                srvy.onLoadData();
+            }
+            
+            $(function() {
+                srvy.init();
+            });
+        </script>
+    </div>
+</body>
+</html>

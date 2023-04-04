@@ -52,19 +52,13 @@
                          </div>
                          <div class="col-lg-3 mb-3">
                              <div class="mb-0 form-group row">
-                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>가입일 - 검색시작일</strong></span>
+                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>가입일</strong></span>
                                  <div class="col-sm-12">
-                                     <input class="form-control form-control-sm" type="date" id="searchStartDay" name="searchStartDay"/>
+                                     <input class="form-control form-control-sm" type="text" id="filterSearchSelectDate" name="filterSearchSelectDate"/>
                                  </div>
                              </div>
-                         </div>
-                         <div class="col-lg-3">
-                             <div class="mb-0 form-group row">
-                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>가입일 - 검색종료일</strong></span>
-                                 <div class="col-sm-12">
-                                     <input class="form-control form-control-sm" type="date" id="searchEndDay" name="searchEndDay"/>
-                                 </div>
-                             </div>
+                             <input type="hidden" id="searchStartDay" name="searchStartDay"/>
+                             <input type="hidden" id="searchEndDay" name="searchEndDay"/>
                          </div>
                          <div class="col-lg-3 mb-3">
                              <div class="mb-0 form-group row">
@@ -89,6 +83,7 @@
                          <button class="btn btn-primary" onclick="fn_searchForm()" >검색</button>
                      </div>
                  </div>
+                 
            </form>
            </div>
            <!-- //필터 부분 -->
@@ -152,8 +147,10 @@
             </p>
       </div>
   </div> -->
-        
+  <link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
   <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+  <script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
   <script th:inline="javascript">
 
   /*<![CDATA[*/ 
@@ -162,16 +159,38 @@
     var selectedItems = [];
     var gridHelper1;         
     $(function(){
-        
         gridHelper1 = new GridHelper('jsGrid','contentPanel');
-        
+        initDataRangePicker();
         writeJsGridData();
-        
         if(userid != null){
             var detailUrl = "/mng/member/memberDetailForm.html?userid=" + userid; 
                 gridHelper1.loadContent(detailUrl);
         }
     });
+    
+    function initDataRangePicker(){
+        $("#filterSearchSelectDate").daterangepicker({
+            opens: 'left',
+            startDate : false,
+            endDate : false,
+            locale: {
+                "separator": " ~ ",                     // 시작일시와 종료일시 구분자
+                "format": 'YYYY-MM-DD',     // 일시 노출 포맷
+                "applyLabel": "적용",                    // 확인 버튼 텍스트
+                "cancelLabel": "취소",                   // 취소 버튼 텍스트
+                "daysOfWeek": ["일", "월", "화", "수", "목", "금", "토"],
+                "monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"]
+            }
+          }, function(start, end, label) {
+            console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+        });
+        $("#filterSearchSelectDate").val("");
+        $("#filterSearchSelectDate").on('apply.daterangepicker', function(ev, picker) {
+            $("#searchStartDay").val(picker.startDate.format('YYYY-MM-DD'));
+            $("#searchEndDay").val(picker.endDate.format('YYYY-MM-DD'));
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+        });
+    }
     
     function validChecked() {
         if(selectedItems.length == 0) {
@@ -180,16 +199,13 @@
         }
         return true;
     }
-    
     function fn_goInsertForm(){
         var insertUrl ="/mng/member/memberInsertForm.html";
             gridHelper1.loadContent(insertUrl);
     }
-     
     function fn_searchForm(){
         gridHelper1.resetListContent();
     }
-    
     function fn_init() {
         $("#searchRoleCd").val('');
         $("#searchSttsCd").val('');
@@ -197,6 +213,7 @@
         $("#searchKeyword").val('');
         $("#searchStartDay").val('');
         $("#searchEndDay").val('');
+        $("#filterSearchSelectDate").val('');
     }
         
     function writeJsGridData(){

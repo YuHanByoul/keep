@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL File Name : EnvReqstDaoImpl.xml
+    Description : 환경교육시설 예약
+-->
+<mapper namespace="com.kbrainc.plum.front.envReqst.model.EnvReqstDao">
+
+    <select id="selectEnvReqstList" resultType="com.kbrainc.plum.front.envReqst.model.EnvReqstVo">
+        <include refid="PaginationMapper.header"/>
+        select A.SPCEID
+        , B.FCLTID
+        , B.FCLT_NM
+        , B.ADDR
+        , B.ADDR_DTL
+        , B.RPRS_IMG_FILEID
+        , B.APLY_MTHD_CD
+        , B1.CD_NM AS APLY_MTHD_NM
+        , C.INSTID
+        , C.INST_NM
+        , D.FILE_IDNTFC_KEY
+        from TB_FCL_SPCE A
+        INNER JOIN TB_FCL_FCLT B ON A.FCLTID = B.FCLTID
+        INNER JOIN (
+        SELECT CD
+        , CD_NM
+        FROM TB_CMM_CD
+        WHERE CDGRPID = 153
+        ) B1 ON (B1.CD = B.APLY_MTHD_CD)
+        LEFT OUTER JOIN TB_CMM_INST C ON B.INSTID = C.INSTID
+        LEFT OUTER JOIN TB_CMM_FILE D ON B.RPRS_IMG_FILEID = D.FILEID
+        WHERE 1=1
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!-- 환경교육시설 예약 상세조회 -->
+    <select id="selectResveEnvInfo" resultType="com.kbrainc.plum.front.envReqst.model.EnvReqstVo">
+        /* EnvReqstDao.selectResveEnvInfo */
+        SELECT
+            A.FCLTID
+             , A.FCLT_NM
+             , A.FCLT_NO
+             , A.INSTID
+             , A.ZIP
+             , A.ADDR
+             , A.ADDR_DTL
+             , A.RGN_CD
+             , A.APLY_MTHD_CD
+             , A.EXTNL_URL
+             , A.BANK_CD
+             , A.BACNT_NO
+             , A.DPSTR_NM
+             , A.RPRS_IMG_FILEID
+             , A.DTL_IMG_FILEGRPID
+             , A.GDNC_FILEID
+             , A.DTL_CN
+             , A.USE_YN
+             , A.MDFCN_DT
+             , A.MDFRID
+             , A.REG_DT
+             , A.RGTRID
+             , B.INST_NM
+             , C.CD_NM AS RGN_NM
+             , D.CD_NM AS APLY_MTHD_NM
+             , E.NM
+        FROM
+            TB_FCL_FCLT A
+                LEFT OUTER JOIN TB_CMM_INST B ON A.INSTID = B.INSTID
+                LEFT OUTER JOIN TB_CMM_USER E ON A.RGTRID = E.USERID
+                INNER JOIN (
+                SELECT
+                    CD
+                     , CD_NM
+                FROM
+                    TB_CMM_CD
+                WHERE
+                    CDGRPID = 143
+            ) C ON (C.CD = A.RGN_CD)
+                INNER JOIN (
+                SELECT
+                    CD
+                     , CD_NM
+                FROM
+                    TB_CMM_CD
+                WHERE
+                    CDGRPID = 153
+            ) D ON (D.CD = A.APLY_MTHD_CD)
+        WHERE
+            1=1
+          AND A.INSTID = B.INSTID
+          AND FCLTID = #{fcltid}
+    </select>
+
+    <select id="selectSpceInfo" resultType="com.kbrainc.plum.front.envReqst.model.EnvReqstVo">
+        SELECT
+            A.SPCEID
+             , A.FCLTID
+             , A.SPCE_NM
+             , A.SPCE_NO
+             , A.MAX_NOPE
+             , A.SIZE
+             , A.CHKIN_HR
+             , A.CHCKT_HR
+             , A.NXTY_CHCKT_YN
+             , A.RSVT_PSBLTY_DAYCNT
+             , A.TODAY_RSVT_PSBLTY_YN
+             , A.USE_YN
+             , A.MDFCN_DT
+             , A.MDFRID
+             , A.REG_DT
+             , A.RGTRID
+             , B.BANK_CD
+             , B.BACNT_NO
+             , B.DPSTR_NM
+             , B.FCLTID
+             , B.FCLT_NM
+             , B.FCLT_NO
+             , B.ADDR
+             , B.ADDR_DTL
+             , B.APLY_MTHD_CD
+             , B1.CD_NM AS BANK_CD_NM
+             , C.INST_NM
+             , C.INSTID
+        FROM
+            TB_FCL_SPCE A
+                INNER JOIN TB_FCL_FCLT B
+                           ON A.FCLTID = B.FCLTID
+                INNER JOIN TB_CMM_INST C
+                           ON B.INSTID = C.INSTID
+                INNER JOIN (
+                    SELECT
+                        CD
+                         , CD_NM
+                    FROM
+                        TB_CMM_CD
+                    WHERE
+                        CDGRPID = 154
+                ) B1 ON (B.BANK_CD = B1.CD)
+        WHERE 1=1
+          AND A.SPCEID = #{spceid}
+    </select>
+
+    <!-- 예약 등록(시설 예약) -->
+    <insert id="insertResveEnvFclSpceAply" useGeneratedKeys="true" keyProperty="aplyid">
+        /* EnvReqstDao.insertResveEnvFclAply */
+        INSERT INTO TB_FCL_SPCE_APLY (
+            APLCNTID
+            ,APLCNT_NM
+            ,APLCNT_MOBLPHON
+            ,APLCNT_EML
+            ,NOPE_ADULT
+            ,NOPE_CHIL
+            ,NOPE_INFNT
+            ,UTZTN_PRPS
+            ,AMT
+            ,STLM_MTHD_CD
+            ,DPST_BACNT
+            ,PYR_NM
+            ,APLY_DT
+            ,MDFCN_DT
+            ,MDFRID
+            ,REG_DT
+            ,RGTRID
+        )VALUES
+        (
+            #{user.userid}
+            ,#{aplcntNm}
+            ,#{aplcntMoblphon}
+            ,#{aplcntEml}
+            ,#{nopeAdult}
+            ,#{nopeChil}
+            ,#{nopeInfnt}
+            ,#{utztnPrps}
+            ,#{amt}
+            ,'190101'
+            ,#{bacntNo}
+            ,#{pyrNm}
+            ,NOW()
+            ,NOW()
+            ,#{user.userid}
+            ,NOW()
+            ,#{user.userid}
+        )
+    </insert>
+
+    <!-- 예약 등록(시설 예약) -->
+    <insert id="insertResveEnvFclAply" keyProperty="userid">
+        /* EnvReqstDao.insertResveEnvFclAply */
+        INSERT INTO TB_FCL_APLY_RSVTDE (
+                APLYID,
+                RSVTDEID,
+                UTZTN_SE_CD,
+                DE,
+                BGNG_DT,
+                END_DT,
+                AMT,
+                MDFCN_DT,
+                MDFRID,
+                REG_DT,
+                RGTRID
+        )VALUES
+        <foreach item="item" collection="rsvtdeids"  separator=",">
+             (
+            #{aplyid}
+            ,#{item}
+            ,#{utztnSeCd}
+            ,#{de}
+            ,#{bgngDt}
+            ,#{endDt}
+            ,#{amt}
+            ,NOW()
+            ,#{user.userid}
+            ,NOW()
+            ,#{user.userid}
+            )
+        </foreach>
+    </insert>
+
+    <!-- 예약 등록(시설 예약-히스토리) -->
+    <insert id="insertResveEnvFclAplyHstry" useGeneratedKeys="true" keyProperty="aplyid">
+        /* EnvReqstDao.insertResveEnvFclAply */
+        INSERT INTO TB_FCL_SPCE_APLY_HSTRY (
+                                      APLYID
+                                     ,APLCNTID
+                                     ,APLCNT_NM
+                                     ,APLCNT_MOBLPHON
+                                     ,APLCNT_EML
+                                     ,NOPE_ADULT
+                                     ,NOPE_CHIL
+                                     ,NOPE_INFNT
+                                     ,UTZTN_PRPS
+                                     ,AMT
+                                     ,STLM_MTHD_CD
+                                     ,DPST_BACNT
+                                     ,PYR_NM
+                                     ,APLY_DT
+                                     ,MDFCN_DT
+                                     ,MDFRID
+                                     ,REG_DT
+                                     ,RGTRID
+        )VALUES
+            (
+             #{aplyid}
+            ,#{user.userid}
+            ,#{aplcntNm}
+            ,#{aplcntMoblphon}
+            ,#{aplcntEml}
+            ,#{nopeAdult}
+            ,#{nopeChil}
+            ,#{nopeInfnt}
+            ,#{utztnPrps}
+            ,#{amt}
+            ,'190101'
+            ,#{bacntNo}
+            ,#{pyrNm}
+            ,NOW()
+            ,NOW()
+            ,#{user.userid}
+            ,NOW()
+            ,#{user.userid}
+            )
+    </insert>
+
+    <!-- 예약 등록(공간 예약) -->
+    <!--<insert id="insertResveEnvSpceAply" keyProperty="userid">
+        /* EnvReqstDao.insertResveEnvSpceAply */
+        INSERT INTO TB_FCL_SPCE_APLY (
+                APLCNTID,
+                INSTID,
+                APLCNT_NM,
+                APLCNT_MOBLPHON,
+                APLCNT_EML,
+                NOPE_ADULT,
+                NOPE_CHIL,
+                NOPE_INFNT,
+                UTZTN_PRPS,
+                AMT,
+                DPST_BACNT,
+                PYR_NM,
+                APLY_DT,
+                APLY_STTS_CD,
+                STLM_STTS_CD,
+                MDFCN_DT,
+                MDFRID,
+                REG_DT,
+                RGTRID
+        )VALUES(
+               #{aplcntid},
+               #{instid},
+               #{aplcntNm},
+               #{aplcntMoblphon},
+               #{aplcntEml},
+               #{nopeAdult},
+               #{nopeChil},
+               #{nopeInfnt},
+               #{utztnPrps},
+               #{amt},
+               #{dpstBacnt},
+               #{pyrNm},
+               #{aplyDt},
+               '160101',
+               '161101',
+               ,NOW()
+               ,#{user.userid}
+               ,NOW()
+               ,#{user.userid}
+               )
+    </insert>-->
+
+    <!-- 공간 예약 여부 확인 목록 -->
+    <select id="selectFclRsvtdeList" resultType="map">
+        /* SpceDao.selectFclRsvtdeList */
+        SELECT RSVTDEID,
+        SPCEID,
+        DE,
+        AMT,
+        RSVT_PSBLTY_YN
+        FROM TB_FCL_SPCE_RSVTDE A
+        WHERE 1 = 1
+        AND A.RSVTDEID IN (
+        <foreach item="item" collection="rsvtdeid"  separator=",">
+            #{item.rsvtdeid}
+        </foreach>
+        )
+    </select>
+</mapper>
