@@ -3,6 +3,7 @@ package com.kbrainc.plum.front.dsgnMng.service;
 import java.util.List;
 
 import com.kbrainc.plum.front.dsgnMng.model.DsgnMngVo;
+import com.kbrainc.plum.mng.qestnr.model.QitemVo;
 
 /**
 * 사용자.지정관리 service
@@ -320,6 +321,18 @@ public interface DsgnMngService {
 	* @return int
 	*/
 	public int deleteCnsltngAply(DsgnMngVo dsgnMngVo) throws Exception;
+
+	/**
+	* (컨설팅)설문 응답 목록 조회
+	*
+	* @Title : selectSrvyAnsList
+	* @Description : (컨설팅)설문 응답 목록 조회
+	* @param dsgnMngVo
+	* @return
+	* @throws Exception
+	* @return List<QitemVo>
+	*/
+	public List<QitemVo> selectSrvyAnsList(DsgnMngVo dsgnMngVo) throws Exception;
 
 
 }
