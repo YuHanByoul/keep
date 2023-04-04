@@ -6,8 +6,9 @@
 <body>
     <div layout:fragment="content">
         <form id="cnsltngAplyForm" name="cnsltngAplyForm" th:action="@{/front/dsgnPrgrm/cnsltngAplyComp.html}" method="post">
-            <input type="hidden"  id="prgrmid" name="prgrmid" th:value="${instInfo.prgrmid}" />
-            <input type="hidden"  id="instid" name="instid" th:value="${instInfo.instid}" />
+            <input type="hidden"  id="prgrmid"   name="prgrmid"   th:value="${instInfo.prgrmid}" />
+            <input type="hidden"  id="instid"    name="instid"    th:value="${instInfo.instid}" />
+            <input type="hidden"  id="sttsCd"    name="sttsCd"    th:value="${instInfo.sttsCd}" />
             <input type="hidden"  id="cnsltngid" name="cnsltngid" th:value="${cnsltngAply.cnsltngid}" />
 
             <!-- content -->
@@ -66,24 +67,38 @@
                         <tr>
                             <th scope="row">기관명</th>
                             <td><th:block th:text="${instInfo.instNm}" /></td>
-                            <th scope="row">기관 담당자명</th>
-                            <td><th:block th:text="${instInfo.aplcntNm}" /></td>
+                            <th scope="row">대표자명</th>
+                            <td><th:block th:text="${instInfo.rprsvNm}" /></td>
                         </tr>
                         <tr>
                             <th scope="row">기관유형</th>
                             <td><th:block th:text="${instInfo.instTypeCdNm}" /></td>
+                            <th scope="row">기관홈페이지</th>
+                            <td><th:block th:text="${instInfo.hmpg}" /></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">기관 연락처</th>
+                            <td colspan="3"><th:block th:text="${instInfo.telno}" /></td>
+<!--                             <th scope="row">기관 이메일</th> -->
+<!--                             <td><a th:href="'mailto:' + ${instInfo.aplcntEml}" class="url"></a></td> -->
+                        </tr>
+                        <tr>
+                            <th scope="row">신청자(담당자)</th>
+                            <td><th:block th:text="${instInfo.aplcntNm}" /></td>
                             <th scope="row">담당자 연락처</th>
                             <td><th:block th:text="${instInfo.aplcntMoblphon}" /></td>
                         </tr>
                         <tr>
-                            <th scope="row">기관 연락처</th>
-                            <td>010-0000-0000</td>
                             <th scope="row">담당자 이메일</th>
                             <td><a th:href="'mailto:' + ${instInfo.aplcntEml}" class="url"><th:block th:text="${instInfo.aplcntEml}" /></a></td>
+                            <th scope="row">지역</th>
+                            <td><th:block th:text="${instInfo.signguNm}" /></td>
                         </tr>
                         <tr>
-                            <th>기관주소</th>
-                            <td><th:block th:text="${instInfo.addr +' '+ instInfo.addrDtl}" /></td>
+                            <th scope="row">주소</th>
+                            <td><th:block th:text="${instInfo.addr}" /></td>
+                            <th scope="row">상세주소</th>
+                            <td><th:block th:text="${instInfo.addrDtl}" /></td>
                         </tr>
                     </tbody>
                 </table>
@@ -91,7 +106,12 @@
 
             <!-- 컨설팅 신청 내용 -->
             <div class="table-caption">
-                <h3 class="sub-title">컨설팅 신청 내용</h3>
+                <div class="left">
+                    <h3 class="sub-title">컨설팅 신청 내용</h3>
+                </div>
+                <div class="right">
+                    <p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
+                </div>
             </div>
 
             <div class="table-row table-row-mo" id="ipt">
@@ -103,19 +123,20 @@
                     </colgroup>
                     <tbody>
                         <tr>
-                            <th scope="row">프로그램명</th>
+                            <th scope="row">프로그램명<i class="ast" title="필수입력">*</i></th>
                             <td>
                                 <div class="form-input">
                                     <input type="text" title="프로그램명" placeholder="프로그램명을 입력해주세요." id="prgrmNm" name="prgrmNm" th:value="${cnsltngAply.prgrmNm}" />
                                 </div>
+                                <p class="feedback"></p>
                             </td>
                         </tr>
                         <tr>
                             <th scope="row">컨설팅 유형</th>
                             <td>
                                 <div class="form-check-list flex-column a-start">
-                                    <label class="inp"><input type="radio"><b class="normal-wrap">온라인 : 컨설팅 담당자가 온라인으로 컨설팅 서비스를 제공해 드립니다.</b></label>
-                                    <label class="inp"><input type="radio"><b class="normal-wrap">오프라인 : 컨설팅 담당자가 현장방문을 통해 컨설팅 서비스를 제공해 드립니다. </b></label>
+                                    <label class="inp"><input type="radio" name="cnsltngKndCd" value="130101" checked="checked"><b class="normal-wrap">온라인 : 컨설팅 담당자가 온라인으로 컨설팅 서비스를 제공해 드립니다.</b></label>
+                                    <label class="inp"><input type="radio" name="cnsltngKndCd" value="130102"><b class="normal-wrap">오프라인 : 컨설팅 담당자가 현장방문을 통해 컨설팅 서비스를 제공해 드립니다. </b></label>
                                 </div>
                             </td>
                         </tr>
@@ -136,24 +157,27 @@
                             </td>
                         </tr>
                         <tr>
-                            <th scope="row">프로그램 영역</th>
+                            <th scope="row">프로그램 영역<i class="ast" title="필수입력">*</i></th>
                             <td>
                                 <textarea title="프로그램 영역" placeholder="" id="prgrm" name="prgrm"><th:block th:text="${cnsltngAply.prgrm}" /></textarea>
                                 <div class="desc ar size"><span>0</span> / 1,000자</div>
+                                <p class="feedback"></p>
                             </td>
                         </tr>
                         <tr>
-                            <th scope="row">지도자 영역</th>
+                            <th scope="row">지도자 영역<i class="ast" title="필수입력">*</i></th>
                             <td>
                                 <textarea title="지도자 영역" placeholder="" id="ldr" name="ldr"><th:block th:text="${cnsltngAply.ldr}" /></textarea>
                                 <div class="desc ar size"><span>0</span> / 1,000자</div>
+                                <p class="feedback"></p>
                             </td>
                         </tr>
                         <tr>
-                            <th scope="row">기타영역</th>
+                            <th scope="row">기타영역<i class="ast" title="필수입력">*</i></th>
                             <td>
                                 <textarea title="기타영역" placeholder="" id="etc" name="etc"><th:block th:text="${cnsltngAply.etc}" /></textarea>
                                 <div class="desc ar size"><span>0</span> / 1,000자</div>
+                                <p class="feedback"></p>
                             </td>
                         </tr>
                         <tr>
@@ -161,11 +185,31 @@
                             <td>
                                 <div class="form-input-file">
                                     <label class="form-input">
-                                        <input type="file" class="blind" multiple="multiple" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부" maxcount="10">
+                                        <input type="file" id="multiFileInput" name="files" class="blind" multiple="multiple" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부" maxcount="5">
                                         <span class="btn-medium btn-gray">파일선택</span>
                                     </label>
-                                    <ul></ul>
+                                    <div class="upload-response">
+                                        <div id="multipleFileUploadError"></div>
+                                        <div id="multipleFileUploadSuccess">
+                                        <th:block th:if="${fileList != null}">
+                                            <div th:each="item : ${fileList}" th:id="${item.fileid}" class="col-auto">
+                                                <ul th:if="${item.orginlFileNm != null}">
+                                                    <li th:fileid='${item.fileid}'
+                                                        th:fileIdntfcKey="${item.fileIdntfcKey}"
+                                                        th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))"
+                                                        class='label label-inverse'
+                                                        th:data_ext="${#strings.replace(item.fileExtsn, '.', '')}">
+                                                        <th:block th:text="${item.orginlFileNm}"/>&nbsp;&nbsp;
+                                                        <a th:if="${detail.crudBtn != 'R'}" th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="fn_deleteFileList(this.name, this.dataset.idntfcKey)" class='text-white'>
+                                                        <th:block th:text="X"></th:block></a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </th:block>
+                                        </div>
+                                    </div>
                                 </div>
+                                <input type="hidden" id="filegrpid" name="filegrpid" th:value="${(cnsltngAply.filegrpid == '' or cnsltngAply.filegrpid == null) ? 0 : cnsltngAply.filegrpid}"/>
                             </td>
                         </tr>
 
@@ -185,21 +229,59 @@
         <!-- //content -->
 
         <script th:inline="javascript">
+            var atchfileCnt = 5;
+            var uploadFileCnt = 0;
 
             var insertUrl = "/front/dsgnPrgrm/insertCnsltngAplyForm.do";
             var prevUrl = "/front/dsgnPrgrm/cnsltngAplyTermsForm.html";    //약관동의
             var nextUrl = "/front/dsgnPrgrm/cnsltngAplyComp.html"    //프로그램 우수성
 
+        	function validate(){
+
+                $("#cnsltngAplyForm").validate({
+                    ignore: [],
+                    rules: {
+                        prgrmNm : { required: true , maxlength:100 }
+                      , prgrm   : { required: true , maxlength:2000 }
+                      , ldr     : { required: true , maxlength:2000 }
+                      , etc     : { required: true , maxlength:2000 }
+                     },
+                     messages: {
+                         prgrmNm : { required: "프로그램명을 입력해 주십시오."   , maxlength:"프로그램명은 100자를 넘을 수 없습니다."  }
+                       , prgrm   : { required: "프로그램영역을 입력해 주십시오." , maxlength:"프로그램명은 2000자를 넘을 수 없습니다."  }
+                       , ldr     : { required: "지도자영역을 입력해 주십시오."   , maxlength:"프로그램명은 2000자를 넘을 수 없습니다."  }
+                       , etc     : { required: "기타영역을 입력해 주십시오."     , maxlength:"프로그램명은 2000자를 넘을 수 없습니다."  }
+                     }
+                });
+
+            }
+
             function goPrev(){
-                document.cnsltngAplyForm.action = prevUrl;
-                $("#cnsltngAplyForm").submit();
+
+            	var chkVal="";
+            	chkVal+= $("#prgrmNm").val();
+            	chkVal+= $("#prgrm").val();
+            	chkVal+= $("#ldr").val();
+            	chkVal+= $("#etc").val();
+            	chkVal+= $("#hopeDe1").val();
+            	chkVal+= $("#hopeDe2").val();
+
+            	if(chkVal!=""){
+            		if(!confirm("등록된 정보가 저장되지 않을 수 있습니다 이전화면으로 이동 하시겠습니까?")) return;
+            	}
+
+                var f = document.forms.cnsltngAplyForm;
+                f.action = prevUrl;
+                f.submit();
             }
 
             function doSave(){
 
-                //if(!valid()) return false;
+                if(!$("#cnsltngAplyForm").valid()) return false;
 
-                //$("#sttsCd").val("111101");    //작성중
+
+                if(!confirm("컨설팅 신청을 완료 하시겠습니까?")) return;
+                $("#sttsCd").val("131101");    //신청완료
 
                 var data =  $("#cnsltngAplyForm").serialize() ;
 
@@ -226,6 +308,7 @@
             }
 
             $(function() {
+            	validate();
 
             	$("textArea").keyup(function (e) {
                     var inTxt = $(this).val();
@@ -236,6 +319,81 @@
             	$("textArea").trigger("keyup");
 
             });
+
+            // 파일업로드
+            $('#multiFileInput').on("change", function(event) {
+            	debugger;
+                var objFile = document.querySelector('#multiFileInput');
+                var formData = new FormData();
+                var content = "";
+
+                for( i = 0 ; i < objFile.files.length ; i++) {
+                    if(uploadFileCnt >= atchfileCnt){
+                        alert("첨부파일은  "+atchfileCnt+ " 개 까지 가능합니다." ); break;
+                    } else {
+                        formData.append("files", objFile.files[i]);
+                        uploadFileCnt++;
+                    }
+                }
+
+                formData.append("filegrpid", $("#filegrpid").val());
+                formData.append("filegrpNm", "cnsnltng_file");
+
+                if(uploadFileCnt > 0){
+                    $.ajax({
+                        url : '/uploadMultipleFiles.do',
+                        processData : false,
+                        contentType : false,
+                        data : formData,
+                        type : 'POST',
+                        success : function(response) {
+                            if(response.result == 'fail'){
+                                alert(response.msg);
+                            }else{
+                                if($("#filegrpid").val()=='0' || $("#filegrpid").val()==''  || $("#filegrpid").val()==null){
+                                    $("#filegrpid").val( response[0].filegrpid );
+                                }
+
+                                for(i = 0 ;i < response.length; i++ ){
+                                    content = '<ul>';
+                                    content +=  '<li class="file-block" data_ext="'+response[i].fileExtsn.replace(".", '')+'" id="'+response[i].fileid+'"><span class="name">'+response[i].orginlFileNm
+                                    content += '&nbsp;&nbsp;<a href="javascript:void(0)" onclick=uploadFileCnt--;fn_deleteFileList("'+response[i].fileid+'","'+response[i].fileIdntfcKey+'")>X</a></span></li>'
+                                    content += '</ul>';
+                                    $('#multipleFileUploadSuccess').append(content);
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+
+            // 파일삭제
+            function fn_deleteFileList(fileid, fileIdntfcKey){
+                if(!confirm("파일을 삭제하시겠습니까?")){return;}
+                fn_deleteFile(fileid, fileIdntfcKey);
+                $("#"+fileid).remove();
+            }
+
+            // 파일삭제
+            function fn_deleteFile(fileid, fileIdntfcKey){
+                var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey;
+                $.ajax({
+                    url : deleteFileUrl,
+                    type: 'GET',
+                    cache : false,
+                    dataType: 'json',
+                    success : function (data){
+                        if(data.result=="success"){
+                            $("#"+fileid).remove();
+                            alert("파일삭제가 완료 되었습니다.");
+                        }else{
+                            alert("파일삭제중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+                        }
+                    },
+                    error : function (error){
+                    }
+                });
+            }
 
         </script>
     </div>
