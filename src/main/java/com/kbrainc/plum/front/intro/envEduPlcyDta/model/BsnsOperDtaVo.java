@@ -9,9 +9,6 @@ import com.kbrainc.plum.rte.util.CommonUtil;
 import lombok.Data;
 import org.apache.ibatis.type.Alias;
 
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
 
@@ -33,23 +30,16 @@ import java.util.List;
 public class BsnsOperDtaVo extends ParentRequestVo {
     private Integer dtaid;
 
-    @Digits(integer = 5, fraction = 0, message = "정확한 년도를 입력해 주십시오.")
     private Integer yy;
 
     private String typeCd;
-
-    @NotEmpty(message = "기관을 선택해 주십시오.")
-    private Integer instid;
 
     private String instNm;
 
     private String clsfCd;
 
-    @NotEmpty(message = "제목을 입력해 주십시오.")
-    @Size(max = 100, message = "제목은 100자를 넘을 수 없습니다.")
     private String ttl;
 
-    @NotEmpty(message = "내용을 입력해 주십시오.")
     private String cn;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")

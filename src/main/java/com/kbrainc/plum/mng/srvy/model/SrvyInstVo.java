@@ -2,14 +2,14 @@ package com.kbrainc.plum.mng.srvy.model;
 
 import java.util.Date;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
-
 import org.apache.commons.lang3.SerializationUtils;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.service.ResCodeService;
+import com.kbrainc.plum.rte.util.CommonUtil;
 
 import lombok.Data;
 
@@ -43,6 +43,9 @@ public class SrvyInstVo extends ParentRequestVo {
     
     /** 기관 코드 */
     private String instCd;
+    
+    /** 기관 유형 코드 */
+    private String instTypeCd;
     
     /** 기관명 */
     private String instNm;
@@ -79,6 +82,21 @@ public class SrvyInstVo extends ParentRequestVo {
     
     /** 프로그램명 */
     private String prgrmNm;
+    
+    public void setInstTypeCd(String instTypeCd) {
+        this.instTypeCd = instTypeCd;
+        if(CommonUtil.isEmpty(this.instType)) {
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.instTypeCd);
+                this.instType = code.getCdNm();
+            } catch(NoClassDefFoundError e) {
+                return;
+             } catch(Exception e) {
+                return;
+             }
+        }
+    }
     
     
     /** 수정일시 */

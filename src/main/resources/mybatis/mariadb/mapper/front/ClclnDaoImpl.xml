@@ -46,13 +46,14 @@
         FROM 
             TB_SPB_PCNTST TSP 
             INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID
-            LEFT OUTER JOIN (SELECT TSDA.APLYID
+            INNER JOIN (SELECT TSDA.APLYID
                                 , TSDA.TOT_AMT AS TOT_AMT
                                 , IFNULL(SUM(AMT), 0) AMT
                                 , ROUND(IFNULL(SUM(AMT), 0) / TSDA.TOT_AMT * 100, 1) AS CLCLN_RATE
                                 , TSDA.TOT_AMT - IFNULL(SUM(AMT), 0) AS NOW_AMT 
                             FROM TB_SPB_DELVRY_APLY TSDA
                             LEFT OUTER JOIN TB_SPB_EXCUT_DSCTN TSED ON TSDA.APLYID = TSED.APLYID AND SE_CD = '210102'
+                            WHERE DELVRY_STTS_CD = '202102'
                             GROUP BY TSDA.TOT_AMT, TSDA.APLYID) TSED1 ON TSED1.APLYID = TSA.APLYID    -- 교부신청 필수 
             LEFT OUTER JOIN (SELECT APLYID, IFNULL(SUM(AMT), 0) AMT FROM TB_SPB_EXCUT_DSCTN WHERE SE_CD = '210101' GROUP BY APLYID) TSED2 ON TSED2.APLYID = TSA.APLYID
             LEFT OUTER JOIN TB_CMM_CD TCC ON TSP.FLD_CD = TCC.CD
