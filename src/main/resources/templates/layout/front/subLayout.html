@@ -44,13 +44,12 @@
         </header>
         <!-- //header -->
 
-        
         <!-- container -->
         <main class="sub-content" aria-label="Main">
             <div class="visual">
                 <div class="visual-inner">
-                    <!-- <h2 th:text="${#request.getAttribute('MENU_NAME')}">Menu Name</h2> -->
-                    <h2 th:with="menuItem=${#request.getAttribute('MENU_ITEM')}"   >
+                    <h2 th:if="${menuPrgrmCntntsCd != null}"><th:block th:text="${@'resCodeServiceImpl'.getCodeInfo(menuPrgrmCntntsCd).cdNm}"></h2>
+                    <h2 th:unless="${menuPrgrmCntntsCd != null}" th:with="menuItem=${#request.getAttribute('MENU_ITEM')}"   >
                        <th:block th:text ="${(menuItem.ptypeCd eq '03' or menuItem.ptypeCd eq '04')? menuItem.upprMenuNm : menuItem.nm }"></th:block>
                     </h2>
                 </div>
@@ -73,24 +72,16 @@
                                         <li class="breadcrumb-home"><a href="/" class="btn-inner-icon" th:title="|${session.site.siteNm} 홈|"></a></li>
                                         
                                         <th:block th:each="menuid : ${menuItem.splitTreeMenuid()}">
-                                        
-   <!--                                     <li th:if="${ menuidStat.last }" area-current="page"><a th:href="${@'cmm.resMenuService'.getMenuItemByMenuID(menuItem.siteid, menuid).url}"><th:block th:text="${@'cmm.resMenuService'.getMenuItemByMenuID(menuItem.siteid, menuid).nm}"></th:block></a></li>
-                                            <li th:unless="${ menuidStat.last }"><a th:href="${@'cmm.resMenuService'.getMenuItemByMenuID(menuItem.siteid, menuid).url}"><th:block th:text="${@'cmm.resMenuService'.getMenuItemByMenuID(menuItem.siteid, menuid).nm}"></th:block></a></li> -->
-   
                                             
                                             <th:block th:with="naviMenuItem = ${@'cmm.resMenuService'.getMenuItemByMenuID(menuItem.siteid, menuid)},listSize = ${#lists.size(menuItem.splitTreeMenuid())}  ">
-                                            
                                             <li th:if="${ menuidStat.index <  listSize -1}" area-current="page">
                                                 <a th:href="${naviMenuItem.url}"><th:block th:text="${naviMenuItem.nm}"></th:block></a>
                                             </li>
-                                            
                                             <li th:if="${menuidStat.index eq  listSize -1  and  naviMenuItem.ptypeCd ne '03' and naviMenuItem.ptypeCd ne'04'}" area-current="page">
                                                 <a th:href="${naviMenuItem.url}"><th:block th:text="${naviMenuItem.nm}"></th:block></a>
                                             </li>
-                                            
                                             </th:block>
                                         </th:block>
-                                        
                                             <li th:if="${menuPrgrmCntntsCd != null}" area-current="page">
                                                 <a href="javascript:void(0)"><th:block th:text="${@'resCodeServiceImpl'.getCodeInfo(menuPrgrmCntntsCd).cdNm}"></a>
                                             </li>
