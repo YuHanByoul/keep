@@ -59,8 +59,22 @@ public class SrvyVo extends ParentRequestVo {
     /** 설문기간 코드 */
     private String srvyPrdCd;
     
+    /** 설문 제출일 String */
+    private String sbmsnDtStr;
+    
     /** 설문 제출일 */
-    private String sbmsnDt;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    private Date sbmsnDt;
+    
+    /** 제출일자 정보 */
+    public Date getSbmsnDt() {
+        return sbmsnDt != null ? (Date) sbmsnDt.clone() : null;
+    }
+    
+    public void setSbmsnDt(Date sbmsnDt) {
+        this.sbmsnDt = sbmsnDt != null ? (Date) sbmsnDt.clone() : null;
+    }
+    
     
     /** 시작 일자 */
     @NotEmpty(message = "설문 시작일을 입력해주세요.")

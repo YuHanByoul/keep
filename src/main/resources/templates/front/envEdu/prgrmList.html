@@ -189,7 +189,6 @@
 				setSearchSelectBox.fn_getNextDepthList(grpcd , upprcd , targetId, selected);
 			}
 		}
-		
     	setSearchSelectBox.fn_getNextDepthList(155 , 0, 'searchEduSbjctCd_1', mainEduSbjctCd);
 		setSearchSelectBox.fn_getNextDepthList(155, mainEduSbjctCd,'searchEduSbjctCd_2', eduSbjctCd);
 		
@@ -206,6 +205,7 @@
 	            },
 
 	            moveToDetail(prgrmid, eduSbjctCd) {
+
 	            	if(eduSbjctCd == null) {
 		                location.href = '/front/envEdu/prgrmDetailForm.html?prgrmid='+prgrmid;	            		
 	            	}else{
@@ -233,7 +233,7 @@
 	            },
 
 	            selectPrgrmList() {
-	            	if (displayWorkProgress(true)) {
+	            	if (displayWorkProgress(true)) {	            		
 	                	let formData = $('#searchForm').serializeArray();
 
 	                    $.ajax({
@@ -244,6 +244,10 @@
 	                        type: 'GET',
 	                        success: function (data) {
 	                        	prgrm.makeListHtml(data);
+	                        	if(mainEduSbjctCd == null){
+		                			$("#searchEduSbjctCd_1").val('');
+		                			$("#searchEduSbjctCd_2").val('');	                        		
+	                        	}
 	                        	closeWorkProgress();
 	                        }
 	                    });
@@ -335,7 +339,7 @@
    							
    	                        cardListHtml += `
    	     					<li>
-   	 							<a href="/front/envEdu/prgrmDetailForm.html?prgrmid=${item.prgrmid}">
+                                <a href="javascript:prgrm.moveToDetail(${item.prgrmid}, ${eduSbjctCd})">
    	 								<div class="thumb" style="height:127px;">
    	 								<img src="/downloadFileByFileid.do?fileid=${item.fileid}+&file_idntfc_key=${item.fileIdntfcKey}" alt="">
    	 								</div>

@@ -117,6 +117,9 @@ public class MenuItem implements Cloneable {
     /** 메뉴아이콘 클래스명 */
     private String classNm;
     
+    /** 상위 메뉴명 */
+    private String upprMenuNm;
+    
     public String getNm() {
         Locale locale = LocaleContextHolder.getLocale();
         if (locale.toLanguageTag().equals("en") && !"".equals(StringUtil.nvl(this.nmEngl))) {

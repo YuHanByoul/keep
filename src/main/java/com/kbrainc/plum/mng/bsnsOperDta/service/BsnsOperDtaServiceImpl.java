@@ -96,7 +96,7 @@ public class BsnsOperDtaServiceImpl extends PlumAbstractServiceImpl implements B
     public int insertBsnsOperDta(BsnsOperDtaVo bsnsOperDtaVo) throws Exception {
         int retVal = 0;
         retVal += bsnsOperDtaDao.insertBsnsOperDta(bsnsOperDtaVo);
-        retVal += bsnsOperDtaDao.insertBsnsOperClsfMapping(bsnsOperDtaVo);
+        retVal += bsnsOperDtaDao.insertBsnsOperDtaClsfMapping(bsnsOperDtaVo);
 
         return retVal;
     }
@@ -116,8 +116,8 @@ public class BsnsOperDtaServiceImpl extends PlumAbstractServiceImpl implements B
         int retVal = 0;
 
         retVal += bsnsOperDtaDao.updateBsnsOperDta(bsnsOperDtaVo);
-        retVal += bsnsOperDtaDao.deleteBsnsOperClsfMapping(bsnsOperDtaVo);
-        retVal += bsnsOperDtaDao.insertBsnsOperClsfMapping(bsnsOperDtaVo);
+        retVal += bsnsOperDtaDao.deleteBsnsOperDtaClsfMapping(bsnsOperDtaVo);
+        retVal += bsnsOperDtaDao.insertBsnsOperDtaClsfMapping(bsnsOperDtaVo);
 
         return retVal;
     }
@@ -134,6 +134,11 @@ public class BsnsOperDtaServiceImpl extends PlumAbstractServiceImpl implements B
     @Override
     @Transactional
     public int deleteBsnsOperDta(BsnsOperDtaVo bsnsOperDtaVo) throws Exception {
-        return bsnsOperDtaDao.deleteBsnsOperDta(bsnsOperDtaVo);
+        int retVal = 0;
+
+        retVal += bsnsOperDtaDao.deleteBsnsOperDtaClsfMappings(bsnsOperDtaVo);
+        retVal += bsnsOperDtaDao.deleteBsnsOperDta(bsnsOperDtaVo);
+
+        return retVal;
     }
 }

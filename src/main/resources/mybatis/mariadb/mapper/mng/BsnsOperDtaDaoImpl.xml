@@ -15,36 +15,48 @@
                 , C.INST_NM
                 , A.REG_DT
                 , A.HITS
-                , B.CLSF_CDS
+                , B.CLSF_CD
             FROM TB_CMM_BSNS_OPER_DTA A
             INNER JOIN
                 (
-                    SELECT DTAID, GROUP_CONCAT(CLSF_CD) CLSF_CDS
-                    FROM TB_CMM_BSNS_OPER_DTA_CLSF_MAPNG
-                    GROUP BY DTAID
+                    SELECT TCBODCM.DTAID, GROUP_CONCAT(TCC.CD_NM) CLSF_CD
+                    FROM TB_CMM_BSNS_OPER_DTA_CLSF_MAPNG TCBODCM
+                    INNER JOIN TB_CMM_CD TCC
+                        ON TCBODCM.CLSF_CD = TCC.CD
+                    WHERE 1=1
+                    GROUP BY TCBODCM.DTAID
                 ) B
                 ON B.DTAID = A.DTAID
             INNER JOIN TB_CMM_INST C
                 ON A.INSTID = C.INSTID
             WHERE 1=1
             <if test="searchKeyword != null and searchKeyword != ''">
-                <if test="searchType == 'ttl'">
-
-                </if>
-                <if test="searchType == 'cn'">
-
-                </if>
+                <choose>
+                    <when test="searchType == 'ttl'">
+                        AND A.TTL LIKE CONCAT('%', #{searchKeyword}, '%')
+                    </when>
+                    <when test="searchType == 'cn'">
+                        AND A.CN LIKE CONCAT('%', #{searchKeyword}, '%')
+                    </when>
+                    <otherwise>
+                        AND A.TTL LIKE CONCAT('%', #{searchKeyword}, '%') AND A.CN LIKE CONCAT('%', #{searchKeyword}, '%')
+                    </otherwise>
+                </choose>
             </if>
 
-            <if test="instNm != null and instNm !=''">
+            <if test="searchInstNm != null and searchInstNm !=''">
+                AND C.INST_NM LIKE CONCAT('%', #{searchInstNm}, '%')
+            </if>
 
+            <if test="searchClsfCdNm != null and searchClsfCdNm != ''">
+                AND B.CLSF_CD LIKE CONCAT('%', #{searchClsfCdNm} ,'%')
             </if>
 
             <if test="searchBgngDt != null and searchBgngDt != ''">
-
+                AND DATE_FORMAT(A.REG_DT, '%Y-%m-%d') <![CDATA[>=]]> #{searchBgngDt}
             </if>
             <if test="searchEndDt != null and searchEndDt != ''">
-
+                AND DATE_FORMAT(A.REG_DT, '%Y-%m-%d') <![CDATA[<=]]> #{searchEndDt}
             </if>
         <include refid="PaginationMapper.footer"/>
     </select>
@@ -60,14 +72,16 @@
              , A.REG_DT
              , A.PDF_FILEID
              , A.ATCH_FILEGRPID
+             , A.CPYRHT_CD
              , A.HITS
              , A.RGTRID
-             , B.CLSF_CDS
+             , B.CLSF_CD
              , D.NM AS RGTR_NM
+             , D.ACNT AS RGTR_ACNT
         FROM TB_CMM_BSNS_OPER_DTA A
         INNER JOIN
         (
-             SELECT DTAID, GROUP_CONCAT(CLSF_CD) CLSF_CDS
+             SELECT DTAID, GROUP_CONCAT(CLSF_CD) CLSF_CD
              FROM TB_CMM_BSNS_OPER_DTA_CLSF_MAPNG
              GROUP BY DTAID
         ) B
@@ -83,10 +97,12 @@
         INSERT INTO TB_CMM_BSNS_OPER_DTA(
             YY
             , INSTID
+            , INST_NM
             , TTL
             , CN
             , PDF_FILEID
             , ATCH_FILEGRPID
+            , CPYRHT_CD
             , HITS
             , MDFCN_DT
             , MDFRID
@@ -96,10 +112,12 @@
         VALUES(
             #{yy}
             , #{instid}
+            , #{instNm}
             , #{ttl}
             , #{cn}
             , #{pdfFileid}
             , #{atchFilegrpid}
+            , #{cpyrhtCd}
             , 0
             , NOW()
             , #{user.userid}
@@ -113,10 +131,12 @@
         SET
             YY = #{yy}
             , INSTID = #{instid}
+            , INST_NM = #{instNm}
             , TTL = #{ttl}
             , CN = #{cn}
             , PDF_FILEID = #{pdfFileid}
             , ATCH_FILEGRPID = #{atchFilegrpid}
+            , CPYRHT_CD = #{cpyrhtCd}
             , MDFCN_DT = NOW()
             , MDFRID = #{user.userid}
         WHERE DTAID = #{dtaid}
@@ -124,10 +144,15 @@
 
     <delete id="deleteBsnsOperDta">
         DELETE FROM TB_CMM_BSNS_OPER_DTA
-        WHERE DTAID = #{dtaid}
+        <where>
+            DTAID IN
+            <foreach collection="deleteDtaids" item="dtaid" separator="," open="(" close=")">
+                #{dtaid}
+            </foreach>
+        </where>
     </delete>
 
-    <insert id="insertBsnsOperClsfMapping">
+    <insert id="insertBsnsOperDtaClsfMapping">
         INSERT INTO TB_CMM_BSNS_OPER_DTA_CLSF_MAPNG
         (
              DTAID
@@ -145,9 +170,19 @@
            </foreach>
     </insert>
 
-    <delete id="deleteBsnsOperClsfMapping">
+    <delete id="deleteBsnsOperDtaClsfMapping">
         DELETE FROM TB_CMM_BSNS_OPER_DTA_CLSF_MAPNG
         WHERE DTAID = #{dtaid}
+    </delete>
+
+    <delete id="deleteBsnsOperDtaClsfMappings">
+        DELETE FROM TB_CMM_BSNS_OPER_DTA_CLSF_MAPNG
+        <where>
+            DTAID IN
+            <foreach collection="deleteDtaids" item="dtaid" separator="," open="(" close=")">
+                #{dtaid}
+            </foreach>
+        </where>
     </delete>
 
 </mapper>

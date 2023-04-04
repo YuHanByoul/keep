@@ -8,34 +8,176 @@
 -->
 <mapper namespace="com.kbrainc.plum.mng.spcltyDta.model.SpcltyDtaDao">
     <select id="selectSpcltyDtaList" resultType="com.kbrainc.plum.mng.spcltyDta.model.SpcltyDtaVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT A.DTAID
+        , A.YY
+        , B.CLSF_CD
+        , A.WRITR
+        , A.TTL
+        , A.REG_DT
+        , A.HITS
+        FROM TB_CMM_SPCLTY_DTA A
+        INNER JOIN
+        (
+            SELECT TCSDC.DTAID, GROUP_CONCAT(TCC.CD_NM) CLSF_CD
+            FROM TB_CMM_SPCLTY_DTA_CLSF TCSDC
+            INNER JOIN TB_CMM_CD TCC
+            ON TCSDC.CLSF_CD = TCC.CD
+            GROUP BY TCSDC.DTAID
+        ) B
+            ON B.DTAID = A.DTAID
+        WHERE 1=1
+        <if test="searchKeyword != null and searchKeyword != ''">
+            <choose>
+                <when test="searchType == 'ttl'">
+                    AND A.TTL LIKE CONCAT('%', #{searchKeyword}, '%')
+                </when>
+                <when test="searchType == 'cn'">
+                    AND A.CN LIKE CONCAT('%', #{searchKeyword}, '%')
+                </when>
+                <otherwise>
+                    AND A.CN LIKE CONCAT('%', #{searchKeyword}, '%') AND A.TTL LIKE CONCAT('%', #{searchKeyword}, '%')
+                </otherwise>
+            </choose>
+        </if>
 
+        <if test="yy != null and yy != ''">
+            AND A.YY = #{yy}
+        </if>
+
+        <if test="writr != null and writr != ''">
+            AND A.WRITR LIKE CONCAT('%', #{writr}, '%')
+        </if>
+
+        <if test="searchClsfCdNm != null and searchClsfCdNm != ''">
+            AND B.CLSF_CD LIKE CONCAT('%',#{searchClsfCdNm}, '%')
+        </if>
+
+        <if test="searchBgngDt != null and searchBgngDt != ''">
+            AND DATE_FORMAT(A.REG_DT, '%Y-%m-%d') <![CDATA[>=]]> #{searchBgngDt}
+        </if>
+
+        <if test="searchEndDt != null and searchEndDt != ''">
+            AND DATE_FORMAT(A.REG_DT, '%Y-%m-%d') <![CDATA[<=]]> #{searchEndDt}
+        </if>
+
+        <include refid="PaginationMapper.footer"/>
     </select>
 
     <select id="selectSpcltyDta" resultType="com.kbrainc.plum.mng.spcltyDta.model.SpcltyDtaVo">
         SELECT
-            DTAID
-            , YY
+            A.DTAID
+            , A.YY
+            , A.WRITR
+            , A.TTL
+            , A.CN
+            , A.PDF_FILEID
+            , A.ATCH_FILEGRPID
+            , A.CPYRHT_CD
+            , A.REG_DT
+            , A.RGTRID
+            , B.CLSF_CD
+            , C.NM AS RGTR_NM
+            , C.ACNT AS RGTR_ACNT
+        FROM
+            TB_CMM_SPCLTY_DTA A
+        INNER JOIN
+        (
+            SELECT DTAID, GROUP_CONCAT(CLSF_CD) CLSF_CD
+            FROM TB_CMM_SPCLTY_DTA_CLSF
+            GROUP BY DTAID
+        ) B
+            ON A.DTAID = B.DTAID
+        INNER JOIN TB_CMM_USER C
+            ON A.RGTRID = C.USERID
+        WHERE A.DTAID = #{dtaid}
+    </select>
+
+    <insert id="insertSpcltyDta" useGeneratedKeys="true" keyProperty="dtaid">
+        INSERT INTO TB_CMM_SPCLTY_DTA (
+            YY
             , WRITR
             , TTL
             , CN
             , PDF_FILEID
             , ATCH_FILEGRPID
+            , CPYRHT_CD
+            , HITS
+            , MDFCN_DT
+            , MDFRID
             , REG_DT
             , RGTRID
-        FROM
-            TB_CMM_SPCLTY_DTA
-        WHERE DTAID = #{dtaid}
-    </select>
+        ) VALUES (
+            #{yy}
+            , #{writr}
+            , #{ttl}
+            , #{cn}
+            , #{pdfFileid}
+            , #{atchFilegrpid}
+            , #{cpyrhtCd}
+            , 0
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
 
-    <insert id="insertSpcltyDta">
-
+    <insert id="insertSpcltyDtaClsfMapping">
+        INSERT INTO TB_CMM_SPCLTY_DTA_CLSF (
+            DTAID
+            , CLSF_CD
+            , REG_DT
+            , RGTRID
+        ) VALUES
+        <foreach collection="clsfCds" item="clsfCd" separator=",">
+            (
+            #{dtaid}
+            , #{clsfCd}
+            , NOW()
+            , #{user.userid}
+            )
+        </foreach>
     </insert>
 
     <update id="updateSpcltyDta">
-
+        UPDATE TB_CMM_SPCLTY_DTA
+        SET
+            YY = #{yy}
+            , WRITR = #{writr}
+            , TTL = #{ttl}
+            , CN = #{cn}
+            , PDF_FILEID = #{pdfFileid}
+            , ATCH_FILEGRPID = #{atchFilegrpid}
+            , CPYRHT_CD = #{cpyrhtCd}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE DTAID = #{dtaid}
     </update>
 
     <delete id="deleteSpcltyDta">
-
+        DELETE FROM TB_CMM_SPCLTY_DTA
+        <where>
+            DTAID IN
+            <foreach collection="deleteDtaids" item="dtaid" separator="," open="(" close=")">
+                #{dtaid}
+            </foreach>
+        </where>
     </delete>
+
+    <delete id="deleteSpcltyDtaClsfMapping" >
+        DELETE FROM TB_CMM_SPCLTY_DTA_CLSF
+        WHERE DTAID = #{dtaid}
+    </delete>
+
+    <delete id="deleteSpcltyDtaClsfMappings">
+        DELETE FROM TB_CMM_SPCLTY_DTA_CLSF
+        <where>
+            DTAID IN
+            <foreach collection="deleteDtaids" item="dtaid" separator="," open="(" close=")">
+                #{dtaid}
+            </foreach>
+        </where>
+    </delete>
+
 </mapper>

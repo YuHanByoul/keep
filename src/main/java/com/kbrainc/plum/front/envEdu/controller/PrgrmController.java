@@ -15,9 +15,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.kbrainc.plum.front.cntnts.model.CntntsVo;
 import com.kbrainc.plum.front.envEdu.model.PrgrmVo;
 import com.kbrainc.plum.front.envEdu.service.PrgrmService;
 import com.kbrainc.plum.mng.code.model.CodeVo;
@@ -95,8 +95,8 @@ public class PrgrmController {
     * @throws Exception
     * @return String
     */
-    @RequestMapping(value="/front/envEdu/prgrmDetailForm.html")
-    public String prgrmDetailForm(PrgrmVo prgrmVo, Model model, String eduSbjctCd) throws Exception {
+    @RequestMapping(value="/front/envEdu/prgrmDetailForm.html")                      
+    public String prgrmDetailForm(PrgrmVo prgrmVo, Model model, @RequestParam(value="eduSbjctCd", required=false)  String eduSbjctCd) throws Exception {
         PrgrmVo prgrm = null;
         prgrm = PrgrmService.selectPrgrmInfo(prgrmVo);
         model.addAttribute("prgrm", prgrm);
@@ -116,6 +116,7 @@ public class PrgrmController {
         }
         
         model.addAttribute("eduSbjctCd", eduSbjctCd);
+        model.addAttribute("menuPrgrmCntntsCd", eduSbjctCd);
 
         return "front/envEdu/prgrmDetail";
     }
