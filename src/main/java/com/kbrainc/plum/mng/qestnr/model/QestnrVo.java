@@ -8,8 +8,11 @@ import javax.validation.constraints.Size;
 import org.apache.commons.lang3.SerializationUtils;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.service.ResCodeService;
+import com.kbrainc.plum.rte.util.CommonUtil;
 
 import lombok.Data;
 
@@ -82,6 +85,21 @@ public class QestnrVo extends ParentRequestVo {
     
     /** 검색 설문 종류 */
     private String searchQestnrKndCd;
+    
+    public void setQestnrKndCd(String qestnrKndCd) {
+        this.qestnrKndCd = qestnrKndCd;
+        if(CommonUtil.isEmpty(this.qestnrKndCdNm)) {
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.qestnrKndCd);
+                this.qestnrKndCdNm = code.getCdNm();
+            } catch(NoClassDefFoundError e) {
+                return;
+             } catch(Exception e) {
+                return;
+             }
+        }
+    }
     
     /** 수정일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")

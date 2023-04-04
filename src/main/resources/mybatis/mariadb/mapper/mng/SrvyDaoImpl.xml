@@ -676,21 +676,12 @@
             A.INSTID
             , A.INST_NM
             , A.INST_CD
+            , A.INST_TYPE_CD
             , B.CD_NM AS RGN_NM
-            , C.CD_NM AS INST_TYPE
         FROM
             TB_CMM_INST A
         LEFT OUTER JOIN
             TB_CMM_RGN_CD B ON (B.RGN_CD = A.RGN_CD)
-        INNER JOIN (
-            SELECT
-                CD
-                , CD_NM
-            FROM
-                TB_CMM_CD
-            WHERE
-                CDGRPID = 108
-        ) C ON (C.CD = A.INST_TYPE_CD)
         WHERE
             A.USE_YN = 'Y'
         <if test="searchKeyword != null and searchKeyword != '' and searchType == 'instNm'">
@@ -819,23 +810,14 @@
             , A.INSTID
             , B.INST_NM
             , B.INST_CD
+            , B.INST_TYPE_CD
             , C.CD_NM AS RGN_NM
-            , D.CD_NM AS INST_TYPE
         FROM
             TB_CMM_SRVY_INST A
         LEFT OUTER JOIN
             TB_CMM_INST B ON (B.INSTID = A.INSTID)
         LEFT OUTER JOIN
             TB_CMM_RGN_CD C ON (C.RGN_CD = B.RGN_CD)    
-        INNER JOIN (
-            SELECT
-                CD
-                , CD_NM
-            FROM
-                TB_CMM_CD
-            WHERE
-                CDGRPID = 108
-        ) D ON (D.CD = B.INST_TYPE_CD)    
         WHERE
             SRVYID = #{srvyid}
         <include refid="PaginationMapper.footer"/>

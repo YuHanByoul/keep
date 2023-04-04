@@ -5,8 +5,11 @@ import java.util.Date;
 import org.apache.commons.lang3.SerializationUtils;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.service.ResCodeService;
+import com.kbrainc.plum.rte.util.CommonUtil;
 
 import lombok.Data;
 
@@ -55,6 +58,36 @@ public class CmntyMbrVo extends ParentRequestVo {
     
     /** 권한 코드명 */
     private String authrtCdNm;
+    
+    public void setMbrSttsCd(String mbrSttsCd) {
+        this.mbrSttsCd = mbrSttsCd;
+        if(CommonUtil.isEmpty(this.mbrSttsCdNm)) {
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.mbrSttsCd);
+                this.mbrSttsCdNm = code.getCdNm();
+            } catch(NoClassDefFoundError e) {
+                return;
+             } catch(Exception e) {
+                return;
+             }
+        }
+    }
+    
+    public void setAuthrtCd(String authrtCd) {
+        this.authrtCd = authrtCd;
+        if(CommonUtil.isEmpty(this.authrtCdNm)) {
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.authrtCd);
+                this.authrtCdNm = code.getCdNm();
+            } catch(NoClassDefFoundError e) {
+                return;
+             } catch(Exception e) {
+                return;
+             }
+        }
+    }
     
     /** 가입신청 일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")

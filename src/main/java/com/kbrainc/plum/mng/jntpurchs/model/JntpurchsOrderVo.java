@@ -6,8 +6,11 @@ import java.util.List;
 import org.apache.commons.lang3.SerializationUtils;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.service.ResCodeService;
+import com.kbrainc.plum.rte.util.CommonUtil;
 
 import lombok.Data;
 
@@ -143,6 +146,21 @@ public class JntpurchsOrderVo extends ParentRequestVo {
     
     /** 신청상품 목록 */
     private List<JntpurchsTchaidVo> goodsList;
+    
+    public void setSttsCd(String sttsCd) {
+        this.sttsCd = sttsCd;
+        if(CommonUtil.isEmpty(this.sttsCdNm)) {
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.sttsCd);
+                this.sttsCdNm = code.getCdNm();
+            } catch(NoClassDefFoundError e) {
+                return;
+             } catch(Exception e) {
+                return;
+             }
+        }
+    }
     
     
     /** 시작일시 */
