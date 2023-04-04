@@ -38,6 +38,17 @@ public interface SrvyDao {
     public List<SrvyVo> selectSrvyList(SrvyVo srvyVo) throws Exception;
     
     /**
+    * 설문 참여 목록 조회
+    *
+    * @Title : selectSrvyHstryList
+    * @Description : 설문 참여 목록 조회
+    * @param srvyVo SrvyVo 객체
+    * @return List<SrvyVo> 설문 참여 목록
+    * @throws Exception 예외
+    */
+    public List<SrvyVo> selectSrvyHstryList(SrvyVo srvyVo) throws Exception;
+    
+    /**
     * 설문 문항 목록 조회
     *
     * @Title : selectQitemList

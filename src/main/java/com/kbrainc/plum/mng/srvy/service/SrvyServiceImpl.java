@@ -575,6 +575,7 @@ public class SrvyServiceImpl extends PlumAbstractServiceImpl implements SrvyServ
             srvyVo.setUseYn("Y");
         }
         retVal += srvyDao.insertCnsltngDgstfnSrvy(srvyVo);
+        if(retVal != 0) retVal = srvyVo.getSrvyid();
          
         return retVal;
      }
@@ -700,6 +701,7 @@ public class SrvyServiceImpl extends PlumAbstractServiceImpl implements SrvyServ
     public int insertEnvSrvy(SrvyVo srvyVo) throws Exception {
         int retVal = 0;
         retVal += srvyDao.insertEnvSrvy(srvyVo);
+        if(retVal != 0) retVal = srvyVo.getSrvyid();
          
         return retVal;
      }

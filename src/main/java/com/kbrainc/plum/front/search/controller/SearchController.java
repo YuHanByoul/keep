@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.kbrainc.plum.front.search.model.SearchVo;
 import com.kbrainc.plum.front.search.service.SearchService;
 
 /**
@@ -81,7 +82,7 @@ public class SearchController {
     * @return String
     */
     @GetMapping("/search.html")
-    public String search() {
+    public String search(SearchVo search) {
         return "front/search/search";
     }
     

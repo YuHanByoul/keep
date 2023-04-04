@@ -8,8 +8,11 @@ import javax.validation.constraints.Size;
 import org.apache.commons.lang3.SerializationUtils;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.service.ResCodeService;
+import com.kbrainc.plum.rte.util.CommonUtil;
 
 import lombok.Data;
 
@@ -65,6 +68,21 @@ public class ChklstVo extends ParentRequestVo {
     
     /** 사용중인 체크리스트 여부 */
     private String isUseChklst;
+    
+    public void setOperFrmCd(String operFrmCd) {
+        this.operFrmCd = operFrmCd;
+        if(CommonUtil.isEmpty(this.operFrmCdNm)) {
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.operFrmCd);
+                this.operFrmCdNm = code.getCdNm();
+            } catch(NoClassDefFoundError e) {
+                return;
+             } catch(Exception e) {
+                return;
+             }
+        }
+    }
     
     /** 수정일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")

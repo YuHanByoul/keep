@@ -66,15 +66,8 @@ $.validator.addMethod("passwordPolicy2", function(value, element) {
 //영문,숫자 혼용
 $.validator.addMethod("idPolicy1", function(value, element) {
     //아이디 정책 관련 필터  
-    if(/^[a-z0-9]+$/.test(value)) {
-        var chk_num = value.search(/[0-9]/g);
-        var chk_eng = value.search(/[a-z]/ig);
-        
-        if(chk_num <0 || chk_eng <0){
-            return false;
-        }else{
-            return true;
-        }
+    if(/^[a-z0-9_]+$/.test(value)) {
+        return true;
     }else{
         return false;
     }

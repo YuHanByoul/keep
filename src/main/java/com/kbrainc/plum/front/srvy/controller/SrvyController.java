@@ -24,7 +24,9 @@ import com.kbrainc.plum.front.srvy.model.SrvySbmsnVo;
 import com.kbrainc.plum.front.srvy.model.SrvyVo;
 import com.kbrainc.plum.front.srvy.service.SrvyServiceImpl;
 import com.kbrainc.plum.rte.constant.Constant;
+import com.kbrainc.plum.rte.model.SiteInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.mvc.bind.annotation.SiteInfo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 
@@ -60,9 +62,22 @@ public class SrvyController {
      * @return String 화면경로
      * @throws Exception 예외
      */
-    @RequestMapping(value = {"/front/srvy/srvyListForm.html", "/front/srvyHstry/srvyListForm.html"})
+    @RequestMapping(value = {"/front/srvy/srvyListForm.html"})
     public String srvyListForm() throws Exception {
         return "front/srvy/srvyList";
+    }
+    
+    /**
+     * 설문조사 참여이력 목록 화면
+     *
+     * @Title : srvyHstryListForm
+     * @Description : 설문조사 목록 화면
+     * @return String 화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = {"/front/srvyHstry/srvyHstryListForm.html"})
+    public String srvyHstryListForm() throws Exception {
+        return "front/srvy/srvyHstryList";
     }
     
     /**
@@ -98,7 +113,6 @@ public class SrvyController {
          return "front/srvy/srvySbmsnInfoPopup";
      }
     
-    
     /**
     * 설문 목록 조회
     *
@@ -110,9 +124,10 @@ public class SrvyController {
     */
     @RequestMapping(value = "/front/srvy/selectSrvyList.do")
     @ResponseBody
-    public Map<String, Object> selectSrvyList(SrvyVo srvyVo, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> selectSrvyList(SrvyVo srvyVo, @UserInfo UserVo user, @SiteInfo SiteInfoVo site) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         srvyVo.setUser(user);
+        srvyVo.setSiteid(Integer.valueOf(site.getSiteid()));
         List<SrvyVo> result = srvyService.selectSrvyList(srvyVo);
                      
         if(result.size() > 0) {
@@ -126,6 +141,33 @@ public class SrvyController {
         return resultMap;
     }
     
+    /**
+    * 설문 참여 목록 조회
+    *
+    * @Title : selectSrvyList
+    * @Description : 설문 참여 목록 조회
+    * @param srvyVo SrvyVo 객체
+    * @return Map<String, Object> 응답결과객체
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/front/srvyHstry/selectSrvyHstryList.do")
+    @ResponseBody
+    public Map<String, Object> selectSrvyHstryList(SrvyVo srvyVo, @UserInfo UserVo user, @SiteInfo SiteInfoVo site) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        srvyVo.setUser(user);
+        srvyVo.setSiteid(Integer.valueOf(site.getSiteid()));
+        List<SrvyVo> result = srvyService.selectSrvyHstryList(srvyVo);
+                     
+        if(result.size() > 0) {
+            resultMap.put("totalCount", (result.get(0).getTotalCount()));
+            resultMap.put("pagination", PaginationUtil.getFrontPaginationHtml(result.get(0).getTotalPage(), result.get(0).getPageNumber(), 10));
+        } else {
+            resultMap.put("totalCount", 0);
+        }
+        resultMap.put("list", result);
+             
+        return resultMap;
+    }
     
     /**
     * 설문 제출

@@ -7,6 +7,7 @@ import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,7 +41,8 @@ public class MyMdfcnHistoryController {
     private MyMdfcnHistoryService myMdfcnHistoryService;
 
     @GetMapping("/mdfcnHistoryList.html")
-    public String mdfcnHistory() throws Exception {
+    public String mdfcnHistory(@UserInfo UserVo user, Model model) throws Exception {
+        model.addAttribute("user", user);
         return VIEW_PATH + "/mdfcnHistoryList";
     }
 

@@ -167,26 +167,30 @@
     <div class="tab-content tab-sub dropDown">
         <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">상세정보</button>
         <ul class="tab-list target" role="tablist">
-            <li class="tab active"><button aria-controls="tab-subpanel01" id="tab-sub01" role="tab">상세정보</button></li>
-            <li class="tab"><button aria-controls="tab-subpanel02" id="tab-sub02" role="tab" >유의사항</button></li>
-            <li class="tab"><button aria-controls="tab-subpanel03" id="tab-sub03" role="tab" >후기</button></li>
+            <li class="tab active" ><button aria-controls="tab-subpanel01" id="tab-sub01" role="tab" >상세정보</button></li>
+            <li class="tab"        ><button aria-controls="tab-subpanel02" id="tab-sub02" role="tab" >유의사항</button></li>
+            <li class="tab"        ><button aria-controls="tab-subpanel03" id="tab-sub03" role="tab" >후기</button></li>
         </ul>
         <div id="tab-subpanel01" class="tabpanel active" role="tabpanel" aria-labelledby="tab-sub01">
             <div class="youtube-frame" th:if ="${lendInfo.mvpUrl != null and lendInfo.mvpUrl != '' and lendInfo.mvpPstnCd =='226101' }" >
                 <iframe  th:src="'https://www.youtube.com/embed/'+${lendInfo.mvpUrl}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
             </div>
             <div class="table-col table-layout-auto">
-               <th:block th:utext="${lendInfo.dtlCn}"/>
+               <th:block th:if ="${lendInfo.dtlCn != null and lendInfo.dtlCn != ''}" th:utext="${lendInfo.dtlCn}" />
+               <th:block th:unless ="${lendInfo.dtlCn != null and lendInfo.dtlCn != ''}" >등록된 상세정보가 없습니다.</th:block>
             </div>
             <div class="youtube-frame" th:if ="${lendInfo.mvpUrl != null and lendInfo.mvpUrl != '' and lendInfo.mvpPstnCd =='226102' }" >
                 <iframe  th:src="'https://www.youtube.com/embed/'+${lendInfo.mvpUrl}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
             </div>
         </div>
+        
         <div id="tab-subpanel02" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub02">
-            <div class="box-desc-list bg7">
-                <th:block th:utext="${lendInfo.atentMttr}"/>
+           <div class="box-desc-list bg7" > 
+                <th:block th:if ="${lendInfo.atentMttr != null and lendInfo.atentMttr != ''}"  th:utext="${lendInfo.atentMttr}"/>
+                <th:block th:unless ="${lendInfo.atentMttr != null and lendInfo.atentMttr != ''}">등록된 유의사항이 없습니다.</th:block>
             </div>
         </div>
+        
         <div id="tab-subpanel03" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub03">
             <div class="accordion-content acc-list" id="replyListArea"></div>
             <div id="reply_pagination"></div>
@@ -279,9 +283,8 @@
         function viewPdf(){
         	for(var i = 0, len = mapFileInfo.length; i < len; i++) {
                 var data = mapFileInfo[i];
-                //var pdfUrl =portalUrl+'js/pdfjs/web/viewer.html?file=/' + data.filegrpNm + '/' + data.saveFileNm;
                 var pdfUrl ='/js/pdfjs/web/viewer.html?file=/' + data.filegrpNm + '/' + data.saveFileNm;
-                window.open(pdfUrl,"","target=_parent");
+                window.open(pdfUrl,"","");
             }
        }
        function returnToList(){
@@ -323,25 +326,21 @@
            $("#replyFrom #pageNumber").val(page);
            selectLendList();
        }
-       
        function increaseQnty(rndid){
            var qnty     = Number($("#rnd"+rndid+" #requestQnty").val());
            var totalCnt = $("#rnd"+rndid).attr("data-totalCnt");
            var plusedQnty =  (qnty == null || qnty == "")? 1:Number(qnty)+1;
            let limitCnt  = (lendInfo.lmtCd =='225101' || lendInfo.lmtCd =='225103')? 1:2;
-           if(limitCnt < plusedQnty){alert("한개차시에 "+limitCnt+"까지 신청 할수 없습니다."); $("#rnd"+rndid+" #requestQnty").val(qnty-1); return;}
+           if(limitCnt < plusedQnty){alert("한 개차시에 "+limitCnt+"개 까지 신청 할 수 있습니다."); $("#rnd"+rndid+" #requestQnty").val(qnty-1); return;}
            if(totalCnt < plusedQnty){alert("재고 이상으로 입력 할수 없습니다."); $("#rnd"+rndid+" #requestQnty").val(qnty-1); return;}
     	   $("#rnd"+rndid+" .btn-green").attr("disabled",(plusedQnty>0)? false:true);
        }
-
-       
        function decreaseQnty(rndid){
     	   var qnty     = Number($("#rnd"+rndid+" #requestQnty").val());
            var totalCnt = $("#rnd"+rndid).attr("data-totalCnt");
            var plusedQnty =  (qnty == null || qnty == "")? 0:Number(qnty)-1;
     	   $("#rnd"+rndid+" .btn-green").attr("disabled",(plusedQnty>0)? false:true);
        }
-       
        function checkChasiValidation($el){
            let limitChasiCnt  = (lendInfo.lmtCd =='225101' || lendInfo.lmtCd =='225102')? 1:2;
            let checkCnt = 0 ;
@@ -365,7 +364,6 @@
                $("#rnd"+rndid+" #requestQnty").val("");
            }
        }
-       
        function requestAply(rndid){
            var qnty  = Number($("#rnd"+rndid+" #requestQnty").val());
            if(qnty ==null || qnty =="" ||qnty <=0){

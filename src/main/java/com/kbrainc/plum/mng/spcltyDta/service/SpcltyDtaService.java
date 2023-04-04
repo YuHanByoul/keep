@@ -74,4 +74,5 @@ public interface SpcltyDtaService {
      * @Description : 전문자료 삭제
      */
     public int deleteSpcltyDta(SpcltyDtaVo spcltyDtaVo) throws Exception;
+
 }

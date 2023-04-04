@@ -9,8 +9,11 @@ import javax.validation.constraints.Size;
 import org.apache.commons.lang3.SerializationUtils;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.service.ResCodeService;
+import com.kbrainc.plum.rte.util.CommonUtil;
 import com.kbrainc.plum.rte.util.mail.model.MailRcptnVo;
 
 import lombok.Data;
@@ -84,6 +87,21 @@ public class QitemVo extends ParentRequestVo {
     
     /** 보기 목록 */
     private List<QitemExVo> exampleList;
+    
+    public void setQitemTypeCd(String qitemTypeCd) {
+        this.qitemTypeCd = qitemTypeCd;
+        if(CommonUtil.isEmpty(this.qitemTypeCdNm)) {
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.qitemTypeCd);
+                this.qitemTypeCdNm = code.getCdNm();
+            } catch(NoClassDefFoundError e) {
+                return;
+             } catch(Exception e) {
+                return;
+             }
+        }
+    }
     
     /** 수정일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")

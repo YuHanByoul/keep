@@ -53,21 +53,21 @@
             , FLD_CD
             , B.CD_NM AS FLD_NM
             , PCNTST_NM
-            , APLY_BGNG_DT
-            , APLY_END_DT
-            , CONCAT(DATE_FORMAT(APLY_BGNG_DT, '%Y-%m-%d %H:%i'), ' - ', DATE_FORMAT(APLY_END_DT, '%Y-%m-%d %H:%i')) AS APLY_DT
+            , DATE_FORMAT(APLY_BGNG_DT, '%Y-%m-%d %H:%i') AS APLY_BGNG_DT
+            , DATE_FORMAT(APLY_END_DT, '%Y-%m-%d %H:%i') AS APLY_END_DT
             <![CDATA[
+            , CONCAT(DATE_FORMAT(APLY_BGNG_DT, '%Y-%m-%d %H:%i'), '<br class="pc-only"> ~ ', DATE_FORMAT(APLY_END_DT, '%Y-%m-%d %H:%i')) AS APLY_DT
             , CASE WHEN NOW() < APLY_BGNG_DT THEN '진행전' 
                 WHEN NOW() >= APLY_BGNG_DT AND  NOW() <= APLY_END_DT THEN '진행중'
                 WHEN NOW() > APLY_END_DT THEN '마감'
                 ELSE ''
                 END AS STATUS
-            ]]>
             , TRGT_CD
             , C.CD_NM AS TRGT_NM
             , BSNS_BGNG_DE
             , BSNS_END_DE
-            , CONCAT(BSNS_BGNG_DE, ' - ', BSNS_END_DE) AS BSNS_DE
+            , CONCAT(BSNS_BGNG_DE, '<br class="pc-only"> ~ ', BSNS_END_DE) AS BSNS_DE
+            ]]>
             , MDL_REPORT_YN
             , CNSLTNG_USE_CD
             , CNSLTNG_OPER_CD
@@ -356,6 +356,9 @@
             </if>
             <if test="aplcntEml != null and aplcntEml != ''">
             , APLCNT_EML = #{aplcntEml}
+            </if>
+            <if test="instTypeCd != null and instTypeCd != ''">
+            , INST_TYPE_CD = #{instTypeCd}
             </if>
             <if test="fldCd == '173106' or fldCd == '173105'">
             , INST_ADDR = #{instAddr}

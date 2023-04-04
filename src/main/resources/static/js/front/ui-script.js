@@ -1178,7 +1178,7 @@ $(document).ready(function() {
 		const pageTitle = document.querySelector('.visual-inner h2');
 		if (pageTitle !== null) {
 			const pageTitleText = pageTitle.innerText;
-			document.title = pageTitleText;
+			document.title = `🚀 ${pageTitleText}`;
 		}
 	}
 	$('body').each(function () {
