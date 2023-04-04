@@ -5,8 +5,11 @@ import java.util.Date;
 import org.apache.commons.lang3.SerializationUtils;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.service.ResCodeService;
+import com.kbrainc.plum.rte.util.CommonUtil;
 
 import lombok.Data;
 
@@ -88,6 +91,51 @@ public class JntpurchsTchaidVo extends ParentRequestVo {
     
     /** 검색 교구유형 */
     private String searchTchaidTypeCd;
+    
+    public void setEduTypeCd(String eduTypeCd) {
+        this.eduTypeCd = eduTypeCd;
+        if(CommonUtil.isEmpty(this.eduTypeCdNm)) {
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.eduTypeCd);
+                this.eduTypeCdNm = code.getCdNm();
+            } catch(NoClassDefFoundError e) {
+                return;
+             } catch(Exception e) {
+                return;
+             }
+        }
+    }
+    
+    public void setTchaidTypeCd(String tchaidTypeCd) {
+        this.tchaidTypeCd = tchaidTypeCd;
+        if(CommonUtil.isEmpty(this.tchaidTypeCdNm)) {
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.tchaidTypeCd);
+                this.tchaidTypeCdNm = code.getCdNm();
+            } catch(NoClassDefFoundError e) {
+                return;
+             } catch(Exception e) {
+                return;
+             }
+        }
+    }
+    
+    public void setTeamCmpstnCd(String teamCmpstnCd) {
+        this.teamCmpstnCd = teamCmpstnCd;
+        if(CommonUtil.isEmpty(this.teamCmpstnCdNm)) {
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.teamCmpstnCd);
+                this.teamCmpstnCdNm = code.getCdNm();
+            } catch(NoClassDefFoundError e) {
+                return;
+             } catch(Exception e) {
+                return;
+             }
+        }
+    }
 
     
     /** 수정일시 */

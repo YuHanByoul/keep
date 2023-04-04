@@ -203,43 +203,13 @@
         SELECT
             A.TCHAIDID
             , A.TCHAID_TYPE_CD
-            , B.CD_NM AS TCHAID_TYPE_CD_NM
             , CONCAT('TA-', LPAD(A.TCHAIDID, 4, '0')) AS TCHAID_NO
             , A.TCHAID_NM
             , A.EDU_TYPE_CD
-            , C.CD_NM AS EDU_TYPE_CD_NM
             , A.TEAM_CMPSTN_CD
-            , D.CD_NM AS TEAM_CMPSTN_CD_NM
             , A.REG_DT
         FROM
             TB_THA_TCHAID A
-        INNER JOIN (
-            SELECT
-                CD
-                , CD_NM
-            FROM
-                TB_CMM_CD
-            WHERE
-                CDGRPID = '184'
-        ) B ON (B.CD = A.TCHAID_TYPE_CD)
-        INNER JOIN (
-            SELECT
-                CD
-                , CD_NM
-            FROM
-                TB_CMM_CD
-            WHERE
-                CDGRPID = '187'
-        ) C ON (C.CD = A.EDU_TYPE_CD)
-        INNER JOIN (
-            SELECT
-                CD
-                , CD_NM
-            FROM
-                TB_CMM_CD
-            WHERE
-                CDGRPID = '186'
-        ) D ON (D.CD = A.TEAM_CMPSTN_CD)
         WHERE 
             1 = 1
         <if test="searchTchaidKeyword != null and searchTchaidKeyword != '' and searchTchaidType == 'tchaidNm'">
@@ -433,7 +403,7 @@
             , A.ORDERNO
             , GROUP_CONCAT(C.TCHAID_NM SEPARATOR ', ') AS TCHAID_NM
             , B.QNTY
-            , G.CD_NM AS STTS_CD_NM
+            , A.STTS_CD
             , A.REG_DT
             , DATE_FORMAT(A.REG_DT, '%Y-%m-%d %H:%i:%s') AS REG_DT_STR
         FROM
@@ -454,15 +424,6 @@
         ) E ON (E.USERID = A.USERID)
         LEFT OUTER JOIN
             TB_CMM_INST F ON (F.INSTID = A.INSTID)
-        INNER JOIN (
-            SELECT
-                CD
-                , CD_NM
-            FROM
-                TB_CMM_CD
-            WHERE
-                CDGRPID = '181'
-        ) G ON (G.CD = A.STTS_CD)
         WHERE 1 = 1
         <if test="searchKeyword != null and searchKeyword != '' and searchType == 'jntpurchsNm'">
             AND D.JNTPURCHS_NM LIKE CONCAT('%',#{searchKeyword},'%')

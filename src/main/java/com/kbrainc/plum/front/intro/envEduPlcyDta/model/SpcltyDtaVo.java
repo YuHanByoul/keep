@@ -2,10 +2,7 @@ package com.kbrainc.plum.front.intro.envEduPlcyDta.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.cmm.file.model.FileVo;
-import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
-import com.kbrainc.plum.rte.service.ResCodeService;
-import com.kbrainc.plum.rte.util.CommonUtil;
 import lombok.Data;
 import org.apache.ibatis.type.Alias;
 
@@ -29,7 +26,6 @@ import java.util.List;
 @Alias("front.SpcltyDtaVo")
 public class SpcltyDtaVo extends ParentRequestVo {
     public Integer dtaid;
-    public String clsfCd;
     public String yy;
     private String typeCd;
     private String writr;
@@ -54,21 +50,4 @@ public class SpcltyDtaVo extends ParentRequestVo {
     private String searchToRegDt;
     private String[] searchClsfCd;
 
-    public void setClsfCd(String clsfCd) {
-        this.clsfCd = clsfCd;
-
-        if (CommonUtil.isEmpty(this.clsfCdNm)) {
-            try {
-                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
-                CodeInfoVo code = resCodeService.getCodeInfo(this.clsfCd);
-                this.clsfCdNm = code.getCdNm();
-            } catch (NoClassDefFoundError e) {
-                //e.printStackTrace();
-                return;
-            } catch (Exception e) {
-                //e.printStackTrace();
-                return;
-            }
-        }
-    }
 }

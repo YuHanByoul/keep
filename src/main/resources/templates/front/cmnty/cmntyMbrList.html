@@ -3,7 +3,7 @@
     xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
     layout:decorator="layout/front/subLayout">
 <body>
-<div layout:fragment="content" th:if="${cmntyInfo.authrtCd eq '117100'}">
+<div layout:fragment="content" th:if="${cmntyInfo.mbrSttsCd eq '118100' and cmntyInfo.authrtCd eq '117100'}">
     <div class="community-wrap">
         <div class="community-tit">
             <strong th:text="${cmntyInfo.cmntyNm}"></strong>
@@ -167,26 +167,12 @@
                     </div>
                 </div>
 
-                <div class="box-desc-list bg7">
-                    <p class="fw-300 fc-black6 ac">
-                        검색결과에서 [초대하기] 버튼을 누르면 <br> 초대 요청을 보낼 수 있습니다. <br> 초대한 사용자는 커뮤니티 회원 관리에서 확인할 수 있습니다.
-                    </p>
-                </div>
-
-                <div class="table-col">
-                    <table>
-                        <caption>회원초대 - 성명, 아이디, 초대하기</caption>
-                        <thead>
-                        <tr>
-                            <th scope="col">성명</th>
-                            <th scope="col">아이디</th>
-                            <th scope="col">초대하기</th>
-                        </tr>
-                        </thead>
-                        <tbody class="layer-tbody">
-                            <!--js 처리-->
-                        </tbody>
-                    </table>
+                <div class="result-box">
+                    <div class="box-desc-list bg7">
+                        <p class="fw-300 fc-black6 ac">
+                            검색결과에서 [초대하기] 버튼을 누르면 <br> 초대 요청을 보낼 수 있습니다. <br> 초대한 사용자는 커뮤니티 회원 관리에서 확인할 수 있습니다.
+                        </p>
+                    </div>
                 </div>
             </div>
             <div class="layer-footer">
@@ -196,6 +182,29 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div class="clone-table-parent" style="display: none;">
+        <div class="table-col">
+            <table>
+                <caption>회원초대 - 성명, 아이디, 초대하기</caption>
+                <thead>
+                <tr>
+                    <th scope="col">성명</th>
+                    <th scope="col">아이디</th>
+                    <th scope="col">초대하기</th>
+                </tr>
+                </thead>
+                <tbody class="layer-tbody">
+                <!--js 처리-->
+                </tbody>
+            </table>
+        </div>
+        <div class="box-desc-list bg7 tr-nodata">
+            <p class="fw-300 fc-black6 ac">
+                <span class="icon icon-notice bg-black6" style="vertical-align:-2px;margin-right:3px;"></span>검색 결과가 없습니다. <br> 성명 확인 후 다시 검색해 주시기 바랍니다.
+            </p>
         </div>
     </div>
 
@@ -213,13 +222,6 @@
             <td class="user-nm"></td>
             <td class="user-acnt"></td>
             <td><button type="button" class="btn-small btn-outline-blue invite-btn">초대</button></td>
-        </tr>
-        <tr class="tr-nodata">
-            <td class="box-desc-list bg7" colspan="3">
-                <p class="fw-300 fc-black6 ac">
-                    <span class="icon icon-notice bg-black6" style="vertical-align:-2px;margin-right:3px;"></span>검색 결과가 없습니다. <br> 성명 확인 후 다시 검색해 주시기 바랍니다.
-                </p>
-            </td>
         </tr>
         </tbody>
     </table>
@@ -257,9 +259,10 @@
             });
 
             $('.btn-before-search').on('click', function (){
-                const $tbody = $('.layer-tbody');
-                const $cloneTable = $('.clone-table .tr-clone');
-                const $nodataTable = $('.clone-table .tr-nodata');
+                const $resultBox = $('.result-box');
+                const $cloneTableTr = $('.clone-table .tr-clone');
+                const $cloneTableParent = $('.clone-table-parent .table-col');
+                const $nodataTable = $('.clone-table-parent .tr-nodata');
                 if(displayWorkProgress(true)){
                     $.ajax({
                         url : "selectMbr.do",
@@ -271,10 +274,12 @@
                             cmntyid: $searchForm[0].cmntyid.value
                         },
                         success : function (result){
-                            $tbody.children().remove();
+                            $resultBox.children().remove();
                             if(result.datalist != null){
+                                $resultBox.append($cloneTableParent.clone(true));
+                                const $tbody = $resultBox.find('.layer-tbody');
                                 for(let item of result.datalist){
-                                    let $clone = $cloneTable.clone(false);
+                                    let $clone = $cloneTableTr.clone(false);
                                     $tbody.append(
                                         $clone.find('.user-nm').text(item.nm).end()
                                             .find('.user-acnt').text(item.acnt).end()
@@ -282,14 +287,14 @@
                                     );
                                 }
                             }else{
-                                $tbody.append($nodataTable.clone(true))
+                                $resultBox.append($nodataTable.clone(true))
                             }
                         }
                     });
                 }
             });
 
-            $('.layer-popup').find('.layer-tbody').on('click','.invite-btn', function (){
+            $('.layer-popup').find('.result-box').on('click','.invite-btn', function (){
                 let {userid} = $(this).data();
                 let $this = $(this);
                 if(confirm('초대하시겠습니까?')){
