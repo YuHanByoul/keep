@@ -2,7 +2,6 @@ package com.kbrainc.plum.mng.spcltyDta.service;
 
 import com.kbrainc.plum.cmm.file.model.FileDao;
 import com.kbrainc.plum.cmm.file.model.FileVo;
-import com.kbrainc.plum.mng.bsnsOperDta.model.BsnsOperDtaVo;
 import com.kbrainc.plum.mng.spcltyDta.model.SpcltyDtaDao;
 import com.kbrainc.plum.mng.spcltyDta.model.SpcltyDtaVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
@@ -93,7 +92,12 @@ public class SpcltyDtaServiceImpl extends PlumAbstractServiceImpl implements Spc
     @Override
     @Transactional
     public int insertSpcltyDta(SpcltyDtaVo spcltyDtaVo) throws Exception {
-        return 0;
+        int retVal = 0;
+
+        retVal += spcltyDtaDao.insertSpcltyDta(spcltyDtaVo);
+        retVal += spcltyDtaDao.insertSpcltyDtaClsfMapping(spcltyDtaVo);
+
+        return retVal;
     }
 
     /**
@@ -108,7 +112,13 @@ public class SpcltyDtaServiceImpl extends PlumAbstractServiceImpl implements Spc
     @Override
     @Transactional
     public int updateSpcltyDta(SpcltyDtaVo spcltyDtaVo) throws Exception {
-        return 0;
+        int retVal = 0;
+
+        retVal += spcltyDtaDao.updateSpcltyDta(spcltyDtaVo);
+        retVal += spcltyDtaDao.deleteSpcltyDtaClsfMapping(spcltyDtaVo);
+        retVal += spcltyDtaDao.insertSpcltyDtaClsfMapping(spcltyDtaVo);
+
+        return retVal;
     }
 
     /**
@@ -123,6 +133,11 @@ public class SpcltyDtaServiceImpl extends PlumAbstractServiceImpl implements Spc
     @Override
     @Transactional
     public int deleteSpcltyDta(SpcltyDtaVo spcltyDtaVo) throws Exception {
-        return 0;
+        int retVal = 0;
+
+        retVal += spcltyDtaDao.deleteSpcltyDtaClsfMappings(spcltyDtaVo);
+        retVal += spcltyDtaDao.deleteSpcltyDta(spcltyDtaVo);
+
+        return retVal;
     }
 }
