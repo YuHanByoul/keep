@@ -31,7 +31,7 @@ import java.util.Map;
 * @Version : 
 * @Company : Copyright KBRAIN Company. All Rights Reserved
 */
-@Service
+@Service("resCodeServiceImpl")
 public class ResCodeServiceImpl extends PlumAbstractServiceImpl implements ResCodeService {
 
     /** 코드목록정보 */
