@@ -6,13 +6,18 @@
 
 <body>
 <div layout:fragment="content">
+    <style>
+        .hide {
+            display: none;
+        }
+    </style>
     <!-- Page-body start -->
     <div class="page-body">
         <div class="row">
             <div class="col-12">
                 <div class="card">
                     <div class="card-block-small">
-                        <form name="searchForm" id="searchForm" onsubmit="return false;">
+                        <form name="searchForm" id="searchForm">
                             <div class="row">
                                 <div class="col-lg-3 col-md-6 mb-3">
                                     <div class="mb-0 form-group row">
@@ -46,26 +51,18 @@
 
                                 <div class="col-lg-3 col-md-6 mb-3">
                                     <div class="mb-0 form-group row">
-                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchBgngDt"><strong>등록일-검색시작일</strong></label>
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchPeriod"><strong>점검기간</strong></label>
                                         <div class="col-sm-12">
-                                            <input class="form-control form-control-sm" type="date" name="searchBgngDt" id="searchBgngDt">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-3 col-md-6 mb-3">
-                                    <div class="mb-0 form-group row">
-                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchEndDt"><strong>등록일 -검색종료일</strong></label>
-                                        <div class="col-sm-12">
-                                            <input class="form-control form-control-sm" name="searchEndDt" id="searchEndDt" type="date">
+                                            <input type="text" name="searchPeriod" class="form-control form-control-sm" value="" id="searchPeriod">
+                                            <input type="hidden" id="searchBgngDt" name="searchBgngDt">
+                                            <input type="hidden" id="searchEndDt" name="searchEndDt">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="mt-1 p-t-20 text-center border-top">
-                                <button class="btn btn-disabled m-r-5" onclick="searchInit()">초기화</button>
-                                <button class="btn btn-primary" onclick="search()">검색</button>
+                                <button type='reset' class="btn btn-disabled m-r-5">초기화</button>
+                                <button type='submit' class="btn btn-primary">검색</button>
                             </div>
                         </form>
 
@@ -107,25 +104,28 @@
     <div class="modal fade" id="instSearchPopup" aria-hidden="true" data-bs-backdrop="static"></div>
 
     <script src="/js/ckeditor/ckeditor.js"></script>
+    <script type="text/javascript" src="/files/bower_components/moment/min/moment.min.js"></script>
+    <script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
     <script th:inline="javascript">
-        let bsnsOperDtaGridHelper;
-        let selectedItem = [];
-        let instSearchPopup;
+        var bsnsOperDtaGridHelper;
+        var selectedItems = [];
+        var instSearchPopup;
 
-        let deleteBsnsOperDta = () => {
-            if(selectedItem.length == 0) {
+        var deleteBsnsOperDta = () => {
+            if (selectedItems.length == 0) {
                 alert('삭제할 항목을 선택해 주십시오.');
-                return ;
+                return;
             }
 
-            if(!confirm('선택하신 항목을 삭제 하시겠습니까?')) return;
+            if (!confirm('선택하신 항목을 삭제 하시겠습니까?')) return;
 
             var deleteDtaids = selectedItems.join(",")
-            var params ={
-                deleteDtaids : deleteDtaids
+            var params = {
+                deleteDtaids: deleteDtaids
             }
 
-            if(displayWorkProgress()) {
+            if (displayWorkProgress()) {
                 $.ajax({
                     method: 'post',
                     url: '/mng/bsnsOperDta/deleteBsnsOperDta.do',
@@ -134,7 +134,7 @@
                     success: function (response) {
                         alert(response.msg);
                         closeWorkProgress();
-                        if(response.result == "success") {
+                        if (response.result == "success") {
                             bsnsOperDtaGridHelper.resetPageContent();
                         }
                     }
@@ -142,16 +142,14 @@
             }
         }
 
-        let search = () => {
-            bsnsOperDtaGridHelper.resetListContent();
-        }
-
-        let searchInit = () => {
-            $(' #searchType, #searchKeyword, #searchClsfCd, #searchInstNm, #searchBgngDt, #searchEndDt').val('');
-        }
-
         $(function () {
+            initDateRangePicker();
             bsnsOperDtaGridHelper = new GridHelper('bsnsOperDtaGridTable', 'contentPanel');
+
+            $('#searchForm').on('submit', function (e) {
+                e.preventDefault();
+                bsnsOperDtaGridHelper.resetListContent();
+            });
 
             $('#bsnsOperDtaGridTable').jsGrid({
                 height: "auto",
@@ -214,23 +212,24 @@
                             return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox")
                                 .prop("checked", $.inArray(item, selectedItems) > -1)
                                 .on("change", function () {
-                                $(this).is(":checked") ? selectItem($(this).parent().next().text()) : unselectItem($(this).parent().next().text());
+                                    $(this).is(":checked") ? selectItem($(this).parent().next().text()) : unselectItem($(this).parent().next().text());
                                 });
                         },
                         align: "center",
                         width: "50"
                     },
+                    {name: 'dtaid', css: 'hide'},
                     {title: 'No.', name: 'rowNumber', type: "number", width: "80", align: "center"},
-                    // {title: '분류', name: 'packageindvdNm', type: "text", width: "250"},
-                    {title: '제목', name: 'ttl', type: "text", width: "150", align: "center"},
-                    {title: '운영기관', name: 'instNm', type: "text", width: "120", align: "center"},
-                    {title: '등록일', name: 'regDt', type: "text", width: "150", align: "center"},
-                    {title: '조회수', name: 'hits', type: "text", width: "120", align: "center"},
+                    {title: '분류', name: 'clsfCd', type: "text", width: "100", align: "center"},
+                    {title: '제목', name: 'ttl', type: "text", width: "300", align: "center"},
+                    {title: '운영기관', name: 'instNm', type: "text", width: "150", align: "center"},
+                    {title: '등록일', name: 'regDt', type: "text", width: "100", align: "center"},
+                    {title: '조회수', name: 'hits', type: "text", width: "100", align: "center"},
                 ],
                 /*[# sec:authorize-url="/mng/bsnsOperDta/bsnsOperDtaForm.html"]*/
                 rowClick: function (args) {
                     if (args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
-                    bsnsOperDtaGridHelper.loadContent("mng/bsnsOperDta/bsnsOperDtaForm.html?dtaid=" + args.item.dtaid);
+                    bsnsOperDtaGridHelper.loadContent("/mng/bsnsOperDta/bsnsOperDtaForm.html?dtaid=" + args.item.dtaid);
                     bsnsOperDtaGridHelper.rowClick(args);
                 },
                 /*[/]*/
@@ -239,7 +238,7 @@
                 }
             });
 
-            let selectItem = function (item) {
+            var selectItem = function (item) {
                 selectedItems.push(item);
 
                 if ($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
@@ -249,7 +248,7 @@
                 }
             };
 
-            let unselectItem = function (item) {
+            var unselectItem = function (item) {
                 selectedItems = $.grep(selectedItems, function (i) {
                     return i !== item;
                 });
@@ -281,7 +280,27 @@
 
         });
 
+        let initDateRangePicker = () => {
 
+            $("#searchPeriod").daterangepicker({
+                opens: 'left',
+                locale: {
+                    "separator": " ~ ",                     // 시작일시와 종료일시 구분자
+                    "format": 'YYYY-MM-DD',     // 일시 노출 포맷
+                    "applyLabel": "적용",                    // 확인 버튼 텍스트
+                    "cancelLabel": "취소",                   // 취소 버튼 텍스트
+                    "daysOfWeek": ["일", "월", "화", "수", "목", "금", "토"],
+                    "monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"]
+                }
+            }, function (start, end, label) {
+                console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+            });
+            $("#searchPeriod").on('apply.daterangepicker', function (ev, picker) {
+                $("#searchBgngDt").val(picker.startDate.format('YYYY-MM-DD'));
+                $("#searchEndDt").val(picker.endDate.format('YYYY-MM-DD'));
+                $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+            });
+        }
     </script>
 </div>
 </body>

@@ -84,7 +84,7 @@ public interface BsnsOperDtaDao {
      * @Title : insertBsnsOperClsfMapping
      * @Description : 사업운영자료 분류 매핑 등록
      */
-    public int insertBsnsOperClsfMapping(BsnsOperDtaVo bsnsOperDtaVo) throws Exception;
+    public int insertBsnsOperDtaClsfMapping(BsnsOperDtaVo bsnsOperDtaVo) throws Exception;
 
     /**
      * 사업운영자료 분류 매핑 삭제
@@ -92,8 +92,19 @@ public interface BsnsOperDtaDao {
      * @param bsnsOperDtaVo
      * @return int
      * @throws Exception
-     * @Title : deleteBsnsOperClsfMapping
+     * @Title : deleteBsnsOperDtaClsfMapping
      * @Description : 사업운영자료 분류 매핑 삭제
      */
-    public int deleteBsnsOperClsfMapping(BsnsOperDtaVo bsnsOperDtaVo) throws Exception;
+    public int deleteBsnsOperDtaClsfMapping(BsnsOperDtaVo bsnsOperDtaVo) throws Exception;
+
+    /**
+     * 삭제할 사업운영자료들의 분류 매핑 삭제
+     *
+     * @param bsnsOperDtaVo
+     * @return int
+     * @throws Exception
+     * @Title : deleteBsnsOperDtaClsfMappings
+     * @Description : 삭제할 사업운영자료들의 분류 매핑 삭제
+     */
+    public int deleteBsnsOperDtaClsfMappings(BsnsOperDtaVo bsnsOperDtaVo) throws Exception;
 }
