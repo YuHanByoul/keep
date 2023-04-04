@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.kbrainc.plum.front.intro.envEduPlcyEtcDta.model.EnvEduPlcyEtcDtaDao">
+    <update id="updateEtcDtaHits">
+        UPDATE TB_CMM_ETC_DTA
+        SET HITS = IFNULL(HITS,0) + 1
+        WHERE DTAID = #{dtaid}
+    </update>
+
+    <select id="selectEtcDtaList" resultType="front.EtcDtaVo">
+        <include refid="PaginationMapper.header"/>
+            SELECT
+                A.DTAID
+                , A.TTL
+                , A.CN
+                , A.NATION_CD
+                , B.CD_NM NATION_NM
+                , A.HMPG
+                , A.PSTN
+                , A.CNTCT
+                , A.OPNHR
+                , A.ETRFEE
+                , A.EXPRN_PRGRM
+                , A.CPYRHT_CD
+                , A.ATCH_FILEGRPID
+                , IFNULL(A.HITS,0) AS HITS
+                , A.REG_DT
+                , A.RGTRID
+            FROM
+                TB_CMM_ETC_DTA A
+                LEFT OUTER JOIN TB_CMM_CD B ON A.NATION_CD = B.CD
+            WHERE 
+                1=1    
+            <if test="searchKeyword != null and searchKeyword != ''">
+                <choose>
+                    <when test="searchType == 'ttl'">
+                        AND A.TTL LIKE CONCAT ('%', #{searchKeyword}, '%')
+                    </when>
+                    <when test="searchType == 'cn'">
+                        AND A.CN LIKE CONCAT ('%', #{searchKeyword}, '%')
+                    </when>
+                    <otherwise>
+                        AND (A.TTL LIKE CONCAT('%', #{searchKeyword}, '%') OR A.CN LIKE CONCAT('%', #{searchKeyword}, '%'))
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="nationCd != null and nationCd != ''">
+                AND A.NATION_CD LIKE CONCAT('%', #{nationCd}, '%')
+            </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <select id="selectEtcDta" resultType="front.EtcDtaVo">
+        WITH rowNumPstList AS(
+            SELECT
+                A.DTAID
+                , ROW_NUMBER() OVER(ORDER BY A.REG_DT DESC) AS rowNumber
+                , A.TTL
+                , A.CN
+                , A.NATION_CD
+                , B.CD_NM NATION_NM
+                , A.HMPG
+                , A.PSTN
+                , A.CNTCT
+                , A.OPNHR
+                , A.ETRFEE
+                , A.EXPRN_PRGRM
+                , A.CPYRHT_CD
+                , A.ATCH_FILEGRPID
+                , IFNULL(A.HITS,0) AS HITS
+                , A.REG_DT
+                , A.RGTRID
+            FROM TB_CMM_ETC_DTA A
+            LEFT OUTER JOIN TB_CMM_CD B ON A.NATION_CD = B.CD
+            WHERE 1=1
+            <if test="searchKeyword != null and searchKeyword != ''">
+                <choose>
+                    <when test="searchType == 'ttl'">
+                        AND A.TTL LIKE CONCAT ('%', #{searchKeyword}, '%')
+                    </when>
+                    <when test="searchType == 'cn'">
+                        AND A.CN LIKE CONCAT ('%', #{searchKeyword}, '%')
+                    </when>
+                    <otherwise>
+                        AND (A.TTL LIKE CONCAT('%', #{searchKeyword}, '%') OR A.CN LIKE CONCAT('%', #{searchKeyword}, '%'))
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="nationCd != null and nationCd != ''">
+                AND A.NATION_CD LIKE CONCAT('%', #{nationCd}, '%')
+            </if>
+        )
+        SELECT *
+        , (SELECT DTAID FROM rowNumPstList  WHERE rowNumber <![CDATA[<]]> A.rowNumber ORDER BY REG_DT DESC LIMIT 1) AS PREV_DTAID
+        , (SELECT TTL FROM rowNumPstList  WHERE rowNumber <![CDATA[<]]> A.rowNumber ORDER BY REG_DT DESC LIMIT 1) AS PREV_DTA_TTL
+        , (SELECT DTAID FROM rowNumPstList  WHERE rowNumber <![CDATA[>]]> A.rowNumber ORDER BY REG_DT DESC LIMIT 1) AS NEXT_DTAID
+        , (SELECT TTL FROM rowNumPstList  WHERE rowNumber <![CDATA[>]]> A.rowNumber ORDER BY REG_DT DESC LIMIT 1) AS NEXT_DTA_TTL
+        FROM ROWNUMPSTLIST A
+        WHERE A.DTAID = #{dtaid}
+    </select>
+</mapper>
