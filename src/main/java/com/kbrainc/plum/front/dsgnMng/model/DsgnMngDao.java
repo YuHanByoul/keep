@@ -3,6 +3,7 @@ package com.kbrainc.plum.front.dsgnMng.model;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import com.kbrainc.plum.front.cntst.model.CntstVo;
+import com.kbrainc.plum.mng.qestnr.model.QitemVo;
 
 import java.util.List;
 
@@ -359,5 +360,17 @@ public interface DsgnMngDao {
 	* @return int
 	*/
 	public int deleteCnsltngAply(DsgnMngVo dsgnMngVo) throws Exception;
+
+	/**
+	* (컨설팅)설문 응답 목록 조회
+	*
+	* @Title : selectSrvyAnsList
+	* @Description : (컨설팅)설문 응답 목록 조회
+	* @param QitemVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnMngVo>
+	*/
+	public List<QitemVo> selectSrvyAnsList(DsgnMngVo dsgnMngVo) throws Exception;
 
 }
