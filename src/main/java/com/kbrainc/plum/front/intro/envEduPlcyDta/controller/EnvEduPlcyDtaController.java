@@ -178,13 +178,17 @@ public class EnvEduPlcyDtaController {
      */
     private List<String> getPdfFilePaths(List<FileVo> pdfFileList) {
         List<String> pdfFilePaths = new ArrayList<>();
-        for (FileVo fileVo : pdfFileList) {
-            String filePath = "/pdf_view_file/";
-            String saveFileNm = fileVo.getSaveFileNm();
-            saveFileNm = saveFileNm.replaceAll("\\[", "%5B");
-            saveFileNm = saveFileNm.replaceAll("\\]", "%5D");
-            pdfFilePaths.add(filePath + saveFileNm);
+
+        if(pdfFileList != null) {
+            for (FileVo fileVo : pdfFileList) {
+                String filePath = "/pdf_view_file/";
+                String saveFileNm = fileVo.getSaveFileNm();
+                saveFileNm = saveFileNm.replaceAll("\\[", "%5B");
+                saveFileNm = saveFileNm.replaceAll("\\]", "%5D");
+                pdfFilePaths.add(filePath + saveFileNm);
+            }
         }
+
         return pdfFilePaths;
     }
 
