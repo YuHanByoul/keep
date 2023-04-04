@@ -75,6 +75,7 @@ public class CheckCodeAttr extends AbstractAttributeTagProcessor {
             String readOnly = "";// default cd
             String[] readOnlys = null;
             String upprCd = ""; // upper Code
+            String[] upprCds = null;
             String listStyle = "";
             String addClass = "";
             String addUlClass = "";
@@ -116,7 +117,12 @@ public class CheckCodeAttr extends AbstractAttributeTagProcessor {
             
             if (tag.hasAttribute("upprCd")) {
                 upprCd = tag.getAttribute("upprCd").getValue();
-                codeList = resCode.getCodeList(grpcd, upprCd);
+                if (upprCd != null) {
+                    upprCds = upprCd.split(",");
+                }
+                for (String itemCd : upprCds) {
+                    codeList.addAll(resCode.getCodeList(grpcd, itemCd));
+                }
             } else {
                 codeList = resCode.getCodeList(grpcd);
             }
