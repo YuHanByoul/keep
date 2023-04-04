@@ -10,7 +10,7 @@
                 <div class="col-lg-6 mb-3">
                     <div class="mb-0 form-group required">
                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>분류</strong></div>
-                        <div class="border-checkbox-section" id="testTag">
+                        <div class="border-checkbox-section">
                             <span kattr:check_code="clsfCds" grpCd="227" isAdmin="true"></span>
                         </div>
                     </div>
@@ -150,7 +150,9 @@
                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="rgtrNm"><strong>작성자ID(이름)</strong></label>
                         <div class="col-12">
                             <input type="text" class="form-control form-control-sm" name="rgtrNm" id="rgtrNm" readonly
-                                   th:value="${bsnsOperDta.rgtrNm != null ? bsnsOperDta.rgtrNm : bsnsOperDta.user.nm}"/>
+                                   th:value="${bsnsOperDta.rgtrNm != null
+                                   ? bsnsOperDta.rgtrAcnt + '(' + bsnsOperDta.rgtrNm + ')'
+                                   : bsnsOperDta.user.acnt + '(' + bsnsOperDta.user.nm + ')'}"/>
                         </div>
                     </div>
                 </div>
@@ -170,22 +172,23 @@
     </form>
 
     <script th:inline="javascript">
+        var bsnsOperDta = /*[[${bsnsOperDta}]]*/null;
+        var editor = CKEDITOR.replace('cn', {enterMode: CKEDITOR.ENTER_BR});
 
-        let editor = CKEDITOR.replace('cn', {enterMode: CKEDITOR.ENTER_BR});
-        let insertBsnsOperDta = () => {
+        var insertBsnsOperDta = () => {
             if ($('input[name=clsfCds]:checked').length == 0) {
                 alert('분류를 선택해 주십시오.');
                 return;
             }
 
-            let editorData = editor.getData();
+            var editorData = editor.getData();
             $("#cn").val(editorData);
 
             if (!$('#registerForm').valid()) {
                 return;
             }
 
-            let url = '/mng/bsnsOperDta/insertBsnsOperDta.do';
+            var url = '/mng/bsnsOperDta/insertBsnsOperDta.do';
 
             if(!!$('#dtaid').val()) {
                 url = '/mng/bsnsOperDta/updateBsnsOperDta.do';
@@ -229,7 +232,24 @@
             }
         }
 
-        let validateForm = () => {
+        $(function () {
+            if(!!bsnsOperDta.clsfCd) {
+                var clsfCds = bsnsOperDta.clsfCd.split(',');
+                clsfCds.forEach(val => {
+                    $('input[name=clsfCds]').each(function (index, item) {
+                        if (val == $(item).val()) {
+                            $(item).prop('checked', true);
+                        }
+                    })
+                })
+            }
+
+            pdfFileEvent();
+            atchFileEvent();
+            validateForm();
+        })
+
+        var validateForm = () => {
             $('#registerForm').validate({
                 ignore: [],
                 rules: {
@@ -245,13 +265,7 @@
             });
         }
 
-        $(function () {
-            pdfFileEvent();
-            atchFileEvent();
-            validateForm();
-        })
-
-        let pdfFileEvent = () => {
+        var pdfFileEvent = () => {
             $('#pdfFile').on("change", function (event) {
 
                 var objFile = document.querySelector('#pdfFile');
@@ -298,7 +312,7 @@
             });
         }
 
-        let atchFileEvent = () => {
+        var atchFileEvent = () => {
             $('#atchFile').on("change", function (event) {
 
                 var objFile = document.querySelector('#atchFile');
@@ -345,7 +359,7 @@
             });
         }
 
-        let openInstSearchPopup = () => {
+        var openInstSearchPopup = () => {
             var url = "/mng/bsnsOperDta/instSearchPopup.html";
             $("#instSearchPopup").load(url, function (response, status, xhr) {
                 if (status == "success") {
