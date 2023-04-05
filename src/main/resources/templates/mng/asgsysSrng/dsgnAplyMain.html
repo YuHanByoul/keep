@@ -15,10 +15,16 @@
 </style>
 
 <!-- Page-body start -->
+    <link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
     <div class="page-body">
         <div class="row">
             <div class="col-12">
                 <form name="searchFrm" id="searchFrm" action="" onsubmit="return false;" class="card">
+                    <input type="hidden" id="searchAplyStartDt"     name="searchAplyStartDt"    value="" />
+                    <input type="hidden" id="searchAplyEndDt"       name="searchAplyEndDt"       value="" />
+                    <input type="hidden" id="searchChckDsgnStartDt" name="searchChckDsgnStartDt" value="" />
+                    <input type="hidden" id="searchChckDsgnEndDt"   name="searchChckDsgnEndDt"   value="" />
+
                 <!-- 필터 부분 -->
                     <div class="card-block-small">
                         <!-- 키워드 filter -->
@@ -46,17 +52,9 @@
                             </div>
                             <div class="col-lg-3 col-md-6 mb-3">
                                 <div class="mb-0 form-group row">
-                                    <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>신청일 - 검색 시작일</strong></span>
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterSearchSelectDate1"><strong>신청기간</strong></label>
                                     <div class="col-sm-12">
-                                        <input class="form-control form-control-sm" type="date" id="searchAplyStartDt" name="searchAplyStartDt"/>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-6 mb-3">
-                                <div class="mb-0 form-group row">
-                                    <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>신청일 - 검색종료일</strong></span>
-                                    <div class="col-sm-12">
-                                        <input class="form-control form-control-sm" type="date" id="searchAplyEndDt" name="searchAplyEndDt"/>
+                                        <input type="text" name="filterSearchSelectDate1" id="filterSearchSelectDate1" class="form-control form-control-sm" value=""/>
                                     </div>
                                 </div>
                             </div>
@@ -68,7 +66,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="col-lg-3 col-md-6 mb-3">
                                 <div class="mb-0 form-group row">
                                     <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>지원단 심사상태</strong></span>
@@ -77,19 +74,12 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div class="col-lg-3 col-md-6 mb-3">
                                 <div class="mb-0 form-group row">
-                                    <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>현장점검 지정일 - 검색 시작일</strong></span>
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterSearchSelectDate2"><strong>현장점검 지정 기간</strong></label>
                                     <div class="col-sm-12">
-                                        <input class="form-control form-control-sm" type="date" id="searchChckDsgnStartDt" name="searchChckDsgnStartDt"/>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-3">
-                                <div class="mb-0 form-group row">
-                                    <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>현장점검 지정일- 검색종료일</strong></span>
-                                    <div class="col-sm-12">
-                                        <input class="form-control form-control-sm" type="date" id="searchChckDsgnEndDt" name="searchChckDsgnEndDt"/>
+                                        <input type="text" name="filterSearchSelectDate2" id="filterSearchSelectDate2" class="form-control form-control-sm" value=""/>
                                     </div>
                                 </div>
                             </div>
@@ -149,7 +139,9 @@
     <script type="text/javascript" src="/files/bower_components/fullcalendar/dist/locale-all.js" charset="utf-8" ></script>
     <script type="text/javascript" src="/files/bower_components/handlebars/handlebars.min.js" charset="utf-8" ></script>
 
-
+    <!-- Date-range picker js -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
     <script th:inline="javascript">
 
     var gridHelper1;
@@ -158,11 +150,30 @@
     $(function(){
         gridHelper1 = new GridHelper('jsGrid','contentPanel');
         writeJsGridData();
+
+        $("#filterSearchSelectDate1, #filterSearchSelectDate2").daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                format: "YYYY-MM-DD",
+            },
+        });
+
+        $("#filterSearchSelectDate1").on('apply.daterangepicker', function(ev, picker) {
+            $("#searchAplyStartDt").val(picker.startDate.format('YYYY-MM-DD'));
+            $("#searchAplyEndDt").val(picker.endDate.format('YYYY-MM-DD'));
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+        });
+
+        $("#filterSearchSelectDate2").on('apply.daterangepicker', function(ev, picker) {
+            $("#searchChckDsgnStartDt").val(picker.startDate.format('YYYY-MM-DD'));
+            $("#searchChckDsgnEndDt").val(picker.endDate.format('YYYY-MM-DD'));
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+        });
     });
 
     //초기화 버튼
     function fn_init() {
-        $("#searchType").val("searchPrgrmNm");
+        $("#searchType").val('');
         $("#searchKeyword").val('');
         $("#searchSttsCd").val('');
         $("#searchAplyStartDt").val('');
@@ -171,6 +182,8 @@
         $("#searchSrgnSttsCd").val('');
         $("#searchChckDsgnStartDt").val('');
         $("#searchChckDsgnEndDt").val('');
+        $("#filterSearchSelectDate1").val('');
+        $("#filterSearchSelectDate2").val('');
     }
 
     //검색버튼

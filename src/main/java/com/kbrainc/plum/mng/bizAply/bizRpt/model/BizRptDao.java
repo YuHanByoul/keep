@@ -369,4 +369,28 @@ public interface BizRptDao {
 	*/
 	public List<BizRptVo> selectMngGrpList(BizRptVo bizRptVo) throws Exception;
 
+	/**
+	* 컨설팅대상 등록
+	*
+	* @Title : insertCnsltngTrgt
+	* @Description : 컨설팅대상 등록
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertCnsltngTrgt(BizRptVo bizRptVo) throws Exception;
+
+	/**
+	* 컨설팅대상내용 수정
+	*
+	* @Title : updateTrgtCn
+	* @Description : 컨설팅대상내용 수정
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int updateTrgtCn(BizRptVo bizRptVo) throws Exception;
+
 }

@@ -323,7 +323,6 @@ public class BizRptController {
             resultMap.put("msg", "보완요청 처리에 실패했습니다.");
         }
 
- 		//model.addAttribute("rptSplmntDmndDtlInfo", rptSplmntDmndDtlInfo);
  		return resultMap;
  	}
 
@@ -341,7 +340,8 @@ public class BizRptController {
  	*/
  	@RequestMapping(value = "/mng/bizAply/bizRpt/cnsltngTrgtPopup.html")
     public String cnsltngTrgtPopup(BizRptVo bizRptVo, Model model, @UserInfo UserVo user) throws Exception {
-        //model.addAttribute("user",user);
+        model.addAttribute("aplyid",bizRptVo.getAplyid());
+        model.addAttribute("cnsltngTrgtCn",bizRptVo.getCnsltngTrgtCn());
         return "mng/bizAply/bizRpt/cnsltngTrgtPopup";
     }
 
@@ -359,12 +359,12 @@ public class BizRptController {
  	 */
  	@RequestMapping(value = "/mng/bizAply/bizRpt/insertCnsltngTrgt.do")
     @ResponseBody
- 	public Map<String, Object> insertCnsltngTrgt(BizRptVo bizRptVo, Model model,@UserInfo UserVo user) throws Exception {
+ 	public Map<String, Object> insertCnsltngTrgt(BizRptVo bizRptVo, @UserInfo UserVo user) throws Exception {
  		Map<String, Object> resultMap = new HashMap<>();
 
  		int ret=0;
  		bizRptVo.setUser(user);
- 		//ret = bizRptService.insertCnsltngTrgt(bizRptVo);
+ 		ret = bizRptService.insertCnsltngTrgt(bizRptVo);
 
  		if (ret > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);

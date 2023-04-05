@@ -15,10 +15,13 @@
 </style>
 
 <!-- Page-body start -->
+    <link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
 	<div class="page-body">
 	    <div class="row">
 
 		    <form name="searchFrm" id="searchFrm" action="" onsubmit="return false;" class="card">
+                <input type="hidden" id="searchRegStartDt" name="searchRegStartDt" value="" />
+                <input type="hidden" id="searchRegEndDt"   name="searchRegEndDt"   value="" />
 		    <!-- 필터 부분 -->
 		        <div class="card-block-small">
 		            <div class="row">
@@ -54,23 +57,12 @@
 		                <div class="col-lg-3 col-md-6 mb-3">
 		                    <div class="mb-0 form-group row">
 		                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterSearchStartAssignDate">
-		                          <strong>배정일 - 검색시작일</strong>
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterSearchSelectDate"><strong>배정일</strong></label>
+                                    <div class="col-sm-12">
+                                        <input type="text" name="filterSearchSelectDate" id="filterSearchSelectDate" class="form-control form-control-sm" value=""/>
+                                    </div>
 		                        </label>
-		                        <div class="col-12">
-		                            <input class="form-control form-control-sm" type="date" name="searchRegStartDt" id="searchRegStartDt"/>
-		                        </div>
 		                    </div>
-		                </div>
-
-		                <div class="col-lg-3 col-md-6 mb-3">
-		                    <div class="mb-0 form-group row">
-                                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterSearchStartAssignDate">
-                                  <strong>배정일 - 검색종료일</strong>
-                                </label>
-                                <div class="col-12">
-                                    <input class="form-control form-control-sm" type="date" name="searchRegEndDt" id="searchRegEndDt"/>
-                                </div>
-                            </div>
 		                </div>
 
 		                <div class="col-lg-3 col-md-6 mb-3">
@@ -81,7 +73,8 @@
                                     <span id="searchSrngSttsCd" name="searchSrngSttsCd" kattr:select_code="searchSrngSttsCd" grpCd="119" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true">
                                 </div>
                             </div>
-                        </div>
+		                </div>
+
                         <div class="col-lg-3 col-md-6 mb-3">
 		                    <div class="mb-0 form-group row">
 		                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
@@ -132,6 +125,9 @@
 		</div>
     </div>
 
+    <!-- Date-range picker js -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
 	<script type="text/javascript">
 	var userid = /*[[${param.userid}]]*/null;
 
@@ -143,6 +139,19 @@
 
 	    gridHelper1 = new GridHelper('jsGrid','contentPanel');
 	    writeJsGridData();
+
+	    $("#filterSearchSelectDate").daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                format: "YYYY-MM-DD",
+            },
+        });
+
+        $("#filterSearchSelectDate").on('apply.daterangepicker', function(ev, picker) {
+            $("#searchRegStartDt").val(picker.startDate.format('YYYY-MM-DD'));
+            $("#searchRegEndDt").val(picker.endDate.format('YYYY-MM-DD'));
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+        });
 
 
 // 총괄관리자, 우수프로그램 지정제 운영자 계정으로 접속
@@ -157,21 +166,21 @@
 // 프로그램 노출 안됨
 // 심사 불가
 
-
 	    if(userid != null){
-	        //
+	        debugger;
 	    }
 
 	});
 
 	//초기화 버튼
 	function fn_init() {
-	    $("#searchType").val("searchPrgrmNm");
+	    $("#searchType").val('');
 	    $("#searchKeyword").val('');
 	    $("#searchSrngSttsCd").val('');
 	    $("#searchRegStartDt").val('');
 	    $("#searchRegEndDt").val('');
 	    $("#searchStyYn").val('');
+	    $("#filterSearchSelectDate").val('');
 	}
 
 	//검색버튼
@@ -218,9 +227,9 @@
 
 		                if(filter.sortField != undefined){
 		                    params.push({name: "orderField", value: filter.sortField});
-		                    params.push({name: "orderDirection", value: filter.sortOrder});
+		                    params.push({name: "orderDirection", value: 'desc'});
 		                }else{
-		                    params.push({name: "orderField", value: 'jdgsid, reg_dt'});
+		                    params.push({name: "orderField", value: 'reg_dt'});
 		                }
 
 		                formData = formData.concat(params);
