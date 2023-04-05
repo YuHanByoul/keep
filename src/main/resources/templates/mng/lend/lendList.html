@@ -37,7 +37,7 @@
                                  <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>대여접수일</strong></span>
                                  <div class="col-sm-12">
                                      <input class="form-control form-control-sm" type="text" id="filterSearchSelectDate" name="filterSearchSelectDate"/>
-                                     <input type="hidden" id="searchStrtDt" name="searchStrtDt"/>
+                                     <input type="hidden" id="searchStartDt" name="searchStartDt"/>
                                      <input type="hidden" id="searchEndDt" name="searchEndDt"/>
                                  </div>
                              </div>
@@ -112,31 +112,9 @@
     $(function(){
         gridHelper1 = new GridHelper('jsGrid','contentPanel');
         initDataRangePicker();
+        initDataRangePicker("filterSearchSelectDate","searchStartDt","searchEndDt");
         writeJsGridData();
     });
-    initDataRangePicker=()=>{
-        $("#filterSearchSelectDate").daterangepicker({
-            opens: 'left',
-            startDate : false,
-            endDate : false,
-            locale: {
-                "separator": " ~ ",                     // 시작일시와 종료일시 구분자
-                "format": 'YYYY-MM-DD',     // 일시 노출 포맷
-                "applyLabel": "적용",                    // 확인 버튼 텍스트
-                "cancelLabel": "취소",                   // 취소 버튼 텍스트
-                "daysOfWeek": ["일", "월", "화", "수", "목", "금", "토"],
-                "monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"]
-            }
-          }, function(start, end, label) {
-            console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
-        });
-        $("#filterSearchSelectDate").val("");
-        $("#filterSearchSelectDate").on('apply.daterangepicker', function(ev, picker) {
-            $("#searchStrtDt").val(picker.startDate.format('YYYY-MM-DD'));
-            $("#searchEndDt").val(picker.endDate.format('YYYY-MM-DD'));
-            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
-        });
-    }
     function validChecked() {
         if(selectedItems.length == 0) {
             alert("대상을 선택해주세요.");

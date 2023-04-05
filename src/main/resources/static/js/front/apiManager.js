@@ -541,8 +541,11 @@ var apiManager = {
     , setWeatherMonDayList: function(data, grid) {
         var dataList = data.items.item;
         var len = data.total_Count - 5;
+        if(len < 5) {
+            len = data.total_Count;
+        }
         var info, date, temp, maxTemp, minTemp, sunTime, rain;
-        for(var i = data.total_Count - 1; i >= len; i--) {
+        for(var i = len - 1; i >= 0; i--) {
             info = dataList[i];
             date = info.date.split("-")[1] + "월" + info.date.split("-")[2] + "일";
             temp = info.temp;
