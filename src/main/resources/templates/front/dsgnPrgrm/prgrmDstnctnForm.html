@@ -564,25 +564,45 @@
             }
 
             function schdlChk(){
+            	var flag=true;
             	$("[id^=schdlTr]").each(function(index, item) {
-            		debugger;
+
             		var row=index+1;
             		var bgngHr  = isNaN(parseInt($("#bgngHr" +row).val())) ? 0 : parseInt($("#bgngHr"+row).val());
             		var bgngMnt = isNaN(parseInt($("#bgngMnt"+row).val())) ? 0 : parseInt($("#bgngMnt"+row).val());
             		var endHr   = isNaN(parseInt($("#endHr" +row).val())) ? 0 : parseInt($("#endHr"+row).val());
             		var endMnt  = isNaN(parseInt($("#endMnt" +row).val())) ? 0 : parseInt($("#endMnt"+row).val());
+            		var msg="";
+
+            		if(bgngMnt==0) {
+            			msg="시작 분을 입력 해주세요"
+            			$("#schdlDiv").find(".feedback.invalid").remove();
+            			$("#schdlDiv").prepend(`<p class="feedback invalid">${msg}</p>`);
+            			flag= false;
+            			return;
+            		}
+
+            		if(endMnt==0) {
+            			msg="종료 분을 입력 해주세요"
+            			$("#schdlDiv").find(".feedback.invalid").remove();
+            			$("#schdlDiv").prepend(`<p class="feedback invalid">${msg}</p>`);
+            			flag=false;
+            			return;
+            		}
 
             		var bgngTotalMnt = bgngHr * 60 + bgngMnt;
             		var endTotalMnt = endHr * 60 + endMnt;
 
-            		var msg="입력된 시간이 올바르지 않습니다."
-
             		if (endTotalMnt <= bgngTotalMnt) {
+            			msg="종료 시간은 시작 시간보다 빠를 수 없습니다."
+            			$("#schdlDiv").find(".feedback.invalid").remove();
             			$("#schdlDiv").prepend(`<p class="feedback invalid">${msg}</p>`);
+            			flag = false;
+            			return;
             		}
 
-
             	});
+            	return flag;
             };
 
             function validate(){
@@ -710,14 +730,12 @@
                     } else {
                         $("#fileTd").find(".feedback.invalid").remove();
                     }
-
+debugger;
                     if (!validLst("plan",  "대처계획")) return false;
-                    //if (!validLst("schdl", "프로그램일정표")) return false;
+
                     //일정표 시간 체크
-                    //if (!schdlChk()) return false;
+                    if (!schdlChk()) return false;
                 }
-
-
 
                 if(!confirm("저장하시겠습니까?")) return;
 
