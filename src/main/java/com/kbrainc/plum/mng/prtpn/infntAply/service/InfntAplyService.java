@@ -5,11 +5,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.kbrainc.plum.mng.inst.model.InstVo;
-import com.kbrainc.plum.mng.member.model.MemberVo;
 import com.kbrainc.plum.mng.prtpn.infntAply.model.InfntAplyVo;
-import com.kbrainc.plum.mng.prtpn.infntSchdl.model.InfntSchdlVo;
-import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.mng.srvy.model.SrvyVo;
 
 
 
@@ -164,6 +161,5 @@ public interface InfntAplyService {
     * @return void
     */
     public void infntAplyExcelDownList(InfntAplyVo infntAply, HttpServletResponse response, HttpServletRequest request) throws Exception;
-    
     
 }

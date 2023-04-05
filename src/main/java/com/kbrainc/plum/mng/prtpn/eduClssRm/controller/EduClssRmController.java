@@ -227,5 +227,23 @@ public class EduClssRmController {
 
         return resultMap;
             
-    }        
+    }    
+    
+    /**
+    * 기관검색 팝업으로 이동
+    *
+    * @Title : eduClssRmInstSearchPopup
+    * @Description : 기관검색 팝업으로 이동
+    * @param model 객체
+    * @param request 객체
+    * @throws Exception 예외
+    * @return String
+    */
+    @RequestMapping(value = "/mng/prtpn/eduClssRm/eduClssRmInstSearchPopup.html")
+    public String eduClssRmInstSearchPopup(Model model, HttpServletRequest request) throws Exception {
+        String instNm = request.getParameter("instNm");
+        model.addAttribute("instNm", instNm);
+        
+        return "mng/prtpn/eduClssRm/eduClssRmInstSearchPopup";
+    }    
 }

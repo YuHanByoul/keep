@@ -3,6 +3,7 @@ package com.kbrainc.plum.mng.prtpn.infntPrgrm.service;
 import java.util.List;
 
 import com.kbrainc.plum.mng.prtpn.infntPrgrm.model.InfntPrgrmVo;
+import com.kbrainc.plum.mng.srvy.model.SrvyVo;
 import com.kbrainc.plum.rte.model.UserVo;
 
 
@@ -125,4 +126,26 @@ public interface InfntPrgrmService {
     * @return List<InfntPrgrmVo>
     */
     public List<InfntPrgrmVo> selectPrgrmSettingList(String rcptMthdCd) throws Exception;
+    
+    /**
+     * 유아환경교육(신청자) 설문지 목록 조회
+     *
+     * @Title : selectAplcntDgstfnSrvyList
+     * @Description : 유아환경교육(신청자) 설문지 목록 조회
+     * @param 
+     * @throws Exception 예외
+     * @return List<SrvyVo>
+     */
+    public List<SrvyVo> selectAplcntDgstfnSrvyList() throws Exception;
+    
+    /**
+     * 유아환경교육(학생) 설문지 목록 조회
+     *
+     * @Title : selectStdntDgstfnSrvyList
+     * @Description : 유아환경교육(학생) 설문지 목록 조회
+     * @param 
+     * @throws Exception 예외
+     * @return List<SrvyVo>
+     */
+    public List<SrvyVo> selectStdntDgstfnSrvyList() throws Exception;        
 }

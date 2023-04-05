@@ -65,15 +65,16 @@ public class InfntSchdlVo extends ParentRequestVo {
     /** 년월 */
     private String ym;    
     /** 교육_일정_명 */
-    @NotEmpty(message = "교육일정명을 입력해주십시오.")    
     private String schdlNm;
     /** 프로그램_일정아이디 */
     private String prgrmSchdlid;
     
     
     /** 교육일자 설정 */
+    @NotEmpty(message = "교육일자 설정을 선택해주십시오.")
     private String [] deSttIds;
     /** 교육프로그램 설정 */
+    @NotEmpty(message = "교육프로그램 설정을 선택해주십시오.")
     private String [] prgrmSttIds;
 
     private String eduTypeCd;

@@ -50,6 +50,9 @@ public class SrvyVo extends ParentRequestVo {
     /** 설문명 */
     private String srvyNm;
     
+    /** 설문설명 */
+    private String expln;
+    
     /** 설문 분류 */
     private String srvyCtgry;
     

@@ -26,6 +26,7 @@ import com.kbrainc.plum.mng.prtpn.mvmnAply.service.MvmnAplyService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.util.DateTimeUtil;
 
 /**
 * 유아환경교육 -> 교육신청관리 컨트롤러 클래스
@@ -69,7 +70,7 @@ public class MvmnAplyController {
         EduSareaVo eduSareaVo = new EduSareaVo(); 
         model.addAttribute("sareaList", eduSareaService.selectEduSareaList(eduSareaVo));
         
-        int curYear = 2022;
+        int curYear = Integer.valueOf(DateTimeUtil.getYear());
         Integer[] years = new Integer[4];
         
         for(int i = curYear, j = 0; i <= i+3 && j <= 3; i++, j++) {
@@ -109,7 +110,7 @@ public class MvmnAplyController {
     */
     @RequestMapping(value = "/mng/prtpn/mvmnAply/mvmnAplyInsertForm.html")
     public String mvmnAplyInsertForm(MvmnAplyVo mvmnAplyVo, Model model) throws Exception {
-        int curYear = 2022;
+        int curYear = Integer.valueOf(DateTimeUtil.getYear());
         Integer[] years = new Integer[4];
         
         for(int i = curYear, j = 0; i <= i+3 && j <= 3; i++, j++) {
@@ -138,7 +139,7 @@ public class MvmnAplyController {
     */
     @RequestMapping(value = "/mng/prtpn/mvmnAply/mvmnAplyUpdateForm.html")
     public String mvmnAplyUpdateForm(MvmnAplyVo mvmnAplyVo, Model model) throws Exception {
-        int curYear = 2022;
+        int curYear = Integer.valueOf(DateTimeUtil.getYear());
         Integer[] years = new Integer[4];
         
         for(int i = curYear, j = 0; i <= i+3 && j <= 3; i++, j++) {

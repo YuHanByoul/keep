@@ -151,10 +151,10 @@ public class CntstAplyHistController {
     }
     
     /**
-    * 공모전 참여 이력(환경방학 일기장 프로젝트) 상세 페이지
+    * 공모전 참여 이력(환경일기장신청) 상세 페이지
     *
     * @Title : cntstAplySchlHistDetailForm
-    * @Description : 공모전 참여 이력(환경방학 일기장 프로젝트) 상세 페이지
+    * @Description : 공모전 참여 이력(환경일기장신청) 상세 페이지
     * @param model
     * @param cntstAplyHistVo
     * @param userVo
@@ -166,13 +166,8 @@ public class CntstAplyHistController {
     public String cntstAplySchlHistDetailForm(Model model, CntstAplyHistVo cntstAplyHistVo, @UserInfo UserVo userVo) throws Exception {
         CntstAplyHistVo cntstAplyHist = null;
         cntstAplyHistVo.setUser(userVo);
-        cntstAplyHist =  cntstAplyHistService.selectCntstAplyHistInfo(cntstAplyHistVo);
+        cntstAplyHist =  cntstAplyHistService.selectCntstAplySchlHistInfo(cntstAplyHistVo);
         model.addAttribute("cntstAplyHist", cntstAplyHist);
-        
-        List<CntstAplyHistVo> cntstAplySchlHist = null;
-        cntstAplyHistVo.setUser(userVo);
-        cntstAplySchlHist =  cntstAplyHistService.selectCntstAplySchlHistInfo(cntstAplyHistVo);
-        model.addAttribute("cntstAplySchlHist", cntstAplySchlHist);
         
         List<CntstAplyHistVo> cntstFldMapngInfo = null;
         cntstFldMapngInfo =  cntstAplyHistService.selectCntstFldMapngInfo(cntstAplyHistVo);
@@ -197,19 +192,14 @@ public class CntstAplyHistController {
     public String cntstAplySchlHistUpdateForm(Model model, CntstAplyHistVo cntstAplyHistVo, @UserInfo UserVo userVo) throws Exception {
         CntstAplyHistVo cntstAplyHist = null;
         cntstAplyHistVo.setUser(userVo);
-        cntstAplyHist =  cntstAplyHistService.selectCntstAplyHistInfo(cntstAplyHistVo);
+        cntstAplyHist =  cntstAplyHistService.selectCntstAplySchlHistInfo(cntstAplyHistVo);
         model.addAttribute("cntstAplyHist", cntstAplyHist);
-        
-        List<CntstAplyHistVo> cntstAplySchlHist = null;
-        cntstAplyHistVo.setUser(userVo);
-        cntstAplySchlHist =  cntstAplyHistService.selectCntstAplySchlHistInfo(cntstAplyHistVo);
-        model.addAttribute("cntstAplySchlHist", cntstAplySchlHist);
         
         List<CntstAplyHistVo> cntstFldMapngInfo = null;
         cntstFldMapngInfo =  cntstAplyHistService.selectCntstFldMapngInfo(cntstAplyHistVo);
         model.addAttribute("fldMapngInfo", cntstFldMapngInfo);
         
-        Map<String, Object> cntstFile = fileService.getConfigurationByFilegrpName("cntst_aply_prdct");
+        Map<String, Object> cntstFile = fileService.getConfigurationByFilegrpName("cntst_aply_schl");
         String uploadFileExtsn = ((HashMap<String, String>) cntstFile.get("uploadFileExtsn"))
                 .entrySet()
                 .stream()
@@ -222,10 +212,10 @@ public class CntstAplyHistController {
     }
     
     /**
-    * 공모전 참여 이력(환경방학 일기장 프로젝트) 수정
+    * 공모전 참여 이력(환경일기장신청) 수정
     *
     * @Title : updateCntstAplySchlHist
-    * @Description : 공모전 참여 이력(환경방학 일기장 프로젝트) 수정
+    * @Description : 공모전 참여 이력(환경일기장신청) 수정
     * @param cntstAplyHistVoList
     * @param cntstAplyHistVo
     * @param userVo
@@ -234,15 +224,13 @@ public class CntstAplyHistController {
     */
     @RequestMapping(value = "/front/cntstAplyHist/updateCntstAplySchlHist.do")
     @ResponseBody
-    public Map<String, Object> updateCntstAplySchlHist(@RequestBody List<CntstAplyHistVo> cntstAplyHistVoList, CntstAplyHistVo cntstAplyHistVo, @UserInfo UserVo userVo) throws Exception {
+    public Map<String, Object> updateCntstAplySchlHist(CntstAplyHistVo cntstAplyHistVo, @UserInfo UserVo userVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         
-        for(int i=0; i<cntstAplyHistVoList.size(); i++) {
-            cntstAplyHistVoList.get(i).setUser(userVo);
-        }
+        cntstAplyHistVo.setUser(userVo);
         
         int retVal = 0;
-        retVal = cntstAplyHistService.updateCntstAplySchlHist(cntstAplyHistVoList);
+        retVal = cntstAplyHistService.updateCntstAplySchlHist(cntstAplyHistVo);
         
       
         if (retVal > 0) {

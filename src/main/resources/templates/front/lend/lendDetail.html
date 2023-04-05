@@ -153,10 +153,12 @@
                         </td>
                         
                         <td>
+                           <!-- <th:block sec:authorize-url="/front/lend/lendAply.html"> -->
                            <th:block th:if="${lendInfo.periodStts == 'E' or item.sttsCd =='O'}"> 
                            <button type="button" class="btn-medium btn-green" th:rndid ="${item.rndid}" onclick="requestAply(this.getAttribute('rndid'))" disabled>신청</button>
                            </th:block>
                            <th:block th:unless="${lendInfo.periodStts == 'E' or item.sttsCd =='O'}">-</th:block> 
+                           <!-- </th:block> -->
                         </td>
                     </tr>
                 </tbody>
@@ -247,6 +249,7 @@
     </script>
     <script th:inline="javascript">
         /*<![CDATA[*/ 
+        var currentUser = /*[[${session.user}]]*/ null;
         var lendInfo = /*[[${lendInfo}]]*/null; 
         var rndList = /*[[${rndList}]]*/null; 
         var eduPhotoFileList = /*[[${eduPhotoFileList}]]*/null; 
@@ -365,6 +368,14 @@
            }
        }
        function requestAply(rndid){
+    	   if(currentUser ==null){
+        	   alert("로그인 후 이용 가능합니다.");
+        	   return;
+           }
+    	   if(currentUser.roleInfo.roleid !='3'){
+        	   alert("기관 회원만 신청 가능합니다.");
+        	   return;
+           }
            var qnty  = Number($("#rnd"+rndid+" #requestQnty").val());
            if(qnty ==null || qnty =="" ||qnty <=0){
                alert("수량을 입력해주십시오");

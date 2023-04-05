@@ -38,10 +38,13 @@ public class CntstAplySchlVo extends ParentRequestVo {
     private String tcherGndr;
     /** 전화번호 */
     private String telno;
-    /** 공모_분야_코드*/
+    /** 공모_분야_코드 */
     private String pcntstFldCd;
-    /** 학생_남자 */
-    private String stdntMale;
-    /** 학생 여자 */
-    private String stdntFemale;
+    /** 학년 */
+    private String grade;
+    /** 학생_인원수*/
+    private String stdntNope;
+    /** 학생_파일아이디*/
+    private String stdntFileid;
+    
 }
