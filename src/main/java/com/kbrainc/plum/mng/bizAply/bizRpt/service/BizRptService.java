@@ -276,4 +276,16 @@ public interface BizRptService {
 	*/
 	public List<BizRptVo> selectMngGrpList(BizRptVo bizRptVo) throws Exception;
 
+	/**
+	* 컨설팅대상 등록
+	*
+	* @Title : insertCnsltngTrgt
+	* @Description : 컨설팅대상 등록
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	int insertCnsltngTrgt(BizRptVo bizRptVo) throws Exception;
+
 }

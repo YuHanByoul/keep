@@ -183,12 +183,12 @@
                                 <th scope="row">교육대상<i class="ast" title="필수입력">*</i></th>
                                 <td id="eduTrgtTd">
                                     <div class="form-input">
-                                        <label class="inp"><input type="checkbox" name="infnt"  value="Y" id="infnt"  th:checked = "${aplyInfo.infnt =='Y'}"><b>유아</b></label>
+                                        <label class="inp"><input type="checkbox" name="infnt"   value="Y" id="infnt"   th:checked = "${aplyInfo.infnt =='Y'}"><b>유아</b></label>
                                         <label class="inp"><input type="checkbox" name="schboy"  value="Y" id="schboy"  th:checked = "${aplyInfo.schboy =='Y'}"><b>초등</b></label>
                                         <label class="inp"><input type="checkbox" name="msklsd"  value="Y" id="msklsd"  th:checked = "${aplyInfo.msklsd =='Y'}"><b>중등</b></label>
-                                        <label class="inp"><input type="checkbox" name="hgschst"  value="Y" id="hgschst"  th:checked = "${aplyInfo.hgschst =='Y'}"><b>고등</b></label>
-                                        <label class="inp"><input type="checkbox" name="adult"  value="Y" id="adult"  th:checked = "${aplyInfo.adult =='Y'}"><b>성인</b></label>
-                                        <label class="inp"><input type="checkbox" name="wholMm"  value="Y" id="wholMm"  th:checked = "${aplyInfo.wholMm =='Y'}"><b>전연령</b></label>
+                                        <label class="inp"><input type="checkbox" name="hgschst" value="Y" id="hgschst" th:checked = "${aplyInfo.hgschst =='Y'}"><b>고등</b></label>
+                                        <label class="inp"><input type="checkbox" name="adult"   value="Y" id="adult"   th:checked = "${aplyInfo.adult =='Y'}"><b>성인</b></label>
+                                        <label class="inp"><input type="checkbox" name="wholAge" value="Y" id="wholAge" th:checked = "${aplyInfo.wholAge =='Y'}"><b>전연령</b></label>
                                     </div>
                                 </td>
                             </tr>
@@ -344,7 +344,7 @@
                 </div>
 
 
-                <div class="table-col table-layout-auto  table-col-scroll">
+                <div class="table-col table-layout-auto  table-col-scroll" id="schdlDiv">
                     <table>
                         <caption>프로그램 일정표 - 차시, 일정, 세부 단위 프로그램 명, 관련교육과정, 열 삭제</caption>
                         <colgroup>
@@ -369,7 +369,7 @@
                                 <td id="rnd" name="rnd" >[[${{i.count}}]]차시</td>
                                 <td>
                                     <div class="form-input d-flex">
-                                        <select title="시" style="flex: 1 1 100%; width:0;" id="bgngHr" name="bgngHr">
+                                        <select title="시" style="flex: 1 1 100%; width:0;" th:id="'bgngHr' + ${i.count}" th:name="'bgngHr' + ${i.count}" th:value="${schd.bgngHr}">
                                             <option th:each="num : ${#numbers.sequence(0,23)}" th:value="${num}" th:selected="${num} == ${schd.bgngHr}">[[${num}]]시</option>
                                         </select>
                                         <input type="number" title="분" style="flex: 1 1 100%; width: 0;" th:id="'bgngMnt'+${i.count}" th:name="'bgngMnt'+${i.count}" th:value="${schd.bgngMnt}">
@@ -533,6 +533,58 @@
         	    }
         	}
 
+            function validLst(lstNm, lstNmKo) {
+
+            	if(lstNm=="plan"){
+                    if ($("[id^="+lstNm+"Tr] input").length === 0) {
+                        var msg= lstNmKo + "을 입력해 주십시오";
+                        if (!$("#"+lstNm+"Div").find(".feedback.invalid").length) {
+                            $("#"+lstNm+"Div").prepend(`<p class="feedback invalid">${msg}</p>`);
+                        }
+                        var offset = $("#"+lstNm+"Div").offset();
+                        $('html, body').animate({scrollTop : offset.top - 300}, 300);
+                        $("#"+lstNm+"Div").focus();
+                        return false;
+                    }
+            	}
+
+                var flag = true;
+                $("[id^="+lstNm+"Tr] input").each(function(index, item) {
+                    if (item.value === "") {
+                        var msg= "입력되지 않은 항목이 있습니다";
+                        $("#"+lstNm+"Div").prepend(`<p class="feedback invalid">${msg}</p>`);
+                        flag = false;
+                        return false; // stop the loop
+                    } else {
+                        $("#"+lstNm+"Div").find(".feedback.invalid").remove();
+                    }
+                });
+
+                return flag;
+            }
+
+            function schdlChk(){
+            	$("[id^=schdlTr]").each(function(index, item) {
+            		debugger;
+            		var row=index+1;
+            		var bgngHr  = isNaN(parseInt($("#bgngHr" +row).val())) ? 0 : parseInt($("#bgngHr"+row).val());
+            		var bgngMnt = isNaN(parseInt($("#bgngMnt"+row).val())) ? 0 : parseInt($("#bgngMnt"+row).val());
+            		var endHr   = isNaN(parseInt($("#endHr" +row).val())) ? 0 : parseInt($("#endHr"+row).val());
+            		var endMnt  = isNaN(parseInt($("#endMnt" +row).val())) ? 0 : parseInt($("#endMnt"+row).val());
+
+            		var bgngTotalMnt = bgngHr * 60 + bgngMnt;
+            		var endTotalMnt = endHr * 60 + endMnt;
+
+            		var msg="입력된 시간이 올바르지 않습니다."
+
+            		if (endTotalMnt <= bgngTotalMnt) {
+            			$("#schdlDiv").prepend(`<p class="feedback invalid">${msg}</p>`);
+            		}
+
+
+            	});
+            };
+
             function validate(){
 
                 $("#dstnctnForm").validate({
@@ -619,9 +671,9 @@
                 $("#dstnctnForm textarea,select").each(function(index, item) { param[item.id] = item.value;});
 
                 //프로그램 대처계획
-                $("[id^=planTr]").each(function(index, item)       { param["emrgcyActnPlanLst[" + index + "].prgrmid"     ] = $("#prgrmid").val()});       //프로그램 id (key)
-                $("[id^=sbstnPrgrmNm]").each(function(index, item) { param["emrgcyActnPlanLst[" + index + "].sbstnPrgrmNm"] = item.value; });    //차수
-                $("[id^=planPrgrmNm]").each(function(index, item)  { param["emrgcyActnPlanLst[" + index + "].prgrmNm"     ] = item.value; });    //프로그램명
+                $("#planBody [id^=planTr]").each(function(index, item)       { param["emrgcyActnPlanLst[" + index + "].prgrmid"     ] = $("#prgrmid").val()});       //프로그램 id (key)
+                $("#planBody [id^=sbstnPrgrmNm]").each(function(index, item) { param["emrgcyActnPlanLst[" + index + "].sbstnPrgrmNm"] = item.value; });    //차수
+                $("#planBody [id^=planPrgrmNm]").each(function(index, item)  { param["emrgcyActnPlanLst[" + index + "].prgrmNm"     ] = item.value; });    //프로그램명
 
                 //숙박여부와 프로그램우수성의 운영형태로 체크리스트의 운영형태를 판단하여 체크리스트 결정
                 if($("#operFrmCd").val() == "120104") {
@@ -659,21 +711,13 @@
                         $("#fileTd").find(".feedback.invalid").remove();
                     }
 
-                    //대처계획
-                    if($("[id^=planTr]").length==0){
-                    	var msg="대처계획을 입력해 주십시오";
-                    	if (!$("#planDiv").find(".feedback.invalid").length) {
-                            $("#planDiv").prepend(`<p class="feedback invalid">${msg}</p>`);
-                        }
-                        var offset = $("#planDiv").offset();
-                        $('html, body').animate({scrollTop : offset.top - 300}, 300);
-                        $("#planDiv").focus();
-                        return false;
-                    } else {
-                        $("#planDiv").find(".feedback.invalid").remove();
-                    }
-
+                    if (!validLst("plan",  "대처계획")) return false;
+                    //if (!validLst("schdl", "프로그램일정표")) return false;
+                    //일정표 시간 체크
+                    //if (!schdlChk()) return false;
                 }
+
+
 
                 if(!confirm("저장하시겠습니까?")) return;
 
@@ -722,18 +766,18 @@
                             <td>1차시</td>
                             <td>
                                 <div class="form-input d-flex">
-                                    <select title="시" style="flex: 1 1 100%; width: 0;">`/**/
+                                    <select title="시" style="flex: 1 1 100%; width: 0;" id="bgngHr`+`${idx+1}`+`" name="bgngHr`+`${idx+1}`+`">`
 
                 for(var i=0; i<24; i++){
-                    html +=`<option value=${i}"시">${i}시</option>`/**/
+                    html +=`<option value=${i}>${i}시</option>`/**/
                 }
 
                 html +=`
                                     </select> <input type="number" title="분" style="flex: 1 1 100%; width: 0;" id="bgngMnt`+`${idx+1}`+`" name="bgngMnt`+`${idx+1}`+`">
                                     <div class="bul">~</div>
-                                    <select title="시" style="flex: 1 1 100%; width: 0;">`/**/
+                                    <select title="시" style="flex: 1 1 100%; width: 0;" id="endHr`+`${idx+1}`+`" name="endHr`+`${idx+1}`+`">`
                 for(var i=0; i<24; i++){
-                    html +=`<option value=${i}"시">${i}시</option>`/**/
+                    html +=`<option value=${i}>${i}시</option>`/**/
                 }
                 html +=`
                                     </select> <input type="number" title="분" style="flex: 1 1 100%; width: 0;" id="endMnt`+`${idx+1}`+`" name="endMnt`+`${idx+1}`+`">

@@ -1035,4 +1035,34 @@ public class BizRptServiceImpl extends PlumAbstractServiceImpl implements BizRpt
 		return bizRptDao.selectMngGrpList(bizRptVo);
 	}
 
+	/**
+	* 컨설팅대상 등록
+	*
+	* @Title : insertCnsltngTrgt
+	* @Description : 컨설팅대상 등록
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	@Override
+	@Transactional
+	public int insertCnsltngTrgt(BizRptVo bizRptVo) throws Exception{
+		int ret = 0;
+		List<Integer> cnstntIds = null;
+		if(bizRptVo.getCnstntIds()!= null) {
+			cnstntIds = bizRptVo.getCnstntIds();
+
+			for(Integer id : cnstntIds) {
+				bizRptVo.setCnstntid(id);
+				ret += bizRptDao.insertCnsltngMng(bizRptVo);
+			}
+		}
+
+		//컨설팅대상자내용 수정
+		ret += bizRptDao.updateTrgtCn(bizRptVo);
+
+		return ret;
+	}
+
 }
