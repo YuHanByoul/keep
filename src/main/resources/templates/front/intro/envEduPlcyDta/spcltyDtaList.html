@@ -38,7 +38,7 @@
             <div class="form-row">
                 <div class="form-header"><strong class="label">분류</strong></div>
                 <div class="form-body">
-                    <th:block kattr:check_code="searchClsfCd" grpCd="228"/>
+                    <th:block kattr:select_code="searchClsfCd" grpCd="228" firstOptTxt="- 전체 - "/>
                 </div>
             </div>
         </div>
@@ -65,34 +65,44 @@
         </div>
     </div>
 
-    <div class="table-col table-layout-auto table-col-mo">
-        <table>
-            <caption>전문자료 - 번호, 분류, 제목, 발행년도, 저자, 등록일, 조회수</caption>
-            <colgroup>
-                <col>
-                <col>
-                <col style="width:40%;">
-                <col>
-                <col>
-                <col>
-            </colgroup>
-            <thead>
-            <tr>
-                <th scope="col">번호</th>
-                <th scope="col">분류</th>
-                <th scope="col">제목</th>
-                <th scope="col">발행년도</th>
-                <th scope="col">저자</th>
-                <th scope="col">등록일</th>
-                <th scope="col">조회수</th>
-            </tr>
-            </thead>
-            <tbody id="listArea">
-            </tbody>
-        </table>
+    <div class="pc-only">
+        <div class="table-col table-layout-auto table-col-mo">
+            <table>
+                <caption>전문자료 - 번호, 분류, 제목, 발행년도, 저자, 등록일, 조회수</caption>
+                <colgroup>
+                    <col>
+                    <col>
+                    <col style="width:40%;">
+                    <col>
+                    <col>
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th scope="col">번호</th>
+                    <th scope="col">분류</th>
+                    <th scope="col">제목</th>
+                    <th scope="col">발행년도</th>
+                    <th scope="col">저자</th>
+                    <th scope="col">등록일</th>
+                    <th scope="col">조회수</th>
+                </tr>
+                </thead>
+                <tbody id="pcListArea">
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <div aria-label="pagination" id="pagination"/>
+    <div class="mo-only">
+        <div class="table-list">
+            <ul id="moListArea">
+            </ul>
+        </div>
+    </div>
+
+
+    <div id="pagination" aria-label="pagination" />
 
     <script th:inline="javascript">
         const listUrl = '/front/intro/envEduPlcyDta/selectSpcltyDtaList.do';
@@ -100,22 +110,12 @@
         const searchVo = /*[[${searchVo}]]*/null;
 
         $(function () {
-            if(!isNull(searchVo.searchClsfCd)) {
-                searchVo.searchClsfCd.forEach(val => {
-                    $('input[name=searchClsfCd]').each(function (index, item) {
-                        if (val == $(item).val()) {
-                            $(item).prop('checked', true);
-                        }
-                    })
-                })
-            }
-
+            $('#searchClsfCd').val(searchVo.searchClsfCd);
             $('#searchType').val(searchVo.searchType);
             $('#searchKeyword').val(searchVo.searchKeyword);
             $('#writr').val(searchVo.writr);
             $('#searchFromRegDt').val(searchVo.searchFromRegDt);
             $('#searchToRegDt').val(searchVo.searchToRegDt);
-            $('#searchClsfCd').val(searchVo.searchClsfCd);
             $('#rowPerPage').val(searchVo.rowPerPage);
 
             selectList();
@@ -139,10 +139,14 @@
                     dataType: 'json',
                     data: $('#searchForm').serializeArray(),
                     type: 'GET',
-                    success: function (data) {
-                        $('#listArea').html(makeListHtml(data.list));
-                        $('#pagination').html(data.pagination);
-                        $('#totalCount').html(data.totalCount);
+                    success: function (response) {
+                        let data = escapeData(response.list);
+
+                        $('#pcListArea').html(makeListHtmlForPc(data));
+                        $('#moListArea').html(makeListHtmlForMo(data));
+                        $('#pagination').html(response.pagination);
+                        $('#totalCount').html(response.totalCount);
+
                         closeWorkProgress();
                     }
                 });
@@ -155,7 +159,7 @@
             f.action = detailUrl;
             f.submit();
         }
-        let makeListHtml = (list) => {
+        let makeListHtmlForPc = (list) => {
             var html = "";
             if (list == null || list.length <= 0) {
                 html += `<tr>
@@ -169,7 +173,7 @@
                                 <td>${item.rowNumber}</td>
                                 <td>${item.clsfCdNm}</td>
                                 <td class="al article"><a href="#" class="link ellipsis" onclick="goToDetail(${item.dtaid})">${item.ttl}</a></td>
-                                <td>${item.yy}</td>
+                                <td>${item.yy ?? ''}</td>
                                 <td>${item.writr}</td>
                                 <td>${item.regDt}</td>
                                 <td>${item.hits}</td>
@@ -178,5 +182,55 @@
             }
             return html;
         }
+
+        let makeListHtmlForMo = (list) => {
+            var html = "";
+            if (list == null || list.length <= 0) {
+                html += `<li class="block">
+                            <div class="nodata">
+                                <p><span class="icon icon-notice bg-black9"></span>등록된 자료가 없습니다.</p>
+                            </div>
+                        </li>`;
+            } else {
+                list.forEach(function (item) {
+                    html += `<li class="block">
+                                <div class="tbody">
+                                    <dl>
+                                        <div class="list">
+                                            <dt>번호</dt>
+                                            <dd>${item.rowNumber}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>분류</dt>
+                                            <dd>${item.clsfCdNm}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>제목</dt>
+                                            <dd><a href="#" class="link ellipsis" onclick="goToDetail(${item.dtaid})">${item.ttl}</a></dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>발행년도</dt>
+                                            <dd>${item.yy ?? ''}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>저자</dt>
+                                            <dd>${item.writr}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>등록일</dt>
+                                            <dd>${item.regDt}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>조회수</dt>
+                                            <dd>${item.hits}</dd>
+                                        </div>
+                                    </dl>
+                                </div>
+                            </li>`;
+                });
+            }
+            return html;
+        }
+
     </script>
 </div>

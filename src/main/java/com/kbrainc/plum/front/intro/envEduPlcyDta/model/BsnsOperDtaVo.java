@@ -32,11 +32,7 @@ public class BsnsOperDtaVo extends ParentRequestVo {
 
     private Integer yy;
 
-    private String typeCd;
-
     private String instNm;
-
-    private String clsfCd;
 
     private String ttl;
 
@@ -44,33 +40,47 @@ public class BsnsOperDtaVo extends ParentRequestVo {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date regDt;
+
+    private String cpyrhtCd;
+
     private Integer hits;
 
     private String typeCdNm;
+
     private String clsfCdNm;
 
     private Integer prevDtaid;
+
     private String prevDtaTtl;
+
     private Integer nextDtaid;
+
     private String nextDtaTtl;
 
     private String searchFromRegDt;
+
     private String searchToRegDt;
-    private String[] searchTypeCd;
+
+    private String searchClsfCd;
+
+    private String searchClsfCdNm;
 
     private Integer pdfFileid;
+
     private Integer atchFilegrpid;
+
     private List<FileVo> pdfFileList;
+
     private List<FileVo> atchFileList;
 
-    public void setTypeCd(String typeCd) {
-        this.typeCd = typeCd;
+    public void setSearchClsfCd(String searchClsfCd) {
+        this.searchClsfCd = searchClsfCd;
 
-        if (CommonUtil.isEmpty(this.typeCdNm)) {
+        if (CommonUtil.isEmpty(this.searchClsfCdNm)) {
             try {
                 ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
-                CodeInfoVo code = resCodeService.getCodeInfo(this.typeCd);
-                this.typeCdNm = code.getCdNm();
+                CodeInfoVo code = resCodeService.getCodeInfo(this.searchClsfCd);
+                this.searchClsfCdNm = code.getCdNm();
             } catch (NoClassDefFoundError e) {
                 //e.printStackTrace();
                 return;
@@ -81,21 +91,4 @@ public class BsnsOperDtaVo extends ParentRequestVo {
         }
     }
 
-    public void setClsfCd(String clsfCd) {
-        this.clsfCd = clsfCd;
-
-        if (CommonUtil.isEmpty(this.clsfCdNm)) {
-            try {
-                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
-                CodeInfoVo code = resCodeService.getCodeInfo(this.clsfCd);
-                this.clsfCdNm = code.getCdNm();
-            } catch (NoClassDefFoundError e) {
-                //e.printStackTrace();
-                return;
-            } catch (Exception e) {
-                //e.printStackTrace();
-                return;
-            }
-        }
-    }
 }
