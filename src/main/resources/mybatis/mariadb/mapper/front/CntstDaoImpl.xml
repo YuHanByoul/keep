@@ -12,6 +12,7 @@
         <include refid="PaginationMapper.header"/>
             SELECT
                 A.CNTSTID
+                , NVL(D.INST_NM, '') AS INST_NM
                 , A.TTL
                 , A.THMBN_FILEID
                 , E.FILE_IDNTFC_KEY
@@ -28,6 +29,8 @@
             FROM
                 TB_CMM_CNTST A
             LEFT OUTER JOIN TB_CMM_CD B ON A.CLSF_CD = B.CD
+            LEFT OUTER JOIN TB_CMM_USER C ON A.RGTRID = C.USERID
+            LEFT OUTER JOIN TB_CMM_INST D ON C.INSTID = D.INSTID
             LEFT OUTER JOIN TB_CMM_FILE E ON A.THMBN_FILEID = E.FILEID
             WHERE 1=1
             <!-- 제목검색 -->
@@ -163,6 +166,10 @@
         	, PRDCT_TTL
         	, PRDCT_EXPLN
         	, PRDCT_FILEGRPID
+            , SCHL_NM
+            , GRADE
+            , STDNT_NOPE
+            , STDNT_FILEID
         	, TRMS_AGRE_YN
         	, MDFCN_DT
         	, MDFRID
@@ -186,6 +193,10 @@
             , #{prdctTtl}
             , #{prdctExpln}
             , #{prdctFilegrpid}
+            , #{schlNm}
+            , #{grade}
+            , #{stdntNope}
+            , #{stdntFileid}
             , #{trmsAgreYn}
             ,NOW()
             ,#{user.userid}

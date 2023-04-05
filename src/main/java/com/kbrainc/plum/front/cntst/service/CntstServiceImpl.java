@@ -135,10 +135,10 @@ public class CntstServiceImpl extends PlumAbstractServiceImpl implements CntstSe
     }
     
     /**
-    * 공모전 신청(환경방학 일기장 프로젝트) 등록
+    * 공모전 신청(환경일기장신청) 등록
     *
     * @Title : insertCntstAplySchl
-    * @Description : 공모전 신청(환경방학 일기장 프로젝트) 등록
+    * @Description : 공모전 신청(환경일기장신청) 등록
     * @param cntstAplySchlVo
     * @throws Exception
     * @return int
