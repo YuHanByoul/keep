@@ -84,4 +84,14 @@ public class CntstAplyVo extends ParentRequestVo {
     private Date regDt;
     /** 등록자아이디 */
     private String rgtrid;
+    
+    //환경일기장신청
+    /** 학교_이름 */
+    private String schlNm;
+    /** 학년 */
+    private String grade;
+    /** 학생_인원수*/
+    private String stdntNope;
+    /** 학생_파일아이디*/
+    private String stdntFileid;
 }

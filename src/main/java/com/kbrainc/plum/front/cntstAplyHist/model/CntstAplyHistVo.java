@@ -75,6 +75,8 @@ public class CntstAplyHistVo extends ParentRequestVo {
     private String rprsvMoblphon;
     /** 이메일 */
     private String eml;
+    /** 우편번호 */
+    private String zip;
     /** 주소 */
     private String addr;
     /** 주소_상세 */
@@ -97,19 +99,16 @@ public class CntstAplyHistVo extends ParentRequestVo {
     
     /* 환경방학 일기장 프로젝트 */
     /* Detail */
-    private Integer aplySchlid;
     /** 학교_이름 */
     private String schlNm;
-    /** 교사_이름 */
-    private String tcherNm;
-    /** 교사_성별 */
-    private String tcherGndr;
-    /** 전화번호 */
-    private String telno;
-    /** 학생_남자 */
-    private String stdntMale;
-    /** 학생 여자 */
-    private String stdntFemale;
+    /** 학년 */
+    private String grade;
+    /** 학생_인원수 */
+    private String stdntNope;
+    /** 학생_파일아이디 */
+    private String stdntFileid;
+    /** 약관_동의_여부 */
+    private String trmsAgreYn;
     
     /* cmm */
     /** 첨부파일 관련 */

@@ -18,6 +18,8 @@ public class CntstVo extends ParentRequestVo {
 
     /** 공모전아이디*/
     private Integer cntstid;
+    /** 기관명*/
+    private String instNm;
     /** 제목*/
     private String ttl;
     /** 썸네일_파일아이디*/
