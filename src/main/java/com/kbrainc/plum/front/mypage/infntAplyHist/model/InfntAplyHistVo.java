@@ -106,6 +106,4 @@ public class InfntAplyHistVo extends ParentRequestVo {
     private String searchKeyword;
     private String searchTrgtCd;
     private String searchCtprvnCd;
-    private String searchClsfCd_1;
-    private String searchClsfCd_2;
 }

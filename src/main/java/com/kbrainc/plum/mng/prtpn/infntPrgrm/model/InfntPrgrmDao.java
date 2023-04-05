@@ -235,4 +235,15 @@ public interface InfntPrgrmDao {
     * @return List<InfntPrgrmVo>
     */
     public List<InfntPrgrmVo> selectPrgrmSettingList(@Param("rcptMthdCd") String rcptMthdCd) throws Exception;
+    
+    /**
+    * 교육프로그램관리 복사대상 파일 상세조회
+    *
+    * @Title : selectInfntCopyPrgrmInfo
+    * @Description : 교육프로그램관리 복사대상 파일 상세조회
+    * @param infntPrgrmVo 교육프로그램관리 객체
+    * @throws Exception 예외
+    * @return InfntPrgrmVo
+    */
+    public InfntPrgrmVo selectInfntCopyPrgrmFileInfo(InfntPrgrmVo infntPrgrmVo) throws Exception;    
 }

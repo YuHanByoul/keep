@@ -34,7 +34,7 @@ import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 public class InfntAplyHistServiceImpl extends PlumAbstractServiceImpl implements InfntAplyHistService {
 
     @Resource(name = "front.infntAplyHistDao")
-    private InfntAplyHistDao InfntAplyHistDao;
+    private InfntAplyHistDao infntAplyHistDao;
     
     /**
      * 유아환경교육관 신청이력 조회
@@ -47,7 +47,7 @@ public class InfntAplyHistServiceImpl extends PlumAbstractServiceImpl implements
      * @return List<InfntAplyHistVo>
      */
     public List<InfntAplyHistVo> selectInfntAplyHistList(InfntAplyHistVo infntAplyHistVo) throws Exception{
-        return InfntAplyHistDao.selectInfntAplyHistList(infntAplyHistVo);
+        return infntAplyHistDao.selectInfntAplyHistList(infntAplyHistVo);
     }        
     /**
      * 유아환경교육관 신청이력 정보 조회
@@ -60,7 +60,7 @@ public class InfntAplyHistServiceImpl extends PlumAbstractServiceImpl implements
      * @return InfntAplyHistVo
      */
     public InfntAplyHistVo selectInfntAplyHistInfo(InfntAplyHistVo infntAplyHistVo) throws Exception{
-        return InfntAplyHistDao.selectInfntAplyHistInfo(infntAplyHistVo);
+        return infntAplyHistDao.selectInfntAplyHistInfo(infntAplyHistVo);
     }
 
     /**
@@ -74,7 +74,7 @@ public class InfntAplyHistServiceImpl extends PlumAbstractServiceImpl implements
      * @return InfntAplyHistVo
      */
     public InfntAplyHistVo selectInfntAplyHistDetail(InfntAplyHistVo infntAplyHistVo) throws Exception{
-        return InfntAplyHistDao.selectInfntAplyHistDetail(infntAplyHistVo);
+        return infntAplyHistDao.selectInfntAplyHistDetail(infntAplyHistVo);
     }    
     
     /**
@@ -89,7 +89,7 @@ public class InfntAplyHistServiceImpl extends PlumAbstractServiceImpl implements
     */
     public int updateCancelInfntAply(InfntAplyHistVo infntAplyHistVo) throws Exception{
         int retVal = 0;
-        retVal += InfntAplyHistDao.updateCancelInfntAply(infntAplyHistVo);
+        retVal += infntAplyHistDao.updateCancelInfntAply(infntAplyHistVo);
         return retVal;
     }
 }

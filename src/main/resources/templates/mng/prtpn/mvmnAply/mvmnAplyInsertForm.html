@@ -11,12 +11,12 @@
                      <div class="mb-0 form-group required">
                          <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="eduYr"><strong>교육년도</strong></label>
                          <div class="col-sm-12">
-	                         <select name="eduYr" id="eduYr" class="form-select form-select-sm form-control-sm" disabled>
-	                             <option value="">- 선택 -</option>
-	                             <th:block th:each="year : ${years}">
-	                                 <option th:value="${year}"><th:block th:text="${year}" /></option>
-	                             </th:block>
-	                         </select>
+                             <select name="eduYr" id="eduYr" class="form-select form-select-sm form-control-sm" disabled>
+                                 <option value="">- 선택 -</option>
+                                 <th:block th:each="year : ${years}">
+                                     <option th:value="${year}"><th:block th:text="${year}" /></option>
+                                 </th:block>
+                             </select>
                          </div>
                      </div>
                  </div>
@@ -215,24 +215,24 @@
 </form>
 <div class="modal fade" id="userSearchPopup" data-bs-backdrop="static"></div>
 <script th:inline="javascript">
-	var prgrmTmeSelectedItems = [];
-	var sareaViewngMaxAplyNope = 0;
-	var userSearchPopupUrl = "/mng/prtpn/mvmnAply/mvmnAplyUserSearchPopup.html";
-	var userSearchAddModal;
-	init();
-	fn_openUserSearchModal = () => {
-		debugger;
-	    $("#userSearchPopup").load(userSearchPopupUrl, function(response, status, xhr) {
-	        if (status == "success") {
-	            userSearchAddModal = new bootstrap.Modal($('#userSearchPopup'));
-	            userSearchAddModal.show();
-	        }
-	    });
-	}
+    var prgrmTmeSelectedItems = [];
+    var sareaViewngMaxAplyNope = 0;
+    var userSearchPopupUrl = "/mng/prtpn/mvmnAply/mvmnAplyUserSearchPopup.html";
+    var userSearchAddModal;
 
-	function init() {
-		prgrmTmeSelectedItems = [];
-		sareaViewngMaxAplyNope = 0;
+    fn_openUserSearchModal = () => {
+
+        $("#userSearchPopup").load(userSearchPopupUrl, function(response, status, xhr) {
+            if (status == "success") {
+                userSearchAddModal = new bootstrap.Modal($('#userSearchPopup'));
+                userSearchAddModal.show();
+            }
+        });
+    }
+
+    function init() {
+        prgrmTmeSelectedItems = [];
+        sareaViewngMaxAplyNope = 0;
 
         var eduYr = selectedItems[0].eduYr;
         var sareaId = selectedItems[0].sareaId;
@@ -245,8 +245,8 @@
         $('#prgrmId').val(prgrmId);
         $('#prgrmNm').val(prgrmNm);
             
-	}
-	
+    }
+    
     function fn_insertMvmnAply(){
         if(!($("#mvmnAplyInsertForm").valid())) return;
         //debugger;
@@ -274,7 +274,7 @@
                 data : data,
                 success : function (data){
                     if(data.result=="success"){
-                    	alert(data.msg);
+                        alert(data.msg);
                         gridHelper1.resetListContent();
                     }else{
                         alert(data.msg);
@@ -285,7 +285,7 @@
         }
     }
 /*     function fn_changeSareaId(item){
-    	var getCodeUrl = "/mng/prtpn/eduSarea/selectSareaEduTypeCd.do";
+        var getCodeUrl = "/mng/prtpn/eduSarea/selectSareaEduTypeCd.do";
         var url = getCodeUrl + "?sareaId=" + $(item).val();
         if (displayWorkProgress()) {
             $.ajax({
@@ -293,18 +293,59 @@
                 type: 'POST',
                 cache: false,
                 success: function (data) {
-                	$("#eduTypeCd").val(data.eduTypeCd);
-                	$("#eduNope").val(data.sareaViewngMaxAplyNope);
-                	//교육관 최대 신청 인원수 세팅.
-                	sareaViewngMaxAplyNope = data.sareaViewngMaxAplyNope;
+                    $("#eduTypeCd").val(data.eduTypeCd);
+                    $("#eduNope").val(data.sareaViewngMaxAplyNope);
+                    //교육관 최대 신청 인원수 세팅.
+                    sareaViewngMaxAplyNope = data.sareaViewngMaxAplyNope;
                 }
             });
         }
     } */
     
     function fn_changeSelectDe(item){
-    	var tmeSchdlid = $(item).val();
-    	$('#tme').val(tmeSchdlid).prop("selected", true);
+        var tmeSchdlid = $(item).val();
+        $('#tme').val(tmeSchdlid).prop("selected", true);
     }
     
+    $(function () {
+        init(); 
+        validForm();
+    })
+    
+    function validForm() {
+        $("#mvmnAplyInsertForm").validate({
+            onsubmit: false,
+            rules: {
+                clssrmId: {required: true},
+                eduYr: {required: true},
+                prgrmNm: {required: true},
+                tmeSchdlid: {required: true},
+                tme: {required: true},
+                ctprvnCd: {required: true},
+                instNm: {required: true},
+                addr: {required: true},
+                moblphon: {required: true},
+                eml: {required: true},
+                eduNope: {required: true},
+                tcherNope: {required: true},
+                towwayOnlnEduAgreYn: {required: true}
+            },
+            messages: {
+                clssrmId: {required: "교육관을 선택해주십시오."},
+                eduYr: {required: "교육년도를 선택해주십시오."},
+                prgrmNm: {required: "프로그램명을 입력해주십시오."},
+                tmeSchdlid: {required: "교육일자를 선택해주십시오."},
+                tme: {required: "회차를 선택해주십시오."},
+                ctprvnCd: {required: "신청인 지역을 선택해주십시오."},
+                instNm: {required: "신청기관을 입력해주십시오."},
+                addr: {required: "기관주소를 입력해주십시오."},
+                moblphon: {required: "휴대폰번호를 입력해주십시오."},
+                eml: {required: "신청자 이메일을 입력해주십시오."},
+                eduNope: {required: "총 교육인원(명)을 입력해주십시오."},
+                tcherNope: {required: "인솔교사인원(명)을 입력해주십시오."},
+                towwayOnlnEduAgreYn: {required: "쌍방향 온라인 시범교육 신청 동의 (비동의 시 교육 선정 및 진행 불가)를 선택해주십시오."}
+            }
+        });
+
+    }     
 </script>

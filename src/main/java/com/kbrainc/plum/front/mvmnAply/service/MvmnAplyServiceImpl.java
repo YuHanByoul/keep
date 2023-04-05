@@ -34,7 +34,7 @@ import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements MvmnAplyService {
 
     @Resource(name = "front.mvmnAplyDao")
-    private MvmnAplyDao MvmnAplyDao;
+    private MvmnAplyDao mvmnAplyDao;
 
     /**
     * 푸름이 이동환경교실 교육신청 게시글 목록 조회
@@ -48,7 +48,7 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
     */
     @Override
     public List<MvmnAplyVo> selectMvmnAplyList(MvmnAplyVo mvmnAplyVo) throws Exception {
-        return MvmnAplyDao.selectMvmnAplyList(mvmnAplyVo);
+        return mvmnAplyDao.selectMvmnAplyList(mvmnAplyVo);
     }
     
     /**
@@ -63,7 +63,7 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
     */
     @Override
     public MvmnAplyVo selectMvmnAplyInfo(MvmnAplyVo mvmnAplyVo) throws Exception {
-        return MvmnAplyDao.selectMvmnAplyInfo(mvmnAplyVo);
+        return mvmnAplyDao.selectMvmnAplyInfo(mvmnAplyVo);
     }
     
     /**
@@ -78,7 +78,7 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
     */
     @Override
     public List<MvmnAplyVo> selectMvmnAplyTmeList(MvmnAplyVo mvmnAplyVo) throws Exception {
-        return MvmnAplyDao.selectMvmnAplyTmeList(mvmnAplyVo);
+        return mvmnAplyDao.selectMvmnAplyTmeList(mvmnAplyVo);
     }
 
     /**
@@ -93,7 +93,7 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
      */
     @Override
     public List<MvmnAplyVo> selectMvmnAplyEduSareaList(MvmnAplyVo mvmnAplyVo) throws Exception {
-        return MvmnAplyDao.selectMvmnAplyEduSareaList(mvmnAplyVo);
+        return mvmnAplyDao.selectMvmnAplyEduSareaList(mvmnAplyVo);
     }
     
     /**
@@ -108,7 +108,7 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
     */
     @Override
     public List<MvmnAplyVo> selectEduPhotoFileList(MvmnAplyVo mvmnAplyVo) throws Exception {
-        return MvmnAplyDao.selectEduPhotoFileList(mvmnAplyVo);
+        return mvmnAplyDao.selectEduPhotoFileList(mvmnAplyVo);
     }
     
     /**
@@ -123,7 +123,7 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
     */
     @Override
     public List<MvmnAplyVo> selectMvmnAplyDeList(MvmnAplyVo mvmnAplyVo) throws Exception {
-        return MvmnAplyDao.selectMvmnAplyDeList(mvmnAplyVo);
+        return mvmnAplyDao.selectMvmnAplyDeList(mvmnAplyVo);
     } 
 
     /**
@@ -138,7 +138,7 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
     */
     @Override
     public MvmnAplyVo selectMvmnAplyRegInfo(MvmnAplyVo mvmnAplyVo) throws Exception {
-        return MvmnAplyDao.selectMvmnAplyRegInfo(mvmnAplyVo);
+        return mvmnAplyDao.selectMvmnAplyRegInfo(mvmnAplyVo);
     }
     
     /**
@@ -152,10 +152,11 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
     */
     public int insertMvmnAply(MvmnAplyVo mvmnAplyVo) throws Exception{
         int retVal = 0;
-        retVal += MvmnAplyDao.insertMvmnAply(mvmnAplyVo);
+        retVal += mvmnAplyDao.insertMvmnAply(mvmnAplyVo);
+        retVal += mvmnAplyDao.insertMvmnAplySchdl(mvmnAplyVo);
         
         if(mvmnAplyVo.getTrgtCds()!=null & mvmnAplyVo.getTrgtCds().length > 0) {
-            retVal += MvmnAplyDao.insertTrgtCd(mvmnAplyVo);
+            retVal += mvmnAplyDao.insertTrgtCd(mvmnAplyVo);
         }
         return retVal;
     }    
@@ -172,7 +173,7 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
     */
     @Override
     public List<MvmnAplyVo> selectEduSareaList(MvmnAplyVo mvmnAplyVo) throws Exception {
-        return MvmnAplyDao.selectEduSareaList(mvmnAplyVo);
+        return mvmnAplyDao.selectEduSareaList(mvmnAplyVo);
     }
     
     /**
@@ -186,7 +187,7 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
      * @return List<MvmnAplyVo>
      */
     public List<MvmnAplyVo> selectMvmnAplySignguList(MvmnAplyVo mvmnAplyVo) throws Exception{
-        return MvmnAplyDao.selectMvmnAplySignguList(mvmnAplyVo);        
+        return mvmnAplyDao.selectMvmnAplySignguList(mvmnAplyVo);        
     }
     
 }

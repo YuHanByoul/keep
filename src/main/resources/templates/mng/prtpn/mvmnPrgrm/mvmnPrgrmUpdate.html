@@ -15,7 +15,7 @@
                              <select name="eduYr" id="eduYr" class="form-select form-select-sm form-control-sm">
                                  <option value="">- 선택 -</option>
                                  <th:block th:each="year : ${years}">
-                                     <option th:value="${year}"><th:block th:text="${year}" /></option>
+                                     <option th:value="${year}" th:selected="${mvmnPrgrm.eduYr} == ${year}"><th:block th:text="${year}" /></option>
                                  </th:block>
                              </select>
                          </div>
@@ -35,7 +35,7 @@
                      <div class="mb-0 form-group required">
                          <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>운영권역</strong></label>
                          <div class="col-sm-12">
-                             <select name="sareaId" id="sareaId" class="form-select form-select-sm form-control-sm" onchange="fn_changeSareaId(this)">
+                             <select name="sareaId" id="sareaId" class="form-select form-select-sm form-control-sm">
                                  <option value="">- 선택 -</option>
                                  <th:block th:each="item : ${sareaList}">
                                      <option th:value="${item.sareaId}" th:selected="${mvmnPrgrm.sareaId} == ${item.sareaId}"><th:block th:text="${item.sareaNm}" /></option>
@@ -119,10 +119,10 @@
              </div>     
              <div class="row">                                           
                  <div class="col-lg-6 mb-3">
-                     <div class="col-lg-6 mb-3">
+                     <div class="mb-0 form-group required">
                          <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육정원(명)</strong></label>
                          <div class="col-sm-12">
-                             <input type="text" class="form-control form-control-sm" name="eduNope" id="eduNope" placeholder="" th:value="${mvmnPrgrm.eduNope}" onchange="fn_changeEduNope(this);">
+                             <input type="text" class="form-control form-control-sm" name="eduNope" id="eduNope" placeholder="" th:value="${mvmnPrgrm.eduNope}" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');">
                              <span class="messages"></span>
                          </div>
                      </div>
@@ -131,12 +131,40 @@
                      <div class="mb-0 form-group required">                     
                           <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육시간(분)</strong></label>
                          <div class="col-sm-12">
-                             <input type="text" class="form-control form-control-sm" name="eduHrMnt" id="eduHrMnt" placeholder="" th:value="${mvmnPrgrm.eduHrMnt}">
+                             <input type="text" class="form-control form-control-sm" name="eduHrMnt" id="eduHrMnt" placeholder="" th:value="${mvmnPrgrm.eduHrMnt}" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');">
                              <span class="messages"></span>
                          </div>
                      </div>
                  </div>
              </div> 
+             <div class="row">
+                 <div class="col-lg-6 mb-3">                 
+                     <div class="mb-0 form-group required">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="aplcntDgstfnSrvyid"><strong>신청자 만족도 설문</strong></label>
+                         <div class="col-sm-12">
+                             <select name="aplcntDgstfnSrvyid" id="aplcntDgstfnSrvyid" class="form-select form-select-sm form-control-sm">
+                                 <option value="">- 선택 -</option>
+                                 <th:block th:each="item : ${aplcntDgstfnSrvyList}">
+                                     <option th:value="${item.srvyid}" th:selected="${mvmnPrgrm.aplcntDgstfnSrvyid} == ${item.srvyid}"><th:block th:text="${item.srvyNm}" /></option>
+                                 </th:block>
+                             </select>
+                         </div>
+                     </div>
+                 </div>                     
+                 <div class="col-lg-6 mb-3">    
+                     <div class="mb-0 form-group required">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="stdntDgstfnSrvyid"><strong>학습자 만족도 설문</strong></label>
+                         <div class="col-sm-12">
+                             <select name="stdntDgstfnSrvyid" id="stdntDgstfnSrvyid" class="form-select form-select-sm form-control-sm">
+                                 <option value="">- 선택 -</option>
+                                 <th:block th:each="item : ${stdntDgstfnSrvyList}">
+                                     <option th:value="${item.srvyid}" th:selected="${mvmnPrgrm.stdntDgstfnSrvyid} == ${item.srvyid}"><th:block th:text="${item.srvyNm}" /></option>
+                                 </th:block>
+                             </select>
+                         </div>
+                     </div>
+                 </div>
+             </div>              
              <div class="row form-group mb-3">    
                  <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>접수방법</strong></div>     
                  <div class="col-sm-12">
@@ -382,14 +410,10 @@ var prgrmTmeSelectedItems = [];
 var prgrmTmeSelectedTmeIds = [];
 var prgrmTmeDeleteTgtItems = [];
 var eduPssbDayWeekSelectedItems = [];
-
-var sareaViewngMaxAplyNope = 0;
-    init(); 
     
     function init() {
         prgrmTmeSelectedItems = [];
         prgrmTmeDeleteTgtItems = [];
-        sareaViewngMaxAplyNope = 0;
         $("#addRowBtn").show();
         $("#delRowBtn").show();
 
@@ -420,8 +444,6 @@ var sareaViewngMaxAplyNope = 0;
     }
     
     function fn_updateMvmnPrgrm(){
-        if(!($("#mvmnPrgrmUpdateForm").valid())) return;
-        if(!confirm("저장하시겠습니까?")) return;
 
         // 교육가능 요일 등록
         var monYn = ($("#monYn").is(":checked") ? "Y" : "N");
@@ -440,12 +462,39 @@ var sareaViewngMaxAplyNope = 0;
         $("#satYn").val(satYn);
         $("#sunYn").val(sunYn);
         
-        var eduTypeCd = $('#eduTypeCd').val();
+        if(!($("#mvmnPrgrmUpdateForm").valid())) return;
+        if(!confirm("저장하시겠습니까?")) return;
+        if(monYn == "N" && tuesYn == "N" && wedYn == "N" && thurYn == "N" && friYn == "N" && satYn == "N" && sunYn == "N"){
+            alert("교육가능요일을 선택하세요.");
+            return;
+        }
+        var bgngTmChk = true;
+        $('input[name=bgngTm]').each(function() {
+            if($(this).parent().parent().is(":visible")){
+                if($(this).val() == ""){
+                    bgngTmChk = false;
+                }
+            }
+        }); 
+        
+        var endTmChk = true;
+        $('input[name=endTm]').each(function() {
+            if($(this).parent().parent().is(":visible")){           
+                if($(this).val() == ""){
+                    endTmChk = false;
+                }
+            }
+        }); 
+        
+        if(!bgngTmChk || !endTmChk) {
+            alert("교육 시간표의 시작시간 또는 종료시간 입력은 필수 입니다.");
+            return;         
+        }
         var trgtCds = $('.trgtCds:checked').map(function(){ return $(this).val();}).get().join(",");
         var clsfCds = $('[name=clsfCds_2] option:selected').map(function(){ return $(this).val();}).get().join(",");
 
         var data =  $("#mvmnPrgrmUpdateForm").serialize();
-        data = data+"&eduTypeCd="+eduTypeCd+"&trgtCds="+trgtCds+"&clsfCds="+clsfCds;
+        data = data+"&trgtCds="+trgtCds+"&clsfCds="+clsfCds;
         if(displayWorkProgress()){
             $.ajax({
                 url : "/mng/prtpn/mvmnPrgrm/updateMvmnPrgrm.do",
@@ -496,40 +545,15 @@ var sareaViewngMaxAplyNope = 0;
             });
         }
     }
-    function fn_changeSareaId(item){
-        var getCodeUrl = "/mng/prtpn/eduClssRm/selectSareaEduTypeCd.do";
-        var url = getCodeUrl + "?sareaId=" + $(item).val();
-        if (displayWorkProgress()) {
-            $.ajax({
-                url: url,
-                type: 'POST',
-                cache: false,
-                success: function (data) {
-                    $("#eduTypeCd").val(data.eduTypeCd);
-                    $("#eduNope").val(data.sareaViewngMaxAplyNope);
-                    //교육관 최대 신청 인원수 세팅.
-                    sareaViewngMaxAplyNope = data.sareaViewngMaxAplyNope;
-                    closeWorkProgress();                    
-                }
-            });
-        }
-    }
-    
-    function fn_changeEduNope(item){
-        if(parseInt(sareaViewngMaxAplyNope) == 0){
-            return;         
-        }
-        if(parseInt($(item).val()) > 0 && parseInt($(item).val()) > parseInt(sareaViewngMaxAplyNope)){
-            alert("교육관 관람 최대 신청 인원수("+sareaViewngMaxAplyNope+"명)를 초과할 수 없습니다.");
-            $(item).val(sareaViewngMaxAplyNope);
-            return;
-        }
-    }
     
     function fn_changeOperFomCd(item){
         if($(item).val() == "197102"){
             $("#addRowBtn").hide();
             $("#delRowBtn").hide();
+            $("#mvmnPrgrmTmBody tr").each(function(i) { 
+                if($(this).find('[name=tmeId]').val() == '') $(this).remove();
+            });
+
         }else{
             $("#addRowBtn").show();
             $("#delRowBtn").show();
@@ -754,7 +778,7 @@ var sareaViewngMaxAplyNope = 0;
         var trCnt = $("#mvmnPrgrmTmBody").children().length;
         html += '<tr>                                                                                                                                                       '
         html += '    <td class="text-center v-middle">                                                                                                                      '
-        html += '        <input id="prgrmTmeSingleCheckbox" class="form-check-input" type="checkbox" value="" aria-label="선택" onchange="fn_changeSelectItem(this);">       '
+        html += '        <input id="prgrmTmeSingleCheckbox" name="tmeId" class="form-check-input" type="checkbox" value="" aria-label="선택" onchange="fn_changeSelectItem(this);">       '
         html += '    </td>                                                                                                                                                  '
         html += '    <td class="text-center v-middle idx">' + (trCnt+1) + '</td>                                                                                                '
         html += '    <td class="text-center v-middle">                                                                                                                      '
@@ -1058,6 +1082,41 @@ var sareaViewngMaxAplyNope = 0;
         }        
     }
     
+    $(function () {
+        init(); 
+        validForm();
+    })
+
+    function validForm() {
+        $("#mvmnPrgrmUpdateForm").validate({
+            onsubmit: false,
+            rules: {
+                eduSeCd: {required: true},
+                sareaId: {required: true},
+                operFomCd: {required: true},
+                eduYr: {required: true},
+                prgrmNm: {required: true},
+                eduNope: {required: true},
+                eduHrMnt: {required: true},
+                aplcntDgstfnSrvyid: {required: true},
+                stdntDgstfnSrvyid: {required: true},
+                eduTypeCd: {required: true}
+            },
+            messages: {
+                eduSeCd: {required: "교육구분을 선택해주십시오."},
+                sareaId: {required: "운영권역을 선택해주십시오."},
+                operFomCd: {required: "운영형식을 선택해주십시오."},
+                eduYr: {required: "교육년도를 선택해주십시오."},
+                prgrmNm: {required: "프로그램명을 입력해주십시오."},
+                eduNope: {required: "교육인원을 입력해주십시오."},
+                eduHrMnt: {required: "교육시간을 입력해주십시오."},
+                aplcntDgstfnSrvyid: {required: "신청자 만족도 설문을 선택해주십시오."},
+                stdntDgstfnSrvyid: {required: "학생 만족도 설문을 선택해주십시오."},
+                eduTypeCd: {required: "교육유형을 선택해주십시오."}
+            }
+        });
+
+    }    
     
     
 </script>

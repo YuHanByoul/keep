@@ -1,0 +1,137 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+
+<div layout:fragment="content">
+    <div class="table-view">
+        <div class="table-view-header">
+            <h3><span>[[${etcDta.ttl}]]</span></h3>
+            <dl>
+                <div class="list">
+                    <dt>국가</dt>
+                    <dd>[[${etcDta.nationNm}]]</dd>
+                </div>
+                <div class="list">
+                    <dt>등록일</dt>
+                    <dd>[[${#dates.format(etcDta.regDt, 'yyyy-MM-dd')}]]</dd>
+                </div>
+            </dl>
+            <dl>
+                <div class="list">
+                    <dt>홈페이지</dt>
+                    <dd><a th:href="${etcDta.hmpg}" class="url" target="_blank" title="새 창">[[${etcDta.hmpg}]]</a></dd>
+                </div>
+                <div class="list">
+                    <dt>위치</dt>
+                    <dd>[[${etcDta.pstn}]]</dd>
+                </div>
+            </dl>
+            <dl>
+                <div class="list">
+                    <dt>연락처</dt>
+                    <dd>[[${etcDta.cntct}]]</dd>
+                </div>
+                <div class="list">
+                    <dt>개장시간</dt>
+                    <dd>[[${etcDta.opnhr}]]</dd>
+                </div>
+            </dl>
+            <dl>
+                <div class="list">
+                    <dt>참가비</dt>
+                    <dd>[[${etcDta.etrfee}]]</dd>
+                </div>
+                <div class="list">
+                    <dt>체험프로그램</dt>
+                    <dd>[[${etcDta.exprnPrgrm}]]</dd>
+                </div>
+            </dl>
+            <dl>
+                <div class="list">
+                    <dt>첨부파일</dt>
+                    <dd>
+                        <div class="form-input-file">
+                            <ul th:if="${etcDta.atchFileList != null}">
+                                <th:block th:each="file : ${etcDta.atchFileList}">
+                                    <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}">
+                                        <span class="name">
+                                            <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                               th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                [[${file.orginlFileNm}]]
+                                            </a>
+                                        </span>
+                                    </li>
+                                </th:block>
+                            </ul>
+                        </div>
+                    </dd>
+                </div>
+            </dl>
+        </div>
+        <div class="table-view-body">
+            <div class="table-view-content">
+                <th:block th:utext="${#strings.replace(#strings.escapeXml(etcDta.cn),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></th:block>
+            </div>
+            <div class="opentype">
+                <a th:if="${@koglLicense.getInfo(etcDta.cpyrhtCd)}" th:href="${@koglLicense.getInfo(etcDta.cpyrhtCd).link}" target="_blank"><img th:src="${@koglLicense.getInfo(etcDta.cpyrhtCd).imageSrc}"></a>
+                <a th:if="${@koglLicense.getInfo(etcDta.cpyrhtCd)}" th:href="${@koglLicense.getInfo(etcDta.cpyrhtCd).link}" target="_blank"><th:block th:text="${@koglLicense.getInfo(etcDta.cpyrhtCd).desc}"></a>            
+<!--                 <a href="https://www.kogl.or.kr/info/licenseType4.do" target="_blank" title="새 창"> -->
+<!--                     <div class="thumb"><img src="images/front/opentype/opentype04.png" alt=""></div> -->
+<!--                     <p>본 저작물은 “공공누리” 제4유형:출처표시+상업적 이용금지+변경금지 조건에 따라 이용할 수 있습니다.</p> -->
+<!--                 </a> -->
+            </div>
+        </div>
+
+        <div class="btn-wrap">
+            <div class="center">
+                <button type="button" class="btn-medium btn-gray" onclick="goToList()">목록</button>
+            </div>
+        </div>
+
+        <div class="page-navigation">
+            <a th:onclick="|goToOtherDta(${etcDta.prevDtaid})|">
+                <dl>
+                    <dt>이전글</dt>
+                    <dd><span class="ellipsis">[[${etcDta.prevDtaTtl}]]</span></dd>
+                </dl>
+            </a>
+
+            <a th:onclick="|goToOtherDta(${etcDta.nextDtaid})|">
+                <dl>
+                    <dt>다음글</dt>
+                    <dd><span class="ellipsis">[[${etcDta.nextDtaTtl}]]</span>
+                    </dd>
+                </dl>
+            </a>
+        </div>
+
+    </div>
+
+    <form name="listForm" id="listForm">
+        <input type="hidden" name="searchType" id="searchType" th:value="${searchVo.searchType}">
+        <input type="hidden" name="searchKeyword" id="searchKeyword" th:value="${searchVo.searchKeyword}">
+        <input type="hidden" name="searchNationCd" id="searchNationCd" th:value="${searchVo.searchNationCd}">
+        <input type="hidden" name="orderField" id="orderField" th:value="${searchVo.orderField}">
+        <input type="hidden" name="rowPerPage" id="rowPerPage" th:value="${searchVo.rowPerPage}">
+        <input type="hidden" id="dtaid" name="dtaid" th:value="${searchVo.dtaid}">
+    </form>
+
+    <script th:inline="javascript">
+        let detailUrl = '/front/intro/envEduPlcyEtcDta/etcDtaDetail.html';
+        let listUrl = '/front/intro/envEduPlcyEtcDta/etcDtaList.html';
+
+        let goToList = () => {
+            let f = document.forms.listForm;
+            f.action = listUrl;
+            f.submit();
+        }
+        let goToOtherDta = (dtaid) => {
+            if(dtaid == null) return;
+            let f = document.forms.listForm;
+            f.action = detailUrl;
+            f.dtaid.value = dtaid;
+            f.submit();
+        }
+    </script>
+</div>

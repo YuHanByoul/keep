@@ -7,6 +7,8 @@
 	<div layout:fragment="content">
 	    <form id="mvmnAplyForm" name="mvmnAplyForm" th:action="@{/front/mvmnAply/mvmnAplyRegStep1.html}" >
 	        <input type="hidden" id="prgrmid" name="prgrmid" th:value="${mvmnAply.prgrmid}" />
+	        <input type="hidden" id="operFomCd" name="operFomCd" th:value="${mvmnAply.operFomCd}" />
+	        <input type="hidden" id="tmeid" name="tmeid"/>
 	        <input type="hidden" id="tmeSchdlid" name="tmeSchdlid"/>
 	        <div class="product-wrap sub-banner-swiper">
 	            <div class="thumb-swiper">
@@ -76,73 +78,138 @@
 	                        <a th:href="|javascript:downloadFileByFileid('${mvmnAply.eduIntrcnFileid}','${mvmnAply.eduIntrcnFileIdntfcKey}')|" class="btn-medium btn-outline-black btn-before-download">교육자료소개</a>
 	                    </div>
 	                </div>
-	                <div class="detail">
-	                    <dl>
-	                        <div class="list">
-	                            <dt>지역 선택</dt>
-	                            <dd>
-	                                <div class="form-input">
-				                        <select name="sareaSignguCd" id="sareaSignguCd" onchange="mvmnAplyDetail.fn_sareaSignguChange(this)">
-				                            <option value="">- 선택 -</option>
-				                            <th:block th:each="item : ${sareaSignguList}">
-				                                <option th:value="${item.sareaSignguCd}"><th:block th:text="${item.sareaSignguDesc}" /></option>
-				                            </th:block>
-				                        </select>
-	                                </div>
-	                            </dd>
-	                        </div>
-	                    </dl>	                
-	                    <dl>
-	                        <div class="list">
-	                            <dt>선택일</dt>
-	                            <dd>
-	                                <div class="form-input">
-	                                    <input type="date" datepicker="true">
-	                                </div>
-	                            </dd>
-	                        </div>
-	                    </dl>
-	                    <dl>
-	                        <div class="list">
-	                            <dt>교육회차</dt>
-	                            <dd>
-	                                <div id="tmeDataDiv" class="form-check-list flex-column" style="display:none;">
-			                            <th:block th:if="${mvmnAplyTmeList != 'null'}">
-			                                <th:block th:each="item : ${mvmnAplyTmeList}">
-			                                    <label class="inp j-start">
-			                                        <th:block th:if="${item.sttsDesc ne '마감'}">   
-			                                          <input name="tmeId" type="radio" th:value="${item.tmeid}"/>
-			                                        </th:block>
-			                                        <th:block th:if="${item.sttsDesc eq '마감'}">   
-			                                          <input name="tmeId" type="radio" th:value="${item.tmeid}" disabled/>
-			                                        </th:block>
-			                                        <b class="d-flex j-between normal-wrap" style="flex:1 1 100%;">
-			                                            <span class="al pr5"><th:block th:text="${item.tmeNm}"></th:block></span>
-			                                            <span class="ar pl5"><th:block th:text="|${item.sttsDesc}/대기 ${item.waitCnt}팀|"></th:block></span>
-			                                        </b>
-			                                    </label>
+	                <th:block th:if="${mvmnAply.operFomCd == '197101'}">
+		                <div class="detail">
+		                    <dl>
+		                        <div class="list">
+		                            <dt>지역 선택</dt>
+		                            <dd>
+		                                <div class="form-input">
+					                        <select name="sareaSignguCd" id="sareaSignguCd" onchange="mvmnAplyDetail.fn_sareaSignguChange(this)">
+					                            <option value="">- 선택 -</option>
+					                            <th:block th:each="item : ${sareaSignguList}">
+					                                <option th:value="${item.sareaSignguCd}"><th:block th:text="${item.sareaSignguDesc}" /></option>
+					                            </th:block>
+					                        </select>
+		                                </div>
+		                            </dd>
+		                        </div>
+		                    </dl>	                
+		                    <dl>
+		                        <div class="list">
+		                            <dt>선택일</dt>
+		                            <dd>
+		                                <div class="form-input">
+		                                    <input type="date" datepicker="true">
+		                                </div>
+		                            </dd>
+		                        </div>
+		                    </dl>
+		                    <dl>
+		                        <div class="list">
+		                            <dt>교육회차</dt>
+		                            <dd>
+		                                <div id="tmeDataDiv" class="form-check-list flex-column" style="display:none;">
+				                            <th:block th:if="${mvmnAplyTmeList != 'null'}">
+				                                <th:block th:each="item : ${mvmnAplyTmeList}">
+				                                    <label class="inp j-start">
+				                                        <th:block th:if="${item.sttsDesc ne '마감'}">   
+				                                          <input name="tmeId" type="radio" th:value="${item.tmeid}"/>
+				                                        </th:block>
+				                                        <th:block th:if="${item.sttsDesc eq '마감'}">   
+				                                          <input name="tmeId" type="radio" th:value="${item.tmeid}" disabled/>
+				                                        </th:block>
+				                                        <b class="d-flex j-between normal-wrap" style="flex:1 1 100%;">
+				                                            <span class="al pr5"><th:block th:text="${item.tmeNm}"></th:block></span>
+				                                            <span class="ar pl5"><th:block th:text="|${item.sttsDesc}/대기 ${item.waitCnt}팀|"></th:block></span>
+				                                        </b>
+				                                    </label>
+			                                    </th:block>
 		                                    </th:block>
-	                                    </th:block>
-	                                </div>
-	                                <div id="tmeBasicDiv" class="form-check-list flex-column" style="display:block;">
-                                        <b class="d-flex j-between normal-wrap" style="flex:1 1 100%;">
-                                            <span id="tmeBasicDivSpan" class="al pr5">지역을 선택해 주세요</span>
-                                        </b>
-	                                </div>
-	                            </dd>
-	                        </div>
-	                    </dl>
-	                    <dl>
-	                        <div class="list">
-	                            <dt></dt>
-	                            <dd>
-	                                <button type="button" class="btn-medium btn-green" onclick="mvmnAplyDetail.moveToRegForm()">신청</button>
-	                            </dd>
-	                        </div>
-	                    </dl>
-	                </div>
+		                                </div>
+		                                <div id="tmeBasicDiv" class="form-check-list flex-column" style="display:block;">
+	                                        <b class="d-flex j-between normal-wrap" style="flex:1 1 100%;">
+	                                            <span id="tmeBasicDivSpan" class="al pr5">지역을 선택해 주세요</span>
+	                                        </b>
+		                                </div>
+		                            </dd>
+		                        </div>
+		                    </dl>
+		                    <dl>
+		                        <div class="list">
+		                            <dt></dt>
+		                            <dd>
+		                                <button type="button" class="btn-medium btn-green" onclick="mvmnAplyDetail.moveToRegForm()">신청</button>
+		                            </dd>
+		                        </div>
+		                    </dl>
+		                </div>
+    	            </th:block>  
+                    <th:block th:if="${mvmnAply.operFomCd == '197102'}">
+                        <div class="detail">
+                            <dl>
+                                <div class="list">
+                                    <dt>지역 선택</dt>
+                                    <dd>
+                                        <div class="form-input">
+                                            <select name="sareaSignguCd" id="sareaSignguCd">
+                                                <option value="">- 선택 -</option>
+                                                <th:block th:each="item : ${sareaSignguList}">
+                                                    <option th:value="${item.sareaSignguCd}"><th:block th:text="${item.sareaSignguDesc}" /></option>
+                                                </th:block>
+                                            </select>
+                                        </div>
+                                    </dd>
+                                </div>
+                            </dl>       
+                        </div>                    
+                    </th:block>    	              
 	            </div>
 	        </div>
+	        <th:block th:if="${mvmnAply.operFomCd == '197102'}">
+	            <div class="table-col table-layout-auto">
+	                <table>
+	                    <caption>푸름이 이동환경교실 교육신청 - 신청, 교육요일, 교육일자, 교육회차, 상태, 대기팀</caption>
+	                    <thead>
+	                        <tr>
+	                            <th scope="col">신청</th>
+	                            <th scope="col">교육요일</th>
+	                            <th scope="col">교육일자</th>
+	                            <th scope="col">교육회차</th>
+	                            <th scope="col">상태</th>
+	                            <th scope="col">대기팀</th>
+	                        </tr>
+	                    </thead>
+	                    <tbody>
+	                        <th:block th:if="${mvmnAplyTmeList != 'null'}">
+                                <th:block th:each="item : ${mvmnAplyTmeList}">	                    
+			                        <tr class="tr-check">
+			                            <td>
+                                            <th:block th:if="${item.sttsDesc ne '마감'}">   
+                                              <label class="inp vm"><input name="tmeId" type="radio" th:value="${item.tmeid}" onchange="mvmnAplyDetail.fn_tmeidChange(this)"/></label>
+                                            </th:block>
+                                            <th:block th:if="${item.sttsDesc eq '마감'}">   
+                                              <label class="inp vm"><input name="tmeId" type="radio" th:value="${item.tmeid}" disabled/></label>
+                                            </th:block>			                            
+			                            </td>
+			                            <td><th:block th:text="${item.weekDesc}"/></td>
+			                            <td><th:block th:text="${item.deDesc}"/></td>
+			                            <td><th:block th:text="${item.tmeNm}"/></td>
+			                            <td><th:block th:text="${item.sttsDesc}"/></td>
+			                            <td><th:block th:text="|${item.waitCnt}팀|"/></td>
+			                        </tr>
+		                        </th:block>
+	                        </th:block>
+	                    </tbody>
+	                </table>
+	            </div>
+	
+	            <div class="btn-wrap">
+	                <div class="right">
+	                    <button type="button" class="btn-medium btn-green" onclick="mvmnAplyDetail.moveToRegForm()">신청</button>
+	                </div>
+	            </div>	        
+	        </th:block>
         </form>	        
         <div class="tab-content tab-sub dropDown">
             <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">상세정보</button>
@@ -152,16 +219,16 @@
                 <li class="tab"><button aria-controls="tab-subpanel03" id="tab-sub03" role="tab">동일 운영권역 교육 프로그램</button></li>
             </ul>
             <div id="tab-subpanel01" class="tabpanel active" role="tabpanel" aria-labelledby="tab-sub01">
-                <th:block th:text="${mvmnAply.eduExpln}"></th:block>
+                <p style="word-wrap: break-word;"><th:block th:text="${mvmnAply.eduExpln}"></th:block></p>
             </div>
             <div id="tab-subpanel02" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub02">
-                <th:block th:text="${mvmnAply.mttrat}"></th:block>
+                <p style="word-wrap: break-word;"><th:block th:text="${mvmnAply.mttrat}"></th:block></p>
             </div>
             <div id="tab-subpanel03" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub03">
                 <div class="pc-only">
                     <div class="table-col table-layout-auto">
                         <table>
-                            <caption>동일 교육관 교육 프로그램 - 프로그램, 교육대상, 교육관지역, 교육주제, 교육시간</caption>
+                            <caption>동일 운영권역 교육 프로그램 - 프로그램, 교육대상, 교육관지역, 교육주제, 교육시간</caption>
                             <thead>
                                 <tr>
                                     <th scope="col">프로그램</th>
@@ -177,12 +244,20 @@
 		                                <tr>
 		                                    <td class="al"><a th:href="|/front/mvmnAply/mvmnAplyDetailForm.html?prgrmid=${item.prgrmid}&sareaid=${item.sareaid}|" class="link url"><th:block th:text="${item.prgrmNm}"></th:block></a></td>
 		                                    <td><th:block th:text="${item.sareaNm}"></th:block></td>
-		                                    <td><th:block th:text="${item.clsfNm}"></td>
+		                                    <td><th:block th:text="${item.clsfNm}"></th:block></td>
 		                                    <td><th:block th:text="${item.operFomNm}"></th:block></td>
-		                                    <td><th:block th:text="|${item.eduHrMnt}분|"></td>
+		                                    <td><th:block th:text="|${item.eduHrMnt}분|"></th:block></td>
 		                                </tr>
 	                                </th:block>
 	                            </th:block>
+                                <th:block th:if="${mvmnAplyEduSareaList == 'null'}">
+                                    <tr>
+                                        <td class="nodata" colspan="8">
+                                            <p><span class="icon icon-notice bg-black9"></span>동일 운영권역 교육 프로그램이 없습니다.</p>
+                                        </td>
+                                    </tr>
+                               </th:block>
+	                            
                             </tbody>
                         </table>
                     </div>
@@ -206,7 +281,7 @@
 		                                        </div>
                                                 <div class="list">
                                                     <dt>교육주제</dt>
-                                                    <dd><th:block th:text="${item.clsfNm}"></dd>
+                                                    <dd><th:block th:text="${item.clsfNm}"></th:block></dd>
                                                 </div>
 		                                        <div class="list">
 		                                            <dt>운영형식</dt>
@@ -214,7 +289,7 @@
 		                                        </div>
 		                                        <div class="list">
 		                                            <dt>교육시간</dt>
-		                                            <dd><th:block th:text="|${item.eduHrMnt}분|"></dd>
+		                                            <dd><th:block th:text="|${item.eduHrMnt}분|"></th:block></dd>
 		                                        </div>
 		                                    </dl>
 	                                    </th:block>
@@ -237,17 +312,36 @@
 		<script src="/js/front/flatpickr.js"></script>
 		<script src="/js/front/flatpickr-locale-ko.js"></script>
 		<script th:inline="javascript">
-           $(function() {
-           	mvmnAplyDetail.validateForm();
-           	mvmnAplyDetail.fn_makeCalendarEvent();
-           });       
+        $(function() {
+        	mvmnAplyDetail.validateForm();
+        	mvmnAplyDetail.fn_makeCalendarEvent();
+        });       
+        /*<![CDATA[*/
+        var user = /*[[${user}]]*/null;
+        /*]]>*/
 		
         var mvmnAplyDetail = {			
 	        moveToList() {
 	            location.href = '/front/mvmnAply/mvmnAplyList.html';
 	        },
 	        moveToRegForm() {
-	        	$('#mvmnAplyForm').submit();
+                var usrType = user != null ? user.loginUserType : "";
+
+                if (usrType == 'I') {
+                    if($("#tmeid").val() == ''){
+                        alert("교육회차를 선택해 주세요.");
+                        return false;
+                    }
+                    if($("#sareaSignguCd").val() == ''){
+                        alert("지역을 선택해 주세요.");
+                        return false;
+                    }
+                	
+                    $('#mvmnAplyForm').submit();
+                }else{
+                    alert("기관회원만 신청할 수 있습니다.");
+                    return false;                    
+                }                
 	        },
 	        fn_sareaSignguChange(obj) {
 	        	if($(obj).val() != ""){
@@ -385,6 +479,7 @@
 	                                           datepicker.clear();
 	                                           return true;
 	                                       }else{
+	                                    	   $("#tmeid").val(result[0].tmeid);
 	                                    	   $("#tmeSchdlid").val(result[0].tmeSchdlid);
 	                                           $("input[name='tmeId']").each(function(){
 	                                               if($(this).val() == result[0].tmeid) $(this).prop("checked", true);
@@ -409,11 +504,16 @@
                       }
                   });		        	
 	        },
+	        fn_tmeidChange(obj) {
+	        	debugger;
+	        	$("#tmeid").val(obj.value);
+	        },
 	        validateForm() {
 	            $('#mvmnAplyForm').validate({
 	                rules: {
 	                	prgrmid: {required: true}
-	                    , tmeSchdlid: {required: true}
+	                  , tmeid: {required: true}
+	                    //, tmeSchdlid: {required: true}
 	                }
 	            });
 	        }

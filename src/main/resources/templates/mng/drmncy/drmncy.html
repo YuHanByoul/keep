@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/mng/mainLayout" 
+>
+
+<body>
+<div layout:fragment="content">
+<style>
+.hide{display:none;}
+</style>
+
+<!-- Page-body start -->
+  <div class="page-body">
+      <div class="row">
+      
+         <div class="col-12">
+          <form name="searchFrm" id="searchFrm" action="" onsubmit="return false;" class="card">
+             <!-- 필터 부분 -->
+                 <div class="card-block-small">
+                     <!-- 키워드 filter -->
+                     <div class="row">
+                         <div class="col-lg-3 mb-3">
+                             <div class="mb-0 form-group row">
+                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></span>
+                                 <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                 
+                                     <select name="searchType" id="searchType" class="form-select form-control ">
+                                        <option value="">- 전체 -</option>
+                                        <option value="id">아이디</option>
+                                        <option value="name">이름</option>
+                                        <option value="email">이메일</option>
+                                     </select>
+                                     <input type="text" name="searchKeyword" id="searchKeyword" class="form-control" aria-label="Text input with dropdown button">
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="col-lg-3 mb-3">
+                             <div class="mb-0 form-group row">
+                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>회원유형</strong></span>
+                                 <div class="col-sm-12">
+                                     <select id ="searchRoleCd" name="searchRoleCd" class="form-select form-select-sm form-control-sm">
+                                        <option value="">- 전체 -</option>
+                                        <option value="U">개인회원</option>
+                                        <option value="C">기관회원 </option>
+                                        <option value="A">관리자</option>
+                                     </select>
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="col-lg-3 mb-3">
+                             <div class="mb-0 form-group row">
+                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>가입일 - 검색시작일</strong></span>
+                                 <div class="col-sm-12">
+                                     <input class="form-control form-control-sm" type="date" id="searchStartDay" name="searchStartDay"/>
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="col-lg-3">
+                             <div class="mb-0 form-group row">
+                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>가입일 - 검색종료일</strong></span>
+                                 <div class="col-sm-12">
+                                     <input class="form-control form-control-sm" type="date" id="searchEndDay" name="searchEndDay"/>
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="col-lg-3 mb-3">
+                             <div class="mb-0 form-group row">
+                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>회원상태</strong></span>
+                                 <div class="col-sm-12">
+                                 
+                                     <select id="searchSttsCd" name="searchSttsCd" class="form-select form-select-sm form-control-sm">
+                                        <option value="">- 전체 -</option>
+                                        <option value="1">가입</option>
+                                        <option value="2">대기</option>
+                                        <option value="9">탈퇴</option>
+                                        <option value="99">계정잠김</option>
+                                     </select>
+                                     
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                     <!-- //키워드 filter -->
+                     <!-- 키워드 filter-btn -->
+                     <div class="mt-1 p-t-20 text-center border-top">
+                         <button class="btn btn-disabled m-r-5" onclick="fn_init()">초기화</button>
+                         <button class="btn btn-primary" onclick="fn_searchForm()">검색</button>
+                     </div>
+                 </div>
+           </form>
+           </div>
+           <!-- //필터 부분 -->
+           
+         <div class="col-12">
+           <div class="card">
+                <div class="row p-20 p-b-0">
+                    <div class="col-12 col-md-6 mb-2 mb-md-0">
+                        <h5><strong>휴면계정 검색 결과</strong></h5>
+                    </div>
+                </div>
+                <div class="card-block-small">
+                    <div class="dt-responsive table-responsive">
+                        <div  class="dataTables_wrapper dt-bootstrap4">
+                                <table id="jsGrid" class="table-responsive"></table>
+                                <div id="listPager" class="text-center"></div>
+                       </div>
+                    </div>
+                </div>
+                
+            </div>
+          </div>
+          <!-- Content Area -->
+          <div class="col-12">
+              <div id="contentPanel" style="display:none" class="card"></div>
+         </div>
+ 
+      </div>
+  </div>
+        
+  <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <script th:inline="javascript">
+
+  /*<![CDATA[*/ 
+     var userid = /*[[${param.userid}]]*/null;
+  /*]]>*/
+    var selectedItems = [];
+    var gridHelper1;         
+    $(function(){
+        gridHelper1 = new GridHelper('jsGrid','contentPanel');
+        writeJsGridData();
+    });
+     
+    function fn_searchForm(){
+        gridHelper1.resetListContent();
+    }
+    
+    function fn_init() {
+        $("#searchRoleCd").val('');
+        $("#searchSttsCd").val('');
+        $("#searchType").val('');
+        $("#searchKeyword").val('');
+        $("#searchStartDay").val('');
+        $("#searchEndDay").val('');
+    }
+        
+    function writeJsGridData(){
+        $("#jsGrid").jsGrid({
+            height: "auto",
+            width: "100%",
+            autoload: true,
+            sorting: true,
+            paging: true,
+            pagerContainer: "#listPager",
+            pagerFormat: "{first} {prev} {pages} {next} {last}",
+            pagePrevText: "이전",
+            pageNextText: "다음",
+            pageFirstText: " < 처음 ㅣ",
+            pageLastText: " | 마지막 >",
+            pageSize: 10,
+            pageButtonCount: 10,
+            pageLoading: true,
+            pageIndex: 1,
+            noDataContent: "데이터가 없습니다.",
+            
+            controller: {
+                loadData: function (filter) {
+                    var data = $.Deferred();
+                                            
+                    var formData = $('#searchFrm').serializeArray();
+                    var params = [
+                            {name: "pageNumber", value: filter.pageIndex},
+                            {name: "rowPerPage", value: filter.pageSize},
+                    ]
+                    
+                    if(filter.sortField != undefined){
+                        params.push({name: "orderField", value: filter.sortField});
+                        params.push({name: "orderDirection", value: filter.sortOrder});
+                    }else{
+                        params.push({name: "orderField", value: 'reg_dt'});
+                    }
+                    formData = formData.concat(params);
+                    
+                    $.ajax({
+                      type: "GET",
+                      contentType: "application/json; charset=utf-8",
+                      url: "/mng/drmncy/selectDrmncyList.do",
+                      dataType: "json",
+                      data: formData,
+                    }).done(function(response){
+                        var da = {
+                                data : escapeGridData(response.list)
+                                ,itemsCount : response.totalCount
+                            };
+                      data.resolve(da);
+                    });
+                    return data.promise();
+                },
+            },
+            fields: [
+                 { name: 'userid', css: 'hide' }
+                ,{ name: 'nm', css: 'hide' }
+                ,{ title: 'No.'   ,name: 'rowNumber' ,type: "number", width : "80", align:"center",  sorting :false }
+                ,{ title: '아이디'  ,name: 'acnt'      ,type: "text" , width: "200" 
+                    ,itemTemplate: function(value, item){ return (item.blcklstYn=='Y')? value+"&nbsp;&nbsp;<span class='label label-inverse'>balcklist</span>" :value;}
+                 }
+                ,{ title: '이름'   ,name: 'nm'    ,type: "text" , width: "100" ,align:"center"}
+                ,{ title: '이메일'  ,name: 'eml'   ,type: "text" , width: "200" ,align:"center"}
+                ,{ title: '회원유형' ,name: 'rolecd' ,type: "text" , width: "100", align:"center" 
+                	,itemTemplate: function(value, item){ if(value=='A'){return "관리자";}else if(value=='C'){return "기관회원";}else{return "개인회원";}}
+                 }
+                ,{ title: '회원상태'   ,name: 'sttsCd' ,type: "text" , align:"center"
+                	,itemTemplate: function(value, item){ if(value=='1'){return "가입";}else if(value=='2'){return "대기";}else if(value=='9'){return "탈퇴";}else{return "계정잠김";}} 
+                 }
+                ,{ title: '최종로그인'  ,name: 'lgnDt' ,type: "text" , width: "120", align:"center" 
+                	,itemTemplate: function(value, item){return value.substring(0,10)}
+                 }
+                ,{ title: '휴면계정전환일'  ,name: 'regDt' ,type: "text" , width: "120", align:"center" 
+                	,itemTemplate: function(value, item){return value.substring(0,10)}
+                 }
+                ,{ title: '계정삭제일'  ,name: 'delDt' ,type: "text" , width: "120", align:"center" 
+                	,itemTemplate: function(value, item){return value.substring(0,10)}
+                 }
+            ],
+            onPageChanged: function(args) {
+                selectedItems = [];
+            }
+        });
+    }
+</script>
+</div> 
+</body>
+</html>

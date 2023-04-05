@@ -890,38 +890,40 @@
     <!-- 컨설팅관리 신청정보 조회 -->
     <select id="selectAplyInfo" parameterType="front.dsgnMngVo" resultType="front.dsgnMngVo">
         /* front.DsgnMngDao.selectAplyInfo*/
-            SELECT
-                E.INST_NM
-              , E.INST_TYPE_CD
-              , E.INSTID
-              , D.USERID
-              , D.NM    AS USER_NM
-              , TYPE_CD.CD_NM    AS INST_TYPE_CD_NM
-              , E.TELNO    AS PIC_TELNO
-              , D.NM
-              , D.ACNT
-              , CONCAT(D.NM,'(',D.ACNT,')') AS INST_PIC_NM
-              , D.MOBLPHON    AS PIC_MOBLPHON
-              , D.EML    AS PIC_EML
-              , E.ADDR
-              , E.ADDR_DTL
-              , E.ZIP
-              , CONCAT(E.ADDR,' ',E.ADDR_DTL) AS ADDR_ALL
-              , B.CNSLTNG_KND_CD
-              , A.PRGRM_NM
-              , B.HOPE_DE1
-              , B.HOPE_DE1_AM_PM_CD
-              , B.HOPE_DE2
-              , B.HOPE_DE2_AM_PM_CD
-              , B.PRGRM
-              , B.LDR
-              , B.ETC
-              , B.FILEGRPID
-              , B.STTS_CD
-              , B.CNSLTNGID
-              , A.PRGRMID
-              , B.SRVYID
-              , SRVY.QESTNRID
+        SELECT
+            A.PRGRMID
+          , B.SRVYID
+          , E.INST_NM
+          , A.PRGRM_NM
+          , E.INST_TYPE_CD
+          , E.INSTID
+          , D.USERID
+          , D.NM    AS USER_NM
+          , TYPE_CD.CD_NM    AS INST_TYPE_CD_NM
+          , E.TELNO    AS PIC_TELNO
+          , D.NM
+          , D.ACNT
+          , CONCAT(D.NM,'(',D.ACNT,')') AS INST_PIC_NM
+          , D.MOBLPHON    AS PIC_MOBLPHON
+          , D.EML    AS PIC_EML
+          , E.ADDR
+          , E.ADDR_DTL
+          , E.ZIP
+          , CONCAT(E.ADDR,' ',E.ADDR_DTL) AS ADDR_ALL
+          , B.CNSLTNG_KND_CD
+          , A.PRGRM_NM
+          , B.HOPE_DE1
+          , B.HOPE_DE1_AM_PM_CD
+          , B.HOPE_DE2
+          , B.HOPE_DE2_AM_PM_CD
+          , B.PRGRM
+          , B.LDR
+          , B.ETC
+          , B.FILEGRPID
+          , B.STTS_CD
+          , B.CNSLTNGID
+          , SRVY.QESTNRID
+          , F.SBMSNID
         FROM
             TB_ASS_PRGRM A
         INNER JOIN
@@ -929,14 +931,16 @@
         LEFT OUTER JOIN TB_CMM_SRVY SRVY ON B.SRVYID = SRVY.SRVYID
         LEFT OUTER JOIN
             TB_ASS_CNSLTNG_RSLT C ON A.CNSLTNGID = C.CNSLTNGID
-        INNER JOIN
+        LEFT OUTER JOIN
             TB_CMM_USER D ON A.APLCNTID = D.USERID
-        INNER JOIN
+        LEFT OUTER JOIN
             TB_CMM_INST E ON A.INSTID = E.INSTID
         LEFT OUTER JOIN
             TB_CMM_CD TYPE_CD ON E.INST_TYPE_CD = TYPE_CD.CD
         LEFT OUTER JOIN
             TB_CMM_CD CD ON E.INST_TYPE_CD = CD.CD
+        LEFT OUTER JOIN TB_CMM_SRVY_SBMSN F ON A.CNSLTNGID = F.CNSLTNGID
+        WHERE 1=1
         AND A.PRGRMID = #{prgrmid}
         AND A.CNSLTNGID = #{cnsltngid}
     </select>
@@ -1035,9 +1039,26 @@
     <!-- 컨설팅신청 삭제 -->
     <delete id="deleteCnsltngAply" parameterType="front.dsgnMngVo">
         /* front.DsgnMngDao.deleteCnsltngAply*/
-        DELETE FROM TB_ASS_CNSLTNG SET
+        DELETE FROM TB_ASS_CNSLTNG
         WHERE CNSLTNGID = #{cnsltngid}
     </delete>
+
+    <!-- 설문응답 목록 조회 -->
+    <select id="selectSrvyAnsList" parameterType="front.dsgnMngVo" resultType="QitemVo">
+        SELECT
+            B.QITEMID      /*문항ID*/
+          , B.ANS          /*답변*/
+          , B.ANS_DSCRP    /*답변_서술형*/
+          , B.SCALE        /*척도*/
+          , B.SCR          /*점수*/
+        FROM
+            TB_CMM_SRVY_SBMSN A
+        LEFT OUTER JOIN
+            TB_CMM_SRVY_SBMSN_ANS B ON A.SBMSNID = B.SBMSNID
+        WHERE
+            A.CNSLTNGID = #{cnsltngid}
+    </select>
+
 
 
 </mapper>

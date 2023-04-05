@@ -75,7 +75,11 @@ public class SpcltyDtaVo extends ParentRequestVo {
 
     private String clsfCd;
 
+    @NotEmpty(message = "저작권 종류를 선택해 주십시오.")
+    private String cpyrhtCd;
+
     /* 등록/수정용 파라미터*/
+    @NotEmpty(message = "분류를 선택해 주십시오.")
     private String[] clsfCds; /*228*/
 
     /* 검색용 파라미터 */

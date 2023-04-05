@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.front.dsgnMng.model.DsgnMngDao;
 import com.kbrainc.plum.front.dsgnMng.model.DsgnMngVo;
+import com.kbrainc.plum.mng.qestnr.model.QitemVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
@@ -444,6 +445,21 @@ public class DsgnMngServiceImpl extends PlumAbstractServiceImpl implements DsgnM
 	@Override
 	public int deleteCnsltngAply(DsgnMngVo dsgnMngVo) throws Exception {
 		return dsgnMngDao.deleteCnsltngAply(dsgnMngVo);
+	}
+
+	/**
+	* (컨설팅)설문 응답 목록 조회
+	*
+	* @Title : selectSrvyAnsList
+	* @Description : (컨설팅)설문 응답 목록 조회
+	* @param dsgnMngVo
+	* @return
+	* @throws Exception
+	* @return List<QitemVo>
+	*/
+	@Override
+	public List<QitemVo> selectSrvyAnsList(DsgnMngVo dsgnMngVo) throws Exception{
+		return dsgnMngDao.selectSrvyAnsList(dsgnMngVo);
 	}
 
 

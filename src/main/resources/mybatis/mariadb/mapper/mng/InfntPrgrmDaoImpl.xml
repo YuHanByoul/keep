@@ -59,11 +59,11 @@
             <if test="searchClssrmId != null and searchClssrmId != ''">
             AND A.CLSSRMID = #{searchClssrmId}
             </if>
-            <if test="searchClsfCd_1 != null and searchClsfCd_1 != '' and searchClsfCd_1 != '전체'">
-            AND F.UPPR_CD = #{searchClsfCd_1}
+            <if test="searchClsfCd1 != null and searchClsfCd1 != '' and searchClsfCd1 != '전체'">
+            AND F.UPPR_CD = #{searchClsfCd1}
             </if>            
-            <if test="searchClsfCd_2 != null and searchClsfCd_2 != '' and searchClsfCd_2 != '전체'">
-            AND C.CLSF_CD = #{searchClsfCd_2}
+            <if test="searchClsfCd2 != null and searchClsfCd2 != '' and searchClsfCd2 != '전체'">
+            AND C.CLSF_CD = #{searchClsfCd2}
             </if>
             <if test="searchRcptMthdCd != null and searchRcptMthdCd != ''">
             AND A.RCPT_MTHD_CD = #{searchRcptMthdCd}
@@ -161,8 +161,8 @@
             , RCPT_MTHD_CD
             , EDU_EXPLN
             , MTTRAT
-            , EDU_INTRCN_FILEID
-            , EDU_PHOTO_FILEID
+            , #{eduIntrcnFileid}
+            , #{eduPhotoFileid}
             , MON_YN
             , TUES_YN
             , WED_YN
@@ -532,4 +532,23 @@
         FROM TB_EDU_INFNT_PRGRM A
        WHERE A.RCPT_MTHD_CD = #{rcptMthdCd}
     </select>     
+    
+    <!-- 교육프로그램 관리 복사대상 파일 상세조회 -->
+    <select id="selectInfntCopyPrgrmFileInfo" parameterType="InfntPrgrmVo" resultType="InfntPrgrmVo"> 
+        /* InfntPrgrmDao.selectInfntPrgrmInfo */
+        SELECT 
+              A.PRGRMID
+            , A.EDU_INTRCN_FILEID
+            , B.FILEGRPID EDU_INTRCN_FILEGRPID
+            , B.FILE_IDNTFC_KEY EDU_INTRCN_FILE_IDNTFC_KEY
+            , B.ORGINL_FILE_NM EDU_INTRCN_ORGINL_FILE_NM
+            , A.EDU_PHOTO_FILEID
+            , C.FILEGRPID EDU_PHOTO_FILEGRPID
+            , C.FILE_IDNTFC_KEY EDU_PHOTO_FILE_IDNTFC_KEY
+            , C.ORGINL_FILE_NM EDU_PHOTO_ORGINL_FILE_NM
+            FROM TB_EDU_INFNT_PRGRM A
+            LEFT OUTER JOIN TB_CMM_FILE B ON A.EDU_INTRCN_FILEID = B.FILEID       
+            LEFT OUTER JOIN TB_CMM_FILE C ON A.EDU_PHOTO_FILEID = C.FILEID            
+       WHERE A.PRGRMID = #{copyPrgrmId}
+    </select>    
 </mapper>

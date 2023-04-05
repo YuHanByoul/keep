@@ -122,6 +122,18 @@ public interface MvmnAplyDao {
     public int insertMvmnAply(MvmnAplyVo mvmnAplyVo) throws Exception;    
 
     /**
+     * 푸름이 이동환경교실 교육신청 회차일정 아이디 등록 
+     *
+     * @Title : insertMvmnAplySchdl
+     * @Description : 푸름이 이동환경교실 교육신청 회차일정 아이디 등록 
+     * @param mvmnAplyVo
+     * @return
+     * @throws Exception
+     * @return int
+     */
+    public int insertMvmnAplySchdl(MvmnAplyVo mvmnAplyVo) throws Exception;
+    
+    /**
      * 푸름이 이동환경교실 교육신청 대상등록
      *
      * @Title : insertTrgtCd

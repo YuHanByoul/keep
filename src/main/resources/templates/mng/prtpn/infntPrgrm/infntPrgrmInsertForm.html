@@ -89,10 +89,10 @@
              </div>     
              <div class="row">                                           
                  <div class="col-lg-6 mb-3">
-                     <div class="col-lg-6 mb-3">
+                     <div class="mb-0 form-group required">
                          <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육정원(명)</strong></label>
                          <div class="col-sm-12">
-                             <input type="text" class="form-control form-control-sm" name="eduNope" id="eduNope" placeholder="" onchange="fn_changeEduNope(this);">
+                             <input type="text" class="form-control form-control-sm" name="eduNope" id="eduNope" placeholder="" onchange="fn_changeEduNope(this);" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');">
                              <span class="messages"></span>
                          </div>
                      </div>
@@ -101,7 +101,7 @@
                      <div class="mb-0 form-group required">                     
                           <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육시간(분)</strong></label>
                          <div class="col-sm-12">
-                             <input type="text" class="form-control form-control-sm" name="eduHrMnt" id="eduHrMnt" placeholder="">
+                             <input type="text" class="form-control form-control-sm" name="eduHrMnt" id="eduHrMnt" placeholder="" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');">
                              <span class="messages"></span>
                          </div>
                      </div>
@@ -112,7 +112,35 @@
                  <div class="col-sm-12">
                       <span id="rcptMthdCd" name="rcptMthdCd" kattr:radio_code="rcptMthdCd" grpCd="156" selectedCd="156101" isAdmin="true">
                   </div>     
-             </div>  
+             </div>
+             <div class="row">
+                 <div class="col-lg-6 mb-3">                 
+                     <div class="mb-0 form-group required">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="aplcntDgstfnSrvyid"><strong>신청자 만족도 설문</strong></label>
+                         <div class="col-sm-12">
+                             <select name="aplcntDgstfnSrvyid" id="aplcntDgstfnSrvyid" class="form-select form-select-sm form-control-sm">
+                                 <option value="">- 선택 -</option>
+                                 <th:block th:each="item : ${aplcntDgstfnSrvyList}">
+                                     <option th:value="${item.srvyid}"><th:block th:text="${item.srvyNm}" /></option>
+                                 </th:block>
+                             </select>
+                         </div>
+                     </div>
+                 </div>                     
+                 <div class="col-lg-6 mb-3">    
+                     <div class="mb-0 form-group required">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="stdntDgstfnSrvyid"><strong>학습자 만족도 설문</strong></label>
+                         <div class="col-sm-12">
+                             <select name="stdntDgstfnSrvyid" id="stdntDgstfnSrvyid" class="form-select form-select-sm form-control-sm">
+                                 <option value="">- 선택 -</option>
+                                 <th:block th:each="item : ${stdntDgstfnSrvyList}">
+                                     <option th:value="${item.srvyid}"><th:block th:text="${item.srvyNm}" /></option>
+                                 </th:block>
+                             </select>
+                         </div>
+                     </div>
+                 </div>
+             </div>               
              <div class="row form-group mb-3">    
                  <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="eduExpln"><strong>교육설명</strong></label>
                  <div class="col-sm-12">
@@ -395,7 +423,7 @@
 var prgrmTmeSelectedItems = [];
 var eduPssbDayWeekSelectedItems = [];
 var clssrmViewngMaxAplyNope = 0;
-    init(); 
+
 	function init() {
 		prgrmTmeSelectedItems = [];
 		clssrmViewngMaxAplyNope = 0;
@@ -403,9 +431,6 @@ var clssrmViewngMaxAplyNope = 0;
 	}
 	
     function fn_insertInfntPrgrm(){
-        if(!($("#infntPrgrmInsertForm").valid())) return;
-        if(!confirm("저장하시겠습니까?")) return;
-
         // 교육가능 요일 등록
         var monYn = ($("#monYn").is(":checked") ? "Y" : "N");
         var tuesYn = ($("#tuesYn").is(":checked") ? "Y" : "N");
@@ -422,6 +447,32 @@ var clssrmViewngMaxAplyNope = 0;
         $("#friYn").val(friYn);
         $("#satYn").val(satYn);
         $("#sunYn").val(sunYn);
+        
+        if(!($("#infntPrgrmInsertForm").valid())) return;
+        if(!confirm("저장하시겠습니까?")) return;
+        
+        if(monYn == "N" && tuesYn == "N" && wedYn == "N" && thurYn == "N" && friYn == "N" && satYn == "N" && sunYn == "N"){
+        	alert("교육가능요일을 선택하세요.");
+        	return;
+        }
+        var bgngTmChk = true;
+        $('input[name=bgngTm]').each(function() { 
+            if($(this).val() == ""){
+            	bgngTmChk = false;
+            }   
+        }); 
+        
+        var endTmChk = true;
+        $('input[name=endTm]').each(function() { 
+            if($(this).val() == ""){
+            	endTmChk = false;
+            }   
+        }); 
+        
+        if(!bgngTmChk || !endTmChk) {
+            alert("교육 시간표의 시작시간 또는 종료시간 입력은 필수 입니다.");
+            return;        	
+        }
         var eduTypeCd = $('#eduTypeCd').val();
         var trgtCds = $('.trgtCds:checked').map(function(){ return $(this).val();}).get().join(",");
         var clsfCds = $('[name=clsfCds_2] option:selected').map(function(){ return $(this).val();}).get().join(",");
@@ -943,7 +994,37 @@ var clssrmViewngMaxAplyNope = 0;
             $("#infntPrgrmTmBody").find('[name=tmeSunYn]').prop("checked", false);
         }        
     }
-    
+    $(function () {
+        init(); 
+        validForm();
+    })
+
+    function validForm() {
+        $("#infntPrgrmInsertForm").validate({
+            onsubmit: false,
+            rules: {
+            	clssrmId: {required: true},
+            	eduYr: {required: true},
+            	prgrmNm: {required: true},
+            	eduNope: {required: true},
+            	eduHrMnt: {required: true},
+            	aplcntDgstfnSrvyid: {required: true},
+            	stdntDgstfnSrvyid: {required: true},
+            	eduTypeCd: {required: true}
+            },
+            messages: {
+            	clssrmId: {required: "교육관을 선택해주십시오."},
+            	eduYr: {required: "교육년도를 선택해주십시오."},
+            	prgrmNm: {required: "프로그램명을 입력해주십시오."},
+            	eduNope: {required: "교육인원을 입력해주십시오."},
+            	eduHrMnt: {required: "교육시간을 입력해주십시오."},
+            	aplcntDgstfnSrvyid: {required: "신청자 만족도 설문을 선택해주십시오."},
+            	stdntDgstfnSrvyid: {required: "학생 만족도 설문을 선택해주십시오."},
+            	eduTypeCd: {required: "교육유형을 선택해주십시오."}
+            }
+        });
+
+    }    
     
     
 </script>

@@ -1,15 +1,24 @@
 package com.kbrainc.plum.mng.prtpn.infntPrgrm.service;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kbrainc.plum.cmm.file.model.FileDao;
+import com.kbrainc.plum.cmm.file.model.FileGrpDao;
+import com.kbrainc.plum.cmm.file.model.FileGrpVo;
+import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.prtpn.infntPrgrm.model.InfntPrgrmDao;
 import com.kbrainc.plum.mng.prtpn.infntPrgrm.model.InfntPrgrmVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+import com.kbrainc.plum.rte.util.CommonUtil;
 
 /**
 * 유아환경교육 -> 교육프로그램관리 서비스 구현 클래스
@@ -32,6 +41,11 @@ public class InfntPrgrmServiceImpl extends PlumAbstractServiceImpl implements In
     @Autowired
     private InfntPrgrmDao infntPrgrmDao;
     
+    @Autowired
+    private FileDao fileDao;
+
+    @Autowired
+    private FileGrpDao fileGrpDao;    
     /**
     * 교육프로그램관리 게시글 목록 조회
     *
@@ -81,6 +95,22 @@ public class InfntPrgrmServiceImpl extends PlumAbstractServiceImpl implements In
         infntPrgrmVo.setUser(userVo);
         for(String copyPrgrmId : copyPrgrmIds) {
           infntPrgrmVo.setCopyPrgrmId(copyPrgrmId);
+          InfntPrgrmVo infntCopyPrgrmFileVo = infntPrgrmDao.selectInfntCopyPrgrmFileInfo(infntPrgrmVo);
+          
+          FileGrpVo eduIntrcnFileGrpVo = new FileGrpVo();
+          eduIntrcnFileGrpVo.setFilegrpid(Integer.parseInt(infntCopyPrgrmFileVo.getEduIntrcnFilegrpid()));
+          FileVo eduIntrcnFileInfo = fileDao.selectFileInfo(eduIntrcnFileGrpVo);
+          copyFile(userVo, eduIntrcnFileInfo, "eduIntrcn_file");
+
+          infntPrgrmVo.setEduIntrcnFileid(eduIntrcnFileInfo.getFilegrpid());
+          
+          FileGrpVo eduPhotoFileGrpVo = new FileGrpVo();
+          eduPhotoFileGrpVo.setFilegrpid(Integer.parseInt(infntCopyPrgrmFileVo.getEduPhotoFilegrpid()));
+          FileVo eduPhotoFileInfo = fileDao.selectFileInfo(eduPhotoFileGrpVo);
+          copyFile(userVo, eduPhotoFileInfo, "eduPhotoFile_file");
+          
+          infntPrgrmVo.setEduPhotoFileid(eduPhotoFileInfo.getFilegrpid());
+      
           retVal += infntPrgrmDao.insertInfntPrgrmCopy(infntPrgrmVo);
           retVal += infntPrgrmDao.insertInfntPrgrmClsfMapngCopy(infntPrgrmVo);
           retVal += infntPrgrmDao.insertInfntPrgrmTrgtMapngCopy(infntPrgrmVo);
@@ -199,4 +229,32 @@ public class InfntPrgrmServiceImpl extends PlumAbstractServiceImpl implements In
     public List<InfntPrgrmVo> selectPrgrmSettingList(String rcptMthdCd) throws Exception {
         return infntPrgrmDao.selectPrgrmSettingList(rcptMthdCd);
     }    
+    
+    private void copyFile(UserVo userVo, FileVo fileVo, String filegrpNm) throws Exception {
+        /* 파일 그룹 생성 */
+        FileGrpVo fileGrpVo = new FileGrpVo();
+        fileGrpVo.setFilegrpNm(filegrpNm);
+        Integer rgtrid = userVo.getUserid() != null ? Integer.parseInt(userVo.getUserid()) : null;
+        fileGrpVo.setRgtrid(rgtrid);
+        fileGrpDao.newFileGrp(fileGrpVo);
+
+        /* 파일 생성 */
+        String fileNm = fileVo.getOrginlFileNm();
+        String saveFileNm = fileVo.getSaveFileNm();
+        UUID uuid = UUID.randomUUID();
+        String copyFileNm = uuid + "_" + fileNm;
+        String fileExt = fileNm.substring(fileNm.lastIndexOf("."));
+
+        fileVo.setFilegrpid(fileGrpVo.getFilegrpid());
+        fileVo.setFileExtsn(fileExt);
+        fileVo.setRgtrid(fileGrpVo.getRgtrid());
+        fileVo.setFileIdntfcKey(CommonUtil.getUUIdGnrBean().getNextBigDecimalId().toString());
+        fileVo.setSaveFileNm(copyFileNm);
+
+        fileDao.addFile(fileVo);
+
+        File source = new File(fileVo.getFilePath() + "/" + saveFileNm);
+        File target = new File(fileVo.getFilePath() + "/" + copyFileNm);
+        Files.copy(source.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
+    }      
 }
