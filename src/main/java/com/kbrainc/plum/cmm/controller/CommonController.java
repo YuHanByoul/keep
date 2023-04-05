@@ -163,6 +163,7 @@ public class CommonController {
             } else {
                 PstVo pstVo = new PstVo();
                 pstVo.setUser(user);
+                pstVo.setSite(site);
                 pstVo.setRowPerPage(6);
                 pstVo.setBbsid(1);
                 pstVo.setOrderField("REG_DT");
@@ -249,6 +250,7 @@ public class CommonController {
         } else { // 사용자 사이트
             pstVo = new PstVo();
             pstVo.setUser(user);
+            pstVo.setSite(site);
             pstVo.setRowPerPage(6);
             pstVo.setBbsid(1);
             pstVo.setOrderField("REG_DT");
