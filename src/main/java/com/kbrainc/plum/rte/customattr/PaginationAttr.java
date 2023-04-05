@@ -81,8 +81,8 @@ public class PaginationAttr extends AbstractAttributeTagProcessor {
 
             List<ParentRequestVo> list = (List<ParentRequestVo>) request.getAttribute("list");
 
-            if (isAdmin.equals("true")) {
-                result.append(adminPaginationHtml(list, pageCount, onclick));
+            if(isAdmin.equals("true")) {
+                result.append(adminPaginationHtml(list,pageCount,onclick));
             } else {
                 result.append(frontPaginationHtml(list, pageCount, onclick));
             }
@@ -124,8 +124,8 @@ public class PaginationAttr extends AbstractAttributeTagProcessor {
             if (pageNumber > 1) {
                 result.append(MessageFormat.format(previousPageTag, new Object[]{onclick, Integer.toString(pageNumber - 1), ""}));
             }/* else {
-                     result.append(MessageFormat.format(previousPageTag, new Object[] { "", 1, "disabled" }));
-                  }*/
+         			result.append(MessageFormat.format(previousPageTag, new Object[] { "", 1, "disabled" }));
+         		 }*/
 
             for (int i = firstPageNum; i <= lastPageNum; i++) {
                 if (i == pageNumber) {
@@ -138,8 +138,8 @@ public class PaginationAttr extends AbstractAttributeTagProcessor {
             if (pageNumber < totalPage) {
                 result.append(MessageFormat.format(nextPageTag, new Object[]{onclick, Integer.toString(pageNumber + 1), ""}));
             }/* else {
-                     result.append(MessageFormat.format(nextPageTag, new Object[] { "", totalPage, "disabled" }));
-                  }*/
+         			result.append(MessageFormat.format(nextPageTag, new Object[] { "", totalPage, "disabled" }));
+         		 }*/
         }
 
         result.append("</ul>");
@@ -157,12 +157,12 @@ public class PaginationAttr extends AbstractAttributeTagProcessor {
             int totalPage = list.get(0).getTotalPage();
             int pageNumber = list.get(0).getPageNumber();
 
-            String firstPageTag = "<button type=\"button\" title=\"처음\" class=\"{0}\" onclick=\"{1}\" {2}></button>";
-            String previousPageTag = "<button type=\"button\" title=\"이전\" class=\"{0}\" onclick=\"{1}\" {2}></button>";
+            String firstPageTag = "<button type=\"button\" title=\"처음\" class=\"{0}\" onclick=\"{1}\"></button>";
+            String previousPageTag = "<button type=\"button\" title=\"이전\" class=\"{0}\" onclick=\"{1}\"></button>";
             String currentPageTag = "<button type=\"button\" class=\"active\">{0}</button>";
             String otherPageTag = "<button type=\"button\" onclick=\"{0}\">{1}</button>";
-            String nextPageTag = "<button type=\"button\" title=\"다음\" class=\"{0}\" onclick=\"{1}\" {2}></button>";
-            String lastPageTag = "<button type=\"button\" title=\"마지막\" class=\"{0}\" onclick=\"{1}\" {2}></button>";
+            String nextPageTag = "<button type=\"button\" title=\"다음\" class=\"{0}\" onclick=\"{1}\"></button>";
+            String lastPageTag = "<button type=\"button\" title=\"마지막\" class=\"{0}\" onclick=\"{1}\"></button>";
 
             if (totalPage < pageNumber) {
                 pageNumber = totalPage;
@@ -175,19 +175,23 @@ public class PaginationAttr extends AbstractAttributeTagProcessor {
                 lastPageNum = totalPage;
             }
 
-            result.append(MessageFormat.format(firstPageTag, new Object[]{"first", onclick + "(1)", pageNumber > 1 ? "" : "disabled"}));
-            result.append(MessageFormat.format(previousPageTag, new Object[]{"prev", onclick + "(" + (pageNumber - 1) + ")", pageNumber > 1 ? "" : "disabled"}));
+            if (pageNumber > 1) {
+                result.append(MessageFormat.format(firstPageTag, new Object[]{"first", onclick + "(1)"}));
+                result.append(MessageFormat.format(previousPageTag, new Object[]{"prev", onclick + "(" + (pageNumber - 1) + ")"}));
+            }
 
             for (int i = firstPageNum; i <= lastPageNum; i++) {
                 if (i == pageNumber) {
                     result.append(MessageFormat.format(currentPageTag, new Object[]{Integer.toString(i)}));
                 } else {
-                    result.append(MessageFormat.format(otherPageTag, new Object[]{onclick + "(" + i + ")", Integer.toString(i)}));
+                    result.append(MessageFormat.format(otherPageTag, new Object[]{onclick +"("+i+")", Integer.toString(i)}));
                 }
             }
 
-            result.append(MessageFormat.format(nextPageTag, new Object[]{"next", onclick + "(" + (pageNumber + 1) + ")", pageNumber < totalPage ? "" : "disabled"}));
-            result.append(MessageFormat.format(lastPageTag, new Object[]{"last", onclick + "(" + totalPage + ")", pageNumber < totalPage ? "" : "disabled"}));
+            if (pageNumber < totalPage) {
+                result.append(MessageFormat.format(nextPageTag, new Object[]{"next", onclick + "(" + (pageNumber + 1) + ")"}));
+                result.append(MessageFormat.format(lastPageTag, new Object[]{"last", onclick + "(" + totalPage + ")"}));
+            }
         }
         result.append("</div>");
         return result.toString();
