@@ -28,6 +28,7 @@ import com.kbrainc.plum.mng.prtpn.infntSchdl.service.InfntSchdlService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.util.DateTimeUtil;
 
 /**
  * 유아환경교육 -> 교육일정관리 컨트롤러 클래스
@@ -67,7 +68,7 @@ public class InfntSchdlController {
         EduClssRmVo eduClssRmVo = new EduClssRmVo();
         model.addAttribute("clssList", eduClssRmService.selectEduClssRmList(eduClssRmVo));
 
-        int curYear = 2022;
+        int curYear = Integer.valueOf(DateTimeUtil.getYear());
         Integer[] years = new Integer[4];
 
         for (int i = curYear, j = 0; i <= i + 3 && j <= 3; i++, j++) {
@@ -180,7 +181,7 @@ public class InfntSchdlController {
         EduClssRmVo eduClssRmVo = new EduClssRmVo();
         model.addAttribute("clssList", eduClssRmService.selectEduClssRmList(eduClssRmVo));
 
-        int curYear = 2022;
+        int curYear = Integer.valueOf(DateTimeUtil.getYear());
         Integer[] years = new Integer[4];
 
         for (int i = curYear, j = 0; i <= i + 3 && j <= 3; i++, j++) {

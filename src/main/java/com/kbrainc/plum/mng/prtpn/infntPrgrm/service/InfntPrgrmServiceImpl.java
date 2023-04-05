@@ -16,6 +16,7 @@ import com.kbrainc.plum.cmm.file.model.FileGrpVo;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.prtpn.infntPrgrm.model.InfntPrgrmDao;
 import com.kbrainc.plum.mng.prtpn.infntPrgrm.model.InfntPrgrmVo;
+import com.kbrainc.plum.mng.srvy.model.SrvyVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import com.kbrainc.plum.rte.util.CommonUtil;
@@ -256,5 +257,31 @@ public class InfntPrgrmServiceImpl extends PlumAbstractServiceImpl implements In
         File source = new File(fileVo.getFilePath() + "/" + saveFileNm);
         File target = new File(fileVo.getFilePath() + "/" + copyFileNm);
         Files.copy(source.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
-    }      
+    }     
+    
+    /**
+     * 유아환경교육(신청자) 설문지 목록 조회
+     *
+     * @Title : selectAplcntDgstfnSrvyList
+     * @Description : 유아환경교육(신청자) 설문지 목록 조회
+     * @param 
+     * @throws Exception 예외
+     * @return List<SrvyVo>
+     */
+    public List<SrvyVo> selectAplcntDgstfnSrvyList() throws Exception {
+        return infntPrgrmDao.selectAplcntDgstfnSrvyList();
+    }
+
+    /**
+     * 유아환경교육(학생) 설문지 목록 조회
+     *
+     * @Title : selectStdntDgstfnSrvyList
+     * @Description : 유아환경교육(학생) 설문지 목록 조회
+     * @param 
+     * @throws Exception 예외
+     * @return List<SrvyVo>
+     */
+    public List<SrvyVo> selectStdntDgstfnSrvyList() throws Exception {
+        return infntPrgrmDao.selectStdntDgstfnSrvyList();
+    }    
 }

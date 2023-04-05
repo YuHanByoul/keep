@@ -1,13 +1,9 @@
 package com.kbrainc.plum.mng.prtpn.infntPrgrm.controller;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -22,8 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.kbrainc.plum.cmm.file.model.FileGrpVo;
-import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.prtpn.eduClssRm.model.EduClssRmVo;
 import com.kbrainc.plum.mng.prtpn.eduClssRm.service.EduClssRmService;
 import com.kbrainc.plum.mng.prtpn.infntPrgrm.model.InfntPrgrmVo;
@@ -31,7 +25,7 @@ import com.kbrainc.plum.mng.prtpn.infntPrgrm.service.InfntPrgrmService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
-import com.kbrainc.plum.rte.util.CommonUtil;
+import com.kbrainc.plum.rte.util.DateTimeUtil;
 
 /**
 * 유아환경교육 -> 교육프로그램관리 컨트롤러 클래스
@@ -72,7 +66,7 @@ public class InfntPrgrmController {
         EduClssRmVo eduClssRmVo = new EduClssRmVo(); 
         model.addAttribute("clssList", eduClssRmService.selectEduClssRmList(eduClssRmVo));
         
-        int curYear = 2022;
+        int curYear = Integer.valueOf(DateTimeUtil.getYear());
         Integer[] years = new Integer[4];
         
         for(int i = curYear, j = 0; i <= i+3 && j <= 3; i++, j++) {
@@ -96,8 +90,11 @@ public class InfntPrgrmController {
 
         EduClssRmVo eduClssRmVo = new EduClssRmVo(); 
         model.addAttribute("clssList", eduClssRmService.selectEduClssRmList(eduClssRmVo));
+        model.addAttribute("aplcntDgstfnSrvyList", infntPrgrmService.selectAplcntDgstfnSrvyList());
+        model.addAttribute("stdntDgstfnSrvyList", infntPrgrmService.selectStdntDgstfnSrvyList());
         
-        int curYear = 2022;
+        
+        int curYear = Integer.valueOf(DateTimeUtil.getYear());
         Integer[] years = new Integer[4];
         
         for(int i = curYear, j = 0; i <= i+3 && j <= 3; i++, j++) {
@@ -120,7 +117,7 @@ public class InfntPrgrmController {
     */
     @RequestMapping(value = "/mng/prtpn/infntPrgrm/infntPrgrmUpdateForm.html")
     public String infntPrgrmUpdateForm(InfntPrgrmVo infntPrgrmVo, Model model) throws Exception {
-        int curYear = 2022;
+        int curYear = Integer.valueOf(DateTimeUtil.getYear());
         Integer[] years = new Integer[4];
         
         for(int i = curYear, j = 0; i <= i+3 && j <= 3; i++, j++) {
@@ -130,6 +127,9 @@ public class InfntPrgrmController {
 
         EduClssRmVo eduClssRmVo = new EduClssRmVo(); 
         model.addAttribute("clssList", eduClssRmService.selectEduClssRmList(eduClssRmVo));
+        
+        model.addAttribute("aplcntDgstfnSrvyList", infntPrgrmService.selectAplcntDgstfnSrvyList());
+        model.addAttribute("stdntDgstfnSrvyList", infntPrgrmService.selectStdntDgstfnSrvyList());
         
         InfntPrgrmVo result = null;
         List<InfntPrgrmVo> resultTmeList = null;

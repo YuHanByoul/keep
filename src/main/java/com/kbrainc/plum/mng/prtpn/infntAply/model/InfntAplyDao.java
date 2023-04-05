@@ -10,6 +10,7 @@ import com.kbrainc.plum.mng.cnsltng.model.CnsltngVo;
 import com.kbrainc.plum.mng.inst.model.InstVo;
 import com.kbrainc.plum.mng.member.model.MemberVo;
 import com.kbrainc.plum.mng.mmnws.model.MmnwsVo;
+import com.kbrainc.plum.mng.srvy.model.SrvyVo;
 import com.kbrainc.plum.rte.model.UserVo;
 
 /**
@@ -229,5 +230,4 @@ public interface InfntAplyDao {
     * @throws Exception
     */
     public List<InfntAplyVo> infntAplyExcelDownList(InfntAplyVo infntAplyVo) throws Exception;
-    
 }

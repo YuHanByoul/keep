@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.prtpn.infntAply.model.InfntAplyDao;
 import com.kbrainc.plum.mng.prtpn.infntAply.model.InfntAplyVo;
+import com.kbrainc.plum.mng.srvy.model.SrvyVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import com.kbrainc.plum.rte.util.StringUtil;

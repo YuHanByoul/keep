@@ -3,12 +3,13 @@ package com.kbrainc.plum.mng.prtpn.mvmnPrgrm.service;
 import java.util.List;
 
 import com.kbrainc.plum.mng.prtpn.mvmnPrgrm.model.MvmnPrgrmVo;
+import com.kbrainc.plum.mng.srvy.model.SrvyVo;
 import com.kbrainc.plum.rte.model.UserVo;
 
 
 
 /**
-* 유아환경교육 -> 교육프로그램관리 서비스 인터페이스
+* 푸름이이동환경교실 -> 교육프로그램관리 서비스 인터페이스
 **
 <pre>
 * com.kbrainc.plum.mng.prtpn.mvmnPrgrm.service
@@ -16,7 +17,7 @@ import com.kbrainc.plum.rte.model.UserVo;
 * </pre>
 **
 @ClassName : MvmnPrgrmService
-* @Description : 유아환경교육 -> 교육프로그램관리 서비스 인터페이스
+* @Description : 푸름이이동환경교실 -> 교육프로그램관리 서비스 인터페이스
 * @author : Notebiz001
 * @date : 2023. 1. 9.
 * @Version :
@@ -125,4 +126,26 @@ public interface MvmnPrgrmService {
     * @return List<MvmnPrgrmVo>
     */
     public List<MvmnPrgrmVo> selectPrgrmSettingList(String operFomCd) throws Exception;
+    
+    /**
+     * 푸름이이동환경교실(신청자) 설문지 목록 조회
+     *
+     * @Title : selectAplcntDgstfnSrvyList
+     * @Description : 푸름이이동환경교실(신청자) 설문지 목록 조회
+     * @param 
+     * @throws Exception 예외
+     * @return List<SrvyVo>
+     */
+    public List<SrvyVo> selectAplcntDgstfnSrvyList() throws Exception;
+    
+    /**
+     * 푸름이이동환경교실(학생) 설문지 목록 조회
+     *
+     * @Title : selectStdntDgstfnSrvyList
+     * @Description : 푸름이이동환경교실(학생) 설문지 목록 조회
+     * @param 
+     * @throws Exception 예외
+     * @return List<SrvyVo>
+     */
+    public List<SrvyVo> selectStdntDgstfnSrvyList() throws Exception;            
 }
