@@ -52,7 +52,8 @@ public class MyLctrDmndController {
      * @Description : 전문가 요청 관리 목록 화면
      */
     @GetMapping("/lctrDmndList.html")
-    public String lctrDmndList(MyLctrDmndVo searchVo, Model model) throws Exception {
+    public String lctrDmndList(MyLctrDmndVo searchVo, @UserInfo UserVo user, Model model) throws Exception {
+        model.addAttribute("user", user);
         model.addAttribute("searchVo", searchVo);
         return VIEW_PATH + "/myLctrDmndList";
     }

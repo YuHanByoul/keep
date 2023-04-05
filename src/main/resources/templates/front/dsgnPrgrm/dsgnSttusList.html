@@ -101,33 +101,45 @@
 
             <div id="tab-list1" class="tabpanel" role="tabpanel" aria-labelledby="list-tab1">
 
-                <div class="table-col table-layout-auto table-col-mo">
-                    <table>
-                        <caption>우수 환경교육 프로그램 지정현황 - 번호, 운영기관, 프로그램, 지역, 교육주제, 교육대상, 참가비(1인)</caption>
-                        <colgroup>
-                            <col style="width:6%;">
-                            <col style="width:15%;">
-                            <col>
-                            <col style="width:9%;">
-                            <col style="width:22%;">
-                            <col style="width:12%;">
-                            <col style="width:10%;">
-                        </colgroup>
-                        <thead>
-                            <tr>
-                                <th scope="col">번호</th>
-                                <th scope="col">운영기관</th>
-                                <th scope="col">프로그램</th>
-                                <th scope="col">지역</th>
-                                <th scope="col">교육주제</th>
-                                <th scope="col">교육대상</th>
-                                <th scope="col">참가비(1인)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="list-area"></tbody>
-                    </table>
+                <div class="pc-only">
+                    <div class="table-col table-layout-auto">
+                        <table>
+                            <caption>우수 환경교육 프로그램 지정현황 - 번호, 운영기관, 프로그램, 지역, 교육주제, 교육대상, 참가비(1인)</caption>
+                            <colgroup>
+                                <col style="width:6%;">
+                                <col style="width:15%;">
+                                <col>
+                                <col style="width:9%;">
+                                <col style="width:22%;">
+                                <col style="width:12%;">
+                                <col style="width:10%;">
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th scope="col">번호</th>
+                                    <th scope="col">운영기관</th>
+                                    <th scope="col">프로그램</th>
+                                    <th scope="col">지역</th>
+                                    <th scope="col">교육주제</th>
+                                    <th scope="col">교육대상</th>
+                                    <th scope="col">참가비(1인)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="list-area"></tbody>
+                        </table>
+                    </div>
                 </div>
-            <div class="pagination" aria-label="pagination" id="pagination"></div>
+
+                <div class="mo-only">
+                    <div class="table-list">
+                        <ul>
+                            <li class="block" id="list-mobile-area"/>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pagination" aria-label="pagination" id="pagination"></div>
+            </div>
         </div>
 		<!-- //content -->
 
@@ -199,12 +211,8 @@
 	                this.selectList();
 	            },
 
-	            moveToDetail() {
-	            	if (this.userid == null) {
-	            	    alert('로그인 후 이용하실 수 있습니다.');
-	                    return;
-	                }
-	                location.href = '/front/dsgnPrgrm/dsgnSttusDetailForm.html';
+	            moveToDetail(id) {
+	                location.href = dsgnSttus.detailUrl+ "?prgrmid="+id;
 	            },
 
 	            search() {
@@ -251,7 +259,9 @@
                 makeListHtml(data) {
                     var cardListHtml = "";
                     var listHtml = "";
+                    var mobileHtml = "";
                     var color ="green";
+
                     if (data.list == null || data.list.length <= 0) {
                     	listHtml += `
                         <tr>
@@ -259,13 +269,55 @@
                                 <p><span className="icon icon-notice bg-black9"></span>등록된 콘텐츠가 없습니다</p>
                             </td>
                         </tr>`;
-                    } else {
 
+                        mobileHtml += `
+                            <li class="block">
+                                <div class="nodata">
+                                    <p><span class="icon icon-notice bg-black9"></span>등록된 프로그램이 없습니다.</p>
+                                </div>
+                            </li>
+                        `
+                    } else {
 
                         listCount.innerHTML = `<p>총 <b>${data.list.length}</b> 건</p>`;
 
-
                         data.list.forEach(function(item, idx) {
+
+                        	mobileHtml += `
+                        	   <div class="tbody">
+                                    <dl>
+                                        <div class="list">
+                                            <dt>번호</dt>
+                                            <dd>${item.rowNumber}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>운영기관</dt>
+                                            <dd>${item.instNm}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>프로그램</dt>
+                                            <dd><a <a href="javascript:void(0)" onclick="dsgnSttus.moveToDetail(${item.prgrmid})" class="link ellipsis">${item.prgrmNm}</a></dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>지역</dt>
+                                            <dd>${item.ctprvnNm}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>교육주제</dt>
+                                            <dd>${item.eduSbjctNmLst}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>교육대상</dt>
+                                            <dd>${item.eduTarget}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>참가비(1인)</dt>
+                                            <dd>${item.etrfeeStr}</dd>
+                                        </div>
+                                    </dl>
+                                </div>
+                            `
+
                         	listHtml += `
                             <tr>
                             <td>${item.rowNumber}</td>
@@ -323,8 +375,10 @@
   	    					`;
                         });
                     }
+                    debugger;
                     $('#cardList-area').html(cardListHtml);
                     $('#list-area').html(listHtml);
+                    $('#list-mobile-area').html(mobileHtml);
                     $("#pagination1").html(data.pagination);
                     $("#pagination2").html(data.pagination);
                     $("#totalCount").html(data.totalCount);

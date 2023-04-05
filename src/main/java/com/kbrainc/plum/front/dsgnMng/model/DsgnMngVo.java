@@ -488,6 +488,24 @@ public class DsgnMngVo extends ParentRequestVo {
     /** 계정 */
     private String acnt;
 
+    /** 제출id */
+    private Integer sbmsnid;
+
+    /** site */
+    private String siteid;
+
+    /** 항목id */
+    private String qitemid;
+
+    /** 답변 서술형 */
+    private String ansDscrp;
+
+    /** 척도 */
+    private String scale;
+
+    /** 점수 */
+    private String scr;
+
     /** 기관담당자 이름 */
     private String instPicNm;
 

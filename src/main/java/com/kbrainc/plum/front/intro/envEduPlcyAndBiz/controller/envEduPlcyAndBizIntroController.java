@@ -147,5 +147,82 @@ public class envEduPlcyAndBizIntroController {
         return VIEW_PATH + "/intro8";
     }
 
+    /**
+     * 환경일기 쓰기 및 방학 프로젝트
+     *
+     * @return string
+     * @throws Exception
+     * @Title : intro9
+     * @Description : 환경일기 쓰기 및 방학 프로젝트
+     */
+    @GetMapping("/intro9.html")
+    public String intro9() throws Exception {
+        return VIEW_PATH + "/intro9";
+    }
+
+    /**
+     * 국가환경교육지원단 화면
+     *
+     * @return string
+     * @throws Exception
+     * @Title : intro10
+     * @Description : 국가환경교육지원단 화면
+     */
+    @GetMapping("/intro10.html")
+    public String intro10() throws Exception {
+        return VIEW_PATH + "/intro10";
+    }
+
+    /**
+     * 자연환경연수원 지원
+     *
+     * @return string
+     * @throws Exception
+     * @Title : intro11
+     * @Description : 자연환경연수원 지원
+     */
+    @GetMapping("/intro11.html")
+    public String intro11() throws Exception {
+        return VIEW_PATH + "/intro11";
+    }
+
+    /**
+     * 환경교육한마당
+     *
+     * @return string
+     * @throws Exception
+     * @Title : intro12
+     * @Description : 환경교육한마당
+     */
+    @GetMapping("/intro12.html")
+    public String intro12() throws Exception {
+        return VIEW_PATH + "/intro12";
+    }
+
+    /**
+     * 사회환경교육기관 지정제
+     *
+     * @return string
+     * @throws Exception
+     * @Title : intro13
+     * @Description : 사회환경교육기관 지정제
+     */
+    @GetMapping("/intro13.html")
+    public String intro13() throws Exception {
+        return VIEW_PATH + "/intro13";
+    }
+
+    /**
+     * 환경교육 우수학교 지정제
+     *
+     * @return string
+     * @throws Exception
+     * @Title : intro14
+     * @Description : 환경교육 우수학교 지정제
+     */
+    @GetMapping("/intro14.html")
+    public String intro14() throws Exception {
+        return VIEW_PATH + "/intro14";
+    }
 
 }
