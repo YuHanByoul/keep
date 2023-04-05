@@ -97,7 +97,7 @@ public class BizAplySrngController {
      */
     @RequestMapping(value="/mng/bizAply/srng/selectSrngList.do")
     @ResponseBody
-    public Map<String, Object> selectSrngList(ReqMngVo reqMngVo) throws Exception {
+    public Map<String, Object> selectSrngList(ReqMngVo reqMngVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         List<ReqMngVo> result = this.reqMngService.selectReqMngList(reqMngVo);
         
