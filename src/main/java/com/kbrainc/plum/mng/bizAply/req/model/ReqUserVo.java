@@ -286,6 +286,12 @@ public class ReqUserVo extends ParentRequestVo {
     /** 최저 기준 평균점수 2차 */
     private String lwetCrtrScrScnd;
     
+    /** 1차 심사위원 여부 */
+    private String frstSrngYn;
+    
+    /** 2차 심사위원 여부 */
+    private String scndSrngYn;
+    
     /** 온라인 심사유형 코드 */
     private String onlnSrngTypeCd;
     private String srngSttsNm;

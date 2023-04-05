@@ -29,7 +29,7 @@
                         <input type="search" title="검색어" placeholder="검색어를 입력해 주세요." id="searchKeyword" name="searchKeyword" th:value="${BbsVo.searchKeyword}">
                     </div>
                     <div class="search-filter-submit">
-                        <button type="button" class="btn-medium btn-green btn-before-search" onclick="searchPstList()">검색</button>
+                        <button type="submit" class="btn-medium btn-green btn-before-search" >검색</button>
                     </div>
                 </div>
                 <input type="hidden" id="pageNumber" name="pageNumber" th:value="${BbsVo.pageNumber}"/>
@@ -201,22 +201,10 @@
             f.submit();
         };
 
-        function searchPstList() {
-            var searchType = $("#searchType").val()
-            var searchKeyword = $("#searchKeyword").val()
-
-            if (searchType != '' && searchKeyword == '') {
-                alert('검색어를 입력해 주십시오.');
-                return;
-            }
-
-            $("#pageNumber").val(1);
-            submitForm();
-        }
-
         function goPage(num) {
             $("#pageNumber").val(num);
-            submitForm();
+            $('#searchForm')[0].action = listUrl;
+            $('#searchForm')[0].submit();
         }
 
         $(function () {
@@ -224,20 +212,31 @@
                 $('#tabType').val(1);
                 $('#searchType, #searchKeyword').val('')
                 $('#rowPerPage').val(10);
-                submitForm();
+
+                $("#pageNumber").val(1);
+                $('#searchForm')[0].submit();
             }).on('click', '#tab-sub02', function (e) {
                 $('#tabType').val(2);
                 $('#searchType, #searchKeyword').val('')
                 $('#rowPerPage').val(10);
-                submitForm();
+
+                $("#pageNumber").val(1);
+                $('#searchForm')[0].submit();
+            }).on('submit', '#searchForm', function(e) {
+                e.preventDefault();
+
+                var searchType = $("#searchType").val()
+                var searchKeyword = $("#searchKeyword").val()
+
+                if (searchType != '' && searchKeyword == '') {
+                    alert('검색어를 입력해 주십시오.');
+                    return;
+                }
+
+                $("#pageNumber").val(1);
+                $('#searchForm')[0].submit();
             });
         });
-
-        function submitForm() {
-            var f = document.forms.searchForm;
-            f.action = listUrl;
-            f.submit();
-        }
 
     </script>
 </div>

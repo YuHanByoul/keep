@@ -10,7 +10,7 @@
             <dl>
                 <div class="list">
                     <dt>분류</dt>
-                    <dd>[[${bsnsOperDta.typeCdNm}]]</dd>
+                    <dd>[[${bsnsOperDta.clsfCdNm}]]</dd>
                 </div>
                 <div class="list">
                     <dt>발간년도</dt>
@@ -54,7 +54,16 @@
                 <th:block th:each="pdfFilePath : ${pdfFilePaths}">
                     <iframe th:src="|/js/pdfjs/web/viewer.html?file=${pdfFilePath}|" width="100%" height="700px"></iframe>
                 </th:block>
-                <th:block th:utext="${#strings.replace(#strings.escapeXml(bsnsOperDta.cn),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></th:block>
+                <th:block th:utext="${bsnsOperDta.cn}"></th:block>
+            </div>
+
+            <div class="opentype">
+                <a th:if="${@koglLicense.getInfo(bsnsOperDta.cpyrhtCd)}" th:href="${@koglLicense.getInfo(bsnsOperDta.cpyrhtCd).link}" target="_blank" title="새 창">
+                    <div class="thumb">
+                        <img th:src="${@koglLicense.getInfo(bsnsOperDta.cpyrhtCd).imageSrc}"/>
+                    </div>
+                    <p><th:block th:utext="${@koglLicense.getInfo(bsnsOperDta.cpyrhtCd).desc}"> </th:block></p>
+                </a>
             </div>
         </div>
 
@@ -89,12 +98,12 @@
         <input type="hidden" name="instNm" id="instNm" th:value="${searchVo.instNm}">
         <input type="hidden" name="searchFromRegDt" id="searchFromRegDt" th:value="${searchVo.searchFromRegDt}">
         <input type="hidden" name="searchToRegDt" id="searchToRegDt" th:value="${searchVo.searchToRegDt}">
-        <th:block th:each="searchTypeCd : ${searchVo.searchTypeCd}">
-            <input type="hidden" name="searchTypeCd" th:value="${searchTypeCd}">
-        </th:block>
+        <input type="hidden" name="searchClsfCd" th:value="${searchVo.searchClsfCd}">
         <input type="hidden" name="orderField" id="orderField" th:value="${searchVo.orderField}">
         <input type="hidden" name="rowPerPage" id="rowPerPage" th:value="${searchVo.rowPerPage}">
         <input type="hidden" id="dtaid" name="dtaid" th:value="${searchVo.dtaid}">
+        <input type="hidden" id="pageNumber" name="pageNumber" th:value="${searchVo.pageNumber}">
+
     </form>
 
     <script th:inline="javascript">

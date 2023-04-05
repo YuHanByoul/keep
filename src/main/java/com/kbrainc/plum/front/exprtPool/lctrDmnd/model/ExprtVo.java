@@ -115,6 +115,8 @@ public class ExprtVo extends ParentRequestVo {
 
     private String flds;
 
+    private String itsMe;
+
     public void setNm(String nm) {
         this.nm = StringUtil.maskingName(nm);
     }

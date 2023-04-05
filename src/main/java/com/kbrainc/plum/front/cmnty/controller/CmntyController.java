@@ -472,9 +472,14 @@ public class CmntyController {
     public String cmntyPstView(Integer cmntyid, CmntyPstVo paramVo, Model model, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         paramVo.setUser(user);
-
-        //조회수 증가
-        cmntyService.updatePstHitsCount(paramVo);
+        CmntyVo cmntyVo = new CmntyVo();
+        cmntyVo.setUser(user);
+        cmntyVo.setCmntyid(cmntyid);
+        CmntyVo cmntyInfo = cmntyService.selectCmntyInfo(cmntyVo);
+        if("Y".equals(cmntyInfo.getRlsYn()) && "118100".equals(cmntyInfo.getMbrSttsCd())){
+            //조회수 증가
+            cmntyService.updatePstHitsCount(paramVo);
+        }
         //게시판 정보 조회
         CmntyBbsVo cmntyBbsVo = new CmntyBbsVo();
         cmntyBbsVo.setBbsid(paramVo.getBbsid());
@@ -497,6 +502,7 @@ public class CmntyController {
         model.addAttribute("list", cmntyCmntList);
         model.addAttribute("fileMap", resultMap.get("fileMap"));
         model.addAttribute("cmntyid",cmntyid);
+        model.addAttribute("cmntyInfo",cmntyInfo);
         model.addAttribute("paramVo",paramVo);
         return "front/cmnty/cmntyPstView";
     }

@@ -92,12 +92,17 @@
         WHERE 1 = 1
             AND A.DEL_YN = 'N' AND A.STTS_CD != '113102'
         <if test="searchKeyword != null and searchKeyword !=''">
-            <if test="searchType == 'ttl' ">
-                AND A.TTL LIKE CONCAT('%', #{searchKeyword}, '%')
-            </if>
-            <if test="searchType =='cn' ">
-                AND A.CN LIKE CONCAT('%', #{searchKeyword}, '%')
-            </if>
+            <choose>
+                <when test="searchType == 'ttl' ">
+                    AND A.TTL LIKE CONCAT('%', #{searchKeyword}, '%')
+                </when>
+                <when test="searchType =='cn' ">
+                    AND A.CN LIKE CONCAT('%', #{searchKeyword}, '%')
+                </when>
+                <otherwise>
+                    AND ( A.TTL LIKE CONCAT('%', #{searchKeyword}, '%') OR A.CN LIKE CONCAT('%', #{searchKeyword}, '%'))
+                </otherwise>
+            </choose>
         </if>
         <if test="clsfCd != null and clsfCd != ''">
             AND A.CLSF_CD = #{clsfCd}

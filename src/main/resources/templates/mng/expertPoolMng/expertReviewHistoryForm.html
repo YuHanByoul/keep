@@ -94,18 +94,23 @@
                     },
                     {
                         headerTemplate: function () {
-                            return "기타의견";
+                            return "상세정보";
                         },
                         itemTemplate: function (value, item) {
                             if (item.etcOpnn == null) {
                                 return "-";
                             }
+
                             var result = $('<div>').addClass('btn-group-sm text-center').append(
                                     $('<button>')
                                     .attr('type', 'button')
                                     .addClass('btn btn-primary btn-modal')
                                     .attr('data-bs-toggle', 'modal')
-                                    .attr('data-bs-target', '#commonModal')
+                                    .attr('data-bs-target', '#reviewRecordEtcCommentPopup')
+                                    .attr('data-zip', item.zip)
+                                    .attr('data-addr', item.addr)
+                                    .attr('data-addr-dtl', item.addrDtl)
+                                    .attr('data-edu-cn', item.eduCn)
                                     .attr('data-etc-opnn', item.etcOpnn)
                                     .attr('onclick', 'expertReviewHistory.openModal(this)').text('확인')
                             );
@@ -118,9 +123,10 @@
         },
 
         openModal: function (data) {
-            $('#commonModal .modal-title').text('기타의견');
-            $('#commonModal .modal-body').find('label').html('<strong> 기타의견 </strong>');
-            $('#commonModal #cn').val($(data).data('etcOpnn'));
+            var $data = $(data);
+            $('#reviewRecordEtcCommentPopup #addr').html($data.data('zip') + '<br>' + $data.data('addr') + ' ' + $data.data('addrDtl'));
+            $('#reviewRecordEtcCommentPopup #eduCn').text($data.data('eduCn'));
+            $('#reviewRecordEtcCommentPopup #etcOpnn').text($data.data('etcOpnn'));
         }
     }
 

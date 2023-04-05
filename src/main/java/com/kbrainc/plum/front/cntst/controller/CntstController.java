@@ -135,10 +135,10 @@ public class CntstController {
     }
     
     /**
-    * 공모전 신청 페이지(환경방학 일기장 프로젝트)
+    * 공모전 신청 페이지(환경일기장신청)
     *
     * @Title : diaryCntstAplyForm
-    * @Description : 공모전 신청 페이지(환경방학 일기장 프로젝트)
+    * @Description : 공모전 신청 페이지(환경일기장신청)
     * @param model
     * @param cntstVo
     * @param userVo
@@ -160,7 +160,7 @@ public class CntstController {
         cntstFldMapngInfo =  cntstService.selectCntstFldMapngInfo(cntstVo);
         model.addAttribute("fldMapngInfo", cntstFldMapngInfo);
         
-        Map<String, Object> cntstFile = fileService.getConfigurationByFilegrpName("cntst_aply_prdct");
+        Map<String, Object> cntstFile = fileService.getConfigurationByFilegrpName("cntst_aply_shcl");
         String uploadFileExtsn = ((HashMap<String, String>) cntstFile.get("uploadFileExtsn"))
                 .entrySet()
                 .stream()
@@ -261,10 +261,10 @@ public class CntstController {
     }
     
     /**
-    * 공모전 신청 기능(환경방학 일기장 프로젝트)
+    * 공모전 신청 기능(환경일기장신청)
     *
     * @Title : insertCntstAplySchl
-    * @Description : 공모전 신청 기능(환경방학 일기장 프로젝트)
+    * @Description : 공모전 신청 기능(환경일기장신청)
     * @param cntstAplySchlVo
     * @param cntstVo
     * @param userVo

@@ -141,15 +141,16 @@ public class CntstRcptHistController {
         model.addAttribute("cntstAplyVO", cntstAplyVO);
         model.addAttribute("cntstInfo", cntstVO);
         model.addAttribute("cntstFldCdList", cntstFldCdList);
-        if (cntstVO.getClsfCd().equals("165105")) {
-            List<CntstAplySchlVO> cntstAplySchlList = cntstRcptHistService.selectCntstAplySchlList(aplyid);
-            model.addAttribute("cntstAplySchlList", cntstAplySchlList);
-        }
         FileVo fileVo = new FileVo();
         if (cntstAplyVO.getPrdctFilegrpid() != null && !cntstAplyVO.getPrdctFilegrpid().equals(0)) {
             fileVo.setFilegrpid(cntstAplyVO.getPrdctFilegrpid());
             ArrayList<FileVo> prdctFileList = fileService.getFileList(fileVo);
             model.addAttribute("prdctFileList", prdctFileList);
+        }
+        if (cntstAplyVO.getStdntFileid() != null && !cntstAplyVO.getStdntFileid().equals(0)) {
+            fileVo.setFilegrpid(cntstAplyVO.getStdntFileid());
+            ArrayList<FileVo> stdntFileList = fileService.getFileList(fileVo);
+            model.addAttribute("stdntFileList", stdntFileList);
         }
         return "mng/prtpn/cntstRcptHist/cntstRcptHistDetail";
     }

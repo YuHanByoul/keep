@@ -74,8 +74,8 @@ public class CntstAplyHistServiceImpl extends PlumAbstractServiceImpl implements
     public CntstAplyHistVo selectCntstAplyHistInfo(CntstAplyHistVo cntstAplyHistVo) throws Exception {
         CntstAplyHistVo cntstHist = cntstAplyHistDao.selectCntstAplyHistInfo(cntstAplyHistVo);
 
-        if(cntstHist != null && !cntstHist.getPrdctFilegrpid().equals("0")) {
-            FileVo fileVo = new FileVo();
+        if(cntstHist != null && !cntstHist.getPrdctFilegrpid().equals("0")) { FileVo
+            fileVo = new FileVo();
             fileVo.setFilegrpid(Integer.parseInt(cntstHist.getPrdctFilegrpid().toString()));
             ArrayList<FileVo> fileList= fileDao.getFileList(fileVo);
             cntstHist.setFileList(fileList);
@@ -114,30 +114,39 @@ public class CntstAplyHistServiceImpl extends PlumAbstractServiceImpl implements
 
 
     /**
-    * 공모전 참여 이력(환경방학 일기장 프로젝트) 상세정보 조회
+    * 공모전 참여 이력(환경일기장신청) 상세정보 조회
     *
     * @Title : selectCntstAplySchlHistInfo
-    * @Description : 공모전 참여 이력(환경방학 일기장 프로젝트) 상세정보 조회
+    * @Description : 공모전 참여 이력(환경일기장신청) 상세정보 조회
     * @param cntstAplyHistVo
     * @throws Exception
     * @return List<CntstAplyHistVo>
     */
     @Override
-    public List<CntstAplyHistVo> selectCntstAplySchlHistInfo(CntstAplyHistVo cntstAplyHistVo) throws Exception {
-        return cntstAplyHistDao.selectCntstAplySchlHistInfo(cntstAplyHistVo);
+    public CntstAplyHistVo selectCntstAplySchlHistInfo(CntstAplyHistVo cntstAplyHistVo) throws Exception {
+        CntstAplyHistVo cntstHist = cntstAplyHistDao.selectCntstAplySchlHistInfo(cntstAplyHistVo);
+        
+        if(cntstHist != null && !cntstHist.getStdntFileid().equals("0")) { FileVo
+            fileVo = new FileVo();
+            fileVo.setFilegrpid(Integer.parseInt(cntstHist.getStdntFileid().toString()));
+            ArrayList<FileVo> fileList= fileDao.getFileList(fileVo);
+            cntstHist.setFileList(fileList);
+        }
+        
+        return cntstHist;
     }
 
     /**
-    * 공모전 참여 이력(환경방학 일기장 프로젝트) 수정
+    * 공모전 참여 이력(환경일기장신청) 수정
     *
     * @Title : updateCntstAplySchlHist
-    * @Description : 공모전 참여 이력(환경방학 일기장 프로젝트) 수정
+    * @Description : 공모전 참여 이력(환경일기장신청) 수정
     * @param cntstAplyHistVoList
     * @throws Exception
     * @return int
     */
     @Override
-    public int updateCntstAplySchlHist(List<CntstAplyHistVo> cntstAplyHistVoList) throws Exception {
-        return cntstAplyHistDao.updateCntstAplySchlHist(cntstAplyHistVoList);
+    public int updateCntstAplySchlHist(CntstAplyHistVo cntstAplyHistVo) throws Exception {
+        return cntstAplyHistDao.updateCntstAplySchlHist(cntstAplyHistVo);
     }
 }

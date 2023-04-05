@@ -106,5 +106,10 @@ function fn_setPopupCookie2(id){
 }
 
 function fn_chatbotOpen(id, url){
-    window.open(url + "/chatbot/counsel/ChatbotCounsel.do?loginId="+id, "chatbotPopup", "height=790,width=480")
+    var w = 480;
+    var h = 790;
+    var t = (document.body.offsetHeight) - h;
+    var l = (document.body.offsetWidth) - w;
+    
+    window.open(url + "/chatbot/counsel/ChatbotCounsel.do?loginId=" + id, "chatbotPopup", "height=" + h + ", width=" + w + ", left=" + l + ", top=" + t);
 }
