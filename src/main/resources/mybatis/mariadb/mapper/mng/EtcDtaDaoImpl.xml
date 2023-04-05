@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!--
+	SQL File Name : EtcDtaDaoImpl.xml
+	Description : 기타자료 관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.etcDta.model.EtcDtaDao">
+    <select id="selectEtcDtaList" resultType="com.kbrainc.plum.mng.etcDta.model.EtcDtaVo">
+        <include refid="PaginationMapper.header"/>    
+        SELECT
+            A.DTAID
+            , A.TTL
+            , A.CN
+            , A.NATION_CD
+            , B.CD_NM NATION_NM
+            , A.HMPG
+            , A.PSTN
+            , A.CNTCT
+            , A.OPNHR
+            , A.ETRFEE
+            , A.EXPRN_PRGRM
+            , A.CPYRHT_CD
+            , A.ATCH_FILEGRPID
+            , A.HITS
+            , A.REG_DT
+            , A.RGTRID
+        FROM
+            TB_CMM_ETC_DTA A
+            LEFT OUTER JOIN TB_CMM_CD B ON A.NATION_CD = B.CD
+        WHERE 
+            1=1    
+            <if test="searchKeyword != null and searchKeyword != ''">
+                <if test="searchType == 'ttl'">
+                    AND A.TTL LIKE CONCAT('%',#{searchKeyword},'%')
+                </if>
+                <if test="searchType == 'cn'">
+                    AND A.CN LIKE CONCAT('%',#{searchKeyword},'%')
+                </if>
+            </if>
+            <if test="searchNationCd != null and searchNationCd !=''">
+                AND A.NATION_CD LIKE CONCAT('%',#{searchNationCd},'%')
+            </if>
+
+            <if test="searchBgngDt != null and searchBgngDt != ''">
+                <![CDATA[
+                    AND DATE(A.REG_DT) >= #{searchBgngDt}
+                ]]>                 
+            </if>
+            <if test="searchEndDt != null and searchEndDt != ''">
+                <![CDATA[
+                    AND DATE(A.REG_DT) <= #{searchEndDt}
+                ]]>    
+            </if>
+        <include refid="PaginationMapper.footer"/>
+            
+    </select>
+
+    <select id="selectEtcDta" resultType="com.kbrainc.plum.mng.etcDta.model.EtcDtaVo">
+        SELECT
+            DTAID
+            , TTL
+            , CN
+            , NATION_CD
+            , HMPG, PSTN
+            , CNTCT
+            , OPNHR
+            , ETRFEE
+            , EXPRN_PRGRM
+            , CPYRHT_CD
+            , ATCH_FILEGRPID
+            , HITS
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        FROM
+            TB_CMM_ETC_DTA
+        WHERE DTAID = #{dtaid}
+    </select>
+
+    <insert id="insertEtcDta" useGeneratedKeys="true" keyProperty="dtaid">
+        INSERT INTO TB_CMM_ETC_DTA(
+            TTL
+            , CN
+            , NATION_CD
+            , HMPG
+            , PSTN
+            , CNTCT
+            , OPNHR
+            , ETRFEE
+            , EXPRN_PRGRM
+            , CPYRHT_CD
+            , ATCH_FILEGRPID
+            , HITS
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        )
+        VALUES(
+            #{ttl}
+            , #{cn}
+            , #{nationCd}
+            , #{hmpg}
+            , #{pstn}
+            , #{cntct}
+            , #{opnhr}
+            , #{etrfee}
+            , #{exprnPrgrm}
+            , #{cpyrhtCd}
+            , #{atchFilegrpid}
+            , 0
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+
+    <update id="updateEtcDta">
+        UPDATE TB_CMM_ETC_DTA
+        SET
+            TTL = #{ttl}
+            , CN = #{cn}
+            , NATION_CD = #{nationCd}
+            , HMPG = #{hmpg}
+            , PSTN = #{pstn}
+            , CNTCT = #{cntct}
+            , OPNHR = #{opnhr}
+            , ETRFEE = #{etrfee}
+            , EXPRN_PRGRM = #{exprnPrgrm}
+            , CPYRHT_CD = #{cpyrhtCd}
+            , ATCH_FILEGRPID = #{atchFilegrpid}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE DTAID = #{dtaid}
+    </update>
+
+    <delete id="deleteEtcDta">
+        DELETE FROM TB_CMM_ETC_DTA
+        WHERE DTAID = #{dtaid}
+    </delete>
+</mapper>

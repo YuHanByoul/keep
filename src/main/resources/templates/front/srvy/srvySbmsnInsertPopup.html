@@ -18,7 +18,7 @@
                         <h3 class="sub-title ac" th:text="${srvyInfo.srvyNm}"></h3>
                     </div>
                     <hr style="display:block;border:0;border-top:1px solid var(--graye);margin:0 0 20px 0;">
-                    <p>설문에 참여해 주셔서 감사합니다.</p>
+                    <p th:text="${srvyInfo.expln}"></p>
                     <p class="desc-info mt15">문항에 대한 귀하의 의견(찬성정도)을 평가해주십시오.  </p>
                     <hr style="display:block;border:0;border-top:1px solid var(--graye);margin:20px 0 -22px;">
                     <div class="table-caption">
@@ -70,11 +70,12 @@
                                             <div class="form-check-list flex-row mo-flex-column">
                                                 <th:block th:each="example : ${item.exampleList}">
                                                     <label class="inp">
-                                                        <input type="radio" th:data-etcYn="${example.etcYn}" th:value="${example.exNo}" th:name="${'ans' + item.qitemid}"><b th:text="${example.cn}"></b>
+                                                        <input type="radio" th:data-etcYn="${example.etcYn}" th:value="${example.exNo}" th:name="${'ans' + item.qitemid}" th:qitemid="${item.qitemid}" onclick="srvySbmsnInsert.onChangeAnswer(this);">
+                                                        <b th:text="${example.cn}"></b>
                                                     </label>
                                                 </th:block>    
                                             </div>
-                                            <div class="form-input mt10">
+                                            <div class="form-input mt10 d-none" th:id="${'etc' + item.qitemid}">
                                                 <textarea th:title="${item.cn}" th:name="${'etc' + item.qitemid}" maxlength="500" onkeyup="srvySbmsnInsert.onChangeText(this);"></textarea>
                                                 <div class="desc ar size fc-black9 mt5"><span class="textLen">0</span> / 500자</div>
                                             </div>    
@@ -116,6 +117,17 @@
                 
                 , onChangeText: function(el) {
                     $(el).closest("div").find(".textLen").text($(el).val().length);
+                }
+                
+                , onChangeAnswer: function(el) {
+                    var etcYn = $(el).attr("data-etcYn");
+                    var qitemid = $(el).attr("qitemid");
+                    
+                    if(etcYn == "Y") {
+                        $("#etc" + qitemid).removeClass("d-none");
+                    } else {
+                        $("#etc" + qitemid).addClass("d-none");
+                    }
                 }
                 
                 , onInsert: function() {

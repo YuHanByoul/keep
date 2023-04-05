@@ -25,6 +25,7 @@ import com.kbrainc.plum.mng.prtpn.mvmnPrgrm.service.MvmnPrgrmService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.util.DateTimeUtil;
 
 /**
 * 유아환경교육 -> 교육프로그램관리 컨트롤러 클래스
@@ -65,7 +66,7 @@ public class MvmnPrgrmController {
         EduSareaVo eduSareaVo = new EduSareaVo(); 
         model.addAttribute("sareaList", eduSareaService.selectEduSareaList(eduSareaVo));
         
-        int curYear = 2022;
+        int curYear = Integer.valueOf(DateTimeUtil.getYear());
         Integer[] years = new Integer[4];
         
         for(int i = curYear, j = 0; i <= i+3 && j <= 3; i++, j++) {
@@ -89,8 +90,10 @@ public class MvmnPrgrmController {
 
         EduSareaVo eduSareaVo = new EduSareaVo(); 
         model.addAttribute("sareaList", eduSareaService.selectEduSareaList(eduSareaVo));
+        model.addAttribute("aplcntDgstfnSrvyList", mvmnPrgrmService.selectAplcntDgstfnSrvyList());
+        model.addAttribute("stdntDgstfnSrvyList", mvmnPrgrmService.selectStdntDgstfnSrvyList());
         
-        int curYear = 2022;
+        int curYear = Integer.valueOf(DateTimeUtil.getYear());
         Integer[] years = new Integer[4];
         
         for(int i = curYear, j = 0; i <= i+3 && j <= 3; i++, j++) {
@@ -113,7 +116,7 @@ public class MvmnPrgrmController {
     */
     @RequestMapping(value = "/mng/prtpn/mvmnPrgrm/mvmnPrgrmUpdateForm.html")
     public String mvmnPrgrmUpdateForm(MvmnPrgrmVo mvmnPrgrmVo, Model model) throws Exception {
-        int curYear = 2022;
+        int curYear = Integer.valueOf(DateTimeUtil.getYear());
         Integer[] years = new Integer[4];
         
         for(int i = curYear, j = 0; i <= i+3 && j <= 3; i++, j++) {
@@ -123,6 +126,8 @@ public class MvmnPrgrmController {
 
         EduSareaVo eduSareaVo = new EduSareaVo(); 
         model.addAttribute("sareaList", eduSareaService.selectEduSareaList(eduSareaVo));
+        model.addAttribute("aplcntDgstfnSrvyList", mvmnPrgrmService.selectAplcntDgstfnSrvyList());
+        model.addAttribute("stdntDgstfnSrvyList", mvmnPrgrmService.selectStdntDgstfnSrvyList());
         
         MvmnPrgrmVo result = null;
         List<MvmnPrgrmVo> resultTmeList = null;

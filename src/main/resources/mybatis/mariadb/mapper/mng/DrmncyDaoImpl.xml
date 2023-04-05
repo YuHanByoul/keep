@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : DrmncyDaoImpl.xml
+	Description : 휴면계정관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.drmncy.model.DrmncyDao">
+
+    <!-- 휴면계정정보 목록 조회 -->
+    <select id="selectDrmncyList" parameterType="DrmncyVo" resultType="DrmncyVo">
+        /* DrmncyDao.selectDrmncyList */
+        <include refid="PaginationMapper.header"/>
+             SELECT
+                A.*
+                FROM
+                (
+                  SELECT
+                      A.USERID
+                      ,A.ACNT
+                      ,A.NM
+                      ,A.EML
+                      ,A.MOBLPHON
+                      ,A.BLCKLST_YN
+                      ,A.DEL_YN
+                      ,A.LGN_DT
+                      ,A.REG_DT
+                      ,DATE_ADD(A.REG_DT, INTERVAL 4 YEAR) DEL_DT 
+                      ,A.MDFCN_DT
+                      ,A.INSTID
+                      ,A.STTS_CD
+                      ,CASE WHEN IFNULL(B.ROLECD,'U') = 'U' AND A.INSTID IS NOT NULL THEN 'C'
+                           WHEN IFNULL(B.ROLECD,'U') = 'U' AND A.INSTID IS NULL THEN 'U'
+                           ELSE B.ROLECD
+                      END AS ROLECD
+                    FROM
+                      TB_CMM_USER_DRMNCY A
+                      LEFT OUTER JOIN (
+                           SELECT
+                               A.USERID
+                              ,CASE WHEN INSTR(GROUP_CONCAT(A.ROLEID),'1') > 0 OR INSTR(GROUP_CONCAT(A.ROLEID),'5') > 0 THEN 'A'
+                                    ELSE 'U'
+                               END AS ROLECD
+                            FROM
+                              TB_CMM_ROLE_USER A
+                              ,TB_CMM_ROLE B
+                             WHERE 1=1
+                               AND A.ROLEID = B.ROLEID
+                              GROUP BY USERID
+                       ) B
+                      ON(A.USERID = B.USERID)
+                ) A
+           WHERE 1=1
+ 	    <if test="searchKeyword != null and searchKeyword != '' and searchType == 'id'">
+	       AND A.ACNT LIKE CONCAT('%',#{searchKeyword},'%')
+	    </if>
+ 	    <if test="searchKeyword != null and searchKeyword != '' and searchType == 'name'">
+	       AND A.NM LIKE CONCAT('%',#{searchKeyword},'%')
+	    </if>
+ 	    <if test="searchKeyword != null and searchKeyword != '' and searchType == 'email'">
+	       AND A.EML LIKE CONCAT('%',#{searchKeyword},'%')
+	    </if>
+ 	    <if test="searchStartDay != null and searchStartDay != ''">
+			AND A.REG_DT >= #{searchStartDay}
+		</if>
+		<if test="searchEndDay != null and searchEndDay != ''">
+			AND A.REG_DT <![CDATA[<]]> CAST(CONCAT(#{searchEndDay},' 23:59:59') AS DATETIME)
+		</if>
+		<if test="searchRoleCd != null and searchRoleCd != ''">
+			AND A.ROLECD = #{searchRoleCd}
+		</if>
+		<if test="searchSttsCd != null and searchSttsCd != ''">
+			AND A.STTS_CD = #{searchSttsCd}
+		</if>
+
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+</mapper>

@@ -34,7 +34,7 @@ import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 public class NtcnHistServiceImpl extends PlumAbstractServiceImpl implements NtcnHistService {
 
     @Resource(name = "front.ntcnHistDao")
-    private NtcnHistDao NtcnHistDao;
+    private NtcnHistDao ntcnHistDao;
     
     /**
      * 알림 내역 조회
@@ -47,7 +47,7 @@ public class NtcnHistServiceImpl extends PlumAbstractServiceImpl implements Ntcn
      * @return List<NtcnHistVo>
      */
     public List<NtcnHistVo> selectNtcnHistList(NtcnHistVo ntcnHistVo) throws Exception{
-        return NtcnHistDao.selectNtcnHistList(ntcnHistVo);
+        return ntcnHistDao.selectNtcnHistList(ntcnHistVo);
     }        
     
     /**
@@ -62,7 +62,7 @@ public class NtcnHistServiceImpl extends PlumAbstractServiceImpl implements Ntcn
     */
     public int updateDeleteNtcn(NtcnHistVo ntcnHistVo) throws Exception{
         int retVal = 0;
-        retVal += NtcnHistDao.updateDeleteNtcn(ntcnHistVo);
+        retVal += ntcnHistDao.updateDeleteNtcn(ntcnHistVo);
         return retVal;
     }
 }

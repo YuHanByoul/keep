@@ -63,11 +63,11 @@
             <if test="searchSareaId != null and searchSareaId != ''">
             AND A.SAREAID = #{searchSareaId}
             </if>
-            <if test="searchClsfCd_1 != null and searchClsfCd_1 != '' and searchClsfCd_1 != '전체'">
-            AND E.UPPR_CD = #{searchClsfCd_1}
+            <if test="searchClsfCd1 != null and searchClsfCd1 != '' and searchClsfCd1 != '전체'">
+            AND E.UPPR_CD = #{searchClsfCd1}
             </if>            
-            <if test="searchClsfCd_2 != null and searchClsfCd_2 != '' and searchClsfCd_2 != '전체'">
-            AND C.CLSF_CD = #{searchClsfCd_2}
+            <if test="searchClsfCd2 != null and searchClsfCd2 != '' and searchClsfCd2 != '전체'">
+            AND C.CLSF_CD = #{searchClsfCd2}
             </if>
             <if test="searchRcptMthdCd != null and searchRcptMthdCd != ''">
             AND A.RCPT_MTHD_CD = #{searchRcptMthdCd}
@@ -97,6 +97,8 @@
             , RCPT_MTHD_CD
             , EDU_EXPLN
             , MTTRAT
+            , APLCNT_DGSTFN_SRVYID
+            , STDNT_DGSTFN_SRVYID            
             , EDU_INTRCN_FILEID
             , EDU_PHOTO_FILEID
             , MON_YN
@@ -124,6 +126,8 @@
             ,#{rcptMthdCd}
             ,#{eduExpln}
             ,#{mttrat}
+            ,#{aplcntDgstfnSrvyid}
+            ,#{stdntDgstfnSrvyid}
             ,#{eduIntrcnFileid}
             ,#{eduPhotoFileid}
             ,#{monYn}
@@ -156,6 +160,8 @@
             , RCPT_MTHD_CD
             , EDU_EXPLN
             , MTTRAT
+            , APLCNT_DGSTFN_SRVYID
+            , STDNT_DGSTFN_SRVYID
             , EDU_INTRCN_FILEID
             , EDU_PHOTO_FILEID
             , MON_YN
@@ -184,6 +190,8 @@
             , RCPT_MTHD_CD
             , EDU_EXPLN
             , MTTRAT
+            , APLCNT_DGSTFN_SRVYID
+            , STDNT_DGSTFN_SRVYID
             , EDU_INTRCN_FILEID
             , EDU_PHOTO_FILEID
             , MON_YN
@@ -332,7 +340,9 @@
             , A.EDU_HR_MNT
             , A.RCPT_MTHD_CD
             , A.EDU_EXPLN
-            , A.MTTRAT                        
+            , A.MTTRAT    
+            , A.APLCNT_DGSTFN_SRVYID
+            , A.STDNT_DGSTFN_SRVYID            
             , A.EDU_INTRCN_FILEID
             , C.FILEGRPID EDU_INTRCN_FILEGRPID
             , C.FILE_IDNTFC_KEY EDU_INTRCN_FILE_IDNTFC_KEY
@@ -365,7 +375,7 @@
     <update id="updateMvmnPrgrm" parameterType="MvmnPrgrmVo" keyProperty="MvmnPrgrmVo">
         /* MvmnPrgrmDao.updateMvmnPrgrm */
         UPDATE TB_EDU_MVMN_PRGRM SET
-                CLSSRMID                        = #{clssrmId}
+                SAREAID                        = #{sareaId}
                 , EDU_YR                        = #{eduYr}
                 , PRGRM_NM                      = #{prgrmNm}
                 , EDU_NOPE                      = #{eduNope}
@@ -373,6 +383,8 @@
                 , RCPT_MTHD_CD                  = #{rcptMthdCd}
                 , EDU_EXPLN                     = #{eduExpln}
                 , MTTRAT                        = #{mttrat}
+                , APLCNT_DGSTFN_SRVYID          = #{aplcntDgstfnSrvyid}
+                , STDNT_DGSTFN_SRVYID           = #{stdntDgstfnSrvyid}
                 , EDU_INTRCN_FILEID             = #{eduIntrcnFileid}
                 , EDU_PHOTO_FILEID              = #{eduPhotoFileid}
                 , MON_YN                        = #{monYn}
@@ -557,5 +569,68 @@
         , A.SUN_YN
         FROM TB_EDU_MVMN_PRGRM A
        WHERE A.OPER_FOM_CD = #{operFomCd}
-    </select>     
+    </select>    
+    
+    <!-- 교육프로그램 관리 복사대상 파일 상세조회 -->
+    <select id="selectMvmnCopyPrgrmFileInfo" parameterType="MvmnPrgrmVo" resultType="MvmnPrgrmVo"> 
+        /* MvmnPrgrmDao.selectMvmnPrgrmInfo */
+        SELECT 
+              A.PRGRMID
+            , A.EDU_INTRCN_FILEID
+            , B.FILEGRPID EDU_INTRCN_FILEGRPID
+            , B.FILE_IDNTFC_KEY EDU_INTRCN_FILE_IDNTFC_KEY
+            , B.ORGINL_FILE_NM EDU_INTRCN_ORGINL_FILE_NM
+            , A.EDU_PHOTO_FILEID
+            , C.FILEGRPID EDU_PHOTO_FILEGRPID
+            , C.FILE_IDNTFC_KEY EDU_PHOTO_FILE_IDNTFC_KEY
+            , C.ORGINL_FILE_NM EDU_PHOTO_ORGINL_FILE_NM
+            FROM TB_EDU_MVMN_PRGRM A
+            LEFT OUTER JOIN TB_CMM_FILE B ON A.EDU_INTRCN_FILEID = B.FILEID       
+            LEFT OUTER JOIN TB_CMM_FILE C ON A.EDU_PHOTO_FILEID = C.FILEID            
+       WHERE A.PRGRMID = #{copyPrgrmId}
+    </select> 
+    
+    <!-- 푸름이이동환경교실(신청자) 설문지 목록 조회 -->
+    <select id="selectAplcntDgstfnSrvyList" parameterType="SrvyVo" resultType="SrvyVo">
+        /* InfntPrgrmDao.selectAplcntDgstfnSrvyList */
+        SELECT
+            A.SRVYID
+            , A.QESTNRID
+            , A.SRVY_NM
+            , A.USE_YN
+            , A.REG_DT
+            , A.BGNG_DE
+            , A.END_DE
+            , B.QESTNR_NM
+        FROM
+            TB_CMM_SRVY A
+        LEFT OUTER JOIN
+            TB_CMM_QESTNR B ON (B.QESTNRID = A.QESTNRID)
+        WHERE 
+            B.QESTNR_KND_CD = '110105'
+        GROUP BY
+            A.SRVYID, A.QESTNRID
+    </select>        
+
+    <!-- 푸름이이동환경교실(학생) 설문지 목록 조회 -->
+    <select id="selectStdntDgstfnSrvyList" parameterType="SrvyVo" resultType="SrvyVo">
+        /* InfntPrgrmDao.selectStdntDgstfnSrvyList */
+        SELECT
+            A.SRVYID
+            , A.QESTNRID
+            , A.SRVY_NM
+            , A.USE_YN
+            , A.REG_DT
+            , A.BGNG_DE
+            , A.END_DE
+            , B.QESTNR_NM
+        FROM
+            TB_CMM_SRVY A
+        LEFT OUTER JOIN
+            TB_CMM_QESTNR B ON (B.QESTNRID = A.QESTNRID)
+        WHERE 
+            B.QESTNR_KND_CD = '110106'
+        GROUP BY
+            A.SRVYID, A.QESTNRID
+    </select>       
 </mapper>

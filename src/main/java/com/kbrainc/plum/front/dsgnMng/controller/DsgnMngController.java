@@ -857,10 +857,10 @@ public class DsgnMngController {
     }
 
     /**
-    * 신청정보 화면 이동
+    * (컨설팅)신청정보 화면 이동
     *
     * @Title : aplyInfoForm
-    * @Description : 신청정보 화면 이동
+    * @Description : (컨설팅)신청정보 화면 이동
     * @param dsgnMngVo
     * @param model
     * @param user
@@ -882,8 +882,10 @@ public class DsgnMngController {
 
     	if(aplyInfo.getQestnrid() != null && aplyInfo.getQestnrid()!=0) {
     		qitemVo.setQestnrid(aplyInfo.getQestnrid());
-    		//qitemList = qestnrService.selectQitemList(qitemVo);
+    		//컨설팅 문항 목록 조회
     		model.addAttribute("qitemList", qestnrService.selectQitemWithExList(qitemVo));
+    		model.addAttribute("ansList",   dsgnMngService.selectSrvyAnsList(dsgnMngVo));
+    		//컨설팅 답변 목록 조회
     	}
 
     	return "front/dsgnMng/aplyInfo";

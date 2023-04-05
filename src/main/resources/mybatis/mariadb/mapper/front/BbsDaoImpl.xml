@@ -54,6 +54,9 @@
                 <if test="searchType != null and searchType == 'CNTNTS' ">
                 AND A.CNTNTS LIKE CONCAT('%', #{searchKeyword}, '%')
                 </if>
+                <if test="bbsid == 1">
+                AND A.SITEID = ${site.siteid}
+                </if>
              )  A
             WHERE 1=1 
                 <if test="searchType != null and searchType == 'WRITER' ">
@@ -116,10 +119,10 @@
         )
         SELECT
         *
-        , (SELECT PSTID FROM rowNumPstList WHERE rowNumber <![CDATA[ > ]]> A.rowNumber ORDER BY rowNumber ASC LIMIT 1) next_pstid
-        , (SELECT TITLE FROM rowNumPstList WHERE rowNumber <![CDATA[ > ]]> A.rowNumber ORDER BY rowNumber ASC LIMIT 1) next_title
-        , (SELECT PSTID FROM rowNumPstList WHERE rowNumber <![CDATA[ < ]]> A.rowNumber ORDER BY rowNumber DESC LIMIT 1) prev_pstid
-        , (SELECT TITLE FROM rowNumPstList WHERE rowNumber <![CDATA[ < ]]> A.rowNumber ORDER BY rowNumber DESC LIMIT 1) prev_title
+        , (SELECT PSTID FROM rowNumPstList WHERE rowNumber <![CDATA[ > ]]> A.rowNumber ORDER BY rowNumber ASC LIMIT 1) PREV_PSTID
+        , (SELECT TITLE FROM rowNumPstList WHERE rowNumber <![CDATA[ > ]]> A.rowNumber ORDER BY rowNumber ASC LIMIT 1) PREV_TITLE
+        , (SELECT PSTID FROM rowNumPstList WHERE rowNumber <![CDATA[ < ]]> A.rowNumber ORDER BY rowNumber DESC LIMIT 1) NEXT_PSTID
+        , (SELECT TITLE FROM rowNumPstList WHERE rowNumber <![CDATA[ < ]]> A.rowNumber ORDER BY rowNumber DESC LIMIT 1) NEXT_TITLE
         FROM
         ROWNUMPSTLIST A
         WHERE 1=1

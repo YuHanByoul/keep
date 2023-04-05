@@ -18,7 +18,7 @@
                         <h3 class="sub-title ac" th:text="${srvyInfo.srvyNm}"></h3>
                     </div>
                     <hr style="display:block;border:0;border-top:1px solid var(--graye);margin:0 0 20px 0;">
-                    <p>설문에 참여해 주셔서 감사합니다.</p>
+                    <p th:text="${srvyInfo.expln}"></p>
                     <p class="desc-info mt15">문항에 대한 귀하의 의견(찬성정도)을 평가해주십시오.  </p>
                     <hr style="display:block;border:0;border-top:1px solid var(--graye);margin:20px 0 -22px;">
                     <div class="table-caption">
@@ -85,7 +85,7 @@
                                                     </label>
                                                 </th:block>    
                                             </div>
-                                            <div class="form-input mt10">
+                                            <div class="form-input mt10 d-none" th:id="${'etc' + item.qitemid}">
                                                 <textarea th:title="${item.cn}" th:name="${'etc' + item.qitemid}" th:text="${item.ansDscrp}" maxlength="500" readonly></textarea>
                                                 <!-- <div class="desc ar size fc-black9 mt5"><span class="textLen">0</span> / 500자</div> -->
                                             </div>    
@@ -115,11 +115,23 @@
         <script th:inline="javascript">
             var srvySbmsnInfo = {
                 init: function() {
-                    this.registEvent();                
+                    this.registEvent();
+                    this.setMixQitem();
                 }
                 
                 , registEvent: function() {
                     // TODO
+                }
+                
+                , setMixQitem: function() {
+                    $("[data-qitemType='107106']").each(function(index, item) {
+                        var qitemid = $(item).attr("data-qitemid");
+                        var ansNo = parseInt($("input[name='ans" + qitemid + "']:checked").val(), 10);
+                        var etcYn = $($("input[name='ans" + qitemid + "']")[ansNo - 1]).attr("data-etcYn");
+                        if(etcYn == "Y") {
+                            $("#etc" + qitemid).removeClass("d-none");
+                        }
+                    });
                 }
             };
             

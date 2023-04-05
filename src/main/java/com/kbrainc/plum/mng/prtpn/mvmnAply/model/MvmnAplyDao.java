@@ -251,5 +251,16 @@ public interface MvmnAplyDao {
     * @throws Exception
     */
     public List<MvmnAplyVo> mvmnAplyExcelDownList(MvmnAplyVo mvmnAplyVo) throws Exception;
+ 
+    /**
+    * 교육신청관리 신청일정 등록
+    *
+    * @Title : insertMvmnAplySchdl
+    * @Description : 교육신청관리 신청일정 등록
+    * @param mvmnAplyVo 교육신청관리 객체
+    * @throws Exception 예외
+    * @return int
+    */
+    public int insertMvmnAplySchdl(MvmnAplyVo mvmnAplyVo) throws Exception;
     
 }

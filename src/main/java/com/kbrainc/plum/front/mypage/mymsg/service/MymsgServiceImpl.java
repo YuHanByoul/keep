@@ -34,7 +34,7 @@ import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 public class MymsgServiceImpl extends PlumAbstractServiceImpl implements MymsgService {
 
     @Resource(name = "front.mymsgDao")
-    private MymsgDao MymsgDao;
+    private MymsgDao mymsgDao;
     
     /**
      * 받은쪽지함 조회
@@ -47,7 +47,7 @@ public class MymsgServiceImpl extends PlumAbstractServiceImpl implements MymsgSe
      * @return List<MymsgVo>
      */
     public List<MymsgVo> selectRecvMsgList(MymsgVo mymsgVo) throws Exception{
-        return MymsgDao.selectRecvMsgList(mymsgVo);
+        return mymsgDao.selectRecvMsgList(mymsgVo);
     }        
     /**
      * 받은쪽지함 정보 조회
@@ -60,7 +60,7 @@ public class MymsgServiceImpl extends PlumAbstractServiceImpl implements MymsgSe
      * @return MymsgVo
      */
     public MymsgVo selectRecvMsgInfo(MymsgVo mymsgVo) throws Exception{
-        return MymsgDao.selectRecvMsgInfo(mymsgVo);
+        return mymsgDao.selectRecvMsgInfo(mymsgVo);
     }
 
     /**
@@ -75,7 +75,7 @@ public class MymsgServiceImpl extends PlumAbstractServiceImpl implements MymsgSe
     */
     public int insertSendMsg(MymsgVo mymsgVo) throws Exception{
         int retVal = 0;
-        retVal += MymsgDao.insertSendMsg(mymsgVo);
+        retVal += mymsgDao.insertSendMsg(mymsgVo);
         return retVal;
     }
     
@@ -91,7 +91,7 @@ public class MymsgServiceImpl extends PlumAbstractServiceImpl implements MymsgSe
      */
     public int updateUserDelMsg(MymsgVo mymsgVo) throws Exception{
         int retVal = 0;
-        retVal += MymsgDao.updateUserDelMsg(mymsgVo);
+        retVal += mymsgDao.updateUserDelMsg(mymsgVo);
         return retVal;
     }
 
@@ -106,7 +106,7 @@ public class MymsgServiceImpl extends PlumAbstractServiceImpl implements MymsgSe
      * @return List<MymsgVo>
      */
     public List<MymsgVo> selectSendMsgList(MymsgVo mymsgVo) throws Exception{
-        return MymsgDao.selectSendMsgList(mymsgVo);
+        return mymsgDao.selectSendMsgList(mymsgVo);
     }        
     /**
      * 보낸쪽지함 정보 조회
@@ -119,7 +119,7 @@ public class MymsgServiceImpl extends PlumAbstractServiceImpl implements MymsgSe
      * @return MymsgVo
      */
     public MymsgVo selectSendMsgInfo(MymsgVo mymsgVo) throws Exception{
-        return MymsgDao.selectSendMsgInfo(mymsgVo);
+        return mymsgDao.selectSendMsgInfo(mymsgVo);
     }
     
     /**
@@ -134,7 +134,7 @@ public class MymsgServiceImpl extends PlumAbstractServiceImpl implements MymsgSe
      */
     public int updateTrgtDelMsg(MymsgVo mymsgVo) throws Exception{
         int retVal = 0;
-        retVal += MymsgDao.updateTrgtDelMsg(mymsgVo);
+        retVal += mymsgDao.updateTrgtDelMsg(mymsgVo);
         return retVal;
     }
 }

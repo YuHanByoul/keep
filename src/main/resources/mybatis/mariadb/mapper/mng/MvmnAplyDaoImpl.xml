@@ -28,30 +28,33 @@
              , Z.REG_DT
         FROM (        
                 SELECT 
-                  C.PRGRM_SCHDLID
+                D.PRGRM_SCHDLID  
                 , SUBSTRING_INDEX(C.YM, '-', 1) EDU_YR  
                 , CONCAT(REPLACE(SUBSTRING_INDEX(C.YM, '-', -1), '0', ''), '월') EDU_MM
                 , C.YM
                 , D.PRGRMID
-                , E.PRGRM_NM
+                , CONCAT(E.PRGRM_NM,'(',H.TME_NM,')') PRGRM_NM
                 , E.EDU_NOPE
                 , C.SAREAID
                 , L.CD_NM AS RCPT_MTHD_NM
                 , F.SAREA_NM
-                , (SELECT COUNT(T1.STTS_CD) FROM TB_EDU_MVMN_PRGRM_APLY T1 WHERE T1.STTS_CD = '180101' AND T1.TME_SCHDLID = B.TME_SCHDLID) ORG_WTNG_APLY_CNT
-                , (SELECT COUNT(T2.STTS_CD) FROM TB_EDU_MVMN_PRGRM_APLY T2 WHERE T2.STTS_CD = '180102' AND T2.TME_SCHDLID = B.TME_SCHDLID) ORG_WTNG_APPRV_CNT
-                , (SELECT COUNT(T3.STTS_CD) FROM TB_EDU_MVMN_PRGRM_APLY T3 WHERE T3.STTS_CD = '180103' AND T3.TME_SCHDLID = B.TME_SCHDLID) ORG_APLY_CMPLT_CNT
-                , (SELECT COUNT(T4.STTS_CD) FROM TB_EDU_MVMN_PRGRM_APLY T4 WHERE T4.STTS_CD = '180104' AND T4.TME_SCHDLID = B.TME_SCHDLID) ORG_CNCL_APLY_CNT
-                , (SELECT COUNT(T5.STTS_CD) FROM TB_EDU_MVMN_PRGRM_APLY T5 WHERE T5.STTS_CD = '180105' AND T5.TME_SCHDLID = B.TME_SCHDLID) ORG_DNL_APPRV_CNT        
+                , B.TMEID
+                , H.TME_NM
+                , (SELECT COUNT(T1.STTS_CD) FROM TB_EDU_MVMN_PRGRM_APLY T1 WHERE T1.STTS_CD = '180101' AND T1.APLYID = G.APLYID) ORG_WTNG_APLY_CNT
+                , (SELECT COUNT(T2.STTS_CD) FROM TB_EDU_MVMN_PRGRM_APLY T2 WHERE T2.STTS_CD = '180102' AND T2.APLYID = G.APLYID) ORG_WTNG_APPRV_CNT
+                , (SELECT COUNT(T3.STTS_CD) FROM TB_EDU_MVMN_PRGRM_APLY T3 WHERE T3.STTS_CD = '180103' AND T3.APLYID = G.APLYID) ORG_APLY_CMPLT_CNT
+                , (SELECT COUNT(T4.STTS_CD) FROM TB_EDU_MVMN_PRGRM_APLY T4 WHERE T4.STTS_CD = '180104' AND T4.APLYID = G.APLYID) ORG_CNCL_APLY_CNT
+                , (SELECT COUNT(T5.STTS_CD) FROM TB_EDU_MVMN_PRGRM_APLY T5 WHERE T5.STTS_CD = '180105' AND T5.APLYID = G.APLYID) ORG_DNL_APPRV_CNT        
                 , C.YM REG_DT
-                FROM TB_EDU_MVMN_PRGRM_SCHDL C 
-                LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME_SCHDL B ON B.PRGRM_SCHDLID = C.PRGRM_SCHDLID 
+                FROM TB_EDU_MVMN_PRGRM_SCHDL C
                 LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_SCHDL_PRGRM D ON D.PRGRM_SCHDLID = C.PRGRM_SCHDLID
+                LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME_SCHDL B ON B.PRGRM_SCHDLID = C.PRGRM_SCHDLID  
+                LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_APLY_SCHDL G ON G.TME_SCHDLID = B.TME_SCHDLID
+                LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME H ON H.TMEID = B.TMEID                 
                 LEFT OUTER JOIN TB_EDU_MVMN_PRGRM E ON E.PRGRMID = D.PRGRMID
                 LEFT OUTER JOIN TB_EDU_SAREA F ON F.SAREAID = C.SAREAID        
-                LEFT OUTER JOIN TB_CMM_CD L ON L.CD = E.RCPT_MTHD_CD
-                WHERE
-                1=1
+                LEFT OUTER JOIN TB_CMM_CD L ON L.CD = E.RCPT_MTHD_CD     
+                WHERE B.TMEID IS NOT NULL
                 <if test="searchKeyword != null and searchKeyword != ''">
                 AND E.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%')
                 </if>
@@ -66,8 +69,7 @@
                 </if>
                 <if test="searchRcptMthdCd != null and searchRcptMthdCd != ''">
                 AND E.RCPT_MTHD_CD = #{searchRcptMthdCd}
-                </if>
-                GROUP BY C.PRGRM_SCHDLID, C.YM, B.TME_SCHDLID, D.PRGRMID, C.SAREAID
+                </if>                
          )Z GROUP BY Z.PRGRM_SCHDLID, Z.YM, Z.PRGRMID, Z.SAREAID                
         <include refid="PaginationMapper.footer"/>        
     </select>
@@ -253,7 +255,6 @@
         INSERT INTO TB_EDU_MVMN_PRGRM_APLY (
             INSTID
             , USERID
-            , TME_SCHDLID
             , ZIP
             , ADDR
             , ADDR_DTL
@@ -273,7 +274,6 @@
         SELECT 
             #{instid}
             ,#{aplyUserid}
-            ,#{tmeSchdlid}
             ,#{zip}
             ,#{addr}
             ,#{addrDtl}
@@ -293,7 +293,11 @@
           FROM TB_EDU_MVMN_PRGRM_TME_SCHDL A
           LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME B ON B.TMEID = A.TMEID
           LEFT OUTER JOIN TB_EDU_MVMN_PRGRM C ON C.PRGRMID = B.PRGRMID                
-          LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_APLY D ON D.TME_SCHDLID = #{tmeSchdlid}                 
+          LEFT OUTER JOIN (
+            SELECT T1.STTS_CD, T2.TME_SCHDLID 
+            FROM TB_EDU_MVMN_PRGRM_APLY T1
+               , TB_EDU_MVMN_PRGRM_APLY_SCHDL T2 
+            WHERE T1.APLYID = T2.APLYID) D ON D.TME_SCHDLID = #{tmeSchdlid}                 
          WHERE A.TME_SCHDLID = #{tmeSchdlid}    
     </insert>
         
@@ -467,5 +471,20 @@
                    AND A.EML LIKE CONCAT('%',#{searchKeyword},'%')
                 </if>
         <include refid="PaginationMapper.footer"/>
-    </select>    
+    </select>  
+    
+    <insert id="insertMvmnAplySchdl" parameterType="MvmnAplyVo">
+        /* MvmnAplyDao.insertMvmnAplySchdl */
+         INSERT INTO TB_EDU_MVMN_PRGRM_APLY_SCHDL(
+              APLYID
+              ,TME_SCHDLID
+              ,REG_DT
+              ,RGTRID
+         )VALUES(
+             #{aplyId}
+             ,#{tmeSchdlid}
+             ,NOW()
+             ,#{user.userid}
+         )
+    </insert>          
 </mapper>

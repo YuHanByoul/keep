@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/mng/mainLayout">
+<body>
+<div layout:fragment="content">
+    <!-- Page-body start -->
+    <div class="page-body">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-block-small">
+                        <form id="searchForm" name="searchForm" onsubmit="return false;">
+	                        <div class="row">
+	                            <div class="col-lg-3 col-md-6 mb-3">
+	                                <div class="mb-0 form-group row">
+	                                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
+	                                    <div class="input-group input-group-sm input-group-dropdown mb-0">
+	                                        <select name="searchType" id="searchType" class="form-select form-control">
+	                                            <option value="">- 전체 -</option>
+	                                            <option value="ttl">제목</option>
+	                                            <option value="cn">내용</option>
+	                                        </select>
+	                                        <input type="text" class="form-control" aria-label="Text input with dropdown button" name="searchKeyword" id="searchKeyword"/>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                            <div class="col-lg-3 col-md-6 mb-3">
+	                                <div class="mb-0 form-group row">
+	                                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>국가</strong></div>
+	                                    <div class="col-12">
+	                                        <th:block kattr:select_code="searchNationCd" grpCd="240" firstOptTxt="- 전체 - " isAdmin="true"></th:block>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                            <div class="col-lg-3 col-md-6 mb-3">
+	                                <div class="mb-0 form-group row">
+	                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchBgngDt"><strong>등록일-검색시작일</strong></label>
+	                                    <div class="col-sm-12">
+	                                        <input class="form-control form-control-sm" type="date" name="searchBgngDt" id="searchBgngDt">
+	                                    </div>
+	                                </div>
+	                            </div>
+	                            <div class="col-lg-3 col-md-6 mb-3">
+	                                <div class="mb-0 form-group row">
+	                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchEndDt"><strong>등록일 -검색종료일</strong></label>
+	                                    <div class="col-sm-12">
+	                                        <input class="form-control form-control-sm" name="searchEndDt" id="searchEndDt" type="date">
+	                                    </div>
+	                                </div>
+	                            </div>
+	                        </div>
+	                        <div class="mt-1 p-t-20 text-center border-top">
+	                            <button class="btn btn-disabled m-r-5" onclick="searchInit()">초기화</button>
+	                            <button class="btn btn-primary" onclick="search()">검색</button>
+	                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!--임시그리드-->
+            <div class="col-12">
+                <div class="card">
+                    <div class="row p-20 p-b-0">
+                        <div class="col-12 col-md-8 mb-2 mb-md-0">
+                            <h5><strong>기타자료 검색결과</strong></h5>
+                        </div>
+                        <div class="col-12 col-md-4 text-right">
+                            <th:block sec:authorize-url="/mng/etcDta/deleteEtcDta.do">
+                                <button type="button" class="btn btn-inverse m-r-5" onclick="deleteEtcDta()">삭제</button>
+                            </th:block>
+                            <th:block sec:authorize-url="/mng/etcDta/insertEtcDta.do">
+                                <button type="button" class="btn btn-primary" onclick="etcDtaGridHelper.loadContent('/mng/etcDta/etcDtaForm.html')">등록</button>
+                            </th:block>
+                        </div>
+                    </div>
+                    <div class="card-block-small">
+                        <table id="etcDtaGridTable" class="table-responsive"></table>
+                        <div id="etcDtaListPager" class="text-center"></div>
+                    </div>
+                </div>
+            </div>
+            <!--//임시그리드-->
+
+            <div class="col-12">
+                <div id="contentPanel"></div>
+            </div>
+
+        </div>
+    </div>
+    <!-- Page-body end -->
+
+    <script src="/js/ckeditor/ckeditor.js"></script>
+    <script th:inline="javascript">
+        let etcDtaGridHelper;
+        let selectedItem = [];
+        let selectedItems;
+        
+        let search = () => {
+            etcDtaGridHelper.resetListContent();
+        }
+
+        let searchInit = () => {
+            $(' #searchType, #searchKeyword, #searchNationCd, #searchBgngDt, #searchEndDt').val('');
+        }
+
+        let deleteEtcDta = () => {
+            if (selectedItem.length == 0) {
+                alert('삭제할 항목을 선택해 주십시오.');
+                return;
+            }
+
+            if (!confirm('선택하신 항목을 삭제 하시겠습니까?')) return;
+
+            var deleteDtaids = selectedItems.join(",")
+            var params = {
+                deleteDtaids: deleteDtaids
+            }
+
+            if (displayWorkProgress()) {
+                $.ajax({
+                    method: 'post',
+                    url: '/mng/etcDta/deleteEtcDta.do',
+                    dataType: 'json',
+                    data: params,
+                    success: function (response) {
+                        alert(response.msg);
+                        closeWorkProgress();
+                        if (response.result == "success") {
+                            etcDtaGridHelper.resetPageContent();
+                        }
+                    }
+                });
+            }
+        }
+
+        $(function () {
+            etcDtaGridHelper = new GridHelper('etcDtaGridTable', 'contentPanel');
+            $('#etcDtaGridTable').jsGrid({
+                height: "auto",
+                width: "100%",
+                autoload: true,
+                sorting: false,
+                paging: true,
+                pagerContainer: "#pagerContainer",
+                pagerFormat: "{first} {prev} {pages} {next} {last}",
+                pagePrevText: "이전",
+                pageNextText: "다음",
+                pageFirstText: " < 처음 ㅣ",
+                pageLastText: " | 마지막 >",
+                pageSize: 10,
+                pageButtonCount: 10,
+                pageLoading: true,
+                pageIndex: 1,
+                noDataContent: "데이터가 없습니다.",
+                controller: {
+                    loadData: function (filter) {
+                        var data = $.Deferred();
+
+                        var formData = $('#searchForm').serializeArray();
+                        var params = [
+                            {name: "pageNumber", value: filter.pageIndex},
+                            {name: "rowPerPage", value: filter.pageSize},
+                        ]
+
+                        if (filter.sortField != undefined) {
+                            params.push({name: "orderField", value: mapCamelCaseToUnderscore(filter.sortField)});
+                            params.push({name: "orderDirection", value: filter.sortOrder});
+                        } else {
+                            params.push({name: "orderField", value: 'reg_dt'});
+                        }
+
+                        formData = formData.concat(params);
+
+                        $.ajax({
+                            type: "GET",
+                            contentType: "application/json; charset=utf-8",
+                            url: '/mng/etcDta/selectEtcDtaList.do',
+                            dataType: "json",
+                            data: formData,
+                        }).done(function (response) {
+                            var da = {
+                                data: escapeGridData(response.list)
+                                , itemsCount: response.totalCount
+                            };
+                            data.resolve(da);
+                        });
+                        return data.promise();
+                    },
+                },
+                fields: [
+                    {
+                        headerTemplate: function () {
+                            return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
+                        },
+                        itemTemplate: function (_, item) {
+                            return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox")
+                                .prop("checked", $.inArray(item, selectedItems) > -1)
+                                .on("change", function () {
+                                    $(this).is(":checked") ? selectItem($(this).parent().next().text()) : unselectItem($(this).parent().next().text());
+                                });
+                        },
+                        align: "center",
+                        width: "50"
+                    },
+                    {title: 'No.', name: 'rowNumber', type: "number", width: "80", align: "center"},
+                    {title: '국가', name: 'nationNm', type: "text", width: "100", align: "center"},
+                    {title: '제목', name: 'ttl', type: "text", width: "180", align: "center"},
+                    {title: '등록일', name: 'regDt', type: "text", width: "150", align: "center"},
+                    {title: '조회수', name: 'hits', type: "text", width: "120", align: "center"},
+                ],
+                /*[# sec:authorize-url="/mng/etcDta/etcDtaForm.html"]*/
+                rowClick: function (args) {
+                    if (args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+                    etcDtaGridHelper.loadContent("/mng/etcDta/etcDtaForm.html?dtaid=" + args.item.dtaid);
+                    etcDtaGridHelper.rowClick(args);
+                },
+                /*[/]*/
+                onPageChanged: function (args) {
+                    selectedItems = [];
+                }
+            });
+            let selectItem = function (item) {
+                selectedItems.push(item);
+
+                if ($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                    $("#selectAllCheckbox").prop("checked", true);
+                } else {
+                    $("#selectAllCheckbox").prop("checked", false);
+                }
+            };
+
+            let unselectItem = function (item) {
+                selectedItems = $.grep(selectedItems, function (i) {
+                    return i !== item;
+                });
+                if (selectedItems.length == 0) {
+                    $('#selectAllCheckbox').attr('checked', false);
+                }
+                if ($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                    $("#selectAllCheckbox").prop("checked", true);
+                } else {
+                    $("#selectAllCheckbox").prop("checked", false);
+                }
+            };
+
+            $("#selectAllCheckbox").click(function (item) {
+                selectedItems = [];
+                if (this.checked) { // check select status
+                    $('.singleCheckbox').each(function () {
+                        this.checked = true;
+                        selectItem($(this).parent().next().text());
+                    });
+                } else {
+                    $('.singleCheckbox').each(function () {
+                        this.checked = false;
+                        unselectItem(item);
+                    });
+                    selectedItems = [];
+                }
+            });
+        })
+    </script>
+</div>
+</body>
+</html>

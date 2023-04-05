@@ -47,7 +47,7 @@ import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 public class InfntAplyController {
 
     @Resource(name = "front.infntAplyServiceImpl")
-    private InfntAplyService InfntAplyService;
+    private InfntAplyService infntAplyService;
     
     /**
     * 유아환경교육관 교육신청 게시글 목록 화면 이동
@@ -77,9 +77,9 @@ public class InfntAplyController {
     * @return String
     */
     @RequestMapping(value="/front/infntAply/infntAplyDetailForm.html")
-    public String infntAplyDetailForm(InfntAplyVo infntAplyVo, Model model) throws Exception {
+    public String infntAplyDetailForm(InfntAplyVo infntAplyVo, @UserInfo UserVo user, Model model) throws Exception {
         InfntAplyVo infntAply = null;
-        infntAply = InfntAplyService.selectInfntAplyInfo(infntAplyVo);
+        infntAply = infntAplyService.selectInfntAplyInfo(infntAplyVo);
         model.addAttribute("infntAply", infntAply);
         
         infntAplyVo.setInstid(infntAply.getInstid());
@@ -89,18 +89,19 @@ public class InfntAplyController {
         List<InfntAplyVo> infntAplyTmeList = null;
         List<InfntAplyVo> infntAplyEduClssRmList = null;
         
-        eduPhotoFileList = InfntAplyService.selectEduPhotoFileList(infntAplyVo);
+        eduPhotoFileList = infntAplyService.selectEduPhotoFileList(infntAplyVo);
         model.addAttribute("eduPhotoFileList", eduPhotoFileList);
+        model.addAttribute("user", user);
         
-        infntAplyTmeList =  InfntAplyService.selectInfntAplyTmeList(infntAplyVo);
-        //infntAplyList = InfntAplyService.selectInstInfntAplyList(infntAplyVo);
+        infntAplyTmeList =  infntAplyService.selectInfntAplyTmeList(infntAplyVo);
+        //infntAplyList = infntAplyService.selectInstInfntAplyList(infntAplyVo);
         if(infntAplyTmeList.size() <= 0) {
             model.addAttribute("infntAplyTmeList", "null");
         }else {
             model.addAttribute("infntAplyTmeList", infntAplyTmeList);
         }
 
-        infntAplyEduClssRmList =  InfntAplyService.selectInfntAplyEduClssRmList(infntAplyVo);
+        infntAplyEduClssRmList =  infntAplyService.selectInfntAplyEduClssRmList(infntAplyVo);
         if(infntAplyEduClssRmList.size() <= 0) {
             model.addAttribute("infntAplyEduClssRmList", "null");
         }else {
@@ -126,7 +127,7 @@ public class InfntAplyController {
         Map<String, Object> resultMap = new HashMap<>();
         List<InfntAplyVo> result = null;
         
-        result =  InfntAplyService.selectInfntAplyList(infntAplyVo);
+        result =  infntAplyService.selectInfntAplyList(infntAplyVo);
         
         if (result.size() > 0) {
             resultMap.put("totalCount", (result.get(0).getTotalCount()));
@@ -153,7 +154,7 @@ public class InfntAplyController {
     @ResponseBody
     public List<InfntAplyVo> selectInfntAplyDeList(InfntAplyVo infntAplyVo) throws Exception {
         List<InfntAplyVo> result = null;
-        result =  InfntAplyService.selectInfntAplyDeList(infntAplyVo);
+        result =  infntAplyService.selectInfntAplyDeList(infntAplyVo);
         return result;
     }
     
@@ -199,7 +200,7 @@ public class InfntAplyController {
         
         InfntAplyVo infntAplyRegVo = null;
         infntAplyVo.setUser(user);        
-        infntAplyRegVo = InfntAplyService.selectInfntAplyRegInfo(infntAplyVo);
+        infntAplyRegVo = infntAplyService.selectInfntAplyRegInfo(infntAplyVo);
         model.addAttribute("infntAplyRegVo", infntAplyRegVo);
         
         List<Map<String, String>> listMap = new ArrayList<Map<String, String>>();
@@ -251,7 +252,7 @@ public class InfntAplyController {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         int retVal = 0;
         
-        retVal = InfntAplyService.insertInfntAply(infntAplyVo);
+        retVal = infntAplyService.insertInfntAply(infntAplyVo);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);

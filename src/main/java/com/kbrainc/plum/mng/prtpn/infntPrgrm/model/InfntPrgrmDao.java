@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
+import com.kbrainc.plum.mng.srvy.model.SrvyVo;
+
 /**
 * 유아환경교육 -> 교육프로그램관리 Dao 클래스
 **
@@ -235,4 +237,37 @@ public interface InfntPrgrmDao {
     * @return List<InfntPrgrmVo>
     */
     public List<InfntPrgrmVo> selectPrgrmSettingList(@Param("rcptMthdCd") String rcptMthdCd) throws Exception;
+    
+    /**
+    * 교육프로그램관리 복사대상 파일 상세조회
+    *
+    * @Title : selectInfntCopyPrgrmInfo
+    * @Description : 교육프로그램관리 복사대상 파일 상세조회
+    * @param infntPrgrmVo 교육프로그램관리 객체
+    * @throws Exception 예외
+    * @return InfntPrgrmVo
+    */
+    public InfntPrgrmVo selectInfntCopyPrgrmFileInfo(InfntPrgrmVo infntPrgrmVo) throws Exception;    
+    
+    /**
+     * 유아환경교육(신청자) 설문지 목록 조회
+     *
+     * @Title : selectAplcntDgstfnSrvyList
+     * @Description : 유아환경교육(신청자) 설문지 목록 조회
+     * @param 
+     * @throws Exception 예외
+     * @return List<SrvyVo>
+     */
+    public List<SrvyVo> selectAplcntDgstfnSrvyList() throws Exception;
+    
+    /**
+     * 유아환경교육(학생) 설문지 목록 조회
+     *
+     * @Title : selectStdntDgstfnSrvyList
+     * @Description : 유아환경교육(학생) 설문지 목록 조회
+     * @param 
+     * @throws Exception 예외
+     * @return List<SrvyVo>
+     */
+    public List<SrvyVo> selectStdntDgstfnSrvyList() throws Exception;            
 }

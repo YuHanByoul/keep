@@ -69,6 +69,9 @@ public class BsnsOperDtaVo extends ParentRequestVo {
 
     private String clsfCd;
 
+    @NotEmpty(message = "저작권 종류를 선택해 주십시오.")
+    private String cpyrhtCd;
+
     @NotEmpty(message = "기관을 선택해 주십시오.")
     private String instNm;
 
@@ -95,6 +98,7 @@ public class BsnsOperDtaVo extends ParentRequestVo {
     private Integer[] deleteDtaids;
 
     /* 등록/수정용 파라미터*/
+    @NotEmpty(message = "분류를 선택해 주십시오.")
     private String[] clsfCds; /*227*/
 
 

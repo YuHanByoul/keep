@@ -15,7 +15,7 @@
                 </div>
                 <div class="col-lg-6 mb-3">
                     <div class="mb-0 form-group">
-                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="yy"><strong>발간년도</strong></label>
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="yy"><strong>발행년도</strong></label>
                         <div class="col-12">
                             <input type="text" class="form-control form-control-sm" name="yy" id="yy" th:value="${spcltyDta.yy}"/>
                         </div>
@@ -34,17 +34,7 @@
                 <div class="col-lg-6 mb-3">
                     <div class="mb-0 form-group required">
                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>저작권</strong></div>
-                        <select name="" class="form-select form-select-sm">
-                            <option value="" disabled="" selected="">-선택-</option>
-                            <option value="opt1">Type 1</option>
-                            <option value="opt2">Type 2</option>
-                            <option value="opt3">Type 3</option>
-                            <option value="opt4">Type 4</option>
-                            <option value="opt5">Type 5</option>
-                            <option value="opt6">Type 6</option>
-                            <option value="opt7">Type 7</option>
-                            <option value="opt8">Type 8</option>
-                        </select>
+                        <span kattr:select_code="cpyrhtCd" grpCd="241" firstOptTxt="- 선택 -" th:attr="selectedCd=${spcltyDta.cpyrhtCd}" isAdmin="true"></span>
                     </div>
                 </div>
             </div>
@@ -163,7 +153,7 @@
         var editor = CKEDITOR.replace('cn', {enterMode: CKEDITOR.ENTER_BR});
 
         $(function () {
-            if(!!spcltyDta.clsfCd) {
+            if (!!spcltyDta.clsfCd) {
                 var clsfCds = spcltyDta.clsfCd.split(',');
                 clsfCds.forEach(val => {
                     $('input[name=clsfCds]').each(function (index, item) {
@@ -188,13 +178,13 @@
             var editorData = editor.getData();
             $("#cn").val(editorData);
 
-            if(!$('#registerForm').valid()) {
-                return ;
+            if (!$('#registerForm').valid()) {
+                return;
             }
 
             let url = '/mng/spcltyDta/insertSpcltyDta.do';
 
-            if(!!$('#dtaid').val()) {
+            if (!!$('#dtaid').val()) {
                 url = '/mng/spcltyDta/updateSpcltyDta.do';
             }
 
@@ -207,9 +197,7 @@
                     alert('접근권한이 없습니다.');
                     return;
                 }
-            }
-
-            else if (url == '/mng/spcltyDta/updateSpcltyDta.do') {
+            } else if (url == '/mng/spcltyDta/updateSpcltyDta.do') {
                 var isSec = false;
                 /*[# sec:authorize-url="/mng/spcltyDta/updateSpcltyDta.do"]*/
                 isSec = true;
@@ -220,7 +208,7 @@
                 }
             }
 
-            if(displayWorkProgress()) {
+            if (displayWorkProgress()) {
                 $.ajax({
                     method: 'post',
                     url: url,
@@ -229,7 +217,7 @@
                     success: function (response) {
                         alert(response.msg);
                         closeWorkProgress();
-                        if(response.result == "success") {
+                        if (response.result == "success") {
                             spcltyDtaGridHelper.resetPageContent();
                         }
                     }
@@ -244,11 +232,14 @@
                     ttl: {required: true, maxlength: 200},
                     writr: {required: true, maxlength: 60},
                     cn: {required: true},
+                    cpyrhtCd: {required: true}
+
                 },
                 messages: {
                     ttl: {required: '제목을 입력해 주십시오.', maxlength: '제목은 200자를 넘을 수 없습니다.'},
                     writr: {required: '저자를 입력해 주십시오.', maxlength: '저자는 60자를 넘을 수 없습니다.'},
                     cn: {required: '내용을 입력해 주십시오.'},
+                    cpyrhtCd: {required: '저작권 종류를 선택해 주십시오.'}
                 }
             });
         }

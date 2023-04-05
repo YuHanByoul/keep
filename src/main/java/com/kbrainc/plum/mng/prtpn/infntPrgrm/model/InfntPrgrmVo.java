@@ -54,7 +54,10 @@ public class InfntPrgrmVo extends ParentRequestVo {
     private String rcptMthdCd;
     /** 접수_방법_코드명 */
     private String rcptMthdNm;
-    
+    /** 신청자_만족도_설문아이디 */
+    private String aplcntDgstfnSrvyid;
+    /** 학생_만족도_설문아이디 */
+    private String stdntDgstfnSrvyid;
     /** 교육_설명 */
     private String eduExpln;
     /** 유의사항 */
@@ -121,15 +124,16 @@ public class InfntPrgrmVo extends ParentRequestVo {
     private String copyPrgrmId;
     
     /** 교육대상 코드 저장용 */
+    @NotEmpty(message = "교육대상을 선택해주십시오.")
     private String [] trgtCds;
     /** 교육주제 코드 저장용 */
+    @NotEmpty(message = "교육주제를 선택해주십시오.")
     private String [] clsfCds;
     /** 프로그램복사 저장용 */
     private String [] copyPrgrmIds;
 
     
     /** 교육_유형_코드 */
-    @NotEmpty(message = "교육유형을 선택해주십시오.")
     private String eduTypeCd;
     
     /** 수정_일시 */
@@ -151,8 +155,8 @@ public class InfntPrgrmVo extends ParentRequestVo {
     private String searchClssrmId;
     private String searchClsfCd;
     private String searchRcptMthdCd;
-    private String searchClsfCd_1;
-    private String searchClsfCd_2;
+    private String searchClsfCd1;
+    private String searchClsfCd2;
     private String searchUseYn;
     
     /** 첨부파일 관련*/

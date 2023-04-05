@@ -5,8 +5,11 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
+import com.kbrainc.plum.mng.prtpn.infntPrgrm.model.InfntPrgrmVo;
+import com.kbrainc.plum.mng.srvy.model.SrvyVo;
+
 /**
-* 유아환경교육 -> 교육프로그램관리 Dao 클래스
+* 푸름이이동환경교실 -> 교육프로그램관리 Dao 클래스
 **
 <pre>
 * com.kbrainc.plum.mng.prtpn.mvmnPrgrm.model
@@ -14,7 +17,7 @@ import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 * </pre>
 **
 @ClassName : MvmnPrgrmDao
-* @Description : 유아환경교육 -> 교육프로그램관리 Dao 클래스
+* @Description : 푸름이이동환경교실 -> 교육프로그램관리 Dao 클래스
 * @author : Notebiz001
 * @date : 2023. 1. 5.
 * @Version :
@@ -235,4 +238,37 @@ public interface MvmnPrgrmDao {
     * @return List<MvmnPrgrmVo>
     */
     public List<MvmnPrgrmVo> selectPrgrmSettingList(@Param("operFomCd") String operFomCd) throws Exception;
+    
+    /**
+    * 교육프로그램관리 복사대상 파일 상세조회
+    *
+    * @Title : selectMvmnCopyPrgrmFileInfo
+    * @Description : 교육프로그램관리 복사대상 파일 상세조회
+    * @param mvmnPrgrmVo 교육프로그램관리 객체
+    * @throws Exception 예외
+    * @return MvmnPrgrmVo
+    */
+    public MvmnPrgrmVo selectMvmnCopyPrgrmFileInfo(MvmnPrgrmVo mvmnPrgrmVo) throws Exception;    
+    
+    /**
+     * 푸름이이동환경교실(신청자) 설문지 목록 조회
+     *
+     * @Title : selectAplcntDgstfnSrvyList
+     * @Description : 푸름이이동환경교실(신청자) 설문지 목록 조회
+     * @param 
+     * @throws Exception 예외
+     * @return List<SrvyVo>
+     */
+    public List<SrvyVo> selectAplcntDgstfnSrvyList() throws Exception;
+    
+    /**
+     * 푸름이이동환경교실(학생) 설문지 목록 조회
+     *
+     * @Title : selectStdntDgstfnSrvyList
+     * @Description : 푸름이이동환경교실(학생) 설문지 목록 조회
+     * @param 
+     * @throws Exception 예외
+     * @return List<SrvyVo>
+     */
+    public List<SrvyVo> selectStdntDgstfnSrvyList() throws Exception;          
 }

@@ -49,7 +49,6 @@ public class MvmnPrgrmVo extends ParentRequestVo {
     /** 권역_코드 */
     private String sareaCd;
     /** 교육_유형_코드 */
-    @NotEmpty(message = "교육유형을 선택해주십시오.")
     private String eduTypeCd;
     /** 프로그램_이름 */
     private String prgrmNm;
@@ -67,11 +66,14 @@ public class MvmnPrgrmVo extends ParentRequestVo {
     private String rcptMthdCd;
     /** 접수_방법_코드명 */
     private String rcptMthdNm;
-    
     /** 교육_설명 */
     private String eduExpln;
     /** 유의사항 */
     private String mttrat;
+    /** 신청자_만족도_설문아이디 */
+    private String aplcntDgstfnSrvyid;
+    /** 학생_만족도_설문아이디 */
+    private String stdntDgstfnSrvyid;    
     /** 교육_소개_파일아이디 */
     private int eduIntrcnFileid;
     /** 교육_사진_파일아이디 */
@@ -134,8 +136,10 @@ public class MvmnPrgrmVo extends ParentRequestVo {
     private String copyPrgrmId;
     
     /** 교육대상 코드 저장용 */
+    @NotEmpty(message = "교육대상을 선택해주십시오.")
     private String [] trgtCds;
     /** 교육주제 코드 저장용 */
+    @NotEmpty(message = "교육주제를 선택해주십시오.")
     private String [] clsfCds;
     /** 프로그램복사 저장용 */
     private String [] copyPrgrmIds;
@@ -160,8 +164,8 @@ public class MvmnPrgrmVo extends ParentRequestVo {
     private String searchEduSeCd;
     private String searchRcptMthdCd;
     private String searchOperFomCd;
-    private String searchClsfCd_1;
-    private String searchClsfCd_2;
+    private String searchClsfCd1;
+    private String searchClsfCd2;
     private String searchUseYn;
     
     /** 첨부파일 관련*/

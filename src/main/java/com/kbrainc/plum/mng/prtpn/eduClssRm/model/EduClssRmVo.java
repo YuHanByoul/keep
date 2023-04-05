@@ -34,12 +34,19 @@ public class EduClssRmVo extends ParentRequestVo {
     /** 교육관아이디 */
     private int clssrmId;
     /** 교육관_이름 */
+    @NotEmpty(message = "교육관명을 입력해주십시오.")
     private String clssrmNm;
     /** 시도_코드 */
     @NotEmpty(message = "교육관지역을 선택해주십시오.")
     private String ctprvnCd;
     /** 시도명 */
-    private String ctprvnNm;    
+    private String ctprvnNm;
+    /** 주소 */
+    @NotEmpty(message = "주소를 입력해주십시오.")
+    private String addr;
+    /** 상세주소 */
+    @NotEmpty(message = "상세주소를 입력해주십시오.")
+    private String addrDtl;
     /** 교육_유형_코드 */
     @NotEmpty(message = "교육유형을 선택해주십시오.")
     private String eduTypeCd;
@@ -51,18 +58,20 @@ public class EduClssRmVo extends ParentRequestVo {
     /** 위탁_기관명 */
     private String cnsgnInstNm;    
     /** 접수_시작_일자 */
-    @NotEmpty(message = "접수 시작 일시를 선택해주십시오.")
     private String rcptBgngDt;
     /** 접수_종료_일자 */
-    @NotEmpty(message = "접수 종료 일시를 선택해주십시오.")
     private String rcptEndDt;
     /** 교육관_연간_신청_제한_개수 */
+    @NotEmpty(message = "교육관 신청 기관별 연간 횟수 제한을 입력해주십시오.")
     private String clssrmFyerAplyLmtCnt;
     /** 교육관_프로그램_최대_신청_기관_개수 */
+    @NotEmpty(message = "교육관 프로그램별 최대 신청 기관수를 입력해주십시오.")
     private String clssrmPrgrmMaxAplyInstCnt;
     /** 교육관_관람_최대_신청_인원수 */
+    @NotEmpty(message = "교육관 관람 최대 신청 인원수를 입력해주십시오.")
     private String clssrmViewngMaxAplyNope;
     /** 접수_가능_이전_일수 */
+    @NotEmpty(message = "교육 당일 이전 접수 가능 일수를 입력해주십시오.")
     private String rcptPsbltyBfrDaycnt;
     /** 비고 */
     private String rmrk;    

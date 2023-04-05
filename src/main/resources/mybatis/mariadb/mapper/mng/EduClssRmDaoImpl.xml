@@ -20,8 +20,8 @@
             , E.CD_NM AS EDU_TYPE_NM
             , A.CNSGN_INSTID
             , C.INST_NM AS CNSGN_INSTNM
-            , A.RCPT_BGNG_DT
-            , A.RCPT_END_DT
+            , DATE_FORMAT(A.RCPT_BGNG_DT, '%Y-%m-%d %H:%i') RCPT_BGNG_DT
+            , DATE_FORMAT(A.RCPT_END_DT, '%Y-%m-%d %H:%i') RCPT_END_DT
             , A.CLSSRM_FYER_APLY_LMT_CNT
             , A.CLSSRM_PRGRM_MAX_APLY_INST_CNT
             , A.CLSSRM_VIEWNG_MAX_APLY_NOPE
@@ -61,6 +61,8 @@
         INSERT INTO TB_EDU_CLSSRM (
             CLSSRM_NM
             , CTPRVN_CD
+            , ADDR
+            , ADDR_DTL
             , EDU_TYPE_CD
             , CNSGN_INSTID
             , RCPT_BGNG_DT
@@ -77,10 +79,12 @@
         )VALUES(
             #{clssrmNm}
             ,#{ctprvnCd}
+            ,#{addr}
+            ,#{addrDtl}
             ,#{eduTypeCd}
             ,#{cnsgnInstId}
-            ,#{rcptBgngDt}
-            ,#{rcptEndDt}
+            ,NULLIF(#{rcptBgngDt},'')
+            ,NULLIF(#{rcptEndDt},'')
             ,#{clssrmFyerAplyLmtCnt}
             ,#{clssrmPrgrmMaxAplyInstCnt}
             ,#{clssrmViewngMaxAplyNope}
@@ -100,10 +104,12 @@
         	  A.CLSSRMID
         	, A.CLSSRM_NM
         	, A.CTPRVN_CD
+        	, A.ADDR
+        	, A.ADDR_DTL
             , A.EDU_TYPE_CD
             , A.CNSGN_INSTID
-        	, A.RCPT_BGNG_DT
-            , A.RCPT_END_DT
+            , DATE_FORMAT(A.RCPT_BGNG_DT, '%Y-%m-%d %H:%i') RCPT_BGNG_DT
+            , DATE_FORMAT(A.RCPT_END_DT, '%Y-%m-%d %H:%i') RCPT_END_DT
         	, A.CLSSRM_FYER_APLY_LMT_CNT
         	, A.CLSSRM_PRGRM_MAX_APLY_INST_CNT
             , A.CLSSRM_VIEWNG_MAX_APLY_NOPE
@@ -126,10 +132,12 @@
         UPDATE TB_EDU_CLSSRM SET
                 CLSSRM_NM                       = #{clssrmNm}
                 ,CTPRVN_CD                      = #{ctprvnCd}
+                ,ADDR                           = #{addr}
+                ,ADDR_DTL                       = #{addrDtl}
                 ,EDU_TYPE_CD                    = #{eduTypeCd}
                 ,CNSGN_INSTID                   = #{cnsgnInstId}
-                ,RCPT_BGNG_DT                   = #{rcptBgngDt} 
-                ,RCPT_END_DT                    = #{rcptEndDt}
+                ,RCPT_BGNG_DT                   = NULLIF(#{rcptBgngDt},'') 
+                ,RCPT_END_DT                    = NULLIF(#{rcptEndDt},'')
                 ,CLSSRM_FYER_APLY_LMT_CNT       = #{clssrmFyerAplyLmtCnt}
                 ,CLSSRM_PRGRM_MAX_APLY_INST_CNT = #{clssrmPrgrmMaxAplyInstCnt}
                 ,CLSSRM_VIEWNG_MAX_APLY_NOPE    = #{clssrmViewngMaxAplyNope}

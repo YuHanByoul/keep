@@ -117,6 +117,7 @@ public class MvmnAplyVo extends ParentRequestVo {
     /** 상태_이름 */
     private String sttsNm;
     /** 교육대상 코드 저장용 */
+    @NotEmpty(message = "교육대상을 선택해주십시오.")
     private String [] trgtCds;
     /** 대상_코드 */
     private String trgtCd;

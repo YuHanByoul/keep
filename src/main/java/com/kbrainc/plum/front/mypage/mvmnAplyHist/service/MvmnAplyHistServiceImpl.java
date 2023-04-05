@@ -34,7 +34,7 @@ import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 public class MvmnAplyHistServiceImpl extends PlumAbstractServiceImpl implements MvmnAplyHistService {
 
     @Resource(name = "front.mvmnAplyHistDao")
-    private MvmnAplyHistDao MvmnAplyHistDao;
+    private MvmnAplyHistDao mvmnAplyHistDao;
     
     /**
      * 푸름이 이동환경교실 신청이력 조회
@@ -47,7 +47,7 @@ public class MvmnAplyHistServiceImpl extends PlumAbstractServiceImpl implements 
      * @return List<MvmnAplyHistVo>
      */
     public List<MvmnAplyHistVo> selectMvmnAplyHistList(MvmnAplyHistVo mvmnAplyHistVo) throws Exception{
-        return MvmnAplyHistDao.selectMvmnAplyHistList(mvmnAplyHistVo);
+        return mvmnAplyHistDao.selectMvmnAplyHistList(mvmnAplyHistVo);
     }        
     /**
      * 푸름이 이동환경교실 신청이력 정보 조회
@@ -60,7 +60,7 @@ public class MvmnAplyHistServiceImpl extends PlumAbstractServiceImpl implements 
      * @return MvmnAplyHistVo
      */
     public MvmnAplyHistVo selectMvmnAplyHistInfo(MvmnAplyHistVo mvmnAplyHistVo) throws Exception{
-        return MvmnAplyHistDao.selectMvmnAplyHistInfo(mvmnAplyHistVo);
+        return mvmnAplyHistDao.selectMvmnAplyHistInfo(mvmnAplyHistVo);
     }
 
     /**
@@ -74,7 +74,7 @@ public class MvmnAplyHistServiceImpl extends PlumAbstractServiceImpl implements 
      * @return MvmnAplyHistVo
      */
     public MvmnAplyHistVo selectMvmnAplyHistDetail(MvmnAplyHistVo mvmnAplyHistVo) throws Exception{
-        return MvmnAplyHistDao.selectMvmnAplyHistDetail(mvmnAplyHistVo);
+        return mvmnAplyHistDao.selectMvmnAplyHistDetail(mvmnAplyHistVo);
     }    
     
     /**
@@ -89,7 +89,7 @@ public class MvmnAplyHistServiceImpl extends PlumAbstractServiceImpl implements 
     */
     public int updateCancelMvmnAply(MvmnAplyHistVo mvmnAplyHistVo) throws Exception{
         int retVal = 0;
-        retVal += MvmnAplyHistDao.updateCancelMvmnAply(mvmnAplyHistVo);
+        retVal += mvmnAplyHistDao.updateCancelMvmnAply(mvmnAplyHistVo);
         return retVal;
     }
 }
