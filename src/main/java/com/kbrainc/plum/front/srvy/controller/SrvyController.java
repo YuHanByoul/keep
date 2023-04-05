@@ -90,8 +90,8 @@ public class SrvyController {
     */
     @RequestMapping(value = "/front/srvy/srvySbmsnInsertPopup.html")
     public String srvySbmsnInsertPopup(SrvyVo srvyVo, Model model) throws Exception {
-        model.addAttribute("srvyInfo", srvyService.selectSrvyInfo(srvyVo));
         model.addAttribute("qitemList", srvyService.selectQitemList(srvyVo));
+        model.addAttribute("srvyInfo", srvyService.selectSrvyInfo(srvyVo));
         
         return "front/srvy/srvySbmsnInsertPopup";
     }
