@@ -397,7 +397,7 @@ function deleteFile(fileid, fileIdntfcKey) {
 * startDtId : 시작일시 element id (hidden)
 * endDtId   : 종료일시 element id (hidden)
 * */
-function initDataRangePicker(pickerid,startDtId,endDtId){
+function initDateRangePicker(pickerid,startDtId,endDtId){
         $("#"+pickerid).daterangepicker({
             opens: 'left',
             autoUpdateInput: false,
