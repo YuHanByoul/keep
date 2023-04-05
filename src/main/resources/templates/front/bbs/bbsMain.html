@@ -18,7 +18,7 @@
                 <input type="search" title="검색어" placeholder="검색어를 입력해 주세요." id="searchKeyword" name="searchKeyword">
             </div>
             <div class="search-filter-submit">
-                <button type="button" class="btn-medium btn-green btn-before-search" onclick="searchPstList()">검색</button>
+                <button type="submit" class="btn-medium btn-green btn-before-search">검색</button>
             </div>
         </div>
         <input type="hidden" id="pageNumber" name="pageNumber" value="1"/>
@@ -95,7 +95,21 @@
             }
 
             selectPstList();
-        })
+
+        }).on('submit', '#bbsForm', function(e) {
+            e.preventDefault();
+
+            var searchType = $("#searchType").val()
+            var searchKeyword = $("#searchKeyword").val()
+
+            if (searchType != '' && searchKeyword == '') {
+                alert('검색어를 입력해 주십시오.');
+                return;
+            }
+
+            $('#pageNumber').val(1);
+            selectPstList();
+        });
 
         function selectPstList() {
 
@@ -188,25 +202,6 @@
                 });
             }
             return html;
-        }
-
-        function searchPstList() {
-            var searchType = $("#searchType").val()
-            var searchKeyword = $("#searchKeyword").val()
-
-            if (searchType != null && searchType != "") {
-                if (searchKeyword == null || searchKeyword == "") {
-                    alert("검색어를 입력해주십시오");
-                    return;
-                }
-            } else {
-                if (searchKeyword != null && searchKeyword != "") {
-                    alert("검색조건을 입력해주십시오");
-                    return;
-                }
-            }
-            $("#pageNumber").val(1);
-            selectPstList();
         }
 
         //공통 Pagination 사용시 function name 일괄 적용 할것

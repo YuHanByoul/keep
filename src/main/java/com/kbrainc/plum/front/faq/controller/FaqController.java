@@ -46,7 +46,7 @@ public class FaqController {
     public String faqList(FaqVo searchVo, Model model, @SiteInfo SiteInfoVo site) throws Exception {
         searchVo.setSite(site);
         searchVo.setOrderField("ORD");
-        searchVo.setOrderDirection(ParentRequestVo.ORDER_DIRECTION.asc);
+        searchVo.setOrderDirection(ParentRequestVo.ORDER_DIRECTION.desc);
         searchVo.setRowPerPage(20);
 
         List<FaqVo> list = faqService.selectFaqList(searchVo);

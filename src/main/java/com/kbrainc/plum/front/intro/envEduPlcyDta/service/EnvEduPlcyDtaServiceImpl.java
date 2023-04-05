@@ -118,7 +118,7 @@ public class EnvEduPlcyDtaServiceImpl extends PlumAbstractServiceImpl implements
 
         if (spcltyDta.getPdfFileid() != null && !spcltyDta.getPdfFileid().equals(0)) {
             FileVo fileVo = new FileVo();
-            fileVo.setFilegrpid(spcltyDta.getAtchFilegrpid());
+            fileVo.setFilegrpid(spcltyDta.getPdfFileid());
             ArrayList<FileVo> fileList = fileDao.getFileList(fileVo);
             spcltyDta.setPdfFileList(fileList);
         }
