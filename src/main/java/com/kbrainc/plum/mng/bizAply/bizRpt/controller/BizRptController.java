@@ -342,6 +342,7 @@ public class BizRptController {
     public String cnsltngTrgtPopup(BizRptVo bizRptVo, Model model, @UserInfo UserVo user) throws Exception {
         model.addAttribute("aplyid",bizRptVo.getAplyid());
         model.addAttribute("cnsltngTrgtCn",bizRptVo.getCnsltngTrgtCn());
+        model.addAttribute("cnstntList", bizRptService.selectCnstntList(bizRptVo));
         return "mng/bizAply/bizRpt/cnsltngTrgtPopup";
     }
 
@@ -374,7 +375,6 @@ public class BizRptController {
             resultMap.put("msg", "컨설팅 대상 처리에 실패했습니다.");
         }
 
- 		//model.addAttribute("rptSplmntDmndDtlInfo", rptSplmntDmndDtlInfo);
  		return resultMap;
  	}
 
@@ -382,7 +382,7 @@ public class BizRptController {
  	 * 컨설팅 대상 삭제
  	 *
  	 * @Title : deleteCnsltngTrgt
- 	 * @Description : 컨설팅 대상 저장
+ 	 * @Description : 컨설팅 대상 삭제
  	 * @param bizRptVo
  	 * @param model
  	 * @param user
@@ -424,7 +424,6 @@ public class BizRptController {
  	 */
  	@RequestMapping(value = "/mng/bizAply/bizRpt/cnsltngPicPopup.html")
  	public String cnsltngPicPopup(BizRptVo bizRptVo, Model model, @UserInfo UserVo user) throws Exception {
- 		//model.addAttribute("user",user);
  		return "mng/bizAply/bizRpt/cnsltngPicPopup";
  	}
 

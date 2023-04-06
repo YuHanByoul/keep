@@ -982,12 +982,34 @@
           )
     </insert>
 
+    <delete id="deleteCnsltngMng" parameterType="BizRptVo" >
+        DELETE FROM TB_SPB_APLY_CNSLTNG
+        WHERE APLYID = #{aplyid}
+    </delete>
+
     <!-- 컨설팅 대상자 내용 수정 -->
     <update id="updateTrgtCn" parameterType="BizRptVo" >
         UPDATE TB_SPB_APLY
         SET    CNSLTNG_TRGT_CN = #{cnsltngTrgtCn}
         WHERE APLYID  = #{aplyid}
     </update>
+
+
+    <select id="selectCnstntList" parameterType="BizRptVo" resultType="BizRptVo">
+        /* BizRptDao.selectCnstntList */
+        SELECT
+            A.APLYID
+          , A.CNSLTNGID
+          , A.CNSTNTID
+          , USR.USERID
+          , USR.NM
+          , USR.ACNT
+          , USR.EML
+          , USR.MOBLPHON
+        FROM TB_SPB_APLY_CNSLTNG A
+        LEFT OUTER JOIN TB_CMM_USER USR ON A.CNSTNTID = USR.USERID
+        WHERE A.APLYID = #{aplyid}
+    </select>
 
 
 </mapper>
