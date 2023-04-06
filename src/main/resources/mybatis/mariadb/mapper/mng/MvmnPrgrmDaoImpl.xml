@@ -21,7 +21,12 @@
         , A.SAREA_CD
         , A.EDU_TYPE_CD
         , A.PRGRM_NM
-        , CONCAT((SELECT A.CD_NM FROM TB_CMM_CD A WHERE A.CD = E.UPPR_CD), '  <![CDATA[>]]> ', E.CD_NM) AS CLSF_NM
+        , (CASE WHEN COUNT(A.PRGRMID) > 1 
+               THEN CONCAT((SELECT A.CD_NM FROM TB_CMM_CD A WHERE A.CD = F.UPPR_CD), '  <![CDATA[>]]> ', F.CD_NM, ' 외 ', COUNT(A.PRGRMID)-1, '건')
+               WHEN COUNT(A.PRGRMID) = 1
+               THEN CONCAT((SELECT A.CD_NM FROM TB_CMM_CD A WHERE A.CD = F.UPPR_CD), '  <![CDATA[>]]> ', F.CD_NM)
+               ELSE F.CD_NM END
+          ) AS CLSF_NM    
         , A.OPER_FOM_CD
         , G.CD_NM OPER_FOM_NM
         , A.EDU_NOPE
@@ -77,7 +82,8 @@
             </if>
             <if test="searchUseYn != null and searchUseYn != ''">
             AND A.USE_YN = #{searchUseYn}
-            </if>                                    
+            </if>       
+        GROUP BY A.PRGRMID                                 
         <include refid="PaginationMapper.footer"/>
     </select>
     

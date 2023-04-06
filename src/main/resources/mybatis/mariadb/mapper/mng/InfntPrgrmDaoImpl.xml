@@ -19,7 +19,13 @@
         , A.EDU_YR
         , A.PRGRM_NM
         -- , C.CLSF_CD
-        , CONCAT((SELECT A.CD_NM FROM TB_CMM_CD A WHERE A.CD = F.UPPR_CD), '  <![CDATA[>]]> ', F.CD_NM) AS CLSF_NM
+        -- , CONCAT((SELECT A.CD_NM FROM TB_CMM_CD A WHERE A.CD = F.UPPR_CD), '  <![CDATA[>]]> ', F.CD_NM) AS CLSF_NM
+        , (CASE WHEN COUNT(A.PRGRMID) > 1 
+               THEN CONCAT((SELECT A.CD_NM FROM TB_CMM_CD A WHERE A.CD = F.UPPR_CD), '  <![CDATA[>]]> ', F.CD_NM, ' 외 ', COUNT(A.PRGRMID)-1, '건')
+               WHEN COUNT(A.PRGRMID) = 1
+               THEN CONCAT((SELECT A.CD_NM FROM TB_CMM_CD A WHERE A.CD = F.UPPR_CD), '  <![CDATA[>]]> ', F.CD_NM)
+               ELSE F.CD_NM END) AS CLSF_NM    
+        -- ,(SELECT GROUP_CONCAT(CONCAT((SELECT TC.CD_NM FROM TB_CMM_CD TC WHERE TC.CD = TB.UPPR_CD), '  <![CDATA[>]]> ', TB.CD_NM) SEPARATOR'<![CDATA[&nbsp;]]> ') FROM TB_EDU_INFNT_PRGRM_CLSF_MAPNG TA, TB_CMM_CD TB WHERE TA.PRGRMID = A.PRGRMID and TA.CLSF_CD = TB.CD) AS CLSF_NM
         , A.EDU_NOPE
         , A.EDU_HR_MNT
         , E.CD_NM AS RCPT_MTHD_NM
@@ -70,7 +76,8 @@
             </if>
             <if test="searchUseYn != null and searchUseYn != ''">
             AND A.USE_YN = #{searchUseYn}
-            </if>                                    
+            </if>
+         GROUP BY A.PRGRMID                                       
         <include refid="PaginationMapper.footer"/>
     </select>
     
