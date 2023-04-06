@@ -543,6 +543,18 @@ public interface ReqMngService {
     List<SrngTabVo> detailSrngList(SrngTabVo srngTabVo) throws Exception;
     
     /**
+    * 심사보기 팝업. 
+    *
+    * @Title : selectSrngResult
+    * @Description : TODO
+    * @param srngTabVo
+    * @return
+    * @throws Exception
+    * @return List<SrngTabVo>
+     */
+    List<SrngTabVo> selectSrngResult(SrngTabVo srngTabVo) throws Exception;
+    
+    /**
     * [심사일정 조회. 
     *
     * @Title : selectScheduleList
