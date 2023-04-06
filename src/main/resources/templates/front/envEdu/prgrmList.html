@@ -283,16 +283,19 @@
                          `;
                     } else {
                         data.list.forEach(function(item) {
+                            var dsgnNo = !item.dsgnNo ? "-" : item.dsgnNo; 
+                            var dsgnDe = !item.dsgnDe ? "-" : item.dsgnDe;
+                             
                         	pc_listHtml += `
                             <tr>
                             <td>${item.rowNumber}</td>
-                            <td>${item.dsgnNo}</td>
+                            <td>${dsgnNo}</td>
                             <td className="al article"><a href="javascript:void(0)" onclick="prgrm.moveToDetail(${item.prgrmid}, ${eduSbjctCd})">${item.prgrmNm}</a></td>
    							<td>${item.instNm}</td>
    							<td>${item.ctprvnNm}</td>
    							<td>${item.eduTarget}</td>
    							<td>${item.etrfee}</td>
-   							<td>${item.dsgnDe}</td>
+   							<td>${dsgnDe}</td>
    							</tr>
    							`;
    							
@@ -306,7 +309,7 @@
 										</div>
 										<div class="list">
 											<dt>지정번호</dt>
-											<dd>${item.dsgnNo}</dd>
+											<dd>${dsgnNo}</dd>
 										</div>
 										<div class="list">
 											<dt>프로그램명</dt>
@@ -330,13 +333,52 @@
 										</div>
 										<div class="list">
 											<dt>지정일</dt>
-											<dd>${item.dsgnDe}</dd>
+											<dd>${dsgnDe}</dd>
 										</div>
 									</dl>
 								</div>
 							</li>
-   							`;   							
+   							`;
    							
+   							var ctprvnNm = item.ctprvnNm;
+   							var ctprvnTag = "";   							
+   							switch(ctprvnNm) {
+                                case "서울특별시":
+                                    ctprvnTag = '<div class="tag tag-green">' + ctprvnNm + '</div>';
+                                break;
+                                       
+                                case "부산광역시":       
+                                case "대구광역시":       
+                                case "울산광역시":       
+                                case "경상북도":       
+                                case "경상남도":
+                                    ctprvnTag = '<div class="tag tag-olive">' + ctprvnNm + '</div>';
+                                break;       
+                                
+                                case "인천광역시":       
+                                case "경기도":       
+                                    ctprvnTag = '<div class="tag tag-blue">' + ctprvnNm + '</div>';
+                                break;
+                                
+                                case "광주광역시":       
+                                case "전라북도":       
+                                case "전라남도":       
+                                    ctprvnTag = '<div class="tag tag-red">' + ctprvnNm + '</div>';
+                                break;
+                                
+                                case "세종특별자치시":
+                                case "대전광역시":       
+                                case "충청북도":       
+                                case "충청남도":       
+                                    ctprvnTag = '<div class="tag tag-purple">' + ctprvnNm + '</div>';
+                                break;
+                                
+                                case "강원도":       
+                                case "제주특별자치도":       
+                                    ctprvnTag = '<div class="tag tag-brown">' + ctprvnNm + '</div>';
+                                break;
+                            }
+                            
    	                        cardListHtml += `
    	     					<li>
                                 <a href="javascript:prgrm.moveToDetail(${item.prgrmid}, ${eduSbjctCd})">
@@ -344,9 +386,7 @@
    	 								<img src="/downloadFileByFileid.do?fileid=${item.fileid}+&file_idntfc_key=${item.fileIdntfcKey}" alt="">
    	 								</div>
    	 								<dl class="card-program-dot-list">
-   	 									<dt>
-   	 										<div class="tag tag-blue">${item.ctprvnNm}</div>
-   	 									</dt>
+   	 									<dt>` + ctprvnTag + `</dt>
    	 									<dd>
    	 										<p class="ellipsis" data-ellipsis="2">${item.prgrmNm}</p>
    	 										<ul class="dot-list fc-black3">

@@ -9,7 +9,7 @@
                     <div class="mb-0 form-group required">
                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>분류</strong></div>
                         <div class="border-checkbox-section">
-                            <span kattr:check_code="clsfCds" grpCd="228" isAdmin="true"></span>
+                            <span kattr:check_code="clsfCds" grpCd="228" th:attr="selectedCd=${spcltyDta.clsfCd}" isAdmin="true"/>
                         </div>
                     </div>
                 </div>
@@ -114,6 +114,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="row">
                 <div class="col-12 col-lg-6 mb-3">
                     <div class="mb-0 form-group">
@@ -136,9 +137,32 @@
                     </div>
                 </div>
             </div>
+
+            <div class="row">
+                <div class="col-12 col-lg-6 mb-3">
+                    <div class="mb-0 form-group">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>최종수정일</strong></label>
+                        <div class="col-12">
+                            <input type="text" class="form-control form-control-sm" readonly
+                                   th:value="${spcltyDta.mdfcnDt != null? #dates.format(spcltyDta.mdfcnDt,'yyyy-MM-dd') : ''}"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6 mb-3">
+                    <div class="mb-0 form-group">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>삭제여부</strong></label>
+                        <div class="col-12">
+                            <input type="text" class="form-control form-control-sm" readonly th:value="${spcltyDta.delYn}"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="card-block-small">
+            <th:block sec:authorize-url="/mng/spcltyDta/deleteSpcltyDta.do">
+                <button th:if="${spcltyDta.dtaid != null and spcltyDta.delYn == 'N'}" type='button' class="btn btn-inverse" th:dtaid="${spcltyDta.dtaid}" th:onclick="|deleteSpcltyDta(this.getAttribute('dtaid'))|">삭제</button>
+            </th:block>
             <button type='button' class="btn btn-disabled m-r-5" onclick="spcltyDtaGridHelper.toggleContent()">취소</button>
             <th:block sec:authorize-url="/mng/spcltyDta/insertSpcltyDta.do">
                 <button type='button' class="btn btn-primary" onclick="insertSpcltyDta()">저장</button>
@@ -153,21 +177,32 @@
         var editor = CKEDITOR.replace('cn', {enterMode: CKEDITOR.ENTER_BR});
 
         $(function () {
-            if (!!spcltyDta.clsfCd) {
-                var clsfCds = spcltyDta.clsfCd.split(',');
-                clsfCds.forEach(val => {
-                    $('input[name=clsfCds]').each(function (index, item) {
-                        if (val == $(item).val()) {
-                            $(item).prop('checked', true);
-                        }
-                    })
-                })
-            }
-
             pdfFileEvent();
             atchFileEvent();
             validateForm();
         })
+
+        var deleteSpcltyDta = (dtaid) => {
+            var deleteDtaids = dtaid;
+
+            if (confirm('해당 게시물을 삭제하시겠습니까?')) {
+                if (displayWorkProgress()) {
+                    $.ajax({
+                        method: 'post',
+                        url: '/mng/spcltyDta/deleteSpcltyDta.do',
+                        dataType: 'json',
+                        data: {deleteDtaids: deleteDtaids},
+                        success: function (response) {
+                            alert(response.msg);
+                            closeWorkProgress();
+                            if (response.result == "success") {
+                                bsnsOperDtaGridHelper.resetPageContent();
+                            }
+                        }
+                    });
+                }
+            }
+        }
 
         var insertSpcltyDta = () => {
             if ($('input[name=clsfCds]:checked').length == 0) {

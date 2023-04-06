@@ -95,6 +95,12 @@ public class SrngTabVo {
     /** 문항 */
     private String qitem;
     
+    /** 문항 배점 */
+    private String altm;
+    
+    /** 문항 점수 */
+    private String itemScr;
+    
     /** 문항 구분 열 병합 */
     private String colspan;
     

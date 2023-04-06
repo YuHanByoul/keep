@@ -162,18 +162,15 @@
                     sorting: false
                 },
                 {name: 'userid', css: 'hide'},
-                {title: '사용자', name: 'nm', type: "text", width: "150"},
+                {title: '사용자', type: "text", width: "150",
+                    itemTemplate(value,item) {
+                        return item.nm +"("+item.acnt+")";
+                    }},
                 {title: '소속기관', name: 'instNm', type: "text", width: "150",sorting: false},
                 {title: '역할', name: 'roleNm', type: "text", width: "120", align: "center",sorting: false}
             ],
             rowClick: function (args) {
                 if (args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
-
-                if ($("#userid-" + args.item.userid).is(":checked")) {
-                    managerUnselectItem(args.item.id, args.item.name);
-                } else {
-                    managerSelectItem(args.item.id, args.item.name);
-                }
             },
             onPageChanged: function (args) {
                 managerSelectedItems = [];
@@ -230,7 +227,7 @@
             if ($("#managerId-" + item.userid).length > 0) {
                 duplicate = true;
             } else {
-                var content = "<span class='label label-inverse' name='managerInfo' id='managerId-" + item.userid + "' data-id='" + item.userid + "'>" + item.nm + "&nbsp; <a href='javascript:void(0)' onclick='removeManagerInfo(" + item.userid + ")' class='text-white'>X</a> </span>";
+                var content = "<span class='label label-inverse' name='managerInfo' id='managerId-" + item.userid + "' data-id='" + item.userid + "'>" + item.nm + "<a href='javascript:void(0)' onclick='removeManagerInfo(" + item.userid + ")' class='text-white'>X</a> </span>";
                 $("#managerList").append(content);
             }
         }

@@ -294,6 +294,7 @@ public class ReqMngController {
         
         model.addAttribute("sidoList", commonService.selectAlowedCtprvnList());
         model.addAttribute("reqUserVo", detailReqUserVo);
+        model.addAttribute("popupYn", reqUserVo.getPopupYn());
         
         return returnPage;
     }
@@ -569,6 +570,7 @@ public class ReqMngController {
         model.addAttribute("prgrmList", prgrmList);
         model.addAttribute("eduList", eduList);
         model.addAttribute("etcList", etcList);
+        model.addAttribute("popupYn", capabilityVo.getPopupYn());
         
         return "mng/bizAply/req/detailCapTabForm";
     }
@@ -639,7 +641,7 @@ public class ReqMngController {
             detail = new ProcPlanVo();
         
         model.addAttribute("detail", detail);
-        
+        model.addAttribute("popupYn", procPlanVo.getPopupYn());
         return "mng/bizAply/req/detailPlanTabForm";
     }
     
@@ -715,7 +717,7 @@ public class ReqMngController {
         
         model.addAttribute("detail", detail);
         model.addAttribute("prgrmList", outlineList);
-        
+        model.addAttribute("popupYn", programInfoVo.getPopupYn());
         return "mng/bizAply/req/detailPrgrmInfoTabForm";
     }
     
@@ -796,7 +798,7 @@ public class ReqMngController {
         model.addAttribute("acbgList", acbgList);
         model.addAttribute("licList", licList);
         model.addAttribute("carrList", carrList);
-        
+        model.addAttribute("popupYn", smrLeaderVo.getPopupYn());
         return "mng/bizAply/req/detailSmrLeaderTabForm";
     }
     
@@ -871,7 +873,7 @@ public class ReqMngController {
         
         model.addAttribute("detail", detail);
         model.addAttribute("detail2", detail2);
-        
+        model.addAttribute("popupYn", safetyMngVo.getPopupYn());
         return "mng/bizAply/req/detailSafetyMngTabForm";
     }
     
@@ -994,6 +996,23 @@ public class ReqMngController {
     }
     
     /**
+    * 심사보기 팝업. 
+    *
+    * @Title : selectSrngResult
+    * @Description : TODO
+    * @param srngTabVo
+    * @param model
+    * @return
+    * @throws Exception
+    * @return String
+     */
+    @RequestMapping(value="/mng/bizAply/req/selectSrngResultPopup.html")
+    public String selectSrngResult(SrngTabVo srngTabVo, Model model) throws Exception {
+        model.addAttribute("list", this.reqMngService.selectSrngResult(srngTabVo));
+        return "mng/bizAply/req/selectSrngResultPopup";
+    }
+    
+    /**
     * 선정 미선정 업데이트. 
     *
     * @Title : updateSrng
@@ -1064,7 +1083,7 @@ public class ReqMngController {
         model.addAttribute("fldCd", budgetVo.getFldCd());
         model.addAttribute("aplyid", budgetVo.getAplyid());
         model.addAttribute("list", list);
-        
+        model.addAttribute("popupYn", budgetVo.getPopupYn());
         return "mng/bizAply/req/detailBudget";
     }
     
@@ -1151,7 +1170,7 @@ public class ReqMngController {
          model.addAttribute("eduList", eduList);
          model.addAttribute("normalList", normalList);
          model.addAttribute("envList", envList);
-         
+         model.addAttribute("popupYn", operVo.getPopupYn());
          return "mng/bizAply/req/detailOper";
     }
     

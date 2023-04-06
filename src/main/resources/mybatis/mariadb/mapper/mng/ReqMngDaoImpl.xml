@@ -242,6 +242,7 @@
         FROM (
             SELECT 
                 TSA.PCNTSTID
+                , TSP.FLD_CD
                 , TSA.APLYID
                 , TSA.APLYNO 
                 , TSA.APLY_STTS_CD
@@ -251,7 +252,7 @@
                 , TSA.APLCNT_NM 
                 , TSA.PRGRM_NM 
                 , TSA.REG_DE 
-                , CASE WHEN NOW()   >   SRNG_END_DT OR (IF(TSP.ONLN_SRNG_TYPE_CD = '177101', FRST.SRNG_CNT = 1 AND SRNG_END_YN = 'Y', IF(TSA.SCND_SRNG_TRGT_YN = 'Y', FRST.SRNG_CNT = 1 AND SCND.SRNG_CNT = 1 AND SCND_SRNG_END_YN = 'Y', FRST.SRNG_CNT = 1 AND SRNG_END_YN = 'Y')))
+                , CASE WHEN NOW() > SRNG_END_DT OR (IF(TSP.ONLN_SRNG_TYPE_CD = '177101', FRST.SRNG_CNT = 1 AND SRNG_END_YN = 'Y', IF(TSA.SCND_SRNG_TRGT_YN = 'Y', FRST.SRNG_CNT = 1 AND SCND.SRNG_CNT = 1 AND SCND_SRNG_END_YN = 'Y', FRST.SRNG_CNT = 1 AND SRNG_END_YN = 'Y')))
                         THEN '심사완료'
                     ELSE '심사전'
                     END AS SRNG_STTS_NM
@@ -1826,6 +1827,36 @@
             AND TSA.APLYID = #{aplyid}
         ) T LEFT OUTER JOIN SCORE S ON T.QITEMID = S.QITEMID AND T.JDGSID = S.JDGSID
         ORDER BY IFNULL(S.SBMSNID, T.JDGSID), T.ORDR
+    </select>
+    
+    <!-- 심사보기 팝업 -->
+    <select id="selectSrngResult" parameterType="SrngTabVo" resultType="SrngTabVo">
+        /* ReqMngDao.selectSrngResult */
+        SELECT
+            TCU.NM
+            , DATE_FORMAT(TSSS.SBMSN_DT, '%Y-%m-%d') AS SBMSN_DT
+            , TCC.CD_NM AS QITEM_SE_NM
+            , TSSSQ.QITEM
+            , TSSSQ.ALTM
+            , TSSSQ.SCR AS ITEM_SCR
+            , TSSS.TOT_SCR 
+            , TSSS.SCR 
+            , TSSS.SRNG_OPNN 
+            , TSSS.OPNN1 
+            , TSSS.OPNN2 
+            , TSSS.OPNN3 
+            , TSSS.OPNN4 
+            , TSJ.CYCL 
+        FROM TB_SPB_PCNTST TSP
+            INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID 
+            INNER JOIN TB_SPB_JDGS TSJ ON TSA.PCNTSTID = TSJ.PCNTSTID
+            INNER JOIN TB_CMM_USER TCU ON TCU.USERID = TSJ.JDGSID
+            LEFT OUTER JOIN TB_SPB_SRNG_SBMSN TSSS ON TSSS.USERID = TSJ.JDGSID AND TSSS.APLYID = TSA.APLYID AND TSSS.FORMID = IF(TSJ.CYCL = 1, TSP.SRNG_FORMID_FIRST, TSP.SRNG_FORMID_SCND)
+            LEFT OUTER JOIN TB_SPB_SRNG_SBMSN_QITEM TSSSQ ON TSSSQ.SBMSNID = TSSS.SBMSNID
+            LEFT OUTER JOIN TB_CMM_CD TCC ON TCC.CD = TSSSQ.QITEM_SE_CD 
+        WHERE 1 = 1
+        AND TSSS.SBMSNID = #{sbmsnid}
+        ORDER BY TSSSQ.ORDR 
     </select>
     
     <!-- 심사일정 캘린더 -->
