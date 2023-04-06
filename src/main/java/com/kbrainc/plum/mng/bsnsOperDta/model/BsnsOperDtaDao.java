@@ -96,15 +96,4 @@ public interface BsnsOperDtaDao {
      * @Description : 사업운영자료 분류 매핑 삭제
      */
     public int deleteBsnsOperDtaClsfMapping(BsnsOperDtaVo bsnsOperDtaVo) throws Exception;
-
-    /**
-     * 삭제할 사업운영자료들의 분류 매핑 삭제
-     *
-     * @param bsnsOperDtaVo
-     * @return int
-     * @throws Exception
-     * @Title : deleteBsnsOperDtaClsfMappings
-     * @Description : 삭제할 사업운영자료들의 분류 매핑 삭제
-     */
-    public int deleteBsnsOperDtaClsfMappings(BsnsOperDtaVo bsnsOperDtaVo) throws Exception;
 }

@@ -98,14 +98,4 @@ public interface SpcltyDtaDao {
      */
     public int deleteSpcltyDtaClsfMapping(SpcltyDtaVo spcltyDtaVo) throws Exception;
 
-    /**
-     * 삭제할 전문자료들의 분류 매핑 삭제
-     *
-     * @param spcltyDtaVo
-     * @return int
-     * @throws Exception
-     * @Title : deleteSpcltyDtaClsfMapping
-     * @Description : 삭제할 전문자료들의 분류 매핑 삭제
-     */
-    public int deleteSpcltyDtaClsfMappings(SpcltyDtaVo spcltyDtaVo) throws Exception;
 }
