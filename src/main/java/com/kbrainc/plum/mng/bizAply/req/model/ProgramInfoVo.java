@@ -169,4 +169,6 @@ public class ProgramInfoVo extends ParentRequestVo {
     
     /** 등록자 아이디 */
     private Integer rgtrid;
+    
+    private String popupYn;
 }
