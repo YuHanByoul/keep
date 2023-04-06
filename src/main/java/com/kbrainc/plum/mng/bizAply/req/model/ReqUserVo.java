@@ -245,7 +245,7 @@ public class ReqUserVo extends ParentRequestVo {
     private Integer mdfrid;
     
     /** 등록일시 */
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd@HH:mm:ss")
     private Date regDt;
     
     /** 등록자 아이디 */
@@ -298,5 +298,5 @@ public class ReqUserVo extends ParentRequestVo {
     private String firstScr;
     private String secondScr;
     private String totalScr;
-    
+    private String popupYn;
 }
