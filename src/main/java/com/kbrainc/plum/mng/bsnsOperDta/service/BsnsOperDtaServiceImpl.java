@@ -136,7 +136,6 @@ public class BsnsOperDtaServiceImpl extends PlumAbstractServiceImpl implements B
     public int deleteBsnsOperDta(BsnsOperDtaVo bsnsOperDtaVo) throws Exception {
         int retVal = 0;
 
-        retVal += bsnsOperDtaDao.deleteBsnsOperDtaClsfMappings(bsnsOperDtaVo);
         retVal += bsnsOperDtaDao.deleteBsnsOperDta(bsnsOperDtaVo);
 
         return retVal;

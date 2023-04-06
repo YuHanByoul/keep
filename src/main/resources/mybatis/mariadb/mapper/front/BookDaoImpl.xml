@@ -11,25 +11,31 @@
     <select id="selectBookList" parameterType="front.BookVo" resultType="front.BookVo">
         /* BookDao.selectBookList */
         <include refid="PaginationMapper.header"/>
-            SELECT
-                  A.BOOKID
+        SELECT 
+           A.*
+          FROM 
+          (
+           SELECT
+                A.BOOKID
                 , A.TTL
-                , B1.CD_NM AS EDUSBJCTCD
-                , C1.CD_NM AS EDUTRGTCD
+                , A.EDU_TRGT_CD
                 , A.WRITR
                 , A.WRITR_PICTR                
-                , A.PLSCMPN
+                , A.PLSCMPN 
                 , A.RPRS_IMG_FILEID
+                , A.CPYRHT_CD
                 , E.FILE_IDNTFC_KEY
                 , NVL(A.HITS,0) AS HITS
                 , DATE(A.REG_DT) AS REG_DT
+                ,GROUP_CONCAT(B.EDU_SBJCT_CD) AS EDUSBJCTCD 
+                ,GROUP_CONCAT(DISTINCT  LEFT(B.EDU_SBJCT_CD,6)) AS UPPR_EDUSBJCTCD 
             FROM
                 TB_CMM_BOOK A
-                LEFT OUTER JOIN TB_CMM_CD B1 ON A.EDU_SBJCT_CD = B1.CD
-                LEFT OUTER JOIN TB_CMM_CD B2 ON B1.UPPR_CD = B2.CD
-                LEFT OUTER JOIN TB_CMM_CD C1 ON A.EDU_TRGT_CD = C1.CD
-                
+                LEFT OUTER JOIN TB_CMM_BOOK_SBJCT B ON A.BOOKID = B.BOOKID 
                 LEFT OUTER JOIN TB_CMM_FILE E ON A.RPRS_IMG_FILEID = E.FILEID
+           WHERE A.DEL_YN = 'N' 
+               GROUP BY A.BOOKID
+               ) A
             WHERE 1=1
             <!-- 키워드 -->
             <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchTtl'">
@@ -39,8 +45,7 @@
             AND A.CN LIKE CONCAT('%',#{searchKeyword},'%')
             </if>
             <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchTtlCn'">
-            AND A.TTL LIKE CONCAT('%',#{searchKeyword},'%')
-            AND A.CN LIKE CONCAT('%',#{searchKeyword},'%')
+            AND (A.TTL LIKE CONCAT('%',#{searchKeyword},'%') OR A.CN LIKE CONCAT('%',#{searchKeyword},'%'))
             </if>
             
             <!-- 작가/출판사 -->
@@ -56,15 +61,15 @@
             
             <!-- 교육대상 -->
             <if test="searchEduTrgtCd != null and searchEduTrgtCd != ''">
-            AND C1.CD = #{searchEduTrgtCd}
+            AND EDUTRGTCD = #{searchEduTrgtCd}
             </if>
             
             <!-- 교육주제 -->
             <if test="searchManinEduSbjctCd != null and searchManinEduSbjctCd != ''">
-            AND B2.CD = #{searchManinEduSbjctCd}
+            AND UPPR_EDUSBJCTCD LIKE CONCAT('%',#{searchManinEduSbjctCd},'%')
             </if>
             <if test="searchMdleEduSbjctCd != null and searchMdleEduSbjctCd != ''">
-            AND B1.CD = #{searchMdleEduSbjctCd}
+            AND EDUSBJCTCD  LIKE CONCAT('%',#{searchMdleEduSbjctCd},'%')
             </if>
         <include refid="PaginationMapper.footer"/>
     </select>
@@ -74,11 +79,12 @@
         /* BookDao.selectBookInfo */
         SELECT
               A.BOOKID
-            , B1.CD_NM AS EDU_SBJCT_CD
-            , C1.CD_NM AS EDU_TRGT_CD
+            , GROUP_CONCAT(EDU_SBJCT_CD ) AS EDU_SBJCT_CD
+            , A.EDU_TRGT_CD
             , A.WRITR
             , A.WRITR_PICTR
             , A.PLSCMPN
+            , A.CPYRHT_CD
             , FORMAT(A.AMT, 0) AS AMT
             , NVL(A.HITS,0) AS HITS
             , A.TTL
@@ -86,7 +92,6 @@
             , E.FILE_IDNTFC_KEY
             , A.CN
             , DATE(A.REG_DT) AS REG_DT
-            
             <![CDATA[
             , (SELECT BOOKID FROM tb_cmm_book WHERE BOOKID > #{bookid} LIMIT 1) AS NEXT_BOOKID
             , (SELECT TTL FROM tb_cmm_book WHERE BOOKID > #{bookid} LIMIT 1) AS NEXT_BOOK_TTL
@@ -95,13 +100,10 @@
             ]]>
         FROM
             TB_CMM_BOOK A
-            LEFT OUTER JOIN TB_CMM_CD B1 ON A.EDU_SBJCT_CD = B1.CD
-            LEFT OUTER JOIN TB_CMM_CD B2 ON B1.UPPR_CD = B2.CD
-            LEFT OUTER JOIN TB_CMM_CD C1 ON A.EDU_TRGT_CD = C1.CD
-            
+            LEFT OUTER JOIN TB_CMM_BOOK_SBJCT B ON A.BOOKID  = B.BOOKID
             LEFT OUTER JOIN TB_CMM_FILE E ON A.RPRS_IMG_FILEID = E.FILEID
             LEFT OUTER JOIN TB_CMM_USER F ON A.RGTRID = F.USERID
-        WHERE BOOKID = #{bookid}
+        WHERE A.BOOKID = #{bookid}
     </select>
     
     <!-- 우수환경도서 게시글 상세조회 -->

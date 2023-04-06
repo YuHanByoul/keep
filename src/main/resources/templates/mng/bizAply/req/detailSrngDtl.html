@@ -32,7 +32,7 @@
                     </tr>
                     <tr class="border-bottom" th:if="${#lists.size(list_1) > 0}" th:each="list, i : ${list_1}">
                         <td class="text-center v-middle"><th:block th:text="${i.index+1}"/></td>
-                        <td class="text-center v-middle"><th:block th:text="${list.nm}"/><button type="button" class="btn btn-primary btn-sm">심사보기</button>
+                        <td class="text-center v-middle"><th:block th:text="${list.nm}"/><button type="button" class="btn btn-primary btn-sm" th:if="${list.sbmsnid > 0}" th:onclick="getSrngPopup([[${list.sbmsnid}]],[[${list.formid}]])">심사보기</button>
                         </td>
                         <td class="text-center v-middle"><th:block th:text="${list.sbmsnDt}"/></td>
                         <th:block th:if="${#lists.size(list_2) > 0 and list.jdgsid == list2.jdgsid}" th:each="list2, j : ${list_2}">
@@ -108,8 +108,17 @@
     </div>
 </form>
 
-<script th:inline="javascript">    
-    $(function(){
-    	
-    });
+<div class="modal fade" id="searchSrngModal" aria-hidden="true" data-bs-backdrop="static"></div>
+<script th:inline="javascript">
+    var searchSrngModal;
+    function getSrngPopup(sbmsnid,formid) {
+    	console.log(sbmsnid,formid);
+    	var url = "/mng/bizAply/req/selectSrngResultPopup.html?sbmsnid="+sbmsnid;
+        $("#searchSrngModal").load(url, function(response, status, xhr) {
+            if (status == "success") {
+            	searchSrngModal = new bootstrap.Modal($('#searchSrngModal'));
+            	searchSrngModal.show();
+            }
+        });
+    }
 </script>

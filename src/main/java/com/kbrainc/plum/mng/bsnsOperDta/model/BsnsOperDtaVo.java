@@ -60,6 +60,8 @@ public class BsnsOperDtaVo extends ParentRequestVo {
 
     private Integer mdfrid;
 
+    private String delYn;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd")
     private Date regDt;
 

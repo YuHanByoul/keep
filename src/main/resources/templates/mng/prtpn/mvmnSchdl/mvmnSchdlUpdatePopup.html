@@ -161,6 +161,7 @@
 </form>
     <script th:inline="javascript">
     var deSttSelectedItems = [];
+    var deSttSelectedOrgItems = [];
     var prgrmSttSelectedItems = [];     
     
     $(function() {
@@ -186,7 +187,10 @@
         }else{
             prgrmSttSelectedItems.push(prgrmIds)
         }
-        
+
+        //교육일자 원본저장
+        deSttSelectedOrgItems = deSttSelectedItems;
+
     });        
     
     function fn_makeListHtml(){
@@ -269,15 +273,18 @@
        }
     }    
     function fn_changeOperFomCd(item){
-        fn_makeListHtml();      
+        fn_makeListHtml();
+        
         if($(item).val() == "" || $(item).val() == "197101"){
             $("#operFomType1").show();          
             $("#operFomType2").hide();
+            deSttSelectedItems = deSttSelectedOrgItems;
         }else{
             $("#operFomType1").hide();
-            $("#operFomType2").show();          
+            $("#operFomType2").show();
+            deSttSelectedItems = [];
         }
-        deSttSelectedItems = [];
+        
         var getCodeUrl = "/mng/prtpn/mvmnPrgrm/selectPrgrmSettingList.do";
         var url = getCodeUrl + "?operFomCd=" + $(item).val();
         var prgrmStthtml = "";
@@ -469,7 +476,7 @@
         if(!($("#mvmnSchdlUpdatePopupForm").valid())) return;
         //debugger;
         if(!confirm("수정하시겠습니까?")) return;
-
+        debugger;
         var deSttIds = deSttSelectedItems.join(",");
         var prgrmSttIds = prgrmSttSelectedItems.join(",");
         var schdlNm = $("#schdlNm").val();
@@ -502,7 +509,6 @@
         var data =  $("#mvmnSchdlUpdatePopupForm").serialize();
         data = data+"&schdlNm="+schdlNm;
 
-        debugger;
         $.ajax({
             url : "/mng/prtpn/mvmnSchdl/deleteMvmnSchdl.do",
             type: 'POST',

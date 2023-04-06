@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+    layout:decorator="layout/mng/popupLayout">
+
+<div layout:fragment="content">
+	<div id="pcoded" class="pcoded">
+	    <div class="pcoded-overlay-box"></div>
+	    <div class="pcoded-container navbar-wrapper">
+	        <div class="pcoded-main-container">
+	            <div class="pcoded-wrapper">
+	
+	                <!-- <div class="pcoded-content"> -->
+	                    <div class="pcoded-inner-content">
+	                        <!-- Main-body start -->
+	                        <div class="main-body">
+	                            <!-- 회원관리 sm 버전 -->
+	                            <div class="">
+	                                <!-- Page-body start -->
+	                               <div class="sub-title">
+		                               <div class="row align-items-end">
+			                               <div class="col">
+						                        <strong></strong>
+						                    </div>
+								           <div class="col-auto btn-group-sm">
+								               <a class="btn btn-primary" onclick="print();">인쇄</a>
+								           </div>
+								       </div>
+							       </div>
+	                                <div class="page-body">
+	                                   <div class="col-12" th:if="${reqUserVo.fldCd == '173101' or reqUserVo.fldCd == '173102' or reqUserVo.fldCd == '173103'}">
+										    <ul class="nav nav-tabs tabs gray-tabs" role="tablist">
+										        <th:block sec:authorize-url="/mng/bizAply/req/detailReqUserInfoTabForm.html">
+										            <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab_01" role="tab" id="tabCon1Link"><strong>신청정보</strong></a></li>
+										        </th:block>
+										        <th:block sec:authorize-url="/mng/bizAply/req/detailCapTabForm.html">
+										            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab_02" role="tab" id="tabCon2Link"><strong>기관역량</strong></a></li>
+										        </th:block>
+										        <th:block sec:authorize-url="/mng/bizAply/req/detailPlanTabForm.html">
+										            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab_03" role="tab" id="tabCon3Link"><strong>사업수행계획</strong></a></li>
+										        </th:block>
+										        <th:block sec:authorize-url="/mng/bizAply/req/detailPrgrmInfo.html">
+										            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab_04" role="tab" id="tabCon4Link"><strong>프로그램정보</strong></a></li>
+										        </th:block>
+										        <th:block sec:authorize-url="/mng/bizAply/req/detailSmrLeader.html">
+										            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab_05" role="tab" id="tabCon5Link"><strong>전문강사 확보</strong></a></li>
+										        </th:block>
+										        <th:block sec:authorize-url="/mng/bizAply/req/detailSafetyMng.html">
+										            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab_06" role="tab" id="tabCon6Link"><strong>안전관리 적정성</strong></a></li>
+										        </th:block>
+										    </ul>
+										</div>
+										<div class="col-12" th:if="${reqUserVo.fldCd == '173105' or reqUserVo.fldCd == '173106' or reqUserVo.fldCd == '173107'}">
+										    <ul class="nav nav-tabs tabs gray-tabs" role="tablist">
+										        <th:block sec:authorize-url="/mng/bizAply/req/detailReqUserInfoTabForm.html">
+										            <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab_01" role="tab" id="tabCon1Link"><strong>신청정보</strong></a></li>
+										        </th:block>
+										        <th:block sec:authorize-url="/mng/bizAply/req/detailBudgetTabForm.html">
+										            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab_08" role="tab" id="tabCon8Link"><strong>소요예산</strong></a></li>
+										        </th:block>
+										    </ul>
+										</div>
+										<div class="col-12" th:if="${reqUserVo.fldCd == '173104'}">
+										    <ul class="nav nav-tabs tabs gray-tabs" role="tablist">
+										        <th:block sec:authorize-url="/mng/bizAply/req/detailReqUserInfoTabForm.html">
+										            <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab_01" role="tab" id="tabCon1Link"><strong>신청정보</strong></a></li>
+										        </th:block>
+										        <th:block sec:authorize-url="/mng/bizAply/req/detailOper.html">
+										            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab_09" role="tab" id="tabCon9Link"><strong>운영개요</strong></a></li>
+										        </th:block>
+										        <th:block sec:authorize-url="/mng/bizAply/req/detailCapTabForm.html">
+										            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab_08" role="tab" id="tabCon8Link"><strong>소요예산</strong></a></li>
+										        </th:block>
+										    </ul>
+										</div>
+										
+										<div class="col-12">
+										    <div id="myTabContent" class="tab-content tabs"></div>
+										</div>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+	            </div>
+	       </div>
+	    </div>
+    </div>
+</div>
+</body>
+</html>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var aplyid = /*[[${reqUserVo.aplyid}]]*/null;
+    var pcntstid = /*[[${reqUserVo.pcntstid}]]*/null;
+    var fldCd = /*[[${reqUserVo.fldCd}]]*/null;
+    /*]]>*/
+
+    $('.nav-tabs a').on('show.bs.tab', function(event) {
+        //tab set
+        var tabId = event.currentTarget.attributes.id.value;
+        selectTab(tabId);
+    });
+
+    function selectTab(tabId) {
+        if(tabId == "tabCon1Link") {
+            loadTabContent("/mng/bizAply/req/detailReqUserInfoTabForm.html?popupYn=Y&aplyid=" + aplyid + '&pcntstid=' + pcntstid + '&fldCd=' + fldCd);
+        } else if(tabId == "tabCon2Link") {
+            loadTabContent("/mng/bizAply/req/detailCapTabForm.html?popupYn=Y&aplyid=" + aplyid);
+        } else if(tabId == "tabCon3Link") {
+            loadTabContent("/mng/bizAply/req/detailPlanTabForm.html?popupYn=Y&aplyid=" + aplyid);
+        } else if(tabId == "tabCon4Link") {
+            loadTabContent("/mng/bizAply/req/detailPrgrmInfo.html?popupYn=Y&aplyid=" + aplyid);
+        } else if(tabId == "tabCon5Link") {
+            loadTabContent("/mng/bizAply/req/detailSmrLeader.html?popupYn=Y&aplyid=" + aplyid);
+        } else if(tabId == "tabCon6Link") {
+            loadTabContent("/mng/bizAply/req/detailSafetyMng.html?popupYn=Y&aplyid=" + aplyid);
+        } else if(tabId == "tabCon7Link") {
+            loadTabContent("/mng/bizAply/req/detailSrng.html?popupYn=Y&aplyid=" + aplyid + '&fldCd=' + fldCd);
+        } else if(tabId == "tabCon8Link") {
+            loadTabContent("/mng/bizAply/req/detailBudgetTabForm.html?popupYn=Y&aplyid=" + aplyid + '&fldCd=' + fldCd);
+        } else if(tabId == "tabCon9Link") {
+            loadTabContent("/mng/bizAply/req/detailOper.html?popupYn=Y&aplyid=" + aplyid);
+        }
+        $("#" + tabId).parent().addClass("active");
+    }
+
+    function loadTabContent(uri){
+        $.ajax({
+            cache   : false
+          , url     : uri
+          , type    : 'GET'
+          , async   : 'false'
+          , dataType: 'html'
+          , success : function(result){ //요청이 성공했을때 실행되는 콜백 함수
+              $('#myTabContent').html(result);
+              scrollIntoView('contentPanel2');
+          }
+        });
+        showContent();
+    }
+
+    function initTab() {
+
+        var tabFlag = false;
+
+        if(tabFlag == false) {
+            selectTab("tabCon1Link");
+            tabFlag = true;
+        }
+
+        if(tabFlag == false) {
+            selectTab("tabCon2Link");
+            tabFlag = true;
+        }
+
+        if(tabFlag == false) {
+            selectTab("tabCon3Link");
+            tabFlag = true;
+        }
+
+        if(tabFlag == false) {
+            selectTab("tabCon4Link");
+            tabFlag = true;
+        }
+
+        if(tabFlag == false) {
+            selectTab("tabCon5Link");
+            tabFlag = true;
+        }
+
+        if(tabFlag == false) {
+            selectTab("tabCon6Link");
+            tabFlag = true;
+        }
+        
+        if(tabFlag == false) {
+            selectTab("tabCon7Link");
+            tabFlag = true;
+        }
+        
+        if(tabFlag == false) {
+            selectTab("tabCon8Link");
+            tabFlag = true;
+        }
+        
+        if(tabFlag == false) {
+            selectTab("tabCon9Link");
+            tabFlag = true;
+        }
+
+    }
+
+    initTab();
+    
+   	var vPrint = "";
+    function print() {
+	    var popUrl = "/cmm/reporting/prgrmDetail.html?id="+aplyid;
+	    var popupOption="scrollbars=yes,top=300, left=900,width=1000, height=600";
+	    vPrint = window.open(popUrl, "_blank", popupOption);
+    }
+</script>

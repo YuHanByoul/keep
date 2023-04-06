@@ -55,11 +55,15 @@ public class SpcltyDtaVo extends ParentRequestVo {
     @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd")
     private Date regDt;
 
+    private String delYn;
+
     private String regD;
 
     private Integer rgtrid;
 
     private String rgtrNm;
+
+    private Date mdfcnDt;
 
     private String rgtrAcnt;
 

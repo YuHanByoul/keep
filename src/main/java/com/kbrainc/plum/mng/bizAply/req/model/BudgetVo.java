@@ -77,5 +77,5 @@ public class BudgetVo extends ParentRequestVo {
     private String[] codeArr;
     private Integer[] amtArr;
     private String[] dsctnArr;
-    
+    private String popupYn;
 }

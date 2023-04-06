@@ -2,7 +2,6 @@ package com.kbrainc.plum.mng.bsnsOperDta.controller;
 
 import com.kbrainc.plum.mng.bsnsOperDta.model.BsnsOperDtaVo;
 import com.kbrainc.plum.mng.bsnsOperDta.service.BsnsOperDtaService;
-import com.kbrainc.plum.mng.inqry.model.InqryVo;
 import com.kbrainc.plum.mng.inst.model.InstVo;
 import com.kbrainc.plum.mng.inst.service.InstService;
 import com.kbrainc.plum.rte.constant.Constant;
@@ -15,7 +14,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
@@ -203,10 +201,11 @@ public class BsnsOperDtaController {
      */
     @PostMapping("/mng/bsnsOperDta/deleteBsnsOperDta.do")
     @ResponseBody
-    public Map<String, Object> deleteBsnsOperDta(BsnsOperDtaVo bsnsOperDtaVo) throws Exception {
+    public Map<String, Object> deleteBsnsOperDta(BsnsOperDtaVo bsnsOperDtaVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> result = new HashMap<>();
 
         int retVal = 0;
+        bsnsOperDtaVo.setUser(user);
         retVal = bsnsOperDtaService.deleteBsnsOperDta(bsnsOperDtaVo);
 
         if (retVal > 0) {

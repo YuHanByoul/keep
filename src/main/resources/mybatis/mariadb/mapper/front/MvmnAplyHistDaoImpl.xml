@@ -12,6 +12,7 @@
         <include refid="PaginationMapper.header"/>
             SELECT
                   A.APLYID 
+                , B.TME_SCHDLID 
                 , D.PRGRMID
                 , E.SAREAID
                 , E.SAREA_NM
@@ -26,7 +27,8 @@
                 , DATE_FORMAT(A.REG_DT, '%Y-%m-%d') REG_DT
                 , A.RGTRID
             FROM TB_EDU_MVMN_PRGRM_APLY A
-            LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME_SCHDL B ON B.TME_SCHDLID = A.TME_SCHDLID
+            LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_APLY_SCHDL Z ON Z.APLYID = A.APLYID            
+            LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME_SCHDL B ON B.TME_SCHDLID = Z.TME_SCHDLID
             LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME C ON C.TMEID = B.TMEID
             LEFT OUTER JOIN TB_EDU_MVMN_PRGRM D ON D.PRGRMID = C.PRGRMID
             LEFT OUTER JOIN TB_EDU_SAREA E ON E.SAREAID = D.SAREAID
@@ -63,7 +65,8 @@
                 , DATE_FORMAT(A.REG_DT, '%Y-%m-%d') REG_DT
                 , A.RGTRID
             FROM TB_EDU_MVMN_PRGRM_APLY A
-            LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME_SCHDL B ON B.TME_SCHDLID = A.TME_SCHDLID
+            LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_APLY_SCHDL Z ON Z.APLYID = A.APLYID
+            LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME_SCHDL B ON B.TME_SCHDLID = Z.TME_SCHDLID
             LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME C ON C.TMEID = B.TMEID
             LEFT OUTER JOIN TB_EDU_MVMN_PRGRM D ON D.PRGRMID = C.PRGRMID
             LEFT OUTER JOIN TB_EDU_SAREA E ON E.SAREAID = D.SAREAID
@@ -71,6 +74,7 @@
             LEFT OUTER JOIN TB_CMM_CD G ON G.CD = A.STTS_CD
             WHERE 1=1
             AND A.APLYID = #{aplyid}      
+            AND B.TME_SCHDLID = #{tmeSchdlid}      
     </select>    
 
     <!-- 푸름이 이동환경교실 신청이력 상세 조회 -->
@@ -78,7 +82,7 @@
         /* MvmnAplyHistDao.selectMvmnAplyHistDetail */
         SELECT 
               A.APLYID
-            , A.TME_SCHDLID  
+            , Z.TME_SCHDLID  
             , B.DE
             , C.TMEID
             , C.TME_NM
@@ -104,12 +108,14 @@
             , A.REG_DT
             , A.RGTRID  
         FROM TB_EDU_MVMN_PRGRM_APLY A 
-        LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME_SCHDL B ON B.TME_SCHDLID = A.TME_SCHDLID 
+        LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_APLY_SCHDL Z ON Z.APLYID = A.APLYID
+        LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME_SCHDL B ON B.TME_SCHDLID = Z.TME_SCHDLID 
         LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME C ON C.TMEID = B.TMEID
         LEFT OUTER JOIN TB_CMM_CD D ON D.CD = A.STTS_CD
         LEFT OUTER JOIN TB_CMM_INST E ON E.INSTID = A.INSTID 
         LEFT OUTER JOIN TB_CMM_USER F ON F.USERID = A.USERID        
         WHERE A.APLYID = #{aplyid}
+        AND B.TME_SCHDLID = #{tmeSchdlid}
     </select>
         
     <!-- 푸름이 이동환경교실 신청취소 -->

@@ -135,7 +135,6 @@ public class SpcltyDtaServiceImpl extends PlumAbstractServiceImpl implements Spc
     public int deleteSpcltyDta(SpcltyDtaVo spcltyDtaVo) throws Exception {
         int retVal = 0;
 
-        retVal += spcltyDtaDao.deleteSpcltyDtaClsfMappings(spcltyDtaVo);
         retVal += spcltyDtaDao.deleteSpcltyDta(spcltyDtaVo);
 
         return retVal;
