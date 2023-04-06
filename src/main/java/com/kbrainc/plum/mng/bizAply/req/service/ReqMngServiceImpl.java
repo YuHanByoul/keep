@@ -775,6 +775,12 @@ public class ReqMngServiceImpl extends PlumAbstractServiceImpl implements ReqMng
         // TODO Auto-generated method stub
         return reqMngDao.detailSrngList(srngTabVo);
     }
+    
+    @Override
+    public List<SrngTabVo> selectSrngResult(SrngTabVo srngTabVo) throws Exception {
+        // TODO Auto-generated method stub
+        return reqMngDao.selectSrngResult(srngTabVo);
+    }
 
     @Override
     public List<SrngTabVo> selectSrngUserList(SrngTabVo srngTabVo) throws Exception {

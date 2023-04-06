@@ -1828,6 +1828,36 @@
         ORDER BY IFNULL(S.SBMSNID, T.JDGSID), T.ORDR
     </select>
     
+    <!-- 심사보기 팝업 -->
+    <select id="selectSrngResult" parameterType="SrngTabVo" resultType="SrngTabVo">
+        /* ReqMngDao.selectSrngResult */
+        SELECT
+            TCU.NM
+            , DATE_FORMAT(TSSS.SBMSN_DT, '%Y-%m-%d') AS SBMSN_DT
+            , TCC.CD_NM AS QITEM_SE_NM
+            , TSSSQ.QITEM
+            , TSSSQ.ALTM
+            , TSSSQ.SCR AS ITEM_SCR
+            , TSSS.TOT_SCR 
+            , TSSS.SCR 
+            , TSSS.SRNG_OPNN 
+            , TSSS.OPNN1 
+            , TSSS.OPNN2 
+            , TSSS.OPNN3 
+            , TSSS.OPNN4 
+            , TSJ.CYCL 
+        FROM TB_SPB_PCNTST TSP
+            INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID 
+            INNER JOIN TB_SPB_JDGS TSJ ON TSA.PCNTSTID = TSJ.PCNTSTID
+            INNER JOIN TB_CMM_USER TCU ON TCU.USERID = TSJ.JDGSID
+            LEFT OUTER JOIN TB_SPB_SRNG_SBMSN TSSS ON TSSS.USERID = TSJ.JDGSID AND TSSS.APLYID = TSA.APLYID AND TSSS.FORMID = IF(TSJ.CYCL = 1, TSP.SRNG_FORMID_FIRST, TSP.SRNG_FORMID_SCND)
+            LEFT OUTER JOIN TB_SPB_SRNG_SBMSN_QITEM TSSSQ ON TSSSQ.SBMSNID = TSSS.SBMSNID
+            LEFT OUTER JOIN TB_CMM_CD TCC ON TCC.CD = TSSSQ.QITEM_SE_CD 
+        WHERE 1 = 1
+        AND TSSS.SBMSNID = #{sbmsnid}
+        ORDER BY TSSSQ.ORDR 
+    </select>
+    
     <!-- 심사일정 캘린더 -->
     <select id="selectScheduleList" parameterType="ReqMngVo" resultType="ReqMngVo">
         /* ReqMngDao.selectScheduleList */

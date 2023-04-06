@@ -994,6 +994,23 @@ public class ReqMngController {
     }
     
     /**
+    * 심사보기 팝업. 
+    *
+    * @Title : selectSrngResult
+    * @Description : TODO
+    * @param srngTabVo
+    * @param model
+    * @return
+    * @throws Exception
+    * @return String
+     */
+    @RequestMapping(value="/mng/bizAply/req/selectSrngResultPopup.html")
+    public String selectSrngResult(SrngTabVo srngTabVo, Model model) throws Exception {
+        model.addAttribute("list", this.reqMngService.selectSrngResult(srngTabVo));
+        return "mng/bizAply/req/selectSrngResultPopup";
+    }
+    
+    /**
     * 선정 미선정 업데이트. 
     *
     * @Title : updateSrng
