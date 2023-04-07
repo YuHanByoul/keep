@@ -190,6 +190,46 @@ public class RgnEnveduCntrController {
     }
     
     /**
+    * 지역환경교육센터 등록
+    *
+    * @Title : insertRgnEnveduCntr
+    * @Description : 지역환경교육센터 등록
+    * @param rgnEnveduCntrVo RgnEnveduCntrVo 객체
+    * @param bindingResult rgnEnveduCntrVo 유효성 검증결과
+    * @param user 사용자 세션 정보
+    * @return Map<String, Object> 응답결과객체
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/rgnEnveduCntr/insertRgnEnveduCntr.do")
+    @ResponseBody
+    public Map<String, Object> insertRgnEnveduCntr(@Valid RgnEnveduCntrVo rgnEnveduCntrVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+                
+        if(bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if(fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+        
+        int retVal = 0;
+        rgnEnveduCntrVo.setUser(user);
+        retVal = rgnEnveduCntrService.insertRgnEnveduCntr(rgnEnveduCntrVo);
+        
+        if(retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("srvyid", retVal);
+            resultMap.put("msg", "등록에 성공하였습니다");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "등록에 실패하였습니다");
+        }
+        
+        return resultMap;
+    }
+    
+    /**
     * 지역환경교육센터 삭제 기능
     *
     * @Title : deleteEnveduCntr
