@@ -156,5 +156,15 @@ public interface MvmnSchdlDao {
      * @throws Exception 예외
      * @return int
      */
-    public List<MvmnSchdlVo> selectMvmnSchdlIdList(@Param("sareaId") String sareaId) throws Exception;   
+    public List<MvmnSchdlVo> selectMvmnSchdlIdList(@Param("sareaId") String sareaId) throws Exception; 
+    
+    /**
+     * 교육일정관리 신청 카운트 조회
+     * @Title : selectMvmnAplyCnt
+     * @Description : 교육일정관리 신청 카운트 조회
+     * @param mvmnSchdlVo
+     * @throws Exception 예외
+     * @return int
+     */
+    public int selectMvmnAplyCnt(MvmnSchdlVo mvmnSchdlVo) throws Exception;            
 }

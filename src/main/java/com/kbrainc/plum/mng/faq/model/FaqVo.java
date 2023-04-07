@@ -7,27 +7,50 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.SerializationUtils;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 @Data
 @NoArgsConstructor
 public class FaqVo extends ParentRequestVo {
     private UserVo user;
+
+    @NotNull(message = "분류를 선택해 주십시오.")
     private Integer clid;
+
     private Integer faqid;
+
+    @NotEmpty(message = "제목을 입력해 주십시오.")
+    @Size(max=500, message="제목은 500자를 넘을 수 없습니다.")
     private String title;
+
+    @NotEmpty(message = "내용을 입력해 주십시오.")
     private String cntnts;
+
+    @NotNull(message = "사이트를 선택해 주십시오.")
     private Integer siteid;
+
     private Integer ord;
+
     private Integer newOrd;
+
     private String useYn;
+
     private String mdfcnDt;
+
     private int mdfrid;
+
     private String nm;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date regDt;
+
     private int rgtrid;
+
     private String clNm;
+
     private String searchSite;
 
     /*순서 변경용*/

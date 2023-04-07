@@ -362,10 +362,10 @@ public class PackageController {
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "등록에 성공하였습니다.");
+            resultMap.put("msg", "개체 등록에 성공하였습니다.");
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-            resultMap.put("msg", "등록에 실패했습니다.");
+            resultMap.put("msg", "개체 등록에 실패했습니다.");
         }
 
         return resultMap;
