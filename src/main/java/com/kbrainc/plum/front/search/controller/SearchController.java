@@ -375,9 +375,11 @@ public class SearchController {
                 //return "/front/enveduCntr/basicEnveduCntrList.html";
                 return data.get("URL");
             } else if ("4".equals(etype)) { // 교육기관/시설 > 민간환경교육단체
-                return "/front/enveduCntr/prvtEnveduCntrList.html";
+                //return "/front/enveduCntr/prvtEnveduCntrList.html";
+                return data.get("URL");
             } else if ("5".equals(etype)) { // 교육기관/시설 > 환경교육사 양성기관 > 양성기관 현황 
-                return "/front/envtcherTrnngInst/envtcherTrnngInstSituList.html";
+                //return "/front/envtcherTrnngInst/envtcherTrnngInstSituList.html";
+                return data.get("URL");
             } else if ("6".equals(etype)) { // 참여/신청 > 환경교육시설 예약 
                 return String.format("/front/envReqst/resveEnvView.html?fcltid=%s", data.get("PSTID"));
             }
