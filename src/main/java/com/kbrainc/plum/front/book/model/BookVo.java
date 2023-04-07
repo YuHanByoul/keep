@@ -78,7 +78,7 @@ public class BookVo  extends ParentRequestVo{
     /** 등록자아이디 */
     private int rgtrid;
     /** 저작권 코드 */
-    private int cpyrhtCd;
+    private String cpyrhtCd;
     
     private String nextBookid;
     private String nextBookTtl;

@@ -7,21 +7,11 @@
 		<!-- Tab Container Start -->
         <div class="card-block-small p-t-0">
             <div class="row">
-                <div class="col-md-6 col-lg-3 mb-3">
+                <div class=" col-lg-6 mb-3">
                     <div class="mb-0 form-group required">
                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육주제(대분류)</strong></div>
-                        <select name="mainEduSbjctCd" id="eduSbjctCd_1" class="form-select form-select-sm" onchange="setInsertFormSelectBox.setNextDepth(155,this.value,'eduSbjctCd_2')">
-                            <option value="" selected>- 선택 -</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3 mb-3">
-                    <div class="mb-0 form-group required">
-                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육주제(중분류)</strong></div>
-                        <select name="eduSbjctCd" id="eduSbjctCd_2" class="form-select form-select-sm">
-                            <option value="" selected>- 선택 -</option>
-                        </select>
-                    </div>
+                        <div id="sbjctArea" ></div>
+                   </div>
                 </div>
                 <div class="col-lg-6 mb-3">
                     <div class="mb-0 form-group required">
@@ -65,6 +55,16 @@
 	                            <input type="text" class="form-control form-control-sm" name="amt" id="amt" placeholder="정가"/>
 	                        </div>
 	                        <span class="ps-2">원</span>
+	                    </div>
+	                </div>
+	            </div>
+            </div>
+            <div class="row">
+	            <div class="col-lg-6 mb-3">
+	                <div class="mb-0 form-group required">
+	                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="plscmpn"><strong>저작권</strong></label>
+	                    <div class="col-12">
+                            <span kattr:select_code="cpyrhtCd" th:attr="grpCd=241" firstOptTxt="- 전체 -" isAdmin="true" ></span>
 	                    </div>
 	                </div>
 	            </div>
@@ -153,8 +153,30 @@
 	    </div>
 		<!-- Tab Container End -->
 </form>
-
+<script type="text/javascript" src="/files/bower_components/handlebars/handlebars.min.js" charset="utf-8" ></script>
+<script  id="subjectFrm" type="text/x-handlebars-template">
+    <div class="row mb-6 mb-md-2 mb-2 subject-form" id="subject{{frmNum}}" name="{{frmNum}}"  > 
+         <div class="col-md-10 mt-1 mt-md-0">
+             <select id="subjectSelect{{frmNum}}" name="eduSbjctCds" class="form-select form-select-sm" onchange="duplCheck('{{frmNum}}')">
+                 <option value="" >-선택-</option>
+                 {{#each list}}
+                 <option value="{{CD}}">{{CD_NM}}</option>
+                 {{/each}}
+             </select>
+         </div>
+         <div class="col-md-auto">
+            <button type="button" class="input-group-text btn btn-primary btn-sm"  onclick="plusSubjectForm()" >+</button>
+            <button type="button" class="input-group-text btn btn-primary btn-sm"  onclick="removeSubjectForm('{{frmNum}}')"  {{#if firstKey}}disabled {{/if}}>-</button>
+         </div>
+     </div>
+</script>
 <script th:inline="javascript">
+
+    /*<![CDATA[*/
+    var sbjctCdLsit = /*[[${sbjctCdLsit}]]*/null;
+    /*]]>*/
+    var subjectLength = 0; 
+    var subjectNum = [1]; 
 	/* insertForm setting */
 	setInsertFormSelectBox.fn_getNextDepthList(155 , 0, 'eduSbjctCd_1');
 	
@@ -163,13 +185,63 @@
 	
 	$(function () {
 	    editor = CKEDITOR.replace('cn');
-	    var text = "";
-    		text += "<p>&nbsp;</p>";
-    		text += "<p>&nbsp;</p>";	    	
-	    	text += "<p>&nbsp;</p>";
-	    	text += "<p style='text-align: center;'><img alt='img' src='https://www.kogl.or.kr/static/kogl/img/sub/number3.jpg' style='width: 120px; height: 30px;'/>&nbsp;본 저작물은 “공공누리” 제4유형 : 출처표시 + 상업적 이용금지 + 변경금지 조건에 따라 이용할 수 있습니다.</p>";
-  	 	editor.setData(text);
+	    //var text = "";
+    	//	text += "<p>&nbsp;</p>";
+    	//	text += "<p>&nbsp;</p>";	    	
+	    //	text += "<p>&nbsp;</p>";
+	    //	text += "<p style='text-align: center;'><img alt='img' src='https://www.kogl.or.kr/static/kogl/img/sub/number3.jpg' style='width: 120px; height: 30px;'/>&nbsp;본 저작물은 “공공누리” 제4유형 : 출처표시 + 상업적 이용금지 + 변경금지 조건에 따라 이용할 수 있습니다.</p>";
+  	 	//editor.setData(text);
+  	 	
+        if(sbjctCdLsit!= null && sbjctCdLsit.length > 0 ){
+            subjectLength = sbjctCdLsit.length 
+        }
+        plusSubjectForm('first');
 	});
+
+    duplCheck=(frmNum)=>{
+        var isDupl = false;
+        var selectCd = $("#subjectSelect"+frmNum).val();
+        if(selectCd==""){return;}
+
+        $(".subject-form").each(function(){
+            var itemId = ($(this).attr("id")).replace("subject","")
+            if( itemId != frmNum  &&  $("#subjectSelect"+itemId).val() == selectCd){
+                isDupl = true;
+            }
+        })
+        if(isDupl){
+            $("#subjectSelect"+frmNum).val("");
+            alert("교육주제는 중복 선택 할 수 없습니다."); 
+            return; 
+        }
+    }
+    plusSubjectForm =(firstKey)=>{
+
+        var subjectFormCnt = 0 ; 
+        $(".subject-form").each(function(){ subjectFormCnt++ })
+        
+        if(subjectFormCnt >= subjectLength){
+            alert("더이상 생성 할수 없습니다.");
+            return;
+        }
+        var maxValue = Math.max.apply(null, subjectNum);
+        subjectNum.push(maxValue+1);
+        
+        var source = $("#subjectFrm").html();
+        var template = Handlebars.compile(source);
+        var data = {
+                    'frmNum' : maxValue+1
+                    ,'list':sbjctCdLsit
+                    ,'firstKey':(firstKey==null)? false:true 
+                   };
+        $("#sbjctArea").append(template(data));
+    }
+
+    removeSubjectForm=(frmNum)=>{
+        $("#subject"+frmNum).remove();
+        var filterArr = subjectNum.filter(function(data) {return data != frmNum;});
+        subjectNum = filterArr;
+    }
 	
 	/* validator */
 	var validator= $("#bookInsertForm").validate({
@@ -181,7 +253,7 @@
 	     	,amt	   		 : 	{ number: true }
 	     	,ttl   			 : 	{ required: true }
 	     	,cn   			 : 	{ required: true }
-	     	,rprsImgFile   	 : 	{ required: true }
+	     	,cpyrhtCd   	 : 	{ required: true }
 	    },
 	    messages: {
 	    	mainEduSbjctCd   :  { required: "교육주제(대분류)를 선택해주십시오." }
@@ -191,7 +263,7 @@
 		    ,amt	   		 : 	{ number: "정가는 숫자만 입력해주십시오." }
 		    ,ttl   	 		 : 	{ required: "제목을 입력해주십시오." }
 		    ,cn   			 : 	{ required: "내용을 입력해주십시오." }
-		    ,rprsImgFile   	 : 	{ required: "대표 이미지를 첨부해주십시오." }
+		    ,cpyrhtCd   	 : 	{ required: "저작권 코드를 선택해주십시오." }
 	    }
 	})
 	
@@ -307,7 +379,35 @@
 	
 	/* 등록 */
  	function fn_insertBookForm(){
-	 	if(!($("#bookInsertForm").valid())) return;
+
+        if($("#rprsImgFileid").val() == '' || $("#rprsImgFileid").val() == null) {
+            alert("대표이미지를 첨부해주십시오.");
+            showErrorMark("#rprsImgFile");
+            return;
+        }
+        
+        if(!$("#bookInsertForm").valid()) return;
+        
+        var subjectParamArr=[];
+        var errorFrmNum = 0;
+        if(subjectNum.length<=0){
+            alert("교육 주제를 선택해주십시오.")
+            return;
+        }else{
+           $(".subject-form").each(function(){
+                var frmNum = $(this).attr("name");
+                subjectParamArr.push($("#subjectSelect"+frmNum).val());
+                if($("#subjectSelect"+frmNum).val() == ""){
+                    errorFrmNum = (errorFrmNum > 0)? errorFrmNum : frmNum;
+                }
+           })
+        }
+        
+        if(errorFrmNum > 0){
+           alert("교육 주제를 선택해주십시오.");
+           showErrorMark("#subjectSelect"+errorFrmNum);
+           return;
+        }
 
   	 	if(!confirm("저장하시겠습니까?")) return;
   	 	

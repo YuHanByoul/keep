@@ -255,6 +255,7 @@ public class CmntyController {
         model.addAttribute("cmntyCtgryList", cmntyCtgryList);
         model.addAttribute("list", cmntyBbsList);
         model.addAttribute("cmntyInfo", cmntyInfo);
+        model.addAttribute("bbsInfo", bbsInfo);
         model.addAttribute("paramVo", paramVo);
         model.addAttribute("totalCount",cmntyBbsList.size() > 0 ? cmntyBbsList.get(0).getTotalCount() : 0);
         return "front/cmnty/cmntyPstList";

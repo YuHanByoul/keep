@@ -1,15 +1,21 @@
 package com.kbrainc.plum.mng.cntnts.service;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.cntnts.model.CntntsDao;
+import com.kbrainc.plum.mng.cntnts.model.CntntsEduSbjctVo;
+import com.kbrainc.plum.mng.cntnts.model.CntntsEduTrgtVo;
 import com.kbrainc.plum.mng.cntnts.model.CntntsVo;
 import com.kbrainc.plum.mng.envtcherTrnngInst.model.EnvtcherTrnngInstVo;
+import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
@@ -37,11 +43,12 @@ public class CntntsServiceImpl extends PlumAbstractServiceImpl implements Cntnts
     * 컨텐츠 관리 게시글 목록 조회
     *
     * @Title : selectCntntsList
-    * @Description : 컨텐츠 관리 게시글 목록 조회
+    * @Description : 컨텐츠 관리 게시글 목록 조회 
     * @param cntntsVo 객체
     * @throws Exception 예외
     * @return List<CntntsVo>
     */
+    @Override
     public List<CntntsVo> selectCntntsList(CntntsVo cntntsVo) throws Exception {
         return cntntsDao.selectCntntsList(cntntsVo);
     };
@@ -55,6 +62,7 @@ public class CntntsServiceImpl extends PlumAbstractServiceImpl implements Cntnts
     * @throws Exception 예외
     * @return CntntsVo
     */
+    @Override
     public CntntsVo selectCntntsInfo(CntntsVo cntntsVo) throws Exception {
         return cntntsDao.selectCntntsInfo(cntntsVo);
     }
@@ -68,8 +76,14 @@ public class CntntsServiceImpl extends PlumAbstractServiceImpl implements Cntnts
     * @throws Exception 예외
     * @return int
     */
-    public int insertCntnts(CntntsVo cntntsVo) throws Exception {
-        return cntntsDao.insertCntnts(cntntsVo);
+    @Override
+    @Transactional
+    public int insertCntnts(CntntsVo cntntsVo, String[] eduSbjctCds, String[] eduTrgt) throws Exception {
+        int retVal = 0;
+        retVal += cntntsDao.insertCntnts(cntntsVo);
+        retVal += cntntsDao.insertEduSbjct(cntntsVo.getCntntsid(), eduSbjctCds, cntntsVo.getUser());
+        retVal += cntntsDao.insertEduTrgt(cntntsVo.getCntntsid(), eduTrgt, cntntsVo.getUser());
+        return retVal;
     }
     
     /**
@@ -81,8 +95,16 @@ public class CntntsServiceImpl extends PlumAbstractServiceImpl implements Cntnts
     * @throws Exception 예외
     * @return int
     */
-    public int updateCntnts(CntntsVo cntntsVo) throws Exception {
-        return cntntsDao.updateCntnts(cntntsVo);
+    @Override
+    @Transactional
+    public int updateCntnts(CntntsVo cntntsVo, String[] eduSbjctCds, String[] eduTrgt) throws Exception {
+        int retVal = 0;
+        retVal += cntntsDao.deleteEduSbjct(cntntsVo);
+        retVal += cntntsDao.deleteEduTrgt(cntntsVo);
+        retVal += cntntsDao.updateCntnts(cntntsVo);
+        retVal += cntntsDao.insertEduSbjct(cntntsVo.getCntntsid(), eduSbjctCds, cntntsVo.getUser());
+        retVal += cntntsDao.insertEduTrgt(cntntsVo.getCntntsid(), eduTrgt, cntntsVo.getUser());
+        return retVal;
     }
     
     /**
@@ -94,7 +116,24 @@ public class CntntsServiceImpl extends PlumAbstractServiceImpl implements Cntnts
     * @throws Exception 예외
     * @return int
     */
-    public int deleteCntnts(String[] cntntsids) throws Exception {
-        return cntntsDao.deleteCntnts(cntntsids);
+    @Override
+    public int deleteCntnts(CntntsVo cntntsVo, String[] cntntsids) throws Exception {
+        return cntntsDao.deleteCntnts(cntntsVo.getUser(), cntntsids);
     }
+    
+    @Override
+    public List<Map<String,String>> selectCntntsCdList(Map<String,String> map) throws Exception {
+        return cntntsDao.selectCntntsCdList(map);
+    }
+
+    @Override
+    public List<CntntsEduSbjctVo> selectCntntsEduSbjctList(CntntsVo cntntsVo) throws Exception {
+        return cntntsDao.selectCntntsEduSbjctList(cntntsVo);
+    }
+
+    @Override
+    public List<CntntsEduTrgtVo> selectCntntsEduTrgtList(CntntsVo cntntsVo) throws Exception {
+        return cntntsDao.selectCntntsEduTrgtList(cntntsVo);
+    }
+
 }

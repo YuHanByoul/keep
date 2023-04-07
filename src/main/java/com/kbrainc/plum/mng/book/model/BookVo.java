@@ -1,12 +1,17 @@
 package com.kbrainc.plum.mng.book.model;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.validation.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.service.ResCodeService;
+import com.kbrainc.plum.rte.util.CommonUtil;
 
 import lombok.Data;
 
@@ -34,10 +39,8 @@ public class BookVo  extends ParentRequestVo{
     /** 도서아이디 */
     private int bookid;
     /** 교육_주제_코드(중분류) */
-    @NotEmpty(message = "교육주제(중분류)를 선택해주십시오.")
     private String eduSbjctCd;
     /** 교육_주제_코드(대분류) */
-    @NotEmpty(message = "교육주제(대분류) 선택해주십시오.")
     private String mainEduSbjctCd;
     /** 교육_대상_코드 */
     @NotEmpty(message = "교육대상 선택해주십시오.")
@@ -62,6 +65,10 @@ public class BookVo  extends ParentRequestVo{
     private Integer rprsImgFileid;
     /** 첨부_파일그룹아이디 */
     private Integer atchFilegrpid;
+    /** 저작권 코드 */
+    private String cpyrhtCd;
+    /** 삭제여부 */
+    private String delYn;
     /** 수정_일시 */
     private Date mdfcnDt;
     /** 수정자아이디 */
@@ -86,5 +93,54 @@ public class BookVo  extends ParentRequestVo{
     private String startDt;
     private String endDt;
     
+    /** 교육_주제_코드명(다수) */
+    private String eduSbjctCdNm;
+    
+    /** 교육_주제_코드(다수) 등록용 */
+    private String[] eduSbjctCds;
+    
+    /** 다수 삭제용 */
+    private String[] bookids;
+    
+    /** 교육_대상_코드명 */
+    private String eduTrgtCdNm;
+    
+    public void setEduTrgtCd(String eduTrgtCd) throws Exception{
+        this.eduTrgtCd = eduTrgtCd;
+        if(CommonUtil.isEmpty(this.eduTrgtCdNm)) { 
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.eduTrgtCd);
+                this.eduTrgtCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                //e.printStackTrace();
+                return ;
+             }catch(Exception e) {
+                //e.printStackTrace();
+                return ;
+             }
+        }
+    }
+    
+    //public void setEduSbjctCd(String eduSbjctCd) throws Exception{
+    //    this.eduSbjctCd = eduSbjctCd;
+    //    List<String> eduCds = new ArrayList();
+    //    String[] eduSbjctCdArr = eduSbjctCd.split(",");
+    //    if(eduSbjctCdArr.length > 0) {
+    //        for(String eduCd:eduSbjctCdArr) {
+    //            try {
+    //                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+    //                CodeInfoVo code = resCodeService.getCodeInfo(eduCd);
+    //                eduCds.add(code.getCdNm());
+    //            }catch(NoClassDefFoundError e) {
+    //                return ;
+    //            }catch(Exception e) {
+    //                return ;
+    //            }
+    //        }
+    //        
+    //        this.eduSbjctCdNm = String.join(",", eduCds);
+    //    }
+    //}
     
 }
