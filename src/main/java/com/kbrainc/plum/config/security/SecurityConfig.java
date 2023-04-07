@@ -130,6 +130,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         		"/ckE/**/*",
         		"/ckEimg/**/*",
                 "/pdf_view_file/**/*",
+                "/envEduPlcyAndBiz/**/*",
                 "/js/pdfjs/**/*",
         		"/example/**/*",
         		"/js/ckeditor/**/*",
