@@ -106,4 +106,6 @@ public class SmrLeaderVo extends ParentRequestVo {
     
     /** 활동_유형 */
     private String[] actvtType;
+    
+    private String popupYn;
 }

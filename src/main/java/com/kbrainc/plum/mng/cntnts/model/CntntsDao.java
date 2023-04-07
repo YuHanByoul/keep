@@ -1,12 +1,15 @@
 package com.kbrainc.plum.mng.cntnts.model;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.kbrainc.plum.mng.envtcherTrnngInst.model.EnvtcherTrnngInstVo;
+import com.kbrainc.plum.rte.model.UserVo;
 
 /**
 * 컨텐츠 관리 Dao 클래스
@@ -79,5 +82,20 @@ public interface CntntsDao {
     * @throws Exception 예외
     * @return int
     */
-    public int deleteCntnts(String[] cntntsids) throws Exception;
+    public int deleteCntnts(@Param("user") UserVo user, @Param("cntntsids") String[] cntntsids) throws Exception;
+
+    public List<Map<String, String>> selectCntntsCdList(Map<String, String> map) throws Exception;
+
+    public int insertEduSbjct(@Param("cntntsid") int cntntsid, @Param("eduSbjctCds") String[] eduSbjctCds, @Param("user") UserVo user) throws Exception;
+    
+    public int insertEduTrgt(@Param("cntntsid") int cntntsid, @Param("eduTrgt") String[] eduTrgt, @Param("user") UserVo user) throws Exception;
+
+    public List<CntntsEduSbjctVo> selectCntntsEduSbjctList(CntntsVo cntntsVo) throws Exception;
+
+    public List<CntntsEduTrgtVo> selectCntntsEduTrgtList(CntntsVo cntntsVo) throws Exception;
+
+    public int deleteEduSbjct(CntntsVo cntntsVo) throws Exception;
+
+    public int deleteEduTrgt(CntntsVo cntntsVo) throws Exception;
+
 }

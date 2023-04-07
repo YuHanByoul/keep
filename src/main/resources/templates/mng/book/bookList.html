@@ -37,14 +37,10 @@
 	                            <div class="col-lg-3 col-md-6 mb-3">
 	                                <div class="mb-0 form-group row">
 	                                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육주제</strong></div>
-	                                    <div class="col-6">
-											<select name="searchManinEduSbjctCd" id="searchEduSbjctCd_1" class="form-select form-select-sm" onchange="setSearchSelectBox.setNextDepth(155,this.value,'searchEduSbjctCd_2')">
-												<option value="" selected>- 전체 -</option>
-											</select>
-	                                    </div>
-	                                    <div class="col-6">
+	                                    <div class="col-12">
 					                        <select name="searchMdleEduSbjctCd" id="searchEduSbjctCd_2" class="form-select form-select-sm">
-					                            <option value="" selected>- 전체 -</option>
+					                            <option value="" >- 전체 -</option>
+					                            <option th:each="item:${sbjctCdLsit}" th:value="${item.CD}" >[[${item.CD_NM}]]</option>
 					                        </select>
 	                                    </div>                                  
 	                                </div>
@@ -69,17 +65,11 @@
                             <div class="row">
                                 <div class="col-lg-3 col-md-6 mb-3">
                                     <div class="mb-0 form-group row">
-                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterSearchStartSelectDate"><strong>등록일-검색시작일</strong></label>
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterSearchStartSelectDate"><strong>등록일</strong></label>
                                         <div class="col-sm-12">
-                                            <input class="form-control form-control-sm" type="date" name="startDt" id="startDt">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 mb-3">
-                                    <div class="mb-0 form-group row">
-                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterSearchEndSelectDate"><strong>등록일 -검색종료일</strong></label>
-                                        <div class="col-sm-12">
-                                            <input class="form-control form-control-sm" type="date" name="endDt" id="endDt">
+                                            <input class="form-control form-control-sm" type="text" id="filterSearchSelectDate" name="filterSearchSelectDate"/>
+                                            <input type="hidden" name="startDt" id="startDt">
+                                            <input type="hidden" name="endDt" id="endDt">
                                         </div>
                                     </div>
                                 </div>
@@ -120,9 +110,11 @@
 				</div>
 			</div>
 		</div>
-
+        <link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
 		<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 		<script type="text/javascript" src="/js/common/jsgrid-master/dist/jsgrid.min.js"></script>
+		<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+        <script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
 		<script th:inline="javascript">
 			/* 커스텀태그(공통코드) : 교육주제 */
 			var getCodeListUrl = "/mng/customAttr/grpCodeList.do"
@@ -302,6 +294,8 @@
 				$("#searchEduSbjctCd_1").val('');
 				$("#searchEduSbjctCd_2").val('');
 				$("#searchEduTrgtCd").val('');
+				$("#searchPlscmpn").val('');
+				$("#filterSearchSelectDate").val('');
 				$("#startDt").val('');
 				$("#endDt").val('');
 				gridHelper1.resetListContent();
@@ -318,6 +312,7 @@
 			
 			$(function() {
 				gridHelper1 = new GridHelper('jsGrid', 'contentPanel');
+				initDateRangePicker("filterSearchSelectDate","startDt","endDt");
 				writeJsGridData();
 			});
 			
@@ -394,11 +389,22 @@
 					  , { name : 'bookid', css : 'hide' }
 					  , { title : 'No.', name : 'rowNumber', type : "number", width : "80", align : "center", sorting : false }
 					  , { title : '도서명', name : 'ttl', type : "text", width : "300" }
-					  , { title : '교육주제', name : 'eduSbjctCd', type : "text", width : "150", align : "center" }
-					  , { title : '대상', name : 'eduTrgtCd', type : "text", width : "150", align : "center" }
-					  , { title : '출판사', name : 'plscmpn', type : "text", width : "150", align : "center" }
-					  , { title : '등록일', name : 'regDt', type : "text", width : "150", align : "center" }
-					  , { title : '조회수', name : 'hits', type : "text", width : "100", align : "center" }
+					  , { title : '교육주제', name : 'eduSbjctCdNm', type : "text", width : "200", align : "center",
+						  itemTemplate: function(_, item) {
+							  if(item.eduSbjctCdNm != null){
+								  var arr = item.eduSbjctCdNm.split(",");
+								  let resStr =arr.join("</br>");
+		                          return resStr;   
+							  }else{
+								  return "-";
+							  }
+						  } 
+						}
+					  , { title : '대상',   name : 'eduTrgtCdNm', type : "text", width : "100", align : "center" }
+					  , { title : '출판사',  name : 'plscmpn', type : "text", width : "150", align : "center" }
+					  , { title : '등록일',  name : 'regDt', type : "text", width : "100", align : "center" }
+					  , { title : '조회수',  name : 'hits', type : "text", width : "50", align : "center" }
+					  , { title : '삭제여부',name : 'delYn', type : "text", width : "50", align : "center" }
 					],
 					rowClick : function(args) {
 						if (args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
@@ -471,15 +477,15 @@
 		    				cache : false,
 		    				traditional : true,
 		    				dataType: 'json',
-		    				data: {bookids:selectedItems},
+		    				data: {'bookids':selectedItems.join(",")},
 		    				success: function(data){
 		    					if(data.result=="success"){
 		    						alert(data.msg);
+			    					gridHelper1.resetListContent();
 		    					}else{
 		    						alert(data.msg);
 		    					}
 		    					closeWorkProgress();
-		    					gridHelper1.resetListContent();
 		    				}
 		    			});
 			    	}

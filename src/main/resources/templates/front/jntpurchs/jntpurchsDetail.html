@@ -197,11 +197,13 @@
                                     </dl>
                                 </div>
                             </li>
+                            <!--
                             <li class="block">
                                 <div class="nodata">
                                     <p><span class="icon icon-notice bg-black9"></span>등록된 내용이 없습니다.</p>
                                 </div>
                             </li>
+                            -->
                         </ul>
                     </div>
                 </div>
@@ -488,14 +490,33 @@
                     } else if(qntyWholLmtYn == "Y" && qntyLmtYn == "N") { // 구매 제한
                         $("#qnty").prop("max", qntyLmt);
                     } else { // 제한없음
-                        $("#qnty").prop("max", 100000000);
+                        $("#qnty").prop("max", 999999999);
                     }
                }
                
                , setPrice: function() {
+                   var qntyWhol = this.jntpurchsInfo.qntyWhol;
+                   var qntyWholLmtYn = this.jntpurchsInfo.qntyWholLmtYn;
+                   var qntyLmt = this.jntpurchsInfo.qntyLmt;
+                   var qntyLmtYn = this.jntpurchsInfo.qntyLmtYn;
+                   var orderQnty = this.jntpurchsInfo.orderQnty;
+                   var remainQnty = qntyWhol - orderQnty;
                    var qnty = $("#qnty").val();
+                   var orderQntyLmt = 0;
+                   
+                   if(qntyWholLmtYn == "N" && qntyLmtYn == "N") { // 수량/구매 제한
+                        orderQntyLmt = Math.min(remainQnty, qntyLmt);
+                        if(qnty > orderQntyLmt) qnty = orderQntyLmt;
+                    } else if(qntyWholLmtYn == "N" && qntyLmtYn == "Y") { // 수량 제한
+                        if(qnty > remainQnty) qnty = remainQnty;
+                    } else if(qntyWholLmtYn == "Y" && qntyLmtYn == "N") { // 구매 제한
+                        orderQntyLmt = Math.min(remainQnty, qntyLmt);
+                        if(qnty > orderQntyLmt) qnty = orderQntyLmt;
+                    }
+                    
                    var minAmt = 0;
                    var amt = 0;
+                   
                    for(var i = 0, len = this.amtList.length; i < len; i++) {
                        var data = this.amtList[i];
                        var qntyBgng = data.qntyBgng;
@@ -513,7 +534,9 @@
                            amt = minAmt;
                        }
                    }
+                   
                    var totalPrice = amt * qnty;
+                   $("#qnty").val(parseInt(qnty, 10));
                    $("#expectationPrice").text(addComma3(amt) + "원");
                    $("#totalPrice").text(addComma3(totalPrice) + "원");
                }

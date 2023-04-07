@@ -370,7 +370,17 @@ public class CmntyServiceImpl extends PlumAbstractServiceImpl implements CmntySe
      */
     @Override
     public boolean insertCmnt(CmntyCmntVo paramVo) {
-        return cmntyDao.insertCmnt(paramVo);
+        boolean result = false;
+        if(paramVo.getCmntid() != null){
+            CmntyCmntVo parentCmntInfo = cmntyDao.selectCmntList(paramVo).get(0);
+            paramVo.setParntsCmntid(parentCmntInfo.getCmntid());
+            paramVo.setCmntGrp(parentCmntInfo.getCmntGrp());
+            paramVo.setDpth(parentCmntInfo.getDpth() + 1);
+            paramVo.setSortordr(parentCmntInfo.getSortordr() + 1);
+            cmntyDao.updateCmntOrdElse(paramVo);
+        }
+        result = cmntyDao.insertCmnt(paramVo);
+        return result;
     }
 
     /**

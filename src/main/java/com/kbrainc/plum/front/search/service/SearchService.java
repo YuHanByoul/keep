@@ -67,5 +67,14 @@ public interface SearchService {
     */
     public Map<String, Object> getTrndKeywordMonth() throws Exception;
 
-    
+    /**
+    * 통합검색
+    *
+    * @Title : getSearchInfo
+    * @Description : 통합검색
+    * @param queryString 쿼리스트링
+    * @return Map<String,Object> 조회결과
+    * @throws Exception 예외
+    */
+    public Map<String, Object> getSearchInfo(String queryString) throws Exception;
 }

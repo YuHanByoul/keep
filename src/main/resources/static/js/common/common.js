@@ -5162,6 +5162,19 @@ function escapeData(data){ // 데이터를 escape 처리함.
 	    }
 	 });
   }
+  
+  function downloadFileByFileidForSearch(fileId, fileIdntfcKey){
+     $.fileDownload('/downloadFileByFileid.do?fileid='+fileId + '&file_idntfc_key=' + fileIdntfcKey, { 
+        //successCallback: function (url) {},
+        failCallback: function(html, url) {
+            if(html=='404'){
+                alert("파일이 존재하지 않습니다.");
+            }else if(html=='403'){
+                alert("해당 파일다운로드는 로그인이 필요한 서비스입니다.");
+            }
+        }
+     });
+  }
    
     function setDefaultImage(id, kind){
 	    $("#"+id).error(function(e){

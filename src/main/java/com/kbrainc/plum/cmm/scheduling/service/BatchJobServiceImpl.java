@@ -81,9 +81,15 @@ public class BatchJobServiceImpl implements BatchJobService {
 	                  context.setVariable("portalUrl", CommonUtil.portalUrl); // 필수값
 	                  String content = "<tr>"
 	                      + "    <td align=\"center\" style=\"font-family:'맑은 고딕','Malgun Gothic','돋움',dotum,sans-serif;font-size:16px;font-weight:400;font-stretch:normal;font-style:normal;line-height:1.5;letter-spacing:-1px;color:#333333;padding:0 10px;\">"
-	                      + "        휴면계정 전환 안내 문구 전달받지 못횄습니다.<br>"
-	                      + "        ID : " + emailSendUser.get("ACNT") + "<br>"
-	                      + "        이름 : " + emailSendUser.get("NM")
+	                      + "        안녕하세요, 국가환경교육 통합플랫폼입니다.<br>"
+	                      + "        <br>"
+	                      + "        회원님의 소중한 개인정보 보호를 위해, 장기간 로그인 이력이 없는 다음 계정을 휴면계정으로 전환했음을 알려드립니다.<br>"
+	                      + "        <br>"
+	                      + "        대상계정 : " + emailSendUser.get("ACNT") + "<br>"
+	                      + "        <br>"
+                          + "        회원가입 시 입력해주신 개인정보는 안전하게 분리 보관되며, 국가환경교육 통합플랫폼 홈페이지에서 휴면해제를 해주시면 계정 복구 및 재이용이 가능합니다.<br>"
+                          + "        <br>"
+                          + "        본 메일은 회원님의 이메일 수신동의 여부와 관계없이 법률에 의거하여 전 회원 대상으로 발송되는 메일입니다."
 	                      + "    </td>"
 	                      + "</tr>"
 	                      + "<tr>"
@@ -213,36 +219,41 @@ public class BatchJobServiceImpl implements BatchJobService {
          if(emailSendUserList.size() > 0) {
              List<MailRcptnVo> mailToArray = new ArrayList<>();
              for(Map<String, Object> emailSendUser : emailSendUserList) {
-                 MailRcptnVo mailRcptnVo = new MailRcptnVo();
-                 mailRcptnVo.setRcptnEmail((String) emailSendUser.get("EML"));
-                 mailRcptnVo.setRcptnUserid((Integer) emailSendUser.get("USERID"));
                  
-                 mailToArray.add(mailRcptnVo);
+                 if(emailSendUser.get("EML") != null ) {
+                     Context context = new Context();
+                     context.setVariable("title", "휴면계정 전환 사전 안내입니다.");
+                     context.setVariable("portalUrl", CommonUtil.portalUrl); // 필수값
+                     String content = "<tr>"
+                             + "    <td align=\"center\" style=\"font-family:'맑은 고딕','Malgun Gothic','돋움',dotum,sans-serif;font-size:16px;font-weight:400;font-stretch:normal;font-style:normal;line-height:1.5;letter-spacing:-1px;color:#333333;padding:0 10px;\">"
+                             + "        안녕하세요, 국가환경교육 통합플랫폼입니다.<br>"
+                             + "        <br>"
+                             + "        소중한 개인정보 보호를 위해, 장기간 로그인 이력이 없는 회원님들의 개인정보를 안전하게 분리 보관하고 ID를 휴면 상태로 전환할 예정입니다.<br>"
+                             + "        <br>"
+                             + "        대상 계정 : " + emailSendUser.get("ACNT") + "<br>"
+                             + "        전환 예정일 : " + emailSendUser.get("PRNMNT_DT") + "<br>"
+                             + "        <br>"
+                             + "        전환을 원치 않으시는 경우, 휴면계정 전환 예정일이 되기 전까지 국가환경교육 통합플랫폼 홈페이지에 로그인을 해주시기 바랍니다.<br>"
+                             + "        <br>"
+                             + "        본 메일은 회원님의 이메일 수신동의 여부와 관계없이 법률에 의거하여 전 회원 대상으로 발송되는 메일입니다."
+                             + "    </td>"
+                             + "</tr>"
+                             + "<tr>"
+                             + "    <td style=\"height:30px;font-size:0px;mso-line-height-rule:exactly;line-height:0px;\">&nbsp;</td>"
+                             + "</tr>";
+                     context.setVariable("content", content);
+                     
+                     String contents = templateEngine.process("mail/mail_basic_template", context);
+                     
+                     MailVo mailVo = new MailVo();
+                     mailVo.setRcptnEmail((String) emailSendUser.get("EML"));
+                     mailVo.setTitle("휴면계정 전환 사전 안내입니다.");
+                     mailVo.setCntnts(contents);
+                     
+                     Map<String, Object> resMap = mailService.sendMail(mailVo); // 이메일 발송
+                 }
              }
-             
-             Context context = new Context();
-             context.setVariable("title", "휴면계정 전환 사전 안내입니다.");
-             context.setVariable("portalUrl", CommonUtil.portalUrl); // 필수값
-             String content = "<tr>"
-                     + "    <td align=\"center\" style=\"font-family:'맑은 고딕','Malgun Gothic','돋움',dotum,sans-serif;font-size:16px;font-weight:400;font-stretch:normal;font-style:normal;line-height:1.5;letter-spacing:-1px;color:#333333;padding:0 10px;\">"
-                     + "        휴면계정 전환 사전 안내 문구 전달받지 못횄습니다."
-                     + "    </td>"
-                     + "</tr>"
-                     + "<tr>"
-                     + "    <td style=\"height:30px;font-size:0px;mso-line-height-rule:exactly;line-height:0px;\">&nbsp;</td>"
-                     + "</tr>";
-             context.setVariable("content", content);
-             String contents = templateEngine.process("mail/mail_basic_template", context);
-             MailVo mailVo = new MailVo();
-             mailVo.setTitle("휴면계정 전환 사전 안내입니다.");
-             mailVo.setCntnts(contents);
-             mailVo.setSndngUserid(0);
-             mailVo.setSndngSeCd("J");
-             mailVo.setRcptnUserid(0);
-             
-             mailService.sendMultiMail(mailToArray, mailVo);
          }
-         
      }
 
 
@@ -487,11 +498,13 @@ public class BatchJobServiceImpl implements BatchJobService {
                        context.setVariable("portalUrl", CommonUtil.portalUrl); // 필수값
                        String content = "<tr>"
                            + "    <td align=\"center\" style=\"font-family:'맑은 고딕','Malgun Gothic','돋움',dotum,sans-serif;font-size:16px;font-weight:400;font-stretch:normal;font-style:normal;line-height:1.5;letter-spacing:-1px;color:#333333;padding:0 10px;\">"
-                           + "        시설예약 취소 안내 문구 전달받지 못횄습니다.<br>"
-                           + "        예약자 : " + flctRsvCancleUser.get("APLCNT_NM") + "<br>"
-                           + "        예약장소 : " + flctRsvCancleUser.get("FCLT_NM") + " " + flctRsvCancleUser.get("SPCE_NM") + "<br>"
-                           + "        예약일시 : " + flctRsvCancleUser.get("BGNG_DT_STR") + "<br>"
-                           + "        신청일시 : " + flctRsvCancleUser.get("APLY_DT_STR")
+                           + "        안녕하세요, 국가환경교육 통합플랫폼입니다.<br>"
+                           + "        시설 이용료 입금이 확인되지 않아 다음 시설의 예약 신청이 취소 처리되었습니다.<br>"
+                           + "        <br>"
+                           + "        이용예정일시 : " + flctRsvCancleUser.get("BGNG_DT_STR") + "<br>"
+                           + "        시설명 : " + flctRsvCancleUser.get("FCLT_NM") + " " + flctRsvCancleUser.get("SPCE_NM") + "<br>"
+                           + "        <br>"
+                           + "        시설 이용을 원하시는 경우 예약을 다시 진행해주시기 바랍니다. 문의사항은 마이페이지의 1:1 문의 게시판에 남겨주시거나 담당자에게 문의해주세요."
                            + "    </td>"
                            + "</tr>"
                            + "<tr>"
