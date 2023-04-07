@@ -150,7 +150,6 @@
 
 			$("#selectSitesearchSite").change(function () {
 				if ($("#selectSitesearchSite").val() == null || $("#selectSitesearchSite").val() == " ") {
-					alert('검색할 사이트를 선택해 주십시오.');
 					return;
 				}
 				writeJsGridData("init");
@@ -324,25 +323,33 @@
 		}
 
 		function executeFaqClFunction(mode) {
-			var params = {
-				clid: $("#clid").val()
-				, clNm: $("#clNm").val()
-				, ord: $("#ord").val()
-				, useYn: $("#useYn").val()
-				, siteid: $("#selectSitesearchSite").val()
+			var siteid = $("#selectSitesearchSite").val();
+			if(siteid != null && siteid != ' ') {
+				var params = {
+					clid: $("#clid").val()
+					, clNm: $("#clNm").val()
+					, ord: $("#ord").val()
+					, useYn: $("#useYn").val()
+					, siteid: siteid
+				}
+
+				if(mode == "insert") {
+					faqCl.insert(params, function () {
+						alert("저장되었습니다.");
+						return false;
+					});
+				} else if(mode =="update") {
+					faqCl.update(params, function () {
+						alert("수정되었습니다.");
+						return false;
+					});
+				}
+			} else {
+				alert('사이트를 선택해주십시오.');
+				return ;
 			}
 
-			if(mode == "insert") {
-				faqCl.insert(params, function () {
-					alert("저장되었습니다.");
-					return false;
-				});
-			} else if(mode =="update") {
-				faqCl.update(params, function () {
-					alert("수정되었습니다.");
-					return false;
-				});
-			}
+
 		}
 
 		function checkValidation() {

@@ -5,6 +5,7 @@ import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.List;
 
@@ -33,10 +34,12 @@ public class HelpDeskAnswrVo extends ParentRequestVo {
     /** 답변 일련번호 */
     private Integer ansid;
     /** 답변 제목 */
-    @Size(max = 50, message = "답변 제목은 50자를 넘을 수 없습니다.")
+    @NotEmpty(message = "제목을 입력해 주십시오.")
+    @Size(max = 100, message = "제목은 100자를 넘을 수 없습니다.")
     private String ttl;
     /** 답변 내용 */
-    @Size(max = 2000, message = "답변 내용은 2000자를 넘을 수 없습니다.")
+    @NotEmpty(message = "답변을 입력해 주십시오.")
+    @Size(max = 4000, message = "답변 내용은 4000자를 넘을 수 없습니다.")
     private String cn;
     /** 파일그룹 아이디 */
     private Integer filegrpid;
@@ -51,6 +54,7 @@ public class HelpDeskAnswrVo extends ParentRequestVo {
     /** 지정 담당자 일련번호 */
     private String[] helpDeskManager;
     /** 문의 상태코드 */
+    @NotEmpty(message = "상태를 선택해 주십시오.")
     private String sttsCd;
     /** 파일Vo 목록 */
     private List<FileVo> fileList;

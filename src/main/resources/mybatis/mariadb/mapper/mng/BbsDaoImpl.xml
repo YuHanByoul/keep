@@ -408,8 +408,16 @@
                 INNER JOIN
                     TB_CMM_USER D
                 ON A.RGTRID = D.USERID
+                INNER JOIN
+                TB_CMM_SITE E
+                ON A.SITEID = E.SITEID
             WHERE 1=1
            -- AND A.DEL_YN = 'N'
+            <bind name="searchSiteValue" value="searchSite"/>
+            <bind name="searchSiteSysSeCd" value="'U'"/>
+            <include refid="SearchMapper.siteLmtCondition">
+                <property name="tableAlias" value="E"/>
+            </include>
             <if test="bbsid != null and bbsid != 0">
             AND A.BBSID= #{bbsid}
             </if>
@@ -421,9 +429,6 @@
             </if>
             <if test="@com.kbrainc.plum.rte.util.CommonUtil@isEmpty(searchType) and @com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(searchKeyword)">
             AND (A.TITLE LIKE CONCAT('%', #{searchKeyword}, '%') OR A.CNTNTS LIKE CONCAT('%', #{searchKeyword}, '%'))
-            </if>
-            <if test="searchSite != null and searchSite != ''">
-            AND A.SITEID = #{searchSite}
             </if>
             <if test='user.roleInfo.trgtInstCd == "S"'>
             AND A.SITEID IN ( SELECT A.SITEID FROM TB_CMM_SITE A WHERE INSTID =  #{user.siteid} )
