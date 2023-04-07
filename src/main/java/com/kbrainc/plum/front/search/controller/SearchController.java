@@ -366,20 +366,35 @@ public class SearchController {
             }
         } else if ("30".equals(gtype)) {
             if ("1".equals(etype)) { // 교육기관/시설 > 지역 환경교육센터 > 국가 환경교육센터
-                //return "/front/enveduCntr/crEnveduCntrList.html";
-                return data.get("URL");
+                if ("".equals(data.get("URL"))) {
+                    return "/front/enveduCntr/crEnveduCntrList.html";
+                } else {                    
+                    return data.get("URL");
+                }
             } else if ("2".equals(etype)) { // 교육기관/시설 > 지역 환경교육센터 > 광역 환경교육센터
-                //return "/front/enveduCntr/waEnveduCntrList.html";
-                return data.get("URL");
+                if ("".equals(data.get("URL"))) {
+                    return "/front/enveduCntr/waEnveduCntrList.html";
+                } else {                    
+                    return data.get("URL");
+                }
             } else if ("3".equals(etype)) { // 교육기관/시설 > 지역 환경교육센터 > 기초 환경교육센터
-                //return "/front/enveduCntr/basicEnveduCntrList.html";
-                return data.get("URL");
+                if ("".equals(data.get("URL"))) {
+                    return "/front/enveduCntr/basicEnveduCntrList.html";
+                } else {                    
+                    return data.get("URL");
+                }
             } else if ("4".equals(etype)) { // 교육기관/시설 > 민간환경교육단체
-                //return "/front/enveduCntr/prvtEnveduCntrList.html";
-                return data.get("URL");
+                if ("".equals(data.get("URL"))) {
+                    return "/front/enveduCntr/prvtEnveduCntrList.html";
+                } else {                    
+                    return data.get("URL");
+                }
             } else if ("5".equals(etype)) { // 교육기관/시설 > 환경교육사 양성기관 > 양성기관 현황 
-                //return "/front/envtcherTrnngInst/envtcherTrnngInstSituList.html";
-                return data.get("URL");
+                if ("".equals(data.get("URL"))) {
+                    return "/front/envtcherTrnngInst/envtcherTrnngInstSituList.html";
+                } else {                    
+                    return data.get("URL");
+                }
             } else if ("6".equals(etype)) { // 참여/신청 > 환경교육시설 예약 
                 return String.format("/front/envReqst/resveEnvView.html?fcltid=%s", data.get("PSTID"));
             }
