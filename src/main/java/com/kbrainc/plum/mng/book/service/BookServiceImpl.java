@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.book.model.BookDao;
+import com.kbrainc.plum.mng.book.model.BookSbjctVo;
 import com.kbrainc.plum.mng.book.model.BookVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
@@ -65,8 +67,12 @@ public class BookServiceImpl extends PlumAbstractServiceImpl implements BookServ
     * @throws Exception 예외
     * @return int
     */
+    @Transactional
     public int insertBook(BookVo bookVo) throws Exception {
-        return bookDao.insertBook(bookVo);
+        int resInt = 0;
+        resInt +=bookDao.insertBook(bookVo);
+        resInt +=bookDao.insertBookSbjct(bookVo);
+        return resInt;
     }
     
     /**
@@ -78,8 +84,13 @@ public class BookServiceImpl extends PlumAbstractServiceImpl implements BookServ
     * @throws Exception 예외
     * @return int
     */
+    @Transactional
     public int updateBook(BookVo bookVo) throws Exception {
-        return bookDao.updateBook(bookVo);
+        int resInt = 0;
+        resInt +=bookDao.deleteBookSbjct(bookVo);
+        resInt +=bookDao.insertBookSbjct(bookVo);
+        resInt +=bookDao.updateBook(bookVo);
+        return resInt;
     }
     
     /**
@@ -91,7 +102,48 @@ public class BookServiceImpl extends PlumAbstractServiceImpl implements BookServ
     * @throws Exception 예외
     * @return int
     */
-    public int deleteBook(String[] bookids) throws Exception {
-        return bookDao.deleteBook(bookids);
+    @Transactional
+    public int deleteBook(BookVo bookVo) throws Exception {
+        int resInt = 0;
+        //resInt += bookDao.deleteBookSbjct(bookVo);
+        resInt += bookDao.deleteBook(bookVo);
+        return resInt;
+    }
+    
+    /**
+    * 우수환경도서 교육주제 목록 조회
+    *
+    * @Title : selectBookList
+    * @Description : 우수환경도서 교육주제 목록 조회
+    * @param bookVo 객체
+    * @throws Exception 예외
+    * @return List<BookSbjctVo>
+    */
+    public List<BookSbjctVo> selectBookSbjctList(BookVo bookVo) throws Exception{
+        return bookDao.selectBookSbjctList(bookVo);
+    }
+    /**
+     * 우수환경도서 교육주제 삭제
+     *
+     * @Title : deleteBook
+     * @Description : 우수환경도서 교육주제 삭제
+     * @param  BookVo
+     * @throws Exception 예외
+     * @return int
+     */
+    public int deleteBookSbjct(BookVo bookVo) throws Exception{
+        return bookDao.deleteBookSbjct(bookVo);
+    }
+    /**
+     * 우수환경도서 교육 주제 등록
+     *
+     * @Title : deleteBook
+     * @Description : 우수환경도서 교육 주제 등록
+     * @param BookVo 
+     * @throws Exception 예외
+     * @return int
+     */
+    public int insertBookSbjct(BookVo bookVo) throws Exception{
+        return bookDao.insertBookSbjct(bookVo);
     }
 }
