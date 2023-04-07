@@ -59,6 +59,7 @@
 							<th scope="row">응모구분<i class="ast" title="필수입력">*</i></th>
 							<td>
 								<span kattr:radio_code="aplySeCd" grpCd="168" th:attr="selectedCd=${cntstAplyHist.aplySeCd}"></span>
+								<p class="feedback"></p>
 							</td>
 						</tr>
 						<tr>
@@ -78,12 +79,14 @@
 									</label>
 									</th:block>
 								</div>
+								<p class="feedback"></p>
 							</td>
 						</tr>
 						<tr>
 							<th scope="row">지원경로<i class="ast" title="필수입력">*</i></th>
 							<td>
 								<span kattr:radio_code="aplyPathCd"grpCd="167" th:attr="selectedCd=${cntstAplyHist.aplyPathCd}"></span>
+								<p class="feedback"></p>
 							</td>
 						</tr>
 					</tbody>
@@ -121,6 +124,7 @@
 							<th scope="row">생년월일<i class="ast" title="필수입력">*</i></th>
 							<td>
 								<input type="date" name="brdt" title="생년월일" th:value="${cntstAplyHist.brdt}">
+								<p class="feedback"></p>
 							</td>
 						</tr>
 						<tr>
@@ -169,13 +173,17 @@
 					<tbody>
 						<tr>
 							<th scope="row">작품제목<i class="ast" title="필수입력">*</i></th>
-							<td><input type="text" title="작품제목" name="prdctTtl" th:value="${cntstAplyHist.prdctTtl}"></td>
+							<td>
+								<input type="text" title="작품제목" name="prdctTtl" th:value="${cntstAplyHist.prdctTtl}">
+								<p class="feedback"></p>
+							</td>
 						</tr>
 						<tr>
 							<th scope="row">작품설명<i class="ast" title="필수입력">*</i></th>
 							<td>
-								<textarea title="작품설명" name="prdctExpln" th:value="${cntstAplyHist.prdctExpln}"><th:block th:text="${cntstAplyHist.prdctExpln}"></th:block></textarea>
-								<div class="desc ar size"><span>0</span> / 5,000</div>
+								<textarea title="작품설명" id="prdctExpln" name="prdctExpln" th:value="${cntstAplyHist.prdctExpln}" style="height: 70px;"><th:block th:text="${cntstAplyHist.prdctExpln}"></th:block></textarea>
+								<div class="desc ar size"><span id="charCount">0</span> / 5,000자</div>
+								<p class="feedback"></p>
 							</td>
 						</tr>
 						<tr>
@@ -211,6 +219,7 @@
 		                            </ul>
 		                            <input type="hidden" id="filegrpid" name="prdctFilegrpid" th:value="${(cntstAplyHist.prdctFilegrpid == '' or cntstAplyHist.prdctFilegrpid == null) ? 0 : cntstAplyHist.prdctFilegrpid}"/>
 		                        </div>
+		                        <p class="feedback"></p>
 		                    </td>
 						</tr>
 					</tbody>
@@ -241,6 +250,15 @@
 	        
 	     	function updateCntstAplyForm(){
 	    	 	if(!($("#cntstAplyHistAplyForm").valid())) return;
+	    	 	var getFileEl = document.getElementById("multipleFileUploadSuccess");
+	    	 	
+	    	    if (getFileEl.children.length == 0) {
+	    	        alert("작품을 업로드해 주십시오.");
+			        var offset = $("#multipleFileUploadSuccess").offset();
+			        $('html, body').animate({scrollTop : offset.top-300}, 300);
+					$("#multipleFileUploadSuccess").focus();
+	    	        return;
+	    	    }
 	    	 	
 	      	 	if(!confirm("저장하시겠습니까?")) return;
 	      	 	
@@ -266,20 +284,29 @@
 	     	}
 	     	
 			$(function(){
+				var textarea = document.getElementById("prdctExpln");
+				var charCount = document.getElementById("charCount");
+				charCount.innerText = textarea.value.length;
+				
+				textarea.addEventListener("input", function() {
+					var count = textarea.value.length;
+					charCount.innerText = count;
+				});
+				
 				validator = $('#cntstAplyHistAplyForm').validate({
 	                rules: {
 	                	aplySeCd: {required: true},
 	                	pcntstAplyHistFldCd: {required: true},
 	                	aplyPathCd: {required: true},
 	                	brdt: {required: true},
-	                	prdctExpln: {required: true},
+	                	prdctExpln: {required: true, maxlength:5000},
 	                },
 	                messages: {
 	                	aplySeCd: {required: "응모구분을 선택해 주십시오."},
 	                    pcntstAplyHistFldCd: {required: "공모분야를 선택해 주십시오."},
 	                    aplyPathCd: {required: "지원경로를 선택해 주십시오."},
 	                    brdt: {required: "생일을 선택해 주십시오."},
-	                    prdctExpln: {required: "작품설명을 작성해 주십시오."},
+	                    prdctExpln: {required: "작품설명을 작성해 주십시오.", maxlength: '작품설명은 5000자를 넘을 수 없습니다.'},
 	                }
 	            });
 				
