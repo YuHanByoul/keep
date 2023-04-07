@@ -99,6 +99,15 @@ public class MvmnAplyHistVo extends ParentRequestVo {
     private String [] trgtCds;
     /** 교육대상 */
     private String trgtCd;
+    /** 신청자_만족도_설문아이디 */
+    private Integer aplcntDgstfnSrvyid;
+    /** 신청자_만족도_설문지아이디 */
+    private Integer aplcntDgstfnQestnrid;
+    /** 학생_만족도_설문아이디 */
+    private Integer stdntDgstfnSrvyid;
+    /** 학생_만족도_설문지아이디 */
+    private Integer stdntDgstfnQestnrid;
+    
     /** 등록일 */
     private String regDt;
     

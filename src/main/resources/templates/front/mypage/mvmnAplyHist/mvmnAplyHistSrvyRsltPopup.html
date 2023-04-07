@@ -1,0 +1,87 @@
+<form id="srvyRsltForm">
+    <input type="hidden" name="mvmnPrgrmAplyid" id="mvmnPrgrmAplyid" th:value="${mvmnPrgrmAplyid}"/>
+    <!-- layerpopup -->
+    <div class="layer-header">
+        <strong class="tit">공유설문 결과</strong>
+        <button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
+    </div>
+    <div class="layer-content">
+
+        <div class="table-col table-layout-auto">
+            <table>
+                <caption>공유설문 결과 - 구분, 이름, 제출일, 결과보기</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">구분</th>
+                        <th scope="col">이름</th>
+                        <th scope="col">제출일</th>
+                        <th scope="col">결과보기</th>
+                    </tr>
+                </thead>
+                <tbody id="srvyRsltTbody">
+                <th:block th:if="${srvySendList.size() > 0}" th:each="item, i : ${srvySendList}">
+					<tr>
+						<td><th:block th:text="${i.index+1}"/></td>
+						<td><th:block th:text="${item.prtpntNm}"/></td>
+						<td><th:block th:text="${item.sbmsnDt}"/></td>
+						<td><button type="button" class="btn-small btn-outline-blue" th:onclick="onSrvySbmsnInfoPopup([[${item.sbmsnid}]], [[${item.srvyid}]],[[${item.qestnrid}]])">확인</button></td>
+					</tr>                
+                </th:block>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+    <div class="layer-footer">
+        <div class="btn-wrap">
+            <div class="center">
+                <button type="button" class="btn-medium btn-gray" data-layer-close>닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- //layerpopup -->
+</form>
+<script th:inline="javascript">
+/*$(function () {
+	var validator= $("#srvyRsltForm").validate({
+	    rules    : { ansCn : { required: true, maxlength: 500 } }
+	  , messages : { ansCn : { required:"보완요청에 대한 답변을 입력해 주십시오." , maxlength: '내용은 500자를 넘을 수 없습니다.' } }
+	});
+});
+
+function goBaseInfoPage(pcntstid, aplyid, fldCd) {
+	console.log(pcntstid, aplyid, fldCd);
+	listPage.moveToDetail(pcntstid, aplyid, fldCd);
+}
+
+function saveSupp() {
+    if(!($("#srvyRsltForm").valid())) return;
+    if(!confirm("보완완료 하시겠습니까?\n보완완료 처리 후 수정이 불가합니다")){return;}
+
+    var data =  $("#srvyRsltForm").serialize();
+    $.ajax({
+        url : "/front/expEnv/updateSplmnt.do",
+        type: 'POST',
+        cache : false,
+        dataType: 'json',
+        data : data,
+        success : function (data){
+            if(data.result=="success"){
+                alert(data.msg);
+                $('.btn-layer-close').trigger('click');
+                listPage.selectList();
+            }else{
+                alert("저장중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+            }
+        },
+        error : function (error){
+        }
+    });
+};*/
+
+function onSrvySbmsnInfoPopup(sbmsnid, srvyid, qestnrid) {
+	var aplyid = $("#mvmnPrgrmAplyid").val();
+    popupCenter({url: '/front/srvy/srvySbmsnInfoPopup.html?sbmsnid=' + sbmsnid + '&mvmnPrgrmAplyid=' + aplyid + '&srvyid=' + srvyid + '&qestnrid=' + qestnrid, title: '설문확인', w: 1280, h: 1000, l: 0, t: 0});
+}
+</script>

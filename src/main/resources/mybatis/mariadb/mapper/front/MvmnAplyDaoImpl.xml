@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!--
-	SQL File Name : MvmnAplyDaoImpl.xml
-	Description : 푸름이 이동환경교실 교육신청
+    SQL File Name : MvmnAplyDaoImpl.xml
+    Description : 푸름이 이동환경교실 교육신청
 -->
 <mapper namespace="com.kbrainc.plum.front.mvmnAply.model.MvmnAplyDao">
     
@@ -122,8 +122,8 @@
                 COALESCE(B.FILEID, 0) FILEID
               , B.FILE_IDNTFC_KEY
             FROM
-            	TB_EDU_MVMN_PRGRM A
-            	LEFT OUTER JOIN tb_cmm_file B ON A.EDU_PHOTO_FILEID = B.FILEID                
+                TB_EDU_MVMN_PRGRM A
+                LEFT OUTER JOIN tb_cmm_file B ON A.EDU_PHOTO_FILEID = B.FILEID                
             WHERE
                 1=1
                 AND A.PRGRMID = #{prgrmid}
@@ -141,6 +141,8 @@
                          WHERE DE <![CDATA[>=]]>  DATE_FORMAT(NOW(), '%Y.%m.%d')) THEN '신청가능' 
                     ELSE '마감' END 
                  ELSE '마감' END) AS STTS_DESC
+              , X.DE_DESC
+              , X.WEEK_DESC
               , X.WAIT_CNT
               , X.REG_DT
           FROM (
@@ -164,9 +166,23 @@
                             AND TB.TME_SCHDLID = TC.TME_SCHDLID 
                             AND TA.STTS_CD = '180101'
                             AND TB.TMEID = A.TMEID) WAIT_CNT    
+                      , (SELECT GROUP_CONCAT(REPLACE(TA.DE, '.', '-') SEPARATOR', ')
+                           FROM TB_EDU_MVMN_PRGRM_TME_SCHDL TA                                                             
+                          WHERE TA.TMEID = A.TMEID) DE_DESC  
+                      , (SELECT GROUP_CONCAT(DISTINCT CASE DAYOFWEEK(TA.DE) 
+                                    WHEN '1' THEN '일요일'
+                                    WHEN '2' THEN '월요일'
+                                    WHEN '3' THEN '화요일'
+                                    WHEN '4' THEN '수요일'
+                                    WHEN '5' THEN '목요일'
+                                    WHEN '6' THEN '금요일'
+                                    WHEN '7' THEN '토요일' END
+                                SEPARATOR', ')
+                           FROM TB_EDU_MVMN_PRGRM_TME_SCHDL TA                               
+                          WHERE TA.TMEID = A.TMEID) WEEK_DESC                             
                   FROM TB_EDU_MVMN_PRGRM_TME A    
                   LEFT OUTER JOIN TB_EDU_MVMN_PRGRM B ON B.PRGRMID = A.PRGRMID
-                  
+                  WHERE A.TMEID IN (SELECT TMEID FROM TB_EDU_MVMN_PRGRM_TME_SCHDL)
            ) X
          WHERE 1=1
            AND X.PRGRMID = #{prgrmid}    
@@ -265,7 +281,8 @@
                 , J.SIGNGU_CD
                 , CONCAT(E.CD_NM,' <![CDATA[>]]> ', G.CD_NM) SIGNGU_DESC
                 , CONCAT(C.TME_NM, C.BGNG_TM, ' ~ ', C.END_TM) TME_NM
-                , CASE WHEN A.OPER_FOM_CD = '197101' THEN REPLACE(D.DE, '.', '-') ELSE (SELECT GROUP_CONCAT(T1.DE SEPARATOR', ') FROM T1 WHERE MONTH(T1.DE) = MONTH(D.DE)) END DE
+                -- , CASE WHEN A.OPER_FOM_CD = '197101' THEN REPLACE(D.DE, '.', '-') ELSE (SELECT GROUP_CONCAT(T1.DE SEPARATOR', ') FROM T1 WHERE MONTH(T1.DE) = MONTH(D.DE)) END DE
+                , GROUP_CONCAT(REPLACE(D.DE, '.', '-') SEPARATOR', ') DE
                 ,(SELECT GROUP_CONCAT(TB.CD_NM SEPARATOR', ') FROM TB_EDU_MVMN_PRGRM_TRGT_MAPNG TA, TB_CMM_CD TB WHERE TA.PRGRMID = A.PRGRMID and TA.TRGT_CD = TB.CD) AS TRGT_NM
                 ,(SELECT GROUP_CONCAT(TC.TRGT_CD SEPARATOR', ') FROM TB_EDU_MVMN_PRGRM_TRGT_MAPNG TC WHERE TC.PRGRMID = A.PRGRMID ) AS TRGT_CD
                 , F.INSTID
@@ -294,7 +311,14 @@
                 LEFT OUTER JOIN TB_CMM_INST H ON H.INSTID = F.INSTID   
             WHERE A.USE_YN = 'Y'
               AND A.PRGRMID = #{prgrmid}
-              AND D.TME_SCHDLID = #{tmeSchdlid}
+              <choose>
+                  <when test="operFomCd == '197101'">
+                    AND D.TME_SCHDLID = #{tmeSchdlid}
+                  </when>
+                  <otherwise>
+                    AND D.TMEID = #{tmeid}
+                  </otherwise>
+              </choose>
               AND I.CTPRVN_CD = SUBSTRING_INDEX(SUBSTRING_INDEX(#{sareaSignguCd}, '^', -2), '^', 1)
               AND J.SIGNGU_CD = SUBSTRING_INDEX(#{sareaSignguCd}, '^', -1)
             GROUP BY A.PRGRMID
