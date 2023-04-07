@@ -5,25 +5,19 @@
       layout:decorator="layout/front/nolnbSubLayout">
 <body>
 <div layout:fragment="content">
-    <form class="block toggleParent">
+    <form class="block toggleParent" name="searchCondForm" id="searchCondForm">
+        <input type="hidden" name="gtype" id="gtype" th:value="${search.gtype}" />
+        <input type="hidden" name="chkSort" id="chkSort" th:value="${search.chkSort}" />
         <div class="search-filter search-filter-suggest mb10">
             <div class="form-input mo-flex-wrap">
                 <div class="form-input">
-                    <select title="검색어" style="width:auto;flex:auto;" name="gtype" id="gtype">
-                        <option value="all">전체</option>
-                        <option value="10">프로그램·콘텐츠</option>
-                        <option value="20">참여·신청</option>
-                        <option value="30">알림·문의</option>
-                        <option value="40">메뉴</option>
-                        <option value="50">첨부파일</option>
-                    </select>
                     <div class="form-input search-suggest-position pb0">
-                        <input type="search" title="검색어" class="mr0" placeholder="검색어를 입력해 주세요." th:value="${param.keyword}" name="keyword" id="keyword">
+                        <input type="search" title="검색어" class="mr0" placeholder="검색어를 입력해 주세요." th:value="${search.keyword}" name="keyword" id="keyword" onkeyup="searchDetailEnterkey()">
                     </div>
                 </div>
                 <div class="search-filter-submit mo-flex-wrap">
                     <div class="form-input">
-                        <button type="button" class="btn-medium btn-green btn-before-search">검색</button>
+                        <button type="button" class="btn-medium btn-green btn-before-search" onclick="searchDetail('all')">검색</button>
                         <button type="button" class="btn-medium btn-green btn-after-toggle toggleTrigger">상세검색</button>
                     </div>
                 </div>
@@ -36,9 +30,9 @@
                         <div class="form-header"><strong class="label">검색기간</strong></div>
                         <div class="form-body">
                             <div class="form-input">
-                                <input type="date" title="시작일" name="dateFilter" id="dateFilter1">
+                                <input type="date" title="시작일" name="startDt" id="startDt" th:value="${search.startDt}">
                                 <div class="bul">~</div>
-                                <input type="date" title="종료일" name="dateFilter" id="dateFilter2">
+                                <input type="date" title="종료일" name="endDt" id="endDt" th:value="${search.endDt}">
                             </div>
                         </div>
                     </div>
@@ -46,7 +40,7 @@
                         <div class="form-header"><strong class="label">검색 제외 단어</strong></div>
                         <div class="form-body">
                             <div class="form-input mo-flex-wrap">
-                                <input type="text" title="검색 제외 단어" data-width="290" class="mo-flex-auto" name="keywordNot">
+                                <input type="text" title="검색 제외 단어" data-width="290" class="mo-flex-auto" name="keywordNot" id="keywordNot" th:value="${search.keywordNot}">
                                 <div class="bul fc-black6">특정단어 제외 후 검색</div>
                             </div>
                         </div>
@@ -54,80 +48,50 @@
                     <div class="form-row">
                         <div class="form-header"><strong class="label">주제</strong></div>
                         <div class="form-body">
-                            <div class="form-check-list">
-                                <label class="inp"><input type="checkbox" name="sbjctCd"><b>소음</b></label>
-                                <label class="inp"><input type="checkbox"><b>폐기물 및 자원순환</b></label>
-                                <label class="inp"><input type="checkbox"><b>환경보건</b></label>
-                                <label class="inp"><input type="checkbox"><b>물</b></label>
-                                <label class="inp"><input type="checkbox"><b>토양</b></label>
-                                <label class="inp"><input type="checkbox"><b>생태계</b></label>
-                                <label class="inp"><input type="checkbox"><b>기후변화 및 탄소중립</b></label>
-                                <label class="inp"><input type="checkbox"><b>대기</b></label>
-                                <label class="inp"><input type="checkbox"><b>에너지</b></label>
-                                <label class="inp"><input type="checkbox"><b>지속가능발전</b></label>
-                                <label class="inp"><input type="checkbox"><b>생명윤리</b></label>
-                                <label class="inp"><input type="checkbox"><b>11월</b></label>
-                                <label class="inp"><input type="checkbox"><b>12월</b></label>
-                            </div>
+                            <span kattr:check_code="sbjctCd" grpCd="155" upprCd="155101,155102,155103,155104" th:attr="selectedCd=${search.sbjctCd}" />
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-header"><strong class="label">대상</strong></div>
                         <div class="form-body">
-                            <div class="form-check-list">
-                                <label class="inp"><input type="checkbox" name="trgtCd"><b>유아기(7세이하)</b></label>
-                                <label class="inp"><input type="checkbox"><b>아동기(8~13세)</b></label>
-                                <label class="inp"><input type="checkbox"><b>청소년기(14~19세)</b></label>
-                                <label class="inp"><input type="checkbox"><b>성인기(20세 이상)</b></label>
-                            </div>
+                            <span kattr:check_code="trgtCd" grpCd="185" th:attr="selectedCd=${search.trgtCd}" />
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-header"><strong class="label">유형</strong></div>
                         <div class="form-body">
-                            <div class="form-check-list">
-                                <label class="inp"><input type="checkbox" name="typeCd"><b>교육지도안</b></label>
-                                <label class="inp"><input type="checkbox"><b>인포그래픽</b></label>
-                                <label class="inp"><input type="checkbox"><b>카드뉴스</b></label>
-                                <label class="inp"><input type="checkbox"><b>학습자료</b></label>
-                                <label class="inp"><input type="checkbox"><b>기타</b></label>
-                            </div>
-                            <div class="form-check-list">
-                                <label class="inp"><input type="checkbox" name="typeCd"><b>교육영상</b></label>
-                                <label class="inp"><input type="checkbox"><b>홍보영상</b></label>
-                                <label class="inp"><input type="checkbox"><b>강연영상</b></label>
-                                <label class="inp"><input type="checkbox"><b>포럼 및 세미나</b></label>
-                            </div>
+                            <span kattr:check_code="typeCd" grpCd="164" upprCd="164101" th:attr="selectedCd=${search.typeCd}" />
+                            <span kattr:check_code="typeCd" grpCd="164" upprCd="164102" th:attr="selectedCd=${search.typeCd}" />
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-header"><strong class="label">지역</strong></div>
                         <div class="form-body">
                             <div class="form-check-list">
-                                <label class="inp"><input type="checkbox" name="rgnCd"><b>서울특별시</b></label>
-                                <label class="inp"><input type="checkbox"><b>부산광역시</b></label>
-                                <label class="inp"><input type="checkbox"><b>대전광역시</b></label>
-                                <label class="inp"><input type="checkbox"><b>대구광역시</b></label>
-                                <label class="inp"><input type="checkbox"><b>인천광역시</b></label>
-                                <label class="inp"><input type="checkbox"><b>광주광역시</b></label>
-                                <label class="inp"><input type="checkbox"><b>울산광역시</b></label>
-                                <label class="inp"><input type="checkbox"><b>세종특별자치시</b></label>
-                                <label class="inp"><input type="checkbox"><b>경기도</b></label>
-                                <label class="inp"><input type="checkbox"><b>강원도</b></label>
-                                <label class="inp"><input type="checkbox"><b>충청북도</b></label>
-                                <label class="inp"><input type="checkbox"><b>충청남도</b></label>
-                                <label class="inp"><input type="checkbox"><b>경상북도</b></label>
-                                <label class="inp"><input type="checkbox"><b>경상남도</b></label>
-                                <label class="inp"><input type="checkbox"><b>전라북도</b></label>
-                                <label class="inp"><input type="checkbox"><b>전라남도</b></label>
-                                <label class="inp"><input type="checkbox"><b>제주특별자치도</b></label>
+                                <label class="inp"><input type="checkbox" name="rgnCd" value="11" th:checked="${search.rgnCd != null and #strings.contains(search.rgnCd,'11')}"><b>서울특별시</b></label>
+                                <label class="inp"><input type="checkbox" name="rgnCd" value="26" th:checked="${search.rgnCd != null and #strings.contains(search.rgnCd,'26')}"><b>부산광역시</b></label>
+                                <label class="inp"><input type="checkbox" name="rgnCd" value="27" th:checked="${search.rgnCd != null and #strings.contains(search.rgnCd,'27')}"><b>대구광역시</b></label>
+                                <label class="inp"><input type="checkbox" name="rgnCd" value="28" th:checked="${search.rgnCd != null and #strings.contains(search.rgnCd,'28')}"><b>인천광역시</b></label>
+                                <label class="inp"><input type="checkbox" name="rgnCd" value="29" th:checked="${search.rgnCd != null and #strings.contains(search.rgnCd,'29')}"><b>광주광역시</b></label>
+                                <label class="inp"><input type="checkbox" name="rgnCd" value="30" th:checked="${search.rgnCd != null and #strings.contains(search.rgnCd,'30')}"><b>대전광역시</b></label>
+                                <label class="inp"><input type="checkbox" name="rgnCd" value="31" th:checked="${search.rgnCd != null and #strings.contains(search.rgnCd,'31')}"><b>울산광역시</b></label>
+                                <label class="inp"><input type="checkbox" name="rgnCd" value="36" th:checked="${search.rgnCd != null and #strings.contains(search.rgnCd,'36')}"><b>세종특별자치시</b></label>
+                                <label class="inp"><input type="checkbox" name="rgnCd" value="50" th:checked="${search.rgnCd != null and #strings.contains(search.rgnCd,'50')}"><b>제주특별자치도</b></label>
+                                <label class="inp"><input type="checkbox" name="rgnCd" value="41" th:checked="${search.rgnCd != null and #strings.contains(search.rgnCd,'41')}"><b>경기도</b></label>
+                                <label class="inp"><input type="checkbox" name="rgnCd" value="42" th:checked="${search.rgnCd != null and #strings.contains(search.rgnCd,'42')}"><b>강원도</b></label>
+                                <label class="inp"><input type="checkbox" name="rgnCd" value="43" th:checked="${search.rgnCd != null and #strings.contains(search.rgnCd,'43')}"><b>충청북도</b></label>
+                                <label class="inp"><input type="checkbox" name="rgnCd" value="44" th:checked="${search.rgnCd != null and #strings.contains(search.rgnCd,'44')}"><b>충청남도</b></label>
+                                <label class="inp"><input type="checkbox" name="rgnCd" value="45" th:checked="${search.rgnCd != null and #strings.contains(search.rgnCd,'45')}"><b>전라북도</b></label>
+                                <label class="inp"><input type="checkbox" name="rgnCd" value="46" th:checked="${search.rgnCd != null and #strings.contains(search.rgnCd,'46')}"><b>전라남도</b></label>
+                                <label class="inp"><input type="checkbox" name="rgnCd" value="47" th:checked="${search.rgnCd != null and #strings.contains(search.rgnCd,'47')}"><b>경상북도</b></label>
+                                <label class="inp"><input type="checkbox" name="rgnCd" value="48" th:checked="${search.rgnCd != null and #strings.contains(search.rgnCd,'48')}"><b>경상남도</b></label>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="search-filter-submit">
-                    <button type="reset" class="btn-medium btn-gray btn-before-refresh">초기화</button>
-                    <button type="button" class="btn-medium btn-green btn-before-search">검색</button>
+                    <button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="initSearchForm()">초기화</button>
+                    <button type="button" class="btn-medium btn-green btn-before-search" onclick="searchDetail('all')">검색</button>
                 </div>
             </div>
             
@@ -138,7 +102,7 @@
     
     <div class="pc-only">
         <div class="rank-list rank-tab-list mt45">
-            <div class="tab-content">
+            <div class="tab-content" style="height:144px;">
                 <dl>
                     <dt>인기검색어</dt>
                     <dd>
@@ -168,588 +132,351 @@
 
     <div class="table-caption flex-nowrap table-border-bottom">
         <div class="left">
-            <p><b>&lsquo;교구&rsquo;</b>에 대한 검색 결과입니다. (총 <b>1,640</b> 건)</p>
+            <p><b>&lsquo;[[${search.keyword}]]&rsquo;</b>에 대한 검색 결과입니다. (총 <b>[[${#numbers.formatInteger(countInfo.all,1,'COMMA')}]]</b> 건)</p>
         </div>
         <div class="right">
             <div class="sort-tab">
                 <ul role="tablist">
-                    <li class="active"><a href="javascript:searchSort('asc')" role="tab" aria-selected="true">정확도순</a></li>
-                    <li><a href="javascript:searchSort('asc')" role="tab">최신순</a></li>
+                    <li th:class="${search.chkSort == 'asc' ? 'active' : ''}"><a href="javascript:searchSort('asc')" role="tab" aria-selected="true">정확도순</a></li>
+                    <li th:class="${search.chkSort == 'desc' ? 'active' : ''}"><a href="javascript:searchSort('desc')" role="tab">최신순</a></li>
                 </ul>
             </div>
         </div>
     </div>
 
     <div class="tab-content tab-sub dropDown">
-        <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">전체 <span class="fw-400 ml5">(1,640)</span></button>
+        <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">전체 <span class="fw-400 ml5">([[${#numbers.formatInteger(countInfo.all,1,'COMMA')}]])</span></button>
         <ul class="tab-list target" role="tablist">
-            <li class="tab active"><button aria-controls="tab-subpanel01" id="tab-sub01" role="tab">전체 <span class="fw-400 ml5">(1,640)</span></button></li>
-            <li class="tab"><button aria-controls="tab-subpanel02" id="tab-sub02" role="tab">프로그램&middot;콘텐츠 <span class="fw-400 ml5">(758)</span></button></li>
-            <li class="tab"><button aria-controls="tab-subpanel03" id="tab-sub03" role="tab">참여&middot;신청 <span class="fw-400 ml5">(165)</span></button></li>
-            <li class="tab"><button aria-controls="tab-subpanel04" id="tab-sub04" role="tab">알림&middot;문의 <span class="fw-400 ml5">(251)</span></button></li>
-            <li class="tab"><button aria-controls="tab-subpanel05" id="tab-sub05" role="tab">메뉴 <span class="fw-400 ml5">(2)</span></button></li>
-            <li class="tab"><button aria-controls="tab-subpanel06" id="tab-sub06" role="tab">첨부파일 <span class="fw-400 ml5">(75)</span></button></li>
+            <li th:class="${search.gtype == 'all' ? 'tab active' : 'tab'}"><a href="javascript:searchGtype('all')" role="tab">전체 <span class="fw-400 ml5">([[${#numbers.formatInteger(countInfo.all,1,'COMMA')}]])</span></a></li>
+            <li th:class="${search.gtype == '10' ? 'tab active' : 'tab'}"><a href="javascript:searchGtype('10')" role="tab">프로그램&middot;콘텐츠 <span class="fw-400 ml5">([[${#numbers.formatInteger(countInfo.cnt10,1,'COMMA')}]])</span></a></li>
+            <li th:class="${search.gtype == '20' ? 'tab active' : 'tab'}"><a href="javascript:searchGtype('20')" role="tab">참여&middot;신청 <span class="fw-400 ml5">([[${#numbers.formatInteger(countInfo.cnt20,1,'COMMA')}]])</span></a></li>
+            <li th:class="${search.gtype == '30' ? 'tab active' : 'tab'}"><a href="javascript:searchGtype('30')" role="tab">알림&middot;문의 <span class="fw-400 ml5">([[${#numbers.formatInteger(countInfo.cnt30,1,'COMMA')}]])</span></a></li>
+            <li th:class="${search.gtype == '50' ? 'tab active' : 'tab'}"><a href="javascript:searchGtype('50')" role="tab">메뉴 <span class="fw-400 ml5">([[${#numbers.formatInteger(countInfo.cnt50,1,'COMMA')}]])</span></a></li>
+            <li th:class="${search.gtype == '40' ? 'tab active' : 'tab'}"><a href="javascript:searchGtype('40')" role="tab">첨부파일 <span class="fw-400 ml5">([[${#numbers.formatInteger(countInfo.cnt40,1,'COMMA')}]])</span></a></li>
         </ul>
-        <div id="tab-subpanel01" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub01">
+        <div class="tabpanel active" role="tabpanel" th:if="${search.gtype == 'all'}">
 
-            <div class="search-page-result">
+            <div class="search-page-result" th:if="${countInfo.all == 0}">
                 <div class="nodata bg3">
                     <p class="fc-black6"><span class="icon icon-notice bg-black6"></span>검색된 내용이 없습니다.</p>
                 </div>
-                <div class="table-caption">
+            </div>
+            <div class="search-page-result" th:if="${countInfo.all > 0}">
+                <div class="table-caption" th:if="${countInfo.cnt10 > 0}">
                     <div class="left">
-                        <h3 class="sub-title">프로그램·콘텐츠 (758)</h3>
+                        <h3 class="sub-title">프로그램·콘텐츠 ([[${#numbers.formatInteger(countInfo.cnt10,1,'COMMA')}]])</h3>
                     </div>
                     <div class="right">
-                        <a href="#" class="btn-small btn-outline-black">검색결과 더보기</a>
+                        <a href="javascript:searchGtype('10')" class="btn-small btn-outline-black" th:if="${countInfo.cnt10 > 3}">검색결과 더보기</a>
+                    </div>
+                </div>
+                
+                <ul th:if="${countInfo.cnt10 > 0}">
+                    <li th:each="item : ${gtype10}">
+                        <a th:href="${T(com.kbrainc.plum.front.search.controller.SearchController).getLink(item)}" th:target="${item.ETYPE == '11' ? '_blank' : ''}">
+                            <strong class="title" th:utext="${#strings.replace(T(com.kbrainc.plum.rte.util.StringUtil).removeHTMLTag(item.TTL),search.keyword,'<i>' + search.keyword +'</i>')}"></strong>
+                            <span class="text" th:utext="${#strings.replace(T(com.kbrainc.plum.rte.util.StringUtil).removeHTMLTag(item.CN),search.keyword,'<i>' + search.keyword +'</i>')}"></span>
+                            <span class="info">
+                                <span class="loc" th:text="${T(com.kbrainc.plum.front.search.controller.SearchController).getPath(item)}"></span>
+                                <span class="date" th:text="${#temporals.createDate(item.REG_DT, 'yyyyMMdd')}"></span>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            
+                <div class="table-caption" th:if="${countInfo.cnt20 > 0}">
+                    <div class="left">
+                        <h3 class="sub-title">참여ㆍ신청 ([[${#numbers.formatInteger(countInfo.cnt20,1,'COMMA')}]])</h3>
+                    </div>
+                    <div class="right">
+                        <a href="javascript:searchGtype('20')" class="btn-small btn-outline-black" th:if="${countInfo.cnt20 > 3}">검색결과 더보기</a>
+                    </div>
+                </div>
+
+                <ul th:if="${countInfo.cnt20 > 0}">
+                    <li th:each="item : ${gtype20}">
+                        <a th:href="${T(com.kbrainc.plum.front.search.controller.SearchController).getLink(item)}">
+                            <strong class="title" th:utext="${#strings.replace(T(com.kbrainc.plum.rte.util.StringUtil).removeHTMLTag(item.TTL),search.keyword,'<i>' + search.keyword +'</i>')}"></strong>
+                            <span class="text" th:utext="${#strings.replace(T(com.kbrainc.plum.rte.util.StringUtil).removeHTMLTag(item.CN),search.keyword,'<i>' + search.keyword +'</i>')}"></span>
+                            <span class="info">
+                                <span class="loc" th:text="${T(com.kbrainc.plum.front.search.controller.SearchController).getPath(item)}"></span>
+                                <span class="date" th:text="${#temporals.createDate(item.REG_DT, 'yyyyMMdd')}"></span>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="table-caption" th:if="${countInfo.cnt30 > 0}">
+                    <div class="left">
+                        <h3 class="sub-title">알림ㆍ문의 ([[${#numbers.formatInteger(countInfo.cnt30,1,'COMMA')}]])</h3>
+                    </div>
+                    <div class="right">
+                        <a href="javascript:searchGtype('30')" class="btn-small btn-outline-black" th:if="${countInfo.cnt30 > 3}">검색결과 더보기</a>
+                    </div>
+                </div>
+
+                <ul th:if="${countInfo.cnt30 > 0}">
+                    <li th:each="item : ${gtype30}">
+                    <th:choose>
+                        <th:when th:if="${item.ETYPE == '1' OR item.ETYPE == '2' OR item.ETYPE == '3'}">
+                        <a th:href="${T(com.kbrainc.plum.front.search.controller.SearchController).getLink(item)}" target="_blank">
+                            <strong class="title" th:utext="${#strings.replace(T(com.kbrainc.plum.rte.util.StringUtil).removeHTMLTag(item.TTL),search.keyword,'<i>' + search.keyword +'</i>')}"></strong>
+                            <span class="text" th:text="${item.URL}"></span>
+                            <span class="info">
+                                <span class="loc" th:text="${T(com.kbrainc.plum.front.search.controller.SearchController).getPath(item)}"></span>
+                                <span class="date" th:text="${#temporals.createDate(item.REG_DT, 'yyyyMMdd')}"></span>
+                            </span>
+                        </a>
+                        </th:when>
+                        <th:when th:if="${item.ETYPE == '4' OR item.ETYPE == '5'}">
+                        <a th:href="${T(com.kbrainc.plum.front.search.controller.SearchController).getLink(item)}">
+                            <strong class="title" th:utext="${#strings.replace(T(com.kbrainc.plum.rte.util.StringUtil).removeHTMLTag(item.INST_NM),search.keyword,'<i>' + search.keyword +'</i>')}"></strong>
+                            <span class="text" th:utext="${#strings.replace(T(com.kbrainc.plum.rte.util.StringUtil).removeHTMLTag(item.ADDR),search.keyword,'<i>' + search.keyword +'</i>')}"></span>
+                            <span class="text" th:text="${item.URL}"></span>
+                            <span class="info">
+                                <span class="loc" th:text="${T(com.kbrainc.plum.front.search.controller.SearchController).getPath(item)}"></span>
+                                <span class="date" th:text="${#temporals.createDate(item.REG_DT, 'yyyyMMdd')}"></span>
+                            </span>
+                        </a>
+                        </th:when>
+                        <th:when th:if="${item.ETYPE == '6'}">
+                        <a th:href="${T(com.kbrainc.plum.front.search.controller.SearchController).getLink(item)}">
+                            <strong class="title" th:utext="${#strings.replace(T(com.kbrainc.plum.rte.util.StringUtil).removeHTMLTag(item.TTL),search.keyword,'<i>' + search.keyword +'</i>')}"></strong>
+                            <span class="text" th:utext="${#strings.replace(T(com.kbrainc.plum.rte.util.StringUtil).removeHTMLTag(item.CN),search.keyword,'<i>' + search.keyword +'</i>')}"></span>
+                            <span class="info">
+                                <span class="loc" th:text="${T(com.kbrainc.plum.front.search.controller.SearchController).getPath(item)}"></span>
+                                <span class="date" th:text="${#temporals.createDate(item.REG_DT, 'yyyyMMdd')}"></span>
+                            </span>
+                        </a>
+                        </th:when>
+                    </th:choose>
+                    </li>
+                </ul>
+
+                <div class="table-caption" th:if="${countInfo.cnt50 > 0}">
+                    <div class="left">
+                        <h3 class="sub-title">메뉴 ([[${#numbers.formatInteger(countInfo.cnt50,1,'COMMA')}]])</h3>
+                    </div>
+                    <div class="right">
+                        <a href="javascript:searchGtype('50')" class="btn-small btn-outline-black" th:if="${countInfo.cnt50 > 3}">검색결과 더보기</a>
+                    </div>
+                </div>
+
+                <ul th:if="${countInfo.cnt50 > 0}">
+                    <li th:each="item : ${gtype50}">
+                        <a th:href="${T(com.kbrainc.plum.front.search.controller.SearchController).getLink(item)}" th:target="${#strings.startsWith(item.URL,'http') ? '_blank' : ''}">
+                            <strong class="title" th:utext="${#strings.replace(T(com.kbrainc.plum.rte.util.StringUtil).removeHTMLTag(item.CN),search.keyword,'<i>' + search.keyword +'</i>')}"></strong>
+                            <span class="text" th:if="${#strings.startsWith(item.URL,'http')}" th:text="${item.URL}"></span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="table-caption" th:if="${countInfo.cnt40 > 0}">
+                    <div class="left">
+                        <h3 class="sub-title">첨부파일 ([[${#numbers.formatInteger(countInfo.cnt40,1,'COMMA')}]])</h3>
+                    </div>
+                    <div class="right">
+                        <a href="javascript:searchGtype('40')" class="btn-small btn-outline-black" th:if="${countInfo.cnt40 > 3}">검색결과 더보기</a>
+                    </div>
+                </div>
+
+                <ul th:if="${countInfo.cnt40 > 0}">
+                    <li th:each="item : ${gtype40}">
+                        <a th:href="${T(com.kbrainc.plum.front.search.controller.SearchController).getLink(item)}">
+                            <strong class="title" th:utext="${#strings.replace(T(com.kbrainc.plum.rte.util.StringUtil).removeHTMLTag(item.TTL),search.keyword,'<i>' + search.keyword +'</i>')}"></strong>
+                            <span class="info">
+                                <span class="loc" th:text="${T(com.kbrainc.plum.front.search.controller.SearchController).getPath(item)}"></span>
+                                <span class="date" th:text="${#temporals.createDate(item.REG_DT, 'yyyyMMdd')}"></span>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="tabpanel active" role="tabpanel" th:if="${search.gtype == '10'}">
+            
+            <div class="search-page-result" th:if="${countInfo.cnt10 == 0}">
+                <div class="nodata bg3">
+                    <p class="fc-black6"><span class="icon icon-notice bg-black6"></span>검색된 내용이 없습니다.</p>
+                </div>
+            </div>
+            <div class="search-page-result" th:if="${countInfo.cnt10 > 0}">
+                <div class="table-caption">
+                    <div class="left">
+                        <h3 class="sub-title">프로그램·콘텐츠 ([[${#numbers.formatInteger(countInfo.cnt10,1,'COMMA')}]])</h3>
                     </div>
                 </div>
                 
                 <ul>
-                    <li>
-                        <a href="#">
-                            <strong class="title">환경교육 <i>교구</i> 세트 공동구매 신청</strong>
-                            <span class="text">&ldquo;보드게임 <i>교구</i> 설명 영상_초등용&rdquo;</span>
+                    <li th:each="item : ${gtype10}">
+                        <a th:href="${T(com.kbrainc.plum.front.search.controller.SearchController).getLink(item)}"  th:target="${item.ETYPE == '11' ? '_blank' : ''}">
+                            <strong class="title" th:utext="${#strings.replace(T(com.kbrainc.plum.rte.util.StringUtil).removeHTMLTag(item.TTL),search.keyword,'<i>' + search.keyword +'</i>')}"></strong>
+                            <span class="text" th:utext="${#strings.replace(T(com.kbrainc.plum.rte.util.StringUtil).removeHTMLTag(item.CN),search.keyword,'<i>' + search.keyword +'</i>')}"></span>
                             <span class="info">
-                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램·콘텐츠 &gt; 교구 &gt; 환경교육 교구 공동구매</span>
-                                <span class="date">2022-10-12</span>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    <li>
-                        <a href="#">
-                            <strong class="title">환경교육 <i>교구</i> A-01 대여</strong>
-                            <span class="text">유아용 누리과정 환경<i>교구</i>는 안내책자의 10종 <i>교구</i> 중, 3번 8번(총 6종)만 대여하고 있습니다</span>
-                            <span class="info">
-                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램ㆍ콘텐츠 &gt; 교구 &gt; 환경교육 교구 대여  </span>
-                                <span class="date">2022-09-24</span>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    <li>
-                        <a href="#">
-                            <strong class="title">[환경교육<i>교구</i>] 공동구매 신청 안내 (7/31)
-                            </strong>
-                            <span class="text">...1. 유아용 5종<i>교구</i> : 16 (34개 더 필요) 2. 나의 먹이는 어디에 : 18 (유력/200개 미만 시 추가비용 발생) 3. 분리배출 비석치기 : 63  (137개 더 필요) 4. 나도 국제협력전문가 : 10 (유력/20개 미만 시 추가비용 발생) 5. 기타 : -우리참나무 –촉감으로찾기 –곤충스탬프 -올해 제작 예정인 습지관련 교구 –기후변화생물지표퍼즐 : 30 –화석연료뚝빙고...
-                                </span>
-                            <span class="info">
-                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 알림ㆍ문의 &gt; 새 소식 &gt; 공지사항</span>
-                                <span class="date">2022-09-13</span>
+                                <span class="loc" th:text="${T(com.kbrainc.plum.front.search.controller.SearchController).getPath(item)}"></span>
+                                <span class="date" th:text="${#temporals.createDate(item.REG_DT, 'yyyyMMdd')}"></span>
                             </span>
                         </a>
                     </li>
                 </ul>
-            
-                <div class="table-caption">
-                    <div class="left">
-                        <h3 class="sub-title">참여ㆍ신청 (165)</h3>
-                    </div>
-                    <div class="right">
-                        <a href="#" class="btn-small btn-outline-black">검색결과 더보기</a>
-                    </div>
-                </div>
-
-                <ul>
-                    <li>
-                        <a href="#">
-                            <strong class="title">환경교육 <i>교구</i> 세트 공동구매 신청</strong>
-                            <span class="text">&ldquo;보드게임 <i>교구</i> 설명 영상_초등용&rdquo;</span>
-                            <span class="info">
-                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램·콘텐츠 &gt; 교구 &gt; 환경교육 교구 공동구매</span>
-                                <span class="date">2022-10-12</span>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    <li>
-                        <a href="#">
-                            <strong class="title">환경교육 <i>교구</i> A-01 대여</strong>
-                            <span class="text">유아용 누리과정 환경<i>교구</i>는 안내책자의 10종 <i>교구</i> 중, 3번 8번(총 6종)만 대여하고 있습니다</span>
-                            <span class="info">
-                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램ㆍ콘텐츠 &gt; 교구 &gt; 환경교육 교구 대여  </span>
-                                <span class="date">2022-09-24</span>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    <li>
-                        <a href="#">
-                            <strong class="title">[환경교육<i>교구</i>] 공동구매 신청 안내 (7/31)
-                            </strong>
-                            <span class="text">...1. 유아용 5종<i>교구</i> : 16 (34개 더 필요) 2. 나의 먹이는 어디에 : 18 (유력/200개 미만 시 추가비용 발생) 3. 분리배출 비석치기 : 63  (137개 더 필요) 4. 나도 국제협력전문가 : 10 (유력/20개 미만 시 추가비용 발생) 5. 기타 : -우리참나무 –촉감으로찾기 –곤충스탬프 -올해 제작 예정인 습지관련 교구 –기후변화생물지표퍼즐 : 30 –화석연료뚝빙고...
-                                </span>
-                            <span class="info">
-                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 알림ㆍ문의 &gt; 새 소식 &gt; 공지사항</span>
-                                <span class="date">2022-09-13</span>
-                            </span>
-                        </a>
-                    </li>
-                </ul>
-
-                <div class="table-caption">
-                    <div class="left">
-                        <h3 class="sub-title">알림ㆍ문의 (758)</h3>
-                    </div>
-                    <div class="right">
-                        <a href="#" class="btn-small btn-outline-black">검색결과 더보기</a>
-                    </div>
-                </div>
-
-                <ul>
-                    <li>
-                        <a href="#">
-                            <strong class="title">환경교육 <i>교구</i> 세트 공동구매 신청</strong>
-                            <span class="text">&ldquo;보드게임 <i>교구</i> 설명 영상_초등용&rdquo;</span>
-                            <span class="info">
-                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램·콘텐츠 &gt; 교구 &gt; 환경교육 교구 공동구매</span>
-                                <span class="date">2022-10-12</span>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    <li>
-                        <a href="#">
-                            <strong class="title">환경교육 <i>교구</i> A-01 대여</strong>
-                            <span class="text">유아용 누리과정 환경<i>교구</i>는 안내책자의 10종 <i>교구</i> 중, 3번 8번(총 6종)만 대여하고 있습니다</span>
-                            <span class="info">
-                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램ㆍ콘텐츠 &gt; 교구 &gt; 환경교육 교구 대여  </span>
-                                <span class="date">2022-09-24</span>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    <li>
-                        <a href="#">
-                            <strong class="title">[환경교육<i>교구</i>] 공동구매 신청 안내 (7/31)
-                            </strong>
-                            <span class="text">...1. 유아용 5종<i>교구</i> : 16 (34개 더 필요) 2. 나의 먹이는 어디에 : 18 (유력/200개 미만 시 추가비용 발생) 3. 분리배출 비석치기 : 63  (137개 더 필요) 4. 나도 국제협력전문가 : 10 (유력/20개 미만 시 추가비용 발생) 5. 기타 : -우리참나무 –촉감으로찾기 –곤충스탬프 -올해 제작 예정인 습지관련 교구 –기후변화생물지표퍼즐 : 30 –화석연료뚝빙고...
-                                </span>
-                            <span class="info">
-                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 알림ㆍ문의 &gt; 새 소식 &gt; 공지사항</span>
-                                <span class="date">2022-09-13</span>
-                            </span>
-                        </a>
-                    </li>
-                </ul>
-
-                <div class="table-caption">
-                    <div class="left">
-                        <h3 class="sub-title">메뉴 (758)</h3>
-                    </div>
-                    <div class="right">
-                        <a href="#" class="btn-small btn-outline-black">검색결과 더보기</a>
-                    </div>
-                </div>
-
-                <ul>
-                    <li>
-                        <a href="#">
-                            <strong class="title">국가 환경교육 통합 플랫폼 &gt; 프로그램·콘텐츠 &gt; <i>교구</i> &gt; 환경교육 <i>교구</i> 대여</strong>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <strong class="title">국가 환경교육 통합 플랫폼 &gt; 프로그램·콘텐츠 &gt; <i>교구</i> &gt; 환경교육 <i>교구</i> 대여</strong>
-                        </a>
-                    </li>
-                </ul>
-
-                <div class="table-caption">
-                    <div class="left">
-                        <h3 class="sub-title">첨부파일 (758)</h3>
-                    </div>
-                    <div class="right">
-                        <a href="#" class="btn-small btn-outline-black">검색결과 더보기</a>
-                    </div>
-                </div>
-
-                <ul>
-                    <li>
-                        <a href="#">
-                            <strong class="title">환경교육 <i>교구</i> 세트 공동구매 신청</strong>
-                            <span class="text">&ldquo;보드게임 <i>교구</i> 설명 영상_초등용&rdquo;</span>
-                            <span class="info">
-                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램·콘텐츠 &gt; 교구 &gt; 환경교육 교구 공동구매</span>
-                                <span class="date">2022-10-12</span>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    <li>
-                        <a href="#">
-                            <strong class="title">환경교육 <i>교구</i> A-01 대여</strong>
-                            <span class="text">유아용 누리과정 환경<i>교구</i>는 안내책자의 10종 <i>교구</i> 중, 3번 8번(총 6종)만 대여하고 있습니다</span>
-                            <span class="info">
-                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램ㆍ콘텐츠 &gt; 교구 &gt; 환경교육 교구 대여  </span>
-                                <span class="date">2022-09-24</span>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    <li>
-                        <a href="#">
-                            <strong class="title">[환경교육<i>교구</i>] 공동구매 신청 안내 (7/31)
-                            </strong>
-                            <span class="text">...1. 유아용 5종<i>교구</i> : 16 (34개 더 필요) 2. 나의 먹이는 어디에 : 18 (유력/200개 미만 시 추가비용 발생) 3. 분리배출 비석치기 : 63  (137개 더 필요) 4. 나도 국제협력전문가 : 10 (유력/20개 미만 시 추가비용 발생) 5. 기타 : -우리참나무 –촉감으로찾기 –곤충스탬프 -올해 제작 예정인 습지관련 교구 –기후변화생물지표퍼즐 : 30 –화석연료뚝빙고...
-                                </span>
-                            <span class="info">
-                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 알림ㆍ문의 &gt; 새 소식 &gt; 공지사항</span>
-                                <span class="date">2022-09-13</span>
-                            </span>
-                        </a>
-                    </li>
-                </ul>
-
             </div>
-
             
+            <th:block kattr:pagination="list" onclick="goPage" th:if="${countInfo.cnt10 > 0}" />
 
         </div>
-
-        <div id="tab-subpanel02" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub02">
+        <div class="tabpanel active" role="tabpanel" th:if="${search.gtype == '20'}">
             
-            <div class="search-page-result">
+            <div class="search-page-result" th:if="${countInfo.cnt20 == 0}">
+                <div class="nodata bg3">
+                    <p class="fc-black6"><span class="icon icon-notice bg-black6"></span>검색된 내용이 없습니다.</p>
+                </div>
+            </div>
+            <div class="search-page-result" th:if="${countInfo.cnt20 > 0}">
+            
                 <div class="table-caption">
                     <div class="left">
-                        <h3 class="sub-title">프로그램·콘텐츠 (758)</h3>
-                    </div>
-                    <div class="right">
-                        <a href="#" class="btn-small btn-outline-black">검색결과 더보기</a>
+                        <h3 class="sub-title">참여ㆍ신청 ([[${#numbers.formatInteger(countInfo.cnt20,1,'COMMA')}]])</h3>
                     </div>
                 </div>
-                
+
                 <ul>
-                    <li>
-                        <a href="#">
-                            <strong class="title">환경교육 <i>교구</i> 세트 공동구매 신청</strong>
-                            <span class="text">&ldquo;보드게임 <i>교구</i> 설명 영상_초등용&rdquo;</span>
+                    <li th:each="item : ${gtype20}">
+                        <a th:href="${T(com.kbrainc.plum.front.search.controller.SearchController).getLink(item)}">
+                            <strong class="title" th:utext="${#strings.replace(T(com.kbrainc.plum.rte.util.StringUtil).removeHTMLTag(item.TTL),search.keyword,'<i>' + search.keyword +'</i>')}"></strong>
+                            <span class="text" th:utext="${#strings.replace(T(com.kbrainc.plum.rte.util.StringUtil).removeHTMLTag(item.CN),search.keyword,'<i>' + search.keyword +'</i>')}"></span>
                             <span class="info">
-                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램·콘텐츠 &gt; 교구 &gt; 환경교육 교구 공동구매</span>
-                                <span class="date">2022-10-12</span>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    <li>
-                        <a href="#">
-                            <strong class="title">환경교육 <i>교구</i> A-01 대여</strong>
-                            <span class="text">유아용 누리과정 환경<i>교구</i>는 안내책자의 10종 <i>교구</i> 중, 3번 8번(총 6종)만 대여하고 있습니다</span>
-                            <span class="info">
-                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램ㆍ콘텐츠 &gt; 교구 &gt; 환경교육 교구 대여  </span>
-                                <span class="date">2022-09-24</span>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    <li>
-                        <a href="#">
-                            <strong class="title">[환경교육<i>교구</i>] 공동구매 신청 안내 (7/31)
-                            </strong>
-                            <span class="text">...1. 유아용 5종<i>교구</i> : 16 (34개 더 필요) 2. 나의 먹이는 어디에 : 18 (유력/200개 미만 시 추가비용 발생) 3. 분리배출 비석치기 : 63  (137개 더 필요) 4. 나도 국제협력전문가 : 10 (유력/20개 미만 시 추가비용 발생) 5. 기타 : -우리참나무 –촉감으로찾기 –곤충스탬프 -올해 제작 예정인 습지관련 교구 –기후변화생물지표퍼즐 : 30 –화석연료뚝빙고...
-                                </span>
-                            <span class="info">
-                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 알림ㆍ문의 &gt; 새 소식 &gt; 공지사항</span>
-                                <span class="date">2022-09-13</span>
+                                <span class="loc" th:text="${T(com.kbrainc.plum.front.search.controller.SearchController).getPath(item)}"></span>
+                                <span class="date" th:text="${#temporals.createDate(item.REG_DT, 'yyyyMMdd')}"></span>
                             </span>
                         </a>
                     </li>
                 </ul>
             </div>
 
-            <div class="pagination" aria-label="pagination">
-                <button type="button" class="first" title="처음"></button>
-                <button type="button" class="prev" title="이전"></button>
-                <button type="button" class="active" title="현재 페이지">1</button>
-                <button type="button">2</button>
-                <button type="button">3</button>
-                <button type="button">4</button>
-                <button type="button">5</button>
-                <button type="button">6</button>
-                <button type="button">7</button>
-                <button type="button">8</button>
-                <button type="button">9</button>
-                <button type="button">10</button>
-                <button type="button" class="next" title="다음"></button>
-                <button type="button" class="last" title="마지막"></button>
-            </div>
+            <th:block kattr:pagination="list" onclick="goPage" th:if="${countInfo.cnt20 > 0}" />
 
         </div>
-        <div id="tab-subpanel03" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub03">
+        <div class="tabpanel active" role="tabpanel" th:if="${search.gtype == '30'}">
             
-            <div class="search-page-result">
-            
+            <div class="search-page-result" th:if="${countInfo.cnt30 == 0}">
+                <div class="nodata bg3">
+                    <p class="fc-black6"><span class="icon icon-notice bg-black6"></span>검색된 내용이 없습니다.</p>
+                </div>
+            </div>
+            <div class="search-page-result" th:if="${countInfo.cnt30 > 0}">
                 <div class="table-caption">
                     <div class="left">
-                        <h3 class="sub-title">참여ㆍ신청 (758)</h3>
-                    </div>
-                    <div class="right">
-                        <a href="#" class="btn-small btn-outline-black">검색결과 더보기</a>
+                        <h3 class="sub-title">알림ㆍ문의 ([[${#numbers.formatInteger(countInfo.cnt30,1,'COMMA')}]])</h3>
                     </div>
                 </div>
 
                 <ul>
-                    <li>
-                        <a href="#">
-                            <strong class="title">환경교육 <i>교구</i> 세트 공동구매 신청</strong>
-                            <span class="text">&ldquo;보드게임 <i>교구</i> 설명 영상_초등용&rdquo;</span>
+                    <li th:each="item : ${gtype30}">
+                    <th:choose>
+                        <th:when th:if="${item.ETYPE == '1' OR item.ETYPE == '2' OR item.ETYPE == '3'}">
+                        <a th:href="${T(com.kbrainc.plum.front.search.controller.SearchController).getLink(item)}" target="_blank">
+                            <strong class="title" th:utext="${#strings.replace(T(com.kbrainc.plum.rte.util.StringUtil).removeHTMLTag(item.TTL),search.keyword,'<i>' + search.keyword +'</i>')}"></strong>
+                            <span class="text" th:text="${item.URL}"></span>
                             <span class="info">
-                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램·콘텐츠 &gt; 교구 &gt; 환경교육 교구 공동구매</span>
-                                <span class="date">2022-10-12</span>
+                                <span class="loc" th:text="${T(com.kbrainc.plum.front.search.controller.SearchController).getPath(item)}"></span>
+                                <span class="date" th:text="${#temporals.createDate(item.REG_DT, 'yyyyMMdd')}"></span>
                             </span>
                         </a>
-                    </li>
-                    
-                    <li>
-                        <a href="#">
-                            <strong class="title">환경교육 <i>교구</i> A-01 대여</strong>
-                            <span class="text">유아용 누리과정 환경<i>교구</i>는 안내책자의 10종 <i>교구</i> 중, 3번 8번(총 6종)만 대여하고 있습니다</span>
+                        </th:when>
+                        <th:when th:if="${item.ETYPE == '4' OR item.ETYPE == '5'}">
+                        <a th:href="${T(com.kbrainc.plum.front.search.controller.SearchController).getLink(item)}">
+                            <strong class="title" th:utext="${#strings.replace(T(com.kbrainc.plum.rte.util.StringUtil).removeHTMLTag(item.INST_NM),search.keyword,'<i>' + search.keyword +'</i>')}"></strong>
+                            <span class="text" th:utext="${#strings.replace(T(com.kbrainc.plum.rte.util.StringUtil).removeHTMLTag(item.ADDR),search.keyword,'<i>' + search.keyword +'</i>')}"></span>
+                            <span class="text" th:text="${item.URL}"></span>
                             <span class="info">
-                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램ㆍ콘텐츠 &gt; 교구 &gt; 환경교육 교구 대여  </span>
-                                <span class="date">2022-09-24</span>
+                                <span class="loc" th:text="${T(com.kbrainc.plum.front.search.controller.SearchController).getPath(item)}"></span>
+                                <span class="date" th:text="${#temporals.createDate(item.REG_DT, 'yyyyMMdd')}"></span>
                             </span>
                         </a>
-                    </li>
-                    
-                    <li>
-                        <a href="#">
-                            <strong class="title">[환경교육<i>교구</i>] 공동구매 신청 안내 (7/31)
-                            </strong>
-                            <span class="text">...1. 유아용 5종<i>교구</i> : 16 (34개 더 필요) 2. 나의 먹이는 어디에 : 18 (유력/200개 미만 시 추가비용 발생) 3. 분리배출 비석치기 : 63  (137개 더 필요) 4. 나도 국제협력전문가 : 10 (유력/20개 미만 시 추가비용 발생) 5. 기타 : -우리참나무 –촉감으로찾기 –곤충스탬프 -올해 제작 예정인 습지관련 교구 –기후변화생물지표퍼즐 : 30 –화석연료뚝빙고...
-                                </span>
+                        </th:when>
+                        <th:when th:if="${item.ETYPE == '6'}">
+                        <a th:href="${T(com.kbrainc.plum.front.search.controller.SearchController).getLink(item)}">
+                            <strong class="title" th:utext="${#strings.replace(T(com.kbrainc.plum.rte.util.StringUtil).removeHTMLTag(item.TTL),search.keyword,'<i>' + search.keyword +'</i>')}"></strong>
+                            <span class="text" th:utext="${#strings.replace(T(com.kbrainc.plum.rte.util.StringUtil).removeHTMLTag(item.CN),search.keyword,'<i>' + search.keyword +'</i>')}"></span>
                             <span class="info">
-                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 알림ㆍ문의 &gt; 새 소식 &gt; 공지사항</span>
-                                <span class="date">2022-09-13</span>
+                                <span class="loc" th:text="${T(com.kbrainc.plum.front.search.controller.SearchController).getPath(item)}"></span>
+                                <span class="date" th:text="${#temporals.createDate(item.REG_DT, 'yyyyMMdd')}"></span>
                             </span>
                         </a>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="pagination" aria-label="pagination">
-                <button type="button" class="first" title="처음"></button>
-                <button type="button" class="prev" title="이전"></button>
-                <button type="button" class="active" title="현재 페이지">1</button>
-                <button type="button">2</button>
-                <button type="button">3</button>
-                <button type="button">4</button>
-                <button type="button">5</button>
-                <button type="button">6</button>
-                <button type="button">7</button>
-                <button type="button">8</button>
-                <button type="button">9</button>
-                <button type="button">10</button>
-                <button type="button" class="next" title="다음"></button>
-                <button type="button" class="last" title="마지막"></button>
-            </div>
-
-        </div>
-        <div id="tab-subpanel04" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub04">
-            
-            <div class="search-page-result">
-                <div class="table-caption">
-                    <div class="left">
-                        <h3 class="sub-title">알림ㆍ문의 (758)</h3>
-                    </div>
-                    <div class="right">
-                        <a href="#" class="btn-small btn-outline-black">검색결과 더보기</a>
-                    </div>
-                </div>
-
-                <ul>
-                    <li>
-                        <a href="#">
-                            <strong class="title">환경교육 <i>교구</i> 세트 공동구매 신청</strong>
-                            <span class="text">&ldquo;보드게임 <i>교구</i> 설명 영상_초등용&rdquo;</span>
-                            <span class="info">
-                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램·콘텐츠 &gt; 교구 &gt; 환경교육 교구 공동구매</span>
-                                <span class="date">2022-10-12</span>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    <li>
-                        <a href="#">
-                            <strong class="title">환경교육 <i>교구</i> A-01 대여</strong>
-                            <span class="text">유아용 누리과정 환경<i>교구</i>는 안내책자의 10종 <i>교구</i> 중, 3번 8번(총 6종)만 대여하고 있습니다</span>
-                            <span class="info">
-                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램ㆍ콘텐츠 &gt; 교구 &gt; 환경교육 교구 대여  </span>
-                                <span class="date">2022-09-24</span>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    <li>
-                        <a href="#">
-                            <strong class="title">[환경교육<i>교구</i>] 공동구매 신청 안내 (7/31)
-                            </strong>
-                            <span class="text">...1. 유아용 5종<i>교구</i> : 16 (34개 더 필요) 2. 나의 먹이는 어디에 : 18 (유력/200개 미만 시 추가비용 발생) 3. 분리배출 비석치기 : 63  (137개 더 필요) 4. 나도 국제협력전문가 : 10 (유력/20개 미만 시 추가비용 발생) 5. 기타 : -우리참나무 –촉감으로찾기 –곤충스탬프 -올해 제작 예정인 습지관련 교구 –기후변화생물지표퍼즐 : 30 –화석연료뚝빙고...
-                                </span>
-                            <span class="info">
-                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 알림ㆍ문의 &gt; 새 소식 &gt; 공지사항</span>
-                                <span class="date">2022-09-13</span>
-                            </span>
-                        </a>
+                        </th:when>
+                    </th:choose>
                     </li>
                 </ul>
 
             </div>
 
-            <div class="pagination" aria-label="pagination">
-                <button type="button" class="first" title="처음"></button>
-                <button type="button" class="prev" title="이전"></button>
-                <button type="button" class="active" title="현재 페이지">1</button>
-                <button type="button">2</button>
-                <button type="button">3</button>
-                <button type="button">4</button>
-                <button type="button">5</button>
-                <button type="button">6</button>
-                <button type="button">7</button>
-                <button type="button">8</button>
-                <button type="button">9</button>
-                <button type="button">10</button>
-                <button type="button" class="next" title="다음"></button>
-                <button type="button" class="last" title="마지막"></button>
-            </div>
+            <th:block kattr:pagination="list" onclick="goPage" th:if="${countInfo.cnt30 > 0}" />
 
         </div>
-        <div id="tab-subpanel05" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub05">
-            
-            <div class="search-page-result">
-                <div class="table-caption">
-                    <div class="left">
-                        <h3 class="sub-title">메뉴 (758)</h3>
-                    </div>
-                    <div class="right">
-                        <a href="#" class="btn-small btn-outline-black">검색결과 더보기</a>
-                    </div>
-                </div>
-
-                <ul>
-                    <li>
-                        <a href="#">
-                            <strong class="title">환경교육 <i>교구</i> 세트 공동구매 신청</strong>
-                            <span class="text">&ldquo;보드게임 <i>교구</i> 설명 영상_초등용&rdquo;</span>
-                            <span class="info">
-                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램·콘텐츠 &gt; 교구 &gt; 환경교육 교구 공동구매</span>
-                                <span class="date">2022-10-12</span>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    <li>
-                        <a href="#">
-                            <strong class="title">환경교육 <i>교구</i> A-01 대여</strong>
-                            <span class="text">유아용 누리과정 환경<i>교구</i>는 안내책자의 10종 <i>교구</i> 중, 3번 8번(총 6종)만 대여하고 있습니다</span>
-                            <span class="info">
-                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램ㆍ콘텐츠 &gt; 교구 &gt; 환경교육 교구 대여  </span>
-                                <span class="date">2022-09-24</span>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    <li>
-                        <a href="#">
-                            <strong class="title">[환경교육<i>교구</i>] 공동구매 신청 안내 (7/31)
-                            </strong>
-                            <span class="text">...1. 유아용 5종<i>교구</i> : 16 (34개 더 필요) 2. 나의 먹이는 어디에 : 18 (유력/200개 미만 시 추가비용 발생) 3. 분리배출 비석치기 : 63  (137개 더 필요) 4. 나도 국제협력전문가 : 10 (유력/20개 미만 시 추가비용 발생) 5. 기타 : -우리참나무 –촉감으로찾기 –곤충스탬프 -올해 제작 예정인 습지관련 교구 –기후변화생물지표퍼즐 : 30 –화석연료뚝빙고...
-                                </span>
-                            <span class="info">
-                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 알림ㆍ문의 &gt; 새 소식 &gt; 공지사항</span>
-                                <span class="date">2022-09-13</span>
-                            </span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="pagination" aria-label="pagination">
-                <button type="button" class="first" title="처음"></button>
-                <button type="button" class="prev" title="이전"></button>
-                <button type="button" class="active" title="현재 페이지">1</button>
-                <button type="button">2</button>
-                <button type="button">3</button>
-                <button type="button">4</button>
-                <button type="button">5</button>
-                <button type="button">6</button>
-                <button type="button">7</button>
-                <button type="button">8</button>
-                <button type="button">9</button>
-                <button type="button">10</button>
-                <button type="button" class="next" title="다음"></button>
-                <button type="button" class="last" title="마지막"></button>
-            </div>
-
-        </div>
+        
 
         
-        <div id="tab-subpanel06" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub06">
+        <div class="tabpanel active" th:if="${search.gtype == '50'}">
             
-            <div class="search-page-result">
+            <div class="search-page-result" th:if="${countInfo.cnt50 == 0}">
+                <div class="nodata bg3">
+                    <p class="fc-black6"><span class="icon icon-notice bg-black6"></span>검색된 내용이 없습니다.</p>
+                </div>
+            </div>
+            <div class="search-page-result" th:if="${countInfo.cnt50 > 0}">
                 <div class="table-caption">
                     <div class="left">
-                        <h3 class="sub-title">첨부파일 (758)</h3>
-                    </div>
-                    <div class="right">
-                        <a href="#" class="btn-small btn-outline-black">검색결과 더보기</a>
+                        <h3 class="sub-title">메뉴 ([[${#numbers.formatInteger(countInfo.cnt50,1,'COMMA')}]])</h3>
                     </div>
                 </div>
 
                 <ul>
-                    <li>
-                        <a href="#">
-                            <strong class="title">환경교육 <i>교구</i> 세트 공동구매 신청</strong>
-                            <span class="text">&ldquo;보드게임 <i>교구</i> 설명 영상_초등용&rdquo;</span>
-                            <span class="info">
-                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램·콘텐츠 &gt; 교구 &gt; 환경교육 교구 공동구매</span>
-                                <span class="date">2022-10-12</span>
-                            </span>
+                    <li th:each="item : ${gtype50}">
+                        <a th:href="${T(com.kbrainc.plum.front.search.controller.SearchController).getLink(item)}" th:target="${#strings.startsWith(item.URL,'http') ? '_blank' : ''}">
+                            <strong class="title" th:utext="${#strings.replace(T(com.kbrainc.plum.rte.util.StringUtil).removeHTMLTag(item.CN),search.keyword,'<i>' + search.keyword +'</i>')}"></strong>
+                            <span class="text" th:if="${#strings.startsWith(item.URL,'http')}" th:text="${item.URL}"></span>
                         </a>
                     </li>
-                    
-                    <li>
-                        <a href="#">
-                            <strong class="title">환경교육 <i>교구</i> A-01 대여</strong>
-                            <span class="text">유아용 누리과정 환경<i>교구</i>는 안내책자의 10종 <i>교구</i> 중, 3번 8번(총 6종)만 대여하고 있습니다</span>
+                </ul>
+            </div>
+
+            <th:block kattr:pagination="list" onclick="goPage" th:if="${countInfo.cnt50 > 0}" />
+
+        </div>
+        
+        <div class="tabpanel active" role="tabpanel" th:if="${search.gtype == '40'}">
+            
+            <div class="search-page-result" th:if="${countInfo.cnt40 == 0}">
+                <div class="nodata bg3">
+                    <p class="fc-black6"><span class="icon icon-notice bg-black6"></span>검색된 내용이 없습니다.</p>
+                </div>
+            </div>
+            <div class="search-page-result" th:if="${countInfo.cnt40 > 0}">
+                <div class="table-caption">
+                    <div class="left">
+                        <h3 class="sub-title">첨부파일 ([[${#numbers.formatInteger(countInfo.cnt40,1,'COMMA')}]])</h3>
+                    </div>
+                </div>
+
+                <ul>
+                    <li th:each="item : ${gtype40}">
+                        <a th:href="${T(com.kbrainc.plum.front.search.controller.SearchController).getLink(item)}">
+                            <strong class="title" th:utext="${#strings.replace(T(com.kbrainc.plum.rte.util.StringUtil).removeHTMLTag(item.TTL),search.keyword,'<i>' + search.keyword +'</i>')}"></strong>
                             <span class="info">
-                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 프로그램ㆍ콘텐츠 &gt; 교구 &gt; 환경교육 교구 대여  </span>
-                                <span class="date">2022-09-24</span>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    <li>
-                        <a href="#">
-                            <strong class="title">[환경교육<i>교구</i>] 공동구매 신청 안내 (7/31)
-                            </strong>
-                            <span class="text">...1. 유아용 5종<i>교구</i> : 16 (34개 더 필요) 2. 나의 먹이는 어디에 : 18 (유력/200개 미만 시 추가비용 발생) 3. 분리배출 비석치기 : 63  (137개 더 필요) 4. 나도 국제협력전문가 : 10 (유력/20개 미만 시 추가비용 발생) 5. 기타 : -우리참나무 –촉감으로찾기 –곤충스탬프 -올해 제작 예정인 습지관련 교구 –기후변화생물지표퍼즐 : 30 –화석연료뚝빙고...
-                                </span>
-                            <span class="info">
-                                <span class="loc">국가 환경교육 통합 플랫폼 &gt; 알림ㆍ문의 &gt; 새 소식 &gt; 공지사항</span>
-                                <span class="date">2022-09-13</span>
+                                <span class="loc" th:text="${T(com.kbrainc.plum.front.search.controller.SearchController).getPath(item)}"></span>
+                                <span class="date" th:text="${#temporals.createDate(item.REG_DT, 'yyyyMMdd')}"></span>
                             </span>
                         </a>
                     </li>
                 </ul>
             </div>
 
-            <div class="pagination" aria-label="pagination">
-                <button type="button" class="first" title="처음"></button>
-                <button type="button" class="prev" title="이전"></button>
-                <button type="button" class="active" title="현재 페이지">1</button>
-                <button type="button">2</button>
-                <button type="button">3</button>
-                <button type="button">4</button>
-                <button type="button">5</button>
-                <button type="button">6</button>
-                <button type="button">7</button>
-                <button type="button">8</button>
-                <button type="button">9</button>
-                <button type="button">10</button>
-                <button type="button" class="next" title="다음"></button>
-                <button type="button" class="last" title="마지막"></button>
-            </div>
+            <th:block kattr:pagination="list" onclick="goPage" th:if="${countInfo.cnt40 > 0}" />
 
         </div>
     </div>
@@ -774,7 +501,7 @@
                         var html = '';
                         html += '<ul>';
                         for(var i = 0; i < data.DAY.length; i++){
-                            html += `<li><a href="/search.html?keyword=${data.DAY[i]._KEYWORD}">${data.DAY[i]._KEYWORD}</a></li>`;            
+                            html += `<li><a href="javascript:searchDetailKeyword('${data.DAY[i]._KEYWORD}')">${data.DAY[i]._KEYWORD}</a></li>`;            
                         }
                         html += '</ul>';
                         $("#tabRank1").append(html);
@@ -786,7 +513,7 @@
                         var html = '';
                         html += '<ul>';
                         for(var i = 0; i < data.WEEK.length; i++){
-                            html += `<li><a href="/search.html?keyword=${data.WEEK[i]._KEYWORD}">${data.WEEK[i]._KEYWORD}</a></li>`;            
+                            html += `<li><a href="javascript:searchDetailKeyword('${data.WEEK[i]._KEYWORD}')">${data.WEEK[i]._KEYWORD}</a></li>`;            
                         }
                         html += '</ul>';
                         $("#tabRank2").append(html);
@@ -798,7 +525,7 @@
                         var html = '';
                         html += '<ul>';
                         for(var i = 0; i < data.MONTH.length; i++){
-                            html += `<li><a href="/search.html?keyword=${data.MONTH[i]._KEYWORD}">${data.MONTH[i]._KEYWORD}</a></li>`;            
+                            html += `<li><a href="javascript:searchDetailKeyword('${data.MONTH[i]._KEYWORD}')">${data.MONTH[i]._KEYWORD}</a></li>`;            
                         }
                         html += '</ul>';                                
                         $("#tabRank3").append(html);
@@ -807,12 +534,75 @@
                     closeWorkProgress();
                 },
                 error :function(){
+                    $("#tabRank1").html('<p>일간 인기 검색어가 없습니다.</p>');
+                    $("#tabRank2").html('<p>주간 인기 검색어가 없습니다.</p>');
+                    $("#tabRank3").html('<p>월간 인기 검색어가 없습니다.</p>');
                 }
             });
         }
     });
 
+    function searchDetail(gtype, page){
+        var keyword = $("#keyword").val();
+        if(keyword == ''){
+            alert('검색어를 입력해주세요.');
+            return;
+        }
+        
+        var startDt = $("#startDt").val();
+        var endDt = $("#endDt").val();
+        
+        if ((startDt != '' && endDt == '') || (startDt == '' && endDt != '')) {
+            alert('검색기간을 입력해 주십시오.');
+            return;
+        }
+        
+        if(gtype != undefined) {
+            $("#gtype").val(gtype);
+        }
+        
+        if(page == undefined) {
+            location.href = "/search.html?" + $("#searchCondForm").serialize();
+        }else{
+            location.href = "/search.html?" + $("#searchCondForm").serialize() + "&page=" + page;
+        }
+    }
     
+    function searchDetailKeyword(keyword){
+        $("#keyword").val(keyword);
+        searchDetail('all');
+    }
+        
+    function searchSort(chkSort){
+        $("#chkSort").val(chkSort);
+        searchDetail();
+    }
+    
+    function searchGtype(gtype){
+        $("#gtype").val(gtype);
+        searchDetail();
+    }
+    
+    function searchDetailEnterkey() {
+        if (window.event.keyCode == 13) {
+            searchDetail('all');
+        }
+    }
+    
+    function initSearchForm() {
+        //$("#keyword").val('');
+        $("#startDt").val('');
+        $("#endDt").val('');
+        $("#keywordNot").val('');
+        $("input[name=sbjctCd]").attr('checked', false);
+        $("input[name=trgtCd]").attr('checked', false)
+        $("input[name=typeCd]").attr('checked', false)
+        $("input[name=rgnCd]").attr('checked', false)
+    }
+    
+    function goPage(page){
+        searchDetail(undefined, page); 
+    }
 </script> 
     
 </div>

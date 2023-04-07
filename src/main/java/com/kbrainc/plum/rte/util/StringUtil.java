@@ -853,4 +853,21 @@ public class StringUtil {
         
         return mobilePhone;
     }
+    
+    /**
+    * 입력문자열에서 html태그를 제거한다.
+    *
+    * @Title : RemoveHTMLTag
+    * @Description : 입력문자열에서 html태그를 제거한다
+    * @param changeStr 입력문자열
+    * @return String 태그가 제외된 문자열
+    */
+    public static String removeHTMLTag(String changeStr){
+        if(changeStr != null && !changeStr.equals("")){
+            changeStr = changeStr.replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", "").replaceAll("<", "").replaceAll("&nbsp;", "");            
+        }else{
+            changeStr = "";
+        }
+        return changeStr;
+    }
 }

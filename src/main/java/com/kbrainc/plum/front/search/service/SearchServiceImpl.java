@@ -103,4 +103,22 @@ public class SearchServiceImpl extends PlumAbstractServiceImpl implements Search
         
         return response;
     }
+    
+    /**
+    * 통합검색
+    *
+    * @Title : getSearchInfo
+    * @Description : 통합검색
+    * @param queryString 쿼리스트링
+    * @return Map<String,Object> 조회결과
+    * @throws Exception 예외
+    */
+    @Override
+    public Map<String, Object> getSearchInfo(String queryString) throws Exception {
+        String path = String.format("%s/extensions/QuerySetExtensionExample?%s", searchServerUrl, queryString);
+        ResponseEntity<String> responseEntityStr = restTemplate.postForEntity(path, null, String.class); 
+        Map<String, Object> response = new ObjectMapper().readValue(responseEntityStr.getBody(), Map.class);
+           
+        return response;
+    }
 }
