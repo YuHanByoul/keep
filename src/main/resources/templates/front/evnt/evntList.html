@@ -32,10 +32,10 @@
 			</div>
 			
 	        <input type="hidden" id="pageNumber" name="pageNumber" value="1">
-	        <input type="hidden" id="rowPerPage" name="rowPerPage" value="12">
+	        <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
 	        <input type="hidden" id="ORDER_DIRECTION" name="orderDirection" value="desc">
 	        <input type="hidden" id="orderField" name="orderField" value="REG_DT">
-	        <input type="hidden" id="cntntsid" name="evntid">
+	        <input type="hidden" id="evntid" name="evntid">
 		</form>
 
 		<div class="table-caption flex-nowrap">
@@ -98,12 +98,8 @@
                     this.selectEvntList();
                 },
 
-                moveToDetail() {
-                    if (this.userid == null) {
-                        alert('로그인 후 이용하실 수 있습니다.');
-                        return;
-                    }
-                    location.href = '/front/evnt/evntDetailForm.html';
+                moveToDetail(evntid) {
+                    location.href = '/front/evnt/evntDetailForm.html?evntid='+evntid;
                 },
 
                 search() {
@@ -127,19 +123,15 @@
                             dataType: 'json',
                             data: formData,
                             type: 'GET',
-                            success: function (data) {
+                            success: function (result) {
+                                $("#pagination").html(result.pagination);
+                                $("#totalCount").html(result.totalCount);
+                            	var data = escapeData(result);
                             	evnt.makeListHtml(data);
                                 closeWorkProgress();
                             }
                         });
                     }
-                },
-
-                moveToDetail(evntid) {
-                    var f = document.forms.searchForm ;
-                    f.evntid.value=evntid;
-                    f.action = this.detailUrl;
-                    f.submit();
                 },
 
                 makeListHtml(data) {
@@ -266,8 +258,6 @@
                     }
                     $('#pc-list-area').html(pc_listHtml);
                     $('#mo-list-area').html(mo_listHtml);
-                    $("#pagination").html(data.pagination);
-                    $("#totalCount").html(data.totalCount);
                 }
             };
 
