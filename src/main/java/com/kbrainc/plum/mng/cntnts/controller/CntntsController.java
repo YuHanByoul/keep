@@ -16,13 +16,16 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
+import com.kbrainc.plum.mng.cntnts.model.CntntsEduTrgtVo;
 import com.kbrainc.plum.mng.cntnts.model.CntntsVo;
 import com.kbrainc.plum.mng.cntnts.service.CntntsService;
 import com.kbrainc.plum.mng.envtcherTrnngInst.model.EnvtcherTrnngInstVo;
+import com.kbrainc.plum.mng.pack.model.PackageEduTrgtVo;
 import com.kbrainc.plum.mng.rgnEnveduCntr.model.RgnEnveduCntrVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -61,8 +64,11 @@ public class CntntsController {
     * @return String
     */
     @RequestMapping(value = "/mng/cntnts/cntntsListForm.html")
-    public String cntntsListForm() throws Exception {
-
+    public String cntntsListForm(Model model) throws Exception {
+        Map<String,String> map = new HashMap();
+        map.put("cdgrpid", "155");
+        model.addAttribute("sbjctCdLsit", cntntsService.selectCntntsCdList(map));
+        
         return "/mng/cntnts/cntntsList";
     }
     
@@ -84,6 +90,10 @@ public class CntntsController {
         
         model.addAttribute("userid", user.getUserid());
         model.addAttribute("useridNm", user.getAcnt()+"("+user.getNm()+")");
+            
+        Map<String,String> map = new HashMap();
+        map.put("cdgrpid", "155");
+        model.addAttribute("sbjctCdLsit", cntntsService.selectCntntsCdList(map));
         
         return "/mng/cntnts/cntntsInsertForm";
     }
@@ -139,6 +149,17 @@ public class CntntsController {
             model.addAttribute("fileBtn", fileBtn);
         }
         
+        Map<String,String> map = new HashMap();
+        map.put("cdgrpid", "155");
+        model.addAttribute("sbjctCdLsit", cntntsService.selectCntntsCdList(map));
+        model.addAttribute("mySbjctLsit", cntntsService.selectCntntsEduSbjctList(cntntsVo));
+        
+        List<String> trgtCds = new ArrayList();
+        List<CntntsEduTrgtVo> list = cntntsService.selectCntntsEduTrgtList(cntntsVo); 
+        for(CntntsEduTrgtVo vo :list) {
+            trgtCds.add(vo.getEduTrgtCd());
+        }
+        model.addAttribute("mytrgtCds", String.join(",",trgtCds) );
         
         return "/mng/cntnts/cntntsUpdate";
     }
@@ -181,9 +202,9 @@ public class CntntsController {
     * @throws Exception 예외
     * @return Map<String,Object>
     */
-    @RequestMapping(value = "/mng/cntnts/insertCntnts.do")
+    @RequestMapping(value = "/mng/cntnts/insertCntnts.do", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> insertCntnts(@Valid CntntsVo cntntsVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> insertCntnts(@Valid CntntsVo cntntsVo, BindingResult bindingResult, @UserInfo UserVo user, String[] eduSbjctCds, String[] eduTrgt) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         
         if (bindingResult.hasErrors()) {
@@ -209,7 +230,7 @@ public class CntntsController {
         
         int retVal = 0;
                 
-        retVal = cntntsService.insertCntnts(cntntsVo);
+        retVal = cntntsService.insertCntnts(cntntsVo, eduSbjctCds, eduTrgt);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -232,9 +253,9 @@ public class CntntsController {
     * @throws Exception 예외
     * @return Map<String,Object>
     */
-    @RequestMapping(value = "/mng/cntnts/updateCntnts.do")
+    @RequestMapping(value = "/mng/cntnts/updateCntnts.do", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> updateCntnts(@Valid CntntsVo cntntsVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> updateCntnts(@Valid CntntsVo cntntsVo, BindingResult bindingResult, @UserInfo UserVo user, String[] eduSbjctCds, String[] eduTrgt) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
         if (bindingResult.hasErrors()) {
@@ -260,7 +281,7 @@ public class CntntsController {
 
         int retVal = 0;
                 
-        retVal = cntntsService.updateCntnts(cntntsVo);
+        retVal = cntntsService.updateCntnts(cntntsVo, eduSbjctCds, eduTrgt);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -284,13 +305,13 @@ public class CntntsController {
     */
     @RequestMapping(value = "/mng/cntnts/deleteCntnts.do")
     @ResponseBody
-    public Map<String, Object> deleteCntnts(HttpServletRequest request) throws Exception {
+    public Map<String, Object> deleteCntnts(CntntsVo cntntsVo, @UserInfo UserVo user, HttpServletRequest request) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         int retVal = 0;
         
         String[] cntntsids = request.getParameterValues("cntntsids");
-        
-        retVal = cntntsService.deleteCntnts(cntntsids);
+        cntntsVo.setUser(user);
+        retVal = cntntsService.deleteCntnts(cntntsVo, cntntsids);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);

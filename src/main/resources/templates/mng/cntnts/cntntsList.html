@@ -37,16 +37,18 @@
 	                            <div class="col-lg-3 col-md-6 mb-3">
 	                                <div class="mb-0 form-group row">
 	                                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육주제</strong></div>
-	                                    <div class="col-6">
-											<select name="searchManinEduSbjctCd" id="searchEduSbjctCd_1" class="form-select form-select-sm" onchange="setSearchSelectBox.setNextDepth(155,this.value,'searchEduSbjctCd_2')">
-												<option value="" selected>- 전체 -</option>
-											</select>
-	                                    </div>
-	                                    <div class="col-6">
-					                        <select name="searchMdleEduSbjctCd" id="searchEduSbjctCd_2" class="form-select form-select-sm">
-					                            <option value="" selected>- 전체 -</option>
-					                        </select>
-	                                    </div>                                  
+					                       <div id="sbjctArea" >
+					                       
+					                       <div class="row mb-3 mb-md-2 subject-form" id="subject1">
+					                           <div class="col-md-12 mt-1 mt-md-0">
+					                               <select id="subjectSelect1" name="searchEduSbjctCd" class="form-select form-select-sm">
+					                                   <option value="" >-선택-</option>
+					                                   <option th:each="item : ${sbjctCdLsit}"   th:value="${item.CD}"> <th:block th:text="${item.CD_NM}" /> </option>
+					                               </select>
+					                           </div>
+					                       </div>
+					                       
+					                       </div>                    
 	                                </div>
 	                            </div>
 	                            <div class="col-lg-3 col-md-6 mb-3">
@@ -74,26 +76,18 @@
 	                            </div>
 	                        </div>
                             <div class="row">
-                                <div class="col-lg-3 col-md-6 mb-3">
-                                    <div class="mb-0 form-group row">
-                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterSearchStartSelectDate"><strong>등록일-검색시작일</strong></label>
-                                        <div class="col-sm-12">
-                                            <input class="form-control form-control-sm" type="date" name="startDt" id="startDt">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 mb-3">
-                                    <div class="mb-0 form-group row">
-                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterSearchEndSelectDate"><strong>등록일 -검색종료일</strong></label>
-                                        <div class="col-sm-12">
-                                            <input class="form-control form-control-sm" type="date" name="endDt" id="endDt">
-                                        </div>
-                                    </div>
-                                </div>
+	                            <div class="col-lg-3 col-md-6 mb-3">
+	                                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchPeriod"><strong>등록일</strong></label>
+	                                <div class="col-sm-12">
+	                                    <input type="text" name="searchPeriod" class="form-control form-control-sm" value="" id="searchPeriod">
+	                                    <input type="hidden" id="searchBgngDt"name="searchBgngDt" >
+	                                    <input type="hidden" id="searchEndDt"name="searchEndDt" >
+	                                </div>
+	                            </div>
                             </div>	                        
 		                    <div class="mt-1 p-t-20 text-center border-top">
 		                        <button class="btn btn-disabled m-r-5" onclick="fn_init()">초기화</button>
-								<button type="submit" class="btn btn-primary" onclick="fn_searchForm()">검색</button>
+								<button type="button" class="btn btn-primary" onclick="fn_searchForm()">검색</button>
 		                    </div>
 		                </div>
 					</form>
@@ -128,8 +122,12 @@
 			</div>
 		</div>
 
-		<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 		<script type="text/javascript" src="/js/common/jsgrid-master/dist/jsgrid.min.js"></script>
+		<script type="text/javascript" src="/files/bower_components/handlebars/handlebars.min.js" charset="utf-8" ></script>
+		<script src="/js/ckeditor/ckeditor.js"></script>
+	    <script type="text/javascript" src="/files/bower_components/moment/min/moment.min.js"></script>		
+	    <script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
+	    <link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">		
 		<script th:inline="javascript">
 			var getCodeListUrl = "/mng/customAttr/grpCodeList.do"
 			
@@ -288,8 +286,51 @@
 				}
 			}
 			
-			setSearchSelectBox.fn_getNextDepthList(155 , 0, 'searchEduSbjctCd_1');
 			setSearchSelectBox.fn_getNextDepthList(164 , 0, 'searchTypeCd_1');
+			
+			var selectBoxHandler = {
+					addEduSbjct : function(){
+				 		var selectBox_HTML = ""
+				 		var eduSbjctArea = document.getElementById('eduSbjct-area'); // eduSbjct-area 아이디를 가진 div 요소 선택
+				 		var className = 'row'; // 찾으려는 클래스 이름
+				 		var elements = eduSbjctArea.querySelectorAll('.' + className); // eduSbjct-area 내에서 클래스 이름이 일치하는 요소 선택
+				 		var idx = elements.length + 1;
+				 		
+				 		selectBox_HTML = `
+	                    <div class="row mt-1" id="${idx}">
+	                        <div class="col-sm">
+	                            <select name="mainEduSbjctCd" id="eduSbjctCd_${idx}" class="form-select form-select-sm form-control-sm" onchange="setInsertFormSelectBox.setNextDepth(155,this.value,'sub_eduSbjctCd_${idx}')">
+	                                <option value="">- 선택 -</option>
+	                            </select>
+	                        </div>
+	                        <div class="col-sm mt-1 mt-sm-0">
+	                            <select name="subEduSbjctCd" id="sub_eduSbjctCd_${idx}" class="form-select form-select-sm form-control-sm">
+	                                <option value="">- 선택 -</option>
+	                            </select>
+	                        </div>
+	                        <div class="mt-1 mt-sm-0" style="width:100px;">
+	                            <button type="button" class="input-group-text btn btn-primary btn-sm" id="addEduSbjct" onclick="selectBoxHandler.addEduSbjct()">+</button>
+	                            <button type="button" class="input-group-text btn btn-primary btn-sm" id="removeEduSbjct" value="${idx}" onclick="selectBoxHandler.removeEduSbjct(this.value)">-</button>
+	                        </div>
+	                    </div>
+				 		`;
+				 		
+				 		$("#eduSbjct-area").append(selectBox_HTML);
+				 		
+				 		var btnElements = eduSbjctArea.querySelectorAll('#removeEduSbjct');
+				 		
+				 		for (var i = 1; i < elements.length; i++) {
+				 			btnElements[i-1].setAttribute('value', i+1);
+				 			elements[i].setAttribute('id', i+1);
+				 		}
+				 		
+				 		setInsertFormSelectBox.fn_getNextDepthList(155, 0, 'eduSbjctCd_'+idx);
+				 	},
+				 	
+					removeEduSbjct : function(id){
+						$("#"+id).remove();
+					}
+			}
 			
 			var selectedItems = [];
 			var gridHelper1;
@@ -297,13 +338,10 @@
 			$(function() {
 				gridHelper1 = new GridHelper('jsGrid', 'contentPanel');
 				writeJsGridData();
+				initDateRangePicker("searchPeriod", "searchBgngDt", "searchEndDt");
 			});
 
-			function fn_searchForm() {
-				if($('#endDt').val() != '' && $('#startDt').val() > $('#endDt').val()) {
-					alert('종료일을 시작일 이후로 선택해 주십시오.');
-				}
-				
+			function fn_searchForm() {				
 				if($('#searchType').val() != '' && $('#searchKeyword').val() == '' || $('#searchKeyword').val() == null) {					
 					alert('키워드를 입력해주십시오.');
 				}
@@ -314,13 +352,11 @@
 			function fn_init() {
 				$("#searchType").val('');
 				$("#searchKeyword").val('');
-				$("#searchEduSbjctCd_1").val('');
-				$("#searchEduSbjctCd_2").val('');
 				$("#searchEduTrgtCd").val('');
 				$("#searchTypeCd_1").val('');
 				$("#searchTypeCd_2").val('');
-				$("#startDt").val('');
-				$("#endDt").val('');
+				$("#searchBgngDt").val('');
+				$("#searchEndDt").val('');
 				gridHelper1.resetListContent();
 			}
 			
@@ -362,7 +398,7 @@
 		                        params.push({name: "orderField", value: filter.sortField});
 		                        params.push({name: "orderDirection", value: filter.sortOrder});
 		                    }else{
-		                        params.push({name: "orderField", value: 'reg_dt'});
+		                        params.push({name: "orderField", value: 'regdt'});
 		                    }
 		                    formData = formData.concat(params);
 		                    
@@ -401,12 +437,13 @@
 						}
 					  , { name : 'cntntsid', css : 'hide' }
 					  , { title : 'No.', name : 'rowNumber', type : "number", width : "80", align : "center", sorting : false }
-					  , { title : '제목', name : 'ttl', type : "text", width : "300" }
-					  , { title : '교육주제', name : 'eduSbjctCd', type : "text", width : "150", align : "center" }
-					  , { title : '교육대상', name : 'eduTrgtCd', type : "text", width : "150", align : "center" }
+					  , { title : '제목', name : 'ttl', type : "text", width : "250" }
+					  , { title : '교육주제', name : 'eduSbjct', type : "text", width : "300", align : "center" }
+					  , { title : '교육대상', name : 'eduTrgt', type : "text", width : "300", align : "center" }
 					  , { title : '콘텐츠유형', name : 'typeCd', type : "text", width : "150", align : "center" }
 					  , { title : '등록일', name : 'regDt', type : "text", width : "150", align : "center" }
 					  , { title : '조회수', name : 'hits', type : "text", width : "100", align : "center" }
+					  , { title : '삭제여부', name : 'delYn', type : "text", width : "100", align : "center" }
 					],
 					rowClick : function(args) {
 						if (args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
@@ -471,30 +508,27 @@
 				}
 				if(!confirm("삭제하시겠습니까?")) return;
 				var msg;
-		    		if(displayWorkProgress()){
-		    			$.ajax({
-		    				url: "/mng/cntnts/deleteCntnts.do",
-		    				type: 'POST',
-		    				cache : false,
-		    				traditional : true,
-		    				dataType: 'json',
-		    				data: {cntntsids:selectedItems},
-		    				success: function(data){
-		    					if(data.result=="success"){
-		    						alert(data.msg);
-		    					}else{
-		    						alert(data.msg);
-		    					}
-		    					closeWorkProgress();
-		    					gridHelper1.resetListContent();
-		    				}
-		    			});
-			    	}
-			    	
-				
+	    		if(displayWorkProgress()){
+	    			$.ajax({
+	    				url: "/mng/cntnts/deleteCntnts.do",
+	    				type: 'POST',
+	    				cache : false,
+	    				traditional : true,
+	    				dataType: 'json',
+	    				data: {cntntsids:selectedItems},
+	    				success: function(data){
+	    					if(data.result=="success"){
+	    						alert(data.msg);
+	    					}else{
+	    						alert(data.msg);
+	    					}
+	    					closeWorkProgress();
+	    					gridHelper1.resetListContent();
+	    				}
+	    			});
+		    	}	
 		    }
 		</script>
-		<script src="/js/ckeditor/ckeditor.js"></script>
 	</div>
 </body>
 </html>

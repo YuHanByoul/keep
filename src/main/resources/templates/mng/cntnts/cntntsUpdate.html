@@ -8,20 +8,25 @@
 		<!-- Tab Container Start -->
 		<div class="card-block-small p-t-0">
 		    <div class="row">
-		        <div class="col-md-6 col-lg-3 mb-3">
+		        <div class="col-lg-6 mb-3">
 		            <div class="mb-0 form-group required">
 		                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육주제(대분류)</strong></div>
-                        <select name="mainEduSbjctCd" id="eduSbjctCd_1" class="form-select form-select-sm" onchange="setUpdateSelectBox.setNextDepth(155,this.value,'eduSbjctCd_2')">
-                            <option value="">- 선택 -</option>
-                        </select>
-		            </div>
-		        </div>
-		        <div class="col-md-6 col-lg-3 mb-3">
-		            <div class="mb-0 form-group required">
-		                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육주제(중분류)</strong></div>
-                        <select name="eduSbjctCd" id="eduSbjctCd_2" class="form-select form-select-sm">
-                            <option value="">- 선택 -</option>
-                        </select>
+						<div id="sbjctArea" >
+							<th:block th:each="sbjct,stat : ${mySbjctLsit}">
+								<div class="row mb-3 mb-md-2 subject-form" th:id="subject+${stat.count}" th:name="${stat.count}">
+						    	<div class="col-md-10 mt-1 mt-md-0">
+						        	<select th:id="subjectSelect+${stat.count}" name="eduSbjctCds" class="form-select form-select-sm" th:count ="${stat.count}" th:onchange="duplCheck(this.getAttribute('count'))">
+						            	<option value="" >-선택-</option>
+						            	<option th:each="item : ${sbjctCdLsit}"   th:value="${item.CD}" th:selected="${sbjct.eduSbjctCd == item.CD}"> <th:block th:text="${item.CD_NM}" /> </option>
+						        	</select>
+						    	</div>
+						      	<div class="col-md-auto">
+						        	<button type="button" class="input-group-text btn btn-primary btn-sm"  onclick="plusSubjectForm()" >+</button>
+						        	<button type="button" class="input-group-text btn btn-primary btn-sm"  th:count ="${stat.count}"  th:onclick="removeSubjectForm(this.getAttribute('count'))" th:disabled="${stat.count == 1}">-</button>
+						      	</div>						    	
+						  </div>
+						 </th:block>
+						</div>
 		            </div>
 		        </div>
 		        <div class="col-md-6 col-lg-3 mb-3">
@@ -43,10 +48,12 @@
 		    </div>
 		    <div class="row">
 		        <div class="col-lg-6 mb-3">
-		            <div class="mb-0 form-group required">
-		                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육대상</strong></div>
-		                <span kattr:select_code="eduTrgtCd" grpCd="185" firstOptTxt="- 선택 -" isAdmin="true" th:attr="selectedCd=${cntnts.eduTrgtCd}"></span>
-		            </div>
+                   <div class="mb-0 form-group required">
+                       <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육대상</strong></div>
+                       <div class="border-checkbox-section">
+                       <span kattr:check_code="eduTrgt" grpCd="185"  isAdmin="true" th:attr="selectedCd=${mytrgtCds}"></span>
+                       </div>
+                   </div>
 		        </div>
 		        <div class="col-lg-6 mb-3">
 		            <div class="mb-0 form-group">
@@ -89,6 +96,14 @@
 		            </div>
 		        </div>
 		    </div>
+            <div class="row">
+                <div class="col-lg-6 mb-3">
+                    <div class="mb-0 form-group required">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>저작권</strong></div>
+                        <span kattr:select_code="cpyrhtCd" grpCd="241" firstOptTxt="- 선택 -" th:attr="selectedCd=${cntnts.cpyrhtCd}" isAdmin="true"></span>
+                    </div>
+                </div>
+            </div> 		    
 		    <div class="row">
 		        <div class="col-12 mb-3">
 		            <div class="mb-0 form-group required">
@@ -175,6 +190,24 @@
 		            </div>
 		        </div>
 		    </div>
+		    <div class="row">
+		        <div class="col-12 col-lg-6 mb-3">
+		            <div class="mb-0 form-group">
+		                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="registDate"><strong>최종수정일</strong></label>
+		                <div class="col-12">
+		                    <input type="text" class="form-control form-control-sm" name="mdfcnDt" id="mdfcnDt" placeholder="최종수정일" th:value="${cntnts.mdfcnDt}" readonly/>
+		                </div>
+		            </div>
+		        </div>
+		        <div class="col-12 col-lg-6 mb-3">
+		            <div class="mb-0 form-group">
+		                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="writer"><strong>삭제여부</strong></label>
+		                <div class="col-12">
+		                    <input type="text" class="form-control form-control-sm" name="delYn" id="delYn" placeholder="삭제여부" th:value="${cntnts.delYn}" readonly/>
+		                </div>
+		            </div>
+		        </div>
+		    </div>		    
 		    <div class="bg-light rounded p-20">
 		        <p class="mb-1">* 첨부 가능 확장자 : JPG, JPEG, PNG, GIF, HWP, DOC, DOCX, XLS, XLSX, PDF, TXT</p>
 		        <p class="mb-1">* 첨부 가능 총 용량 : 100Mbyte</p>
@@ -182,6 +215,7 @@
 		    </div>
 		</div>
 	    <div class="card-block-small">
+	    	<button type="button" class="btn btn-disabled m-r-5" id="cancelInsertRgnEnveduCntr" th:onclick="fn_deleteCntnts([[${cntnts.cntntsid}]])">삭제</button>
 	        <button type="button" class="btn btn-disabled m-r-5" id="cancelInsertRgnEnveduCntr" onclick="gridHelper1.toggleContent()">취소</button>
 	        <th:block sec:authorize-url="/mng/cntnts/updateCntnts.do">
 	        	<button type="button" class="btn btn-primary" id="updateCntnts" onclick="fn_updateCntnts()">저장</button>
@@ -189,18 +223,34 @@
 	    </div>
 		<!-- Tab Container End -->
 </form>
+<script  id="subjectFrm" type="text/x-handlebars-template">
+    <div class="row mb-3 mb-md-2 subject-form" id="subject{{frmNum}}" name="{{frmNum}}">
+         <div class="col-md-10 mt-1 mt-md-0">
+             <select id="subjectSelect{{frmNum}}" name="eduSbjctCds" class="form-select form-select-sm" onchange="duplCheck('{{frmNum}}')">
+                 <option value="" >-선택-</option>
+                 {{#each list}}
+                 <option value="{{CD}}">{{CD_NM}}</option>
+                 {{/each}}
+             </select>
+         </div>
+         <div class="col-md-auto">
+            <button type="button" class="input-group-text btn btn-primary btn-sm"  onclick="plusSubjectForm()" >+</button>
+            <button type="button" class="input-group-text btn btn-primary btn-sm"  onclick="removeSubjectForm('{{frmNum}}')">-</button>
+         </div>
+     </div>
+</script>
 
 <script th:inline="javascript">
 	/*<![CDATA[*/
-	var eduSbjctCd = /*[[${cntnts.eduSbjctCd}]]*/null;
-	var mainEduSbjctCd = /*[[${cntnts.mainEduSbjctCd}]]*/null;
+	var sbjctCdLsit = /*[[${sbjctCdLsit}]]*/null; 
+	var mySbjctLsit = /*[[${mySbjctLsit}]]*/null; 
 	
 	var typeCd = /*[[${cntnts.typeCd}]]*/null;		
 	var mainTypeCd = /*[[${cntnts.mainTypeCd}]]*/null;
 	/*]]>*/
 	
-	setUpdateSelectBox.fn_getNextDepthList(155 , 0, 'eduSbjctCd_1', mainEduSbjctCd);
-	setUpdateSelectBox.fn_getNextDepthList(155 , mainEduSbjctCd, 'eduSbjctCd_2', eduSbjctCd);
+    var subjectLength = 0; 
+    var subjectNum = [1]; 	
 	
 	setUpdateSelectBox.fn_getNextDepthList(164 , 0, 'typeCd_1', mainTypeCd);
 	setUpdateSelectBox.fn_getNextDepthList(164 , mainTypeCd, 'typeCd_2', typeCd);
@@ -209,6 +259,14 @@
 	
 	$(function () {
 	    editor = CKEDITOR.replace('cn');
+	    
+    	if(sbjctCdLsit!= null && sbjctCdLsit.length > 0 ){
+	    	subjectLength = sbjctCdLsit.length 
+        }
+    	//등록되어 있는 교육 주제 폼 넘버   
+        for(var i = 0;i < mySbjctLsit.length;i++){
+            subjectNum.push((i+1));
+        }
 	});
 
 	var validator= $("#cntntsUpdateForm").validate({
@@ -363,6 +421,11 @@
 
   	 	if(!confirm("저장하시겠습니까?")) return;
   	 	
+  	 	if(subjectNum.length<=0){
+  	  	 	alert("교육 주제를 선택해주십시오.")
+  	  	 	return;
+  	  	}
+  	 	
   	 	var editorData = editor.getData();
         $("#cn").val(editorData);
   	 	
@@ -386,4 +449,75 @@
 			});
 		}
 	}
+ 	
+    function fn_deleteCntnts(id){
+		if(!confirm("삭제하시겠습니까?")) return;
+		var msg;
+    		if(displayWorkProgress()){
+    			$.ajax({
+    				url: "/mng/cntnts/deleteCntnts.do",
+    				type: 'POST',
+    				cache : false,
+    				traditional : true,
+    				dataType: 'json',
+    				data: {cntntsids:id},
+    				success: function(data){
+    					if(data.result=="success"){
+    						alert(data.msg);
+    					}else{
+    						alert(data.msg);
+    					}
+    					closeWorkProgress();
+    					gridHelper1.resetListContent();
+    				}
+    			});
+	    	}
+	    	
+		
+    }
+ 	
+    duplCheck=(frmNum)=>{
+        var isDupl = false;
+    	var selectCd = $("#subjectSelect"+frmNum).val();
+    	if(selectCd==""){return;}
+
+    	$(".subject-form").each(function(){
+    		var itemId = ($(this).attr("id")).replace("subject","")
+        	if( itemId != frmNum  &&  $("#subjectSelect"+itemId).val() == selectCd){
+        		isDupl = true;
+            }
+        })
+        if(isDupl){
+        	$("#subjectSelect"+frmNum).val("");
+            alert("교육주제는 중복 선택 할 수 없습니다."); 
+            return; 
+        }
+    }
+    
+    plusSubjectForm =()=>{
+
+    	var subjectFormCnt = 0 ; 
+    	$(".subject-form").each(function(){	subjectFormCnt++ })
+    	
+    	if(subjectFormCnt >= subjectLength){
+        	alert("더이상 생성 할수 없습니다.");
+        	return;
+        }
+    	var maxValue = Math.max.apply(null, subjectNum);
+    	subjectNum.push(maxValue+1);
+        
+	    var source = $("#subjectFrm").html();
+        var template = Handlebars.compile(source);
+        var data = {
+                    'frmNum' : maxValue+1
+                    ,'list':sbjctCdLsit 
+                   };
+        $("#sbjctArea").append(template(data));
+    }
+
+    removeSubjectForm=(frmNum)=>{
+    	$("#subject"+frmNum).remove();
+    	var filterArr = subjectNum.filter(function(data) {return data != frmNum;});
+    	subjectNum = filterArr;
+    }
 </script>
