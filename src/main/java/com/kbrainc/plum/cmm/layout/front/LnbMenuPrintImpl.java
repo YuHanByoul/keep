@@ -191,7 +191,7 @@ public class LnbMenuPrintImpl {
 		                        if (isMenuView) {
 		                            
 		                            menuTag.append("				<li class=\""); // active필요
-		                            if (menuItem2.getMenuid().equals(menuItem.getMenuid())) {
+		                            if (menuItem2.getMenuid().equals(menuItem.getMenuid()) || menuItem2.getMenuid().equals(menuItem.getUpprMenuid())) {
 		                                menuTag.append("active ");
 		                            }
 		                            menuTag.append("\">");
