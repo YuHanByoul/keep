@@ -34,21 +34,20 @@ public class CntntsVo  extends ParentRequestVo{
     
     /** 콘텐츠아이디 */
     private int cntntsid;
-    /** 교육_주제_코드(중분류) */
-    @NotEmpty(message = "교육주제(중분류)를 선택해주십시오.")
-    private String eduSbjctCd;
-    /** 교육_주제_코드(대분류) */
-    @NotEmpty(message = "교육주제(대분류) 선택해주십시오.")
-    private String mainEduSbjctCd;
+    /** 교육주제 */
+    private String eduSbjct;
+    /** 교육대상 */
+    private String eduTrgt;
+    /** 교육 주제 코드(s) */
+    private String[] eduSbjctCds;
+    /** 교육 대상 코드(s) */
+    private String[] eduTrgtCds;
     /** 유형_코드(중분류) */
     @NotEmpty(message = "콘텐츠 유형(중분류) 선택해주십시오.")
     private String typeCd;
     /** 유형_코드(대분류) */
     @NotEmpty(message = "콘텐츠 유형(대분류) 선택해주십시오.")
     private String mainTypeCd;
-    /** 교육_대상_코드 */
-    @NotEmpty(message = "교육대상 선택해주십시오.")
-    private String eduTrgtCd;
     /** 출처 */
     private String origin;
     /** 제작_년 */
@@ -71,6 +70,7 @@ public class CntntsVo  extends ParentRequestVo{
     private Integer rprsImgFileid;
     /** 첨부_파일그룹아이디 */
     private Integer atchFilegrpid;
+    private String delYn;
     /** 수정_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date mdfcnDt;
@@ -82,6 +82,9 @@ public class CntntsVo  extends ParentRequestVo{
     /** 등록자아이디 */
     private int rgtrid;
     
+    /** 저작권_코드 */
+    private String cpyrhtCd;
+    
     private String rgtridNm;
     
     /** 첨부파일 관련 */
@@ -91,13 +94,12 @@ public class CntntsVo  extends ParentRequestVo{
     
     /** 필터 */
     /** 교육주제 */
-    private String searchManinEduSbjctCd;
-    private String searchMdleEduSbjctCd;
+    private String searchEduSbjctCd;
     private String searchEduTrgtCd;
     private String searchMainTypeCd;
     private String searchMdleTypeCd;
-    private String startDt;
-    private String endDt;
+    private String searchBgngDt;
+    private String searchEndDt;
     
     
 }

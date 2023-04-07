@@ -43,6 +43,8 @@ public class CntntsVo  extends ParentRequestVo{
     private String mainTypeCd;
     /** 교육_대상_코드 */
     private String eduTrgtCd;
+    /** 등록기관 */
+    private String instNm;
     /** 출처 */
     private String origin;
     /** 제작_년 */
@@ -71,6 +73,9 @@ public class CntntsVo  extends ParentRequestVo{
     private Date regDt;
     /** 등록자아이디 */
     private int rgtrid;
+    
+    /** 저작권_코드 */
+    private String cpyrhtCd;
     
     private String nextCntntsid;
     private String nextCntntsTtl;
