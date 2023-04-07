@@ -12,25 +12,49 @@
         /* CntntsDao.selectCntntsList */
         <include refid="PaginationMapper.header"/>
             SELECT
-                  A.CNTNTSID
-                , A.TTL
-                , CONCAT(B2.CD_NM, ' > ', B1.CD_NM) AS EDUSBJCTCD
-                , C1.CD_NM AS EDUTRGTCD
-                , CONCAT(D2.CD_NM, ' > ', D1.CD_NM) AS TYPECD
-                , NVL(A.HITS,0) AS HITS
-                , A.RPRS_IMG_FILEID
-                , E.FILEGRPID
-                , A.REG_DT
+                A.CNTNTSID
+              , A.TTL
+              , TB1.EDU_SBJCT AS EDUSBJCT
+              , TB2.EDU_TRGT EDUTRGT
+              , CONCAT(D2.CD_NM, ' > ', D1.CD_NM) AS TYPECD
+              , NVL(A.HITS, 0) AS HITS
+              , A.DEL_YN
+              , A.RPRS_IMG_FILEID
+              , E.FILEGRPID
+              , A.REG_DT AS REGDT
             FROM
                 TB_CMM_CNTNTS A
-                LEFT OUTER JOIN TB_CMM_CD B1 ON A.EDU_SBJCT_CD = B1.CD
-                LEFT OUTER JOIN TB_CMM_CD B2 ON B1.UPPR_CD = B2.CD
-                LEFT OUTER JOIN TB_CMM_CD C1 ON A.EDU_TRGT_CD = C1.CD
-                LEFT OUTER JOIN TB_CMM_CD D1 ON A.TYPE_CD = D1.CD
-                LEFT OUTER JOIN TB_CMM_CD D2 ON D1.UPPR_CD = D2.CD
-                
-                LEFT OUTER JOIN TB_CMM_FILE E ON A.RPRS_IMG_FILEID = E.FILEID
-            WHERE 1=1
+            
+                    LEFT OUTER JOIN (
+                                    SELECT
+                                        GROUP_CONCAT(ESUPPRCD.CD_NM, ' > ', ESCD.CD_NM separator ', ') EDU_SBJCT
+                                      , ES.CNTNTSID
+                                      , ES.EDU_SBJCT_CD
+                                    FROM
+                                        TB_CMM_CNTNTS_EDU_SBJCT ES
+                                            LEFT OUTER JOIN TB_CMM_CD ESCD ON ES.EDU_SBJCT_CD = ESCD.CD
+                                            LEFT OUTER JOIN TB_CMM_CD ESUPPRCD ON ESCD.UPPR_CD = ESUPPRCD.CD
+                                    GROUP BY CNTNTSID
+                                    ) TB1 ON A.CNTNTSID = TB1.CNTNTSID
+            
+                    LEFT OUTER JOIN (
+                                    SELECT
+                                        GROUP_CONCAT(ETCD.CD_NM separator ', ') EDU_TRGT
+                                      , CNTNTSID
+                                      , ET.EDU_TRGT_CD
+                                    FROM
+                                        TB_CMM_CNTNTS_EDU_TRGT ET
+                                            LEFT OUTER JOIN TB_CMM_CD ETCD ON ET.EDU_TRGT_CD = ETCD.CD
+                                    GROUP BY CNTNTSID                                            
+                                    ) TB2 ON A.CNTNTSID = TB2.CNTNTSID
+            
+            
+                    LEFT OUTER JOIN TB_CMM_CD D1 ON A.TYPE_CD = D1.CD
+                    LEFT OUTER JOIN TB_CMM_CD D2 ON D1.UPPR_CD = D2.CD
+            
+                    LEFT OUTER JOIN TB_CMM_FILE E ON A.RPRS_IMG_FILEID = E.FILEID
+            WHERE
+                1 = 1
             <!-- 키워드 -->
             <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchTtl'">
             AND A.TTL LIKE CONCAT('%',#{searchKeyword},'%')
@@ -44,16 +68,13 @@
             </if>
             
             <!-- 교육주제 -->
-            <if test="searchManinEduSbjctCd != null and searchManinEduSbjctCd != ''">
-            AND B2.CD = #{searchManinEduSbjctCd}
-            </if>
-            <if test="searchMdleEduSbjctCd != null and searchMdleEduSbjctCd != ''">
-            AND B1.CD = #{searchMdleEduSbjctCd}
+            <if test="searchEduSbjctCd != null and searchEduSbjctCd != ''">
+            AND TB1.EDU_SBJCT_CD = #{searchEduSbjctCd}
             </if>
             
             <!-- 교육대상 -->
             <if test="searchEduTrgtCd != null and searchEduTrgtCd != ''">
-            AND C1.CD = #{searchEduTrgtCd}
+            AND TB2.EDU_TRGT_CD = #{searchEduTrgtCd}
             </if>
             
             <!-- 콘텐츠 유형 -->
@@ -65,14 +86,14 @@
             </if>
             
             <!-- 등록일(시작일, 종료일) -->
-            <if test="startDt != null and startDt != ''">
+            <if test="searchBgngDt != null and searchBgngDt != ''">
             <![CDATA[
-                AND DATE(A.REG_DT) >= #{startDt}
+                AND DATE(A.REG_DT) >= #{searchBgngDt}
             ]]>
             </if>
-            <if test="endDt != null and endDt != ''">
+            <if test="searchEndDt != null and searchEndDt != ''">
             <![CDATA[
-                AND DATE(A.REG_DT) <= #{endDt}
+                AND DATE(A.REG_DT) <= #{searchEndDt}
             ]]>
             </if>            
         <include refid="PaginationMapper.footer"/>
@@ -84,9 +105,6 @@
         SELECT
               A.CNTNTSID
             , A.TTL
-            , A.EDU_SBJCT_CD
-            , B2.CD AS MAIN_EDU_SBJCT_CD
-            , C1.CD AS EDU_TRGT_CD
             , A.TYPE_CD
             , D2.CD AS MAIN_TYPE_CD
             , A.ORIGIN
@@ -94,6 +112,7 @@
             , A.PLY_SECND
             , A.TTL
             , A.CN
+            , A.CPYRHT_CD
             , DATE(A.REG_DT) AS REG_DT
             , A.RGTRID
             , CONCAT(F.ACNT,'(',F.NM,')') AS rgtridNm
@@ -102,11 +121,10 @@
             , E.FILE_IDNTFC_KEY      
             , E.ORGINL_FILE_NM
             , A.ATCH_FILEGRPID
+            , A.MDFCN_DT
+            , A.DEL_YN
         FROM
             TB_CMM_CNTNTS A
-            LEFT OUTER JOIN TB_CMM_CD B1 ON A.EDU_SBJCT_CD = B1.CD
-            LEFT OUTER JOIN TB_CMM_CD B2 ON B1.UPPR_CD = B2.CD
-            LEFT OUTER JOIN TB_CMM_CD C1 ON A.EDU_TRGT_CD = C1.CD
             LEFT OUTER JOIN TB_CMM_CD D1 ON A.TYPE_CD = D1.CD
             LEFT OUTER JOIN TB_CMM_CD D2 ON D1.UPPR_CD = D2.CD
             
@@ -117,12 +135,13 @@
     </select>
     
     <!-- 컨텐츠 관리 게시글 등록 --> 
-    <insert id="insertCntnts" parameterType="CntntsVo" keyProperty="CntntsVo">
+    <insert id="insertCntnts" useGeneratedKeys="true">
         /* CntntsDao.insertCntnts */
+        <selectKey resultType="int" keyProperty="cntntsid" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>        
         INSERT INTO TB_CMM_CNTNTS (
-            EDU_SBJCT_CD
-            , TYPE_CD
-            , EDU_TRGT_CD
+            TYPE_CD
             , ORIGIN
             , MNFCT_YY
             , PLY_SECND
@@ -130,14 +149,14 @@
             , CN
             , RPRS_IMG_FILEID
             , ATCH_FILEGRPID
+            , CPYRHT_CD
+            , DEL_YN
             , MDFCN_DT
             , MDFRID
             , REG_DT
             , RGTRID
         )VALUES(
-            #{eduSbjctCd}
-            ,#{typeCd}
-            ,#{eduTrgtCd}
+            #{typeCd}
             ,#{origin}
             ,#{mnfctYy}
             ,#{plySecnd}
@@ -145,6 +164,8 @@
             ,#{cn}
             ,#{rprsImgFileid}
             ,#{atchFilegrpid}
+            ,#{cpyrhtCd}
+            ,'N'
             ,NOW()
             ,#{user.userid}
             ,NOW()
@@ -156,9 +177,7 @@
     <update id="updateCntnts" parameterType="CntntsVo" >
          /* CntntsDao.updateCntnts */
           UPDATE TB_CMM_CNTNTS SET
-              EDU_SBJCT_CD      = #{eduSbjctCd}
-              ,TYPE_CD          = #{typeCd}
-              ,EDU_TRGT_CD      = #{eduTrgtCd}
+              TYPE_CD          = #{typeCd}
               ,ORIGIN           = #{origin}
               ,MNFCT_YY         = #{mnfctYy}
               ,PLY_SECND        = #{plySecnd}
@@ -166,18 +185,107 @@
               ,CN               = #{cn}
               ,RPRS_IMG_FILEID  = #{rprsImgFileid}
               ,ATCH_FILEGRPID   = #{atchFilegrpid}
+              , CPYRHT_CD       = #{cpyrhtCd}
               ,MDFCN_DT         = NOW()
               ,MDFRID           = #{user.userid}
            WHERE CNTNTSID = #{cntntsid}
     </update>
     
     <!-- 컨텐츠 관리 게시글 삭제 -->
-    <delete id="deleteCntnts" parameterType="java.util.ArrayList">
+    <update id="deleteCntnts">
         /* CntntsDao.deleteCntnts */
-        DELETE FROM TB_CMM_CNTNTS
+        UPDATE TB_CMM_CNTNTS
+        SET
+            DEL_YN   = 'Y'
+          , MDFCN_DT = NOW()
+          , MDFRID   = #{user.userid}
         WHERE CNTNTSID IN 
-        <foreach item="item" collection="array" index="cntntsid" open="(" close=")" separator=",">
+        <foreach item="item" collection="cntntsids" open="(" close=")" separator=",">
         #{item}
         </foreach>
-    </delete>
+    </update>
+    
+    
+    <!-- 교육 주제 코드 리스트 호출 --> 
+    <select id="selectCntntsCdList" parameterType="map" resultType="map">
+          /* CntntsDao.selectCntntsCdList */
+           SELECT 
+               A.CD 
+               ,CONCAT(B.CD_NM,'>',A.CD_NM ) CD_NM 
+             FROM 
+               TB_CMM_CD A
+               INNER JOIN TB_CMM_CD B
+               ON A.UPPR_CD = B.CD 
+            WHERE 1=1
+              AND A.USE_YN = 'Y'
+              AND A.CDGRPID = #{cdgrpid}
+    </select>
+    
+    <!-- 공모전 분야 매핑 등록 -->
+    <insert id="insertEduSbjct">
+        INSERT INTO TB_CMM_CNTNTS_EDU_SBJCT (CNTNTSID, EDU_SBJCT_CD, REG_DT, RGTRID) VALUES
+        <foreach item="item" collection="eduSbjctCds"  separator=",">
+            (
+            #{cntntsid}
+            , #{item}
+            , NOW()
+            , #{user.userid}
+            )
+        </foreach>
+    </insert>
+    
+    <!-- 공모전 분야 매핑 등록 -->
+    <insert id="insertEduTrgt">
+        INSERT INTO TB_CMM_CNTNTS_EDU_TRGT (CNTNTSID, EDU_TRGT_CD, REG_DT, RGTRID) VALUES
+        <foreach item="item" collection="eduTrgt"  separator=",">
+            (
+            #{cntntsid}
+            , #{item}
+            , NOW()
+            , #{user.userid}
+            )
+        </foreach>
+    </insert>
+    
+   <!-- 콘텐츠 교육 주제 코드 맵핑 리스트 호출 --> 
+   <select id="selectCntntsEduSbjctList" parameterType="CntntsVo" resultType="CntntsEduSbjctVo">
+          /* CntntsDao.selectCntntsEduSbjctList */
+           SELECT
+               CNTNTSID 
+               ,EDU_SBJCT_CD
+               ,REG_DT
+               ,RGTRID
+             FROM 
+               TB_CMM_CNTNTS_EDU_SBJCT
+            WHERE 1=1
+              AND CNTNTSID = #{cntntsid}
+   </select>
+   
+   <!-- 콘텐츠 교육 대상 코드 리스트 호출 --> 
+   <select id="selectCntntsEduTrgtList" parameterType="CntntsVo" resultType="CntntsEduTrgtVo">
+          /* CntntsDao.selectCntntsEduTrgtList */
+           SELECT
+               CNTNTSID
+               ,EDU_TRGT_CD
+               ,REG_DT
+               ,RGTRID
+             FROM 
+               TB_CMM_CNTNTS_EDU_TRGT
+            WHERE 1=1
+              AND CNTNTSID = #{cntntsid}
+   </select>
+   
+   <!-- 콘텐츠 교육 주제 코드 삭제 -->
+   <delete id="deleteEduSbjct" parameterType="CntntsVo">
+        /* CntntsDao.deleteEduSbjct */
+        DELETE FROM TB_CMM_CNTNTS_EDU_SBJCT
+        WHERE CNTNTSID = #{cntntsid}
+   </delete>
+   
+   <!-- 콘텐츠 교육 대상 코드 삭제 -->
+   <delete id="deleteEduTrgt" parameterType="CntntsVo">
+        /* CntntsDao.deleteEduTrgt */
+        DELETE FROM TB_CMM_CNTNTS_EDU_TRGT
+        WHERE CNTNTSID = #{cntntsid}
+   </delete>
 </mapper>

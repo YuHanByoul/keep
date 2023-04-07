@@ -12,26 +12,51 @@
         /* CntntsDao.selectCntntsList */
         <include refid="PaginationMapper.header"/>
             SELECT
-                  A.CNTNTSID
-                , A.TTL
-                , CONCAT(B2.CD_NM, ' > ', B1.CD_NM) AS EDUSBJCTCD
-                , C1.CD_NM AS EDUTRGTCD
-                , CONCAT(D2.CD_NM, ' > ', D1.CD_NM) AS TYPECD
-                , D1.CD_NM AS MAINTYPECD
-                , NVL(A.HITS,0) AS HITS
-                , A.RPRS_IMG_FILEID
-                , E.FILE_IDNTFC_KEY
-                , DATE(A.REG_DT) AS REG_DT
+                A.CNTNTSID
+              , A.TTL
+              , TB1.EDU_SBJCT AS EDUSBJCTCD
+              , TB2.EDU_TRGT EDUTRGTCD
+              , CONCAT(D2.CD_NM, ' > ', D1.CD_NM) AS TYPECD
+              , NVL(A.HITS, 0) AS HITS
+              , A.DEL_YN
+              , A.RPRS_IMG_FILEID
+              , E.FILEGRPID
+              , E.FILE_IDNTFC_KEY
+              , A.REG_DT
             FROM
                 TB_CMM_CNTNTS A
-                LEFT OUTER JOIN TB_CMM_CD B1 ON A.EDU_SBJCT_CD = B1.CD
-                LEFT OUTER JOIN TB_CMM_CD B2 ON B1.UPPR_CD = B2.CD
-                LEFT OUTER JOIN TB_CMM_CD C1 ON A.EDU_TRGT_CD = C1.CD
-                LEFT OUTER JOIN TB_CMM_CD D1 ON A.TYPE_CD = D1.CD
-                LEFT OUTER JOIN TB_CMM_CD D2 ON D1.UPPR_CD = D2.CD
-                
-                LEFT OUTER JOIN TB_CMM_FILE E ON A.RPRS_IMG_FILEID = E.FILEID
-            WHERE 1=1
+            
+                    LEFT OUTER JOIN (
+                                    SELECT
+                                        GROUP_CONCAT(ESUPPRCD.CD_NM, ' > ', ESCD.CD_NM separator ', ') EDU_SBJCT
+                                      , ES.CNTNTSID
+                                      , ES.EDU_SBJCT_CD
+                                      , ESCD.UPPR_CD AS EDU_SBJCT_UPPR_CD
+                                    FROM
+                                        TB_CMM_CNTNTS_EDU_SBJCT ES
+                                            LEFT OUTER JOIN TB_CMM_CD ESCD ON ES.EDU_SBJCT_CD = ESCD.CD
+                                            LEFT OUTER JOIN TB_CMM_CD ESUPPRCD ON ESCD.UPPR_CD = ESUPPRCD.CD
+                                    GROUP BY CNTNTSID                                            
+                                    ) TB1 ON A.CNTNTSID = TB1.CNTNTSID
+            
+                    LEFT OUTER JOIN (
+                                    SELECT
+                                        GROUP_CONCAT(ETCD.CD_NM separator ', ') EDU_TRGT
+                                      , CNTNTSID
+                                      , ET.EDU_TRGT_CD
+                                    FROM
+                                        TB_CMM_CNTNTS_EDU_TRGT ET
+                                            LEFT OUTER JOIN TB_CMM_CD ETCD ON ET.EDU_TRGT_CD = ETCD.CD
+                                    GROUP BY CNTNTSID                                            
+                                    ) TB2 ON A.CNTNTSID = TB2.CNTNTSID
+            
+            
+                    LEFT OUTER JOIN TB_CMM_CD D1 ON A.TYPE_CD = D1.CD
+                    LEFT OUTER JOIN TB_CMM_CD D2 ON D1.UPPR_CD = D2.CD
+            
+                    LEFT OUTER JOIN TB_CMM_FILE E ON A.RPRS_IMG_FILEID = E.FILEID
+            WHERE
+                1 = 1
             <!-- 키워드 -->
             <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchTtl'">
             AND A.TTL LIKE CONCAT('%',#{searchKeyword},'%')
@@ -45,23 +70,23 @@
             </if>
             
             <!-- 교육주제 -->
-            <if test="searchManinEduSbjctCd != null and searchManinEduSbjctCd != '' and searchManinEduSbjctCd != 'all'">
-            AND B2.CD = #{searchManinEduSbjctCd}
+            <if test="searchManinEduSbjctCd != null and searchManinEduSbjctCd != ''">
+            AND TB1.EDU_SBJCT_UPPR_CD = #{searchManinEduSbjctCd}
             </if>
-            <if test="searchMdleEduSbjctCd != null and searchMdleEduSbjctCd != '' and searchMdleEduSbjctCd != 'all'">
-            AND B1.CD = #{searchMdleEduSbjctCd}
+            <if test="searchMdleEduSbjctCd != null and searchMdleEduSbjctCd != ''">
+            AND TB1.EDU_SBJCT_CD = #{searchMdleEduSbjctCd}
             </if>
             
             <!-- 교육대상 -->
             <if test="searchEduTrgtCd != null and searchEduTrgtCd != ''">
-            AND C1.CD = #{searchEduTrgtCd}
+            AND TB2.EDU_TRGT_CD = #{searchEduTrgtCd}
             </if>
             
             <!-- 콘텐츠 유형 -->
-            <if test="searchMainTypeCd != null and searchMainTypeCd != '' and searchMainTypeCd != 'all'">
+            <if test="searchMainTypeCd != null and searchMainTypeCd != ''">
             AND D2.CD = #{searchMainTypeCd}
             </if>
-            <if test="searchMdleTypeCd != null and searchMdleTypeCd != '' and searchMdleTypeCd != 'all'">
+            <if test="searchMdleTypeCd != null and searchMdleTypeCd != ''">
             AND D1.CD = #{searchMdleTypeCd}
             </if>
             
@@ -84,17 +109,18 @@
         /* CntntsDao.selectCntntsInfo */
         SELECT
               A.CNTNTSID
-            , B1.CD_NM AS EDU_SBJCT_CD
-            , B2.CD_NM AS MAIN_EDU_SBJCT_CD
-            , C1.CD_NM AS EDU_TRGT_CD
+            , TB1.EDU_SBJCT AS EDU_SBJCT_CD
+            , TB2.EDU_TRGT AS EDU_TRGT_CD
             , D1.CD_NM AS TYPE_CD
             , D2.CD_NM AS MAIN_TYPE_CD
+            , G.INST_NM
             , A.ORIGIN
             , NVL(A.HITS,0) AS HITS
             , A.MNFCT_YY
             , A.PLY_SECND
             , A.TTL
             , A.CN
+            , A.CPYRHT_CD
             , DATE(A.REG_DT) AS REG_DT
             , A.RGTRID
             , CONCAT(F.ACNT,'(',F.NM,')') AS rgtridNm
@@ -108,14 +134,37 @@
             ]]>
         FROM
             TB_CMM_CNTNTS A
-            LEFT OUTER JOIN TB_CMM_CD B1 ON A.EDU_SBJCT_CD = B1.CD
-            LEFT OUTER JOIN TB_CMM_CD B2 ON B1.UPPR_CD = B2.CD
-            LEFT OUTER JOIN TB_CMM_CD C1 ON A.EDU_TRGT_CD = C1.CD
+            LEFT OUTER JOIN (
+                            SELECT
+                                GROUP_CONCAT(ESUPPRCD.CD_NM, ' > ', ESCD.CD_NM separator ', ') EDU_SBJCT
+                              , ES.CNTNTSID
+                              , ES.EDU_SBJCT_CD
+                              , ESCD.UPPR_CD AS EDU_SBJCT_UPPR_CD
+                            FROM
+                                TB_CMM_CNTNTS_EDU_SBJCT ES
+                                    LEFT OUTER JOIN TB_CMM_CD ESCD ON ES.EDU_SBJCT_CD = ESCD.CD
+                                    LEFT OUTER JOIN TB_CMM_CD ESUPPRCD ON ESCD.UPPR_CD = ESUPPRCD.CD
+                            GROUP BY CNTNTSID                                    
+                            ) TB1 ON A.CNTNTSID = TB1.CNTNTSID
+    
+            LEFT OUTER JOIN (
+                            SELECT
+                                GROUP_CONCAT(ETCD.CD_NM separator ', ') EDU_TRGT
+                              , CNTNTSID
+                              , ET.EDU_TRGT_CD
+                            FROM
+                                TB_CMM_CNTNTS_EDU_TRGT ET
+                                    LEFT OUTER JOIN TB_CMM_CD ETCD ON ET.EDU_TRGT_CD = ETCD.CD
+                            GROUP BY CNTNTSID                                    
+                            ) TB2 ON A.CNTNTSID = TB2.CNTNTSID
+    
+    
             LEFT OUTER JOIN TB_CMM_CD D1 ON A.TYPE_CD = D1.CD
             LEFT OUTER JOIN TB_CMM_CD D2 ON D1.UPPR_CD = D2.CD
             
             LEFT OUTER JOIN TB_CMM_USER F ON A.RGTRID = F.USERID
-        WHERE CNTNTSID = #{cntntsid}
+            LEFT OUTER JOIN TB_CMM_INST G ON F.INSTID = G.INSTID
+        WHERE A.CNTNTSID = #{cntntsid}
     </select>
     
     <!-- 콘텐츠 게시글 상세조회 -->

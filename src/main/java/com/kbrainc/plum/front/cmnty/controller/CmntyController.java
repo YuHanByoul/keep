@@ -254,6 +254,7 @@ public class CmntyController {
         model.addAttribute("cmntyCtgryList", cmntyCtgryList);
         model.addAttribute("list", cmntyBbsList);
         model.addAttribute("cmntyInfo", cmntyInfo);
+        model.addAttribute("bbsInfo", bbsInfo);
         model.addAttribute("paramVo", paramVo);
         model.addAttribute("totalCount",cmntyBbsList.size() > 0 ? cmntyBbsList.get(0).getTotalCount() : 0);
         return "front/cmnty/cmntyPstList";
@@ -497,12 +498,12 @@ public class CmntyController {
         }
         resultMap = cmntyService.selectPst(paramVo);
 
+        model.addAttribute("cmntyInfo", cmntyInfo);
         model.addAttribute("bbsInfo", bbsInfo);
         model.addAttribute("cmntyPstInfo", resultMap.get("paramMap"));
         model.addAttribute("list", cmntyCmntList);
         model.addAttribute("fileMap", resultMap.get("fileMap"));
         model.addAttribute("cmntyid",cmntyid);
-        model.addAttribute("cmntyInfo",cmntyInfo);
         model.addAttribute("paramVo",paramVo);
         return "front/cmnty/cmntyPstView";
     }
@@ -518,7 +519,12 @@ public class CmntyController {
      * @return string
      */
     @RequestMapping(value = "/front/cmnty/cmntyPstInsertForm.html")
-    public String cmntyPstInsertForm(Integer cmntyid, CmntyPstVo paramVo, Model model) {
+    public String cmntyPstInsertForm(Integer cmntyid, CmntyPstVo paramVo, Model model, @UserInfo UserVo user) {
+        //커뮤니티 정보 조회
+        CmntyVo cmntyVo = new CmntyVo();
+        cmntyVo.setUser(user);
+        cmntyVo.setCmntyid(cmntyid);
+        CmntyVo cmntyInfo = cmntyService.selectCmntyInfo(cmntyVo);
         //게시판 정보 조회
         CmntyBbsVo cmntyBbsVo = new CmntyBbsVo();
         cmntyBbsVo.setBbsid(paramVo.getBbsid());
@@ -539,6 +545,7 @@ public class CmntyController {
 
         model.addAttribute("acceptUploadFileExt", uploadFileExtsn);
         model.addAttribute("fileConfiguration", fileConfiguration);
+        model.addAttribute("cmntyInfo",cmntyInfo);
         model.addAttribute("bbsInfo",bbsInfo);
         model.addAttribute("paramVo",paramVo);
         model.addAttribute("cmntyid",cmntyid);
@@ -592,6 +599,11 @@ public class CmntyController {
     public String cmntyPstUpdateForm(Integer cmntyid, CmntyPstVo paramVo, Model model, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         paramVo.setUser(user);
+        //커뮤니티 정보 조회
+        CmntyVo cmntyVo = new CmntyVo();
+        cmntyVo.setUser(user);
+        cmntyVo.setCmntyid(cmntyid);
+        CmntyVo cmntyInfo = cmntyService.selectCmntyInfo(cmntyVo);
         //게시판 정보 조회
         CmntyBbsVo cmntyBbsVo = new CmntyBbsVo();
         cmntyBbsVo.setBbsid(paramVo.getBbsid());
@@ -612,6 +624,7 @@ public class CmntyController {
         }
         resultMap = cmntyService.selectPst(paramVo);
 
+        model.addAttribute("cmntyInfo", cmntyInfo);
         model.addAttribute("bbsInfo", bbsInfo);
         model.addAttribute("acceptUploadFileExt", uploadFileExtsn);
         model.addAttribute("fileConfiguration", fileConfiguration);
@@ -668,6 +681,8 @@ public class CmntyController {
         boolean result = false;
 
         paramVo.setUser(user);
+        paramVo.setCmntid(paramVo.getParntsCmntid());
+        paramVo.setParntsCmntid(null);
         result = cmntyService.insertCmnt(paramVo);
 
         if(result){

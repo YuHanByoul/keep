@@ -151,7 +151,7 @@ import lombok.Data;
 
     /** 등록_일시 */
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd 00:00")
-	private Date  regDt;
+	private String  regDt;
 
     /** 등록자아이디 */
 	private Integer rgtrid;
@@ -363,9 +363,17 @@ import lombok.Data;
     /** 그룹 세부사항  */
     private String grpExprtStr;
 
+    /** 그룹 세부사항  */
     private Integer cycl;
 
+    /** 계정 */
+    private String acnt;
 
+    /** 이메일  */
+    private String eml;
+
+    /** 핸드폰 번호  */
+    private String moblphon;
 
 
 

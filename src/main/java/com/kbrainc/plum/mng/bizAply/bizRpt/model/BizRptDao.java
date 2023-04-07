@@ -393,4 +393,18 @@ public interface BizRptDao {
 	*/
 	public int updateTrgtCn(BizRptVo bizRptVo) throws Exception;
 
+	/**
+	* 컨설턴트 목록 조회
+	*
+	* @Title : selectCnstntList
+	* @Description : 컨설턴트 목록 조회
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return List<BizRptVo>
+	*/
+	public List<BizRptVo> selectCnstntList(BizRptVo bizRptVo) throws Exception;
+
+	public void deleteCnsltngMng(BizRptVo bizRptVo) throws Exception;
+
 }

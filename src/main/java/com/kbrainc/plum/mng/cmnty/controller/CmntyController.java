@@ -47,26 +47,26 @@ public class CmntyController {
     private CmntyServiceImpl cmntyService;
     
     /**
-     * 커뮤니티 목록 화면
-     *
-     * @Title : cmntyForm
-     * @Description : 커뮤니티 목록 화면
-     * @return String 화면경로
-     * @throws Exception 예외
-     */
+    * 커뮤니티 목록 화면
+    *
+    * @Title : cmntyForm
+    * @Description : 커뮤니티 목록 화면
+    * @return String 화면경로
+    * @throws Exception 예외
+    */
     @RequestMapping(value = "/mng/cmnty/cmntyMng.html")
     public String cmntyForm() throws Exception {
         return "mng/cmnty/cmntyList";
     }
     
     /**
-     * 커뮤니티 상세 탭 화면
-     *
-     * @Title : cmntyDetailForm
-     * @Description : 커뮤니티 상세 탭 화면
-     * @return String 화면경로
-     * @throws Exception 예외
-     */
+    * 커뮤니티 상세 탭 화면
+    *
+    * @Title : cmntyDetailForm
+    * @Description : 커뮤니티 상세 탭 화면
+    * @return String 화면경로
+    * @throws Exception 예외
+    */
     @RequestMapping(value = "/mng/cmnty/cmntyDetail.html")
     public String cmntyDetailForm(CmntyCtgryVo cmntyCtgryVo, Model model) throws Exception {
         model.addAttribute("ctgryList", cmntyService.selectCmntyCtgryList(cmntyCtgryVo));
@@ -74,16 +74,16 @@ public class CmntyController {
     }
     
     /**
-     * 커뮤니티 정보 화면
-     *
-     * @Title : cmntyUpdateForm
-     * @Description : 커뮤니티 수정 화면
-     * @param cmntyVo CmntyVo 객체
-     * @param model 모델객체
-     * @param user 사용자 세션 정보
-     * @return String 화면경로
-     * @throws Exception 예외
-     */
+    * 커뮤니티 정보 화면
+    *
+    * @Title : cmntyUpdateForm
+    * @Description : 커뮤니티 수정 화면
+    * @param cmntyVo CmntyVo 객체
+    * @param model 모델객체
+    * @param user 사용자 세션 정보
+    * @return String 화면경로
+    * @throws Exception 예외
+    */
     @RequestMapping(value = "/mng/cmnty/cmntyUpdateForm.html")
     public String cmntyUpdateForm(CmntyVo cmntyVo, Model model, @UserInfo UserVo user) throws Exception {
         model.addAttribute("cmnty", cmntyService.selectCmntyInfo(cmntyVo));
@@ -92,61 +92,61 @@ public class CmntyController {
     }
     
     /**
-     * 커뮤니티 회원 목록 화면
-     *
-     * @Title : cmntyMbrForm
-     * @Description : 커뮤니티 회원 목록 화면
-     * @return String 화면경로
-     * @throws Exception 예외
-     */
+    * 커뮤니티 회원 목록 화면
+    *
+    * @Title : cmntyMbrForm
+    * @Description : 커뮤니티 회원 목록 화면
+    * @return String 화면경로
+    * @throws Exception 예외
+    */
     @RequestMapping(value = "/mng/cmnty/cmntyMbr.html")
     public String cmntyMbrForm() throws Exception {
         return "mng/cmnty/cmntyMbrList";
     }
     
     /**
-     * 커뮤니티 게시글 목록 화면
-     *
-     * @Title : cmntyPstForm
-     * @Description : 커뮤니티 게시글 목록 화면
-     * @return String 화면경로
-     * @throws Exception 예외
-     */
+    * 커뮤니티 게시글 목록 화면
+    *
+    * @Title : cmntyPstForm
+    * @Description : 커뮤니티 게시글 목록 화면
+    * @return String 화면경로
+    * @throws Exception 예외
+    */
     @RequestMapping(value = "/mng/cmnty/cmntyPst.html")
     public String cmntyPstForm() throws Exception {
         return "mng/cmnty/cmntyPstList";
     }
     
     /**
-     * 커뮤니티 게시글 정보 화면
-     *
-     * @Title : cmntyPstUpdateForm
-     * @Description : 커뮤니티 게시글 정보 화면
-     * @param cmntyPstVo CmntyPstVo 객체
-     * @param model 모델객체
-     * @param user 사용자 세션 정보
-     * @return String 화면경로
-     * @throws Exception 예외
-     */
+    * 커뮤니티 게시글 정보 화면
+    *
+    * @Title : cmntyPstUpdateForm
+    * @Description : 커뮤니티 게시글 정보 화면
+    * @param cmntyPstVo CmntyPstVo 객체
+    * @param model 모델객체
+    * @param user 사용자 세션 정보
+    * @return String 화면경로
+    * @throws Exception 예외
+    */
     @RequestMapping(value = "/mng/cmnty/cmntyPstUpdateForm.html")
     public String cmntyPstUpdateForm(CmntyPstVo cmntyPstVo, Model model, @UserInfo UserVo user) throws Exception {
         model.addAttribute("cmntyPst", cmntyService.selectCmntyPstInfo(cmntyPstVo));
-        cmntyPstVo.setOrderField("CMNT_GRP DESC, SORTORDR");
-        cmntyPstVo.setOrderDirection(CmntyPstVo.ORDER_DIRECTION_ASC);
-        model.addAttribute("cmntyCmntList", cmntyService.selectCmntyCmntList(cmntyPstVo));
+        //cmntyPstVo.setOrderField("CMNT_GRP DESC, SORTORDR");
+        //cmntyPstVo.setOrderDirection(CmntyPstVo.ORDER_DIRECTION_ASC);
+        //model.addAttribute("cmntyCmntList", cmntyService.selectCmntyCmntList(cmntyPstVo));
         
         return "mng/cmnty/cmntyPstUpdate";
     }
     
     /**
-     * 커뮤니티 목록 조회
-     *
-     * @Title : selectCmntyList
-     * @Description : 커뮤니티 목록 조회
-     * @param cmntyVo CmntyVo 객체
-     * @return Map<String, Object> 응답결과객체
-     * @throws Exception 예외
-     */
+    * 커뮤니티 목록 조회
+    *
+    * @Title : selectCmntyList
+    * @Description : 커뮤니티 목록 조회
+    * @param cmntyVo CmntyVo 객체
+    * @return Map<String, Object> 응답결과객체
+    * @throws Exception 예외
+    */
     @RequestMapping(value = "/mng/cmnty/selectCmntyList.do")
     @ResponseBody
     public Map<String, Object> selectCmntyList(CmntyVo cmntyVo) throws Exception {
@@ -164,14 +164,41 @@ public class CmntyController {
     }
     
     /**
-     * 커뮤니티 회원 목록 조회
-     *
-     * @Title : selectCmntyMbrList
-     * @Description : 커뮤니티 회원 목록 조회
-     * @param cmntyMbrVo CmntyMbrVo 객체
-     * @return Map<String, Object> 응답결과객체
-     * @throws Exception 예외
-     */
+    * 커뮤니티 댓글 목록 조회
+    *
+    * @Title : selectCmntyCmntList
+    * @Description : 커뮤니티 댓글 목록 조회
+    * @param cmntyVo CmntyVo 객체
+    * @return Map<String, Object> 응답결과객체
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/cmnty/selectCmntyCmntList.do")
+    @ResponseBody
+    public Map<String, Object> selectCmntyCmntList(CmntyPstVo cmntyPstVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        cmntyPstVo.setOrderField("CMNT_GRP DESC, DPTH, SORTORDR");
+        cmntyPstVo.setOrderDirection(CmntyPstVo.ORDER_DIRECTION_DESC);
+        List<CmntyCmntVo> result = cmntyService.selectCmntyCmntList(cmntyPstVo);
+                    
+        if(result.size() > 0) {
+            resultMap.put("totalCount", (result.get(0).getTotalCount()));
+        } else {
+            resultMap.put("totalCount", 0);
+        }
+        resultMap.put("list", result);
+            
+        return resultMap;
+    }
+    
+    /**
+    * 커뮤니티 회원 목록 조회
+    *
+    * @Title : selectCmntyMbrList
+    * @Description : 커뮤니티 회원 목록 조회
+    * @param cmntyMbrVo CmntyMbrVo 객체
+    * @return Map<String, Object> 응답결과객체
+    * @throws Exception 예외
+    */
     @RequestMapping(value = "/mng/cmnty/selectCmntyMbrList.do")
     @ResponseBody
     public Map<String, Object> selectCmntyMbrList(CmntyMbrVo cmntyMbrVo) throws Exception {
@@ -189,14 +216,14 @@ public class CmntyController {
     }
     
     /**
-     * 커뮤니티 게시글 목록 조회
-     *
-     * @Title : selectCmntyPstList
-     * @Description : 커뮤니티 게시글 목록 조회
-     * @param cmntyPstVo CmntyPstVo 객체
-     * @return Map<String, Object> 응답결과객체
-     * @throws Exception 예외
-     */
+    * 커뮤니티 게시글 목록 조회
+    *
+    * @Title : selectCmntyPstList
+    * @Description : 커뮤니티 게시글 목록 조회
+    * @param cmntyPstVo CmntyPstVo 객체
+    * @return Map<String, Object> 응답결과객체
+    * @throws Exception 예외
+    */
     @RequestMapping(value = "/mng/cmnty/selectCmntyPstList.do")
     @ResponseBody
     public Map<String, Object> selectCmntyPstList(CmntyPstVo cmntyPstVo) throws Exception {
@@ -214,16 +241,16 @@ public class CmntyController {
     }
     
     /**
-     * 커뮤니티 게시글 삭제
-     *
-     * @Title : deleteCmntyPst
-     * @Description : 커뮤니티 게시글 삭제
-     * @param cmntyPstVo CmntyPstVo 객체
-     * @param bindingResult cmntyPstVo 유효성 검증결과
-     * @param user 사용자 세션 정보
-     * @return Map<String, Object> 응답결과객체
-     * @throws Exception 예외
-     */
+    * 커뮤니티 게시글 삭제
+    *
+    * @Title : deleteCmntyPst
+    * @Description : 커뮤니티 게시글 삭제
+    * @param cmntyPstVo CmntyPstVo 객체
+    * @param bindingResult cmntyPstVo 유효성 검증결과
+    * @param user 사용자 세션 정보
+    * @return Map<String, Object> 응답결과객체
+    * @throws Exception 예외
+    */
     @RequestMapping(value = "/mng/cmnty/deleteCmntyPst.do")
     @ResponseBody
     public Map<String, Object> deleteCmntyPst(@Valid CmntyPstVo cmntyPstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
@@ -253,16 +280,16 @@ public class CmntyController {
     }
     
     /**
-     * 커뮤니티 댓글 삭제
-     *
-     * @Title : deleteQitem
-     * @Description : 커뮤니티 댓글 삭제
-     * @param cmntyCmntVo CmntyCmntVo 객체
-     * @param bindingResult cmntyPstVo 유효성 검증결과
-     * @param user 사용자 세션 정보
-     * @return Map<String, Object> 응답결과객체
-     * @throws Exception 예외
-     */
+    * 커뮤니티 댓글 삭제
+    *
+    * @Title : deleteQitem
+    * @Description : 커뮤니티 댓글 삭제
+    * @param cmntyCmntVo CmntyCmntVo 객체
+    * @param bindingResult cmntyPstVo 유효성 검증결과
+    * @param user 사용자 세션 정보
+    * @return Map<String, Object> 응답결과객체
+    * @throws Exception 예외
+    */
     @RequestMapping(value = "/mng/cmnty/deleteCmntyCmnt.do")
     @ResponseBody
     public Map<String, Object> deleteCmntyCmnt(@Valid CmntyCmntVo cmntyCmntVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
