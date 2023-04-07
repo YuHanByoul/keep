@@ -3,10 +3,10 @@
 <body>
     <div layout:fragment="content">
         <form id="dstnctnForm" name="dstnctnForm" th:action="@{/front/dsgnPrgrm/prgrmEvlForm.html}" method="post">
-        <input type="hidden"  id="prgrmid" name="prgrmid" th:value="${aplyInfo.prgrmid}" />
+        <input type="hidden"  id="prgrmid"   name="prgrmid"   th:value="${aplyInfo.prgrmid}" />
         <input type="hidden"  id="dstnctnid" name="dstnctnid" th:value="${aplyInfo.dstnctnid}" />
-        <input type="hidden"  id="sttsCd" name="sttsCd" th:value="${aplyInfo.sttsCd}" />
-        <input type="hidden"  id="opner" name="opner" th:value="${opner==null ?'':opner}" />
+        <input type="hidden"  id="sttsCd"    name="sttsCd"    th:value="${aplyInfo.sttsCd}" />
+        <input type="hidden"  id="opner"     name="opner"     th:value="${opner==null ?'':opner}" />
 
         <div class="steps" id="steps" th:if="${opner!='myPage'}">
             <ol>
@@ -183,12 +183,12 @@
                                 <th scope="row">교육대상<i class="ast" title="필수입력">*</i></th>
                                 <td id="eduTrgtTd">
                                     <div class="form-input">
-                                        <label class="inp"><input type="checkbox" name="infnt"  value="Y" id="infnt"  th:checked = "${aplyInfo.infnt =='Y'}"><b>유아</b></label>
+                                        <label class="inp"><input type="checkbox" name="infnt"   value="Y" id="infnt"   th:checked = "${aplyInfo.infnt =='Y'}"><b>유아</b></label>
                                         <label class="inp"><input type="checkbox" name="schboy"  value="Y" id="schboy"  th:checked = "${aplyInfo.schboy =='Y'}"><b>초등</b></label>
                                         <label class="inp"><input type="checkbox" name="msklsd"  value="Y" id="msklsd"  th:checked = "${aplyInfo.msklsd =='Y'}"><b>중등</b></label>
-                                        <label class="inp"><input type="checkbox" name="hgschst"  value="Y" id="hgschst"  th:checked = "${aplyInfo.hgschst =='Y'}"><b>고등</b></label>
-                                        <label class="inp"><input type="checkbox" name="adult"  value="Y" id="adult"  th:checked = "${aplyInfo.adult =='Y'}"><b>성인</b></label>
-                                        <label class="inp"><input type="checkbox" name="wholMm"  value="Y" id="wholMm"  th:checked = "${aplyInfo.wholMm =='Y'}"><b>전연령</b></label>
+                                        <label class="inp"><input type="checkbox" name="hgschst" value="Y" id="hgschst" th:checked = "${aplyInfo.hgschst =='Y'}"><b>고등</b></label>
+                                        <label class="inp"><input type="checkbox" name="adult"   value="Y" id="adult"   th:checked = "${aplyInfo.adult =='Y'}"><b>성인</b></label>
+                                        <label class="inp"><input type="checkbox" name="wholAge" value="Y" id="wholAge" th:checked = "${aplyInfo.wholAge =='Y'}"><b>전연령</b></label>
                                     </div>
                                 </td>
                             </tr>
@@ -344,7 +344,7 @@
                 </div>
 
 
-                <div class="table-col table-layout-auto  table-col-scroll">
+                <div class="table-col table-layout-auto  table-col-scroll" id="schdlDiv">
                     <table>
                         <caption>프로그램 일정표 - 차시, 일정, 세부 단위 프로그램 명, 관련교육과정, 열 삭제</caption>
                         <colgroup>
@@ -369,7 +369,7 @@
                                 <td id="rnd" name="rnd" >[[${{i.count}}]]차시</td>
                                 <td>
                                     <div class="form-input d-flex">
-                                        <select title="시" style="flex: 1 1 100%; width:0;" id="bgngHr" name="bgngHr">
+                                        <select title="시" style="flex: 1 1 100%; width:0;" th:id="'bgngHr' + ${i.count}" th:name="'bgngHr' + ${i.count}" th:value="${schd.bgngHr}">
                                             <option th:each="num : ${#numbers.sequence(0,23)}" th:value="${num}" th:selected="${num} == ${schd.bgngHr}">[[${num}]]시</option>
                                         </select>
                                         <input type="number" title="분" style="flex: 1 1 100%; width: 0;" th:id="'bgngMnt'+${i.count}" th:name="'bgngMnt'+${i.count}" th:value="${schd.bgngMnt}">
@@ -533,6 +533,78 @@
         	    }
         	}
 
+            function validLst(lstNm, lstNmKo) {
+
+            	if(lstNm=="plan"){
+                    if ($("[id^="+lstNm+"Tr] input").length === 0) {
+                        var msg= lstNmKo + "을 입력해 주십시오";
+                        if (!$("#"+lstNm+"Div").find(".feedback.invalid").length) {
+                            $("#"+lstNm+"Div").prepend(`<p class="feedback invalid">${msg}</p>`);
+                        }
+                        var offset = $("#"+lstNm+"Div").offset();
+                        $('html, body').animate({scrollTop : offset.top - 300}, 300);
+                        $("#"+lstNm+"Div").focus();
+                        return false;
+                    }
+            	}
+
+                var flag = true;
+                $("[id^="+lstNm+"Tr] input").each(function(index, item) {
+                    if (item.value === "") {
+                        var msg= "입력되지 않은 항목이 있습니다";
+                        $("#"+lstNm+"Div").prepend(`<p class="feedback invalid">${msg}</p>`);
+                        flag = false;
+                        return false; // stop the loop
+                    } else {
+                        $("#"+lstNm+"Div").find(".feedback.invalid").remove();
+                    }
+                });
+
+                return flag;
+            }
+
+            function schdlChk(){
+            	var flag=true;
+            	$("[id^=schdlTr]").each(function(index, item) {
+
+            		var row=index+1;
+            		var bgngHr  = isNaN(parseInt($("#bgngHr" +row).val())) ? 0 : parseInt($("#bgngHr"+row).val());
+            		var bgngMnt = isNaN(parseInt($("#bgngMnt"+row).val())) ? 0 : parseInt($("#bgngMnt"+row).val());
+            		var endHr   = isNaN(parseInt($("#endHr" +row).val())) ? 0 : parseInt($("#endHr"+row).val());
+            		var endMnt  = isNaN(parseInt($("#endMnt" +row).val())) ? 0 : parseInt($("#endMnt"+row).val());
+            		var msg="";
+
+            		if(bgngMnt==0) {
+            			msg="시작 분을 입력 해주세요"
+            			$("#schdlDiv").find(".feedback.invalid").remove();
+            			$("#schdlDiv").prepend(`<p class="feedback invalid">${msg}</p>`);
+            			flag= false;
+            			return;
+            		}
+
+            		if(endMnt==0) {
+            			msg="종료 분을 입력 해주세요"
+            			$("#schdlDiv").find(".feedback.invalid").remove();
+            			$("#schdlDiv").prepend(`<p class="feedback invalid">${msg}</p>`);
+            			flag=false;
+            			return;
+            		}
+
+            		var bgngTotalMnt = bgngHr * 60 + bgngMnt;
+            		var endTotalMnt = endHr * 60 + endMnt;
+
+            		if (endTotalMnt <= bgngTotalMnt) {
+            			msg="종료 시간은 시작 시간보다 빠를 수 없습니다."
+            			$("#schdlDiv").find(".feedback.invalid").remove();
+            			$("#schdlDiv").prepend(`<p class="feedback invalid">${msg}</p>`);
+            			flag = false;
+            			return;
+            		}
+
+            	});
+            	return flag;
+            };
+
             function validate(){
 
                 $("#dstnctnForm").validate({
@@ -619,9 +691,9 @@
                 $("#dstnctnForm textarea,select").each(function(index, item) { param[item.id] = item.value;});
 
                 //프로그램 대처계획
-                $("[id^=planTr]").each(function(index, item)       { param["emrgcyActnPlanLst[" + index + "].prgrmid"     ] = $("#prgrmid").val()});       //프로그램 id (key)
-                $("[id^=sbstnPrgrmNm]").each(function(index, item) { param["emrgcyActnPlanLst[" + index + "].sbstnPrgrmNm"] = item.value; });    //차수
-                $("[id^=planPrgrmNm]").each(function(index, item)  { param["emrgcyActnPlanLst[" + index + "].prgrmNm"     ] = item.value; });    //프로그램명
+                $("#planBody [id^=planTr]").each(function(index, item)       { param["emrgcyActnPlanLst[" + index + "].prgrmid"     ] = $("#prgrmid").val()});       //프로그램 id (key)
+                $("#planBody [id^=sbstnPrgrmNm]").each(function(index, item) { param["emrgcyActnPlanLst[" + index + "].sbstnPrgrmNm"] = item.value; });    //차수
+                $("#planBody [id^=planPrgrmNm]").each(function(index, item)  { param["emrgcyActnPlanLst[" + index + "].prgrmNm"     ] = item.value; });    //프로그램명
 
                 //숙박여부와 프로그램우수성의 운영형태로 체크리스트의 운영형태를 판단하여 체크리스트 결정
                 if($("#operFrmCd").val() == "120104") {
@@ -659,20 +731,10 @@
                         $("#fileTd").find(".feedback.invalid").remove();
                     }
 
-                    //대처계획
-                    if($("[id^=planTr]").length==0){
-                    	var msg="대처계획을 입력해 주십시오";
-                    	if (!$("#planDiv").find(".feedback.invalid").length) {
-                            $("#planDiv").prepend(`<p class="feedback invalid">${msg}</p>`);
-                        }
-                        var offset = $("#planDiv").offset();
-                        $('html, body').animate({scrollTop : offset.top - 300}, 300);
-                        $("#planDiv").focus();
-                        return false;
-                    } else {
-                        $("#planDiv").find(".feedback.invalid").remove();
-                    }
+                    if (!validLst("plan",  "대처계획")) return false;
 
+                    //일정표 시간 체크
+                    //if (!schdlChk()) return false;
                 }
 
                 if(!confirm("저장하시겠습니까?")) return;
@@ -722,18 +784,18 @@
                             <td>1차시</td>
                             <td>
                                 <div class="form-input d-flex">
-                                    <select title="시" style="flex: 1 1 100%; width: 0;">`/**/
+                                    <select title="시" style="flex: 1 1 100%; width: 0;" id="bgngHr`+`${idx+1}`+`" name="bgngHr`+`${idx+1}`+`">`
 
                 for(var i=0; i<24; i++){
-                    html +=`<option value=${i}"시">${i}시</option>`/**/
+                    html +=`<option value=${i}>${i}시</option>`/**/
                 }
 
                 html +=`
                                     </select> <input type="number" title="분" style="flex: 1 1 100%; width: 0;" id="bgngMnt`+`${idx+1}`+`" name="bgngMnt`+`${idx+1}`+`">
                                     <div class="bul">~</div>
-                                    <select title="시" style="flex: 1 1 100%; width: 0;">`/**/
+                                    <select title="시" style="flex: 1 1 100%; width: 0;" id="endHr`+`${idx+1}`+`" name="endHr`+`${idx+1}`+`">`
                 for(var i=0; i<24; i++){
-                    html +=`<option value=${i}"시">${i}시</option>`/**/
+                    html +=`<option value=${i}>${i}시</option>`/**/
                 }
                 html +=`
                                     </select> <input type="number" title="분" style="flex: 1 1 100%; width: 0;" id="endMnt`+`${idx+1}`+`" name="endMnt`+`${idx+1}`+`">
@@ -755,16 +817,18 @@
 
             function addPlan(){
                 var html="";
-                var idx = $("[id^='planTr']").length;
+                var idx = $("[id^='planTr']").length+1;
 
                 html +=`
                     <tr id="planTr`+`${idx+1}`+`" >
                         <td><input type="text" title="본 프로그램명" id="prgrmNm`+`${idx+1}`+`" name="prgrmNm`+`${idx+1}`+`" ></td>
                         <td><input type="text" title="대체 프로그램명" id="sbstnPrgrmNm`+`${idx+1}`+`" name="sbstnPrgrmNm`+`${idx+1}`+`" ></td>
                         <td class="ac">
+                        ${idx>1 ? `
                             <button type="button" class="btn-remove-table" title="열 삭제" id="delPlanBtn`+`${idx+1}`+`" onclick="delPlan(`+`${idx+1}`+`) ">
                                 <span class="icon icon-remove"></span>
-                            </button>
+                            </button>`
+                        :``}
                         </td>
                     </tr>
                 `/**/

@@ -278,6 +278,7 @@
         <include refid="PaginationMapper.header"/>
         SELECT
             A.APLYID
+          , A.CNSLTNG_TRGT_CN
           , B.DELVRY_APLYID
           , B.DELVRYID
           , C.REPORTID
@@ -381,6 +382,7 @@
           , A.REPORT_STTS_CD    /*제출(보고)상태*/
           , A.ETC_CN
           , A.ATCH_FILEGRPID
+          , B.CNSLTNG_TRGT_CN   /*컨설팅 대상 내용*/
         FROM
             TB_SPB_REPORT A
         INNER JOIN TB_SPB_APLY B ON A.APLYID = B.APLYID
@@ -948,8 +950,66 @@
             APLYID = #{aplyid}
     </update>
 
+    <insert id="insertCnsltngTrgt">
+        INSERT INTO TB_SPB_APLY_CNSLTNG (
+            APLYID
+          , CNSTNTID
+          , VST_DT
+          , RSLT
+          , CN_BFR
+          , CN_AFTR
+          , ATCH_FILEGRPID
+          , WRT_DT
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+          ) VALUES (
+            #{aplyid        }
+            <foreach item="userId" collection="list" separator=",">
+                #{cnstntid}
+            </foreach>
+          , #{vstDt         }
+          , #{rslt          }
+          , #{cnBfr         }
+          , #{cnAftr        }
+          , #{atchFilegrpid }
+          , #{wrtDt         }
+          , #{mdfcnDt       }
+          , #{mdfrid        }
+          , #{regDt         }
+          , #{rgtrid        }
+          )
+    </insert>
+
+    <delete id="deleteCnsltngMng" parameterType="BizRptVo" >
+        DELETE FROM TB_SPB_APLY_CNSLTNG
+        WHERE APLYID = #{aplyid}
+    </delete>
+
+    <!-- 컨설팅 대상자 내용 수정 -->
+    <update id="updateTrgtCn" parameterType="BizRptVo" >
+        UPDATE TB_SPB_APLY
+        SET    CNSLTNG_TRGT_CN = #{cnsltngTrgtCn}
+        WHERE APLYID  = #{aplyid}
+    </update>
 
 
+    <select id="selectCnstntList" parameterType="BizRptVo" resultType="BizRptVo">
+        /* BizRptDao.selectCnstntList */
+        SELECT
+            A.APLYID
+          , A.CNSLTNGID
+          , A.CNSTNTID
+          , USR.USERID
+          , USR.NM
+          , USR.ACNT
+          , USR.EML
+          , USR.MOBLPHON
+        FROM TB_SPB_APLY_CNSLTNG A
+        LEFT OUTER JOIN TB_CMM_USER USR ON A.CNSTNTID = USR.USERID
+        WHERE A.APLYID = #{aplyid}
+    </select>
 
 
 </mapper>

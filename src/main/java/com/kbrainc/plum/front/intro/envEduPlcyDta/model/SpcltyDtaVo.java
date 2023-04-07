@@ -2,7 +2,10 @@ package com.kbrainc.plum.front.intro.envEduPlcyDta.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
+import com.kbrainc.plum.rte.service.ResCodeService;
+import com.kbrainc.plum.rte.util.CommonUtil;
 import lombok.Data;
 import org.apache.ibatis.type.Alias;
 
@@ -26,28 +29,65 @@ import java.util.List;
 @Alias("front.SpcltyDtaVo")
 public class SpcltyDtaVo extends ParentRequestVo {
     public Integer dtaid;
+
     public String yy;
+
     private String typeCd;
+
     private String writr;
+
     private String ttl;
+
     private String cn;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date regDt;
+
     private String clsfCdNm;
+
+    private String cpyrhtCd;
+
     private Integer hits;
 
     private Integer pdfFileid;
+
     private Integer atchFilegrpid;
+
     private List<FileVo> pdfFileList;
+
     private List<FileVo> atchFileList;
 
     private Integer prevDtaid;
+
     private String prevDtaTtl;
+
     private Integer nextDtaid;
+
     private String nextDtaTtl;
 
     private String searchFromRegDt;
-    private String searchToRegDt;
-    private String[] searchClsfCd;
 
+    private String searchToRegDt;
+
+    private String searchClsfCd;
+
+    private String searchClsfCdNm;
+
+    public void setSearchClsfCd(String searchClsfCd) {
+        this.searchClsfCd = searchClsfCd;
+
+        if (CommonUtil.isEmpty(this.searchClsfCdNm)) {
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.searchClsfCd);
+                this.searchClsfCdNm = code.getCdNm();
+            } catch (NoClassDefFoundError e) {
+                //e.printStackTrace();
+                return;
+            } catch (Exception e) {
+                //e.printStackTrace();
+                return;
+            }
+        }
+    }
 }

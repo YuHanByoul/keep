@@ -3,7 +3,6 @@
  */
 package com.kbrainc.plum.mng.bizAply.srng.controller;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +28,7 @@ import com.kbrainc.plum.mng.bizAply.req.model.ReqUserVo;
 import com.kbrainc.plum.mng.bizAply.req.service.ReqMngService;
 import com.kbrainc.plum.mng.bizAply.srng.model.BizAplySrngVo;
 import com.kbrainc.plum.mng.bizAply.srng.service.BizAplySrngService;
-import com.kbrainc.plum.mng.cnsltng.model.CnsltngExprtVo;
+import com.kbrainc.plum.mng.pop.model.PopUpNtcVo;
 import com.kbrainc.plum.mng.score.model.QuestionVo;
 import com.kbrainc.plum.mng.score.service.ScoreCardService;
 import com.kbrainc.plum.rte.constant.Constant;
@@ -97,7 +96,7 @@ public class BizAplySrngController {
      */
     @RequestMapping(value="/mng/bizAply/srng/selectSrngList.do")
     @ResponseBody
-    public Map<String, Object> selectSrngList(ReqMngVo reqMngVo) throws Exception {
+    public Map<String, Object> selectSrngList(ReqMngVo reqMngVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         List<ReqMngVo> result = this.reqMngService.selectReqMngList(reqMngVo);
         
@@ -398,4 +397,23 @@ public class BizAplySrngController {
         return resultMap;
     }
     
+    /**
+    * 프로그램 상세보기 팝업 
+    *
+    * @Title : programDetailPopup
+    * @Description : TODO
+    * @param reqUserVo
+    * @param model
+    * @return
+    * @throws Exception
+    * @return String
+     */
+    @RequestMapping(value = "/mng/bizAply/srng/programDetailPopup.html")
+    public String programDetailPopup(ReqUserVo reqUserVo, Model model) throws Exception {
+        PopUpNtcVo paramVO = new PopUpNtcVo();
+        paramVO.setTitle("프로그램 상세보기");
+        model.addAttribute("item", paramVO);
+        model.addAttribute("reqUserVo", reqUserVo);
+        return "mng/bizAply/srng/programDetailPopup";
+    }
 }

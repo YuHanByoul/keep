@@ -20,15 +20,19 @@
             , B.CL_NM
         FROM TB_CMM_FAQ A
         INNER JOIN (
-            SELECT CLID
-                 , CL_NM
+            SELECT
+                CLID
+                , CL_NM
             FROM TB_CMM_FAQ_CL
-            WHERE USE_YN ='Y'
-              AND SITEID=#{site.siteid}
+            WHERE SITEID = #{site.siteid}
         ) B
             ON A.CLID = B.CLID
         WHERE 1=1
             AND A.USE_YN = 'Y'
+        <if test="faqid != null and faqid != ''">
+            AND A.FAQID = #{faqid}
+        </if>
+
         <if test="searchKeyword != null and searchKeyword != ''">
             <if test="searchType == 'title'">
                 AND A.TITLE LIKE CONCAT('%', #{searchKeyword},'%')
@@ -40,10 +44,9 @@
                 AND (A.TITLE LIKE CONCAT('%', #{searchKeyword},'%') OR A.CNTNTS LIKE CONCAT('%', #{searchKeyword},'%'))
             </if>
         </if>
-        <if test="clid != null">
+        <if test="clid != null and clid != ''">
             AND A.CLID = #{clid}
         </if>
-        ORDER BY A.ORD
         <include refid="PaginationMapper.footer"/>
     </select>
 

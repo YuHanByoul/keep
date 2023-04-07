@@ -46,15 +46,15 @@
                        
                        <th:block th:each="sbjct,stat : ${mySbjctLsit}">
                        <div class="row mb-3 mb-md-2 subject-form" th:id="subject+${stat.count}">
-                           <div class="col-md-auto">
-                               <button class="input-group-text btn btn-primary btn-sm"  onclick="plusSubjectForm()" >+</button>
-                               <button class="input-group-text btn btn-primary btn-sm"  th:count ="${stat.count}"  th:onclick="removeSubjectForm(this.getAttribute('count'))" th:disabled="${stat.count == 1}">-</button>
-                           </div>
                            <div class="col-md-5 mt-1 mt-md-0">
                                <select th:id="subjectSelect+${stat.count}" name="eduSbjctCds" class="form-select form-select-sm" th:count ="${stat.count}" th:onchange="duplCheck(this.getAttribute('count'))">
                                    <option value="" >-선택-</option>
                                    <option th:each="item : ${sbjctCdLsit}"   th:value="${item.CD}" th:selected="${sbjct.eduSbjctCd == item.CD}"> <th:block th:text="${item.CD_NM}" /> </option>
                                </select>
+                           </div>
+                           <div class="col-md-auto">
+                               <button class="input-group-text btn btn-primary btn-sm"  onclick="plusSubjectForm()" >+</button>
+                               <button class="input-group-text btn btn-primary btn-sm"  th:count ="${stat.count}"  th:onclick="removeSubjectForm(this.getAttribute('count'))" th:disabled="${stat.count == 1}">-</button>
                            </div>
                        </div>
                        </th:block>
@@ -160,19 +160,17 @@
 <script  id="subjectFrm" type="text/x-handlebars-template">
 
     <div class="row mb-3 mb-md-2 subject-form" id="subject{{frmNum}}">
-         <div class="col-md-auto">
-            <button class="input-group-text btn btn-primary btn-sm"  onclick="plusSubjectForm()" >+</button>
-            <button class="input-group-text btn btn-primary btn-sm"  onclick="removeSubjectForm('{{frmNum}}')">-</button>
-         </div>
          <div class="col-md-5 mt-1 mt-md-0">
-
              <select id="subjectSelect{{frmNum}}" name="eduSbjctCds" class="form-select form-select-sm" onchange="duplCheck('{{frmNum}}')">
                  <option value="" >-선택-</option>
                  {{#each list}}
                  <option value="{{CD}}">{{CD_NM}}</option>
                  {{/each}}
              </select>
-
+         </div>
+         <div class="col-md-auto">
+            <button class="input-group-text btn btn-primary btn-sm"  onclick="plusSubjectForm()" >+</button>
+            <button class="input-group-text btn btn-primary btn-sm"  onclick="removeSubjectForm('{{frmNum}}')">-</button>
          </div>
      </div>
 </script>
@@ -205,8 +203,6 @@
         }
         
     })
-    
-    
     
     duplCheck=(frmNum)=>{
         var isDupl = false;
@@ -253,7 +249,7 @@
     	subjectNum = filterArr;
     }
 
-    var validator= $("#modifyFrm").validate({
+    var validator = $("#modifyFrm").validate({
 		    onsubmit: false,
 	          rules: {
 	        	     tchaidTypeCd :   { required: true }
@@ -297,20 +293,17 @@
   	    var errorCmpntFrmNum = 0;
   	    var cmpntCntErrorNum = 0;
         for(var i=0 ; i < cmpntNumArr.length;i++){
-
             if($("#cmpnt"+cmpntNumArr[i]).val() == null || $("#cmpnt"+cmpntNumArr[i]).val() == "" || $("#cmpnt"+cmpntNumArr[i]).val() == null){
             	errorCmpntFrmNum = cmpntNumArr[i];
                 break;
             }
-            
             if($("#cmpntCnt"+cmpntNumArr[i]).val() == null || $("#cmpntCnt"+cmpntNumArr[i]).val() == "" || $("#cmpntCnt"+cmpntNumArr[i]).val() < 0){
             	cmpntCntErrorNum = cmpntNumArr[i];
                 break;
             }
         }
-        
   	 	if(!confirm("저장하시겠습니까?")) return;
-
+  	 	
   	  	var trgtParamArr=[]
   	  	$("input[name=eduTrgtCds]").each(function(){
   	  	  	if($(this).is(":checked")){trgtParamArr.push($(this).val())}

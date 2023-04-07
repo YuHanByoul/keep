@@ -95,6 +95,12 @@ public class SrngTabVo {
     /** 문항 */
     private String qitem;
     
+    /** 문항 배점 */
+    private String altm;
+    
+    /** 문항 점수 */
+    private String itemScr;
+    
     /** 문항 구분 열 병합 */
     private String colspan;
     
@@ -106,4 +112,25 @@ public class SrngTabVo {
     
     /** 총점 평균 */
     private String totSumAvg;
+    
+    /** 인원수 제한 사용여부 */
+    private String nopeLmtUseYn;
+    
+    /** 인원수 제한 */
+    private String nopeLmt;
+    
+    /** 최저 기준 평균점수 사용여부 1차 */
+    private String lwetCrtrScrUseYnFirst;
+    
+    /** 최저 기준 평균점수 1차 */
+    private String lwetCrtrScrFirst;
+    
+    /** 최저 기준 평균점수 사용여부 2차 */
+    private String lwetCrtrScrUseYnScnd;
+    
+    /** 최저 기준 평균점수 2차 */
+    private String lwetCrtrScrScnd;
+
+    /** 평균점수 폰트 색상 */
+    private String fontColor;
 }

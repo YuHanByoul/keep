@@ -1,14 +1,18 @@
 package com.kbrainc.plum.front.book.model;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.validation.constraints.NotEmpty;
 
 import org.apache.ibatis.type.Alias;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.service.ResCodeService;
+import com.kbrainc.plum.rte.util.CommonUtil;
 
 import lombok.Data;
 
@@ -73,6 +77,8 @@ public class BookVo  extends ParentRequestVo{
     private Date regDt;
     /** 등록자아이디 */
     private int rgtrid;
+    /** 저작권 코드 */
+    private int cpyrhtCd;
     
     private String nextBookid;
     private String nextBookTtl;
@@ -94,5 +100,50 @@ public class BookVo  extends ParentRequestVo{
     protected String searchType2;
     protected String searchKeyword2;
     
+    /** 교육_주제_코드명(다수) */
+    private String eduSbjctCdNm;
     
+    /** 교육_주제_코드(다수) 등록용 */
+    private String[] eduSbjctCds;
+    
+    /** 교육_대상_코드명 */
+    private String eduTrgtCdNm;
+    
+    public void setEduTrgtCd(String eduTrgtCd) throws Exception{
+        this.eduTrgtCd = eduTrgtCd;
+        if(CommonUtil.isEmpty(this.eduTrgtCdNm)) { 
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.eduTrgtCd);
+                this.eduTrgtCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                //e.printStackTrace();
+                return ;
+             }catch(Exception e) {
+                //e.printStackTrace();
+                return ;
+             }
+        }
+    }
+    
+    public void setEduSbjctCd(String eduSbjctCd) throws Exception{
+        this.eduSbjctCd = eduSbjctCd;
+        List<String> eduCds = new ArrayList();
+        String[] eduSbjctCdArr = eduSbjctCd.split(",");
+        if(eduSbjctCdArr.length > 0) {
+            for(String eduCd:eduSbjctCdArr) {
+                try {
+                    ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                    CodeInfoVo code = resCodeService.getCodeInfo(eduCd);
+                    eduCds.add(code.getCdNm());
+                }catch(NoClassDefFoundError e) {
+                    return ;
+                }catch(Exception e) {
+                    return ;
+                }
+            }
+            
+            this.eduSbjctCdNm = String.join(",", eduCds);
+        }
+    }
 }

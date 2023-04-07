@@ -16,6 +16,7 @@
         , A.TTL
         , A.REG_DT
         , A.HITS
+        , A.DEL_YN
         FROM TB_CMM_SPCLTY_DTA A
         INNER JOIN
         (
@@ -36,7 +37,7 @@
                     AND A.CN LIKE CONCAT('%', #{searchKeyword}, '%')
                 </when>
                 <otherwise>
-                    AND A.CN LIKE CONCAT('%', #{searchKeyword}, '%') AND A.TTL LIKE CONCAT('%', #{searchKeyword}, '%')
+                    AND (A.CN LIKE CONCAT('%', #{searchKeyword}, '%') OR A.TTL LIKE CONCAT('%', #{searchKeyword}, '%'))
                 </otherwise>
             </choose>
         </if>
@@ -76,6 +77,8 @@
             , A.CPYRHT_CD
             , A.REG_DT
             , A.RGTRID
+            , A.MDFCN_DT
+            , A.DEL_YN
             , B.CLSF_CD
             , C.NM AS RGTR_NM
             , C.ACNT AS RGTR_ACNT
@@ -103,6 +106,7 @@
             , ATCH_FILEGRPID
             , CPYRHT_CD
             , HITS
+            , DEL_YN
             , MDFCN_DT
             , MDFRID
             , REG_DT
@@ -116,6 +120,7 @@
             , #{atchFilegrpid}
             , #{cpyrhtCd}
             , 0
+            , 'N'
             , NOW()
             , #{user.userid}
             , NOW()
@@ -155,29 +160,22 @@
         WHERE DTAID = #{dtaid}
     </update>
 
-    <delete id="deleteSpcltyDta">
-        DELETE FROM TB_CMM_SPCLTY_DTA
-        <where>
+    <update id="deleteSpcltyDta">
+        UPDATE TB_CMM_SPCLTY_DTA
+        SET
+            DEL_YN = 'Y'
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE
             DTAID IN
             <foreach collection="deleteDtaids" item="dtaid" separator="," open="(" close=")">
                 #{dtaid}
             </foreach>
-        </where>
-    </delete>
+    </update>
 
     <delete id="deleteSpcltyDtaClsfMapping" >
         DELETE FROM TB_CMM_SPCLTY_DTA_CLSF
         WHERE DTAID = #{dtaid}
-    </delete>
-
-    <delete id="deleteSpcltyDtaClsfMappings">
-        DELETE FROM TB_CMM_SPCLTY_DTA_CLSF
-        <where>
-            DTAID IN
-            <foreach collection="deleteDtaids" item="dtaid" separator="," open="(" close=")">
-                #{dtaid}
-            </foreach>
-        </where>
     </delete>
 
 </mapper>

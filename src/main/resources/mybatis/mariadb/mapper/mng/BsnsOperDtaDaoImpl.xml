@@ -16,6 +16,7 @@
                 , A.REG_DT
                 , A.HITS
                 , B.CLSF_CD
+                , A.DEL_YN
             FROM TB_CMM_BSNS_OPER_DTA A
             INNER JOIN
                 (
@@ -23,7 +24,6 @@
                     FROM TB_CMM_BSNS_OPER_DTA_CLSF_MAPNG TCBODCM
                     INNER JOIN TB_CMM_CD TCC
                         ON TCBODCM.CLSF_CD = TCC.CD
-                    WHERE 1=1
                     GROUP BY TCBODCM.DTAID
                 ) B
                 ON B.DTAID = A.DTAID
@@ -39,7 +39,7 @@
                         AND A.CN LIKE CONCAT('%', #{searchKeyword}, '%')
                     </when>
                     <otherwise>
-                        AND A.TTL LIKE CONCAT('%', #{searchKeyword}, '%') AND A.CN LIKE CONCAT('%', #{searchKeyword}, '%')
+                        AND (A.TTL LIKE CONCAT('%', #{searchKeyword}, '%') OR A.CN LIKE CONCAT('%', #{searchKeyword}, '%'))
                     </otherwise>
                 </choose>
             </if>
@@ -70,6 +70,8 @@
              , A.TTL
              , A.CN
              , A.REG_DT
+             , A.DEL_YN
+             , A.MDFCN_DT
              , A.PDF_FILEID
              , A.ATCH_FILEGRPID
              , A.CPYRHT_CD
@@ -100,6 +102,7 @@
             , INST_NM
             , TTL
             , CN
+            , DEL_YN
             , PDF_FILEID
             , ATCH_FILEGRPID
             , CPYRHT_CD
@@ -115,6 +118,7 @@
             , #{instNm}
             , #{ttl}
             , #{cn}
+            , 'N'
             , #{pdfFileid}
             , #{atchFilegrpid}
             , #{cpyrhtCd}
@@ -142,15 +146,18 @@
         WHERE DTAID = #{dtaid}
     </update>
 
-    <delete id="deleteBsnsOperDta">
-        DELETE FROM TB_CMM_BSNS_OPER_DTA
-        <where>
+    <update id="deleteBsnsOperDta">
+        UPDATE TB_CMM_BSNS_OPER_DTA
+        SET
+            DEL_YN = 'Y'
+            MDFCN_DT = NOW()
+            MDFRID = #{user.userid}
+        WHERE
             DTAID IN
             <foreach collection="deleteDtaids" item="dtaid" separator="," open="(" close=")">
                 #{dtaid}
             </foreach>
-        </where>
-    </delete>
+    </update>
 
     <insert id="insertBsnsOperDtaClsfMapping">
         INSERT INTO TB_CMM_BSNS_OPER_DTA_CLSF_MAPNG
@@ -173,16 +180,6 @@
     <delete id="deleteBsnsOperDtaClsfMapping">
         DELETE FROM TB_CMM_BSNS_OPER_DTA_CLSF_MAPNG
         WHERE DTAID = #{dtaid}
-    </delete>
-
-    <delete id="deleteBsnsOperDtaClsfMappings">
-        DELETE FROM TB_CMM_BSNS_OPER_DTA_CLSF_MAPNG
-        <where>
-            DTAID IN
-            <foreach collection="deleteDtaids" item="dtaid" separator="," open="(" close=")">
-                #{dtaid}
-            </foreach>
-        </where>
     </delete>
 
 </mapper>

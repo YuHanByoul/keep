@@ -1,6 +1,7 @@
 package com.kbrainc.plum.mng.bizAply.bizRpt.model;
 
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.CodeInfoVo;
@@ -26,8 +27,7 @@ import lombok.Data;
 * @Version :
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
-@Data
-public class BizRptVo extends ParentRequestVo {
+@Datapublic class BizRptVo extends ParentRequestVo {
 	/** 로그인사용자정보 */
     private UserVo user;
 
@@ -57,6 +57,12 @@ public class BizRptVo extends ParentRequestVo {
 
     /** 공모아이디 */
     private Integer pcntstid;
+
+    /** 컨설턴트 ids */
+    private List<Integer> cnstntIds;
+
+    /** 컨설팅 대상 내용 */
+    private String cnsltngTrgtCn;
 
     /** 분야 코드 */
     private String fldCd;
@@ -145,7 +151,7 @@ public class BizRptVo extends ParentRequestVo {
 
     /** 등록_일시 */
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd 00:00")
-	private Date  regDt;
+	private String  regDt;
 
     /** 등록자아이디 */
 	private Integer rgtrid;
@@ -357,9 +363,17 @@ public class BizRptVo extends ParentRequestVo {
     /** 그룹 세부사항  */
     private String grpExprtStr;
 
+    /** 그룹 세부사항  */
     private Integer cycl;
 
+    /** 계정 */
+    private String acnt;
 
+    /** 이메일  */
+    private String eml;
+
+    /** 핸드폰 번호  */
+    private String moblphon;
 
 
 

@@ -170,15 +170,18 @@
     <!-- 교육주제 목록 조회 -->
     <select id="selectEduSbjctList" parameterType="front.dsgnPrgrmVo" resultType="front.dsgnPrgrmVo">
         SELECT
-            PRGRMID       /*프로그램아이디*/
-          , EDU_SBJCT_CD  /*교육_주제_코드*/
-          , MDFCN_DT      /*수정_일시*/
-          , MDFRID        /*수정자아이디*/
-          , REG_DT        /*등록_일시*/
-          , RGTRID        /*등록자아이디*/
-        FROM TB_ASS_PRGRM_EDU_SBJCT
+            A.PRGRMID       /*프로그램아이디*/
+          , B.EDU_SBJCT_CD  /*교육_주제_코드*/
+          , B.MDFCN_DT      /*수정_일시*/
+          , B.MDFRID        /*수정자아이디*/
+          , B.REG_DT        /*등록_일시*/
+          , B.RGTRID        /*등록자아이디*/
+        FROM
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+            TB_ASS_PRGRM_EDU_SBJCT B ON A.PRGRMID = B.PRGRMID
         WHERE 1=1
-        AND PRGRMID = ${prgrmid}
+        AND A.PRGRMID = ${prgrmid}
     </select>
 
     <!-- 프로그램 교육사진 파일 목록 조회 -->
@@ -902,7 +905,8 @@
         LEFT OUTER JOIN
             TB_ASS_SPRTGRP_SRNG B ON A.PRGRMID  = B.PRGRMID
         WHERE 1=1
-            AND APLCNTID = #{aplcntid}
+        AND APLCNTID = #{aplcntid}
+        AND A.STTS_CD IN (111101,111102)
             <!-- 프로그램 명 -->
         <if test="searchPrgrmNm!= null and searchPrgrmNm != '' ">
             AND A.PRGRM_NM LIKE CONCAT('%',#{searchPrgrmNm},'%')

@@ -245,7 +245,7 @@ public class ReqUserVo extends ParentRequestVo {
     private Integer mdfrid;
     
     /** 등록일시 */
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd@HH:mm:ss")
     private Date regDt;
     
     /** 등록자 아이디 */
@@ -286,11 +286,17 @@ public class ReqUserVo extends ParentRequestVo {
     /** 최저 기준 평균점수 2차 */
     private String lwetCrtrScrScnd;
     
+    /** 1차 심사위원 여부 */
+    private String frstSrngYn;
+    
+    /** 2차 심사위원 여부 */
+    private String scndSrngYn;
+    
     /** 온라인 심사유형 코드 */
     private String onlnSrngTypeCd;
     private String srngSttsNm;
     private String firstScr;
     private String secondScr;
     private String totalScr;
-    
+    private String popupYn;
 }

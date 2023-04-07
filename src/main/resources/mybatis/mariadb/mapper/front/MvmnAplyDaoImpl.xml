@@ -32,6 +32,7 @@
                 FROM TB_EDU_MVMN_PRGRM A
                 LEFT OUTER JOIN TB_EDU_SAREA B ON A.SAREAID = B.SAREAID 
                 LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_CLSF_MAPNG C ON A.PRGRMID = C.PRGRMID
+                LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TRGT_MAPNG D  ON A.PRGRMID = D.PRGRMID
                 LEFT OUTER JOIN TB_CMM_CD E ON E.CD = A.EDU_SE_CD
                 LEFT OUTER JOIN TB_CMM_CD F ON F.CD = C.CLSF_CD
                 LEFT OUTER JOIN TB_CMM_CD H ON H.CD = A.OPER_FOM_CD
@@ -52,7 +53,7 @@
                 </if>
                 <!-- 푸름이 이동환경교실 교육신청 교육대상 -->
                 <if test="searchTrgtCd != null and searchTrgtCd != '' and searchTrgtCd != '전체'">
-                AND C.TRGT_CD = #{searchTrgtCd}
+                AND D.TRGT_CD = #{searchTrgtCd}
                 </if>
                 <!-- 푸름이 이동환경교실 교육신청 교육형식 -->
                 <if test="searchOperFomCd != null and searchOperFomCd != '' and searchOperFomCd != '전체'">
@@ -65,6 +66,7 @@
                 <if test="searchClsfCd2 != null and searchClsfCd2 != '' and searchClsfCd2 != '전체'">
                 AND C.CLSF_CD = #{searchClsfCd2}
                 </if>
+        GROUP BY A.PRGRMID, C.CLSF_CD
         <include refid="PaginationMapper.footer"/>
     </select>
     
@@ -303,7 +305,6 @@
         INSERT INTO TB_EDU_MVMN_PRGRM_APLY (
             INSTID
             , USERID
-            , TME_SCHDLID
             , ADDR
             , ADDR_DTL
             , SIGNGU_CD
@@ -324,7 +325,6 @@
         SELECT 
              NULLIF(#{instid},'')
             ,#{aplyUserid}
-            ,#{tmeSchdlid}
             ,#{addr}
             ,#{addrDtl}
             ,#{signguCd}

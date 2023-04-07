@@ -1,5 +1,6 @@
 <!-- [팝업] 컨설팅 대상 -->
 <form id="cnsltngTrgtPopupFrm">
+    <input type="hidden" id="aplyid" name="aplyid" th:value="${aplyid}">
 
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content type_2">
@@ -15,7 +16,7 @@
                         <div class="mb-0 form-group row required">
                             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="popInput00"><strong>내용</strong></label>
                             <div class="col-12">
-                                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="Default textarea" id="popInput00" name="popInput00"></textarea>
+                                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="Default textarea" id="cnsltngTrgtCn" name="cnsltngTrgtCn" >[[${cnsltngTrgtCn}]]</textarea>
                             </div>
                         </div>
 
@@ -32,20 +33,22 @@
                                     <div class="col-12 row border rounded p-t-10 p-b-10 m-0 mt-2">
                                         <div class="col-auto">
                                             <div class="col-auto" id="mng_list_area">
-<!--                                                 <th:block th:each="item : ${mngList_2}"> -->
-<!--                                                     <span class="label label-inverse mb-2" th:id="'mng_list_'+${item.userid}"> <th:block th:text="${item.nm}+' '"></th:block> (<th:block th:text="${item.acnt}"></th:block>) | <th:block th:text="${item.eml}"></th:block> | <th:block th:text="${item.moblphon}+' '"></th:block> &nbsp;&nbsp;&nbsp; <a th:href="'javascript:deleteMng(2,'+${item.userid}+')'" class="text-white delete-manager">X</a> <input type="hidden" th:id="'pcntst'+${item.userid}" -->
-<!--                                                         name="pcntstids2" th:value="${item.userid}"> -->
-<!--                                                     </span> -->
-<!--                                                 </th:block> -->
+                                                <th:block th:each="item : ${cnstntList}">
+                                                    <span class="label label-inverse mb-2" th:id="'mng_list_'+${item.userid}">
+                                                    <th:block th:text="${item.nm}+' '"></th:block> (
+                                                    <th:block th:text="${item.acnt}"></th:block>) |
+                                                    <th:block th:text="${item.eml}"></th:block> |
+                                                    <th:block th:text="${item.moblphon}+' '"></th:block> &nbsp;&nbsp;&nbsp;
+                                                    <a th:href="'javascript:deleteMng('+${item.userid}+')'" class="text-white delete-manager">X</a>
+                                                    <input type="hidden" th:id="'cnstnt'+${item.userid}"
+                                                        name="cnstntIds" th:value="${item.userid}">
+                                                    </span>
+                                                </th:block>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
-
-
-
                         </div>
                     </div>
                 </div>
@@ -60,16 +63,16 @@
 <!-- 컨설팅담당자 팝업 -->
 <div class="modal fade" id="cnsltngPicPopup" aria-hidden="true" data-bs-backdrop="static"/>
 <!-- //[팝업] 컨설팅 대상 -->
-
 <div class="modal fade" id="cnslngModal" aria-hidden="true" data-bs-backdrop="static"></div>
+
 <script th:inline="javascript">
 
 var validator= $("#cnsltngTrgtPopupFrm").validate({
     rules: {
-        dmmCn : { required: true, maxlength:500 }
+    	cnsltngTrgtCn : { required: true, maxlength:500 }
     },
     messages: {
-        dmmCn : { required:"내용을 입력해주십시오", maxlength:"내용은 500자 이하여야 합니다."}
+    	cnsltngTrgtCn : { required:"내용을 입력해주십시오", maxlength:"내용은 500자 이하여야 합니다."}
     }
 });
 
@@ -95,6 +98,7 @@ var url = "/mng/cnsltng/cnsltngManagerPopup.html?cnsltngid="+cnsltngid;
 
 //회원 검색 모달 오픈
 var fn_openInstManagerSearchModal =()=> {
+
     $("#cnslngModal").load(url, function(response, status, xhr) {
         if (status == "success") {
             cnstntSearchModal = new bootstrap.Modal($('#cnslngModal'));
@@ -105,7 +109,8 @@ var fn_openInstManagerSearchModal =()=> {
 
 var cnsltngTrgtPop = {
 
-    insertUrl: "/mng/bizAply/bizRpt/insertRptSplmnt.do",
+    insertUrl: "/mng/bizAply/bizRpt/insertCnsltngTrgt.do",
+
     init:function(){
 
     },
@@ -113,16 +118,18 @@ var cnsltngTrgtPop = {
 
 
         if(!($("#cnsltngTrgtPopupFrm").valid())) return;
-
+        if($("[name^=cnstntIds]").length == 0 ){
+        	alert("담당자를 입력해 주세요");
+        	return;
+        }
 
         if(!confirm("저장하시겠습니까?")) return;
 
-        var data = $("#cnsltngTrgtPopupFrm").serialize();
-        debugger;
-return;
+        var data =  $("#cnsltngTrgtPopupFrm").serialize();
+
         if(displayWorkProgress()){
             $.ajax({
-                url : cnsltngTrgtPopupFrm.insertUrl,
+                url : cnsltngTrgtPop.insertUrl,
                 type: 'POST',
                 cache : false,
                 dataType: 'json',
@@ -131,8 +138,8 @@ return;
                     debugger;
                     if(data.result=="success"){
                         alert(data.msg);
-                        cnsltngTrgtPopup.hide();
-                        mdlRptSbmsnDtl.setGrid();
+                        cnsltngTrgtModal.hide();
+                        mdlRptSbmsnGridHelper1.resetListContent();
 
                     }else{
                         alert(data.msg);
@@ -143,6 +150,11 @@ return;
         }
     }
 };
+
+//담당자 삭제
+var deleteMng = (id) =>{
+    $("#mng_list_area").find("#mng_list_"+id).remove();
+}
 
 
 

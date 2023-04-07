@@ -37,8 +37,18 @@ public class ExpertReviewHistoryVo  extends ParentRequestVo {
     private String ttl;
     /** 점수 */
     private Integer scr;
+    /** 우편번호 */
+    private String zip;
+    /** 주소 */
+    private String addr;
+    /** 주소 상세 */
+    private String addrDtl;
     /** 기타 의견 */
     private String etcOpnn;
+    /** 교육 내용 */
+    private String eduCn;
+    /** 교육 인원수 */
+    private Integer eduNope;
     /** 등록일 */
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date regDt;

@@ -8,4 +8,5 @@ public class ManagerVo extends ParentRequestVo {
     private Integer telinqryid;
     private Integer userid;
     private String nm;
+    private String acnt;
 }
