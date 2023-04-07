@@ -19,7 +19,7 @@
         <input type="hidden" id="tmeSchdlid" name="tmeSchdlid">
         <input type="hidden" id="pageNumber" name="pageNumber" value="1">
         <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
-        <input type="hidden" id="orderField" name="orderField" value="REG_DT">
+        <input type="hidden" id="orderField" name="orderField" value="REG_DT, DE">
     </form>
 
     <div class="table-caption flex-nowrap">
@@ -35,34 +35,37 @@
         </div>
     </div>
     <div class="pc-only">
-	    <div class="table-col table-layout-auto">
-	        <table>
-	            <colgroup>
-	                <col>
-	                <col>
-	                <col style="width:25%;">
-	                <col>
-	                <col>
-	                <col>
-	                <col>
-	                <col>
-	            </colgroup>
-	            <thead>
-	                <tr>
-	                    <th scoep="col">번호</th>
-	                    <th scoep="col">권역</th>
-	                    <th scoep="col">프로그램명</th>
-	                    <th scoep="col">운영형식</th>
-	                    <th scoep="col">교육일자</th>
-	                    <th scoep="col">회차</th>
-	                    <th scoep="col">신청상태</th>
-	                    <th scoep="col">신청일</th>
-	                </tr>
-	            </thead>
-	            <tbody id="list-area">
-	            </tbody>
-	        </table>
-	    </div>
+        <div class="table-col table-layout-auto">
+            <table>
+                <caption>푸름이이동환경교실 - 번호, 권역, 프로그램명, 운영형식, 교육일자, 회차, 신청상태, 신청일, 설문참여</caption>
+                <colgroup>
+                    <col>
+                    <col>
+                    <col style="width:25%;">
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th scoep="col">번호</th>
+                        <th scoep="col">권역</th>
+                        <th scoep="col">프로그램명</th>
+                        <th scoep="col">운영형식</th>
+                        <th scoep="col">교육일자</th>
+                        <th scoep="col">회차</th>
+                        <th scoep="col">신청상태</th>
+                        <th scoep="col">신청일</th>
+                        <th scoep="col">설문참여</th>
+                    </tr>
+                </thead>
+                <tbody id="list-area">
+                </tbody>
+            </table>
+        </div>
     </div>
     <div class="mo-only">
         <div class="table-list">
@@ -143,7 +146,11 @@
                                     <td>${item.de}</td>
                                     <td>${item.tmeNm}</td>
                                     <td>${item.sttsNm}</td>
-                                    <td>${item.regDt}</td>
+                                    <td>${item.regDt}</td><td>`;
+                                    if(item.aplcntDgstfnSrvyid > 0){
+                                              html += `<button type="button" class="btn-small btn-outline-blue" onclick="mvmnAplyHist.onSrvySbmsnInsertPopup(${item.aplyid}, ${item.aplcntDgstfnSrvyid}, ${item.aplcntDgstfnQestnrid})">설문참여</button>`;
+                                    }
+                                    html += `</td>
                                 </tr>`;
                     });
                 }
@@ -190,10 +197,22 @@
                                 <dt>신청일</dt>
                                 <dd>${item.regDt}</dd>
                             </div>
-                        </dl></div></li>`;
+                            </dl></div>
+                            <div class="btn-wrap">
+                            <div class="center">`;
+                            if(item.aplcntDgstfnSrvyid > 0){
+                                moHtml += `<button type="button" class="btn-small btn-outline-blue" onclick="mvmnAplyHist.onSrvySbmsnInsertPopup(${item.aplyid}, ${item.aplcntDgstfnSrvyid}, ${item.aplcntDgstfnQestnrid})">설문참여</button>`;
+                            }
+                            moHtml += `
+                            </div>
+                            </div></li>`;
+
                     });
                 }
                 return moHtml;
+            },
+            onSrvySbmsnInsertPopup: function(aplyid, srvyid, qestnrid) {
+                popupCenter({url: '/front/srvy/srvySbmsnInsertPopup.html?srvyid=' + srvyid + '&qestnrid=' + qestnrid + '&mvmnPrgrmAplyid=' + aplyid, title: '설문조사', w: 1280, h: 1000, l: 0, t: 0});
             }            
         };
 

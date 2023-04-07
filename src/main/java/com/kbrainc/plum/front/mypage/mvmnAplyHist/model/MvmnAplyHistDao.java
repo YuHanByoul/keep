@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
+import com.kbrainc.plum.front.srvy.model.SrvyVo;
+
 /**
 * 푸름이 이동환경교실 교육신청 Dao 클래스
 *
@@ -72,4 +74,28 @@ public interface MvmnAplyHistDao {
     * @return int
     */
     public int updateCancelMvmnAply(MvmnAplyHistVo mvmnAplyHistVo) throws Exception;
+    
+    /**
+     * 푸름이 이동환경교실 설문 정보 조회
+     **
+     * @Title : selectMvmnSrvyInfo
+     * @Description : 푸름이 이동환경교실 설문 정보 조회
+     * @param mvmnAplyHistVo
+     * @return
+     * @throws Exception
+     * @return SrvyVo
+     */
+    public SrvyVo selectMvmnSrvyInfo(SrvyVo srvyVo) throws Exception;
+    
+    /**
+     * 푸름이 이동환경교실 설문 공유 리스트 조회
+     *
+     * @Title : selectMvmnSrvySendList
+     * @Description : 푸름이 이동환경교실 설문 공유 리스트 조회
+     * @param srvyVo
+     * @return
+     * @throws Exception
+     * @return List<SrvyVo>
+     */
+    public List<SrvyVo> selectMvmnSrvySendList(SrvyVo srvyVo) throws Exception;        
 }

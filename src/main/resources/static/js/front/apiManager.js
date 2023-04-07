@@ -204,7 +204,8 @@ var apiManager = {
         new daum.Postcode({
             oncomplete: function(data) {
                 apiManager.getTMStdrCrdnt(data.bname).then(function(response) {
-                    if(main.envfldCd != "104104") return false;
+                    console.log(response)
+                    if(main.envfldCd != "104103") return false;
                     if(response.totalCount == 0) {
                         main.setWidgetStatus("error", null, "검색한 주소와 가까운 측정소가 없습니다.<br/>주소를 다시 검색해 주세요.");
                     } else {
@@ -226,6 +227,7 @@ var apiManager = {
     }
     
     , getTMStdrCrdnt: function(umdName) {
+        console.log("umdName: " + umdName)
         return new Promise(function(resolve, reject) {
             $.ajax({
                 url: "/front/api/getTMStdrCrdnt.do"
@@ -233,7 +235,7 @@ var apiManager = {
                 , data: {umdName: umdName} 
                 , cache: false
                 , success: function(result) {
-                    if(main.envfldCd != "104104") return false;
+                    if(main.envfldCd != "104103") return false;
                     if(result.response && result.response.header.resultCode == "00") {
                         resolve(result.response.body);
                     } else {
@@ -251,7 +253,7 @@ var apiManager = {
             , data: {tmX: tmData.tmX, tmY: tmData.tmY} 
             , cache: false
             , success: function(result) {
-                if(main.envfldCd != "104104") return false;
+                if(main.envfldCd != "104103") return false;
                 if(result.response && result.response.header.resultCode == "00") {
                     var stationInfo = result.response.body.items[0];
                     var confirmMsg = postData.address + "(" + postData.bname + ")" + "과(와)\n가장 가까운 측정소는 『" + stationInfo.stationName + " 측정소』입니다.\n해당 측정소의 대기정보를 조회 하시겠습니까?";
