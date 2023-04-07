@@ -90,6 +90,23 @@ public class SrvyVo extends ParentRequestVo {
     /** 사용여부 */
     private String useYn;
     
+    /** 참가자_이름 */
+    private String prtpntNm;
+    
+    /** 유아_프로그램_신청아이디 */
+    private int infntPrgrmAplyid;
+    
+    /** 이동_프로그램_신청아이디 */
+    private int mvmnPrgrmAplyid;
+
+    /** 설문지_종류_코드 */
+    private String qestnrKndCd;
+
+    /** 설문 제출일(국가교육관) */
+    private String aplySbmsnDt;
+
+    /** 제출아이디 */
+    private int sbmsnid;
     
     /** 수정일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")

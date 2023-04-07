@@ -63,6 +63,15 @@ public class SrvySbmsnVo extends ParentRequestVo {
     
     /** 디바이스 종류 */
     private String deviceKndCd;
+
+    /** 유아_프로그램_신청아이디 */
+    private int infntPrgrmAplyid;
+    
+    /** 이동_프로그램_신청아이디 */
+    private int mvmnPrgrmAplyid;
+    
+    /** 참가자_이름 */
+    private String prtpntNm;
     
 //    List<SrvySbmsnAnsVo> ansList;
     
