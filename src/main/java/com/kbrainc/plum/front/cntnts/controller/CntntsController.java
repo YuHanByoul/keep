@@ -68,7 +68,7 @@ public class CntntsController {
     * @return String
     */
     @RequestMapping(value = "/front/cntnts/{eduSbjctCd}/cntntsListForm.html")
-    public String cntntsListForm(@PathVariable String eduSbjctCd, Model model, CodeVo codeVo, @RequestParam(value="typeCd", required=false)  String typeCd) throws Exception {
+    public String cntntsListForm(@PathVariable String eduSbjctCd, Model model, CodeVo codeVo) throws Exception {
         codeVo.setCd(eduSbjctCd);
         CodeVo codeInfo = codeService.selectCodeInfo(codeVo);
         
