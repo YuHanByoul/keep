@@ -63,16 +63,17 @@ public class HelpDeskController {
     /**
      * 문의목록 조회
      *
-     * @Title       : selectHelpDeskList
-     * @Description : 문의목록 조회
      * @param helpDeskVo
+     * @param user
      * @return
      * @throws Exception
-     * @return Map<String, Object>
+     * @Title : selectHelpDeskList
+     * @Description : 문의목록 조회
      */
     @RequestMapping(value = "/mng/helpDesk/selectHelpDeskList.do")
     @ResponseBody
-    public Map<String, Object> selectHelpDeskList(HelpDeskVo helpDeskVo) throws Exception {
+    public Map<String, Object> selectHelpDeskList(HelpDeskVo helpDeskVo, @UserInfo UserVo user) throws Exception {
+        helpDeskVo.setUser(user);
         List<HelpDeskVo> list = helpDeskService.selectHelpDeskList(helpDeskVo);
 
         Map<String, Object> response = new HashMap<String, Object>();
