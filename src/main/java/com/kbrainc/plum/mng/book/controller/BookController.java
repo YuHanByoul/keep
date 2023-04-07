@@ -22,6 +22,7 @@ import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.mng.book.model.BookVo;
 import com.kbrainc.plum.mng.book.service.BookService;
+import com.kbrainc.plum.mng.tchaid.service.TchaidService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
@@ -50,6 +51,9 @@ public class BookController {
     @Autowired
     private FileService fileService;
     
+    @Autowired
+    private TchaidService tchaidService;
+    
     /**
     * 우수환경도서 관리 목록화면 이동
     *
@@ -59,7 +63,11 @@ public class BookController {
     * @return String
     */
     @RequestMapping(value = "/mng/book/bookListForm.html")
-    public String bookListForm() throws Exception {
+    public String bookListForm(Model model) throws Exception {
+        
+        Map<String,String> map = new HashMap();
+        map.put("cdgrpid", "155");
+        model.addAttribute("sbjctCdLsit", tchaidService.selectTchaidCdList(map)  );
 
         return "/mng/book/bookList";
     }
@@ -83,6 +91,10 @@ public class BookController {
         model.addAttribute("userid", user.getUserid());
         model.addAttribute("useridNm", user.getAcnt()+"("+user.getNm()+")");
         
+        Map<String,String> map = new HashMap();
+        map.put("cdgrpid", "155");
+        model.addAttribute("sbjctCdLsit", tchaidService.selectTchaidCdList(map)  );
+        
         return "/mng/book/bookInsertForm";
     }
     
@@ -105,6 +117,10 @@ public class BookController {
         FileVo fileVo = new FileVo();
         fileVo.setUser(user);
         
+        Map<String,String> map = new HashMap();
+        map.put("cdgrpid", "155");
+        model.addAttribute("sbjctCdLsit", tchaidService.selectTchaidCdList(map)  );
+        
         if (result.getAtchFilegrpid() != null && !result.getAtchFilegrpid().equals(0)) {
             fileVo.setFilegrpid(Integer.parseInt(result.getAtchFilegrpid().toString()));
             ArrayList<FileVo> fileList= fileService.getFileList(fileVo);
@@ -125,6 +141,7 @@ public class BookController {
             model.addAttribute("fileBtn", fileBtn);
         }
         
+        model.addAttribute("bookSbjctList", bookService.selectBookSbjctList(bookVo));
         
         return "/mng/book/bookUpdate";
     }
@@ -248,13 +265,12 @@ public class BookController {
     */
     @RequestMapping(value = "/mng/book/deleteBook.do")
     @ResponseBody
-    public Map<String, Object> deleteBook(HttpServletRequest request) throws Exception {
+    public Map<String, Object> deleteBook(BookVo bookVo ,@UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         int retVal = 0;
         
-        String[] bookids = request.getParameterValues("bookids");
-        
-        retVal = bookService.deleteBook(bookids);
+        bookVo.setUser(user);
+        retVal = bookService.deleteBook(bookVo);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);

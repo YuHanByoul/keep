@@ -122,13 +122,17 @@
             , LGN_DT 
             , REG_DT 
             , DEL_YN 
+            , DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 1 MONTH), '%Y-%m-%d')  AS PRNMNT_DT
         FROM TB_CMM_USER
         WHERE DEL_YN = 'N'
             AND STTS_CD != '9'
             AND (ACNT_LOCK_CD NOT IN (101105, 101106) OR ACNT_LOCK_CD IS NULL)
             AND NVL(PRVC_VLDTY, 0) > 0
-            AND REG_DT <![CDATA[<]]> DATE_ADD(NOW(), INTERVAL -(PRVC_VLDTY * 12 - 1) MONTH)
-            AND LGN_DT <![CDATA[<]]> DATE_ADD(NOW(), INTERVAL -(PRVC_VLDTY * 12 - 1) MONTH)
+            AND 
+                CASE 
+                    WHEN LGN_DT IS NULL THEN REG_DT <![CDATA[<]]> DATE_ADD(NOW(), INTERVAL -(NVL(PRVC_VLDTY, 0) * 12 - 1) MONTH) 
+                    ELSE LGN_DT <![CDATA[<]]> DATE_ADD(NOW(), INTERVAL -(NVL(PRVC_VLDTY, 0) * 12 - 1) MONTH) 
+                END
     </select>
     
     <!-- 휴면계정 전환 대상자 리스트를 반환한다 -->

@@ -75,5 +75,35 @@ public interface BookDao {
     * @throws Exception 예외
     * @return int
     */
-    public int deleteBook(String[] bookids) throws Exception;
+    public int deleteBook(BookVo bookVo) throws Exception;
+    /**
+    * 우수환경도서 교육주제 목록 조회
+    *
+    * @Title : selectBookList
+    * @Description : 우수환경도서 교육주제 목록 조회
+    * @param bookVo 객체
+    * @throws Exception 예외
+    * @return List<BookSbjctVo>
+    */
+    public List<BookSbjctVo> selectBookSbjctList(BookVo bookVo) throws Exception;
+    /**
+     * 우수환경도서 교육주제 삭제
+     *
+     * @Title : deleteBook
+     * @Description : 우수환경도서 교육주제 삭제
+     * @param  BookVo
+     * @throws Exception 예외
+     * @return int
+     */
+    public int deleteBookSbjct(BookVo bookVo) throws Exception;
+    /**
+     * 우수환경도서 교육 주제 등록
+     *
+     * @Title : deleteBook
+     * @Description : 우수환경도서 교육 주제 등록
+     * @param BookVo 
+     * @throws Exception 예외
+     * @return int
+     */
+    public int insertBookSbjct(BookVo bookVo) throws Exception;
 }

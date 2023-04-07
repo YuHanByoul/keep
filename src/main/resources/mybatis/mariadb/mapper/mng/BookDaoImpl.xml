@@ -11,23 +11,32 @@
     <select id="selectBookList" parameterType="BookVo" resultType="BookVo">
         /* BookDao.selectBookList */
         <include refid="PaginationMapper.header"/>
-            SELECT
-                  A.BOOKID
+        SELECT 
+           A.*
+          FROM 
+          (
+           SELECT
+                A.BOOKID
                 , A.TTL
-                , CONCAT(B2.CD_NM, ' > ', B1.CD_NM) AS EDUSBJCTCD
-                , C1.CD_NM AS EDUTRGTCD
+                , GROUP_CONCAT(B2.CD_NM, ' > ', B1.CD_NM) AS EDU_SBJCT_CD_NM
+                , A.EDU_TRGT_CD 
                 , A.PLSCMPN
                 , A.RPRS_IMG_FILEID
                 , E.FILEGRPID
                 , NVL(A.HITS,0) AS HITS
+                , A.CN
                 , A.REG_DT
+                , A.DEL_YN
+                ,GROUP_CONCAT(B.EDU_SBJCT_CD) AS EDUSBJCTCD 
+                ,GROUP_CONCAT(DISTINCT  LEFT(B.EDU_SBJCT_CD,6)) AS UPPR_EDUSBJCTCD
             FROM
                 TB_CMM_BOOK A
-                LEFT OUTER JOIN TB_CMM_CD B1 ON A.EDU_SBJCT_CD = B1.CD
+                LEFT OUTER JOIN tb_cmm_book_sbjct B ON A.BOOKID = B.BOOKID 
+                LEFT OUTER JOIN TB_CMM_CD B1 ON B.EDU_SBJCT_CD = B1.CD
                 LEFT OUTER JOIN TB_CMM_CD B2 ON B1.UPPR_CD = B2.CD
-                LEFT OUTER JOIN TB_CMM_CD C1 ON A.EDU_TRGT_CD = C1.CD
-                
                 LEFT OUTER JOIN TB_CMM_FILE E ON A.RPRS_IMG_FILEID = E.FILEID
+              GROUP BY A.BOOKID
+             ) A
             WHERE 1=1
             <!-- 키워드 -->
             <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchTtl'">
@@ -37,21 +46,20 @@
             AND A.CN LIKE CONCAT('%',#{searchKeyword},'%')
             </if>
             <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchTtlCn'">
-            AND A.TTL LIKE CONCAT('%',#{searchKeyword},'%')
-            AND A.CN LIKE CONCAT('%',#{searchKeyword},'%')
+            AND (A.TTL LIKE CONCAT('%',#{searchKeyword},'%') OR A.CN LIKE CONCAT('%',#{searchKeyword},'%'))
             </if>
             
             <!-- 교육주제 -->
             <if test="searchManinEduSbjctCd != null and searchManinEduSbjctCd != ''">
-            AND B2.CD = #{searchManinEduSbjctCd}
+            AND UPPR_EDUSBJCTCD LIKE CONCAT('%',#{searchManinEduSbjctCd},'%')
             </if>
             <if test="searchMdleEduSbjctCd != null and searchMdleEduSbjctCd != ''">
-            AND B1.CD = #{searchMdleEduSbjctCd}
+            AND EDUSBJCTCD  LIKE CONCAT('%',#{searchMdleEduSbjctCd},'%')
             </if>
             
             <!-- 교육대상 -->
             <if test="searchEduTrgtCd != null and searchEduTrgtCd != ''">
-            AND C1.CD = #{searchEduTrgtCd}
+            AND EDU_TRGT_CD = #{searchEduTrgtCd}
             </if>
             
             <!-- 출판사 -->
@@ -77,16 +85,15 @@
     <select id="selectBookInfo" parameterType="BookVo" resultType="BookVo"> 
         /* BookDao.selectBookInfo */
         SELECT
-              A.BOOKID
-            , A.EDU_SBJCT_CD
-            , B2.CD AS MAIN_EDU_SBJCT_CD
-            , C1.CD AS EDU_TRGT_CD
+            A.BOOKID
+            , A.EDU_TRGT_CD
             , A.WRITR
             , A.WRITR_PICTR
             , A.PLSCMPN
             , A.AMT
             , A.TTL
             , A.CN
+            , A.CPYRHT_CD
             , DATE(A.REG_DT) AS REG_DT
             , A.RGTRID
             , CONCAT(F.ACNT,'(',F.NM,')') AS rgtridNm
@@ -95,24 +102,18 @@
             , E.FILE_IDNTFC_KEY      
             , E.ORGINL_FILE_NM
             , A.ATCH_FILEGRPID
+            , A.DEL_YN
         FROM
             TB_CMM_BOOK A
-            LEFT OUTER JOIN TB_CMM_CD B1 ON A.EDU_SBJCT_CD = B1.CD
-            LEFT OUTER JOIN TB_CMM_CD B2 ON B1.UPPR_CD = B2.CD
-            LEFT OUTER JOIN TB_CMM_CD C1 ON A.EDU_TRGT_CD = C1.CD
-            
             LEFT OUTER JOIN TB_CMM_FILE E ON A.RPRS_IMG_FILEID = E.FILEID
-            
             LEFT OUTER JOIN TB_CMM_USER F ON A.RGTRID = F.USERID
         WHERE BOOKID = #{bookid}
     </select>
-    
     <!-- 우수환경도서 관리 게시글 등록 --> 
-    <insert id="insertBook" parameterType="BookVo" keyProperty="BookVo">
+    <insert id="insertBook" parameterType="BookVo" keyProperty="bookid" useGeneratedKeys="true">
         /* BookDao.insertBook */
         INSERT INTO TB_CMM_BOOK (
-            EDU_SBJCT_CD
-            , EDU_TRGT_CD
+             EDU_TRGT_CD
             , WRITR
             , WRITR_PICTR
             , PLSCMPN
@@ -121,13 +122,14 @@
             , CN
             , RPRS_IMG_FILEID
             , ATCH_FILEGRPID
+            , CPYRHT_CD
+            , DEL_YN
             , MDFCN_DT
             , MDFRID
             , REG_DT
             , RGTRID
         )VALUES(
-            #{eduSbjctCd}
-            ,#{eduTrgtCd}
+            #{eduTrgtCd}
             ,#{writr}
             ,#{writrPictr}
             ,#{plscmpn}
@@ -136,6 +138,8 @@
             ,#{cn}
             ,#{rprsImgFileid}
             ,#{atchFilegrpid}
+            ,#{cpyrhtCd}
+            ,'N'
             ,NOW()
             ,#{user.userid}
             ,NOW()
@@ -147,8 +151,7 @@
     <update id="updateBook" parameterType="BookVo" >
          /* BookDao.updateBook */
           UPDATE TB_CMM_BOOK SET
-              EDU_SBJCT_CD      = #{eduSbjctCd}
-              ,EDU_TRGT_CD      = #{eduTrgtCd}
+               EDU_TRGT_CD      = #{eduTrgtCd}
               ,WRITR            = #{writr}
               ,WRITR_PICTR      = #{writrPictr}
               ,PLSCMPN          = #{plscmpn}
@@ -157,18 +160,65 @@
               ,CN               = #{cn}
               ,RPRS_IMG_FILEID  = #{rprsImgFileid}
               ,ATCH_FILEGRPID   = #{atchFilegrpid}
+              ,CPYRHT_CD        = #{cpyrhtCd}
               ,MDFCN_DT         = NOW()
               ,MDFRID           = #{user.userid}
            WHERE BOOKID = #{bookid}
     </update>
     
     <!-- 우수환경도서 관리 게시글 삭제 -->
-    <delete id="deleteBook" parameterType="java.util.ArrayList">
+    <delete id="deleteBook" parameterType="BookVo">
         /* BookDao.deleteBook */
-        DELETE FROM TB_CMM_BOOK
-        WHERE BOOKID IN 
-        <foreach item="item" collection="array" index="bookid" open="(" close=")" separator=",">
-        #{item}
+       UPDATE TB_CMM_BOOK SET
+               DEL_YN           = 'Y'
+              ,MDFCN_DT         = NOW()
+              ,MDFRID           = #{user.userid}
+        WHERE BOOKID IN (
+        <foreach item="item" collection="bookids" separator=",">
+           #{item}
         </foreach>
+        )
     </delete>
+    
+    <!-- 우수환경도서 교육 주제 리스트 호출  -->
+    <select id="selectBookSbjctList" parameterType="BookVo" resultType="BookSbjctVo"> 
+        /* BookDao.selectBookSbjctList */
+        SELECT
+            A.BOOKID
+            ,A.EDU_SBJCT_CD
+            ,A.REG_DT
+            ,A.RGTRID
+        FROM
+            TB_CMM_BOOK_SBJCT A
+        WHERE BOOKID = #{bookid}
+    </select>
+    <!-- 우수환경도서 교육 주제 삭제 -->
+    <delete id="deleteBookSbjct" parameterType="BookVo">
+        /* BookDao.deleteBookSbjct */
+        DELETE FROM TB_CMM_BOOK_SBJCT
+        WHERE BOOKID IN (
+            <foreach item="item" collection="bookids"  separator=",">
+            #{item}
+            </foreach>
+        )
+    </delete>
+    <!-- 우수환경도서 교육 주제 등록 -->
+    <insert id="insertBookSbjct" parameterType="BookVo">
+        /* BookDao.insertBookSbjct */
+        INSERT INTO TB_CMM_BOOK_SBJCT(
+            BOOKID
+            ,EDU_SBJCT_CD
+            ,REG_DT
+            ,RGTRID
+        )VALUES
+         <foreach item="item" collection="eduSbjctCds"  separator=",">
+            (
+            #{bookid}
+            ,#{item}
+            ,NOW()
+            ,#{user.userid}
+            )
+         </foreach>
+    </insert>
+    
 </mapper>
