@@ -1,16 +1,12 @@
 package com.kbrainc.plum.front.search.model;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import java.io.Serializable;
 
 import org.apache.commons.lang3.SerializationUtils;
-import org.apache.ibatis.type.Alias;
 
-import com.kbrainc.plum.cmm.esylgn.model.EsylgnVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.util.StringUtil;
 
 import lombok.Data;
 
@@ -29,16 +25,13 @@ import lombok.Data;
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Data
-public class SearchVo extends ParentRequestVo {
+public class SearchVo extends ParentRequestVo implements Serializable {
 
     /** 로그인사용자정보 */
     private UserVo user;
     
     /** 검색 대상 그룹 */
     private String gtype;
-    
-    /** 검색 개체 그룹 */
-    private String etype;
     
     /** 검색어 */
     private String keyword;
@@ -61,7 +54,13 @@ public class SearchVo extends ParentRequestVo {
     /** 정렬순서 */
     private String chkSort;
     
-    /** 검색기간 */
+    /** 검색기간 시작일 */
+    private String startDt;
+    
+    /** 검색기간 종료일 */
+    private String endDt;
+    
+    /** 검색기간 필터 */
     private String dateFilter;
     
     /** 현재 페이지 */
@@ -69,6 +68,40 @@ public class SearchVo extends ParentRequestVo {
     
     /** 페이지 노출 수 */
     private String nget;
+
+    public void setStartDt(String startDt) {
+        this.startDt = startDt;
+        if (!"".equals(startDt) && !"".equals(endDt)) {
+            this.dateFilter = String.format("%s,%s", startDt.replaceAll("-", ""), endDt.replaceAll("-", ""));
+        }
+    }
+
+    /**
+    * 상세검색 여부 반환.
+    *
+    * @Title : getDetailSearch
+    * @Description : 상세검색 여부 반환
+    * @return boolean 상세검색 여부
+    */
+    public boolean getDetailSearch() {
+        if (!"".equals(StringUtil.nvl(sbjctCd))) {
+            return true;
+        } else if(!"".equals(StringUtil.nvl(trgtCd))) {
+            return true;
+        } else if(!"".equals(StringUtil.nvl(typeCd))) {
+            return true;
+        } else if(!"".equals(StringUtil.nvl(rgnCd))) {
+            return true;
+        } else if(!"".equals(StringUtil.nvl(keywordNot))) {
+            return true;
+        } else if(!"".equals(StringUtil.nvl(startDt))) {
+            return true;
+        } else if(!"".equals(StringUtil.nvl(endDt))) {
+            return true;
+        }
+        
+        return false;
+    }
     
     /** 로그인사용자정보 */
     public void setUser(UserVo user) {
@@ -79,5 +112,10 @@ public class SearchVo extends ParentRequestVo {
     public UserVo getUser() {
         UserVo clone = (UserVo) SerializationUtils.clone(this.user);
         return clone;
+    }
+
+    public SearchVo clone() {
+       SearchVo clone = (SearchVo) SerializationUtils.clone(this);
+       return clone;
     }
 }
