@@ -7,6 +7,7 @@ import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import com.kbrainc.plum.mng.cnsltng.model.CnsltngVo;
 import com.kbrainc.plum.mng.mmnws.model.MmnwsVo;
+import com.kbrainc.plum.mng.srng.model.SrngFormVO;
 
 /**
 * 유아환경교육 -> 교육일정관리 Dao 클래스
@@ -159,6 +160,16 @@ public interface InfntSchdlDao {
      * @throws Exception 예외
      * @return int
      */
-    public List<InfntSchdlVo> selectInfntSchdlIdList(@Param("clssrmId") String clssrmId) throws Exception;   
+    public List<InfntSchdlVo> selectInfntSchdlIdList(@Param("clssrmId") String clssrmId) throws Exception;
+    
+    /**
+     * 교육일정관리 신청 카운트 조회
+     * @Title : selectInfntAplyCnt
+     * @Description : 교육일정관리 신청 카운트 조회
+     * @param infntSchdlVo
+     * @throws Exception 예외
+     * @return int
+     */
+    public int selectInfntAplyCnt(InfntSchdlVo infntSchdlVo) throws Exception;    
 
 }

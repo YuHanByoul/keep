@@ -248,5 +248,19 @@
         , SCHDL_NM
         FROM TB_EDU_MVMN_PRGRM_SCHDL
        WHERE SAREAID = #{sareaId}
+    </select>
+    
+    <!-- 교육일정관리 신청 카운트 조회 -->   
+    <select id="selectMvmnAplyCnt" parameterType="MvmnSchdlVo" resultType="int">
+        /* MvmnSchdlDao.selectMvmnAplyCnt */
+        SELECT COUNT(A.APLYID)
+        FROM TB_EDU_MVMN_PRGRM_APLY A
+        LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_APLY_SCHDL B ON A.APLYID = B.APLYID
+        WHERE B.TME_SCHDLID IN (
+            SELECT TME_SCHDLID
+              FROM TB_EDU_MVMN_PRGRM_TME_SCHDL
+             WHERE 1=1
+               AND PRGRM_SCHDLID = #{prgrmSchdlid}
+        )
     </select>     
 </mapper>

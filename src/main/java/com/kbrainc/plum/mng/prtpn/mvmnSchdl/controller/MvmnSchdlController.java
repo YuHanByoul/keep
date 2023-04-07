@@ -135,6 +135,7 @@ public class MvmnSchdlController {
 
         model.addAttribute("mvmnSchdl", result);
         model.addAttribute("ymDesc", ymDesc);
+        model.addAttribute("infntAplyCnt", mvmnSchdlService.selectMvmnAplyCnt(mvmnSchdlVo));
 
         return "mng/prtpn/mvmnSchdl/mvmnSchdlUpdatePopup";
     }
@@ -280,13 +281,6 @@ public class MvmnSchdlController {
     @ResponseBody
     public Map<String, Object> deleteMvmnSchdl(@Valid MvmnSchdlVo mvmnSchdlVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
-        if (bindingResult.hasErrors()) {
-            FieldError fieldError = bindingResult.getFieldError();
-            if (fieldError != null) {
-                resultMap.put("msg", fieldError.getDefaultMessage());
-            }
-            return resultMap;
-        }
         mvmnSchdlVo.setUser(user);
         int retVal = 0;
         retVal = mvmnSchdlService.deleteMvmnSchdl(mvmnSchdlVo);
