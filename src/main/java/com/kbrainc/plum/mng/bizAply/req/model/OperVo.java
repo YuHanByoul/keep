@@ -78,4 +78,6 @@ public class OperVo {
     
     /** 교육_주제_코드 */
     private String[] eduSbjctCdArr;
+    
+    private String popupYn;
 }

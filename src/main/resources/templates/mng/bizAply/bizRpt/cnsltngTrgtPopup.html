@@ -16,7 +16,7 @@
                         <div class="mb-0 form-group row required">
                             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="popInput00"><strong>내용</strong></label>
                             <div class="col-12">
-                                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="Default textarea" id="cnsltngTrgtCn" name="cnsltngTrgtCn" th:value="${cnsltngTrgtCn}"></textarea>
+                                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="Default textarea" id="cnsltngTrgtCn" name="cnsltngTrgtCn" >[[${cnsltngTrgtCn}]]</textarea>
                             </div>
                         </div>
 
@@ -33,20 +33,22 @@
                                     <div class="col-12 row border rounded p-t-10 p-b-10 m-0 mt-2">
                                         <div class="col-auto">
                                             <div class="col-auto" id="mng_list_area">
-<!--                                                 <th:block th:each="item : ${mngList_2}"> -->
-<!--                                                     <span class="label label-inverse mb-2" th:id="'mng_list_'+${item.userid}"> <th:block th:text="${item.nm}+' '"></th:block> (<th:block th:text="${item.acnt}"></th:block>) | <th:block th:text="${item.eml}"></th:block> | <th:block th:text="${item.moblphon}+' '"></th:block> &nbsp;&nbsp;&nbsp; <a th:href="'javascript:deleteMng(2,'+${item.userid}+')'" class="text-white delete-manager">X</a> <input type="hidden" th:id="'pcntst'+${item.userid}" -->
-<!--                                                         name="pcntstids2" th:value="${item.userid}"> -->
-<!--                                                     </span> -->
-<!--                                                 </th:block> -->
+                                                <th:block th:each="item : ${cnstntList}">
+                                                    <span class="label label-inverse mb-2" th:id="'mng_list_'+${item.userid}">
+                                                    <th:block th:text="${item.nm}+' '"></th:block> (
+                                                    <th:block th:text="${item.acnt}"></th:block>) |
+                                                    <th:block th:text="${item.eml}"></th:block> |
+                                                    <th:block th:text="${item.moblphon}+' '"></th:block> &nbsp;&nbsp;&nbsp;
+                                                    <a th:href="'javascript:deleteMng('+${item.userid}+')'" class="text-white delete-manager">X</a>
+                                                    <input type="hidden" th:id="'cnstnt'+${item.userid}"
+                                                        name="cnstntIds" th:value="${item.userid}">
+                                                    </span>
+                                                </th:block>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
-
-
-
                         </div>
                     </div>
                 </div>
@@ -61,8 +63,8 @@
 <!-- 컨설팅담당자 팝업 -->
 <div class="modal fade" id="cnsltngPicPopup" aria-hidden="true" data-bs-backdrop="static"/>
 <!-- //[팝업] 컨설팅 대상 -->
-
 <div class="modal fade" id="cnslngModal" aria-hidden="true" data-bs-backdrop="static"></div>
+
 <script th:inline="javascript">
 
 var validator= $("#cnsltngTrgtPopupFrm").validate({
@@ -96,6 +98,7 @@ var url = "/mng/cnsltng/cnsltngManagerPopup.html?cnsltngid="+cnsltngid;
 
 //회원 검색 모달 오픈
 var fn_openInstManagerSearchModal =()=> {
+
     $("#cnslngModal").load(url, function(response, status, xhr) {
         if (status == "success") {
             cnstntSearchModal = new bootstrap.Modal($('#cnslngModal'));
@@ -136,6 +139,7 @@ var cnsltngTrgtPop = {
                     if(data.result=="success"){
                         alert(data.msg);
                         cnsltngTrgtModal.hide();
+                        mdlRptSbmsnGridHelper1.resetListContent();
 
                     }else{
                         alert(data.msg);

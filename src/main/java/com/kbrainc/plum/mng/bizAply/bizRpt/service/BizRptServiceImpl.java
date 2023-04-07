@@ -1050,6 +1050,8 @@ public class BizRptServiceImpl extends PlumAbstractServiceImpl implements BizRpt
 	public int insertCnsltngTrgt(BizRptVo bizRptVo) throws Exception{
 		int ret = 0;
 		List<Integer> cnstntIds = null;
+
+		bizRptDao.deleteCnsltngMng(bizRptVo);
 		if(bizRptVo.getCnstntIds()!= null) {
 			cnstntIds = bizRptVo.getCnstntIds();
 
@@ -1065,4 +1067,17 @@ public class BizRptServiceImpl extends PlumAbstractServiceImpl implements BizRpt
 		return ret;
 	}
 
+	/**
+	* 컨설턴트 목록 조회
+	*
+	* @Title : selectCnstntList
+	* @Description : 컨설턴트 목록 조회
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return List<BizRptVo>
+	*/
+	public List<BizRptVo> selectCnstntList(BizRptVo bizRptVo) throws Exception{
+		return bizRptDao.selectCnstntList(bizRptVo);
+	}
 }

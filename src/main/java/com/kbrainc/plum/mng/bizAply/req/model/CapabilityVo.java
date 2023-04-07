@@ -118,4 +118,6 @@ public class CapabilityVo extends ParentRequestVo {
     
     /** 순서 */
     private Integer[] ordr;  
+    
+    private String popupYn;
 }

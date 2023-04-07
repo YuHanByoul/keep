@@ -25,4 +25,6 @@ public class HelpDeskAnswrManagerVo {
     private Integer userid;
     /** 담당자 이름 */
     private String nm;
+    /** 담당자 계정 */
+    private String acnt;
 }

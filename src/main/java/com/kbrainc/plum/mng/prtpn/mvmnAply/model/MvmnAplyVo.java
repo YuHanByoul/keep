@@ -144,7 +144,7 @@ public class MvmnAplyVo extends ParentRequestVo {
     private String searchKeyword;
     private String searchEduYr;
     private String searchSareaId;
-    private String searchSareaMm;
+    private String searchClssMm;
     private String searchRcptMthdCd;
     private String searchSttsCd;
     private String searchType;

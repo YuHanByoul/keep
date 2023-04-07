@@ -182,9 +182,10 @@ public class SpcltyDtaController {
      */
     @PostMapping("/mng/spcltyDta/deleteSpcltyDta.do")
     @ResponseBody
-    public Map<String, Object> deleteSpcltyDta(SpcltyDtaVo spcltyDtaVo) throws Exception {
+    public Map<String, Object> deleteSpcltyDta(SpcltyDtaVo spcltyDtaVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> result = new HashMap<>();
 
+        spcltyDtaVo.setUser(user);
         int retVal = 0;
         retVal = spcltyDtaService.deleteSpcltyDta(spcltyDtaVo);
 

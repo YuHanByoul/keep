@@ -286,6 +286,19 @@ public interface BizRptService {
 	* @throws Exception
 	* @return int
 	*/
-	int insertCnsltngTrgt(BizRptVo bizRptVo) throws Exception;
+	public int insertCnsltngTrgt(BizRptVo bizRptVo) throws Exception;
+
+	/**
+	* 컨설턴트 목록 조회
+	*
+	* @Title : selectCnstntList
+	* @Description : 컨설턴트 목록 조회
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return List<BizRptVo>
+	*/
+	public List<BizRptVo> selectCnstntList(BizRptVo bizRptVo) throws Exception;
+
 
 }
