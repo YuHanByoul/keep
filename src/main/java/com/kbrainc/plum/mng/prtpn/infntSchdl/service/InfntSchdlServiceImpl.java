@@ -145,4 +145,16 @@ public class InfntSchdlServiceImpl extends PlumAbstractServiceImpl implements In
     public List<InfntSchdlVo> selectInfntSchdlIdList(String clssrmId) throws Exception{
         return infntSchdlDao.selectInfntSchdlIdList(clssrmId);   
     }
+    
+    /**
+     * 교육일정관리 신청 카운트 조회
+     * @Title : selectInfntAplyCnt
+     * @Description : 교육일정관리 신청 카운트 조회
+     * @param infntSchdlVo
+     * @throws Exception 예외
+     * @return int
+     */
+    public int selectInfntAplyCnt(InfntSchdlVo infntSchdlVo) throws Exception{
+        return infntSchdlDao.selectInfntAplyCnt(infntSchdlVo);        
+    }        
 }

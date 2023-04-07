@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.front.mypage.infntAplyHist.model.InfntAplyHistVo;
 import com.kbrainc.plum.front.mypage.infntAplyHist.service.InfntAplyHistService;
+import com.kbrainc.plum.front.srvy.model.SrvyVo;
+import com.kbrainc.plum.front.srvy.service.SrvyService;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.StringUtil;
@@ -43,7 +45,7 @@ public class InfntAplyHistController {
 
     @Resource(name = "front.infntAplyHistServiceImpl")
     private InfntAplyHistService infntAplyHistService;
-
+    
     @GetMapping("/infntAplyHistListForm.html")
     public String infntAplyHistList(InfntAplyHistVo searchVo, Model model) throws Exception {
         model.addAttribute("searchVo", searchVo);
@@ -121,5 +123,51 @@ public class InfntAplyHistController {
 
         response.put("success", success);
         return response;
+    }    
+    
+    /**
+    * 유아환경교육관 교육 신청 이력 설문공유. 
+    *
+    * @Title : infntAplyHistSrvySendPopup
+    * @Description : 유아환경교육관 교육 신청 이력 설문공유
+    * @return
+    * @throws Exception
+    * @return String
+     */
+    @RequestMapping(value="/infntAplyHistSrvySendPopup.html")
+    public String infntAplyHistSrvySendPopup(InfntAplyHistVo infntAplyHistVo, Model model) throws Exception {
+        SrvyVo srvyVo = new SrvyVo();
+        if (infntAplyHistVo != null) {
+            //srvyDetail = infntAplyHistService.detailSplmnt(infntAplyHistVo);
+            srvyVo.setSrvyid(infntAplyHistVo.getStdntDgstfnSrvyid());
+            model.addAttribute("infntPrgrmAplyid", infntAplyHistVo.getAplyid());
+            model.addAttribute("prgrmNm", infntAplyHistVo.getPrgrmNm());
+            model.addAttribute("srvyDetail", infntAplyHistService.selectInfntSrvyInfo(srvyVo));
+            
+        }
+        //model.addAttribute("srvyDetail", srvyDetail);
+        return VIEW_PATH + "/infntAplyHistSrvySendPopup";
+    }    
+
+    /**
+     * 유아환경교육관 교육 신청 이력 공유설문 결과. 
+     *
+     * @Title : infntAplyHistSrvyRsltPopup
+     * @Description : 유아환경교육관 교육 신청 이력 공유설문 결과
+     * @return
+     * @throws Exception
+     * @return String
+     */
+    @RequestMapping(value="/infntAplyHistSrvyRsltPopup.html")
+    public String infntAplyHistSrvyRsltPopup(InfntAplyHistVo infntAplyHistVo, Model model) throws Exception {
+        SrvyVo srvyVo = new SrvyVo();
+        if (infntAplyHistVo != null) {
+            //srvyDetail = infntAplyHistService.detailSplmnt(infntAplyHistVo);
+            srvyVo.setInfntPrgrmAplyid(infntAplyHistVo.getAplyid());
+            srvyVo.setSrvyid(infntAplyHistVo.getStdntDgstfnSrvyid());
+        }
+        model.addAttribute("infntPrgrmAplyid", infntAplyHistVo.getAplyid());
+        model.addAttribute("srvySendList", infntAplyHistService.selectInfntSrvySendList(srvyVo));
+        return VIEW_PATH + "/infntAplyHistSrvyRsltPopup";
     }    
 }

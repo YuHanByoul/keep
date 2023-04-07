@@ -1,0 +1,156 @@
+<form id="srvySendForm">
+<input type="hidden" name="mvmnPrgrmAplyid" id="mvmnPrgrmAplyid" th:value="${mvmnPrgrmAplyid}"/>
+	<!-- layerpopup -->
+    <div class="layer-header">
+        <strong class="tit">설문공유</strong>
+        <button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
+    </div>
+    <div class="layer-content">
+
+        <div class="table-row">
+            <table>
+                <caption>설문공유 - 설문명, 참여기간</caption>
+                <colgroup>
+                    <col style="width:140px;">
+                    <col>
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <th scope="row">설문명</th>
+                        <td><th:block th:text="${srvyDetail.srvyNm}"/></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">참여기간</th>
+                        <td><th:block th:text="|${srvyDetail.bgngDe} ~ ${srvyDetail.endDe}|"/></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-caption">
+            <div class="left">
+                <h3 class="sub-title">설문대상 휴대전화 번호</h3>
+                <p>설문을 공유할 대상자의 휴대전화 번호를 입력해주세요. <br> 입력된 휴대전화 번호로 설문 참여 링크 문자 메시지가 발송됩니다.</p>
+            </div>
+        </div>
+        
+        <div class="table-col table-layout-auto table-col-scroll">
+            <table>
+                <caption>설문대상 휴대전화 번호 - 번호, 설문대상 휴대전화 번호 입력, 행 추가
+                </caption>
+                <colgroup>
+                    <col style="width:6%;">
+                    <col>
+                    <col style="width:55px;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th scope="col">번호</th>
+                        <th scope="col">설문대상 휴대전화 번호</th>
+                        <th scope="col"><span class="blind">행 삭제</span></th>
+                    </tr>
+                </thead>
+                <tbody id="srvySendTbody">
+                    <tr>
+                        <td class="idx">1</td>
+                        <td><input type="tel" name="moblphon" title="설문대상 휴대전화 번호"></td>
+                        <td class="ac"><button type="button" class="btn-remove-table" title="행 삭제" onclick="fn_delRow(this)"><span class="icon icon-remove"></span></button></td>
+                    </tr>
+                    <tr>
+                        <td class="idx">2</td>
+                        <td><input type="tel" name="moblphon" title="설문대상 휴대전화 번호"></td>
+                        <td class="ac"><button type="button" class="btn-remove-table" title="행 삭제" onclick="fn_delRow(this)"><span class="icon icon-remove"></span></button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <button type="button" class="btn-row-add" title="행 추가" onclick="fn_addRow()">
+            <span class="icon icon-row-add"></span>
+        </button>
+
+
+    </div>
+    <div class="layer-footer">
+        <div class="btn-wrap">
+            <div class="center">
+                <button type="button" class="btn-medium btn-gray" data-layer-close>닫기</button>
+                <button type="button" class="btn-medium btn-green" onclick="fn_srvySend();">공유</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- //layerpopup -->
+</form>
+<script th:inline="javascript">
+$(function () {
+	var validator= $("#srvySendForm").validate({
+	    rules    : { moblphon : { required: true } }
+	  , messages : { moblphon : { required:"공유할 대상의 휴대전화 번호를 입력해 주세요." } }
+	});
+});
+var stdntDgstfnSrvyid = /*[[${srvyDetail.srvyid}]]*/null;
+var stdntDgstfnQestnrid = /*[[${srvyDetail.qestnrid}]]*/null;
+var prgrmNm = /*[[${prgrmNm}]]*/null;
+
+function fn_srvySend() {
+    if(!($("#srvySendForm").valid())) return;
+    if(!confirm("설문공유를 하시겠습니까?")){return;}
+//    var moblphons = $('[name=moblphon]').map(function(){if($(this).val() != "") return $(this).val();}).get().join(",");
+    var aplyid = $("#mvmnPrgrmAplyid").val();
+    var recipientList = [];
+    $('[name=moblphon]').each(function(){
+        var moblphon = $(this).val();
+        if(moblphon != ""){
+	        recipientList.push(
+                {
+                	recipientNo  : moblphon
+                    ,templateParameter  : {prgrmNm: prgrmNm, stdntDgstfnSrvyid: stdntDgstfnSrvyid, stdntDgstfnQestnrid:stdntDgstfnQestnrid, mvmnPrgrmAplyid:aplyid, infntPrgrmAplyid:0}
+                }
+	        )
+        }
+    })
+	$.ajax({
+	    url: "/front/alimtalk/sendAlimtalk.do"
+	    , type: 'POST'
+	    , data: {templateCode: "TEST004", recipientList: JSON.stringify(recipientList)} 
+	    , cache: false
+	    , success: function(response) {
+	        if(response.header.resultCode == 0) {
+	            alert("알림톡 발송이 완료되었습니다.");                                
+	        } else {
+	            alert("알림톡 발송이 실패 하였습니다.\n잠시 후 다시 시도해주세요.");
+	        }
+	    }
+	});
+};
+function fn_addRow(){
+    var trCnt = $("#srvySendTbody").children().length;
+    $("#srvySendTbody").append( fn_makeListHtml() );
+}
+function fn_makeListHtml(list) {
+    var trCnt = $("#srvySendTbody").children().length;
+    var html = `<tr><td class="idx"> ` + (trCnt+1);  
+		html +=`</td>
+			        <td><input type="tel" name="moblphon" title="설문대상 휴대전화 번호"></td>
+			        <td class="ac"><button type="button" class="btn-remove-table" title="행 삭제" onclick="fn_delRow(this)"><span class="icon icon-remove"></span></button></td>
+			    </tr>    
+			  `;    
+	return html;		  
+}
+
+function fn_delRow(item) {
+	debugger;
+    var trCnt = 0;
+    trCnt = $('#srvySendTbody .idx').length;
+    if(trCnt <= 1){
+        alert("더이상 삭제가 불가 합니다.")
+        return;
+    }                       
+    $(item).parent().parent().remove();
+    //넘버링 초기화
+    $('#srvySendTbody .idx').each(function(i) {
+    	$(this).text(i+1);
+    });
+}
+</script>

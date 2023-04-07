@@ -56,6 +56,8 @@ public class EtcDtaVo extends ParentRequestVo {
     private String exprnPrgrm;
     /** 저작권_코드 */
     private String cpyrhtCd;
+    /** 삭제여부 */
+    private String delYn;
     /** 등록일 */
     @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd")
     private Date regDt;

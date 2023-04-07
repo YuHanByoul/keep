@@ -182,9 +182,10 @@ public class EtcDtaController {
      */
     @PostMapping("/mng/etcDta/deleteEtcDta.do")
     @ResponseBody
-    public Map<String, Object> deleteEtcDta(EtcDtaVo etcDtaVo) throws Exception {
+    public Map<String, Object> deleteEtcDta(EtcDtaVo etcDtaVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> result = new HashMap<>();
 
+        etcDtaVo.setUser(user);
         int retVal = 0;
         retVal = etcDtaService.deleteEtcDta(etcDtaVo);
 

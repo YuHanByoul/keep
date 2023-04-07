@@ -96,5 +96,14 @@ public interface InfntSchdlService {
     */
     public List<InfntSchdlVo> selectInfntSchdlIdList(String clssrmId) throws Exception;
 
+    /**
+     * 교육일정관리 신청 카운트 조회
+     * @Title : selectInfntAplyCnt
+     * @Description : 교육일정관리 신청 카운트 조회
+     * @param infntSchdlVo
+     * @throws Exception 예외
+     * @return int
+     */
+    public int selectInfntAplyCnt(InfntSchdlVo infntSchdlVo) throws Exception;    
 
 }

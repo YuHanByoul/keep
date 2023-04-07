@@ -28,6 +28,7 @@ import com.kbrainc.plum.rte.model.SiteInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.SiteInfo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.util.DateTimeUtil;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 
 /**
@@ -92,6 +93,8 @@ public class SrvyController {
     public String srvySbmsnInsertPopup(SrvyVo srvyVo, Model model) throws Exception {
         model.addAttribute("qitemList", srvyService.selectQitemList(srvyVo));
         model.addAttribute("srvyInfo", srvyService.selectSrvyInfo(srvyVo));
+        model.addAttribute("infntPrgrmAplyid", srvyVo.getInfntPrgrmAplyid());
+        model.addAttribute("mvmnPrgrmAplyid", srvyVo.getMvmnPrgrmAplyid());
         
         return "front/srvy/srvySbmsnInsertPopup";
     }
@@ -210,5 +213,22 @@ public class SrvyController {
         }
         return resultMap;
     }
-    
+
+    /**
+     * 설문 완료 팝업
+     *
+     * @Title : srvySbmsnCmplPopup
+     * @Description : 설문 완료 팝업
+     * @return String 화면경로
+     * @throws Exception 예외
+     */
+     @RequestMapping(value = "/front/srvy/srvySbmsnCmplPopup.html")
+     public String srvySbmsnCmplPopup(String aplyType, Model model) throws Exception {
+         int curYear = Integer.valueOf(DateTimeUtil.getYear());
+         
+         model.addAttribute("aplyType", aplyType);
+         model.addAttribute("curYear", curYear);
+         
+         return "front/srvy/srvySbmsnCmplPopup";
+     }
 }

@@ -51,6 +51,8 @@ public class EduSareaVo extends ParentRequestVo {
     private String useYn;
     /** 지역코드 */
     private String ctprvnCd;
+    /** 지역코드 */
+    private String ctprvnGrp;
     /** 지역코드 저장용 */
     private String [] ctprvnCds;
     /** 시군구코드 */
