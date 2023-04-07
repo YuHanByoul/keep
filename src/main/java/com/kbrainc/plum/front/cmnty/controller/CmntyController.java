@@ -681,6 +681,8 @@ public class CmntyController {
         boolean result = false;
 
         paramVo.setUser(user);
+        paramVo.setCmntid(paramVo.getParntsCmntid());
+        paramVo.setParntsCmntid(null);
         result = cmntyService.insertCmnt(paramVo);
 
         if(result){
