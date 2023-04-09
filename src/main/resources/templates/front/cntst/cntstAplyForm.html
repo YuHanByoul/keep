@@ -159,27 +159,29 @@
 					</colgroup>
 					<tbody>
 						<tr>
-							<th scope="row">작품제목</th>
-							<td><input type="text" title="작품제목" name="prdctTtl"></td>
+							<th scope="row">작품제목<i class="ast" title="필수입력">*</i></th>
+							<td>
+								<input type="text" title="작품제목" name="prdctTtl">
+								<p class="feedback"></p>
+							</td>
+							
 						</tr>
 						<tr>
 							<th scope="row">작품설명<i class="ast" title="필수입력">*</i></th>
 							<td>
-								<textarea title="작품설명" name="prdctExpln"></textarea>
-								<p class="desc">최대 5,000자 작성 가능</p>
+								<textarea title="작품설명" id="prdctExpln" name="prdctExpln" style="height: 70px;"></textarea>
+								<div class="desc ar size"><span id="charCount">0</span> / 5,000자</div>
 								<p class="feedback"></p>
 							</td>
 						</tr>
 						<tr>
-							<th scope="row">작품 업로드</th>
+							<th scope="row">작품 업로드<i class="ast" title="필수입력">*</i></th>
 		                    <td>
 		                        <div class="form-input-file">
 		                            <label class="form-input">
 		                                <input id="multiFileInput" name="files" type="file" multiple class="blind" title="파일첨부" maxcount="5" style="display: none;" th:attr="accept=${acceptUploadFileExt}">
 		                                <span class="btn-medium btn-gray">파일선택</span>                              
-		                            </label>
-									<ul></ul>
-									<p>첨부파일은 최대 5개까지 가능합니다.</p>		  		                            
+		                            </label> 		                            
 		                            <ul id="multipleFileUploadSuccess">
 		                                <th:block th:if="${cntst.fileList != null}">
 		                                    <th:block th:each="file : ${cntst.fileList}">
@@ -198,6 +200,9 @@
 		                                        </li>
 		                                    </th:block>
 		                                </th:block>
+		                                <th:block th:unless="${cntstAplyHist.fileList != null}">
+		                                	<p>첨부파일은 최대 5개까지 가능합니다.</p>
+		                                </th:block>		                                
 		                            </ul>
 		                            <input type="hidden" id="filegrpid" name="prdctFilegrpid" value="0"/>
 		                        </div>
@@ -264,6 +269,14 @@
 	     		
 	    	 	if(!($("#cntstAplyForm").valid())) return;
 	    	 	
+	    	    if (Number($("#filegrpid").val()) == 0) {
+	    	        alert("작품을 업로드해 주십시오.");
+			        var offset = $("#multipleFileUploadSuccess").offset();
+			        $('html, body').animate({scrollTop : offset.top-300}, 300);
+					$("#multipleFileUploadSuccess").focus();
+	    	        return;
+	    	    }
+	    	 	
 	    	 	if(!$("input[name='trmsAgreYn']").prop("checked")) {
 	    	 		alert("참가서약서에 동의해 주십시오.");
 	    	 		return false;
@@ -296,20 +309,31 @@
 				if(msg != null) {
 					alert(msg);
 				}
+				
+				var textarea = document.getElementById("prdctExpln");
+				var charCount = document.getElementById("charCount");
+
+				textarea.addEventListener("input", function() {
+					var count = textarea.value.length;
+					charCount.innerText = count;
+				});
+				
 				validator = $('#cntstAplyForm').validate({
 	                rules: {
-	                	aplySeCd: {required: true},
-	                	pcntstFldCd: {required: true},
-	                	aplyPathCd: {required: true},
-	                	brdt: {required: true},
-	                	prdctExpln: {required: true},
+	                	prdctTtl		: {required: true},
+	                	aplySeCd		: {required: true},
+	                	pcntstFldCd		: {required: true},
+	                	aplyPathCd		: {required: true},
+	                	brdt			: {required: true},
+	                	prdctExpln		: {required: true, maxlength:5000},
 	                },
 	                messages: {
-	                	aplySeCd: {required: "응모구분을 선택해 주십시오."},
-	                    pcntstFldCd: {required: "공모분야를 선택해 주십시오."},
-	                    aplyPathCd: {required: "지원경로를 선택해 주십시오."},
-	                    brdt: {required: "생일을 선택해 주십시오."},
-	                    prdctExpln: {required: "작품설명을 작성해 주십시오."},
+	                	prdctTtl		: {required: "작품제목을 입력해 주십시오."},
+	                	aplySeCd		: {required: "응모구분을 선택해 주십시오."},
+	                    pcntstFldCd		: {required: "공모분야를 선택해 주십시오."},
+	                    aplyPathCd		: {required: "지원경로를 선택해 주십시오."},
+	                    brdt			: {required: "생일을 선택해 주십시오."},
+	                    prdctExpln		: {required: "작품설명을 작성해 주십시오.", maxlength: '작품설명은 5000자를 넘을 수 없습니다.'},
 	                }
 	            });
 				

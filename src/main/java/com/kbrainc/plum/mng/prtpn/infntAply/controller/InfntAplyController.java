@@ -298,13 +298,13 @@ public class InfntAplyController {
     @ResponseBody
     public Map<String, Object> updateSttsCdInfntAply(@Valid InfntAplyVo infntAplyVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
-        if (bindingResult.hasErrors()) {
+        /*if (bindingResult.hasErrors()) {
             FieldError fieldError = bindingResult.getFieldError();
             if (fieldError != null) {
                 resultMap.put("msg", fieldError.getDefaultMessage());
             }
             return resultMap;
-        }
+        }*/
         infntAplyVo.setUser(user);
         int retVal = 0;
         retVal = infntAplyService.updateSttsCdInfntAply(infntAplyVo);

@@ -137,6 +137,9 @@
 	        </div>
 	    </div>    
         <div class="card-block-small">
+            <th:block sec:authorize-url="/mng/etcDta/deleteEtcDta.do">
+                <button th:if="${etcDta.dtaid != null and etcDta.delYn == 'N' }" type='button' class="btn btn-inverse" th:dtaid="${etcDta.dtaid}" th:onclick="|deleteEtcDta(this.getAttribute('dtaid'))|">삭제</button>
+            </th:block>
             <button type='button' class="btn btn-disabled m-r-5" onclick="etcDtaGridHelper.toggleContent()">취소</button>
             <th:block sec:authorize-url="/mng/etcDta/insertEtcDta.do">
                 <button type='button' class="btn btn-primary" onclick="insertEtcDta()">저장</button>
@@ -152,6 +155,29 @@
             atchFileEvent();
             validateForm();
         })
+        
+        var deleteEtcDta = (dtaid) => {
+            var deleteDtaids = dtaid;
+
+            if (confirm('해당 게시물을 삭제하시겠습니까?')) {
+                if (displayWorkProgress()) {
+                    $.ajax({
+                        method: 'post',
+                        url: '/mng/etcDta/deleteEtcDta.do',
+                        dataType: 'json',
+                        data: {deleteDtaids: deleteDtaids},
+                        success: function (response) {
+                            alert(response.msg);
+                            closeWorkProgress();
+                            if (response.result == "success") {
+                                etcDtaGridHelper.resetPageContent();
+                            }
+                        }
+                    });
+                }
+            }
+        }
+        
         let insertEtcDta = () => {
             let editorData = editor.getData();
             $("#cn").val(editorData);

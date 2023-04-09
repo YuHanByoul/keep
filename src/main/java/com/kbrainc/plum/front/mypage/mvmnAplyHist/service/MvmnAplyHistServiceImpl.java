@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.kbrainc.plum.front.mypage.mvmnAplyHist.model.MvmnAplyHistDao;
 import com.kbrainc.plum.front.mypage.mvmnAplyHist.model.MvmnAplyHistVo;
+import com.kbrainc.plum.front.srvy.model.SrvyVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
@@ -92,4 +93,32 @@ public class MvmnAplyHistServiceImpl extends PlumAbstractServiceImpl implements 
         retVal += mvmnAplyHistDao.updateCancelMvmnAply(mvmnAplyHistVo);
         return retVal;
     }
+    
+    /**
+     * 푸름이 이동환경교실 설문 정보 조회
+     **
+     * @Title : selectMvmnSrvyInfo
+     * @Description : 푸름이 이동환경교실 설문 정보 조회
+     * @param mvmnAplyHistVo
+     * @return
+     * @throws Exception
+     * @return SrvyVo
+     */
+    public SrvyVo selectMvmnSrvyInfo(SrvyVo srvyVo) throws Exception{
+        return mvmnAplyHistDao.selectMvmnSrvyInfo(srvyVo);        
+    }
+    
+    /**
+     * 푸름이 이동환경교실 설문 공유 리스트 조회
+     *
+     * @Title : selectMvmnSrvySendList
+     * @Description : 푸름이 이동환경교실 설문 공유 리스트 조회
+     * @param srvyVo
+     * @return
+     * @throws Exception
+     * @return List<SrvyVo>
+     */
+    public List<SrvyVo> selectMvmnSrvySendList(SrvyVo srvyVo) throws Exception{
+        return mvmnAplyHistDao.selectMvmnSrvySendList(srvyVo);
+    }    
 }

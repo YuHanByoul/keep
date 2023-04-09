@@ -24,6 +24,7 @@
             , A.CPYRHT_CD
             , A.ATCH_FILEGRPID
             , A.HITS
+            , A.DEL_YN
             , A.REG_DT
             , A.RGTRID
         FROM
@@ -71,6 +72,7 @@
             , CPYRHT_CD
             , ATCH_FILEGRPID
             , HITS
+            , DEL_YN
             , MDFCN_DT
             , MDFRID
             , REG_DT
@@ -94,6 +96,7 @@
             , CPYRHT_CD
             , ATCH_FILEGRPID
             , HITS
+            , DEL_YN
             , MDFCN_DT
             , MDFRID
             , REG_DT
@@ -112,6 +115,7 @@
             , #{cpyrhtCd}
             , #{atchFilegrpid}
             , 0
+            , 'N'
             , NOW()
             , #{user.userid}
             , NOW()
@@ -138,8 +142,15 @@
         WHERE DTAID = #{dtaid}
     </update>
 
-    <delete id="deleteEtcDta">
-        DELETE FROM TB_CMM_ETC_DTA
-        WHERE DTAID = #{dtaid}
-    </delete>
+    <update id="deleteEtcDta">
+        UPDATE TB_CMM_ETC_DTA
+        SET DEL_YN = 'Y'
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE DTAID IN
+        <foreach collection="deleteDtaids" item="dtaid" separator="," open="(" close=")">
+            #{dtaid}
+        </foreach>
+
+    </update>
 </mapper>

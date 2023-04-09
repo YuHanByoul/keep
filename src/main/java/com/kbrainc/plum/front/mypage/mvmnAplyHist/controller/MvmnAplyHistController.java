@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.front.mypage.mvmnAplyHist.model.MvmnAplyHistVo;
 import com.kbrainc.plum.front.mypage.mvmnAplyHist.service.MvmnAplyHistService;
+import com.kbrainc.plum.front.srvy.model.SrvyVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.StringUtil;
@@ -122,4 +123,50 @@ public class MvmnAplyHistController {
         response.put("success", success);
         return response;
     }    
+    
+    /**
+    * 푸름이 이동환경교실 교육 신청 이력 설문공유. 
+    *
+    * @Title : mvmnAplyHistSrvySendPopup
+    * @Description : 푸름이 이동환경교실 교육 신청 이력 설문공유
+    * @return
+    * @throws Exception
+    * @return String
+     */
+    @RequestMapping(value="/mvmnAplyHistSrvySendPopup.html")
+    public String mvmnAplyHistSrvySendPopup(MvmnAplyHistVo mvmnAplyHistVo, Model model) throws Exception {
+        SrvyVo srvyVo = new SrvyVo();
+        if (mvmnAplyHistVo != null) {
+            //srvyDetail = mvmnAplyHistService.detailSplmnt(mvmnAplyHistVo);
+            srvyVo.setSrvyid(mvmnAplyHistVo.getStdntDgstfnSrvyid());
+            model.addAttribute("mvmnPrgrmAplyid", mvmnAplyHistVo.getAplyid());
+            model.addAttribute("prgrmNm", mvmnAplyHistVo.getPrgrmNm());
+            model.addAttribute("srvyDetail", mvmnAplyHistService.selectMvmnSrvyInfo(srvyVo));
+            
+        }
+        //model.addAttribute("srvyDetail", srvyDetail);
+        return VIEW_PATH + "/mvmnAplyHistSrvySendPopup";
+    }    
+
+    /**
+     * 푸름이 이동환경교실 교육 신청 이력 공유설문 결과. 
+     *
+     * @Title : mvmnAplyHistSrvyRsltPopup
+     * @Description : 푸름이 이동환경교실 교육 신청 이력 공유설문 결과
+     * @return
+     * @throws Exception
+     * @return String
+     */
+    @RequestMapping(value="/mvmnAplyHistSrvyRsltPopup.html")
+    public String mvmnAplyHistSrvyRsltPopup(MvmnAplyHistVo mvmnAplyHistVo, Model model) throws Exception {
+        SrvyVo srvyVo = new SrvyVo();
+        if (mvmnAplyHistVo != null) {
+            //srvyDetail = mvmnAplyHistService.detailSplmnt(mvmnAplyHistVo);
+            srvyVo.setMvmnPrgrmAplyid(mvmnAplyHistVo.getAplyid());
+            srvyVo.setSrvyid(mvmnAplyHistVo.getStdntDgstfnSrvyid());
+        }
+        model.addAttribute("mvmnPrgrmAplyid", mvmnAplyHistVo.getAplyid());
+        model.addAttribute("srvySendList", mvmnAplyHistService.selectMvmnSrvySendList(srvyVo));
+        return VIEW_PATH + "/mvmnAplyHistSrvyRsltPopup";
+    }        
 }

@@ -1,6 +1,5 @@
 package com.kbrainc.plum.front.evnt.controller;
 
-import com.kbrainc.plum.front.cntnts.model.CntntsVo;
 import com.kbrainc.plum.front.evnt.model.EvntVo;
 import com.kbrainc.plum.front.evnt.service.EvntService;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
@@ -8,7 +7,7 @@ import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 import org.apache.ibatis.type.Alias;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
@@ -17,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 참여신청관리 > 이벤트관리 컨트롤러 클래스
+ * 참여신청 > 이벤트 컨트롤러 클래스
  *
  * <pre>
  * com.kbrainc.plum.front.evnt.controller
@@ -26,7 +25,7 @@ import java.util.Map;
  *
  * @author : KBRAINC_DEV
  * @ClassName : EvntController
- * @Description : 참여신청관리 > 이벤트관리 컨트롤러 클래스
+ * @Description : 참여신청 > 이벤트 컨트롤러 클래스
  * @date : 2023. 01. 25.
  * @Version :
  * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
@@ -46,7 +45,7 @@ public class EvntController {
      * @Title : evntList
      * @Description : 이벤트 목록 화면
      */
-    @GetMapping("/front/evnt/evntListForm.html")
+    @RequestMapping("/front/evnt/evntListForm.html")
     public String evntListForm() throws Exception {
         return "front/evnt/evntList";
     }
@@ -59,7 +58,7 @@ public class EvntController {
      * @Title : evntList
      * @Description : 이벤트 목록 화면
      */
-    @GetMapping("/front/evnt/evntDetailForm.html")
+    @RequestMapping("/front/evnt/evntDetailForm.html")
     public String evntDetailForm(Model model, EvntVo evntVo) throws Exception {
         evntService.updateEvntHits(evntVo);
         
@@ -82,7 +81,7 @@ public class EvntController {
      * @Title : selectEvntList
      * @Description : 이벤트 목록 조회
      */
-    @GetMapping("/front/evnt/selectEvntList.do")
+    @RequestMapping("/front/evnt/selectEvntList.do")
     @ResponseBody
     public Map<String, Object> selectEvntList(EvntVo evntVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();

@@ -145,4 +145,16 @@ public class MvmnSchdlServiceImpl extends PlumAbstractServiceImpl implements Mvm
     public List<MvmnSchdlVo> selectMvmnSchdlIdList(String sareaId) throws Exception{
         return mvmnSchdlDao.selectMvmnSchdlIdList(sareaId);   
     }
+    
+    /**
+     * 교육일정관리 신청 카운트 조회
+     * @Title : selectMvmnAplyCnt
+     * @Description : 교육일정관리 신청 카운트 조회
+     * @param mvmnSchdlVo
+     * @throws Exception 예외
+     * @return int
+     */
+    public int selectMvmnAplyCnt(MvmnSchdlVo mvmnSchdlVo) throws Exception{
+        return mvmnSchdlDao.selectMvmnAplyCnt(mvmnSchdlVo);        
+    }
 }
