@@ -1150,8 +1150,29 @@ public interface AsgsysSrngDao {
 	*/
 	public List<AsgsysSrngVo> selectSrngQitemList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
+	/**
+	* 체크리스트정보 조회
+	*
+	* @Title : selectChkListInfo
+	* @Description : 체크리스트정보 조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return AsgsysSrngVo
+	*/
+	public AsgsysSrngVo selectChkListInfo(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
-
+	/**
+	* 체크리스트 문항 목록 조회
+	*
+	* @Title : selectQitemList
+	* @Description : 체크리스트 문항 목록 조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<AsgsysSrngVo>
+	*/
+	public List<AsgsysSrngVo> selectQitemList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 
 }
