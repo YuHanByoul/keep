@@ -1,6 +1,7 @@
 <form id="sprtgrpSrngFrm">
 <input type="hidden" id="prgrmid"      name="prgrmid"       th:value="${sprtgrpSrngInfo.prgrmid}"><!-- 프로그램id -->
 <input type="hidden" id="splmntDmndid" name="splmntDmndid"  th:value="${sprtgrpSrngInfo.splmntDmndid}"><!-- 보완요청id -->
+<input type="hidden" id="chklstid"     name="chklstid"      th:value="${sprtgrpSrngInfo.chklstid}"><!-- 체크리스트 id -->
 <input type="hidden" id="sbmsnid"      name="sbmsnid"       th:value="${sprtgrpSrngInfo.sbmsnid}"><!-- 체크리스트 제출 id -->
 <input type="hidden" id="sbmsnSttsCd"  name="sbmsnSttsCd"   th:value="${sprtgrpSrngInfo.sbmsnSttsCd}"><!-- 제출상태코드 -->
 <input type="hidden" id="scr"          name="scr"           th:value="${sprtgrpSrngInfo.scr}"><!-- 점수 -->
@@ -293,7 +294,6 @@
         $("#sprtgrpSrngFrm [id^=styYn]").prop("disabled", true);
         $("#sprtgrpSrngFrm [id^=sftyMngYn]").prop("disabled", true);
         $("#sprtgrpSrngFrm [id^=sttsCd]").prop("disabled", true);
-
     }
 
 
@@ -329,10 +329,8 @@
         $("#splmntDmndPopup").load(url, function(response, status, xhr) {
 
             if (status == "success") {
-
                 splmntDmndAddModal = new bootstrap.Modal($('#splmntDmndPopup'));
                 splmntDmndAddModal.show();
-
             }
         });
     }
@@ -423,11 +421,10 @@
     			var rdoId = rdoGrp[k].id
 
     			if($("#"+rdoId).prop("checked") && false == isNaN( $("#"+rdoId).attr("altm")) ) {
-
     				sumScr = Number(sumScr)+ Number($("#"+rdoId).attr("altm"));
     			}
-
     		}
+
     		$("#scrSum"+lvCd).text(sumScr+"점");
 
     		totalscore = Number(totalscore) + Number(sumScr);
@@ -517,6 +514,7 @@
         param["chklstRsltCn"]= $("#chklstRsltCn").val();
 
         param["userid"]= $("#sprtgrpid").val();
+        param["sbmsnSeCd"]= "242102";    /*심사구분:심사위원(지원단)*/
 
         var vScr = 0;
         $("[id^=scrSum]").each(

@@ -190,11 +190,11 @@
         (
             SELECT
                 AA.PRGRMID
-              , GROUP_CONCAT(AA.JDGSID)   AS USERID_GRP
-              , GROUP_CONCAT(BB.ACNT)     AS USER_ACNT_GRP
-              , GROUP_CONCAT(BB.NM)       AS USER_NM_GRP
-              , GROUP_CONCAT(BB.EML)      AS USER_EML_GRP
-              , GROUP_CONCAT(BB.MOBLPHON) AS USER_MOBLPHON_GRP
+              , GROUP_CONCAT(IFNULL(AA.JDGSID,''))   AS USERID_GRP
+              , GROUP_CONCAT(IFNULL(BB.ACNT,''))     AS USER_ACNT_GRP
+              , GROUP_CONCAT(IFNULL(BB.NM,''))       AS USER_NM_GRP
+              , GROUP_CONCAT(IFNULL(BB.EML,'') )     AS USER_EML_GRP
+              , GROUP_CONCAT(IFNULL(BB.MOBLPHON,'')) AS USER_MOBLPHON_GRP
             FROM
                 TB_ASS_PRGRM_JDGS AA
             INNER JOIN
@@ -2396,16 +2396,17 @@
                WHERE A.CHKLSTID = #{chklstid}
                ORDER BY D.ORDR ,B.ORDR
         )
-        SELECT DP1 , DP2 , CN , LV , ORDR , QITEMID , ALTM FROM
+        SELECT DP1 , DP2 , CN , LV , ORDR , QITEMID , ALTM, QROW FROM
         (
             SELECT
                 DP1
               , DP2
-              , DB1CN      AS CN
-              , '1'        AS LV
+              , DB1CN     AS CN
+              , '1'       AS LV
               , DENSE_RANK() OVER(PARTITION BY QROW ORDER BY DP1ORDR) ORDR
-              ,''     QITEMID
-              ,''     AS ALTM
+              , 0         AS QITEMID
+              , 0         AS ALTM
+              , 0         AS QROW
             FROM CHK_LST A
             GROUP BY DP1
             UNION ALL
@@ -2415,24 +2416,26 @@
               , DP2CN    AS CN
               , '2'      AS LV
               , DENSE_RANK() OVER(PARTITION BY QROW ORDER BY DP1ORDR) ORDR
-              ,''     AS QITEMID
-              ,''     AS ALTM
+              , 0        AS QITEMID
+              , 0        AS ALTM
+              , 0        AS QROW
             FROM CHK_LST A
             GROUP BY DP2
             UNION ALL
             SELECT
                 DP1
               , DP2
-              , CN            AS  CN
-              , '3'           AS  LV
-              , QROW          AS  ORDR
-              , A.QITEMID
-              , A.ALTM
+              , CN       AS  CN
+              , '3'      AS  LV
+              , DENSE_RANK() OVER(PARTITION BY QROW ORDER BY DP1ORDR) ORDR
+              , QITEMID
+              , ALTM
+              , QROW
             FROM CHK_LST A
             GROUP BY A.QITEMID
             ORDER BY ORDR
         ) AA
-        ORDER BY AA.ORDR, AA.DP1, ORDR, LV
+        ORDER BY AA.DP1,AA.DP2, AA.ORDR, AA.LV, QROW
     </select>
 
     <select id="getCheckListId" parameterType="AsgsysSrngVo" resultType="Integer">
@@ -2730,7 +2733,8 @@
             SRNG_OPNN = #{srngOpnn}
           , MDFCN_DT  = NOW()
           , MDFRID    = #{user.userid}
-        WHERE SPRTGRPID= #{sprtgrpid}
+        WHERE PRGRMID = #{prgrmid}
+        AND   SPRTGRPID= #{sprtgrpid}
     </update>
 
     <!-- 파일목록 조회 -->
@@ -2980,5 +2984,30 @@
          INNER JOIN
             TB_CMM_USER USR ON A.USERID = USR.USERID AND USR.DEL_YN ='N'
     </select>
+
+
+    <!-- 체크리스트 정보 조회 -->
+    <select id="selectChkListInfo" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        /* front.DsgnPrgrmDao.selectChkListInfo*/
+        SELECT
+            A.PRGRMID
+          , A.APLCNTID
+          , A.STTS_CD
+          , IFNULL(A.CHKLSTID ,C.CHKLSTID)    AS CHKLSTID
+          , B.OPER_FRM_CD
+          , CD.CD_NM
+          , D.SBMSNID
+        FROM TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+            TB_ASS_PRGRM_DSTNCTN B ON A.PRGRMID = B.PRGRMID
+        LEFT OUTER JOIN TB_CMM_CD CD ON B.OPER_FRM_CD = CD.CD
+        LEFT OUTER JOIN TB_ASS_CHKLST C ON B.OPER_FRM_CD = C.OPER_FRM_CD AND C.USE_YN ='Y'
+        LEFT OUTER JOIN TB_ASS_CHKLST_SBMSN D ON A.PRGRMID = D.PRGRMID
+                                             AND A.CHKLSTID = D.CHKLSTID
+                                             AND D.SBMSN_SE_CD ='N'   /*신청자 자가진단*/
+        WHERE A.PRGRMID = #{prgrmid}
+    </select>
+
+
 
 </mapper>

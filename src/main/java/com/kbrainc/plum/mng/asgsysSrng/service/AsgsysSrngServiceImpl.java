@@ -1003,12 +1003,81 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     @Transactional
     public int insertSftyMng(AsgsysSrngVo asgsysSrngVo) throws Exception{
     	int ret = 0;
+    	int allSum=0;
+    	int ordrAns=1;
+    	String preSeCd="";
+    	AsgsysSrngVo chkInfo = null;
+    	List<AsgsysSrngVo> qitemList = null;
+    	List<AsgsysSrngVo> ansList = null;
+    	AsgsysSrngVo sbmsnInfo = null;
 
-    	if(CommonUtil.isEmpty(asgsysSrngVo.getSftyMngId())){
+    	if(null != asgsysSrngVo.getSftyMngId() && 0 != asgsysSrngVo.getSftyMngId()){
     		ret = asgsysSrngDao.insertSftyMng(asgsysSrngVo);
+
     	}else {
     		ret = asgsysSrngDao.updateSftyMng(asgsysSrngVo);
     	}
+    	//사전관리인증여부 Y
+    	if("Y".equals(asgsysSrngVo.getBfrCertYn())) {
+    		sbmsnInfo = asgsysSrngDao.selectChkListSbmsn(asgsysSrngVo);
+    		if(null != sbmsnInfo.getSbmsnid() && 0 != sbmsnInfo.getSbmsnid()){
+
+    		}
+    	}
+
+    	//사전관리인증여부 Y
+    	if("Y".equals(asgsysSrngVo.getBfrCertYn())) {
+    		chkInfo = asgsysSrngDao.selectChkListInfo(asgsysSrngVo);
+
+    		//체크리스트 제출 등록
+    		asgsysSrngVo.setSbmsnSttsCd("128102");    /*제출상태 제출*/
+    		asgsysSrngVo.setSbmsnSeCd("242101");    /*제출자:신청자*/
+    		asgsysSrngVo.setChklstid(chkInfo.getChklstid());    /*체크리스트id*/
+    		asgsysSrngVo.setSbmsnid(sbmsnInfo.getSbmsnid());    /*체크리스트id*/
+
+    		ret += asgsysSrngDao.insertChklstSbmsn(asgsysSrngVo);
+
+    		sbmsnInfo = asgsysSrngDao.selectChkListSbmsn(asgsysSrngVo);
+
+    		asgsysSrngVo.setChklstid(chkInfo.getChklstid());
+
+    		qitemList = asgsysSrngDao.selectQitemList(asgsysSrngVo);
+    		for(AsgsysSrngVo vo :  qitemList) {
+    			if("3".equals(vo.getLv())) {
+
+    				ChklstAnsVo ansVo = new ChklstAnsVo();
+    				ansVo.setUser(asgsysSrngVo.getUser());
+    				ansVo.setSbmsnid(asgsysSrngVo.getSbmsnid());
+    				ansVo.setQitemid(vo.getQitemid());
+    				ansVo.setSeCd(vo.getDp2());
+    				ansVo.setCn(vo.getCn());
+    				ansVo.setIdntyMttr(vo.getCn());
+    				ansVo.setScr(Integer.parseInt(vo.getAltm()));
+    				allSum+=ansVo.getScr();
+    				ansVo.setOrdr(vo.getOrdr());
+    				//답변등록
+    				ret += asgsysSrngDao.insertChklstAns(ansVo);
+
+    				ChklstAnsVo ordrAnsVo = new ChklstAnsVo();
+    				if(!vo.getDp2().equals(preSeCd)) {
+    					ordrAnsVo.setUser(asgsysSrngVo.getUser());
+    					ordrAnsVo.setSbmsnid(asgsysSrngVo.getSbmsnid());
+    					ordrAnsVo.setSeCd(vo.getDp2());
+    					ordrAnsVo.setOrdr(ordrAns);
+    					ordrAnsVo.setUser(vo.getUser());
+    					//답변순서 등록
+    					ret+=asgsysSrngDao.insertChklstSeOrdrAnsList(ordrAnsVo);
+    					ordrAns++;
+    					preSeCd=ordrAnsVo.getSeCd();
+    				}
+    			}
+    		}
+
+    		//제출 점수 update
+    		asgsysSrngVo.setScr(allSum);
+    		ret+=asgsysSrngDao.updateChklstSbmsn(asgsysSrngVo);
+    	}
+
     	return ret;
     }
 
@@ -1255,7 +1324,9 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 	public int insertSprtgrpSrng(AsgsysSrngVo asgsysSrngVo) throws Exception {
 
     	int ret=0;
-
+    	String preSeCd="";
+    	int ordrAns=1;
+    	ChklstAnsVo ordrAnsVo = new ChklstAnsVo();
 
     	//지원단심사 수정
     	ret += asgsysSrngDao.updateSprtgrpOpnn(asgsysSrngVo);
@@ -1268,19 +1339,21 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     		ret = asgsysSrngDao.insertChklstSbmsn(asgsysSrngVo);
     	}
 
-    	AsgsysSrngVo SbmsnInfo = asgsysSrngDao.selectDsgnAplyDtlInfo(asgsysSrngVo);
+    	AsgsysSrngVo sbmsnInfo = asgsysSrngDao.selectChkListSbmsn(asgsysSrngVo);
 
     	//체크리스트 답변 수정
     	List<ChklstAnsVo> lst = asgsysSrngVo.getAnsLst();
 
+    	//체크리스트 답변 순서 삭제
+    	ordrAnsVo.setSbmsnid(sbmsnInfo.getSbmsnid());
+    	asgsysSrngDao.deleteChklstSeOrdrAnsList(ordrAnsVo);
+
     	if(lst.size() > 0 ) {
-    		//체크리스트 답변 순서 삭제
-    		//ret += asgsysSrngDao.deleteChklstSeOrdrAnsList(lst.get(0));todo
 
     		for(ChklstAnsVo vo : lst) {
 
     			vo.setUser(asgsysSrngVo.getUser());
-    			vo.setSbmsnid(SbmsnInfo.getSbmsnid());
+    			vo.setSbmsnid(sbmsnInfo.getSbmsnid());
 
     			if(1 == asgsysSrngDao.selectKeyCntChklstAns(vo)) {
     				ret += asgsysSrngDao.updateChklstAns(vo);
@@ -1288,7 +1361,15 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     				ret += asgsysSrngDao.insertChklstAns(vo);
     			}
     			//체크리스트 답변 순서 등록
-    			//ret += asgsysSrngDao.insertChklstSeOrdrAnsList(vo);todo
+    			if(!vo.getSeCd().equals(preSeCd)) {
+        			ordrAnsVo.setSbmsnid(sbmsnInfo.getSbmsnid());
+        			ordrAnsVo.setSeCd(vo.getSeCd());
+        			ordrAnsVo.setOrdr(ordrAns);
+        			ordrAnsVo.setUser(vo.getUser());
+        			ret+=asgsysSrngDao.insertChklstSeOrdrAnsList(ordrAnsVo);
+        			ordrAns++;
+        			preSeCd=vo.getSeCd();
+        		}
     		}
     	}
 
