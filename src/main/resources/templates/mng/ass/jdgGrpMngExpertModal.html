@@ -5,9 +5,6 @@
         display: none;
     }
 
-    #expertSearchJsGrid .jsgrid-grid-body {
-        max-height: 385px;
-    }
 </style>
 <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content type_2">
@@ -145,7 +142,7 @@
                 fields: [
                     {
                         headerTemplate: function () {
-                            return "선택";
+                            return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
                         },
                         itemTemplate: function (_, item) {
                             return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox").attr("id", "userid-" + item.userid)
@@ -157,7 +154,7 @@
                                 });
                         },
                         align: "center",
-                        width: "50",
+                        width: "80",
                         sorting: false
                     },
                     {name: 'userid', type: 'number', css: 'hide'},
@@ -169,16 +166,59 @@
                     {title: "자격증명", name: "crtfctNm", type: "text", cellRenderer: jdgGrpMngExpertModal.cellRendererCrtfctNm, width: "130", sorting: false},
                     {title: "전문분야", name: "sbjctCdNm", type: "text", width: "150", cellRenderer: jdgGrpMngExpertModal.cellRendererSbjctCdNm, align: "center", sorting: false},
                     {title: "활동가능지역", name: "rgnCdNm", type: "text", width: "150", cellRenderer: jdgGrpMngExpertModal.cellRendererRgnCdNm, align: "center", sorting: false},
-                ]
+                ],
+                rowClick : function(args) {
+                    if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+
+                    if($('#userid-'+ args.item.userid).is(':checked')) {
+                        $('#userid-'+ args.item.userid).prop('checked',false).change();
+                    } else {
+                        $('#userid-'+ args.item.userid).prop('checked',true).change();
+                    }
+                },
+                onPageChanged : function() {
+                    $("#selectAllCheckbox").prop("checked", false);
+                    expertSelectedItems = [];
+                }
             });
             var expertSelectItem = function (id) {
                 expertSelectedItems.push(id);
+                if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                    $("#selectAllCheckbox").prop("checked", true);
+                } else {
+                    $("#selectAllCheckbox").prop("checked", false);
+                }
             };
             var expertUnselectItem = function (id) {
                 expertSelectedItems = $.grep(expertSelectedItems, function (i) {
                     return i !== id;
                 });
+
+                if(expertSelectedItems.length == 0) {
+                    $('#selectAllCheckbox').attr('checked', false);
+                }
+                if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                    $("#selectAllCheckbox").prop("checked", true);
+                } else {
+                    $("#selectAllCheckbox").prop("checked", false);
+                }
             };
+
+            $("#selectAllCheckbox").click(function(item) {
+                expertSelectedItems = [];
+                if(this.checked) { // check select status
+                    $('.singleCheckbox').each(function() {
+                        this.checked = true;
+                        expertSelectItem($(this).parent().next().text());
+                    });
+                }else {
+                    $('.singleCheckbox').each(function() {
+                        this.checked = false;
+                        expertUnselectItem(item);
+                    });
+                    expertSelectedItems = [];
+                }
+            });
         },
 
         cellRendererCrtfctNm: function (value, item) {
@@ -230,7 +270,7 @@
                         alert(result.msg)
                         closeWorkProgress();
                         if (result.success) {
-                            jdgGrpDetail.jdgGrpDetailGridHelper.resetPageContent()
+                            jdgGrpDetail.jdgGrpDetailGridHelper.resetListContent()
                         }
                     }
                 });
