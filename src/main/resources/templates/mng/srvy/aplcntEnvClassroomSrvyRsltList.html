@@ -1,0 +1,193 @@
+<div class="tab-pane active" id="aplcntEnvClassroomSrvy" role="tabpanel">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block-small">
+                <form name="searchFrm" id="searchFrm" action="" onsubmit="return false;">
+                    <div class="row">
+                        <div class="col-lg-3 mb-2 mb-lg-0">
+                            <div class="mb-0 form-group">
+                                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
+                                <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                    <select name="searchType" id="searchType" class="form-select form-control">
+                                        <option value="">- 선택 -</option>
+                                        <option value="srvyNm">설문명</option>
+                                    </select>
+                                    <input type="text" class="form-control" name="searchKeyword" id="searchKeyword" aria-label="Text input with dropdown button"/>
+                                </div>
+                            </div>
+                        </div>
+                        <!--    
+                        <div class="col-lg-3 mb-2 mb-lg-0">
+                            <div class="mb-0 form-group row">
+                                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사이트(기관)</strong></div>
+                                <div class="col-sm-12">
+                                    <select name="searchSiteid" id="searchSiteid" class="form-select form-select-sm form-control-sm">
+                                        <option value="">- 전체 -</option>
+                                        <option th:each="site: ${siteList}" th:value="${site.siteid}" th:text="${site.siteNm + ' (' + site.instNm + ')'}"></option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        -->
+                    </div>
+                    <div class="mt-1 p-t-20 text-center border-top">
+                        <button type="button" class="btn btn-disabled m-r-5" onclick="aplcntEnvClassroomSrvy.initSearch();">초기화</button>
+                        <button type="submit" class="btn btn-primary" onclick="aplcntEnvClassroomSrvy.onSearch();">검색</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--임시그리드-->
+    <div class="col-12">
+        <div class="card">
+            <div class="row p-20 p-b-0">
+                <div class="col-12 col-md-6">
+                    <h5><strong>설문 검색 결과</strong></h5>
+                </div>
+                <div class="col-12 col-md-6 text-right">
+                    <th:block sec:authorize-url="/mng/srvy/aplcntEnvClassroomSrvyInsertForm.html">
+                        <button type="button" class="btn btn-primary waves-effect waves-light" onclick="aplcntEnvClassroomSrvy.onInsertForm();">등록</button>
+                    </th:block>
+                </div>
+            </div>
+            <div class="card-block-small">
+                <table id="srvyGrid" class="table-responsive"></table>
+                <div id="srvyPager" class="text-center"></div>
+            </div>
+        </div>
+    </div>
+    <!--//임시그리드-->
+    <div class="col-12">
+        <div class="row" id="contentPanel" style="display: none;"></div>
+    </div>
+</div>
+
+<div class="modal fade" id="qestnrPopup" aria-hidden="true" data-bs-backdrop="static"></div>
+
+<script th:inline="javascript">
+    var aplcntEnvClassroomSrvy = {
+        listUrl: "/mng/srvy/selectEnvClassroomSrvyList.do"
+        , qestnrNm: ""
+        
+        , init: function() {
+            srvyGrid = new GridHelper("srvyGrid", "contentPanel");
+            this.setGrid();
+            this.registEvent();
+        }
+        
+        , registEvent: function() {
+            // TODO
+        }
+        
+        , initSearch: function() {
+             $("#searchType, #searchKeyword").val('');
+        }
+        
+        , onSearch: function() {
+            var searchType = $("#searchType").val();
+            var searchKeyword = $("#searchKeyword").val();
+            if(searchType != '' && searchKeyword == "") {
+                alert("검색어를 입력해 주세요.");
+                return false;
+            }
+            if(searchType == '' && searchKeyword != "") {
+                alert("키워드를 선택해 주세요.");
+                return false;
+            }
+            
+            srvyGrid.resetListContent();
+        }
+        
+        , setGrid: function() {
+            $("#srvyGrid").jsGrid({
+                height: "auto",
+                width: "100%",
+                autoload: true,
+                sorting: false,
+                paging: true,
+                pagerContainer: "#srvyPager",
+                pagerFormat: "{first} {prev} {pages} {next} {last}",
+                pagePrevText: "이전",
+                pageNextText: "다음",
+                pageFirstText: "< 처음 ㅣ",
+                pageLastText: "ㅣ 마지막 >",
+                noDataContent: "데이터가 없습니다.",
+                pageSize: 10,
+                pageButtonCount: 10,
+                pageLoading: true,
+                pageIndex: 1,
+                controller: {
+                    loadData: function(filter) {
+                        var data = $.Deferred();
+                        var params = {
+                            "qestnrKndCd": "110105",
+                            "searchType": $('#searchType').val(),
+                            "searchKeyword": $('#searchKeyword').val(),
+                            "pageNumber": filter.pageIndex,
+                            "rowPerPage": filter.pageSize,
+                            "orderField": "REG_DT",
+                            "orderDirection": "desc"
+                        };
+                        $.ajax({
+                          type: "GET",
+                          contentType: "application/json; charset=utf-8",
+                          url: aplcntEnvClassroomSrvy.listUrl,
+                          data: params,
+                          dataType: "json"
+                        }).done(function(response) {
+                            var da = {
+                                data : escapeGridData(response.list),
+                                itemsCount : response.totalCount
+                            };
+                            data.resolve(da);
+                        });
+                        
+                        return data.promise();
+                    }
+                },
+                fields: [
+                    {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center", sorting: false},
+                    {title: "설문명", name: "srvyNm", type: "text", width: "200"},
+                    {title: "설문지명", name: "qestnrNm", type: "text", width: "200"},
+                    {title: "문항수", name: "qitemCnt", type: "number", align: "center" , width: "60"},
+                    {title: "프로그램 수", name: "prgrmCnt", type: "number", align: "center" , width: "60"},
+                    {title: "사용여부", name: "useYn", type: "text", align: "center" , width: "80", itemTemplate: function(value, item) {
+                        return value == "Y" ? "사용" : "미사용";
+                    }},
+                    {title: "미리보기", name: "", type: "text", align: "center" , width: "150", itemTemplate: function(value, item) {
+                        if(item.qitemCnt == 0) return "-";
+                        return $("<div class='col-sm-12 btn-group-sm'><button class='btn btn-xs btn-primary'>미리보기</div>").on("click", function() {
+                            aplcntEnvClassroomSrvy.qestnrNm = item.qestnrNm;
+                            aplcntEnvClassroomSrvy.onQestnrPopup(item.qestnrid);
+                        });
+                    }}
+                ],
+                rowClick: function(args) { 
+                    if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+                    var detailUrl = "/mng/srvy/srvyRsltDetailForm.html?srvyid=" + args.item.srvyid + "&qestnrid=" + args.item.qestnrid; 
+                    srvyGrid.loadContent(detailUrl);
+                    srvyGrid.rowClick(args);
+                }
+            });
+        }
+        
+        , onInsertForm: function() {
+            var insertUrl = "/mng/srvy/aplcntEnvClassroomSrvyInsertForm.html";
+            srvyGrid.loadContent(insertUrl);
+        }
+        
+        , onQestnrPopup: function(qestnrid) {
+            var url = "/mng/qestnr/qestnrPopup.html?qestnrid=" + qestnrid;
+            $("#qestnrPopup").load(url, function(response, status, xhr) {
+                if(status == "success") {
+                    qestnrModal = new bootstrap.Modal($("#qestnrPopup"));
+                    qestnrModal.show();
+                    $("#popupTitle").text(aplcntEnvClassroomSrvy.qestnrNm);
+                }
+            });
+        }
+    };
+    
+    aplcntEnvClassroomSrvy.init();
+</script>
