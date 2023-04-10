@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.kbrainc.plum.front.mypage.infntAplyHist.model.InfntAplyHistVo;
 import com.kbrainc.plum.front.mypage.infntAplyHist.service.InfntAplyHistService;
 import com.kbrainc.plum.front.srvy.model.SrvyVo;
-import com.kbrainc.plum.front.srvy.service.SrvyService;
+import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.StringUtil;
@@ -108,19 +108,27 @@ public class InfntAplyHistController {
         return VIEW_PATH + "/infntAplyHistDetail";
     }
     
-    @PostMapping("/updateCancelInfntAply.do")
+    @PostMapping("/updateSttsInfntAply.do")
     @ResponseBody
-    public Map<String, Object> updateCancelInfntAply(InfntAplyHistVo infntAplyHistVo, @UserInfo UserVo userVo) throws Exception {
+    public Map<String, Object> updateSttsInfntAply(InfntAplyHistVo infntAplyHistVo, @UserInfo UserVo userVo) throws Exception {
         Map<String, Object> response = new HashMap<>();
         boolean success = false;
         infntAplyHistVo.setUser(userVo);
 
-        if (infntAplyHistService.updateCancelInfntAply(infntAplyHistVo) > 0) {
+        if (infntAplyHistService.updateSttsInfntAply(infntAplyHistVo) > 0) {
             success = true;
-            response.put("msg", "취소가 완료되었습니다.");
+            if("180104".equals(infntAplyHistVo.getUpdCd())){
+                response.put("msg", "취소가 완료되었습니다.");
+            }else if("180105".equals(infntAplyHistVo.getUpdCd())){
+                response.put("msg", "승인거부가 완료되었습니다.");                
+            }
         } else
-            response.put("msg", "취소가 실패하였습니다.");
-
+            if("180104".equals(infntAplyHistVo.getUpdCd())){
+                response.put("msg", "취소가 실패하였습니다.");
+            }
+            if("180105".equals(infntAplyHistVo.getUpdCd())){
+                response.put("msg", "승인거부가 실패하였습니다.");
+            }
         response.put("success", success);
         return response;
     }    
@@ -169,5 +177,23 @@ public class InfntAplyHistController {
         model.addAttribute("infntPrgrmAplyid", infntAplyHistVo.getAplyid());
         model.addAttribute("srvySendList", infntAplyHistService.selectInfntSrvySendList(srvyVo));
         return VIEW_PATH + "/infntAplyHistSrvyRsltPopup";
+    }    
+    
+    @RequestMapping(value = "/updateInfntAply.do")
+    @ResponseBody
+    public Map<String, Object> updateInfntAply(InfntAplyHistVo infntAplyHistVo, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        int retVal = 0;
+        infntAplyHistVo.setUser(user);
+        retVal = infntAplyHistService.updateInfntAply(infntAplyHistVo);
+        
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "수정에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "수정에 실패했습니다.");
+        }        
+        return resultMap;    
     }    
 }

@@ -79,18 +79,23 @@ public class MvmnAplyHistServiceImpl extends PlumAbstractServiceImpl implements 
     }    
     
     /**
-    * 푸름이 이동환경교실 신청취소
+    * 푸름이 이동환경교실 상태수정
     **
-    * @Title : updateCancelMvmnAply
-    * @Description : 푸름이 이동환경교실 신청취소
+    * @Title : updateSttsMvmnAply
+    * @Description : 푸름이 이동환경교실 상태수정
     * @param mvmnAplyHistVo
     * @return
     * @throws Exception
     * @return int
     */
-    public int updateCancelMvmnAply(MvmnAplyHistVo mvmnAplyHistVo) throws Exception{
+    public int updateSttsMvmnAply(MvmnAplyHistVo mvmnAplyHistVo) throws Exception{
         int retVal = 0;
-        retVal += mvmnAplyHistDao.updateCancelMvmnAply(mvmnAplyHistVo);
+        if("C".equals(mvmnAplyHistVo.getUpdCd())) {
+            mvmnAplyHistVo.setUpdCd("180104");
+        }else if("R".equals(mvmnAplyHistVo.getUpdCd())) {
+            mvmnAplyHistVo.setUpdCd("180105");            
+        }
+        retVal += mvmnAplyHistDao.updateSttsMvmnAply(mvmnAplyHistVo);
         return retVal;
     }
     
@@ -120,5 +125,27 @@ public class MvmnAplyHistServiceImpl extends PlumAbstractServiceImpl implements 
      */
     public List<SrvyVo> selectMvmnSrvySendList(SrvyVo srvyVo) throws Exception{
         return mvmnAplyHistDao.selectMvmnSrvySendList(srvyVo);
-    }    
+    }  
+    
+    /**
+    * 푸름이 이동환경교실 참여이력 수정
+    **
+    * @Title : updateMvmnAply
+    * @Description : 푸름이 이동환경교실 참여이력 수정
+    * @param mvmnAplyHistVo
+    * @return
+    * @throws Exception
+    * @return int
+    */
+    public int updateMvmnAply(MvmnAplyHistVo mvmnAplyHistVo) throws Exception{
+        int retVal = 0;
+        retVal += mvmnAplyHistDao.updateMvmnAply(mvmnAplyHistVo);
+        
+        mvmnAplyHistDao.deleteTrgtCd(mvmnAplyHistVo);
+        if(mvmnAplyHistVo.getTrgtCds()!=null & mvmnAplyHistVo.getTrgtCds().length > 0) {
+            retVal += mvmnAplyHistDao.insertTrgtCd(mvmnAplyHistVo);
+        }
+        
+        return retVal;
+    }        
 }

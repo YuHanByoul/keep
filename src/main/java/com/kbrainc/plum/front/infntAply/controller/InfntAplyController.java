@@ -248,10 +248,10 @@ public class InfntAplyController {
     
     @RequestMapping(value = "/front/infntAply/insertInfntAply.do")
     @ResponseBody
-    public Map<String, Object> insertInfntAply(InfntAplyVo infntAplyVo) throws Exception {
+    public Map<String, Object> insertInfntAply(InfntAplyVo infntAplyVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         int retVal = 0;
-        
+        infntAplyVo.setUser(user);
         retVal = infntAplyService.insertInfntAply(infntAplyVo);
         
         if (retVal > 0) {

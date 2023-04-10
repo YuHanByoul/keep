@@ -39,6 +39,7 @@
         </div>
     </div>
     <form id="infntAplyHistForm" name="infntAplyHistForm" method="post">
+    <input type="hidden" id="aplyid" name="aplyid" th:value="${infntAplyHistVo.aplyid}" />
         <div class="table-row">
             <table>
                 <caption>프로그램 정보 - 프로그램, 교육관, 교육정원, 교육시간, 교육대상, 교육회차</caption>
@@ -67,15 +68,20 @@
                         <th scope="row">교육회차</th>
                         <td><th:block th:text="|${infntAplyHistInfoVo.de}, ${infntAplyHistInfoVo.tmeNm}|"></th:block></td>
                     </tr>
-                    <tr>
-                        <th scope="row">지역</th>
-                        <td><th:block th:text="${infntAplyHistInfoVo.ctprvnNm}"></th:block></td>
-                    </tr>
+<!--                     <tr> -->
+<!--                         <th scope="row">지역</th> -->
+<!--                         <td><th:block th:text="${infntAplyHistInfoVo.ctprvnNm}"></th:block></td> -->
+<!--                     </tr> -->
                 </tbody>
             </table>
         </div>
         <div class="table-caption">
-            <h3 class="sub-title">신청 정보</h3>
+            <div class="left">
+                <h3 class="sub-title">신청 정보</h3>
+            </div>
+            <div class="right">
+                <p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
+            </div>
         </div>
         <div class="table-row table-row-mo">
             <table>
@@ -102,8 +108,10 @@
                     <tr>
                         <th scope="row">신청자명</th>
                         <td><th:block th:text="${infntAplyHistRegVo.aplyUserNm}"></th:block></td>
-                        <th scope="row">휴대전화</th>
-                        <td><th:block th:text="${infntAplyHistRegVo.moblphon}"></th:block></td>
+                        <th scope="row">신청자 이메일</th>
+                        <td><th:block th:text="${infntAplyHistRegVo.eml}"></th:block></td>
+<!--                         <th scope="row">휴대전화</th> -->
+<!--                         <td><th:block th:text="${infntAplyHistRegVo.moblphon}"></th:block></td> -->
                     </tr>
                     <tr>
                         <th scope="row">기관주소</th>
@@ -112,68 +120,79 @@
                         <td><th:block th:text="${infntAplyHistRegVo.addrDtl}"></th:block></td>
                     </tr>
                     <tr>
-                        <th scope="row">이메일</th>
-                        <td><th:block th:text="${infntAplyHistRegVo.eml}"></th:block></td>
-                        <th scope="row">교육대상</th>
+                        <th scope="row">방문교사 휴대전화<i class="ast" title="필수입력">*</i></th>
+                        <td>
+	                        <div class="form-input">
+	                            <input type="text" id="moblphon" name="moblphon" title="방문교사 휴대전화" placeholder="교육일에 방문하는 교사 휴대폰 번호" th:value="${infntAplyHistRegVo.moblphon}"/>
+	                        </div>
+                            <p class="feedback"></p>
+                        </td>    
+                        <th scope="row">교육대상<i class="ast" title="필수입력">*</i></th>
                         <td>
                             <div class="form-input">
                                 <div class="form-check-list">
                                     <th:block th:each="item, stat : ${trgtList}">
-                                       <label class="inp"><input type="checkbox" class="trgtCds" th:id="|trgtCd${stat.count}|" name="trgtCd" th:value="${item.TRGTCD}" th:checked="${item.TRGTCHK == 'checked'}" readonly><b><th:block th:text="${item.TRGTNM}"></th:block></b></label>
+                                       <label class="inp"><input type="checkbox" class="trgtCds" th:id="|trgtCd${stat.count}|" name="trgtCd" th:value="${item.TRGTCD}" th:checked="${item.TRGTCHK == 'checked'}"><b><th:block th:text="${item.TRGTNM}"></th:block></b></label>
                                     </th:block>
                                 </div>
                             </div>
-                        </td>
+                        </td>    
                     </tr>
                     <tr>
-                        <th scope="row">총 교육인원</th>
+                        <th scope="row">총 교육인원<i class="ast" title="필수입력">*</i></th>
                         <td>
                             <div class="form-input mo-flex-wrap">
                                 <div class="bul">총</div>
-                                <input type="number" class="ar" title="총 교육인원" style="flex:0 0 50px;width:50px;" th:value="${infntAplyHistRegVo.eduNope}" readonly>
+                                <input type="number" class="ar" id="eduNope" name="eduNope" title="총 교육인원" style="flex:0 0 50px;width:50px;" th:value="${infntAplyHistRegVo.eduNope}" >
                                 <div class="bul">명</div>
                             </div>
+                            <p class="feedback"></p>
                         </td>
-                        <th scope="row">인솔교사인원</th>
+                        <th scope="row">인솔교사인원<i class="ast" title="필수입력">*</i></th>
                         <td>
                             <div class="form-input mo-flex-wrap">
                                 <div class="bul">총</div>
-                                <input type="number" class="ar" title="총 교육인원" style="flex:0 0 50px;width:50px;" th:value="${infntAplyHistRegVo.tcherNope}" readonly>
+                                <input type="number" class="ar" id="tcherNope" name="tcherNope" title="총 교육인원" style="flex:0 0 50px;width:50px;" th:value="${infntAplyHistRegVo.tcherNope}" >
                                 <div class="bul">명</div>
                             </div>
                             <p class="desc fc-red">※ 유아 10명당 인솔교사 1명 필수 참석</p>
+                            <p class="feedback"></p>
                         </td>
                     </tr>
                     <tr>
-                        <th scope="row">신청인 지역</th>
+                        <th scope="row">신청인 지역<i class="ast" title="필수입력">*</i></th>
                         <td colspan="3">
                             <div class="form-input">
-                                <th:block kattr:select_code="ctprvnCd" title="신청인 지역" th:attr="grpCd=143,selectedCd=${infntAplyHistRegVo.ctprvnCd}"  readonly></th:block>
+                                <th:block kattr:select_code="ctprvnCd" th:attr="grpCd=143,selectedCd=${infntAplyHistRegVo.ctprvnCd}" firstOptTxt="- 선택 -"></th:block>
                             </div>
+                            <p class="feedback"></p>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row">기타사항</th>
                         <td colspan="3">
-                            <textarea title="기타사항" placeholder="요청사항 또는 특이사항이 있으시면, 여기에 남겨주세요." readonly><th:block th:text="${infntAplyHistRegVo.etc}"></th:block></textarea>
+                            <textarea name="etc" id="etc" title="기타사항" placeholder="요청사항 또는 특이사항이 있으시면, 여기에 남겨주세요." maxlength="300"><th:block th:text="${infntAplyHistRegVo.etc}"></th:block></textarea>
+                            <div class="desc ar size"><span id="etcTextSize">0</span> / 200자</div>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
         <div class="form-check-all">
-            <label class="inp"><input type="checkbox" th:checked="${infntAplyHistRegVo.towwayOnlnEduAgreYn == 'Y'}" readonly onclick="return false;"><b class="normal-wrap">쌍방향 온라인 시범교육 신청 동의(비동의 시 교육 선정 및 진행 불가)</b></label>
-        </div>
-        <div class="btn-wrap">
-            <div class="right">
-                <th:block th:if="${(infntAplyHistRegVo.sttsCd == '180101' || infntAplyHistRegVo.sttsCd == '180102' || infntAplyHistRegVo.sttsCd == '180103')}">
-                    <a href="javascript:void(0)" class="fc-black6 fs-14 fw-300 underline" th:onclick="infntAplyHistDetail.cancelAply('[[${infntAplyHistInfoVo.aplyid}]]',[[${infntAplyHistRegVo.sttsCd}]])">신청취소</a>
-                </th:block>
-            </div>
+            <label class="inp"><input id="towwayOnlnEduAgreYn" name="towwayOnlnEduAgreYn" type="checkbox" th:checked="${infntAplyHistRegVo.towwayOnlnEduAgreYn == 'Y'}"><b class="normal-wrap">쌍방향 온라인 시범교육 신청 동의(비동의 시 교육 선정 및 진행 불가)<i class="ast" title="필수입력">*</i></b></label>
         </div>
         <div class="btn-wrap">
             <div class="center">
+                <th:block th:if="${(infntAplyHistRegVo.sttsCd == '180101' || infntAplyHistRegVo.sttsCd == '180102')}">
+                    <button type="button" class="btn-medium btn-gray" th:onclick="infntAplyHistDetail.cancelAply('[[${infntAplyHistInfoVo.aplyid}]]',[[${infntAplyHistRegVo.sttsCd}]])">신청취소</button>
+                </th:block>
+                <th:block th:if="${infntAplyHistRegVo.sttsCd == '180103'}">
+                    <button type="button" class="btn-medium btn-gray" th:onclick="infntAplyHistDetail.refuseAply('[[${infntAplyHistInfoVo.aplyid}]]',[[${infntAplyHistRegVo.sttsCd}]])">승인거부</button>                
+                </th:block>    
                 <button type="button" class="btn-medium btn-gray" onclick="infntAplyHistDetail.moveToList()">목록</button>
+                <th:block th:if="${(infntAplyHistRegVo.sttsCd == '180101' || infntAplyHistRegVo.sttsCd == '180102')}">
+                    <button type="button" class="btn-medium btn-green" onclick="infntAplyHistDetail.modifyApply()">저장</button>
+                </th:block>
             </div>
         </div>
     </form>
@@ -201,11 +220,28 @@
     
     <script th:inline="javascript">
     /*<![CDATA[*/
+	    $(function () {
+	    	$('#etcTextSize').text($("#etc").val().length);
+	        $('#etc').keyup(function (e) {
+	            let content = $(this).val();
+	            if (content == '' || content.length == 0) {
+	                $('#etcTextSize').text('0');
+	            } else {
+	                $('#etcTextSize').text(content.length);
+	            }
+	            // 기타사항 text size 제한
+	            if (content.length > 200) {
+	                $(this).val($(this).val().substring(0, 200));
+	            };
+	        });        
+	    })        	
         let infntAplyHistDetail = {
             listUrl: '/front/mypage/infntAplyHist/infntAplyHistListForm.html',
-            cancelUrl: '/front/mypage/infntAplyHist/updateCancelInfntAply.do',
+            updateUrl: '/front/mypage/infntAplyHist/updateSttsInfntAply.do',
+            //refuseUrl: '/front/mypage/infntAplyHist/updateRefuseInfntAply.do',
+            modifyUrl: '/front/mypage/infntAplyHist/updateInfntAply.do',
             cancelAply(id, stat) {
-               if ("180103" == stat || "180101" == stat) {
+               if ("180103" == stat) {
                    alert("신청을 취소할 수 없습니다. 관리자에게 문의하세요.");
                    return;
                } 
@@ -213,9 +249,9 @@
                if (displayWorkProgress(true)) {
                    $.ajax({
                        method: 'post',
-                       url: infntAplyHistDetail.cancelUrl,
+                       url: infntAplyHistDetail.updateUrl,
                        dataType: 'json',
-                       data: {aplyid: id},
+                       data: {aplyid: id, updCd: 'C'},
                        success: function (response) {
                            closeWorkProgress();
                            alert(response.msg);
@@ -224,6 +260,57 @@
                        }
                    })
                }
+            },
+            refuseAply(id, stat) {
+               if (!confirm('승인거부를 하시겠습니까?')) return;
+               if (displayWorkProgress(true)) {
+                   $.ajax({
+                       method: 'post',
+                       url: infntAplyHistDetail.updateUrl,
+                       dataType: 'json',
+                       data: {aplyid: id, updCd: 'R'},
+                       success: function (response) {
+                           closeWorkProgress();
+                           alert(response.msg);
+                           if (response.success)
+                               infntAplyHistDetail.submit(infntAplyHistDetail.listUrl);
+                       }
+                   })
+               }
+            },
+            modifyApply() {
+                if ($("input[name=trgtCd]:checked").length == 0) {
+                    alert('교육대상을 선택해주십시오.')
+                    $('#trgtCd1').focus();
+                    return;
+                }
+                
+                if (!$('#infntAplyHistForm').valid()) return;
+                
+                if(!confirm("저장 하시겠습니까?")) return;
+                
+                var trgtCds = $('.trgtCds:checked').map(function(){ return $(this).val();}).get().join(",");
+                
+                $('#towwayOnlnEduAgreYn').prop("checked") ? $('#towwayOnlnEduAgreYn').val("Y") : $('#towwayOnlnEduAgreYn').val("N");
+                
+                var data =  $("#infntAplyHistForm").serialize();
+                data = data+"&trgtCds="+trgtCds;
+                if(displayWorkProgress(true)){
+                    $.ajax({
+                        url : infntAplyHistDetail.modifyUrl,
+                        type: 'POST',
+                        cache : false,
+                        dataType: 'json',
+                        data : data,
+                        success : function (response){
+                            closeWorkProgress();
+                            alert(response.msg);
+                            if (response.success)
+                                infntAplyHistDetail.submit(infntAplyHistDetail.listUrl);
+                        }
+                    });
+                }            
+
             },
             moveToList() {
                 this.submit(this.listUrl);
@@ -236,8 +323,7 @@
             },
             onSrvySbmsnInsertPopup: function(aplyid, srvyid, qestnrid) {
                 popupCenter({url: '/front/srvy/srvySbmsnInsertPopup.html?srvyid=' + srvyid + '&qestnrid=' + qestnrid + '&infntPrgrmAplyid=' + aplyid, title: '설문조사', w: 1280, h: 1000, l: 0, t: 0});
-            }
-            
+            },
             srvySendPopup: function(aplyid, srvyid, qestnrid) {
                 $("#srvySendModalPopup").load("/front/mypage/infntAplyHist/infntAplyHistSrvySendPopup.html?aplyid=" + aplyid + "&stdntDgstfnSrvyid=" + srvyid + "&stdntDgstfnQestnrid=" + qestnrid + "&prgrmNm=" + $("#prgrmNm").val(), function(response, status, xhr) {
                     if (status == "success") {
