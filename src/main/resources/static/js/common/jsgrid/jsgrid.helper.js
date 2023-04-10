@@ -147,6 +147,20 @@ function loadContent(uri){ // 등록/수정 컨텐츠영역 로드시 사용(컨
 	showContent(); 
 	//hideList();
 }
+function loadContentToTarget(uri,targetElement){ // 등록/수정 컨텐츠영역 로드시 사용(컨텐츠영역 노출, 그리드 숨김)
+   $.ajax({
+        cache: false,
+        url: uri, 
+        type: 'GET',
+        async: 'false',
+        dataType: 'html',
+        success: function(result){ //요청이 성공했을때 실행되는 콜백 함수
+              $(targetElement).html(result);
+        }
+    });
+	showContent(); 
+	//hideList();
+}
 
 function toggleListContent(){
 	/*$("#jsGrid").jsGrid("reset");
