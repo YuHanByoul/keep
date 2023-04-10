@@ -96,6 +96,9 @@
         var popUpdFormModal;
         var eventClickSelectItem = "";
         
+        var jsonData = null;
+        var jsonDataCnt = 0;
+                
         fn_popInsForm = () => {
             var sareaId = $("#sareaId").val();
             var ym = $("#ym").val();
@@ -130,7 +133,29 @@
                 }
             });
         },
-
+        
+        fn_xhrRestDeInfo = () => {
+            var yyyy = $('#calendar').fullCalendar('getView').intervalStart.format("YYYY");
+            var mm = $('#calendar').fullCalendar('getView').intervalStart.format("MM");
+            var xhr = new XMLHttpRequest();
+            var url = 'http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo'; /*URL*/
+            var queryParams = '?' + encodeURIComponent('serviceKey') + '='+'HJwCA6TG5HWdSWlAhHzB190xv4Z%2F2okQ7xj0iITXHGLp6E5iQHdB4ZSS4ehLZiszBeLLcKPP%2F%2FQ6gRrI8k4dDA%3D%3D'; /*Service Key*/
+            queryParams += '&' + encodeURIComponent('pageNo') + '=' + encodeURIComponent('1'); /**/
+            queryParams += '&' + encodeURIComponent('numOfRows') + '=' + encodeURIComponent('100'); /**/
+            queryParams += '&' + encodeURIComponent('solYear') + '=' + encodeURIComponent(yyyy); /**/
+            queryParams += '&' + encodeURIComponent('solMonth') + '=' + encodeURIComponent(mm); /**/
+            queryParams += '&' + encodeURIComponent('_type') + '=' + encodeURIComponent('json'); /**/
+            xhr.open('GET', url + queryParams);
+            xhr.onreadystatechange = function () {
+                if (this.readyState == 4) {
+                    jsonDataCnt = JSON.parse(this.response).response.body.totalCount;
+                    if(jsonDataCnt > 0){
+                           jsonData = JSON.parse(this.response).response.body.items.item;
+                    }
+                }
+            }
+            xhr.send('');                       
+        },
         $('#calendar').fullCalendar({
             plugins : [ 'interaction', 'dayGrid',  'resourceTimeline' ],
             locale : 'ko',
@@ -233,6 +258,7 @@
             },            
             //캘린더 렌더링 이후  
             viewRender: function(view, element){
+                fn_xhrRestDeInfo();
             }
         });     
         // 이전 날짜 클릭

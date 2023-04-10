@@ -6,6 +6,10 @@
 <body>
     <div layout:fragment="content">
         <!-- content -->
+        <div class="nodata d-none">
+            <p><span class="icon icon-notice bg-black9"></span>등록된 설문조사가 없습니다.</p>
+        </div>
+        
         <ul class="survey-list" id="srvyList">
         </ul>
         
@@ -59,19 +63,16 @@
                 , setList: function(data) {
                     $("#srvyList, #pagination").empty();
                     if(data.totalCount == 0) {
-                        $("#srvyList").append(srvy.getNoData());
+                        $(".nodata").removeClass("d-none");
+                        $(".survey-list").addClass("d-none");
                     } else {
+                        $(".nodata").addClass("d-none");
+                        $(".card-list").removeClass("d-none");
                         $(data.list).each(function(index, data) {
                             $("#srvyList").append(srvy.getListItem(data));
                         });                        
                     }
                     $("#pagination").html(data.pagination);
-                }
-                
-                , getNoData: function() {
-                    var el = '<li class="block"><div class="nodata" style="border: none;"><p><span class="icon icon-notice bg-black9"></span>등록된 설문이 없습니다.</p></div></li>';
-                    
-                    return el;
                 }
                 
                 , getListItem: function(data) {
