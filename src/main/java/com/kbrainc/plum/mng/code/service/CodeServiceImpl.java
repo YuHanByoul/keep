@@ -91,6 +91,7 @@ public class CodeServiceImpl extends PlumAbstractServiceImpl implements CodeServ
     @Override
     @Transactional
     public int insertCodeGrpInfo(CodeGrpVo codeGrpVO) throws Exception {
+        codeGrpVO.setCdgrpNm(codeGrpVO.getCdgrpNm().trim());
         return codeDao.insertCodeGrpInfo(codeGrpVO);
     }
 
@@ -153,32 +154,26 @@ public class CodeServiceImpl extends PlumAbstractServiceImpl implements CodeServ
             String cd = codeVo.getCd();
             String tcd = codeVo.getTcd();
             CodeVo codeInfo = codeDao.selectCodeInfo(cd); // 이동될 위치의 ord 정보를 얻기
-            Integer pord = codeInfo.getOrd();
-            String pucd = codeInfo.getUpprCd();
+            Integer pord = codeInfo.getOrd(); //이동될 위치의 순서
+            String pucd = codeInfo.getUpprCd(); //이동될 위치의 상위 그룹 코드
 
             codeInfo = codeDao.selectCodeInfo(tcd);// 이동하는 코드의 code 정보를 얻기
-            Integer tord = codeInfo.getOrd();
-            String tucd = codeInfo.getUpprCd();
+            Integer tord = codeInfo.getOrd(); // 이동하는 위치의 순서
+            String tucd = codeInfo.getUpprCd(); //이동하는 위치의 상위 그룹 코드
 
             if (pucd.equals(tucd)) { // 부모가같을때
-                if (pord.intValue() < tord.intValue()) { // intValue 디버깅 확인 필요
-                    codeVo.setUpperYn("Y");
-                    if ("after".equals(codeVo.getHitMode())) {
-                        codeVo.setOrd(pord + 1);
-                    } else {
-                        codeVo.setOrd(pord);
-                    }
-                } else {
+                if("after".equals(codeVo.getHitMode())) {
+                    /* 아래로 드래그시 */
                     codeVo.setUpperYn("N");
-                    if ("after".equals(codeVo.getHitMode())) {
-                        codeVo.setOrd(pord);
-                    } else {
-                        codeVo.setOrd(pord - 1);
-                    }
+                    codeVo.setOrd(pord);
+                } else {
+                    /* 위로 드래그 시 */
+                    codeVo.setUpperYn("Y");
+                    codeVo.setOrd(pord);
                 }
-                // 트리의 order 변경 (+1, -1)
                 codeDao.updateCodeReOrder(codeVo);
-            } else { // 부모가 다를때
+            }
+/*            else { // 부모가 다를때
                 if ("after".equals(codeVo.getHitMode())) {
                     codeVo.setOrd(pord + 1);
 
@@ -187,12 +182,12 @@ public class CodeServiceImpl extends PlumAbstractServiceImpl implements CodeServ
                 }
                 codeDao.updateCodeReOrderPrnDiff(codeVo);
                 codeDao.updateCodeReOrderPrnDiffOrgin(codeVo);
-            }
+            }*/
 
         }
-        // 트리 코드 부모 코드 및 순서변경
-        // 트리순서 조정
+
         codeDao.updateCodeTreeInfo(codeVo);
+
         retVal = 1;
         return retVal;
     }
