@@ -55,6 +55,8 @@ public class InfntAplyHistVo extends ParentRequestVo {
     private Integer tmeid;
     /** 프로그램 회차명 */
     private String tmeNm;
+    /** 신청상태 변경코드 */
+    private String updCd;
     /** 신청상태 코드 */
     private String sttsCd;
     /** 신청상태 코드명 */

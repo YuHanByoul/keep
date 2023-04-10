@@ -69,6 +69,8 @@ public class MvmnAplyHistVo extends ParentRequestVo {
     private String eduHrMnt;
     /** 교육대상 */
     private String trgtNm;
+    /** 신청상태 변경코드 */
+    private String updCd;
     /** 시군구설명 */
     private String signguDesc;
     /** 신청일 */
@@ -107,6 +109,19 @@ public class MvmnAplyHistVo extends ParentRequestVo {
     private Integer stdntDgstfnSrvyid;
     /** 학생_만족도_설문지아이디 */
     private Integer stdntDgstfnQestnrid;
+    
+    /** 희망 교육 시작시간 */
+    private String hopeEduBgngTm;
+    /** 희망 교육 시작시간 시 */
+    private String hopeEduBgngTmHour;
+    /** 희망 교육 시작시간 분 */
+    private String hopeEduBgngTmMin;
+    /** 희망 교육 종료시간 */
+    private String hopeEduEndTm;
+    /** 희망 교육 종료시간 시 */
+    private String hopeEduEndTmHour;
+    /** 희망 교육 종료시간 분 */
+    private String hopeEduEndTmMin;
     
     /** 등록일 */
     private String regDt;

@@ -507,6 +507,19 @@ public class SrvyController {
     }
     
     /**
+    * 홈페이지설문 결과 목록 화면
+    *
+    * @Title : homeSrvyRsltListForm
+    * @Description : 홈페이지설문 결과 목록 화면
+    * @return String 화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/srvy/homeSrvyRsltListForm.html")
+    public String homeSrvyRsltListForm() throws Exception {
+        return "mng/srvy/homeSrvyRsltList";
+    }
+    
+    /**
     * 대상자설문 결과 목록 화면
     *
     * @Title : trprSrvyRsltListForm
@@ -543,6 +556,58 @@ public class SrvyController {
     @RequestMapping(value = "/mng/srvy/cnsltngDgstfnSrvyRsltListForm.html")
     public String cnsltngDgstfnSrvyRsltListForm() throws Exception {
         return "mng/srvy/cnsltngDgstfnSrvyRsltList";
+    }
+    
+    /**
+    * 유아환경교육설문(신청자) 결과 목록 화면
+    *
+    * @Title : aplcntEnvEduSrvyRsltListForm
+    * @Description : 유아환경교육설문(신청자) 결과 목록 화면
+    * @return String 화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/srvy/aplcntEnvEduSrvyRsltListForm.html")
+    public String aplcntEnvEduSrvyRsltListForm() throws Exception {
+        return "mng/srvy/aplcntEnvEduSrvyRsltList";
+    }
+    
+    /**
+    * 유아환경교육설문(학생) 결과 목록 화면
+    *
+    * @Title : stdntEnvEduSrvyRsltListForm
+    * @Description : 유아환경교육설문(학생) 결과 목록 화면
+    * @return String 화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/srvy/stdntEnvEduSrvyRsltListForm.html")
+    public String stdntEnvEduSrvyRsltListForm() throws Exception {
+        return "mng/srvy/stdntEnvEduSrvyRsltList";
+    }
+    
+    /**
+    * 푸름이아동환경교육(신청자) 결과 목록 화면
+    *
+    * @Title : aplcntEnvClassroomSrvyRsltListForm
+    * @Description : 푸름이아동환경교육(신청자) 결과 목록 화면
+    * @return String 화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/srvy/aplcntEnvClassroomSrvyRsltListForm.html")
+    public String aplcntEnvClassroomSrvyRsltListForm() throws Exception {
+        return "mng/srvy/aplcntEnvClassroomSrvyRsltList";
+    }
+    
+    /**
+    * 푸름이아동환경교육설문(학생) 결과 목록 화면
+    *
+    * @Title : stdntEnvClassroomSrvyRsltListForm
+    * @Description : 푸름이아동환경교육설문(학생) 결과 목록 화면
+    * @return String 화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/srvy/stdntEnvClassroomSrvyRsltListForm.html")
+    public String stdntEnvClassroomSrvyRsltListForm() throws Exception {
+        return "mng/srvy/stdntEnvClassroomSrvyRsltList";
     }
     
     /**

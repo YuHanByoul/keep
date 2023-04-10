@@ -63,16 +63,17 @@ public interface MvmnAplyHistService {
     
     
     /**
-    * 푸름이 이동환경교실 신청취소
+    * 푸름이 이동환경교실 상태수정
     **
-    * @Title : updateCancelMvmnAply
-    * @Description : 푸름이 이동환경교실 신청취소
+    * @Title : updateSttsMvmnAply
+    * @Description : 푸름이 이동환경교실 상태수정
     * @param mvmnAplyHistVo
     * @return
     * @throws Exception
     * @return int
     */
-    public int updateCancelMvmnAply(MvmnAplyHistVo mvmnAplyHistVo) throws Exception;
+    public int updateSttsMvmnAply(MvmnAplyHistVo mvmnAplyHistVo) throws Exception;
+
     
     /**
      * 푸름이 이동환경교실 설문 정보 조회
@@ -96,5 +97,18 @@ public interface MvmnAplyHistService {
      * @throws Exception
      * @return List<SrvyVo>
      */
-    public List<SrvyVo> selectMvmnSrvySendList(SrvyVo srvyVo) throws Exception;        
+    public List<SrvyVo> selectMvmnSrvySendList(SrvyVo srvyVo) throws Exception;    
+    
+    /**
+    * 푸름이 이동환경교실 참여이력 수정
+    **
+    * @Title : updateMvmnAply
+    * @Description : 푸름이 이동환경교실 참여이력 수정
+    * @param mvmnAplyHistVo
+    * @return
+    * @throws Exception
+    * @return int
+    */
+    public int updateMvmnAply(MvmnAplyHistVo mvmnAplyHistVo) throws Exception;   
+      
 }

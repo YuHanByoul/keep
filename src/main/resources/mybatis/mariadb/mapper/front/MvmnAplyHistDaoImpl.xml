@@ -62,6 +62,7 @@
                 , D.PRGRM_NM
                 , D.EDU_NOPE
                 , D.EDU_HR_MNT
+                , D.OPER_FOM_CD
                 , CONCAT((SELECT t1.CD_NM FROM TB_CMM_CD t1 WHERE t1.CD = F.UPPR_CD), ' ', F.CD_NM) AS SIGNGU_DESC
                 , (SELECT GROUP_CONCAT(TC.TRGT_CD SEPARATOR',') FROM TB_EDU_MVMN_PRGRM_TRGT_MAPNG TC WHERE TC.PRGRMID = D.PRGRMID) AS TRGT_CD
                 , (SELECT GROUP_CONCAT(TB.CD_NM SEPARATOR',') FROM TB_EDU_MVMN_PRGRM_TRGT_MAPNG TA, TB_CMM_CD TB WHERE TA.PRGRMID = D.PRGRMID and TA.TRGT_CD = TB.CD) AS TRGT_NM
@@ -87,8 +88,15 @@
             LEFT OUTER JOIN TB_CMM_SRVY H ON H.SRVYID = D.APLCNT_DGSTFN_SRVYID
             LEFT OUTER JOIN TB_CMM_SRVY I ON I.SRVYID = D.STDNT_DGSTFN_SRVYID
             WHERE 1=1
-            AND A.APLYID = #{aplyid}      
-            AND B.TME_SCHDLID = #{tmeSchdlid}    
+            AND A.APLYID = #{aplyid} 
+            <choose>
+              <when test="operFomCd == '197101'">
+                AND B.TME_SCHDLID = #{tmeSchdlid}
+              </when>
+              <otherwise>
+                AND B.TMEID = #{tmeid}
+              </otherwise>
+            </choose>                 
             GROUP BY A.APLYID                  
     </select>    
 
@@ -112,6 +120,8 @@
             , NULLIF(F.MOBLPHON, '') MOBLPHON
             , NULLIF(A.EML, '') EML
             , NULLIF(A.FXNO, '') FXNO            
+            , NULLIF(A.HOPE_EDU_BGNG_TM, '') HOPE_EDU_BGNG_TM            
+            , NULLIF(A.HOPE_EDU_END_TM, '') HOPE_EDU_END_TM            
             , A.EDU_NOPE
             , NULLIF(A.RMRK, '') RMRK
             , A.STTS_CD
@@ -130,19 +140,26 @@
         LEFT OUTER JOIN TB_CMM_INST E ON E.INSTID = A.INSTID 
         LEFT OUTER JOIN TB_CMM_USER F ON F.USERID = A.USERID        
         WHERE A.APLYID = #{aplyid}
-        AND B.TME_SCHDLID = #{tmeSchdlid}
+        <choose>
+          <when test="operFomCd == '197101'">
+            AND B.TME_SCHDLID = #{tmeSchdlid}
+          </when>
+          <otherwise>
+            AND B.TMEID = #{tmeid}
+          </otherwise>
+        </choose>                         
         GROUP BY A.APLYID   
     </select>
-        
-    <!-- 푸름이 이동환경교실 신청취소 -->
-    <update id="updateCancelMvmnAply">
+    
+    <!-- 푸름이 이동환경교실 상태수정 -->
+    <update id="updateSttsMvmnAply" parameterType="front.MvmnAplyHistVo">
         /* MvmnAplyHistDao.updateCancelMvmnAply */
         UPDATE TB_EDU_MVMN_PRGRM_APLY SET
-            STTS_CD = '180104'
+            STTS_CD = #{updCd}
             , MDFCN_DT = NOW()
             , MDFRID = #{user.userid}
         WHERE APLYID = #{aplyid}
-    </update>    
+    </update>   
     
     <!-- 푸름이 이동환경교실 설문 정보 조회 -->
     <select id="selectMvmnSrvyInfo" parameterType="front.SrvyVo" resultType="front.SrvyVo">
@@ -169,7 +186,6 @@
             , A.SITEID
             , A.SRVYID
             , B.QESTNRID
-            , A.INFNT_PRGRM_APLYID
             , A.MVMN_PRGRM_APLYID
             , A.USERID
             , A.PRTPNT_NM
@@ -187,5 +203,48 @@
             AND A.MVMN_PRGRM_APLYID = #{mvmnPrgrmAplyid}
         </if>        
             
-    </select>    
+    </select>  
+    
+    <!-- 푸름이 이동환경교실 참여이력 수정 -->
+    <update id="updateMvmnAply" parameterType="front.MvmnAplyHistVo" keyProperty="front.MvmnAplyHistVo">
+        /* MvmnAplyHistDao.updateMvmnAply */
+        UPDATE TB_EDU_MVMN_PRGRM_APLY SET
+                EDU_NOPE                  = #{eduNope}
+                , HOPE_EDU_BGNG_TM        = #{hopeEduBgngTm}
+                , HOPE_EDU_END_TM         = #{hopeEduEndTm}
+                , RMRK                    = #{rmrk}
+                , MDFCN_DT                = NOW()
+                , MDFRID                  = #{user.userid}
+         WHERE APLYID                     = #{aplyid}
+    </update>      
+    <!-- 교육대상 저장 -->
+    <insert id="insertTrgtCd" parameterType="front.MvmnAplyHistVo" >
+         /* MvmnAplyHistDao.insertTrgtCd */
+         INSERT INTO TB_EDU_MVMN_PRGRM_APLY_EDU_TRGT(
+              APLYID
+              ,EDU_TRGT_CD
+              ,MDFCN_DT
+              ,MDFRID
+              ,REG_DT
+              ,RGTRID
+         )VALUES
+          <foreach item="item" collection="trgtCds"  separator=",">
+           (
+             #{aplyid}
+             ,#{item}
+             ,NOW()
+             ,#{user.userid}
+             ,NOW()
+             ,#{user.userid}             
+            )
+          </foreach>
+    </insert>
+
+    <!-- 교육대상 삭제 -->
+    <insert id="deleteTrgtCd" parameterType="front.MvmnAplyHistVo" >
+         /* MvmnAplyHistDao.deleteTrgtCd */
+         DELETE FROM TB_EDU_MVMN_PRGRM_APLY_EDU_TRGT
+         WHERE 1=1
+           AND APLYID = #{aplyid}
+    </insert>           
 </mapper>

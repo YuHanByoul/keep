@@ -39,130 +39,130 @@
     <select id="selectCodeList" parameterType="CodeVo" resultType="CodeVo">
         /* codeDao.selectCodeList */
         WITH RECURSIVE SEARCH_ORG AS (
-            SELECT 
-                A.CD,
-                A.CD_NM,
-                B.CDGRPID,
-                B.CDGRP_NM,
-                A.CD_DC,
-                A.OPTN1,
-                A.OPTN2,
-                A.OPTN3,
-                A.ORD,
-                A.USE_YN,
-                C.NM AS UPDT_NM,
-                A.MDFCN_DT AS UPDT_D,
-                A.UPPR_CD,
-                CONVERT(CONCAT(A.CDGRPID, RIGHT(CONCAT('0000', CONVERT(A.ORD, VARCHAR(4))), 4)), VARCHAR(255)) AS TREE_ORD,
-                CONVERT('', VARCHAR(255)) AS UPPR_CD_NM
-            FROM 
-                TB_CMM_CD A,
-                TB_CMM_CDGRP B,
-                TB_CMM_USER C
-            WHERE 
-                A.CDGRPID = B.CDGRPID
-                AND A.MDFRID = C.USERID
-                AND A.UPPR_CD = '0'
+        SELECT
+        A.CD,
+        A.CD_NM,
+        B.CDGRPID,
+        B.CDGRP_NM,
+        A.CD_DC,
+        A.OPTN1,
+        A.OPTN2,
+        A.OPTN3,
+        A.ORD,
+        A.USE_YN,
+        C.NM AS UPDT_NM,
+        A.MDFCN_DT AS UPDT_D,
+        A.UPPR_CD,
+        CONVERT(CONCAT(A.CDGRPID, RIGHT(CONCAT('0000', CONVERT(A.ORD, VARCHAR(4))), 4)), VARCHAR(255)) AS TREE_ORD,
+        CONVERT('', VARCHAR(255)) AS UPPR_CD_NM
+        FROM
+        TB_CMM_CD A,
+        TB_CMM_CDGRP B,
+        TB_CMM_USER C
+        WHERE
+        A.CDGRPID = B.CDGRPID
+        AND A.MDFRID = C.USERID
+        AND A.UPPR_CD = '0'
 
-            UNION ALL
-        
-            SELECT 
-                A.CD,
-                A.CD_NM,
-                B.CDGRPID,
-                B.CDGRP_NM,
-                A.CD_DC,
-                A.OPTN1,
-                A.OPTN2,
-                A.OPTN3,
-                A.ORD,
-                A.USE_YN,
-                C.NM AS UPDT_NM,
-                A.MDFCN_DT AS UPDT_D,
-                A.UPPR_CD,
-                CONVERT(CONCAT(D.TREE_ORD, RIGHT(CONCAT('0000', CONVERT(A.ORD, VARCHAR(4))), 4)), VARCHAR(255)) AS TREE_ORD,
-                CONVERT(D.CD_NM, VARCHAR(255)) AS UPPR_CD_NM
-            FROM 
-                TB_CMM_CD A,
-                TB_CMM_CDGRP B,
-                TB_CMM_USER C,
-                SEARCH_ORG D
-            WHERE 
-                A.CDGRPID = B.CDGRPID
-                AND A.MDFRID = C.USERID
-                AND A.UPPR_CD = D.CD
+        UNION ALL
+
+        SELECT
+        A.CD,
+        A.CD_NM,
+        B.CDGRPID,
+        B.CDGRP_NM,
+        A.CD_DC,
+        A.OPTN1,
+        A.OPTN2,
+        A.OPTN3,
+        A.ORD,
+        A.USE_YN,
+        C.NM AS UPDT_NM,
+        A.MDFCN_DT AS UPDT_D,
+        A.UPPR_CD,
+        CONVERT(CONCAT(D.TREE_ORD, RIGHT(CONCAT('0000', CONVERT(A.ORD, VARCHAR(4))), 4)), VARCHAR(255)) AS TREE_ORD,
+        CONVERT(D.CD_NM, VARCHAR(255)) AS UPPR_CD_NM
+        FROM
+        TB_CMM_CD A,
+        TB_CMM_CDGRP B,
+        TB_CMM_USER C,
+        SEARCH_ORG D
+        WHERE
+        A.CDGRPID = B.CDGRPID
+        AND A.MDFRID = C.USERID
+        AND A.UPPR_CD = D.CD
         ),
         <!-- [총건수] -->
         totalCount AS (
-            SELECT 
-                COUNT(1) AS totalCount
-            FROM 
-                SEARCH_ORG A1              <!-- [조회원본] -->
-            WHERE 
-                1=1
-                <if test="cdgrpid != null and cdgrpid != ''">
-                    AND A1.CDGRPID = #{cdgrpid}
-                </if>
-                <if test="upprCd != null and upprCd != ''">
-                    AND A1.UPPR_CD = #{upprCd}
-                </if>
+        SELECT
+        COUNT(1) AS totalCount
+        FROM
+        SEARCH_ORG A1              <!-- [조회원본] -->
+        WHERE
+        1=1
+        <if test="cdgrpid != null and cdgrpid != ''">
+            AND A1.CDGRPID = #{cdgrpid}
+        </if>
+        <if test="upprCd != null and upprCd != ''">
+            AND A1.UPPR_CD = #{upprCd}
+        </if>
 
-                <if test="searchType != null and searchType != ''">
-                    <if test="searchType == 'CD'">
-                        AND A1.CD = #{searchKeyword}
-                    </if>
-                    <if test="searchType == 'CD_NM'">
-                        AND A1.CD_NM LIKE CONCAT('%',#{searchKeyword},'%')
-                    </if>
-                    <if test="searchType == 'UPPR_CD'">
-                        AND A1.UPPR_CD = #{searchKeyword}
-                    </if>
-                    <if test="searchType == 'UPPR_CD_NM'">
-                        AND A1.UPPR_CD_NM LIKE CONCAT('%',#{searchKeyword},'%')
-                    </if>
-                    <if test="searchType == 'CDGRPID'">
-                        AND A1.CDGRPID = #{searchKeyword}
-                    </if>
-                </if>
+        <if test="searchType != null and searchType != ''">
+            <if test="searchType == 'CD'">
+                AND A1.CD = #{searchKeyword}
+            </if>
+            <if test="searchType == 'CD_NM'">
+                AND A1.CD_NM LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+            <if test="searchType == 'UPPR_CD'">
+                AND A1.UPPR_CD = #{searchKeyword}
+            </if>
+            <if test="searchType == 'UPPR_CD_NM'">
+                AND A1.UPPR_CD_NM LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+            <if test="searchType == 'CDGRPID'">
+                AND A1.CDGRPID = #{searchKeyword}
+            </if>
+        </if>
         )
-        SELECT 
-            A1.*,
-            B1.totalCount - (ROW_NUMBER() OVER(ORDER BY A1.TREE_ORD ASC)) + 1 AS rowNumber,
-            B1.totalCount,
-            IFNULL(#{pageNumber}, 1) AS PAGE_NUMBER,
-            CEILING(CONVERT(B1.totalCount, FLOAT) / IFNULL(#{rowPerPage}, 10)) AS TOTAL_PAGE
-        FROM 
-            SEARCH_ORG A1              <!-- [조회원본] -->
-            CROSS JOIN
-            totalCount B1              <!-- [총페이지] -->
-        WHERE 
-            1=1
-            <if test="cdgrpid != null and cdgrpid != ''">
-                AND A1.CDGRPID = #{cdgrpid}
+        SELECT
+        A1.*,
+        B1.totalCount - (ROW_NUMBER() OVER(ORDER BY A1.TREE_ORD ASC)) + 1 AS rowNumber,
+        B1.totalCount,
+        IFNULL(#{pageNumber}, 1) AS PAGE_NUMBER,
+        CEILING(CONVERT(B1.totalCount, FLOAT) / IFNULL(#{rowPerPage}, 10)) AS TOTAL_PAGE
+        FROM
+        SEARCH_ORG A1              <!-- [조회원본] -->
+        CROSS JOIN
+        totalCount B1              <!-- [총페이지] -->
+        WHERE
+        1=1
+        <if test="cdgrpid != null and cdgrpid != ''">
+            AND A1.CDGRPID = #{cdgrpid}
+        </if>
+        <if test="upprCd != null and upprCd != ''">
+            AND A1.UPPR_CD = #{upprCd}
+        </if>
+
+        <if test="searchType != null and searchType != ''">
+            <if test="searchType == 'CD'">
+                AND A1.CD = #{searchKeyword}
             </if>
-            <if test="upprCd != null and upprCd != ''">
-                AND A1.UPPR_CD = #{upprCd}
+            <if test="searchType == 'CD_NM'">
+                AND A1.CD_NM LIKE CONCAT('%',#{searchKeyword},'%')
             </if>
-    
-            <if test="searchType != null and searchType != ''">
-                <if test="searchType == 'CD'">
-                    AND A1.CD = #{searchKeyword}
-                </if>
-                <if test="searchType == 'CD_NM'">
-                    AND A1.CD_NM LIKE CONCAT('%',#{searchKeyword},'%')
-                </if>
-                <if test="searchType == 'UPPR_CD'">
-                    AND A1.UPPR_CD = #{searchKeyword}
-                </if>
-                <if test="searchType == 'UPPR_CD_NM'">
-                    AND A1.UPPR_CD_NM LIKE CONCAT('%',#{searchKeyword},'%')
-                </if>
-                <if test="searchType == 'CDGRPID'">
-                    AND A1.CDGRPID = #{searchKeyword}
-                </if>
+            <if test="searchType == 'UPPR_CD'">
+                AND A1.UPPR_CD = #{searchKeyword}
             </if>
+            <if test="searchType == 'UPPR_CD_NM'">
+                AND A1.UPPR_CD_NM LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+            <if test="searchType == 'CDGRPID'">
+                AND A1.CDGRPID = #{searchKeyword}
+            </if>
+        </if>
         ORDER BY
-            A1.TREE_ORD ASC					<!-- ORDER 필수 -->
+        A1.TREE_ORD ASC					<!-- ORDER 필수 -->
         LIMIT #{pageOffset}, #{rowPerPage}
     </select>
 
@@ -301,27 +301,22 @@
         UPDATE TB_CMM_CD SET
         <if test="upperYn == 'Y'.toString()">
             ORD = ORD + 1
-            WHERE UPPR_CD = IFNULL(#{upprCd}, ((SELECT T.UPPR_CD FROM (SELECT A.UPPR_CD FROM TB_CMM_CD A WHERE A.CD = #{cd}) T) ))
+            WHERE
+                UPPR_CD = (SELECT T.UPPR_CD FROM (SELECT A.UPPR_CD FROM TB_CMM_CD A WHERE A.CD = #{cd}) T)
+                AND CDGRPID = #{cdgrpid}
             <if test="hitMode == 'before'">
-                AND ORD <![CDATA[>= ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CMM_CD A WHERE A.CD = #{cd}) T1)
-                AND ORD <![CDATA[< ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CMM_CD A WHERE A.CD = #{tcd}) T1)
-            </if>
-            <if test="hitMode == 'after'">
-                AND ORD <![CDATA[> ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CMM_CD A WHERE A.CD = #{cd}) T1)
-                AND ORD <![CDATA[< ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CMM_CD A WHERE A.CD = #{tcd}) T1)
+                AND ORD <![CDATA[>=]]> (SELECT ORD FROM TB_CMM_CD A WHERE A.CD = #{cd})
+                AND ORD <![CDATA[<]]> (SELECT ORD FROM TB_CMM_CD A WHERE A.CD = #{tcd})
             </if>
         </if>
         <if test="upperYn == 'N'.toString()">
             ORD = ORD - 1
-            WHERE UPPR_CD = IFNULL(#{upprCd}, ((SELECT T.UPPR_CD FROM (SELECT A.UPPR_CD FROM TB_CMM_CD A WHERE A.CD = #{cd}) T) ))
-            <if test="hitMode == 'before'">
-                AND ORD <![CDATA[> ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CMM_CD A WHERE A.CD = #{tcd}) T1)
-                AND ORD <![CDATA[< ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CMM_CD A WHERE A.CD = #{cd}) T1)
-            </if>
+            WHERE
+                UPPR_CD = (SELECT T.UPPR_CD FROM (SELECT A.UPPR_CD FROM TB_CMM_CD A WHERE A.CD = #{cd}) T)
+                AND CDGRPID = #{cdgrpid}
             <if test="hitMode == 'after'">
-                AND ORD <![CDATA[> ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CMM_CD A WHERE A.CD = #{tcd}) T1)
-                <!-- <if test="menuid != null and menuid != ''"> AND ORD <![CDATA[<= 
-                    ]]> (SELECT T1.ORD FROM(SELECT A.ORD FROM TB_CMM_CD A WHERE A.CD = #{cd}) T1) </if> -->
+                AND ORD <![CDATA[>]]> (SELECT ORD FROM TB_CMM_CD WHERE CD = #{tcd})
+                AND ORD <![CDATA[<=]]> (SELECT ORD FROM TB_CMM_CD WHERE CD = #{cd})
             </if>
         </if>
     </update>
@@ -362,16 +357,8 @@
         UPDATE 
             TB_CMM_CD 
         SET
-            UPPR_CD = #{upprCd}
-            <if test="hitMode == 'over'">
-                ,ORD = (SELECT T.ORD FROM(SELECT IFNULL(MAX(A.ORD),0) +1 AS ORD
-                FROM TB_CMM_CD A
-                WHERE A.UPPR_CD = #{upprCd}) T)
-            </if>
-            <if test="hitMode != 'over'">
-                ,ORD = #{ord}
-            </if>
-        WHERE 
+            ORD = #{ord}
+        WHERE
             CD = #{tcd}
     </update>
 

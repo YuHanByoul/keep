@@ -1,13 +1,13 @@
-<form id="objcModalForm" name="objcModalForm">
-    <input type="hidden" id="aplyid" name="aplyid" th:value="${objcInfo.aplyid}">
-    <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content type_2">
-            <div class="modal-header">
-                <h4 class="modal-title">이의신청 상세보기</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true"></span>
-                </button>
-            </div>
+<div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content type_2">
+        <div class="modal-header">
+            <h4 class="modal-title">이의신청 상세보기</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"></span>
+            </button>
+        </div>
+        <form id="objcModalForm" name="objcModalForm">
+            <input type="hidden" id="aplyid" name="aplyid" th:value="${objcInfo.aplyid}">
             <div class="modal-body">
                 <div class="card m-b-10">
                     <div class="card-header p-b-0">
@@ -36,9 +36,10 @@
                     <button type="button" class="btn btn-primary" onclick="objcPopup.insertAns()">저장</button>
                 </th:block>
             </div>
-        </div>
-    </div>
-</form>
+        </form>
+
+    </div >
+</div>
 
 <script th:inline="javascript">
     var objcPopup = {
@@ -61,18 +62,22 @@
 
             if (!$('#objcModalForm').valid()) return;
 
-            if (displayWorkProgress()) {
-                $.ajax({
-                    type: 'post',
-                    url: this.insertObjcAnsUrl,
-                    data: $('#objcModalForm').serialize(),
-                    dataType: 'json'
-                }).done(function (response) {
-                    alert(response.msg);
-                    objc.modal.hide();
-                    objc.gridHelper.resetPageContent();
-                    closeWorkProgress();
-                });
+            if(confirm('답변을 등록하시겠습니까?')) {
+                if (displayWorkProgress()) {
+                    $.ajax({
+                        type: 'post',
+                        url: this.insertObjcAnsUrl,
+                        data: $('#objcModalForm').serialize(),
+                        dataType: 'json'
+                    }).done(function (response) {
+                        alert(response.msg);
+                        closeWorkProgress();
+                        if(response.success = "success") {
+                            objc.modal.hide();
+                            objc.gridHelper.resetPageContent();
+                        }
+                    });
+                }
             }
         },
 
@@ -80,10 +85,10 @@
             $('#objcModalForm').validate({
                 onsubmit: false,
                 rules: {
-                    ans: {required: true}
+                    ans: {required: true, maxlength: 2000}
                 },
                 messages: {
-                    ans: {required: '답변을 입력해 주십시오.'}
+                    ans: {required: '답변을 입력해 주십시오.', maxlength: '답변은 2000자를 넘을 수 없습니다.'}
                 }
             });
         }

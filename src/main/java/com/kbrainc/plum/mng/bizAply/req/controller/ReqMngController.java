@@ -441,6 +441,7 @@ public class ReqMngController {
             }
         }
         model.addAttribute("supplementVo", detail);
+        model.addAttribute("aplyid", supplementVo.getAplyid());
         
         return "mng/bizAply/req/suppPopup";
     }

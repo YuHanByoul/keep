@@ -79,18 +79,23 @@ public class InfntAplyHistServiceImpl extends PlumAbstractServiceImpl implements
     }    
     
     /**
-    * 유아환경교육관 신청취소
+    * 유아환경교육관 상태수정
     **
-    * @Title : updateCancelInfntAply
-    * @Description : 유아환경교육관 신청취소
+    * @Title : updateSttsInfntAply
+    * @Description : 유아환경교육관 상태수정
     * @param infntAplyHistVo
     * @return
     * @throws Exception
     * @return int
     */
-    public int updateCancelInfntAply(InfntAplyHistVo infntAplyHistVo) throws Exception{
+    public int updateSttsInfntAply(InfntAplyHistVo infntAplyHistVo) throws Exception{
         int retVal = 0;
-        retVal += infntAplyHistDao.updateCancelInfntAply(infntAplyHistVo);
+        if("C".equals(infntAplyHistVo.getUpdCd())) {
+            infntAplyHistVo.setUpdCd("180104");
+        }else if("R".equals(infntAplyHistVo.getUpdCd())) {
+            infntAplyHistVo.setUpdCd("180105");            
+        }
+        retVal += infntAplyHistDao.updateSttsInfntAply(infntAplyHistVo);
         return retVal;
     }
     
@@ -120,5 +125,28 @@ public class InfntAplyHistServiceImpl extends PlumAbstractServiceImpl implements
      */
     public List<SrvyVo> selectInfntSrvySendList(SrvyVo srvyVo) throws Exception{
         return infntAplyHistDao.selectInfntSrvySendList(srvyVo);
+    }    
+    
+    
+    /**
+    * 유아환경교육관 참여이력 수정
+    **
+    * @Title : updateInfntAply
+    * @Description : 유아환경교육관 참여이력 수정
+    * @param infntAplyHistVo
+    * @return
+    * @throws Exception
+    * @return int
+    */
+    public int updateInfntAply(InfntAplyHistVo infntAplyHistVo) throws Exception{
+        int retVal = 0;
+        retVal += infntAplyHistDao.updateInfntAply(infntAplyHistVo);
+        
+        infntAplyHistDao.deleteTrgtCd(infntAplyHistVo);
+        if(infntAplyHistVo.getTrgtCds()!=null & infntAplyHistVo.getTrgtCds().length > 0) {
+            retVal += infntAplyHistDao.insertTrgtCd(infntAplyHistVo);
+        }
+        
+        return retVal;
     }    
 }

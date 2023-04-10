@@ -127,14 +127,18 @@
 							</td>
 						</tr>
 						<tr>
-							<th scope="row">주소</th>
-							<td>
-								<th:block th:text="${userAplyInfo.addr}">
+							<th scope="row">주소<i class="ast" title="필수입력">*</i></th>
+							<td colspan="3">
+								<div class="form-input">
+									<input type="text" id="addr" name="addr" title="지번/도로명" placeholder="지번/도로명을 입력해주세요."  readonly>
+									<button type="button" class="btn-medium btn-gray" onclick="daumPostcode1()">검색</button>
+								</div>
 							</td>
-							
-							<th scope="row">상세주소</th>
-							<td>
-								<th:block th:text="${userAplyInfo.addrDtl}">
+						</tr>
+						<tr>
+							<th scope="row">상세주소<i class="ast" title="필수입력">*</i></th>
+							<td colspan="3">
+								<input type="text" id="addrDtl" name="addrDtl" title="상세주소" placeholder="상세주소를 입력해주세요." >
 							</td>
 						</tr>
 					</tbody>
@@ -169,7 +173,7 @@
 						<tr>
 							<th scope="row">작품설명<i class="ast" title="필수입력">*</i></th>
 							<td>
-								<textarea title="작품설명" id="prdctExpln" name="prdctExpln" style="height: 70px;"></textarea>
+								<textarea title="작품설명" id="prdctExpln" name="prdctExpln" maxlength="5000" style="height: 70px;"></textarea>
 								<div class="desc ar size"><span id="charCount">0</span> / 5,000자</div>
 								<p class="feedback"></p>
 							</td>
@@ -181,7 +185,9 @@
 		                            <label class="form-input">
 		                                <input id="multiFileInput" name="files" type="file" multiple class="blind" title="파일첨부" maxcount="5" style="display: none;" th:attr="accept=${acceptUploadFileExt}">
 		                                <span class="btn-medium btn-gray">파일선택</span>                              
-		                            </label> 		                            
+		                            </label>
+									<ul></ul>
+									<p>첨부파일은 최대 5개까지 가능합니다.</p>		                             		                            
 		                            <ul id="multipleFileUploadSuccess">
 		                                <th:block th:if="${cntst.fileList != null}">
 		                                    <th:block th:each="file : ${cntst.fileList}">
@@ -245,10 +251,9 @@
 			<input type="hidden" name="rprsvNm" th:value="${userAplyInfo.rprsvNm}">
 			<input type="hidden" name="rprsvMoblphon" th:value="${userAplyInfo.rprsvMoblphon}">
 			<input type="hidden" name="eml" th:value="${userAplyInfo.eml}">
-			<input type="hidden" name="zip" th:value="${userAplyInfo.zip}">
-			<input type="hidden" name="addr" th:value="${userAplyInfo.addr}">
-			<input type="hidden" name="addrDtl" th:value="${userAplyInfo.addrDtl}">			
+			<input type="hidden" name="zip" value="">			
 		</form>
+		<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 		<script th:inline="javascript">
 			var cntstid = /*[[${userAplyInfo.cntstid}]]*/ null;
 			var msg = /*[[${msg}]]*/ null;
@@ -336,6 +341,22 @@
 				
 				addFileUploadEvent('multiFileInput', 'cntst_atch', 'multipleFileUploadSuccess');
 			});
+			
+            function daumPostcode1(){
+                new daum.Postcode({
+                    oncomplete: function(data) {
+                        let addr = '';
+                        if (data.userSelectedType === 'R') {
+                            addr = data.roadAddress;
+                        } else {
+                            addr = data.jibunAddress;
+                        }
+                        $('#zip').val(data.zonecode);
+                        $('#addr').val(addr);
+                        $('#addrDtl').focus();
+                    }
+                }).open();
+            }
 		</script>
 	</div>
 
