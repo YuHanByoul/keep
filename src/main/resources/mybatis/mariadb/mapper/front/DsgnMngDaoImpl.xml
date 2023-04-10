@@ -17,6 +17,13 @@
          , B.DSGN_NO
          , A.PRGRM_NM
          , B.STTS_CD
+         , CASE WHEN B.STTS_CD = '132102' THEN '지정탈락'
+                ELSE CASE WHEN B.DSGN_END_DE <![CDATA[ < ]]> DATE_FORMAT(NOW(), '%Y-%m-%d') THEN '지정만료'
+                           ELSE CASE WHEN B.STTS_CD = '132101'THEN '지정승인'
+                                      ELSE ''
+                           END
+                END
+           END    AS DSGN_STTS_CD_NM
          , B.DSGN_OBTAIN_DE
          , B.DSGN_END_DE
          , B.MDFCN_DT
@@ -26,10 +33,12 @@
             TB_ASS_PRGRM A
         LEFT OUTER JOIN
             TB_ASS_DSGN_HSTRY B ON A.PRGRMID = B.PRGRMID
+        WHERE 1=1
+        AND   B.HSTRYID IS NOT NULL
         GROUP BY
             A.PRGRMID
         <if test="user.userid != null and user.userid != ''">
-<!--             AND A.APLCNTID = #{user.userid} -->
+            AND A.APLCNTID = #{user.userid}
         </if>
         <include refid="PaginationMapper.footer"/>
     </select>

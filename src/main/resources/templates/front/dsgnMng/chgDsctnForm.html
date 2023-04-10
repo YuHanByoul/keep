@@ -61,22 +61,13 @@
                             </tr>
                         </thead>
                         <tbody id="list-area"/>
-                            <tr>
-                                <td>9</td>
-                                <td>2231-01</td>
-                                <td class="al"><a href="#" class="link ellipsis">훌륭한 환경교육프로그램 5</a></td>
-                                <td>변경신청</td>
-                                <td>2023-01-01</td>
-                            </tr>
-                        </tbody>
                     </table>
                 </div>
             </div>
 
             <div class="mo-only">
-                <div class="table-list">
-                    <ul>
-                        <li class="block" id="list-mobile-area"/>
+                <div class="table-list" >
+                    <ul id="list-mobile-area"/>
                     </ul>
                 </div>
             </div>
@@ -113,6 +104,8 @@
                     var html = "";
                     var list = data.list;
                     var mobileHtml = "";
+
+
                     if (list == null || list.length <= 0) {
                         html += `<tr>
                                      <td class="nodata" colspan="5">
@@ -127,59 +120,64 @@
                             `;
                     } else {
                         list.forEach(function (item) {
-                            let canGoToDetail = item.rlsYn == 'Y' || (item.rlsYn == 'N' && (item.userid == aplyDsctnList.userid));
+
+                            var dsgnNo       = item?.dsgnNo       ?? '';
+                            var aplyid       = item?.aplyid       ?? '';
+                            var prgrmNm      = item?.prgrmNm      ?? '';
+                            var sttsCdNm     = item?.sttsCdNm     ?? '';
+                            var sttsCd       = item?.sttsCd       ?? '';
+                            var regDt        = item?.regDt        ?? '';
+                            var splmntDmndCn = item?.splmntDmndCn ?? '';
+
                             html +=
                                 `
                                 <tr>
                                 <td>${item.rowNumber}</td>
-                                <td>${item.dsgnNo}</td>
-                                <td><button type="button" class="link" onclick="chgDsctn.goDtl('${item.aplyid}')">${item.prgrmNm}</button></td>
-                                `
-                                if(item.sttsCd != '119101') html += `<td><button type="button" class="link" onclick="chgDsctn.goPop('${item.sttsCdNm}','${item.splmntDmndCn}')">${item.sttsCdNm==null?'':item.sttsCdNm}</button></td>`
-                                else                        html +=`<td>${item.sttsCdNm==null?'':item.sttsCdNm}</td>`
-
-                            html +=
-                            	`
-                                <td>${item.regDt}</td>
+                                <td>${dsgnNo}</td>
+                                <td><button type="button" class="link" onclick="chgDsctn.goDtl('${aplyid}')">${prgrmNm}</button></td>
+                                ${sttsCd != '119101'? `<td><button type="button" class="link" onclick="chgDsctn.goPop('${sttsCdNm}','${splmntDmndCn}')">${sttsCdNm}</button></td>` : `<td>${sttsCdNm}</td>`}
+                                <td>${regDt}</td>
                                 </tr>
                                 `;
 
                             mobileHtml += `
-                            	<div class="tbody">
-                                <dl>
-                                    <div class="list">
-                                        <dt>번호</dt>
-                                        <dd>${item.rowNumber}</dd>
+                                <li class="block">
+                                	<div class="tbody">
+                                        <dl>
+                                            <div class="list">
+                                                <dt>번호</dt>
+                                                <dd>${item.rowNumber}</dd>
+                                            </div>
+                                            <div class="list">
+                                                <dt>지정번호</dt>
+                                                <dd>${dsgnNo}</dd>
+                                            </div>
+                                            <div class="list">
+                                                <dt>프로그램명</dt>
+                                                <dd class="al"><button type="button" class="link" onclick="chgDsctn.goDtl('${aplyid}')">${prgrmNm}</button></dd>
+                                            </div>
+                                            <div class="list">
+                                                <dt>진행상태</dt>
+                                                ${sttsCd != '119101'? `<dd><button type="button" class="link" onclick="chgDsctn.goPop('${sttsCdNm}','${splmntDmndCn}')">${sttsCdNm}</button></dd>` : `<dd>${sttsCdNm}</dd>`}
+                                            </div>
+                                            <div class="list">
+                                                <dt>등록일</dt>
+                                                <dd>${regDt}</dd>
+                                            </div>
+                                        </dl>
                                     </div>
-                                    <div class="list">
-                                        <dt>지정번호</dt>
-                                        <dd>${item.dsgnNo}</dd>
-                                    </div>
-                                    <div class="list">
-                                        <dt>프로그램명</dt>
-                                        <dd class="al"><a href="#" class="link ellipsis">${item.prgrmNm}</a></dd>
-                                    </div>
-                                    <div class="list">
-                                        <dt>진행상태</dt>
-                                        <dd>${item.sttsCd==null?'':item.sttsCdNm}</dd>
-                                    </div>
-                                    <div class="list">
-                                        <dt>등록일</dt>
-                                        <dd>${item.regDt}</dd>
-                                    </div>
-                                </dl>
-                            </div>
+                                </li>
                                 `;
                         });
-
                     }
+
                     $("#list-area").html(html);
                     $('#list-mobile-area').html(mobileHtml);
                     $("#pagination").html(data.pagination);
-
                 },
 
                 goDtl(id) {
+
                     var f = document.forms.searchForm;
                     f.action = chgDsctn.dtlUrl
                     f.aplyid.value = id;
@@ -197,7 +195,6 @@
                             layerPopup.open({target:'chgAprvPopup'});
                         }
                     });
-
                 }
             }
 

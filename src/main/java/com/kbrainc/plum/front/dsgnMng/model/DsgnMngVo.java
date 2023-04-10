@@ -61,6 +61,9 @@ public class DsgnMngVo extends ParentRequestVo {
     /** 상태 코드 */
     private String sttsCd;
 
+    /** 지정 상태 코드 */
+    private String dsgnSttsCdNm;
+
     /** 상태 코드 명*/
     private String sttsCdNm;
 
