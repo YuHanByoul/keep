@@ -4,176 +4,197 @@
         layout:decorator="layout/front/subLayout">
 <body>
 <div layout:fragment="content">
-    <form id="pstForm" name="pstForm">
-        <input type="hidden" id="atchfileCnt" th:value="${bbsInfo.atchfileCnt}">
-        <input type="hidden" id="atchfileSize" th:value="${bbsInfo.atchfileSize}">
-        <input type="hidden" id="currentFileCnt" th:value="${currentFileCnt eq null ? 0 : currentFileCnt}">
-        <input type="hidden" name="pstid" th:value="${paramVo.pstid}">
-        <input type="hidden" name="bbsid" th:value="${paramVo.bbsid}">
-        <input type="hidden" id="formType" th:value="${formType}">
-        <div class="table-caption">
-            <div class="left">
-                <h3 class="sub-title"><th:block th:text="${bbsInfo.nm + (formType eq 'INSERT' ? ' 등록' : ' 수정')}"></th:block></h3>
+    <th:block th:if="${cmntyInfo.mbrSttsCd eq '118100' and (bbsInfo.cmntyBbsTmplatid != 1 or cmntyInfo.authrtCd eq '117100')}">
+        <form id="pstForm" name="pstForm">
+            <input type="hidden" id="atchfileCnt" th:value="${bbsInfo.atchfileCnt}">
+            <input type="hidden" id="atchfileSize" th:value="${bbsInfo.atchfileSize}">
+            <input type="hidden" id="currentFileCnt" th:value="${currentFileCnt eq null ? 0 : currentFileCnt}">
+            <input type="hidden" name="pstid" th:value="${paramVo.pstid}">
+            <input type="hidden" name="bbsid" th:value="${paramVo.bbsid}">
+            <input type="hidden" id="formType" th:value="${formType}">
+            <div class="table-caption">
+                <div class="left">
+                    <h3 class="sub-title"><th:block th:text="${bbsInfo.nm + (formType eq 'INSERT' ? ' 등록' : ' 수정')}"></th:block></h3>
+                </div>
+                <div class="right">
+                    <p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
+                </div>
             </div>
-            <div class="right">
-                <p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
-            </div>
-        </div>
 
-        <div class="table-row table-row-mo">
-            <table class="board-input">
-                <caption><span>게시글 작성</span></caption>
-                <colgroup>
-                    <col style="width:140px;">
-                    <col>
-                    <col style="width:140px;">
-                    <col>
-                </colgroup>
-                <tr>
-                    <th scope="row"><label for="ttl">제목</label></th>
-                    <td colspan="3">
-                        <div class="form-input">
-                            <input type="text" title="제목" placeholder="제목을 입력해주세요." id="ttl" name="ttl" th:value="${cmntyPstInfo.ttl}">
-                        </div>
-                        <div class="col">
-                            <p class="feedback"></p>
-                        </div>
-                    </td>
-                </tr>
-                <tr th:if="${bbsInfo.fxNtcUseYn eq 'Y'}">
-                    <th scope="row">공지여부</th>
-                    <td colspan="3">
-                        <div class="form-check-list">
-                            <label class="inp"><input type="radio" name="fxNtcYn" value="Y" th:checked="${cmntyPstInfo.fxNtcYn eq 'Y'}"><b>사용</b></label>
-                            <label class="inp"><input type="radio" name="fxNtcYn" value="N" th:checked="${cmntyPstInfo.fxNtcYn eq 'N' or cmntyPstInfo.fxNtcYn eq null}"><b>사용안함</b></label>
-                        </div>
-                        <div class="col">
-                            <p class="feedback"></p>
-                        </div>
-                    </td>
-                </tr>
-                <tr th:if="${bbsInfo.fxNtcUseYn eq 'Y'}">
-                    <th scope="row">공지 시작 일시<i class="ast" title="필수입력">*</i></th>
-                    <td>
-                        <div class="form-input">
-                            <input type="datetime-local" title="시작일" id="fxNtcBgngDt" name="fxNtcBgngDt" th:value="${cmntyPstInfo.fxNtcBgngDt}">
-                        </div>
-                        <div class="col">
-                            <p class="feedback"></p>
-                        </div>
-                    </td>
-                    <th scope="row">공지 종료 일시<i class="ast" title="필수입력">*</i></th>
-                    <td>
-                        <div class="form-input">
-                            <input type="datetime-local" title="종료일" id="fxNtcEndDt" name="fxNtcEndDt" th:value="${cmntyPstInfo.fxNtcEndDt}">
-                        </div>
-                        <div class="col">
-                            <p class="feedback"></p>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row"><label for="cn">내용</label></th>
-                    <td colspan="3">
-                        <textarea cols="40" id="cn" name="cn" rows="5" placeholder="내용을 입력해주세요." title="내용입력" class="textarea" th:text="${cmntyPstInfo.cn}"></textarea>
-                        <div class="col">
-                            <p class="feedback"></p>
-                        </div>
-                    </td>
-                </tr>
-                <tr th:if="${bbsInfo.atchfileUseYn eq 'Y'}">
-                    <th scope="row">첨부파일</th>
-                    <td colspan="3">
-                        <div class="form-input-file">
-                            <label class="form-input">
-                                <input id="multiFileInput" name="files" type="file" multiple class="blind" title="파일첨부" maxcount="5" style="display: none;"
-                                       th:attr="accept=${acceptUploadFileExt}">
-                                <span class="btn-medium btn-gray">파일선택</span>
-                            </label>
-                            <ul id="multipleFileUploadSuccess">
-                                <th:block th:if="${fileMap ne null}" th:each="file : ${fileMap}">
-                                    <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}" th:id="${file.fileid}">
+            <div class="table-row table-row-mo">
+                <table class="board-input">
+                    <caption><span>게시글 작성</span></caption>
+                    <colgroup>
+                        <col style="width:140px;">
+                        <col>
+                        <col style="width:140px;">
+                        <col>
+                    </colgroup>
+                    <tr>
+                        <th scope="row"><label for="ttl">제목</label></th>
+                        <td colspan="3">
+                            <div class="form-input">
+                                <input type="text" title="제목" placeholder="제목을 입력해주세요." id="ttl" name="ttl" th:value="${cmntyPstInfo.ttl}">
+                            </div>
+                            <div class="col">
+                                <p class="feedback"></p>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${bbsInfo.fxNtcUseYn eq 'Y'}">
+                        <th scope="row">공지여부</th>
+                        <td colspan="3">
+                            <div class="form-check-list">
+                                <label class="inp"><input type="radio" name="fxNtcYn" value="Y" th:checked="${cmntyPstInfo.fxNtcYn eq 'Y'}"><b>사용</b></label>
+                                <label class="inp"><input type="radio" name="fxNtcYn" value="N" th:checked="${cmntyPstInfo.fxNtcYn eq 'N' or cmntyPstInfo.fxNtcYn eq null}"><b>사용안함</b></label>
+                            </div>
+                            <div class="col">
+                                <p class="feedback"></p>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${bbsInfo.fxNtcUseYn eq 'Y'}">
+                        <th scope="row">공지 시작 일시<i class="ast" title="필수입력">*</i></th>
+                        <td>
+                            <div class="form-input">
+                                <input type="datetime-local" title="시작일" id="fxNtcBgngDt" name="fxNtcBgngDt" th:value="${cmntyPstInfo.fxNtcBgngDt}">
+                            </div>
+                            <div class="col">
+                                <p class="feedback"></p>
+                            </div>
+                        </td>
+                        <th scope="row">공지 종료 일시<i class="ast" title="필수입력">*</i></th>
+                        <td>
+                            <div class="form-input">
+                                <input type="datetime-local" title="종료일" id="fxNtcEndDt" name="fxNtcEndDt" th:value="${cmntyPstInfo.fxNtcEndDt}">
+                            </div>
+                            <div class="col">
+                                <p class="feedback"></p>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><label for="cn">내용</label></th>
+                        <td colspan="3">
+                            <textarea cols="40" id="cn" name="cn" rows="5" placeholder="내용을 입력해주세요." title="내용입력" class="textarea" th:text="${cmntyPstInfo.cn}"></textarea>
+                            <div class="col">
+                                <p class="feedback"></p>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${bbsInfo.atchfileUseYn eq 'Y'}">
+                        <th scope="row">첨부파일</th>
+                        <td colspan="3">
+                            <div class="form-input-file">
+                                <label class="form-input">
+                                    <input id="multiFileInput" name="files" type="file" multiple class="blind" title="파일첨부" maxcount="5" style="display: none;"
+                                           th:attr="accept=${acceptUploadFileExt}">
+                                    <span class="btn-medium btn-gray">파일선택</span>
+                                </label>
+                                <ul id="multipleFileUploadSuccess">
+                                    <th:block th:if="${fileMap ne null}" th:each="file : ${fileMap}">
+                                        <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}" th:id="${file.fileid}">
                                         <span class="name">
                                             <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
                                                th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
                                                 [[${file.orginlFileNm}]]
                                             </a>
                                         </span>
-                                        <button type="button" class="file-delete" title="삭제" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
-                                                th:onclick="|javascript:deleteFile(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
-                                            <span class="icon icon-circle-close"></span>
-                                        </button>
-                                    </li>
-                                </th:block>
-                            </ul>
-                            <input type="hidden" id="filegrpid" name="filegrpid" th:value="${cmntyPstInfo.filegrpid eq null ? 0 : cmntyPstInfo.filegrpid}"/>
-                        </div>
-                    </td>
-                </tr>
-<!--<th:block  th:if ="${bbsInfo.clUseYn == 'Y'}">-->
-<!--                            <tr>-->
-<!--                                <th scope="row"><label for="title">분류</label></th>-->
-<!--                                <td>-->
-<!--                                    <fieldset>-->
-<!--                                        <legend>-->
-<!--                                            <span>검색</span>-->
-<!--                                        </legend>-->
+                                            <button type="button" class="file-delete" title="삭제" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                                    th:onclick="|javascript:deleteFile(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                <span class="icon icon-circle-close"></span>
+                                            </button>
+                                        </li>
+                                    </th:block>
+                                </ul>
+                                <input type="hidden" id="filegrpid" name="filegrpid" th:value="${cmntyPstInfo.filegrpid eq null ? 0 : cmntyPstInfo.filegrpid}"/>
+                            </div>
+                        </td>
+                    </tr>
+                    <!--<th:block  th:if ="${bbsInfo.clUseYn == 'Y'}">-->
+                    <!--                            <tr>-->
+                    <!--                                <th scope="row"><label for="title">분류</label></th>-->
+                    <!--                                <td>-->
+                    <!--                                    <fieldset>-->
+                    <!--                                        <legend>-->
+                    <!--                                            <span>검색</span>-->
+                    <!--                                        </legend>-->
 
-<!--                                        <div class="search-board-in">-->
-<!--                                            <select title="구분" class="form-select" id="bbsClid" name="bbsClid">-->
-<!--                                                <option value="">분류선택</option>-->
-<!--                                                <th:block th:each="item : ${clList}">-->
-<!--                                                    <option th:value="${item.bbsClid}"><th:block th:text="${item.clNm}"/></option>-->
-<!--                                                </th:block>-->
-<!--                                            </select>-->
-<!--                                            <span class="form-msg"></span>-->
-<!--                                        </div>-->
-<!--                                    </fieldset>-->
+                    <!--                                        <div class="search-board-in">-->
+                    <!--                                            <select title="구분" class="form-select" id="bbsClid" name="bbsClid">-->
+                    <!--                                                <option value="">분류선택</option>-->
+                    <!--                                                <th:block th:each="item : ${clList}">-->
+                    <!--                                                    <option th:value="${item.bbsClid}"><th:block th:text="${item.clNm}"/></option>-->
+                    <!--                                                </th:block>-->
+                    <!--                                            </select>-->
+                    <!--                                            <span class="form-msg"></span>-->
+                    <!--                                        </div>-->
+                    <!--                                    </fieldset>-->
 
-<!--                                </td>-->
-<!--                            </tr>-->
-<!--</th:block>-->
-            </table>
-        </div>
-
-        <div class="box-desc-list bg7 mt10">
-            <ul>
-                <li>첨부 가능 확장자 :
-                    <th:block>
-                        <th:block th:each="item, itemStat : ${fileConfiguration.uploadFileExtsn}">
-                            [[${item.value}]]
-                            <th:block th:if="${!itemStat.last}">,&nbsp;</th:block>
-                        </th:block>
-                    </th:block>
-                </li>
-                <li>첨부 가능 개수 : [[${bbsInfo.atchfileCnt}]]개</li>
-                <li>첨부 가능 개별 용량 : [[${bbsInfo.atchfileSize}]]Mbyte</li>
-            </ul>
-        </div>
-
-        <div class="btn-wrap">
-            <div class="center">
-                <button th:if="${paramVo.pstid eq null}" type="button" class="btn-medium btn-gray list-btn" data-action="cmntyPstList.html">이전</button>
-                <button th:if="${paramVo.pstid ne null}" type="button" class="btn-medium btn-gray list-btn" data-action="cmntyPstView.html">이전</button>
-                <button th:if="${formType eq 'INSERT'}" type="button" class="btn-medium btn-blue save-btn">등록</button>
-                <button th:if="${formType eq 'MODIFY'}" type="button" class="btn-medium btn-blue save-btn">수정</button>
+                    <!--                                </td>-->
+                    <!--                            </tr>-->
+                    <!--</th:block>-->
+                </table>
             </div>
-        </div>
-    </form>
 
-    <form name="searchForm" id="searchForm">
-        <input type="hidden" id="pageNumber" name="pageNumber" th:value="${paramVo.pageNumber}">
-        <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${paramVo.rowPerPage}">
-        <input type="hidden" id="searchType" name="searchType" th:value="${paramVo.searchType}">
-        <input type="hidden" id="searchKeyword" name="searchKeyword" th:value="${paramVo.searchKeyword}">
-        <input type="hidden" id="cmntyid" name="cmntyid" th:value="${cmntyid}">
-        <input type="hidden" id="bbsid" name="bbsid" th:value="${paramVo.bbsid}">
-        <input type="hidden" id="pstid" name="pstid" th:value="${paramVo.pstid}">
-    </form>
+            <div class="box-desc-list bg7 mt10">
+                <ul>
+                    <li>첨부 가능 확장자 :
+                        <th:block>
+                            <th:block th:each="item, itemStat : ${fileConfiguration.uploadFileExtsn}">
+                                [[${item.value}]]
+                                <th:block th:if="${!itemStat.last}">,&nbsp;</th:block>
+                            </th:block>
+                        </th:block>
+                    </li>
+                    <li>첨부 가능 개수 : [[${bbsInfo.atchfileCnt}]]개</li>
+                    <li>첨부 가능 개별 용량 : [[${bbsInfo.atchfileSize}]]Mbyte</li>
+                </ul>
+            </div>
+
+            <div class="btn-wrap">
+                <div class="center">
+                    <button th:if="${paramVo.pstid eq null}" type="button" class="btn-medium btn-gray list-btn" data-action="cmntyPstList.html">이전</button>
+                    <button th:if="${paramVo.pstid ne null}" type="button" class="btn-medium btn-gray list-btn" data-action="cmntyPstView.html">이전</button>
+                    <button th:if="${formType eq 'INSERT'}" type="button" class="btn-medium btn-blue save-btn">등록</button>
+                    <button th:if="${formType eq 'MODIFY'}" type="button" class="btn-medium btn-blue save-btn">수정</button>
+                </div>
+            </div>
+        </form>
+
+        <form name="searchForm" id="searchForm">
+            <input type="hidden" id="pageNumber" name="pageNumber" th:value="${paramVo.pageNumber}">
+            <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${paramVo.rowPerPage}">
+            <input type="hidden" id="searchType" name="searchType" th:value="${paramVo.searchType}">
+            <input type="hidden" id="searchKeyword" name="searchKeyword" th:value="${paramVo.searchKeyword}">
+            <input type="hidden" id="cmntyid" name="cmntyid" th:value="${cmntyid}">
+            <input type="hidden" id="bbsid" name="bbsid" th:value="${paramVo.bbsid}">
+            <input type="hidden" id="pstid" name="pstid" th:value="${paramVo.pstid}">
+        </form>
+    </th:block>
 
     <script src="/js/ckeditor/ckeditor.js"></script>
     <script th:inline="javascript">
     window.addEventListener('DOMContentLoaded', function (){
+        let mbrSttsCd = /*[[${cmntyInfo.mbrSttsCd}]]*/null;
+        let cmntyBbsTmplatid = /*[[${bbsInfo.cmntyBbsTmplatid}]]*/null;
+        let authrtCd = /*[[${cmntyInfo.authrtCd}]]*/null;
+        let operYn = /*[[${cmntyInfo.operYn}]]*/null;
+        let useYn = /*[[${bbsInfo.useYn}]]*/null;
+        let isMbr = mbrSttsCd === '118100';
+        let isAdmin = cmntyBbsTmplatid !== 1 || authrtCd === '117100';
+        let isOper = operYn === 'Y';
+        let isUse = useYn === 'Y';
+
+        if(!isMbr || !isAdmin){
+            alert(!isMbr ? '게시글 등록은 가입전에는 입장하실 수 없습니다.':'공지시항은 관리자만 등록할 수 있습니다.');
+            history.back();
+        }
+        if(!isOper || !isUse){
+            alert(!isOper ? '미운영 동아리입니다.':'사용중인 게시판이 아닙니다.');
+            history.back();
+        }
+
         const $searchForm = $('#searchForm');
         const formType = $('#formType').val();
         const $fxNtcYn = $('input[name=fxNtcYn]');

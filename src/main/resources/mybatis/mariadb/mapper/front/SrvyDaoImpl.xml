@@ -151,12 +151,19 @@
             <if test="user != null">
             , B.SBMSN_DT
             </if>
+            <if test="sbmsnid != 0 and ((infntPrgrmAplyid != null and infntPrgrmAplyid != 0) or (mvmnPrgrmAplyid != null or mvmnPrgrmAplyid != 0))">
+            , DATE_FORMAT(D.SBMSN_DT, '%Y-%m-%d') AS APLY_SBMSN_DT
+            , D.PRTPNT_NM            
+            </if>            
         FROM
             TB_CMM_SRVY A
         <if test="user != null">    
         LEFT OUTER JOIN
             TB_CMM_SRVY_SBMSN B ON (B.SRVYID = A.SRVYID AND B.USERID = #{user.userid})
         </if>
+        <if test="sbmsnid != 0 and ((infntPrgrmAplyid != null and infntPrgrmAplyid != 0) or (mvmnPrgrmAplyid != null or mvmnPrgrmAplyid != 0))">
+        LEFT OUTER JOIN TB_CMM_SRVY_SBMSN D ON D.SRVYID = A.SRVYID AND D.SBMSNID = #{sbmsnid} 
+        </if>        
         WHERE 
             A.SRVYID = #{srvyid}
     </select>
@@ -201,7 +208,13 @@
         WHERE
             A.USE_YN = 'Y'
             AND A.QESTNRID = #{qestnrid}
+            <if test="(infntPrgrmAplyid == null or infntPrgrmAplyid == 0) and (mvmnPrgrmAplyid == null or mvmnPrgrmAplyid == 0)">
             AND B.USERID = #{user.userid}
+            </if>
+            <if test="sbmsnid != 0 and ((infntPrgrmAplyid != null and infntPrgrmAplyid != 0) or (mvmnPrgrmAplyid != null or mvmnPrgrmAplyid != 0))">
+            AND B.SBMSNID = #{sbmsnid}
+            </if>
+            
         ORDER BY
             A.ORDR
     </select>
@@ -236,6 +249,9 @@
             , USER_IP
             , BRWSR_NM
             , DEVICE_KND_CD
+            , INFNT_PRGRM_APLYID
+            , MVMN_PRGRM_APLYID
+            , PRTPNT_NM
             , MDFCN_DT
             , MDFRID
             , REG_DT
@@ -249,6 +265,9 @@
             , #{userIp}
             , #{brwsrNm}
             , #{deviceKndCd}
+            , #{infntPrgrmAplyid}
+            , #{mvmnPrgrmAplyid}
+            , #{prtpntNm}
             , NOW()
             , #{user.userid}
             , NOW()

@@ -35,6 +35,93 @@
         </th:block>
     </div>
     
+    <div id="cmntContainer" class="d-none">
+        <div class="card-header p-b-0">
+            <h3 class="sub-title"><strong id="totalCount"></strong></h3>
+        </div>
+        <div class="card-block-small p-t-0">
+            <ul class="basic-list" id="cmntGrid">
+                <!--
+                <li>
+                    <div class="col-12 mb-2 row align-items-center">
+                        <div class="col-11">
+                            <h6 class="m-b-0">홍길동 2017.07.19 16:03</h6>
+                        </div>
+                        <div class="col-1 text-right btn-group-sm p-r-0">
+                            <a href="javascript:void(0)" class="btn btn-inverse">삭제</a>
+                        </div>
+                    </div>
+                    <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Do</p>
+                </li>
+                <li class="m-l-25">
+                    <div class="col-12 mb-2 row align-items-center">
+                        <div class="col-11">
+                            <h6 class="m-b-0">ㄴ 홍길동 2017.07.19 16:03</h6>
+                        </div>
+                        <div class="col-1 text-right btn-group-sm p-r-0">
+                            <a href="javascript:void(0)" class="btn btn-inverse">삭제</a>
+                        </div>
+                    </div>
+                    <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Do</p>
+                </li>
+                <li class="m-l-50">
+                    <div class="col-12 mb-2 row align-items-center">
+                        <div class="col-11">
+                            <h6 class="m-b-0">ㄴ 홍길동 2017.07.19 16:03</h6>
+                        </div>
+                        <div class="col-1 text-right btn-group-sm p-r-0">
+                            <a href="javascript:void(0)" class="btn btn-inverse">삭제</a>
+                        </div>
+                    </div>
+                    <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Do</p>
+                </li>
+                <li class="m-l-25">
+                    <div class="col-12 mb-2 row">
+                        <div class="col-11">
+                            <h6 class="m-b-0">ㄴ 홍길동 2017.07.19 16:03</h6>
+                        </div>
+                        <div class="col-1 text-right">
+                            <a href="javascript:void(0)" class="text-muted">삭제</a>
+                        </div>
+                    </div>
+                    <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Do</p>
+                </li>
+                <li>
+                    <div class="col-12 mb-2 row">
+                        <div class="col-11">
+                            <h6 class="m-b-0">홍길동 2017.07.19 16:03</h6>
+                        </div>
+                        <div class="col-1 text-right">
+                            <a href="javascript:void(0)" class="text-muted">삭제</a>
+                        </div>
+                    </div>
+                    <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Do</p>
+                </li>
+                -->
+            </ul>
+            <!--
+            <ul class="m-t-10 pagination justify-content-center">
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Previous">
+                        <span aria-hidden="true">«</span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Next">
+                        <span aria-hidden="true">»</span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </li>
+            </ul>
+            -->
+        </div>
+    </div>
+    
+    <!--
     <th:block th:if="not ${cmntyCmntList.isEmpty()}">
         <div class="card-header p-t-0 p-b-0">
             <h3 class="sub-title"><strong>댓글 <th:block th:text="${cmntyCmntList[0].totalCount}" /></strong></h3>
@@ -89,19 +176,84 @@
             </ul>
         </div>
     </th:block>
+    -->
 </form>
 
 <script th:inline="javascript">
     var cmntyPstUpdate = {
-        init: function() {
-            // TODO
-        },
+        pstid: /*[[${cmntyPst.cmntyPstInfo.pstid}]]*/
+        , listUrl: "/mng/cmnty/selectCmntyCmntList.do"
         
-        registEvent: function() {
-            // TODO
-        },
+        , init: function() {
+            this.onLoadData();
+            this.registEvent();
+        }
         
-        onDelete: function(cmntid) {
+        , registEvent: function() {
+            // TODO
+        }
+        
+        , onLoadData: function() {
+            if(displayWorkProgress()) {
+                var param = {
+                    pstid: this.pstid
+                    , pageNumber: 1
+                    , rowPerPage: 0
+                };
+                $.ajax({
+                    url: cmntyPstUpdate.listUrl
+                    , cache: false
+                    , dataType: "json"
+                    , data: param
+                    , type: "GET"
+                    , success: function(response) {
+                        if(response.totalCount > 0) {
+                            $("#totalCount").text("댓글 " + response.totalCount);
+                            $("#cmntContainer").removeClass("d-none");
+                            cmntyPstUpdate.setList(response.list);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+        
+        , setList: function(dataList) {
+            $("#cmntGrid").empty();
+             $(dataList).each(function(index, data) {
+                $("#cmntGrid").append(cmntyPstUpdate.getListItem(data));
+            });                        
+        }
+        
+        , getListItem: function(data) {
+            var marginLeft = data.dpth * 25;
+            var marginClass = "m-l-" + marginLeft;
+            var item = '<li>';
+            var cn = data.cn.replaceAll("\n", "<br/>");
+            if(data.dpth != 0) item = '<li class="' + marginClass + '">';
+            item += '<div class="col-12 mb-2 row align-items-center">';
+            item += '<div class="col-11">';
+            if(data.delYn == "Y") {
+                if(data.dpth == 0) item += '<h6 class="m-b-0">삭제된 게시글입니다.</h6>';
+                else item += '<h6 class="m-b-0">ㄴ 삭제된 게시글입니다.</h6>';
+            } else {
+                if(data.dpth == 0) item += '<h6 class="m-b-0">' + data.nm + ' ' + data.regDt + '</h6>';
+                else item += '<h6 class="m-b-0">ㄴ ' + data.nm + ' ' + data.regDt + '</h6>';
+            }
+            item += '</div>';
+            item += '<div class="col-1 text-right btn-group-sm p-r-0">';
+            item += '<a href="javascript:cmntyPstUpdate.onDelete(' + "'" + data.cmntid + "'" + ');" class="btn btn-inverse">삭제</a>';
+            item += '</div>';
+            item += '</div>';
+            if(data.delYn == "N") {
+                item += '<p>' + cn + '</p>';
+            }
+            item += '</li>'
+            
+            return item;
+        } 
+        
+        , onDelete: function(cmntid) {
             if(confirm("삭제하시겠습니까?")) {
                 var param = {cmntid: cmntid};
                 if(displayWorkProgress()) {

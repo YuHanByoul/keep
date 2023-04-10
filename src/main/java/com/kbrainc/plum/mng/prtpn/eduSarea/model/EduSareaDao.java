@@ -151,4 +151,28 @@ public interface EduSareaDao {
      * @return List<EduSareaVo>
      */
     public List<EduSareaVo> selectCtprvnCdList(@Param("sareaid") int sareaid) throws Exception;    
+    
+    /**
+    * 지역코드 목록을 공통 테이블에서 조회.
+    **
+    @Title : selectAddrCtprvnList
+    * @Description : 지역코드 목록을 공통 테이블에서 조회.
+    * @param 
+    * @return
+    * @throws Exception
+    * @return List<EduSareaVo>
+    */
+    public List<EduSareaVo> selectAddrCtprvnList() throws Exception;        
+
+    /**
+     * 시군구 목록을 공통 테이블에서 조회.
+     **
+    @Title : selectAddrSignguList
+     * @Description : 시군구 목록을 공통 테이블에서 조회.
+     * @param 
+     * @return
+     * @throws Exception
+     * @return List<EduSareaVo>
+     */
+    public List<EduSareaVo> selectAddrSignguList(EduSareaVo eduSareaVo) throws Exception;        
 }

@@ -205,7 +205,6 @@
 	            },
 
 	            moveToDetail(prgrmid, eduSbjctCd) {
-
 	            	if(eduSbjctCd == null) {
 		                location.href = '/front/envEdu/prgrmDetailForm.html?prgrmid='+prgrmid;	            		
 	            	}else{
@@ -242,12 +241,17 @@
 	                        dataType: 'json',
 	                        data: formData,
 	                        type: 'GET',
-	                        success: function (data) {
-	                        	prgrm.makeListHtml(data);
-	                        	if(mainEduSbjctCd == null){
+	                        success: function (result) {
+	                        	if(mainEduSbjctCd == ""){
 		                			$("#searchEduSbjctCd_1").val('');
 		                			$("#searchEduSbjctCd_2").val('');	                        		
 	                        	}
+	                        	
+	                            $("#pagination1").html(result.pagination);
+	                            $("#pagination2").html(result.pagination);
+	                            $("#totalCount").html(result.totalCount);
+	                        	 var data = escapeData(result);
+	                        	prgrm.makeListHtml(data);
 	                        	closeWorkProgress();
 	                        }
 	                    });
@@ -413,9 +417,6 @@
                     $('#cardList-area').html(cardListHtml);	
                     $('#pc-list-area').html(pc_listHtml);
                     $('#mo-list-area').html(mo_listHtml);
-                    $("#pagination1").html(data.pagination);
-                    $("#pagination2").html(data.pagination);
-                    $("#totalCount").html(data.totalCount);
                 }
 	        };
 

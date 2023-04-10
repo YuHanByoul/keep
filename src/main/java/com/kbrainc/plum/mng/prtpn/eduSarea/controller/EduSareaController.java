@@ -69,11 +69,8 @@ public class EduSareaController {
     
     @RequestMapping(value = "/mng/prtpn/eduSarea/eudSareaSignguSettingPopup.html")
     public String infntSchdlInsertPopup(@RequestParam(value ="sareaid",required = false) int sareaid, Model model, HttpServletRequest request) throws Exception {
-        CodeVo codeVo = new CodeVo();        
-        codeVo.setCdgrpid("143");
-        codeVo.setUpprCd("0");
-        codeVo.setRowPerPage(100);
         model.addAttribute("sareaid", sareaid);
+        
         model.addAttribute("ctprvnCdList", eduSareaService.selectCtprvnCdList(sareaid));
         
         return "mng/prtpn/eduSarea/eudSareaSignguSettingPopup";
@@ -92,7 +89,8 @@ public class EduSareaController {
     @ResponseBody
     public Map<String, Object> signguCodeList(EduSareaVo eduSareaVo) throws Exception {
 
-        List<EduSareaVo> list = eduSareaService.selectSignguCodeList(eduSareaVo);
+        //List<EduSareaVo> list = eduSareaService.selectSignguCodeList(eduSareaVo);
+        List<EduSareaVo> list = eduSareaService.selectAddrSignguList(eduSareaVo);
 
         Map<String, Object> response = new HashMap<String, Object>();
 
@@ -112,11 +110,7 @@ public class EduSareaController {
     */
     @RequestMapping(value = "/mng/prtpn/eduSarea/eduSareaInsertForm.html")
     public String eduSareaInsertForm(Model model) throws Exception {
-        CodeVo codeVo = new CodeVo();
-        codeVo.setCdgrpid("143");
-        codeVo.setUpprCd("0");
-        codeVo.setRowPerPage(100);
-        model.addAttribute("ctprvnCdList", codeService.selectCodeList(codeVo));
+        model.addAttribute("ctprvnCdList", eduSareaService.selectAddrCtprvnList());
         
         return "mng/prtpn/eduSarea/eduSareaInsertForm";
     }
@@ -137,11 +131,7 @@ public class EduSareaController {
         result = eduSareaService.selectEduSareaInfo(eduSareaVo);
         model.addAttribute("eduSarea", result);
         
-        CodeVo codeVo = new CodeVo();
-        codeVo.setCdgrpid("143");
-        codeVo.setUpprCd("0");
-        codeVo.setRowPerPage(100);
-        model.addAttribute("ctprvnCdList", codeService.selectCodeList(codeVo));
+        model.addAttribute("ctprvnCdList", eduSareaService.selectAddrCtprvnList());
 
         return "mng/prtpn/eduSarea/eduSareaUpdate";
     }
@@ -285,6 +275,7 @@ public class EduSareaController {
         int retVal = 0;
         eduSareaVo.setUser(user);
         eduSareaVo.setSareaId(eduSareaVo.getSignguList().get(0).getSareaId());
+        eduSareaVo.setCtprvnGrp(eduSareaVo.getSignguList().get(0).getCtprvnCd());
         retVal = eduSareaService.updateEduSareaSignguSetting(eduSareaVo);
           
         if(retVal > 0) {

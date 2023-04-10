@@ -121,6 +121,8 @@ public class EtcDtaServiceImpl extends PlumAbstractServiceImpl implements EtcDta
     @Override
     @Transactional
     public int deleteEtcDta(EtcDtaVo etcDtaVo) throws Exception {
-        return etcDtaDao.deleteEtcDta(etcDtaVo);
+        int retVal = 0;
+        retVal += etcDtaDao.deleteEtcDta(etcDtaVo);
+        return retVal;
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.kbrainc.plum.front.mypage.infntAplyHist.model.InfntAplyHistDao;
 import com.kbrainc.plum.front.mypage.infntAplyHist.model.InfntAplyHistVo;
+import com.kbrainc.plum.front.srvy.model.SrvyVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
@@ -92,4 +93,32 @@ public class InfntAplyHistServiceImpl extends PlumAbstractServiceImpl implements
         retVal += infntAplyHistDao.updateCancelInfntAply(infntAplyHistVo);
         return retVal;
     }
+    
+    /**
+     * 유아환경교육관 설문 정보 조회
+     **
+     * @Title : selectInfntSrvyInfo
+     * @Description : 유아환경교육관 설문 정보 조회
+     * @param infntAplyHistVo
+     * @return
+     * @throws Exception
+     * @return SrvyVo
+     */
+    public SrvyVo selectInfntSrvyInfo(SrvyVo srvyVo) throws Exception{
+        return infntAplyHistDao.selectInfntSrvyInfo(srvyVo);        
+    }
+    
+    /**
+     * 유아환경교육관 설문 공유 리스트 조회
+     *
+     * @Title : selectInfntSrvySendList
+     * @Description : 유아환경교육관 설문 공유 리스트 조회
+     * @param srvyVo
+     * @return
+     * @throws Exception
+     * @return List<SrvyVo>
+     */
+    public List<SrvyVo> selectInfntSrvySendList(SrvyVo srvyVo) throws Exception{
+        return infntAplyHistDao.selectInfntSrvySendList(srvyVo);
+    }    
 }

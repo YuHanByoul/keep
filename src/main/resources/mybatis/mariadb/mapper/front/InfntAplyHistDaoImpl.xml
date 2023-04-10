@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!--
-	SQL File Name : InfntAplyHistDaoImpl.xml
-	Description : 유아환경교육관 교육신청
+    SQL File Name : InfntAplyHistDaoImpl.xml
+    Description : 유아환경교육관 교육신청
 -->
 <mapper namespace="com.kbrainc.plum.front.mypage.infntAplyHist.model.InfntAplyHistDao">
     <!-- 유아환경교육관 신청이력 조회 -->
@@ -26,6 +26,10 @@
                 , C.TME_NM
                 , A.STTS_CD
                 , G.CD_NM STTS_NM
+                , D.APLCNT_DGSTFN_SRVYID
+                , D.STDNT_DGSTFN_SRVYID
+                , H.QESTNRID APLCNT_DGSTFN_QESTNRID
+                , I.QESTNRID STDNT_DGSTFN_QESTNRID
                 , DATE_FORMAT(A.REG_DT, '%Y-%m-%d') REG_DT
                 , A.RGTRID
             FROM TB_EDU_INFNT_PRGRM_APLY A
@@ -35,6 +39,8 @@
             LEFT OUTER JOIN TB_EDU_CLSSRM E ON E.CLSSRMID = D.CLSSRMID
             LEFT OUTER JOIN TB_CMM_CD F ON F.CD = E.CTPRVN_CD
             LEFT OUTER JOIN TB_CMM_CD G ON G.CD = A.STTS_CD
+            LEFT OUTER JOIN TB_CMM_SRVY H ON H.SRVYID = D.APLCNT_DGSTFN_SRVYID
+            LEFT OUTER JOIN TB_CMM_SRVY I ON I.SRVYID = D.STDNT_DGSTFN_SRVYID
             WHERE 1=1
             AND A.USERID = #{user.userid}
             <!-- 유아환경교육관 교육신청 프로그램명 -->
@@ -67,6 +73,10 @@
                 , C.TME_NM
                 , A.STTS_CD
                 , G.CD_NM STTS_NM
+                , D.APLCNT_DGSTFN_SRVYID
+                , D.STDNT_DGSTFN_SRVYID
+                , H.QESTNRID APLCNT_DGSTFN_QESTNRID
+                , I.QESTNRID STDNT_DGSTFN_QESTNRID
                 , DATE_FORMAT(A.REG_DT, '%Y-%m-%d') REG_DT
                 , A.RGTRID
             FROM TB_EDU_INFNT_PRGRM_APLY A
@@ -76,6 +86,8 @@
             LEFT OUTER JOIN TB_EDU_CLSSRM E ON E.CLSSRMID = D.CLSSRMID
             LEFT OUTER JOIN TB_CMM_CD F ON F.CD = E.CTPRVN_CD
             LEFT OUTER JOIN TB_CMM_CD G ON G.CD = A.STTS_CD
+            LEFT OUTER JOIN TB_CMM_SRVY H ON H.SRVYID = D.APLCNT_DGSTFN_SRVYID
+            LEFT OUTER JOIN TB_CMM_SRVY I ON I.SRVYID = D.STDNT_DGSTFN_SRVYID
             WHERE 1=1
             AND A.APLYID = #{aplyid}   
             AND A.TME_SCHDLID = #{tmeSchdlid}     
@@ -132,4 +144,49 @@
             , MDFRID = #{user.userid}
         WHERE APLYID = #{aplyid}
     </update>    
+    
+    <!-- 유아환경교육관 설문 정보 조회 -->
+    <select id="selectInfntSrvyInfo" parameterType="front.SrvyVo" resultType="front.SrvyVo">
+        /* InfntAplyHistDao.selectInfntSrvyInfo */
+        SELECT
+            A.SRVYID
+            , A.QESTNRID
+            , A.SRVY_NM
+            , A.SRVY_PRD_CD
+            , A.BGNG_DE
+            , A.END_DE
+            , A.USE_YN
+        FROM
+            TB_CMM_SRVY A
+        WHERE 
+            SRVYID = #{srvyid}
+    </select>
+
+    <!-- 유아환경교육관 설문 정보 조회 -->
+    <select id="selectInfntSrvySendList" parameterType="front.SrvyVo" resultType="front.SrvyVo">
+        /* InfntAplyHistDao.selectInfntSrvySendList */
+        SELECT
+            A.SBMSNID
+            , A.SITEID
+            , A.SRVYID
+            , B.QESTNRID
+            , A.INFNT_PRGRM_APLYID
+            , A.MVMN_PRGRM_APLYID
+            , A.USERID
+            , A.PRTPNT_NM
+            , DATE_FORMAT(A.SBMSN_DT, '%Y-%m-%d') AS SBMSN_DT
+            , A.MDFCN_DT
+            , A.MDFRID
+            , A.REG_DT
+            , A.RGTRID
+        FROM
+            TB_CMM_SRVY_SBMSN A
+        LEFT OUTER JOIN TB_CMM_SRVY B ON A.SRVYID = B.SRVYID
+        WHERE 
+            A.SRVYID = #{srvyid}
+        <if test="infntPrgrmAplyid != null and infntPrgrmAplyid != 0">
+            AND A.INFNT_PRGRM_APLYID = #{infntPrgrmAplyid} 
+        </if>            
+    </select>
+    
 </mapper>

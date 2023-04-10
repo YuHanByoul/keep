@@ -157,12 +157,16 @@ public class PaginationAttr extends AbstractAttributeTagProcessor {
             int totalPage = list.get(0).getTotalPage();
             int pageNumber = list.get(0).getPageNumber();
 
+            String firstPageDisabledTag = "<button type=\"button\" title=\"처음\" class=\"first\" disabled></button>";
+            String previousPageDisabledTag = "<button type=\"button\" title=\"이전\" class=\"prev\" disabled></button>";
             String firstPageTag = "<button type=\"button\" title=\"처음\" class=\"{0}\" onclick=\"{1}\"></button>";
             String previousPageTag = "<button type=\"button\" title=\"이전\" class=\"{0}\" onclick=\"{1}\"></button>";
             String currentPageTag = "<button type=\"button\" class=\"active\">{0}</button>";
             String otherPageTag = "<button type=\"button\" onclick=\"{0}\">{1}</button>";
             String nextPageTag = "<button type=\"button\" title=\"다음\" class=\"{0}\" onclick=\"{1}\"></button>";
             String lastPageTag = "<button type=\"button\" title=\"마지막\" class=\"{0}\" onclick=\"{1}\"></button>";
+            String nextPageDisabledTag = "<button type=\"button\" title=\"다음\" class=\"next\" disabled></button>";
+            String lastPageDisabledTag = "<button type=\"button\" title=\"마지막\" class=\"last\" disabled></button>";
 
             if (totalPage < pageNumber) {
                 pageNumber = totalPage;
@@ -178,6 +182,9 @@ public class PaginationAttr extends AbstractAttributeTagProcessor {
             if (pageNumber > 1) {
                 result.append(MessageFormat.format(firstPageTag, new Object[]{"first", onclick + "(1)"}));
                 result.append(MessageFormat.format(previousPageTag, new Object[]{"prev", onclick + "(" + (pageNumber - 1) + ")"}));
+            } else {
+                result.append(firstPageDisabledTag);
+                result.append(previousPageDisabledTag);
             }
 
             for (int i = firstPageNum; i <= lastPageNum; i++) {
@@ -191,6 +198,9 @@ public class PaginationAttr extends AbstractAttributeTagProcessor {
             if (pageNumber < totalPage) {
                 result.append(MessageFormat.format(nextPageTag, new Object[]{"next", onclick + "(" + (pageNumber + 1) + ")"}));
                 result.append(MessageFormat.format(lastPageTag, new Object[]{"last", onclick + "(" + totalPage + ")"}));
+            } else {
+                result.append(nextPageDisabledTag);
+                result.append(lastPageDisabledTag);
             }
         }
         result.append("</div>");

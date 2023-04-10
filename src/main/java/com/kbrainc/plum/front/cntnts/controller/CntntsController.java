@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.front.cntnts.model.CntntsVo;
@@ -54,13 +55,7 @@ public class CntntsController {
     * @return String
     */
     @RequestMapping(value = "/front/cntnts/cntntsListForm.html")
-    public String cntntsListForm(String eduSbjctCd, Model model, CntntsVo cntntsVo, CodeVo codeVo) throws Exception {
-        codeVo.setCd(eduSbjctCd);
-        CodeVo codeInfo = codeService.selectCodeInfo(codeVo);
-        
-        model.addAttribute("mainEduSbjctCd", codeInfo.getUpprCd());
-        model.addAttribute("eduSbjctCd", eduSbjctCd);
-        
+    public String cntntsListForm() throws Exception {
         return "front/cntnts/cntntsList";
     }
     
@@ -95,7 +90,7 @@ public class CntntsController {
     * @return String
     */
     @RequestMapping(value = "/front/cntnts/cntntsDetailForm.html")
-    public String cntntsDetailForm(Model model, CntntsVo cntntsVo) throws Exception {
+    public String cntntsDetailForm(CntntsVo cntntsVo, Model model, @RequestParam(value="eduSbjctCd", required=false)  String eduSbjctCd) throws Exception {
         cntntsService.updateCntntsHits(cntntsVo); 
         
         CntntsVo result = null;
@@ -117,6 +112,9 @@ public class CntntsController {
         
         List<CntntsVo> file = cntntsService.selectCntntsFileList(cntntsVo);
         model.addAttribute("file", file);
+        
+        model.addAttribute("eduSbjctCd", eduSbjctCd);
+        model.addAttribute("menuPrgrmCntntsCd", eduSbjctCd);
         
         return "front/cntnts/cntntsDetail";
     }

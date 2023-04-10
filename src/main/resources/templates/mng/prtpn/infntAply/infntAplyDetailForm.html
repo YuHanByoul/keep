@@ -105,7 +105,7 @@
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script type="text/javascript" src="/js/common/jsgrid-master/dist/jsgrid.min.js"></script>
 <script th:inline="javascript">
-
+var cellEditMode = false;
 	/* 엑셀 다운로드 */
 	function fn_excelDownload(){
 	    var f = document.searchDtlFrm;
@@ -239,25 +239,6 @@
                         data.resolve(da);
                       });
                       return data.promise();
-                  },	
-                  onItemInserting: function(args) {
-                	  debugger;
-//                       return $.ajax({
-//                           type: "POST",
-//                           url: "/items",
-//                           data: item
-//                       });
-                  },
-                  onItemUpdating: function(args) {
-                	  debugger;
-//                       return $.ajax({
-//                           type: "PUT",
-//                           url: "/items",
-//                           data: item
-//                       });
-                  },
-                  onItemEditing: function(args){
-                	  debugger;
                   }
 			},
 			
@@ -271,7 +252,6 @@
                   var selectedAplyId = grid.fields[0]._value;
                   var $editControl = jsGrid.fields.select.prototype.editTemplate.call(this, value);
                   $editControl.change(function (value, item) {
-                	  debugger;
                       var selectedSttsCd = $(this).val();
                       
                       var data = "aplyId="+selectedAplyId+"&sttsCd="+selectedSttsCd;
@@ -289,7 +269,9 @@
                                   }else{
                                       alert(data.msg);
                                   }
+                                  cellEditMode = false;
                                   closeWorkProgress();
+                                  
                               }
                           });
                       }
@@ -305,17 +287,22 @@
 			],
 			
 			rowClick : function(args) {
+				if(cellEditMode) {
+					alert("신청상태 수정중 상태입니다. 먼저 신청상태를 변경해주세요.");
+					return;
+				}
 				if(args.event.originalEvent.target.cellIndex == 4){
 				    jsGrid.Grid.prototype.rowClick.call(this, args);
+				    cellEditMode = true;
 				      //gridHelper2.rowClick(args);
 				}
 				if (args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
 				
 				var detailUrl = detailUrl = "/mng/prtpn/infntAply/infntAplyUpdateForm.html?aplyId=" + args.item.aplyId+"&prgrmSchdlid=" + args.item.prgrmSchdlid;
-				if(args.event.originalEvent.target.cellIndex != 4) {
+ 				if(args.event.originalEvent.target.cellIndex != 4) {
 				    gridHelper2.loadContent(detailUrl);
 				    gridHelper2.rowClick(args);
-				}
+ 				}
 
 			}
 		});

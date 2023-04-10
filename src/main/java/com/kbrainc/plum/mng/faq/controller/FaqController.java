@@ -15,6 +15,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,7 +112,7 @@ public class FaqController {
 
     @RequestMapping(value = "/mng/faq/insertFaq.do", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> insertFaq(FaqVo faqVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> insertFaq(@Valid FaqVo faqVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
 
         if (bindingResult.hasErrors()) {
@@ -139,7 +140,7 @@ public class FaqController {
 
     @RequestMapping(value = "/mng/faq/updateFaq.do", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> updateFaq(FaqVo faqVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> updateFaq(@Valid FaqVo faqVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
 
         if (bindingResult.hasErrors()) {

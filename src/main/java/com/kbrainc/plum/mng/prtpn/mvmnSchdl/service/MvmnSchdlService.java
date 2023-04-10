@@ -2,11 +2,6 @@ package com.kbrainc.plum.mng.prtpn.mvmnSchdl.service;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
-import com.kbrainc.plum.mng.prtpn.mvmnPrgrm.model.MvmnPrgrmVo;
 import com.kbrainc.plum.mng.prtpn.mvmnSchdl.model.MvmnSchdlVo;
 
 
@@ -95,4 +90,14 @@ public interface MvmnSchdlService {
     * @return List<MvmnSchdlVo>
     */
     public List<MvmnSchdlVo> selectMvmnSchdlIdList(String sareaId) throws Exception;
+    
+    /**
+     * 교육일정관리 신청 카운트 조회
+     * @Title : selectMvmnAplyCnt
+     * @Description : 교육일정관리 신청 카운트 조회
+     * @param mvmnSchdlVo
+     * @throws Exception 예외
+     * @return int
+     */
+    public int selectMvmnAplyCnt(MvmnSchdlVo mvmnSchdlVo) throws Exception;        
 }

@@ -7,27 +7,32 @@
 		<!-- Tab Container Start -->
         <div class="card-block-small p-t-0">
             <div class="row">
-                <div class="col-md-6 col-lg-3 mb-3">
-                    <div class="mb-0 form-group required">
-                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육주제(대분류)</strong></div>
-                        <select name="mainEduSbjctCd" id="eduSbjctCd_1" class="form-select form-select-sm" onchange="setInsertFormSelectBox.setNextDepth(155,this.value,'eduSbjctCd_2')">
-                            <option value="" selected>- 선택 -</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3 mb-3">
-                    <div class="mb-0 form-group required">
-                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육주제(중분류)</strong></div>
-                        <select name="eduSbjctCd" id="eduSbjctCd_2" class="form-select form-select-sm">
-                            <option value="" selected>- 선택 -</option>
-                        </select>
-                    </div>
-                </div>
+	            <div class="col-md-6 mb-3">
+	                <div class="mb-0 form-group required">
+	                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-0"><strong>교육주제</strong></div>
+                       <div id="sbjctArea" >
+                       
+                       <div class="row mb-3 mb-md-2 subject-form" id="subject1">
+                           <div class="col-md-10 mt-1 mt-md-0">
+                               <select id="subjectSelect1" name="eduSbjctCds" class="form-select form-select-sm" onchange="duplCheck('1')">
+                                   <option value="" >-선택-</option>
+                                   <option th:each="item : ${sbjctCdLsit}"   th:value="${item.CD}"> <th:block th:text="${item.CD_NM}" /> </option>
+                               </select>
+                           </div>
+                           <div class="col-md-auto">
+                               <button type="button" class="input-group-text btn btn-primary btn-sm"  onclick="plusSubjectForm()" >+</button>
+                               <button type="button" class="input-group-text btn btn-primary btn-sm"  onclick="removeSubjectForm('1')"disabled>-</button>
+                           </div>
+                       </div>
+                       
+                       </div>
+	                </div>
+	            </div>
                 <div class="col-md-6 col-lg-3 mb-3">
                     <div class="mb-0 form-group required">
                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>콘텐츠 유형(대분류)</strong></div>
                         <select name="mainTypeCd" id="typeCd_1" class="form-select form-select-sm" onchange="setInsertFormSelectBox.setNextDepth(164,this.value,'typeCd_2')">
-                            <option value="" selected>- 선택 -</option>
+                            <option value="">- 선택 -</option>
                         </select>
                     </div>
                 </div>
@@ -35,7 +40,7 @@
                     <div class="mb-0 form-group required">
                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>콘텐츠 유형(중분류)</strong></div>
                         <select name="typeCd" id="typeCd_2" class="form-select form-select-sm">
-                            <option value="" selected>- 선택 -</option>
+                            <option value="">- 선택 -</option>
                         </select>
                     </div>
                 </div>
@@ -44,7 +49,7 @@
                 <div class="col-lg-6 mb-3">
                     <div class="mb-0 form-group required">
                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육대상</strong></div>
-                        <span kattr:select_code="eduTrgtCd" grpCd="185" firstOptTxt="- 선택 -" isAdmin="true"></span>
+                    	<span kattr:check_code="eduTrgt" grpCd="185"  isAdmin="true"></span>
                     </div>
                 </div>
                 <div class="col-lg-6 mb-3">
@@ -88,6 +93,14 @@
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-lg-6 mb-3">
+                    <div class="mb-0 form-group required">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>저작권</strong></div>
+                        <span kattr:select_code="cpyrhtCd" grpCd="241" firstOptTxt="- 선택 -" isAdmin="true"></span>
+                    </div>
+                </div>
+            </div>                        
             <div class="row">
                 <div class="col-12 mb-3">
                     <div class="mb-0 form-group required">
@@ -178,30 +191,50 @@
 		<!-- Tab Container End -->
 </form>
 
+<script  id="subjectFrm" type="text/x-handlebars-template">
+    <div class="row mb-3 mb-md-2 subject-form" id="subject{{frmNum}}">
+         <div class="col-md-10 mt-1 mt-md-0">
+             <select id="subjectSelect{{frmNum}}" name="eduSbjctCds" class="form-select form-select-sm" onchange="duplCheck('{{frmNum}}')">
+                 <option value="" >-선택-</option>
+                 {{#each list}}
+                 <option value="{{CD}}">{{CD_NM}}</option>
+                 {{/each}}
+             </select>
+         </div>
+         <div class="col-md-auto">
+         	<button type="button" class="input-group-text btn btn-primary btn-sm"  onclick="plusSubjectForm()" >+</button>
+         	<button type="button" class="input-group-text btn btn-primary btn-sm"  onclick="removeSubjectForm('{{frmNum}}')">-</button>
+         </div>
+     </div>
+</script>
 <script th:inline="javascript">
 	$("#palyTime").hide();
-	setInsertFormSelectBox.fn_getNextDepthList(155 , 0, 'eduSbjctCd_1');
-	setInsertFormSelectBox.fn_getNextDepthList(164 , 0, 'typeCd_1');
+	
+	setInsertFormSelectBox.fn_getNextDepthList(164 , 0, 'typeCd_1');	
 	
 	var editor;
 	
+    /*<![CDATA[*/ 
+	var sbjctCdLsit = /*[[${sbjctCdLsit}]]*/null; 
+    /*]]>*/
+    
+    var subjectLength = 0; 
+    var subjectNum = [1];
+	
 	$(function () {
 	    editor = CKEDITOR.replace('cn');
-	    var text = "";
-    		text += "<p>&nbsp;</p>";
-    		text += "<p>&nbsp;</p>";	    	
-	    	text += "<p>&nbsp;</p>";
-	    	text += "<p style='text-align: center;'><a href='https://www.kogl.or.kr/info/licenseType4.do' target='_blank' title='새 창'><img alt='img' src='https://www.kogl.or.kr/static/kogl/img/sub/number3.jpg' style='width: 220px; height: 50px;'/></a> &nbsp;본 저작물은 “공공누리” 제4유형 : 출처표시 + 상업적 이용금지 + 변경금지 조건에 따라 이용할 수 있습니다.</p>";
-  	 	editor.setData(text);
+  	 	editor.setData();
+  	 	
+    	if(sbjctCdLsit!= null && sbjctCdLsit.length > 0 ){
+	    	subjectLength = sbjctCdLsit.length 
+        }
 	});
 	
 	var validator= $("#cntntsInsertForm").validate({
 	    rules: {
-	    	mainEduSbjctCd	 :  { required: true }
-	    	,eduSbjctCd  	 :  { required: true }
-	    	,mainTypeCd 	 :  { required: true }  
+	    	mainTypeCd 	 :  { required: true }  
 	     	,typeCd   	 	 : 	{ required: true }
-	     	,eduTrgtCd   	 : 	{ required: true }
+	     	,eduTrgt	   	 : 	{ required: true }
 	     	,mnfctYy   		 : 	{ number: true, maxlength: 4 }
 	     	,plyHour 	  	 : 	{ number: true }
 	     	,plyMinute   	 : 	{ number: true, maxlength: 2 }
@@ -211,11 +244,9 @@
 	     	,rprsImgFile   	 : 	{ required: true }
 	    },
 	    messages: {
-	    	mainEduSbjctCd   :  { required: "교육주제(대분류)를 선택해주십시오." }
-    	    ,eduSbjctCd		 :  { required: "교육주제(중분류)를 선택해주십시오." }
-	    	,mainTypeCd		 :  { required: "콘텐츠 유형(대분류)를 선택해주십시오." }
+	    	mainTypeCd		 :  { required: "콘텐츠 유형(대분류)를 선택해주십시오." }
 		    ,typeCd   	 	 :  { required: "콘텐츠 유형(중분류)를 선택해주십시오." }
-		    ,eduTrgtCd   	 :  { required: "교육대상을 선택해주십시오." }
+		    ,eduTrgt	   	 :  { required: "교육대상을 선택해주십시오." }
 		    ,mnfctYy   		 : 	{ number: "제작년도는 숫자만 입력해주십시오.", maxlength: "제작년도는 4자리까지 입력가능합니다." }
 		    ,plyHour   		 : 	{ number: "재생시간(시간)은 숫자만 입력해주십시오." }
 		    ,plyMinute   	 : 	{ number: "재생시간(분)은 숫자만 입력해주십시오.", maxlength: "재생시간(분)는 2자리까지 입력가능합니다." }
@@ -342,8 +373,13 @@
 	};
 	
  	function fn_insertCntntsForm(){
-	 	if(!($("#cntntsInsertForm").valid())) return;
-
+ 	 	if(!($("#cntntsInsertForm").valid())) return;
+		
+  	 	if(subjectNum.length<=0){
+  	  	 	alert("교육 주제를 선택해주십시오.")
+  	  	 	return;
+  	  	}
+ 	 	
   	 	if(!confirm("저장하시겠습니까?")) return;
   	 	
   	 	var editorData = editor.getData();
@@ -369,4 +405,49 @@
 			});
 		}
 	}
+ 	
+    duplCheck=(frmNum)=>{
+        var isDupl = false;
+    	var selectCd = $("#subjectSelect"+frmNum).val();
+    	if(selectCd==""){return;}
+
+    	$(".subject-form").each(function(){
+    		var itemId = ($(this).attr("id")).replace("subject","")
+        	if( itemId != frmNum  &&  $("#subjectSelect"+itemId).val() == selectCd){
+        		isDupl = true;
+            }
+        })
+        if(isDupl){
+        	$("#subjectSelect"+frmNum).val("");
+            alert("교육주제는 중복 선택 할 수 없습니다."); 
+            return; 
+        }
+    }
+    
+    plusSubjectForm =()=>{
+
+    	var subjectFormCnt = 0 ; 
+    	$(".subject-form").each(function(){	subjectFormCnt++ })
+    	
+    	if(subjectFormCnt >= subjectLength){
+        	alert("더이상 생성 할수 없습니다.");
+        	return;
+        }
+    	var maxValue = Math.max.apply(null, subjectNum);
+    	subjectNum.push(maxValue+1);
+        
+	    var source = $("#subjectFrm").html();
+        var template = Handlebars.compile(source);
+        var data = {
+                    'frmNum' : maxValue+1
+                    ,'list':sbjctCdLsit 
+                   };
+        $("#sbjctArea").append(template(data));
+    }
+
+    removeSubjectForm=(frmNum)=>{
+    	$("#subject"+frmNum).remove();
+    	var filterArr = subjectNum.filter(function(data) {return data != frmNum;});
+    	subjectNum = filterArr;
+    }
 </script>

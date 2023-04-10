@@ -135,6 +135,7 @@ public class InfntSchdlController {
 
         model.addAttribute("infntSchdl", result);
         model.addAttribute("ymDesc", ymDesc);
+        model.addAttribute("infntAplyCnt", infntSchdlService.selectInfntAplyCnt(infntSchdlVo));
 
         return "mng/prtpn/infntSchdl/infntSchdlUpdatePopup";
     }
@@ -280,13 +281,7 @@ public class InfntSchdlController {
     @ResponseBody
     public Map<String, Object> deleteInfntSchdl(@Valid InfntSchdlVo infntSchdlVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
-        if (bindingResult.hasErrors()) {
-            FieldError fieldError = bindingResult.getFieldError();
-            if (fieldError != null) {
-                resultMap.put("msg", fieldError.getDefaultMessage());
-            }
-            return resultMap;
-        }
+        
         infntSchdlVo.setUser(user);
         int retVal = 0;
         retVal = infntSchdlService.deleteInfntSchdl(infntSchdlVo);

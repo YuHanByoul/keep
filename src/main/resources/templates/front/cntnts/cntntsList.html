@@ -146,7 +146,7 @@
 	
 		<script th:inline="javascript">	
 		var mainEduSbjctCd = /*[[${mainEduSbjctCd}]]*/ null;
-		var eduSbjctCd = /*[[${eduSbjctCd}]]*/ null;	
+		var eduSbjctCd = /*[[${eduSbjctCd}]]*/ null;
 		
 		var getCodeListUrl = "/mng/customAttr/grpCodeList.do";
 		
@@ -177,7 +177,7 @@
 			   	var nextTarget = cntArr[0]+"_"+nextCnt;
 			   	
 			    var html ="<select id='"+targetId+"' onchange=setSearchSelectBox.setNextDepth('"+grpcd+"',this.value,'"+nextTarget+"')>";
-			        html +=`<option value="all">- 전체 -</option>`;
+			        html +=`<option value="">- 전체 -</option>`;
 			        
 		  		for(var i=0 ; i < list.length;i++){
 		  			if(list[i].cd==selected){
@@ -199,12 +199,10 @@
 				setSearchSelectBox.fn_getNextDepthList(grpcd , upprcd , targetId, selected);
 			}
 		}
+    	setSearchSelectBox.fn_getNextDepthList(155 , 0, 'searchEduSbjctCd_1', mainEduSbjctCd);
+		setSearchSelectBox.fn_getNextDepthList(155, mainEduSbjctCd,'searchEduSbjctCd_2', eduSbjctCd);
 		
-		console.log(mainEduSbjctCd, eduSbjctCd)
-		setSearchSelectBox.fn_getNextDepthList(155 , 0, 'searchEduSbjctCd_1', mainEduSbjctCd);
-		setSearchSelectBox.setNextDepth(155, 155102,'searchEduSbjctCd_2', 155102101);
-		
-		setSearchSelectBox.fn_getNextDepthList(164 , 0, 'searchTypeCd_1', " ");
+		setSearchSelectBox.fn_getNextDepthList(164 , 0, 'searchTypeCd_1', "");
 		
         var cntnts = {
                 listUrl: '/front/cntnts/selectCntntsList.do',
@@ -218,12 +216,12 @@
                     this.selectCntntsList();
                 },
 
-                moveToDetail(cntntsid) {
-                    if (this.userid == null) {
-                        alert('로그인 후 이용하실 수 있습니다.');
-                        return;
-                    }
-                    location.href = '/front/cntnts/cntntsDetailForm.html';
+                moveToDetail(cntntsid, eduSbjctCd) {
+                	if(eduSbjctCd == null) {
+                    	location.href = '/front/cntnts/cntntsDetailForm.html?cntntsid='+cntntsid;
+                	}else{
+                		location.href = '/front/cntnts/cntntsDetailForm.html?cntntsid='+cntntsid+'&eduSbjctCd='+eduSbjctCd;
+                	}
                 },
 
                 search() {
@@ -243,8 +241,6 @@
     				}
                 	
                     $('#pageNumber').val('1');
-                	$('#card-table').removeClass();
-                    $('#card-table').addClass('card-list card-list-n4');
                     this.selectCntntsList();
                 },
 
@@ -258,8 +254,6 @@
     				$("#searchTypeCd_2").val('');
     				$("#startDt").val('');
     				$("#endDt").val('');
-                	$('#card-table').removeClass();
-                    $('#card-table').addClass('card-list card-list-n4');
     				this.selectCntntsList();
                 },
 
@@ -272,7 +266,16 @@
                             dataType: 'json',
                             data: formData,
                             type: 'GET',
-                            success: function (data) {
+                            success: function (result) {
+                            	$('#card-table').removeClass();
+                                $('#card-table').addClass('card-list card-list-n4');
+                				$("#searchTypeCd_1").val('');
+                				$("#searchTypeCd_2").val('');
+                				
+                                $("#pagination1").html(result.pagination);
+                                $("#pagination2").html(result.pagination);
+                                $("#totalCount").html(result.totalCount);
+                				var data = escapeData(result);
                             	cntnts.makeListHtml(data);
                                 closeWorkProgress();
                             }
@@ -313,12 +316,12 @@
                             <tr>
                             <td>${item.rowNumber}</td>
                             <td>${item.eduSbjctCd}</td>
-                            <td className="al article"><a href="javascript:void(0)" onclick="cntnts.moveToDetail(${item.cntntsid})">${item.ttl}</a></td>
+                            <td className="al article"><a href="javascript:void(0)" onclick="cntnts.moveToDetail(${item.cntntsid}, ${eduSbjctCd})">${item.ttl}</a></td>
    							<td>${item.typeCd}</td>
    							<td>${item.eduTrgtCd}</td>
    							<td>${item.regDt}</td>
    							<td>${item.hits}</td>
-   							<tr>
+   							</tr>
    							`;
    							
                         	mo_listHtml += `
@@ -335,7 +338,7 @@
 										</div>
 										<div class="list">
 											<dt>제목</dt>
-											<dd><a href="javascript:void(0)" onclick="cntnts.moveToDetail(${item.cntntsid})" class="link ellipsis">${item.ttl}</a></dd>
+											<dd><a href="javascript:void(0)" onclick="cntnts.moveToDetail(${item.cntntsid}, ${eduSbjctCd})" class="link ellipsis">${item.ttl}</a></dd>
 										</div>
 										<div class="list">
 											<dt>콘텐츠 유형</dt>
@@ -356,14 +359,13 @@
 									</dl>
 								</div>
 							</li>
-   							`;   							
-   							
+   							`;
    							if(`${item.mainTypeCd}` == '교육영상'){
    	                            cardListHtml += `
    	                             <li>
-   	 	                            <a href="/front/cntnts/cntntsDetailForm.html?cntntsid=${item.cntntsid}">
+   	 	                            <a href="javascript:void(0)" onclick="cntnts.moveToDetail(${item.cntntsid}, ${eduSbjctCd})">
    	 		                            <div class="thumb" style="height:127px;">
-   	 		                            	<img src="/downloadFileByFileid.do?fileid=${item.rprsImgFileid}+&file_idntfc_key=${item.fileIdntfcKey}" alt="">
+   	 		                            	<img src="/downloadFileByFileid.do?fileid=${item.rprsImgFileid}&file_idntfc_key=${item.fileIdntfcKey}" alt="">
    	 		                            	<div class="video" title="동영상 콘텐츠"><span class="icon icon-video-play"></span></div>
    	 		                            </div>
    	 		                            <dl class="card-cate-list">
@@ -377,9 +379,9 @@
    							}else {
    	                            cardListHtml += `
    	                             <li>
-   	 	                            <a href="/front/cntnts/cntntsDetailForm.html?cntntsid=${item.cntntsid}">
+   	 	                            <a href="javascript:void(0)" onclick="cntnts.moveToDetail(${item.cntntsid}, ${eduSbjctCd})">
    	 		                            <div class="thumb" style="height:127px;">
-   	 		                            	<img src="/downloadFileByFileid.do?fileid=${item.rprsImgFileid}+&file_idntfc_key=${item.fileIdntfcKey}" alt="">
+   	 		                            	<img src="/downloadFileByFileid.do?fileid=${item.rprsImgFileid}&file_idntfc_key=${item.fileIdntfcKey}" alt="">
    	 		                            </div>
    	 		                            <dl class="card-cate-list">
    	 										<dt class="mo-ellipsis" data-ellipsis="2">${item.ttl}</dt>
@@ -396,9 +398,6 @@
                     $('#cardList-area').html(cardListHtml);	
                     $('#pc-list-area').html(pc_listHtml);
                     $('#mo-list-area').html(mo_listHtml);
-                    $("#pagination1").html(data.pagination);
-                    $("#pagination2").html(data.pagination);
-                    $("#totalCount").html(data.totalCount);
                 }
             };
 

@@ -3,88 +3,104 @@
         xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
         layout:decorator="layout/front/subLayout">
 <body>
-<div layout:fragment="content" th:if="${cmntyInfo.rlsYn eq 'Y' or cmntyInfo.mbrSttsCd eq '118100'}">
-    <div class="table-view">
-        <div class="table-view-header">
-            <h3><span>[[${cmntyPstInfo.ttl}]]</span></h3>
-            <dl>
-                <div class="list">
-                    <dt>등록자</dt>
-                    <dd>[[${cmntyPstInfo.rgtrNm}]]</dd>
-                </div>
-                <div class="list">
-                    <dt>등록일</dt>
-                    <dd>[[${#dates.format(cmntyPstInfo.regDt, 'yyyy-MM-dd')}]]</dd>
-                </div>
-                <div class="list">
-                    <dt>조회수</dt>
-                    <dd>[[${cmntyPstInfo.hits}]]</dd>
-                </div>
-            </dl>
-            <dl>
-                <div class="list">
-                    <dt>첨부파일</dt>
-                    <dd>
-                        <div class="form-input-file">
-                            <ul th:each="file : ${fileMap}">
-                                <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}">
+<div layout:fragment="content">
+    <th:block th:if="${cmntyInfo.rlsYn eq 'Y' or cmntyInfo.mbrSttsCd eq '118100'}">
+        <div class="table-view">
+            <div class="table-view-header">
+                <h3><span>[[${cmntyPstInfo.ttl}]]</span></h3>
+                <dl>
+                    <div class="list">
+                        <dt>등록자</dt>
+                        <dd>[[${cmntyPstInfo.rgtrNm}]]</dd>
+                    </div>
+                    <div class="list">
+                        <dt>등록일</dt>
+                        <dd>[[${#dates.format(cmntyPstInfo.regDt, 'yyyy-MM-dd')}]]</dd>
+                    </div>
+                    <div class="list">
+                        <dt>조회수</dt>
+                        <dd>[[${cmntyPstInfo.hits}]]</dd>
+                    </div>
+                </dl>
+                <dl>
+                    <div class="list">
+                        <dt>첨부파일</dt>
+                        <dd>
+                            <div class="form-input-file">
+                                <ul th:each="file : ${fileMap}">
+                                    <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}">
                                     <span class="name">
                                         <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
                                            th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
                                             [[${file.orginlFileNm}]]
                                         </a>
                                     </span>
-                                </li>
-                            </ul>
-                        </div>
-                    </dd>
+                                    </li>
+                                </ul>
+                            </div>
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+            <div class="table-view-body">
+                <div class="table-view-content">
+                    <th:block th:utext="${cmntyPstInfo.cn}"></th:block>
                 </div>
-            </dl>
-        </div>
-        <div class="table-view-body">
-            <div class="table-view-content">
-                <th:block th:utext="${cmntyPstInfo.cn}"></th:block>
             </div>
-        </div>
 
-        <div class="cmnt-wrap" th:if="${cmntyPstInfo.cmntUseYn eq 'Y'}">
-            <th:block th:replace="front/cmnty/cmntyWrap"></th:block>
-        </div>
-
-        <div class="btn-wrap">
-            <div class="center">
-                <button th:if="${cmntyPstInfo.rgtrid eq paramVo.user.userid}" type="button" class="btn-medium btn-gray delete-btn" data-del-yn="Y">삭제</button>
-                <button th:if="${cmntyPstInfo.rgtrid eq paramVo.user.userid}" type="button" class="btn-medium btn-gray action-btn" data-action="cmntyPstUpdateForm.html">수정</button>
-                <button type="button" class="btn-medium btn-gray action-btn" data-action="cmntyPstList.html">목록</button>
-                <button th:if="${bbsInfo.cmntUseYn eq 'Y'}" type="button" class="btn-medium btn-gray action-btn" data-action="cmntyPstInsertForm.html">답글</button>
+            <div class="cmnt-wrap" th:if="${cmntyPstInfo.cmntUseYn eq 'Y'}">
+                <th:block th:replace="front/cmnty/cmntyWrap"></th:block>
             </div>
+
+            <div class="btn-wrap">
+                <div class="center">
+                    <button th:if="${cmntyPstInfo.rgtrid eq paramVo.user.userid}" type="button" class="btn-medium btn-gray delete-btn" data-del-yn="Y">삭제</button>
+                    <button th:if="${cmntyPstInfo.rgtrid eq paramVo.user.userid}" type="button" class="btn-medium btn-gray action-btn" data-action="cmntyPstUpdateForm.html">수정</button>
+                    <button type="button" class="btn-medium btn-gray action-btn" data-action="cmntyPstList.html">목록</button>
+                    <button th:if="${bbsInfo.cmntUseYn eq 'Y'}" type="button" class="btn-medium btn-gray action-btn" data-action="cmntyPstInsertForm.html">답글</button>
+                </div>
+            </div>
+
+            <!--<div class="page-navigation">
+                <a class="move-pst-btn" th:if="${cmntyPstInfo.prevPstid ne null}" th:data-pstid="${cmntyPstInfo.prevPstid}">
+                    <dl>
+                        <dt>다음글</dt>
+                        <dd><span class="ellipsis">[[${cmntyPstInfo.prevTitle}]]</span></dd>
+                    </dl>
+                </a>
+
+                <a class="move-pst-btn" th:if="${cmntyPstInfo.nextPstid ne null}" th:data-pstid="${cmntyPstInfo.nextPstid}">
+                    <dl>
+                        <dt>이전글</dt>
+                        <dd><span class="ellipsis">[[${cmntyPstInfo.nextTitle}]]</span>
+                        </dd>
+                    </dl>
+                </a>
+            </div>-->
         </div>
 
-        <!--<div class="page-navigation">
-            <a class="move-pst-btn" th:if="${cmntyPstInfo.prevPstid ne null}" th:data-pstid="${cmntyPstInfo.prevPstid}">
-                <dl>
-                    <dt>다음글</dt>
-                    <dd><span class="ellipsis">[[${cmntyPstInfo.prevTitle}]]</span></dd>
-                </dl>
-            </a>
-
-            <a class="move-pst-btn" th:if="${cmntyPstInfo.nextPstid ne null}" th:data-pstid="${cmntyPstInfo.nextPstid}">
-                <dl>
-                    <dt>이전글</dt>
-                    <dd><span class="ellipsis">[[${cmntyPstInfo.nextTitle}]]</span>
-                    </dd>
-                </dl>
-            </a>
-        </div>-->
-    </div>
-
-    <div class="clone-tmps" style="display: none;">
-        <li class="common-cmnt">
-            <div class="reply-container">
-                <div class="top">
-                    <div class="profile"></div>
-                    <div class="date"></div>
-                    <div class="pc-only">
+        <div class="clone-tmps" style="display: none;">
+            <li class="common-cmnt">
+                <div class="reply-container">
+                    <div class="top">
+                        <div class="profile"></div>
+                        <div class="date"></div>
+                        <div class="pc-only">
+                            <div class="btn-wrap btn-wrap-medium">
+                                <div class="left">
+                                    <button type="button" class="btn-xsmall btn-outline-blue reply-btn">답글</button>
+                                    <button type="button" class="btn-xsmall btn-outline-black update-form-btn">수정</button>
+                                    <button type="button" class="btn-xsmall btn-outline-black cmnt-delete-btn">삭제</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="reply-input">
+                        <div class="reply-textarea">
+                            <pre></pre>
+                        </div>
+                    </div>
+                    <div class="mo-only">
                         <div class="btn-wrap btn-wrap-medium">
                             <div class="left">
                                 <button type="button" class="btn-xsmall btn-outline-blue reply-btn">답글</button>
@@ -94,76 +110,80 @@
                         </div>
                     </div>
                 </div>
-                <div class="reply-input">
-                    <div class="reply-textarea">
-                        <pre></pre>
-                    </div>
+                <div class="dep02">
+                    <ul></ul>
                 </div>
-                <div class="mo-only">
-                    <div class="btn-wrap btn-wrap-medium">
-                        <div class="left">
-                            <button type="button" class="btn-xsmall btn-outline-blue reply-btn">답글</button>
-                            <button type="button" class="btn-xsmall btn-outline-black update-form-btn">수정</button>
-                            <button type="button" class="btn-xsmall btn-outline-black cmnt-delete-btn">삭제</button>
+            </li>
+
+            <li class="reply-cmnt-input">
+                <div class="reply-container">
+                    <div class="reply-input">
+                        <div class="reply-textarea">
+                            <textarea title="답글" placeholder="답글 내용을 입력해주세요."></textarea>
+                            <div class="desc ar size"><span>0</span> / 1,000자</div>
+                        </div>
+                        <div class="btn-wrap">
+                            <button type="button" class="btn-medium btn-green cmnt-insert-btn">등록</button>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="dep02">
-                <ul></ul>
-            </div>
-        </li>
+            </li>
 
-        <li class="reply-cmnt-input">
-            <div class="reply-container">
-                <div class="reply-input">
-                    <div class="reply-textarea">
-                        <textarea title="답글" placeholder="답글 내용을 입력해주세요."></textarea>
-                        <div class="desc ar size"><span>0</span> / 1,000자</div>
+            <li class="update-cmnt-input">
+                <div class="reply-container">
+                    <div class="top">
+                        <div class="profile"></div>
+                        <div class="date"></div>
                     </div>
-                    <div class="btn-wrap">
-                        <button type="button" class="btn-medium btn-green cmnt-insert-btn">등록</button>
+                    <div class="reply-input">
+                        <div class="reply-textarea">
+                            <textarea title="답글" placeholder="답글 내용을 입력해주세요."></textarea>
+                            <div class="desc ar size"><span>0</span> / 1,000자</div>
+                        </div>
+                        <div class="btn-wrap">
+                            <button type="button" class="btn-medium btn-green cmnt-update-btn">수정</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </li>
+            </li>
 
-        <li class="update-cmnt-input">
-            <div class="reply-container">
-                <div class="top">
-                    <div class="profile"></div>
-                    <div class="date"></div>
-                </div>
-                <div class="reply-input">
-                    <div class="reply-textarea">
-                        <textarea title="답글" placeholder="답글 내용을 입력해주세요."></textarea>
-                        <div class="desc ar size"><span>0</span> / 1,000자</div>
-                    </div>
-                    <div class="btn-wrap">
-                        <button type="button" class="btn-medium btn-green cmnt-update-btn">수정</button>
-                    </div>
-                </div>
+            <div class="relpy-more-view">
+                <button type="button" class="btn-small btn-outline-black bg-grayd reply-more-btn">답글 더보기</button>
+                <input type="hidden" id="pageIndex" value="1" />
             </div>
-        </li>
-
-        <div class="relpy-more-view">
-            <button type="button" class="btn-small btn-outline-black bg-grayd reply-more-btn">답글 더보기</button>
-            <input type="hidden" id="pageIndex" value="1" />
         </div>
-    </div>
 
-    <form name="searchForm" id="searchForm">
-        <input type="hidden" id="pageNumber" name="pageNumber" th:value="${paramVo.pageNumber}">
-        <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${paramVo.rowPerPage}">
-        <input type="hidden" id="searchType" name="searchType" th:value="${paramVo.searchType}">
-        <input type="hidden" id="searchKeyword" name="searchKeyword" th:value="${paramVo.searchKeyword}">
-        <input type="hidden" id="cmntyid" name="cmntyid" th:value="${cmntyid}">
-        <input type="hidden" id="bbsid" name="bbsid" th:value="${paramVo.bbsid}">
-        <input type="hidden" id="pstid" name="pstid" th:value="${cmntyPstInfo.pstid}">
-    </form>
+        <form name="searchForm" id="searchForm">
+            <input type="hidden" id="pageNumber" name="pageNumber" th:value="${paramVo.pageNumber}">
+            <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${paramVo.rowPerPage}">
+            <input type="hidden" id="searchType" name="searchType" th:value="${paramVo.searchType}">
+            <input type="hidden" id="searchKeyword" name="searchKeyword" th:value="${paramVo.searchKeyword}">
+            <input type="hidden" id="cmntyid" name="cmntyid" th:value="${cmntyid}">
+            <input type="hidden" id="bbsid" name="bbsid" th:value="${paramVo.bbsid}">
+            <input type="hidden" id="pstid" name="pstid" th:value="${cmntyPstInfo.pstid}">
+        </form>
+    </th:block>
 
     <script th:inline="javascript">
         window.addEventListener('DOMContentLoaded',function (){
+            let rlsYn = /*[[${cmntyInfo.rlsYn}]]*/null;
+            let mbrSttsCd = /*[[${cmntyInfo.mbrSttsCd}]]*/null;
+            let operYn = /*[[${cmntyInfo.operYn}]]*/null;
+            let useYn = /*[[${bbsInfo.useYn}]]*/null;
+            let isRls = rlsYn === 'Y';
+            let isMbr = mbrSttsCd === '118100';
+            let isOper = operYn === 'Y';
+            let isUse = useYn === 'Y';
+
+            if(!isRls && !isMbr){
+                alert('비공개 커뮤니티는 가입전에는 입장하실 수 없습니다.');
+                history.back();
+            }
+            if(!isOper || !isUse){
+                alert(!isOper ? '미운영 동아리입니다.':'사용중인 게시판이 아닙니다.');
+                history.back();
+            }
+
             const $searchForm = $('#searchForm');
             const $replyLength = $('.reply-length > span');
             const $cmntWrap = $('.reply-list .dep01 > ul');
