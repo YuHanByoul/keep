@@ -26,7 +26,7 @@ public class MemberAcntPswdVo extends ParentRequestVo {
 
     /** 계정 */
     @NotEmpty(message = "아이디를 입력 해주십시오.")
-    @Size(min = 6, max = 10, message = "아이디 형식이 올바르지 않습니다.")
+    @Size(min = 5, max = 50, message = "아이디 형식이 올바르지 않습니다.")
     private String acnt;
 
     /** 비밀번호 */
