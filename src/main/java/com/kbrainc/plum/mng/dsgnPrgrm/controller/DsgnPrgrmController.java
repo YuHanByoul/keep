@@ -26,6 +26,8 @@ import com.kbrainc.plum.mng.code.service.CodeServiceImpl;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmObjcVo;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.mng.dsgnPrgrm.service.DsgnPrgrmServiceImpl;
+import com.kbrainc.plum.mng.inst.model.InstVo;
+import com.kbrainc.plum.mng.inst.service.InstServiceImpl;
 import com.kbrainc.plum.mng.pop.model.PopUpNtcVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -63,8 +65,7 @@ public class DsgnPrgrmController {
     private AsgsysSrngServiceImpl asgsysSrngServiceImpl;
 
 	@Autowired
-    private CodeServiceImpl codeServiceImpl;
-
+	private InstServiceImpl instService;
 
     /**********************************************************************************
      * 지정프로그램
@@ -177,7 +178,7 @@ public class DsgnPrgrmController {
      * @throws Exception 예외
      */
     @RequestMapping(value = "/mng/dsgnPrgrm/dsgnPrgrmDetailForm.html")
-    public String dsgnPrgrmDetailForm() throws Exception {
+    public String dsgnPrgrmDetailForm(Model model) throws Exception {
     	return "mng/dsgnPrgrm/dsgnPrgrmDetail";
     }
 
@@ -190,7 +191,8 @@ public class DsgnPrgrmController {
      */
     @RequestMapping(value = "/mng/dsgnPrgrm/dsgnInfoForm.html")
     public String dsgnInfoForm(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
-
+    	InstVo instVo = new InstVo();
+        model.addAttribute("typeCdList", instService.selectInstTypeCdList(instVo));
     	model.addAttribute("dsgnAplyInfo",dsgnPrgrmServiceImpl.selectDsgnPrgrm(dsgnPrgrmVo));
     	return "mng/dsgnPrgrm/dsgnInfoForm";
     }

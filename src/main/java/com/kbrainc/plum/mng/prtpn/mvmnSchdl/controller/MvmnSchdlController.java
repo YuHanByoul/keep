@@ -135,7 +135,7 @@ public class MvmnSchdlController {
 
         model.addAttribute("mvmnSchdl", result);
         model.addAttribute("ymDesc", ymDesc);
-        model.addAttribute("infntAplyCnt", mvmnSchdlService.selectMvmnAplyCnt(mvmnSchdlVo));
+        model.addAttribute("mvmnAplyCnt", mvmnSchdlService.selectMvmnAplyCnt(mvmnSchdlVo));
 
         return "mng/prtpn/mvmnSchdl/mvmnSchdlUpdatePopup";
     }

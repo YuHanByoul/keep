@@ -220,6 +220,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	/** 사업자_등록번호 */
 	private String brno;
 
+	/** 사업자_등록번호 */
+	private String rprsvNm;
+
     /** 기관_이메일 */
 	private String instEml;
 
