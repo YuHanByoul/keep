@@ -151,7 +151,7 @@
 		var getCodeListUrl = "/mng/customAttr/grpCodeList.do";
 		
 		var setSearchSelectBox = {
-		 	fn_getNextDepthList : function(grpcd , upprcd, targetId, selected){
+		 	fn_getNextDepthList : function(grpcd , upprcd, targetId, selected, sessionId){
 				$.ajax({
 					url : getCodeListUrl,
 					type: 'GET',
@@ -163,7 +163,7 @@
 						, upprcd : upprcd
 					}, 
 					success : function (data){
-						setSearchSelectBox.writeHtml(grpcd,targetId,data, selected);
+						setSearchSelectBox.writeHtml(grpcd,targetId,data, selected, sessionId);
 					},
 				 	error : function (error){
 					} 
@@ -171,7 +171,7 @@
 				});
 			},
 
-		 	writeHtml : function(grpcd,targetId,list,selected){
+		 	writeHtml : function(grpcd,targetId, list, selected, sessionId){
 			 	var cntArr = targetId.split("_");
 			   	var nextCnt = Number(cntArr[1])+1;
 			   	var nextTarget = cntArr[0]+"_"+nextCnt;
@@ -188,21 +188,38 @@
 		  		}
 		  		
 				if(list.length == 0 && jQuery("#"+nextTarget)[0] != undefined){
-					setSearchSelectBox.writeHtml(grpcd,nextTarget,list,selected);
+					setSearchSelectBox.writeHtml(grpcd,nextTarget,list,selected, sessionId);
 				}
 				html +="    </select>";
 				
 				$("#"+targetId).html(html);
+				
+				if(sessionId == "searchEduSbjctCd_2"){
+					sessionStorage.removeItem("searchEduSbjctCd_1");
+					sessionStorage.removeItem("searchEduSbjctCd_2");
+				}
+				
+				if(sessionId == "searchTypeCd_2"){
+					sessionStorage.removeItem("searchTypeCd_1");
+					sessionStorage.removeItem("searchTypeCd_2");
+				}
 		 	},
 		 	
 		    setNextDepth : function(grpcd , upprcd , targetId, selected){
-				setSearchSelectBox.fn_getNextDepthList(grpcd , upprcd , targetId, selected);
+				setSearchSelectBox.fn_getNextDepthList(grpcd , upprcd , targetId);
 			}
 		}
-    	setSearchSelectBox.fn_getNextDepthList(155 , 0, 'searchEduSbjctCd_1', mainEduSbjctCd);
-		setSearchSelectBox.fn_getNextDepthList(155, mainEduSbjctCd,'searchEduSbjctCd_2', eduSbjctCd);
 		
-		setSearchSelectBox.fn_getNextDepthList(164 , 0, 'searchTypeCd_1', "");
+    	if(sessionStorage.getItem("searchEduSbjctCd_2") != null){
+        	setSearchSelectBox.fn_getNextDepthList(155 , 0, 'searchEduSbjctCd_1', sessionStorage.getItem("searchEduSbjctCd_1"));
+    		setSearchSelectBox.fn_getNextDepthList(155, sessionStorage.getItem("searchEduSbjctCd_1"), "searchEduSbjctCd_2", sessionStorage.getItem("searchEduSbjctCd_2"), "searchEduSbjctCd_2");            		
+    	}else{
+    		setSearchSelectBox.fn_getNextDepthList(155 , 0, 'searchEduSbjctCd_1', mainEduSbjctCd == null ? sessionStorage.getItem("searchEduSbjctCd_1") : mainEduSbjctCd);
+    		setSearchSelectBox.fn_getNextDepthList(155, mainEduSbjctCd == null ? sessionStorage.getItem("searchEduSbjctCd_1") : mainEduSbjctCd,'searchEduSbjctCd_2', eduSbjctCd == null ? sessionStorage.getItem("searchEduSbjctCd_2") : eduSbjctCd, "searchEduSbjctCd_2");	
+    	}
+    	
+   		setSearchSelectBox.fn_getNextDepthList(164 , 0, 'searchTypeCd_1', sessionStorage.getItem("searchTypeCd_1"));
+   		setSearchSelectBox.fn_getNextDepthList(164 , sessionStorage.getItem("searchTypeCd_1"), 'searchTypeCd_2', sessionStorage.getItem("searchTypeCd_2"), "searchTypeCd_2");
 		
         var cntnts = {
                 listUrl: '/front/cntnts/selectCntntsList.do',
@@ -217,6 +234,16 @@
                 },
 
                 moveToDetail(cntntsid, eduSbjctCd) {
+                	if(eduSbjctCd == null && $("#searchEduSbjctCd_2").val() != "") {
+                		sessionStorage.setItem("searchEduSbjctCd_1", $("#searchEduSbjctCd_1").val());
+                		sessionStorage.setItem("searchEduSbjctCd_2", $("#searchEduSbjctCd_2").val());
+                	}
+                	
+                	if($("#searchTypeCd_2").val() != "") {
+                		sessionStorage.setItem("searchTypeCd_1", $("#searchTypeCd_1").val());
+                		sessionStorage.setItem("searchTypeCd_2", $("#searchTypeCd_2").val());
+                	}     
+                	
                 	if(eduSbjctCd == null) {
                     	location.href = '/front/cntnts/cntntsDetailForm.html?cntntsid='+cntntsid;
                 	}else{
@@ -239,12 +266,18 @@
     						return;
     					}
     				}
+    				
+               		sessionStorage.setItem("searchEduSbjctCd_1", $("#searchEduSbjctCd_1").val());
+               		sessionStorage.setItem("searchEduSbjctCd_2", $("#searchEduSbjctCd_2").val());
+               		sessionStorage.setItem("searchTypeCd_1", $("#searchTypeCd_1").val());
+               		sessionStorage.setItem("searchTypeCd_2", $("#searchTypeCd_2").val());
                 	
                     $('#pageNumber').val('1');
                     this.selectCntntsList();
                 },
 
                 searchInit() {
+                	sessionStorage.clear();
     				$("#searchType").val('');
     				$("#searchKeyword").val('');
     				$("#searchEduSbjctCd_1").val('');
@@ -269,8 +302,6 @@
                             success: function (result) {
                             	$('#card-table').removeClass();
                                 $('#card-table').addClass('card-list card-list-n4');
-                				$("#searchTypeCd_1").val('');
-                				$("#searchTypeCd_2").val('');
                 				
                                 $("#pagination1").html(result.pagination);
                                 $("#pagination2").html(result.pagination);
@@ -402,7 +433,7 @@
             };
 
             $(function () {
-            	cntnts.init();
+            	cntnts.init();            	
             })
 			
 			function goPage(page) {
