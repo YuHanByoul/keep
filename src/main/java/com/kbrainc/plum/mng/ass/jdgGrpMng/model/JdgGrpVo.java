@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.Date;
 
@@ -41,7 +42,8 @@ public class JdgGrpVo extends ParentRequestVo {
     /**
      * 그룹 이름
      */
-    @Size(max = 20, message = "심사위원 그룹명은 20자를 넘을 수 없습니다.")
+    @NotEmpty(message = "심사위원 그룹명을 입력해 주십시오.")
+    @Size(max = 60, message = "심사위원 그룹명은 60자를 넘을 수 없습니다.")
     private String grpNm;
 
     /**
@@ -63,12 +65,11 @@ public class JdgGrpVo extends ParentRequestVo {
      * 등록일
      */
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date regDt;
 
     /**
      * 수정일
      */
-    private Date mdfcnDT;
+    private Date mdfcnDt;
 
 }

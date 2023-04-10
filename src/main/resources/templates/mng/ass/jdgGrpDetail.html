@@ -8,7 +8,6 @@
 <!-- insert 부분 -->
 <div class="col-12 col-lg-6">
     <form id="jdgGrpMngForm" name="jdgGrpMngForm">
-        <input type="hidden" name="grpId" id="grpId" th:value="${jdgGrpInfo.grpId}">
         <div class="card">
             <div class="card-header p-b-0">
                 <h3 class="sub-title"><strong>기본정보</strong></h3>
@@ -29,7 +28,7 @@
                 <div class="mb-2 form-group row">
                     <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="regDt"><strong>등록일</strong></label>
                     <div class="col-auto">
-                        <input type="text" class="form-control form-control-sm" id="regDt" name="regDt"
+                        <input type="text" class="form-control form-control-sm" id="regD" name="regD"
                                th:value="${jdgGrpInfo.regDt != null ? #dates.format(jdgGrpInfo.regDt, 'yyyy-MM-dd') : #dates.format(#dates.createNow(), 'yyyy-MM-dd')}" readonly/>
                     </div>
                 </div>
@@ -52,7 +51,9 @@
             </div>
             <div class="col-12 col-md-6 text-right">
                 <div class="col-sm-12 btn-group-sm">
-                    <button type="button" id='exprtSearchBtn' class="btn btn-primary btn-sm" onclick="jdgGrpDetail.openExpertModal()">전문가 검색</button>
+                    <button type="button" id='exprtSearchBtn' class="btn btn-primary btn-sm" onclick="jdgGrpDetail.openExpertModal()"
+                            th:disabled="${jdgGrpInfo.grpId == null}">전문가 검색
+                    </button>
                 </div>
             </div>
         </div>
@@ -72,9 +73,11 @@
         insertUrl: "/mng/ass/insertJdgGrpInfo.do",
         updateUrl: "/mng/ass/updateJdgGrpInfo.do",
         expertDeleteUrl: "/mng/ass/deleteJdgGrpExpert.do",
+        jdgGrpDetailGridHelper: null,
+        grpId: /*[[${jdgGrpInfo.grpId}]]*/null,
 
         init: function () {
-            jdgGrpDetailGridHelper = new GridHelper('expertJsGrid');
+            this.jdgGrpDetailGridHelper = new GridHelper('expertJsGrid');
             this.validateForm();
             this.writeExpertJsGridData();
         },
@@ -83,10 +86,10 @@
             $('#jdgGrpMngForm').validate({
                 onsubmit: false,
                 rules: {
-                    grpNm: {required: true, maxlength: 20}
+                    grpNm: {required: true, maxlength: 60}
                 },
                 messages: {
-                    grpNm: {required: '심사위원 그룹명을 입력해 주십시오.', maxlength: '그룹명은 20자를 넘을 수 없습니다.'}
+                    grpNm: {required: '심사위원 그룹명을 입력해 주십시오.', maxlength: '그룹명은 60자를 넘을 수 없습니다.'}
                 }
             })
         },
@@ -99,6 +102,35 @@
                     expertSearchModal.show();
                 }
             });
+        },
+
+        deleteExprt: function (userid) {
+            var isSec = false;
+            /*[# sec:authorize-url="/mng/ass/deleteJdgGrpExpert.do"]*/
+            isSec = true;
+            /*[/]*/
+            if (!isSec) {
+                alert('접근권한이 없습니다.');
+                return;
+            }
+
+            var param = {userid: userid, grpId: jdgGrpDetail.grpId};
+            if (displayWorkProgress()) {
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    url: jdgGrpDetail.expertDeleteUrl,
+                    data: JSON.stringify(param),
+                    dataType: "json"
+                }).done(function (response) {
+                    alert(response.msg);
+                    closeWorkProgress();
+
+                    if (response.success) {
+                        jdgGrpDetail.jdgGrpDetailGridHelper.resetPageContent()
+                    }
+                });
+            }
         },
 
         writeExpertJsGridData: function () {
@@ -120,38 +152,14 @@
                 pageLoading: true,
                 pageIndex: 1,
 
-                deleteConfirm: function () {
-                    return "전문가를 삭제하시겠습니까?";
-                },
-
                 controller: {
-                    deleteItem: function (item) {
-                        item.grpId = $("#jdgGrpMngForm #grpId").val();
-
-                        if (displayWorkProgress()) {
-                            $.ajax({
-                                type: "POST",
-                                contentType: "application/json; charset=utf-8",
-                                url: jdgGrpDetail.expertDeleteUrl,
-                                data: JSON.stringify(item),
-                                dataType: "json"
-                            }).done(function (response) {
-                                if (response.success) {
-                                    jdgGrpDetailGridHelper.resetPageContent()
-                                    // $("#expertJsGrid").jsGrid("reset");
-                                }
-                                alert(response.msg);
-                                closeWorkProgress();
-                            });
-                        }
-                    },
-
                     loadData: function (filter) {
                         var data = $.Deferred();
 
                         var params = [
                             {"name": "pageNumber", "value": filter.pageIndex},
                             {"name": "rowPerPage", "value": filter.pageSize},
+                            {"name": "grpId", "value": jdgGrpDetail.grpId}
                         ];
 
                         if (filter.sortField != undefined) {
@@ -186,45 +194,26 @@
                     {title: "아이디", name: "acnt", type: "text", width: "150", align: "center"},
                     {title: "이름", name: "nm", type: "text", width: "120", align: "center"},
                     {title: "이메일", name: "eml", type: "text", width: "200"},
+                    {title: "전화번호", name: "moblphon", type: "number", align: "center", width: "150"},
                     {
-                        title: "전화번호", name: "moblphon", type: "number", align: "center", width: "150",
-                        itemTemplate: function (value, item) {
-                            return value.substring(0, 3) + "-" + value.substring(3, 7) + "-" + value.substring(7, 11);
+                        title: '삭제', align: 'center', width: '90'
+                        , itemTemplate: function (value, item) {
+                            var deleteBtn = `<input class='btn btn-inverse' type='button' value='삭제' title='삭제' onclick="jdgGrpDetail.deleteExprt(${item.userid})">`;
+                            return deleteBtn;
                         }
-                    },
-                    {
-                        type: 'control',
-                        deleteButton: true,
-                        editButton: false,
-                        deleteButtonClass: 'btn btn-inverse',
-                        buttonClass: '',
-
-                        headerTemplate: function () {
-                            return "삭제";
-                        },
-
-                        itemTemplate: function (value, item) {
-                            var result = $([]);
-                            result = result.add(this._createDeleteButton(item));
-                            result.attr('value', '삭제');
-                            return result;
-                        },
-                        width: '80',
-                        align: 'center',
-                        sorting: false
                     }
                 ]
             });
         },
 
         insert: function () {
-            var url = jdgGrpDetail.insertUrl;
+            var url = this.insertUrl;
 
-            if ($('#grpId').val() != '') {
-                url = jdgGrpDetail.updateUrl;
+            if (this.grpId != null) {
+                url = this.updateUrl;
             }
 
-            if (url == jdgGrpDetail.insertUrl) {
+            if (url == this.insertUrl) {
                 var isSec = false;
                 /*[# sec:authorize-url="/mng/ass/insertJdgGrpInfo.do"]*/
                 isSec = true;
@@ -233,7 +222,7 @@
                     alert('접근권한이 없습니다.');
                     return;
                 }
-            } else if (url == jdgGrpDetail.updateUrl) {
+            } else if (url == this.updateUrl) {
                 var isSec = false;
                 /*[# sec:authorize-url="/mng/ass/updateJdgGrpInfo.do"]*/
                 isSec = true;
@@ -255,9 +244,11 @@
                     let input_html = "<input type='hidden' id='" + ckbId.replaceAll("Chk", "") + "' name='" + ckbId.replaceAll("Chk", "") + "' value='" + value + "'   '/>"
                     $("#jdgGrpMngForm").append(input_html);
                 }
-            })
+            });
 
             var formData = $('#jdgGrpMngForm').serializeArray();
+            formData = formData.concat({"name": "grpId", "value": this.grpId});
+
             if (displayWorkProgress()) {
                 $.ajax({
                     url: url,
@@ -268,7 +259,7 @@
                     success: function (data) {
                         alert(data.msg);
                         closeWorkProgress();
-                        gridHelper.resetPageContent();
+                        jdgGrpList.gridHelper.resetPageContent();
                     }
                 });
             }
@@ -276,18 +267,11 @@
         },
 
         cancel: function () {
-            gridHelper.resetPageContent()
+            jdgGrpList.gridHelper.toggleContent()
         }
     }
     $(function () {
         jdgGrpDetail.init();
-
-        /*<![CDATA[*/
-        var grpId = /*[[${jdgGrpInfo.grpId}]]*/null;
-        /*]]>*/
-        if (grpId == null) {
-            $('#exprtSearchBtn').attr('disabled', true);
-        }
     })
 </script>
 </html>
