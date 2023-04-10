@@ -64,16 +64,16 @@ public interface InfntAplyHistDao {
     public InfntAplyHistVo selectInfntAplyHistDetail(InfntAplyHistVo infntAplyHistVo) throws Exception;
     
     /**
-    * 유아환경교육관 신청취소
+    * 유아환경교육관 상태수정
     **
-    * @Title : updateCancelInfntAply
-    * @Description : 유아환경교육관 신청취소
+    * @Title : updateSttsInfntAply
+    * @Description : 유아환경교육관 상태수정
     * @param infntAplyHistVo
     * @return
     * @throws Exception
     * @return int
     */
-    public int updateCancelInfntAply(InfntAplyHistVo infntAplyHistVo) throws Exception;
+    public int updateSttsInfntAply(InfntAplyHistVo infntAplyHistVo) throws Exception;
 
     /**
      * 유아환경교육관 설문 정보 조회
@@ -97,5 +97,41 @@ public interface InfntAplyHistDao {
      * @throws Exception
      * @return List<SrvyVo>
      */
-    public List<SrvyVo> selectInfntSrvySendList(SrvyVo srvyVo) throws Exception;      
+    public List<SrvyVo> selectInfntSrvySendList(SrvyVo srvyVo) throws Exception;  
+    
+    /**
+    * 유아환경교육관 참여이력 수정
+    **
+    * @Title : updateInfntAply
+    * @Description : 유아환경교육관 참여이력 수정
+    * @param infntAplyHistVo
+    * @return
+    * @throws Exception
+    * @return int
+    */
+    public int updateInfntAply(InfntAplyHistVo infntAplyHistVo) throws Exception;   
+    
+    /**
+    * 교육대상 등록
+    **
+    @Title : insertTrgtCd
+    * @Description : 교육대상 등록
+    * @param infntAplyHistVo
+    * @return
+    * @throws Exception
+    * @return int
+    */
+    public int insertTrgtCd(InfntAplyHistVo infntAplyHistVo) throws Exception;
+    
+    /**
+    * 교육대상 삭제
+    **
+    @Title : deleteTrgtCd
+    * @Description : 교육대상 삭제
+    * @param infntAplyHistVo
+    * @return
+    * @throws Exception
+    * @return int
+    */
+    public int deleteTrgtCd(InfntAplyHistVo infntAplyHistVo) throws Exception;
 }

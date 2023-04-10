@@ -13,12 +13,12 @@
 					<div class="form-body">
 						<div class="form-input">
 							<select title="검색어" name="searchType" id="searchType">
-								<option value="">- 전체 - </option>	
-								<option value="searchTtl">제목</option>
-								<option value="searchCn">내용</option>
-								<option value="searchTtlCn">제목+내용</option>
+								<option value=""            th:selected="${params.searchType == ''}"            >- 전체 - </option>	
+								<option value="searchTtl"   th:selected="${params.searchType == 'searchTtl'}"   >제목</option>
+								<option value="searchCn"    th:selected="${params.searchType == 'searchCn'}"    >내용</option>
+								<option value="searchTtlCn" th:selected="${params.searchType == 'searchTtlCn'}" >제목+내용</option>
 							</select>
-							<input type="search" title="검색어" name="searchKeyword" id="searchKeyword" placeholder="검색어를 입력해 주세요.">
+							<input type="search" title="검색어" name="searchKeyword" id="searchKeyword" placeholder="검색어를 입력해 주세요." th:value="${params.searchKeyword}">
 						</div>
 					</div>
 				</div>
@@ -28,18 +28,18 @@
 						<div class="form-input">
 							<select title="작가/출판사" name="searchType2" id="searchType2">
 								<option value="">- 전체 -</option>
-								<option value="searchWritr">작가(글)</option>
-								<option value="searchWritrPictr">작가(그림)</option>
-								<option value="searchPlscmpn">출판사</option>
-							</select>
-							<input type="search" title="작가/출판사" name="searchKeyword2" id="searchKeyword2" placeholder="작가/출판사를 입력해 주세요.">
+								<option value="searchWritr"      th:selected="${params.searchType2 == 'searchWritr'}"            >작가(글)</option>
+								<option value="searchWritrPictr" th:selected="${params.searchType2 == 'searchWritrPictr'}"   >작가(그림)</option>
+								<option value="searchPlscmpn"    th:selected="${params.searchType2 == 'searchPlscmpn'}"    >출판사</option>
+							</select>                            
+							<input type="search" title="작가/출판사" name="searchKeyword2" id="searchKeyword2" placeholder="작가/출판사를 입력해 주세요." th:value="${params.searchKeyword2}">
 						</div>
 					</div>
 				</div>
 				<div class="form-row">
 					<div class="form-header"><strong class="label">대상</strong></div>
 					<div class="form-body">
-						<span kattr:select_code="searchEduTrgtCd" th:attr="grpCd=178" firstOptTxt="- 전체 -"></span>
+						<span kattr:select_code="searchEduTrgtCd" th:attr="grpCd=178,selectedCd=${params.searchEduTrgtCd}" firstOptTxt="- 전체 -"></span>
 					</div>
 				</div>
 				<div class="form-row">
@@ -47,10 +47,8 @@
 					<div class="form-body">
 						<div class="form-input">
 							<select name="searchManinEduSbjctCd" id="searchEduSbjctCd_1" title="주제" onchange="setSearchSelectBox.setNextDepth(155,this.value,'searchEduSbjctCd_2')">
-								<option value="" selected>- 전체 -</option>
 							</select>
 	                        <select name="searchMdleEduSbjctCd" id="searchEduSbjctCd_2" title="주제 상세" style="flex:auto">
-	                            <option value="" selected>- 전체 -</option>
 	                        </select>							
 						</div>
 					</div>
@@ -61,11 +59,11 @@
 				<button type="button" class="btn-medium btn-green btn-before-search" onclick="book.search()">검색</button>
 			</div>
 			
-	        <input type="hidden" id="pageNumber" name="pageNumber" value="1">
-	        <input type="hidden" id="rowPerPage" name="rowPerPage" value="16">
+	        <input type="hidden" id="pageNumber"      name="pageNumber"     th:value="${params.pageNumber}" >
+	        <input type="hidden" id="rowPerPage"      name="rowPerPage"     value="3">
 	        <input type="hidden" id="ORDER_DIRECTION" name="orderDirection" value="desc">
-	        <input type="hidden" id="orderField" name="orderField" value="BOOKID DESC, REG_DT">
-	        <input type="hidden" id="bookid" name="bookid" >
+	        <input type="hidden" id="orderField"      name="orderField"     value="BOOKID DESC, REG_DT">
+	        <input type="hidden" id="bookid"          name="bookid" >
 		</form>
 
 		<div class="tab-content">
@@ -139,9 +137,25 @@
 		<!-- //content -->
 	
 		<script th:inline="javascript">
+		
+		/*<![CDATA[*/ 
+	    var params = /*[[${params}]]*/null;
+	    /*]]>*/
+	     
+	    function promiseProcess(){
+		    return new Promise(function (resolve,reject){
+                setSearchSelectBox.fn_getNextDepthList(155 , 0, 'searchEduSbjctCd_1',params.searchManinEduSbjctCd);
+		        setSearchSelectBox.setNextDepth(155,params.searchManinEduSbjctCd,'searchEduSbjctCd_2',params.searchMdleEduSbjctCd)
+			    resolve();
+			})
+		}
+		 
         $(function () {
-            book.init();
+            setSearchSelectBox.fn_getNextDepthList(155 , 0, 'searchEduSbjctCd_1',params.searchManinEduSbjctCd);
+            setSearchSelectBox.setNextDepth(155,params.searchManinEduSbjctCd,'searchEduSbjctCd_2',params.searchMdleEduSbjctCd)
+        	book.init();
         })
+        
         var book = {
                 listUrl: '/front/book/selectBookList.do',
                 detailUrl : '/front/book/bookDetailForm.html',
@@ -149,19 +163,9 @@
                 init(rowPerPage) {
                 	if(rowPerPage != null) {
 	                    $("#rowPerPage").val(parseInt(rowPerPage));
-	                    $('#pageNumber').val('1');
                 	}
                     this.selectBookList();
                 },
-
-                moveToDetail() {
-                    if (this.userid == null) {
-                        alert('로그인 후 이용하실 수 있습니다.');
-                        return;
-                    }
-                    location.href = '/front/book/bookDetailForm.html';
-                },
-
                 search() {
     				var searchType = $("#searchType").val()
     				var searchKeyword = $("#searchKeyword").val()
@@ -220,6 +224,7 @@
                             url: book.listUrl,
                             cache: false,
                             dataType: 'json',
+                            async:false,
                             data: formData,
                             type: 'GET',
                             success: function (data) {
@@ -239,8 +244,6 @@
 
                 makeListHtml(data) {
 
-                    console.log(data.list);
-                    
                     var cardListHtml = "";
                     var pc_listHtml = "";
                     var mo_listHtml = "";
@@ -333,7 +336,7 @@
    							
                             cardListHtml += `
                              <li>
- 	                            <a href="/front/book/bookDetailForm.html?bookid=${item.bookid}">
+ 	                            <a href="javascript:book.moveToDetail(${item.bookid})"> 
  		                            <div class="thumb contain" style="height:160px;">
  		                            	<img src="/downloadFileByFileid.do?fileid=${item.rprsImgFileid}+&file_idntfc_key=${item.fileIdntfcKey}" alt="">
  		                            </div>
@@ -359,18 +362,20 @@
 			var getCodeListUrl = "/mng/customAttr/grpCodeList.do"
 			
 			var setSearchSelectBox = {
-			 	fn_getNextDepthList : function(grpcd , upprcd, targetId){
+			 	fn_getNextDepthList : function(grpcd , upprcd, targetId,selectedCd){
 					$.ajax({
 						url : getCodeListUrl,
 						type: 'GET',
 						cache : false,
+						async:false,
 						dataType: 'json',
 						data: {
 							  grpcd  : grpcd
 							, upprcd : upprcd
 						}, 
 						success : function (data){
-							setSearchSelectBox.writeHtml(grpcd,targetId,data,"");
+							setSearchSelectBox.writeHtml(grpcd,targetId,data,selectedCd);
+							return true;
 						},
 					 	error : function (error){
 						} 
@@ -385,32 +390,27 @@
 				   	   
 				    var html ="<select id='"+targetId+"' onchange=setSearchSelectBox.setNextDepth('"+grpcd+"',this.value,'"+nextTarget+"')>";
 				        html +="    <option value='' selected>- 전체 -</option>";
-			    	   
 			  		  for(var i=0 ; i < list.length;i++){
-			  			if(list[i].cdid==selected){
+			  			if(list[i].cd==selected){
 			   			html +="    <option value="+list[i].cd+" selected>"+ list[i].cdNm+ "</option>";
 			  			}else{
 			  			html +="    <option value="+list[i].cd+">"+ list[i].cdNm+ "</option>";
 			  			}
 			  		  }
 			  		  if(list.length == 0 && jQuery("#"+nextTarget)[0] != undefined){
-			  		  	setSearchSelectBox.writeHtml(grpcd,nextTarget,list,selected);
+			  		  	setSearchSelectBox.writeHtml(grpcd,nextTarget,list,"");
 			  		  }
 				   	  html +="    </select>";
 				   	  $("#"+targetId).html(html);
 			 	},
 			 	
-			    setNextDepth : function(grpcd , upprcd , targetId){
-					setSearchSelectBox.fn_getNextDepthList(grpcd , upprcd , targetId);
+			    setNextDepth : function(grpcd , upprcd , targetId,selected){
+					return setSearchSelectBox.fn_getNextDepthList(grpcd , upprcd , targetId,selected);
 				}
 			}
 			
-			setSearchSelectBox.fn_getNextDepthList(155 , 0, 'searchEduSbjctCd_1');
-			setSearchSelectBox.fn_getNextDepthList(164 , 0, 'searchTypeCd_1');
-			
 			function goPage(page) {
 				$("#pageNumber").val(page);
-				
 				book.selectBookList();
 			}            
 		</script>

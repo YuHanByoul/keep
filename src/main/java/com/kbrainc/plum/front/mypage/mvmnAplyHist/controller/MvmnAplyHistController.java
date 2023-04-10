@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.kbrainc.plum.front.mypage.mvmnAplyHist.model.MvmnAplyHistVo;
 import com.kbrainc.plum.front.mypage.mvmnAplyHist.service.MvmnAplyHistService;
 import com.kbrainc.plum.front.srvy.model.SrvyVo;
+import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.StringUtil;
@@ -76,6 +77,17 @@ public class MvmnAplyHistController {
         MvmnAplyHistVo mvmnAplyHistRegVo = mvmnAplyHistService.selectMvmnAplyHistDetail(mvmnAplyHistVo);
         
         model.addAttribute("mvmnAplyHistInfoVo", mvmnAplyHistInfoVo);
+        
+        if(!"".equals(mvmnAplyHistRegVo.getHopeEduBgngTm())){
+            String[] splitHopeEduBgngTmStr = mvmnAplyHistRegVo.getHopeEduBgngTm().split(":");
+            mvmnAplyHistRegVo.setHopeEduBgngTmHour(splitHopeEduBgngTmStr[0]);
+            mvmnAplyHistRegVo.setHopeEduBgngTmMin(splitHopeEduBgngTmStr[1]);
+            
+            String[] splitHopeEduEndTmStr = mvmnAplyHistRegVo.getHopeEduEndTm().split(":");
+            mvmnAplyHistRegVo.setHopeEduEndTmHour(splitHopeEduEndTmStr[0]);
+            mvmnAplyHistRegVo.setHopeEduEndTmMin(splitHopeEduEndTmStr[1]);
+        }
+        
         model.addAttribute("mvmnAplyHistRegVo", mvmnAplyHistRegVo);
         
         List<Map<String, String>> listMap = new ArrayList<Map<String, String>>();
@@ -107,23 +119,30 @@ public class MvmnAplyHistController {
         return VIEW_PATH + "/mvmnAplyHistDetail";
     }
     
-    @PostMapping("/updateCancelMvmnAply.do")
+    @PostMapping("/updateSttsMvmnAply.do")
     @ResponseBody
-    public Map<String, Object> updateCancelMvmnAply(MvmnAplyHistVo mvmnAplyHistVo, @UserInfo UserVo userVo) throws Exception {
+    public Map<String, Object> updateSttsMvmnAply(MvmnAplyHistVo mvmnAplyHistVo, @UserInfo UserVo userVo) throws Exception {
         Map<String, Object> response = new HashMap<>();
         boolean success = false;
         mvmnAplyHistVo.setUser(userVo);
 
-        if (mvmnAplyHistService.updateCancelMvmnAply(mvmnAplyHistVo) > 0) {
+        if (mvmnAplyHistService.updateSttsMvmnAply(mvmnAplyHistVo) > 0) {
             success = true;
-            response.put("msg", "취소가 완료되었습니다.");
+            if("180104".equals(mvmnAplyHistVo.getUpdCd())){
+                response.put("msg", "취소가 완료되었습니다.");
+            }else if("180105".equals(mvmnAplyHistVo.getUpdCd())){
+                response.put("msg", "승인거부가 완료되었습니다.");                
+            }
         } else
-            response.put("msg", "취소가 실패하였습니다.");
-
+            if("180104".equals(mvmnAplyHistVo.getUpdCd())){
+                response.put("msg", "취소가 실패하였습니다.");
+            }
+            if("180105".equals(mvmnAplyHistVo.getUpdCd())){
+                response.put("msg", "승인거부가 실패하였습니다.");
+            }
         response.put("success", success);
         return response;
-    }    
-    
+    }   
     /**
     * 푸름이 이동환경교실 교육 신청 이력 설문공유. 
     *
@@ -168,5 +187,23 @@ public class MvmnAplyHistController {
         model.addAttribute("mvmnPrgrmAplyid", mvmnAplyHistVo.getAplyid());
         model.addAttribute("srvySendList", mvmnAplyHistService.selectMvmnSrvySendList(srvyVo));
         return VIEW_PATH + "/mvmnAplyHistSrvyRsltPopup";
+    }       
+    
+    @RequestMapping(value = "/updateMvmnAply.do")
+    @ResponseBody
+    public Map<String, Object> updateMvmnAply(MvmnAplyHistVo mvmnAplyHistVo, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        int retVal = 0;
+        mvmnAplyHistVo.setUser(user);
+        retVal = mvmnAplyHistService.updateMvmnAply(mvmnAplyHistVo);
+        
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "수정에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "수정에 실패했습니다.");
+        }        
+        return resultMap;    
     }        
 }

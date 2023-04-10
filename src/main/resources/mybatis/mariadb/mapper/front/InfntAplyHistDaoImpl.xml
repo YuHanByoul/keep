@@ -136,10 +136,10 @@
     </select>
         
     <!-- 유아환경교육관 신청취소 -->
-    <update id="updateCancelInfntAply">
+    <update id="updateSttsInfntAply" parameterType="front.InfntAplyHistVo">
         /* InfntAplyHistDao.updateCancelInfntAply */
         UPDATE TB_EDU_INFNT_PRGRM_APLY SET
-            STTS_CD = '180104'
+            STTS_CD = #{updCd}
             , MDFCN_DT = NOW()
             , MDFRID = #{user.userid}
         WHERE APLYID = #{aplyid}
@@ -171,7 +171,6 @@
             , A.SRVYID
             , B.QESTNRID
             , A.INFNT_PRGRM_APLYID
-            , A.MVMN_PRGRM_APLYID
             , A.USERID
             , A.PRTPNT_NM
             , DATE_FORMAT(A.SBMSN_DT, '%Y-%m-%d') AS SBMSN_DT
@@ -189,4 +188,49 @@
         </if>            
     </select>
     
+    <!-- 유아환경교육관 참여이력 수정 -->
+    <update id="updateInfntAply" parameterType="front.InfntAplyHistVo" keyProperty="front.InfntAplyHistVo">
+        /* InfntAplyHistDao.updateInfntAply */
+        UPDATE TB_EDU_INFNT_PRGRM_APLY SET
+                CTPRVN_CD                 = #{ctprvnCd}
+                , MOBLPHON                  = #{moblphon}
+                , EDU_NOPE                  = #{eduNope}
+                , TCHER_NOPE                = #{tcherNope}
+                , ETC                       = #{etc}
+                , TOWWAY_ONLN_EDU_AGRE_YN   = #{towwayOnlnEduAgreYn}
+                , MDFCN_DT                  = NOW()
+                , MDFRID                    = #{user.userid}
+         WHERE APLYID                      = #{aplyid}
+    </update>      
+    
+    <!-- 교육대상 저장 -->
+    <insert id="insertTrgtCd" parameterType="front.InfntAplyHistVo" >
+         /* InfntAplyHistDao.insertTrgtCd */
+         INSERT INTO TB_EDU_INFNT_PRGRM_APLY_EDU_TRGT(
+              APLYID
+              ,EDU_TRGT_CD
+              ,MDFCN_DT
+              ,MDFRID
+              ,REG_DT
+              ,RGTRID
+         )VALUES
+          <foreach item="item" collection="trgtCds"  separator=",">
+           (
+             #{aplyid}
+             ,#{item}
+             ,NOW()
+             ,#{user.userid}
+             ,NOW()
+             ,#{user.userid}             
+            )
+          </foreach>
+    </insert>
+
+    <!-- 교육대상 삭제 -->
+    <insert id="deleteTrgtCd" parameterType="front.InfntAplyHistVo" >
+         /* InfntAplyHistDao.deleteTrgtCd */
+         DELETE FROM TB_EDU_INFNT_PRGRM_APLY_EDU_TRGT
+         WHERE 1=1
+           AND APLYID = #{aplyid}
+    </insert>             
 </mapper>

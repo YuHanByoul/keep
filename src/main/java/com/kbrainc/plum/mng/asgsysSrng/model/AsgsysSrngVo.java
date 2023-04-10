@@ -818,6 +818,11 @@ public class AsgsysSrngVo extends ParentRequestVo {
     /** 학력 ID */
     private Integer acbgid;
 
+    private String dp1;
+    private String dp2;
+    private String lv;
+    private String qrow;
+
     /** 로그인사용자정보 */
     public void setUser(UserVo user){
         UserVo clone = (UserVo) SerializationUtils.clone(user);

@@ -63,16 +63,16 @@ public interface InfntAplyHistService {
     
     
     /**
-    * 유아환경교육관 신청취소
+    * 유아환경교육관 상태수정
     **
-    * @Title : updateCancelInfntAply
-    * @Description : 유아환경교육관 신청취소
+    * @Title : updateSttsInfntAply
+    * @Description : 유아환경교육관 상태수정
     * @param infntAplyHistVo
     * @return
     * @throws Exception
     * @return int
     */
-    public int updateCancelInfntAply(InfntAplyHistVo infntAplyHistVo) throws Exception;
+    public int updateSttsInfntAply(InfntAplyHistVo infntAplyHistVo) throws Exception;
     
     /**
      * 유아환경교육관 설문 정보 조회
@@ -97,5 +97,17 @@ public interface InfntAplyHistService {
      * @return List<SrvyVo>
      */
     public List<SrvyVo> selectInfntSrvySendList(SrvyVo srvyVo) throws Exception;    
+    
+    /**
+    * 유아환경교육관 참여이력 수정
+    **
+    * @Title : updateInfntAply
+    * @Description : 유아환경교육관 참여이력 수정
+    * @param infntAplyHistVo
+    * @return
+    * @throws Exception
+    * @return int
+    */
+    public int updateInfntAply(InfntAplyHistVo infntAplyHistVo) throws Exception;    
     
 }

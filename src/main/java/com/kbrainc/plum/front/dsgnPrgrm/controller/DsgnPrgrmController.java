@@ -703,12 +703,12 @@ public class DsgnPrgrmController {
 	*/
 	@RequestMapping(value = "/front/dsgnPrgrm/insertPrgrmSftyMngForm.do")
 	@ResponseBody
-	public Map<String, Object> insertPrgrmSftyMngForm(AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user) throws Exception {
+	public Map<String, Object> insertPrgrmSftyMngForm(AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user,HttpServletRequest request) throws Exception {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
+	    asgsysSrngVo.setUserIp(CommonUtil.getClientIp(request));
+	    asgsysSrngVo.setUser(user);
 
 		int retVal=0;
-
-		asgsysSrngVo.setUser(user);
 
 		retVal+=asgsysSrngService.insertSftyMng(asgsysSrngVo);
 

@@ -949,7 +949,7 @@ public class AsgsysSrngController {
     /**
     * 지도자의자격및배치 등록
     *
-    * @Title : insertSprtgrpSrng
+    * @Title : insertPrgrmLdrQlfc
     * @Description : 지도자의자격및배치 등록
     * @param asgsysSrngVo
     * @param user
@@ -960,7 +960,7 @@ public class AsgsysSrngController {
     */
     @RequestMapping(value = "/mng/asgsysSrng/insertPrgrmLdrQlfc.do")
     @ResponseBody
-    public Map<String, Object> insertSprtgrpSrng(@Valid AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> insertPrgrmLdrQlfc(@Valid AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user) throws Exception {
 
     	Map<String, Object> resultMap = new HashMap<String, Object>();
 
@@ -1112,43 +1112,43 @@ public class AsgsysSrngController {
          return resultMap;
      }
 
-     /**
-      * 지원단심사 등록
-      *
-      * @Title : insertSprtgrpSrng
-      * @Description : 지원단심사 등록
-      * @param asgsysSrngVo
-      * @param user
-      * @throws Exception
-      * @return Map<String,Object>
-      */
-      @RequestMapping(value = "/mng/asgsysSrng/insertSprtgrpSrng.do")
-      @ResponseBody
-      public Map<String, Object> insertSprtgrpSrng(@Valid AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user, HttpServletRequest request) throws Exception {
+    /**
+    * 지원단심사 등록
+    *
+    * @Title : insertSprtgrpSrng
+    * @Description : 지원단심사 등록
+    * @param asgsysSrngVo
+    * @param user
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+ 	@RequestMapping(value = "/mng/asgsysSrng/insertSprtgrpSrng.do")
+	@ResponseBody
+	public Map<String, Object> insertSprtgrpSrng(@Valid AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user, HttpServletRequest request) throws Exception {
 
-      	Map<String, Object> resultMap = new HashMap<String, Object>();
+		Map<String, Object> resultMap = new HashMap<String, Object>();
 
-      	asgsysSrngVo.setUser(user);
-      	asgsysSrngVo.setUserIp(CommonUtil.getClientIp(request));
+		asgsysSrngVo.setUser(user);
+		asgsysSrngVo.setUserIp(CommonUtil.getClientIp(request));
 
-      	int retVal = 0;
+		int retVal = 0;
 
-      	if (!StringUtil.nvl(asgsysSrngVo.getSbmsnid()).equals("") && !StringUtil.nvl(asgsysSrngVo.getSbmsnid()).equals(0)) {
-      		retVal = asgsysSrngService.updateSprtgrpSrng(asgsysSrngVo);
-      	}else {
-      		retVal = asgsysSrngService.insertSprtgrpSrng(asgsysSrngVo);
-      	}
+		if (null != asgsysSrngVo.getSbmsnid() && 0 != asgsysSrngVo.getSbmsnid()) {
+			retVal = asgsysSrngService.updateSprtgrpSrng(asgsysSrngVo);
+		} else {
+			retVal = asgsysSrngService.insertSprtgrpSrng(asgsysSrngVo);
+		}
 
-          if (retVal > 0) {
-              resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-              resultMap.put("msg", "저장에 성공하였습니다.");
-          } else {
-              resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-              resultMap.put("msg", "저장에 실패했습니다.");
-          }
+		if (retVal > 0) {
+			resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+			resultMap.put("msg", "저장에 성공하였습니다.");
+		} else {
+			resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+			resultMap.put("msg", "저장에 실패했습니다.");
+		}
 
-          return resultMap;
-      }
+		return resultMap;
+	}
 
     /**
     * 지원단 캘린더 팝업 오픈
@@ -1619,7 +1619,6 @@ public class AsgsysSrngController {
     	AsgsysSrngVo asgsysSrngInfo = asgsysSrngService.selectSprtgrpSrng(asgsysSrngVo);
 
     	model.addAttribute("sprtgrpSrngInfo", asgsysSrngInfo);
-
     	model.addAttribute("sprtgrpCheckList", asgsysSrngService.selectCheckList(asgsysSrngInfo));
 
         return "mng/asgsysSrng/sprtgrpSrngInsertForm";
