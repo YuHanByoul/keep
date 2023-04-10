@@ -9,6 +9,7 @@ import com.kbrainc.plum.rte.util.CommonUtil;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 /**
@@ -89,7 +90,8 @@ public class DsgnPrgrmObjcVo extends ParentRequestVo {
     /**
      * 답변
      */
-    @NotEmpty(message = "답변 내용을 입력해 주십시오.")
+    @NotEmpty(message = "답변을 입력해 주십시오.")
+    @Size(max = 2000, message= "답변은 2000자를 넘을 수 없습니다.")
     private String ans;
 
     public void setAplySttsCd(String aplySttsCd) throws Exception {
