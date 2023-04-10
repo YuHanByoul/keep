@@ -237,9 +237,6 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 	/** 지정일 */
 	private String dsgnDe;
 
-	/** 기관_상세주소*/
-    private String instDtlAddr;
-
     /** 기관_홈페이지*/
     private String instHmpg;
 
@@ -613,6 +610,15 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 
     /** 점수 */
     private Integer scr;
+
+    /** 기관 담당자 명 */
+    private String instPicNm;
+
+    /** 기관 담당자 eml */
+    private String instPicEml;
+
+    /** 기관 담당자 연락처 */
+    private String instPicTelno;
 
     private String dp1;
     private String dp2;
