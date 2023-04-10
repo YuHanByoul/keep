@@ -134,31 +134,11 @@
     });        
     
     function fn_makeListHtml(){
-        var jsonData = null;
-        var jsonDataCnt = 0;
         var yyyy = $('#calendar').fullCalendar('getView').intervalStart.format("YYYY");
         var mm = $('#calendar').fullCalendar('getView').intervalStart.format("MM");
         var lastDay = new Date(yyyy, mm, 0);
         var weekDay = ['일', '월', '화', '수', '목', '금', '토'];
-        
-        var xhr = new XMLHttpRequest();
-        var url = 'http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getAnniversaryInfo'; /*URL*/
-        var queryParams = '?' + encodeURIComponent('serviceKey') + '='+'HJwCA6TG5HWdSWlAhHzB190xv4Z%2F2okQ7xj0iITXHGLp6E5iQHdB4ZSS4ehLZiszBeLLcKPP%2F%2FQ6gRrI8k4dDA%3D%3D'; /*Service Key*/
-        queryParams += '&' + encodeURIComponent('pageNo') + '=' + encodeURIComponent('1'); /**/
-        queryParams += '&' + encodeURIComponent('numOfRows') + '=' + encodeURIComponent('10'); /**/
-        queryParams += '&' + encodeURIComponent('solYear') + '=' + encodeURIComponent(yyyy); /**/
-        queryParams += '&' + encodeURIComponent('solMonth') + '=' + encodeURIComponent(mm); /**/
-        queryParams += '&' + encodeURIComponent('_type') + '=' + encodeURIComponent('json'); /**/
-        xhr.open('GET', url + queryParams);
-        xhr.onreadystatechange = function () {
-            if (this.readyState == 4) {
-                jsonDataCnt = JSON.parse(this.response).response.body.totalCount;
-                if(jsonDataCnt > 0){
-                       jsonData = JSON.parse(this.response).response.body.items.item;
-                }
-            }
-        };
-        xhr.send('');
+
         $("#updateCheckDayBody tr").remove();
         var schdlHtml = "";
         for (var i=1; i<=lastDay.getDate(); i++){
@@ -170,18 +150,50 @@
             if(day.getDay() == 0){
                 schdlHtml += '<tr class="text-c-pink">';
             }else if(day.getDay() == 6){
-                schdlHtml += '<tr class="text-c-blue">';
+                if(jsonData != null){
+                    if(jsonDataCnt == 1){
+                        if(jsonData.locdate == yyyy + mm + (("00"+i.toString()).slice(-2))){                     
+                            if(jsonData.isHoliday == "Y"){
+                                schdlHtml += '<tr class="text-c-pink">';
+                            }
+                        }else{
+                            schdlHtml += '<tr class="text-c-blue">';                            
+                        }
+                    }else{
+                        for (var j=0; j<jsonDataCnt; j++){                      
+                            if(jsonData[j].locdate == yyyy + mm + (("00"+i.toString()).slice(-2))){                     
+                                if(jsonData[j].isHoliday == "Y"){
+                                    schdlHtml += '<tr class="text-c-pink">';
+                                    break;
+                                }
+                            }else{
+                                schdlHtml += '<tr class="text-c-blue">';                            
+                            }
+                        }
+                    }
+                }else{
+                    schdlHtml += '<tr class="text-c-blue">';
+                }
             }else{
                 if(jsonData != null){
-                    for (var j=0; j<jsonData.length; j++){                      
-                        if(jsonData[j].locdate == yyyy + mm + (("00"+i.toString()).slice(-2))){                     
-                            if(jsonData[j].isHoliday == "Y"){
+                    if(jsonDataCnt == 1){
+                        if(jsonData.locdate == yyyy + mm + (("00"+i.toString()).slice(-2))){                     
+                            if(jsonData.isHoliday == "Y"){
                                 schdlHtml += '<tr class="text-c-pink">';
-                            }else{
-                                schdlHtml += '<tr>';                            
                             }
                         }else{
                             schdlHtml += '<tr>';                            
+                        }
+                    }else{
+                        for (var j=0; j<jsonDataCnt; j++){                      
+                            if(jsonData[j].locdate == yyyy + mm + (("00"+i.toString()).slice(-2))){                     
+                                if(jsonData[j].isHoliday == "Y"){
+                                    schdlHtml += '<tr class="text-c-pink">';
+                                    break;
+                                }
+                            }else{
+                                schdlHtml += '<tr>';                            
+                            }
                         }
                     }
                 }else{
@@ -385,7 +397,6 @@
         
         var data =  $("#infntSchdlUpdatePopupForm").serialize();
         data = data+"&deSttIds="+deSttIds+"&prgrmSttIds="+prgrmSttIds+"&schdlNm="+schdlNm+"&ym="+ym;
-        debugger;
         if(displayWorkProgress()){
             $.ajax({
                 url : "/mng/prtpn/infntSchdl/updateInfntSchdl.do",
