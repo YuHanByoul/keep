@@ -162,8 +162,6 @@
                                     </th:block>
                                 </th:block>
                             </div>
-
-
                         </div>
                     </div>
 
@@ -199,7 +197,7 @@
 
                 <div class="m-0 row">
                     <div class="col-12 row border rounded p-t-10 p-b-10 m-0 mt-2">
-                        <div id="sprtgrpPicList" class="col-auto"></div>
+                        <div id="jdgsPicList" class="col-auto"></div>
                     </div>
                 </div>
 
@@ -217,7 +215,7 @@
 
                 <div class="m-0 row">
                     <div class="col-12 row border rounded p-t-10 p-b-10 m-0 mt-2">
-                        <div id="jdgsPicList" class="col-auto"></div>
+                        <div id="sprtgrpPicList" class="col-auto"></div>
                     </div>
                 </div>
 
@@ -509,16 +507,17 @@ var openPicChgModal = (modeYn) => {
 //담당자 set
 function setPic(){
 
-    var idGrp       = null == dsgnAplyInfo.useridGrp       ? "" : dsgnAplyInfo.useridGrp.split(",");
-    var emlGrp      = null == dsgnAplyInfo.userEmlGrp      ? "" : dsgnAplyInfo.userEmlGrp.split(",");
-    var moblphonGrp = null == dsgnAplyInfo.userMoblphonGrp ? "" : dsgnAplyInfo.userMoblphonGrp.split(",");
-    var nmGrp       = null == dsgnAplyInfo.userNmGrp       ? "" : dsgnAplyInfo.userNmGrp.split(",");
-    var acntGrp     = null == dsgnAplyInfo.userAcntGrp     ? "" : dsgnAplyInfo.userAcntGrp.split(",");
+     if(dsgnAplyInfo== null) return;
 
+     var idGrp       = dsgnAplyInfo.useridGrp       == null ? "" : dsgnAplyInfo.useridGrp.split(",");
+     var emlGrp      = dsgnAplyInfo.userEmlGrp      == null ? "" : dsgnAplyInfo.userEmlGrp.split(",");
+     var moblphonGrp = dsgnAplyInfo.userMoblphonGrp == null ? "" : dsgnAplyInfo.userMoblphonGrp.split(",");
+     var nmGrp       = dsgnAplyInfo.userNmGrp       == null ? "" : dsgnAplyInfo.userNmGrp.split(",");
+     var acntGrp     = dsgnAplyInfo.userAcntGrp     == null ? "" : dsgnAplyInfo.userAcntGrp.split(",");
 
     if(0 < idGrp.length){
         for(var i=0; i < idGrp.length; i++) {
-        	debugger;
+
             var id        = idGrp       == '' ? '' : idGrp[i]      ;
             var nm        = nmGrp       == '' ? '' : nmGrp[i]      ;
             var acnt      = acntGrp     == '' ? '' : acntGrp[i]    ;
@@ -529,7 +528,7 @@ function setPic(){
             if(id != ''){
                 content    += "' name='picInfo' id='" + id+"'>" + nm + "("+ acnt+ ") | " + eml +" | " +moblphon
                 content    += "&nbsp; <a href='javascript:void(0)' onclick='removePicInfo(" + id+ ")' class='text-white'>X</a> </span>";
-                $("#sprtgrpPicList").append(content);    //심사위원
+                $("#jdgsPicList").append(content);    //심사위원
             }
         }
     }
@@ -538,7 +537,7 @@ function setPic(){
         var content = "<span class='label label-inverse' id='picId-" + dsgnAplyInfo.sprtgrpid
         content    += "' name='picInfo' id='"+dsgnAplyInfo.sprtgrpid+"'>" + dsgnAplyInfo.sprtgrpNm + "("+ dsgnAplyInfo.sprtgrpAcnt + ") | " + dsgnAplyInfo.sprtgrpEml +" | " + dsgnAplyInfo.sprtgrpMoblphon
         content    += "&nbsp; <a href='javascript:void(0)' onclick='removePicInfo(" + dsgnAplyInfo.sprtgrpid+ ")' class='text-white'>X</a> </span>";
-        $("#jdgsPicList").append(content);    //지원단
+        $("#sprtgrpPicList").append(content);    //지원단
     }
 }
 
@@ -547,6 +546,8 @@ function removePicInfo(userid){
 
     var data={};
     var picSe = $("#picId-"+userid).parent().prop("id");
+
+
 
     if("jdgsPicList"    == picSe ) data={ "prgrmid":prgrmid, "mode":"jdgs"    , "jdgsid"   :userid };
     if("sprtgrpPicList" == picSe ) data={ "prgrmid":prgrmid, "mode":"sprtgrp" , "sprtgrpid":userid };
@@ -561,15 +562,13 @@ function removePicInfo(userid){
 
             if(data.result=="success"){
 
-
-            	if("sprtgrpPicList"    == picSe ) alert("담당자(심사위원)가 삭제 되었습니다.");
-            	if("jdgsPicList" == picSe ) alert("담당자(지원단)가 삭제 되었습니다.");
+            	if("jdgsPicList"    == picSe ) alert("담당자(심사위원)가 삭제 되었습니다.");
+            	if("sprtgrpPicList" == picSe ) alert("담당자(지원단)가 삭제 되었습니다.");
 
             	$("#picId-"+userid).remove();
 
-
             }else{
-                //alert("진행상태변경중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+                alert("담당자 삭제중에 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
             }
             closeWorkProgress();
         },
@@ -605,7 +604,6 @@ var openSplmntDmndModal = ( key, cd, mode) => {
     var vKey1 = prgrmid;
     var vKey2 = key;
 
-    debugger;
     if(vSttsCd == null || vSttsCd == "undefined" || vSttsCd == "") vSttsCd = '';
 
     var url = "/mng/asgsysSrng/splmntDmndPopup.html?prgrmid="+ vKey1+"&splmntDmndid=" + vKey2+ "&sttsCd="+vSttsCd+"&mode="+vMode;
