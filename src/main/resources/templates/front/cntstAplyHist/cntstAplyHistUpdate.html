@@ -186,7 +186,7 @@
 						<tr>
 							<th scope="row">작품설명<i class="ast" title="필수입력">*</i></th>
 							<td>
-								<textarea title="작품설명" id="prdctExpln" name="prdctExpln" th:value="${cntstAplyHist.prdctExpln}" style="height: 70px;"><th:block th:text="${cntstAplyHist.prdctExpln}"></th:block></textarea>
+								<textarea title="작품설명" id="prdctExpln" name="prdctExpln" maxlength="5000" th:value="${cntstAplyHist.prdctExpln}" style="height: 70px;"><th:block th:text="${cntstAplyHist.prdctExpln}"></th:block></textarea>
 								<div class="desc ar size"><span id="charCount">0</span> / 5,000자</div>
 								<p class="feedback"></p>
 							</td>
@@ -247,6 +247,8 @@
 		</form>
 		<script th:inline="javascript">
 			var aplyid = /*[[${cntstAplyHist.aplyid}]]*/ null;
+			var aplyEndDt = /*[[${cntstAplyHist.aplyEndDt}]]*/ null;
+			var endDate = new Date(aplyEndDt);
 			
 	        function moveToDetail() {
 	        	if (!confirm('작성글이 저장되지 않을 수 있습니다. 나가시겠습니까?')) return;
@@ -254,6 +256,12 @@
 	        }
 	        
 	     	function updateCntstAplyForm(){
+	     		var nowDate = new Date();
+	        	if(nowDate.getTime() >= endDate.getTime()) {
+					alert("접수기간이 종료되어 수정할 수 없습니다.");
+					return false;
+				}
+	     		
 	    	 	if(!($("#cntstAplyHistAplyForm").valid())) return;
 	    	 	var getFileEl = document.getElementById("multipleFileUploadSuccess");
 	    	 	
