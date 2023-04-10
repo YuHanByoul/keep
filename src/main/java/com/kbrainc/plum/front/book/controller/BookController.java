@@ -50,8 +50,8 @@ public class BookController {
     * @return String
     */
     @RequestMapping(value = "/front/book/bookListForm.html")
-    public String bookListForm() throws Exception {
-
+    public String bookListForm(BookVo bookVo,Model model) throws Exception {
+        model.addAttribute("params", bookVo);
         return "front/book/bookList";
     }
     
@@ -59,6 +59,7 @@ public class BookController {
     public String bookDetailForm(Model model, BookVo bookVo) throws Exception {
         bookService.updateBookHits(bookVo); 
         
+        model.addAttribute("params", bookVo);
         BookVo result = null;
         result =  bookService.selectBookInfo(bookVo);
         model.addAttribute("book", result);
