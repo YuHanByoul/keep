@@ -99,7 +99,7 @@ public class MyInfoController {
     * @throws Exception
     * @return String
     */
-    @RequestMapping(value = "/front/myInfo/moblCertStep.html")
+    @RequestMapping(value = "/front/myInfo/moblCertStep1.html")
     public String moblCertStep() throws Exception {
         return "front/myInfo/moblCertStep";
     }
