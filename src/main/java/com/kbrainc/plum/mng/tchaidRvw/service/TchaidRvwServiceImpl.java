@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.tchaidRvw.model.TchaidRvwDao;
 import com.kbrainc.plum.mng.tchaidRvw.model.TchaidRvwVo;
@@ -82,7 +83,23 @@ public class TchaidRvwServiceImpl extends PlumAbstractServiceImpl implements Tch
     * @return int
     */
     @Override
-    public int deleteTchaidRvw(String[] nscvrgids) throws Exception {
-        return tchaidRvwDao.deleteTchaidRvw(nscvrgids);
+    @Transactional
+    public int deleteTchaidRvw(TchaidRvwVo tchaidRvwVo) throws Exception {
+        int reInt = 0 ;
+        reInt +=tchaidRvwDao.deleteTchaidRvw(tchaidRvwVo);
+        reInt +=tchaidRvwDao.deleteLendAplyRvw(tchaidRvwVo);
+        return  reInt; 
+    }
+    /**
+     * 교구 대여 후기 삭제
+     *
+     * @Title : deleteLendAplyRvw
+     * @Description : 교구 대여 후기 삭제
+     * @param lendAplyids
+     * @throws Exception 예외
+     * @return int
+     */
+    public int deleteLendAplyRvw(TchaidRvwVo tchaidRvwVo) throws Exception{
+        return tchaidRvwDao.deleteLendAplyRvw(tchaidRvwVo);
     }
 }

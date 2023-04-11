@@ -34,6 +34,7 @@ public class TchaidRvwVo extends ParentRequestVo {
     
     private String tchaidid;
     private String type;
+    private String typeCd;
     private Integer aplyid;
     private String aplcntid;
     private String aplcntNm;
@@ -56,5 +57,10 @@ public class TchaidRvwVo extends ParentRequestVo {
     
     private String searchRcritNm;
     private String searchCd;
+    private String searchScr;
+    
+    /** 삭제용 */
+    private String[] orderids;
+    private String[] lendAplyids;
     
 }

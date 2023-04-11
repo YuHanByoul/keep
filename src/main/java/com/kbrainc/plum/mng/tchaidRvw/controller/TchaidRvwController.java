@@ -180,13 +180,13 @@ public class TchaidRvwController {
     */
     @RequestMapping(value = "/mng/tchaidRvw/deleteTchaidRvw.do")
     @ResponseBody
-    public Map<String, Object> deleteTchaidRvw(HttpServletRequest request) throws Exception {
+    public Map<String, Object> deleteTchaidRvw(TchaidRvwVo tchaidRvwVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         int retVal = 0;
         
-        String[] nscvrgids = request.getParameterValues("nscvrgids");
+        tchaidRvwVo.setUser(user);
         
-        retVal = tchaidRvwService.deleteTchaidRvw(nscvrgids);
+        retVal = tchaidRvwService.deleteTchaidRvw(tchaidRvwVo);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
