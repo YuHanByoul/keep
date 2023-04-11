@@ -94,6 +94,7 @@ public class ExprtRegisterController {
     @GetMapping("/registerStep2.html")
     public String registerStep2(HttpServletResponse response, ExprtRegisterVo exprtRegisterVo, @UserInfo UserVo user, Model model) throws Exception {
         if (user == null) {
+            /* 비 로그인 */
             response.setContentType("text/html;charset=UTF-8");
             PrintWriter writer = response.getWriter();
             writer.print("<script>alert('14세 이상 개인회원 또는 기관회원 가입 후 전문가 요청이 가능합니다.');history.back();</script>");
@@ -101,6 +102,7 @@ public class ExprtRegisterController {
         }
 
         if (user.getUserType() != null && user.getUserType().equals("C")) {
+            /* 어린이 회원 */
             response.setContentType("text/html;charset=UTF-8");
             PrintWriter writer = response.getWriter();
             writer.print("<script>alert('14세 미만 어린이 회원은 가입 신청을 할 수 없습니다.');history.back();</script>");
@@ -113,10 +115,13 @@ public class ExprtRegisterController {
                 response.setContentType("text/html;charset=UTF-8");
                 PrintWriter writer = response.getWriter();
                 if (exprtStts.equals("134102")) {
+                    /* 상태코드 : 신청 */
                     writer.print("<script>alert('전문가 심사가 진행중입니다.');location.href='/front/exprtPool/registerStep1.html';</script>");
                 } else if (exprtStts.equals("134101") || exprtStts.equals("134104")) {
+                    /* 상태코드 : 작성중 또는 반려 */
                     writer.print("<script>alert('작성중인 데이터가 존재합니다.');location.href='/front/exprtPool/registerStep1.html';</script>");
                 } else {
+                    /* 상태코드 : 승인 */
                     writer.print("<script>alert('이미 전문가로 등록되어 있습니다.');location.href='/front/exprtPool/registerStep1.html';</script>");
                 }
                 return null;
@@ -147,6 +152,7 @@ public class ExprtRegisterController {
             String exprtStts = exprtRegisterService.selectExprtStts(user);
             if (exprtStts != null) {
                 if (exprtStts.equals("134101") || exprtStts.equals("134104")) {
+                    /* 상태코드 : 작성중 또는 반려 */
                     exprtRegisterVo.setTosAgreYn("Y");
                     exprtRegisterVo.setPrvcClctAgreYn("Y");
                     exprtRegisterVo.setPrvcThptyPvsnAgreYn("Y");
@@ -154,8 +160,10 @@ public class ExprtRegisterController {
                     response.setContentType("text/html;charset=UTF-8");
                     PrintWriter writer = response.getWriter();
                     if (exprtStts.equals("134102")) {
+                        /* 상태코드 : 신청 */
                         writer.print("<script>alert('전문가 심사가 진행중입니다.');location.href='/front/exprtPool/registerStep1.html';</script>");
                     } else {
+                        /* 상태코드 : 승인 */
                         writer.print("<script>alert('이미 전문가로 등록되어 있습니다.');location.href='/front/exprtPool/registerStep1.html';</script>");
                     }
                     return null;
@@ -195,12 +203,12 @@ public class ExprtRegisterController {
         ExprtRegisterVo tempExprtRegister = exprtRegisterService.selectExprtRegister(exprtRegisterVo);
         if (tempExprtRegister == null) {
             tempExprtRegister = new ExprtRegisterVo();
+
+            /* 환경교육사 연동 테이블 */
+            List<MmbrQlfcVo> mmbrQlfcs = exprtRegisterService.selectMmbrQlfcList(exprtRegisterVo);
+            model.addAttribute("mmbrQlfcs", mmbrQlfcs);
          }
 
-        /* 환경교육사 연동 테이블 */
-        List<MmbrQlfcVo> mmbrQlfcs = exprtRegisterService.selectMmbrQlfcList(exprtRegisterVo);
-
-        model.addAttribute("mmbrQlfcs", mmbrQlfcs);
         model.addAttribute("uploadFileExtsn", uploadFileExtsn);
         model.addAttribute("tempExprtRegister", tempExprtRegister);
         model.addAttribute("defaultMemberInfo", defaultMemberInfo);

@@ -7,6 +7,7 @@ import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.salt.RandomSaltGenerator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -103,6 +104,7 @@ public class LctrDmndServiceImpl extends PlumAbstractServiceImpl implements Lctr
     }
 
     @Override
+    @Transactional
     public int insertLctrDmnd(LctrDmndVo lctrDmndVo) throws Exception {
         return lctrDmndDao.insertLctrDmnd(lctrDmndVo);
     }
@@ -116,6 +118,8 @@ public class LctrDmndServiceImpl extends PlumAbstractServiceImpl implements Lctr
      * @Title : insertLtrstExprt
      * @Description : 관심인력 등록
      */
+    @Override
+    @Transactional
     public int insertItrstExprt(ExprtVo exprtVo) throws Exception {
         return lctrDmndDao.insertItrstExprt(exprtVo);
     }
@@ -144,6 +148,7 @@ public class LctrDmndServiceImpl extends PlumAbstractServiceImpl implements Lctr
      * @Description : 관심인력 삭제
      */
     @Override
+    @Transactional
     public int deleteItrstExprt(ExprtVo exprtVo) throws Exception {
         return lctrDmndDao.deleteItrstExprt(exprtVo);
     }

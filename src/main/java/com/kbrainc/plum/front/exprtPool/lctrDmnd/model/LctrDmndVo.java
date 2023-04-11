@@ -40,6 +40,8 @@ public class LctrDmndVo {
     @NotEmpty(message="강의 종료 일시를 입력해 주십시오.")
     private String lctrEndDt;
 
+    @NotEmpty(message="우편번호를 입력해 주십시오.")
+    @Size(max=10, message="우편번호는 10자를 초과할 수 없습니다.")
     private String zip;
 
     @NotEmpty(message="주소를 입력해 주십시오.")

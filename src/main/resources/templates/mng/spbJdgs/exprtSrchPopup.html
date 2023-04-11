@@ -145,8 +145,8 @@
                 },
                 fields: [
                     {
-                        headerTemplate: function () {
-                            return "선택";
+                        headerTemplate: function() {
+                            return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
                         },
                         itemTemplate: function (_, item) {
                             return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox").attr("id", "userid-" + item.userid)
@@ -181,17 +181,51 @@
                     }
                 },
                 onPageChanged : function() {
+                    $("#selectAllCheckbox").prop("checked", false);
                     exprtSrchPop.exprtSelctedItems = [];
                 }
             });
+
+
             var expertSelectItem = function (id) {
                 exprtSrchPop.exprtSelctedItems.push(id);
+                if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                    $("#selectAllCheckbox").prop("checked", true);
+                } else {
+                    $("#selectAllCheckbox").prop("checked", false);
+                }
             };
+
             var expertUnselectItem = function (id) {
                 exprtSrchPop.exprtSelctedItems = $.grep(exprtSrchPop.exprtSelctedItems, function (i) {
                     return i !== id;
                 });
+
+                if(exprtSrchPop.exprtSelctedItems.length == 0) {
+                    $('#selectAllCheckbox').attr('checked', false);
+                }
+                if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                    $("#selectAllCheckbox").prop("checked", true);
+                } else {
+                    $("#selectAllCheckbox").prop("checked", false);
+                }
             };
+
+            $("#selectAllCheckbox").click(function(item) {
+                exprtSrchPop.exprtSelctedItems = [];
+                if(this.checked) { // check select status
+                    $('.singleCheckbox').each(function() {
+                        this.checked = true;
+                        expertSelectItem($(this).parent().next().text());
+                    });
+                }else {
+                    $('.singleCheckbox').each(function() {
+                        this.checked = false;
+                        expertUnselectItem(item);
+                    });
+                    exprtSrchPop.exprtSelctedItems = [];
+                }
+            });
         },
 
         cellRendererCrtfctNm: function (value, item) {
@@ -243,7 +277,8 @@
                         alert(result.msg);
                         closeWorkProgress();
                         if (result.success) {
-                            spbJdgsForm.gridHelper.resetPageContent();
+                            spbJdgsForm.gridHelper.resetListContent();
+
                         }
                     }
                 });
