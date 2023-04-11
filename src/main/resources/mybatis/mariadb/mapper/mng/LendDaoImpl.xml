@@ -540,7 +540,17 @@
                        ON A.RNDID = B.RNDID
               ) G
               ON A.RNDID = G.RNDID
-              LEFT OUTER JOIN TB_THA_PACKAGE_LEND_APLY_DLIVY H
+              LEFT OUTER JOIN (
+                 SELECT 
+                      AD.APLYID
+                     , MAX(AD.DLIVY_PRCS_DT) AS DLIVY_PRCS_DT
+                     , CASE WHEN MIN(IFNULL(AD.WRHOUSNG_PRCS_DT,0)) = 0 THEN NULL
+                            ELSE MIN(IFNULL(AD.WRHOUSNG_PRCS_DT,0)) 
+                       END AS WRHOUSNG_PRCS_DT 
+                   FROM
+                      TB_THA_PACKAGE_LEND_APLY_DLIVY AD
+                  GROUP BY AD.APLYID
+              ) H
               ON H.APLYID = A.APLYID
             WHERE 1=1
             <if test="searchKeyword != null and searchKeyword != '' and searchType == 'nm'">

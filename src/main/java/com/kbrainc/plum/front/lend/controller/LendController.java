@@ -59,7 +59,6 @@ public class LendController {
     @Autowired
     private FileService fileService;
     
-    
     /**
     * 교구 대여 모집 화면 
     *
@@ -69,7 +68,8 @@ public class LendController {
     * @throws Exception 예외
     */
     @RequestMapping(value = "/front/lend/LendList.html")
-    public String memberForm(Model model) throws Exception {
+    public String memberForm(LendVo lendVo, Model model) throws Exception {
+        model.addAttribute("params",lendVo);
         model.addAttribute("rankList", lendService.selectLendRankList());
         model.addAttribute("sbjctList", lendService.selectEduSbjctCdList());
         return "front/lend/lendList";
@@ -116,6 +116,8 @@ public class LendController {
     */
     @RequestMapping(value = "/front/lend/lendDetail.html")
     public String lendDetail(LendVo lendVo,Model model, @UserInfo UserVo user) throws Exception {
+        
+        model.addAttribute("params",lendVo);
         
         if(lendVo.getRcritid()==0) {
             return "redirect:/front/lend/LendList.html";
@@ -205,7 +207,9 @@ public class LendController {
      * @throws Exception 예외
      */
     @RequestMapping(value = "/front/lend/lendAply.html")
-    public String lendAply(LendAplyVo lendAplyVo,Model model, @UserInfo UserVo user) throws Exception {
+    public String lendAply(LendVo lendParamVo,LendAplyVo lendAplyVo,Model model, @UserInfo UserVo user) throws Exception {
+        
+        model.addAttribute("parmas",lendParamVo);
         
         if(lendAplyVo.getRcritid()==null || lendAplyVo.getRcritid()==0) {
             return "redirect:/front/lend/LendList.html";
