@@ -67,6 +67,7 @@ public class PrgrmController {
     @RequestMapping(value="/front/envEdu/prgrmListForm.html")
     public String prgrmListForm(Model model) throws Exception {
         model.addAttribute("sidoList", commonService.selectCtprvnList());
+        model.addAttribute("menuPrgrmCntntsCd", "all");
         return "front/envEdu/prgrmList";
     }
     
@@ -86,6 +87,7 @@ public class PrgrmController {
         model.addAttribute("mainEduSbjctCd", codeInfo.getUpprCd());
         model.addAttribute("eduSbjctCd", eduSbjctCd);
         model.addAttribute("sidoList", commonService.selectCtprvnList());
+        model.addAttribute("menuPrgrmCntntsCd", null);
         
         return "front/envEdu/prgrmList";
     }
