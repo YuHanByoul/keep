@@ -323,7 +323,7 @@ public class CnsltngController {
             model.addAttribute("fileList", null);
         }
         model.addAttribute("resultVo", resVo);
-        return "mng/cnsltng/cnsltngresultForm";
+        return "mng/cnsltng/cnsltngResultForm";
     }
     /**
      * @Title : insertCnsltngResult
