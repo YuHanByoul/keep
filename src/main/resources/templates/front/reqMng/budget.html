@@ -86,8 +86,8 @@
                                         </th>
 	                                    <td class="vt"><input type="text" class="ar" name="amtArr" id="amtArr" maxlength="25" th:value="${#numbers.formatInteger(list.amt, 0, 'COMMA')}" th:title="${list.expitmNm}"></td>
 	                                    <td>
-	                                        <textarea title="물품구입비 세부내역" name="dsctnArr" id="dsctnArr" maxlength="1000" th:placeholder="${list.expitmNm} + ' 세부내역 입력'"><th:block th:text="${list.dsctn}"/></textarea>
-	                                        <div class="desc ar size"><span>0</span> / 1000자</div>
+	                                        <textarea title="물품구입비 세부내역" name="dsctnArr" th:id="'dsctnArr_'+${i.index+1}" maxlength="1000" th:placeholder="${list.expitmNm} + ' 세부내역 입력'"><th:block th:text="${list.dsctn}"/></textarea>
+	                                        <div class="desc ar size"><span th:class="'dsctnArr_'+${i.index+1}">0</span> / 1000자</div>
 	                                    </td>
 	                                </tr>
 	                                <tr th:unless="${#lists.size(list) > 0}">
@@ -128,6 +128,11 @@
         /*]]>*/
         var pathVar = requestURI ? 'bizAply' : 'expEnv';
     	$(function(){
+    		$("textarea[name='dsctnArr']").each(function(){
+    			var id = $(this).attr("id");
+                $("." + id).text($(this).val().length);
+    		});
+    		
     		if (requestURI) {
 	    		$(".steps").show();
     		} else {
@@ -148,6 +153,11 @@
     		$("input[name='amtArr']").on("keyup", function(){
                 $(this).val($(this).val().replace(/[^0-9]/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,'));
                 totalSum();
+            });
+    		
+    		$("textarea[name='dsctnArr']").on("keyup", function(){
+    			var id = $(this).attr("id");
+                $("." + id).text($(this).val().length);
             });
         });
 	    
