@@ -114,45 +114,51 @@
         </div>
 
         <div class="mo-only">
-            <div class="community-list">
-                <ul>
-                    <li th:if="${list.size() > 0}" th:each="item : ${list}">
-                        <div class="community-desc">
-                            <div class="left" th:with="
-                                isEster=${item.esterid == paramVo.user.userid},
-                                isAdmin=${item.authrtCd == '117100'},
-                                sttsAprv=${item.mbrSttsCd eq '118100'},
-                                sttsAply=${item.mbrSttsCd eq '118101'},
-                                sttsDeny=${item.mbrSttsCd eq '118102'},
-                                sttsExit=${item.mbrSttsCd eq '118103'},
-                                sttsInvite=${item.mbrSttsCd eq '118104'}">
-                                <div class="thumb"><img th:src="'/downloadFileByFileid.do?fileid='+${item.cmntyLogoFileid}+'&file_idntfc_key='+${item.fileIdntfcKey}" th:alt="${item.cmntyNm}"></div>
-                                <span th:if="${isEster}" >개설자</span>
-                                <span th:if="${not isEster and sttsAprv and isAdmin}">관리자</span>
-                                <span th:if="${not isEster and sttsAprv and not isAdmin}">회원</span>
-                                <button th:if="${not (sttsAprv or sttsAply)}" type="button" class="btn-small btn-outline-blue" th:onclick="|fn_joinCmnty(${item.cmntyid})|">가입</button>
-                                <button th:if="${sttsAply}" type="button" class="btn-small btn-outline-blue" th:onclick="|fn_cancelJoinCmnty(${item.cmntyid})|">신청취소</button>
+            <th:block th:if="${list.size() > 0}">
+                <div class="community-list">
+                    <ul>
+                        <li th:each="item : ${list}">
+                            <div class="community-desc">
+                                <div class="left" th:with="
+                                    isEster=${item.esterid == paramVo.user.userid},
+                                    isAdmin=${item.authrtCd == '117100'},
+                                    sttsAprv=${item.mbrSttsCd eq '118100'},
+                                    sttsAply=${item.mbrSttsCd eq '118101'},
+                                    sttsDeny=${item.mbrSttsCd eq '118102'},
+                                    sttsExit=${item.mbrSttsCd eq '118103'},
+                                    sttsInvite=${item.mbrSttsCd eq '118104'}">
+                                    <div class="thumb"><img th:src="'/downloadFileByFileid.do?fileid='+${item.cmntyLogoFileid}+'&file_idntfc_key='+${item.fileIdntfcKey}" th:alt="${item.cmntyNm}"></div>
+                                    <span th:if="${isEster}" >개설자</span>
+                                    <span th:if="${not isEster and sttsAprv and isAdmin}">관리자</span>
+                                    <span th:if="${not isEster and sttsAprv and not isAdmin}">회원</span>
+                                    <button th:if="${not (sttsAprv or sttsAply)}" type="button" class="btn-small btn-outline-blue" th:onclick="|fn_joinCmnty(${item.cmntyid})|">가입</button>
+                                    <button th:if="${sttsAply}" type="button" class="btn-small btn-outline-blue" th:onclick="|fn_cancelJoinCmnty(${item.cmntyid})|">신청취소</button>
+                                </div>
+                                <a th:href="${'cmntyPstList.html?cmntyid='+ item.cmntyid}"
+                                   th:data-rls-yn="${item.rlsYn}"
+                                   th:data-mbr-stts-cd="${item.mbrSttsCd}"
+                                >
+                                    <dl>
+                                        <dt>[[${item.cmntyNm}]] <span th:if="${item.rlsYn == 'N'}" class="icon icon-lockon vm" title="비공개 커뮤니티"></span></dt>
+                                        <dd class="ellipsis" data-ellipsis="2" th:text="${item.cmntyIntrcn}"></dd>
+                                        <dd class="member">
+                                            <span th:text="${item.esterNm}"></span>
+                                            <span th:text="${item.mbrCnt + ' 명'}"></span>
+                                        </dd>
+                                    </dl>
+                                </a>
                             </div>
-                            <a th:href="${'cmntyPstList.html?cmntyid='+ item.cmntyid}"
-                               th:data-rls-yn="${item.rlsYn}"
-                               th:data-mbr-stts-cd="${item.mbrSttsCd}"
-                            >
-                                <dl>
-                                    <dt>[[${item.cmntyNm}]] <span th:if="${item.rlsYn == 'N'}" class="icon icon-lockon vm" title="비공개 커뮤니티"></span></dt>
-                                    <dd class="ellipsis" data-ellipsis="2" th:text="${item.cmntyIntrcn}"></dd>
-                                    <dd class="member">
-                                        <span th:text="${item.esterNm}"></span>
-                                        <span th:text="${item.mbrCnt + ' 명'}"></span>
-                                    </dd>
-                                </dl>
-                            </a>
-                        </div>
-                    </li>
-                    <li th:unless="${list.size() > 0}">
+                        </li>
+                    </ul>
+                </div>
+            </th:block>
+            <th:block th:unless="${list.size() > 0}">
+                <li class="block">
+                    <div class="nodata">
                         <p><span class="icon icon-notice bg-black9"></span>등록된 커뮤니티가 없습니다.</p>
-                    </li>
-                </ul>
-            </div>
+                    </div>
+                </li>
+            </th:block>
         </div>
 
         <th:block kattr:pagination="list" onclick="goPage"/>

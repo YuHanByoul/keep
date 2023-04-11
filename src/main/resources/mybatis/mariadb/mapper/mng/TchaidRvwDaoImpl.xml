@@ -14,34 +14,41 @@
             SELECT
             	*
             FROM
-            	(SELECT
-            		 '대여' AS TYPE
-            	   , A.APLYID
-            	   , H.TCHAIDID
-            	   , B.ACNT AS APLCNTID
-            	   , A.APLCNT_NM
-            	   , INST_NM
-            	   , E.RCRIT_NM
-            	   , A.RVW_SCR
-            	   , A.RVW_CN
-            	   , A.RVW_FILEGRPID
-            	   , DATE(A.RVW_REG_DT) AS RVW_REG_DT
-            	 FROM
-            		 TB_THA_PACKAGE_LEND_APLY A
-            		 LEFT OUTER JOIN (SELECT USERID, ACNT, NM FROM TB_CMM_USER) B ON A.APLCNTID = B.USERID
-            		 LEFT OUTER JOIN (SELECT APLYID, RNDID, PACKAGEINDVDID FROM TB_THA_PACKAGE_LEND_APLY_DLIVY) C ON A.APLYID = C.APLYID
-            		 LEFT OUTER JOIN (SELECT RNDID, RCRITID FROM TB_THA_PACKAGE_LEND_RND) D ON C.RNDID = D.RNDID
-            		 LEFT OUTER JOIN (SELECT RCRITID, RCRIT_NM FROM TB_THA_PACKAGE_LEND_RCRIT) E ON D.RCRITID = E.RCRITID
-            		 LEFT OUTER JOIN (SELECT PACKAGEINDVDID, PACKAGEID FROM TB_THA_PACKAGEINDVD) F ON C.PACKAGEINDVDID = F.PACKAGEINDVDID
-            		 LEFT OUTER JOIN (SELECT PACKAGEID, PACKAGE_NM FROM TB_THA_PACKAGE) G ON F.PACKAGEID = G.PACKAGEID
-                     LEFT OUTER JOIN (SELECT PACKAGEID, TCHAIDID FROM TB_THA_PACKAGE_TCHAID_CMPSTN) H ON G.PACKAGEID = H.PACKAGEID
-            	 WHERE
-            		 STTS_CD = 1
-
+            	(SELECT 
+                   '대여' AS TYPE
+                   , 'L' AS TYPE_CD
+                   , A.APLYID
+                   , 0 TCHAIDID
+                   , B.ACNT AS APLCNTID
+                   , A.APLCNT_NM
+                   , A.INST_NM
+                   , E.RCRIT_NM
+                   , A.RVW_SCR
+                   , A.RVW_CN
+                   , A.RVW_FILEGRPID
+                   , DATE(A.RVW_REG_DT) AS RVW_REG_DT
+                 FROM
+                     TB_THA_PACKAGE_LEND_APLY A
+                     LEFT OUTER JOIN TB_CMM_USER 
+                     B ON A.APLCNTID = B.USERID
+                     LEFT OUTER JOIN TB_THA_PACKAGE_LEND_RND D 
+                     ON A.RNDID = D.RNDID
+                     LEFT OUTER JOIN TB_THA_PACKAGE_LEND_RCRIT E 
+                     ON D.RCRITID = E.RCRITID
+                     LEFT OUTER JOIN TB_THA_PACKAGE G 
+                     ON A.PACKAGEID = G.PACKAGEID
+                 WHERE 1=1
+                   AND A.RVW_SCR IS NOT NULL
+                   AND A.RVW_CN  IS NOT NULL
+                   AND A.RVW_REG_DT IS NOT NULL
+                   AND A.STTS_CD = '231102'
+                   AND A.DLVY_STTS_CD ='230102'
+                 
             	 UNION ALL
 
             	 SELECT
             		 '공동구매'
+                   , 'J' AS TYPE_CD                     
             	   , A.ORDERID AS APLYID
             	   , E.TCHAIDID
             	   , B.ACNT AS APLCNTID
@@ -58,20 +65,26 @@
             		 LEFT OUTER JOIN (SELECT ORDERID, JNTPURCHSID, TCHAIDID FROM TB_THA_TCHAID_JNTPURCHS_ORDER_GOODS) C ON A.ORDERID = C.ORDERID
             		 LEFT OUTER JOIN (SELECT JNTPURCHSID, JNTPURCHSNO, JNTPURCHS_NM FROM TB_THA_TCHAID_JNTPURCHS) D ON C.JNTPURCHSID = D.JNTPURCHSID
             		 LEFT OUTER JOIN (SELECT TCHAIDID, TCHAID_NM FROM TB_THA_TCHAID) E ON C.TCHAIDID = E.TCHAIDID
-            	 WHERE
-            		 STTS_CD = 181100
+            	 WHERE 1=1
+            	   AND STTS_CD = 181100
+                   AND RVW_SCR IS NOT NULL
+                   AND RVW_CN  IS NOT NULL
+                   AND RVW_REG_DT IS NOT NULL
                  GROUP BY APLYID                     
                 ) TB1
-            WHERE
-                1=1
-                <if test="searchKeyword != null and searchKeyword != '' and searchType == 'oxprNm'">
-                AND OXPR_NM LIKE CONCAT('%',#{searchKeyword},'%')
+            WHERE 1=1
+            
+                <if test="searchType != null and searchType != '' and searchType == 'lend'">
+                 AND TYPE_CD = 'L'
                 </if>
-                <if test="searchKeyword != null and searchKeyword != '' and searchType == 'ttl'">
-                AND TTL LIKE CONCAT('%',#{searchKeyword},'%')
+                <if test="searchType != null and searchType != '' and searchType == 'jntpurchs'">
+                 AND TYPE_CD = 'J'
                 </if>
-                <if test="searchCd != null and searchCd != ''">
-                AND CLSF_CD = #{searchCd}
+                <if test="searchRcritNm != null and searchRcritNm != '' ">
+                AND RCRIT_NM LIKE CONCAT('%',#{searchRcritNm},'%')
+                </if>
+                <if test="searchScr != null and searchScr != ''">
+                AND RVW_SCR = #{searchScr}
                 </if>
         <include refid="PaginationMapper.footer"/>
     </select>
@@ -85,10 +98,10 @@
                 (SELECT
                      '대여' AS TYPE
                    , A.APLYID
-                   , H.TCHAIDID
+                   , 0 TCHAIDID
                    , B.ACNT AS APLCNTID
                    , A.APLCNT_NM
-                   , INST_NM
+                   , A.INST_NM
                    , E.RCRIT_NM
                    , G.PACKAGE_NM AS PRODUCT_NM
                    , A.RVW_SCR
@@ -96,17 +109,22 @@
                    , A.RVW_FILEGRPID
                    , DATE(A.RVW_REG_DT) AS RVW_REG_DT
                  FROM
-            		 TB_THA_PACKAGE_LEND_APLY A
-            		 LEFT OUTER JOIN (SELECT USERID, ACNT, NM FROM TB_CMM_USER) B ON A.APLCNTID = B.USERID
-            		 LEFT OUTER JOIN (SELECT APLYID, RNDID, PACKAGEINDVDID FROM TB_THA_PACKAGE_LEND_APLY_DLIVY) C ON A.APLYID = C.APLYID
-            		 LEFT OUTER JOIN (SELECT RNDID, RCRITID FROM TB_THA_PACKAGE_LEND_RND) D ON C.RNDID = D.RNDID
-            		 LEFT OUTER JOIN (SELECT RCRITID, RCRIT_NM FROM TB_THA_PACKAGE_LEND_RCRIT) E ON D.RCRITID = E.RCRITID
-            		 LEFT OUTER JOIN (SELECT PACKAGEINDVDID, PACKAGEID FROM TB_THA_PACKAGEINDVD) F ON C.PACKAGEINDVDID = F.PACKAGEINDVDID
-            		 LEFT OUTER JOIN (SELECT PACKAGEID, PACKAGE_NM FROM TB_THA_PACKAGE) G ON F.PACKAGEID = G.PACKAGEID
-                     LEFT OUTER JOIN (SELECT PACKAGEID, TCHAIDID FROM TB_THA_PACKAGE_TCHAID_CMPSTN) H ON G.PACKAGEID = H.PACKAGEID
-                 WHERE
-                     STTS_CD = 1
-
+                     TB_THA_PACKAGE_LEND_APLY A
+                     LEFT OUTER JOIN TB_CMM_USER 
+                     B ON A.APLCNTID = B.USERID
+                     LEFT OUTER JOIN TB_THA_PACKAGE_LEND_RND D 
+                     ON A.RNDID = D.RNDID
+                     LEFT OUTER JOIN TB_THA_PACKAGE_LEND_RCRIT E 
+                     ON D.RCRITID = E.RCRITID
+                     LEFT OUTER JOIN TB_THA_PACKAGE G 
+                     ON A.PACKAGEID = G.PACKAGEID
+                 WHERE 1=1
+                   AND A.RVW_SCR IS NOT NULL
+                   AND A.RVW_CN  IS NOT NULL
+                   AND A.RVW_REG_DT IS NOT NULL
+                   AND A.STTS_CD = '231102'
+                   AND A.DLVY_STTS_CD ='230102'
+                 
                  UNION ALL
 
                  SELECT
@@ -157,13 +175,37 @@
     </update>
     
     <!-- 교구후기관리 게시글 삭제 -->
-    <delete id="deleteTchaidRvw" parameterType="java.util.ArrayList">
+    <delete id="deleteTchaidRvw" parameterType="TchaidRvwVo">
         /* TchaidRvwDao.deleteTchaidRvw */
-		DELETE FROM TB_THA_TCHAID_JNTPURCHS_RVW 
-        WHERE RVWID IN 
-        <foreach item="item" collection="array" index="rvwid" open="(" close=")" separator=",">
+         UPDATE TB_THA_TCHAID_JNTPURCHS_ORDER SET
+                RVW_CN    = null 
+                ,RVW_SCR  = null 
+                ,RVW_CN   = null
+                ,RVW_FILEGRPID = null
+                ,RVW_REG_DT = null
+                ,MDFCN_DT = NOW() 
+                ,MDFRID   = #{user.userid}
+        WHERE ORDERID IN 
+        <foreach item="item" collection="orderids"  open="(" close=")" separator=",">
         #{item}
         </foreach>
+    </delete>
+    
+    <!-- 교구대여 후기 삭제 -->
+    <delete id="deleteLendAplyRvw" parameterType="TchaidRvwVo">
+        /* TchaidRvwDao.deleteLendAplyRvw */
+         UPDATE TB_THA_PACKAGE_LEND_APLY SET
+                RVW_CN    = null 
+                ,RVW_SCR  = null 
+                ,RVW_CN   = null
+                ,RVW_FILEGRPID = null
+                ,RVW_REG_DT = null
+                ,MDFCN_DT = NOW() 
+                ,MDFRID   = #{user.userid}
+         WHERE APLYID IN 
+             <foreach item="item" collection="lendAplyids"  open="(" close=")" separator=",">
+                #{item}
+             </foreach>
     </delete>
     
 </mapper>
