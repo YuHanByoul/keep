@@ -36,16 +36,19 @@
         <form class="search-filter mt20" id="searchForm">
             <div class="form-input mo-flex-wrap">
                 <strong class="label">대여모집명</strong>
-                <div class="form-input"><input type="search" title="대여모집명" id="rcritNm" name="rcritNm" placeholder="대여모집명을 입력해 주세요." ></div>
+                <div class="form-input"><input type="search" title="대여모집명" id="rcritNm" name="rcritNm" placeholder="대여모집명을 입력해 주세요." th:value="${params.rcritNm}"></div>
                 <div class="search-filter-submit">
                     <button type="button" class="btn-medium btn-green btn-before-search"        onclick="onSearch();"   >검색</button>
                     <button type="button" class="btn-medium btn-transparent btn-before-refresh" onclick="initSearch();" >초기화</button>
                 </div>
             </div>
-            <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+            <input type="hidden" id="pageNumber" name="pageNumber" th:value="${(params != null and params.pageNumber > 0 )? params.pageNumber:1}"    >
             <input type="hidden" id="rowPerPage" name="rowPerPage" value="8">
             <input type="hidden" id="orderDirection" name="orderDirection" value="desc">
             <input type="hidden" id="orderField" name="orderField" value="REG_DT">
+            
+            <input type="hidden" id="aplyid" name="aplyid"  value="0">
+            <input type="hidden" id="rcritid" name="rcritid" value="0">
         </form>
         
         <div class="table-caption flex-nowrap">
@@ -192,8 +195,11 @@
 		    }
 		}
 		function goDetail(aplyid,rcritid){
-	        var portalUrl = /*[[${T(com.kbrainc.plum.rte.util.CommonUtil).portalUrl}]]*/ "";
-	        location.href = "/front/mypage/lendHist/lendHistDetail.html?aplyid="+aplyid+"&rcritid="+rcritid;
+            var f = document.forms.searchForm ;
+            f.action = "/front/mypage/lendHist/lendHistDetail.html";
+            f.aplyid.value=aplyid;
+            f.rcritid.value=rcritid;
+            f.submit();
 		}
         function openPopup(url) {
             $("#lendHistPopup").empty();
