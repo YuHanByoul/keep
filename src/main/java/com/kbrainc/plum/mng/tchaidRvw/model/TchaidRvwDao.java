@@ -64,5 +64,15 @@ public interface TchaidRvwDao {
     * @throws Exception 예외
     * @return int
     */
-    public int deleteTchaidRvw(String[] nscvrgids) throws Exception;
+    public int deleteTchaidRvw(TchaidRvwVo tchaidRvwVo) throws Exception;
+    /**
+     * 교구 대여 후기 삭제
+     *
+     * @Title : deleteLendAplyRvw
+     * @Description : 교구 대여 후기 삭제
+     * @param lendAplyids
+     * @throws Exception 예외
+     * @return int
+     */
+    public int deleteLendAplyRvw(TchaidRvwVo tchaidRvwVo) throws Exception;
 }
