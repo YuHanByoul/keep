@@ -52,8 +52,7 @@
             <div class="col-12 col-md-6 text-right">
                 <div class="col-sm-12 btn-group-sm">
                     <th:block sec:authorize-url="/mng/spbJdgs/exprtSrchPopup.html">
-                        <button type="button" id='exprtSrchBtn' class="btn btn-primary btn-sm" onclick="spbJdgsForm.openPopup()"
-                                th:disabled="${jdgGrpInfo.grpId == null}">전문가 검색
+                        <button type="button" id='exprtSrchBtn' class="btn btn-primary btn-sm" onclick="spbJdgsForm.openPopup()">전문가 검색
                         </button>
                     </th:block>
                 </div>
@@ -98,13 +97,18 @@
         },
 
         openPopup: function () {
-            var url = "/mng/spbJdgs/exprtSrchPopup.html";
-            $("#exprtSrchPopup").load(url, function (response, status, xhr) {
-                if (status == "success") {
-                    spbJdgsForm.exprtSrchPopup = new bootstrap.Modal($('#exprtSrchPopup'));
-                    spbJdgsForm.exprtSrchPopup.show();
-                }
-            });
+            if(this.grpId == null) {
+                alert('심사위원 그룹 등록 후 전문가를 추가할 수 있습니다.');
+            }
+            else {
+                var url = "/mng/spbJdgs/exprtSrchPopup.html";
+                $("#exprtSrchPopup").load(url, function (response, status, xhr) {
+                    if (status == "success") {
+                        spbJdgsForm.exprtSrchPopup = new bootstrap.Modal($('#exprtSrchPopup'));
+                        spbJdgsForm.exprtSrchPopup.show();
+                    }
+                });
+            }
         },
 
         deleteExprt: function (userid) {
