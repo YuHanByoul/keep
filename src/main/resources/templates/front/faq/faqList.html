@@ -38,28 +38,32 @@
         <input type="hidden" id="pageNumber" name="pageNumber" th:value="${searchVo.pageNumber}">
     </form>
 
-    <div class="accordion-content acc-list">
-        <th:block th:if="${list.size() == 0}">
-            <div class="nodata">
-                <p><span class="icon icon-notice bg-black9"></span>등록된 자주하는 질문이 없습니다</p>
-            </div>
-        </th:block>
-        <th:block th:each="item, itemStat:${list}">
-            <h3 class="acc-title">
-                <button type="button" class="acc-trigger" th:attr="aria-controls='accordion-panel'+${itemStat.index}" th:id="|accordion-${itemStat.index}|" title="질문">
-                    <span class="tag tag-green">[[${item.clNm}]]</span>
-                    <b>Q</b>
-                    <strong>[[${item.title}]]</strong>
-                </button>
-            </h3>
-            <div th:id="|accordion-panel${itemStat.index}|" role="region" th:attr="aria-labelledby='accordion-'+${itemStat.index}" class="acc-panel" >
-                <span class="blind">답변</span>
-                <div class="acc-content">
-                    <th:block th:utext="${item.cntnts}"></th:block>
+    <th:block th:if="${list.size() == 0}">
+        <div class="nodata">
+            <p><span class="icon icon-notice bg-black9"></span>등록된 자주하는 질문이 없습니다</p>
+        </div>
+    </th:block>
+
+    <th:block th:unless="${list.size() == 0}">
+        <div class="accordion-content acc-list">
+            <th:block th:each="item, itemStat:${list}">
+                <h3 class="acc-title">
+                    <button type="button" class="acc-trigger" th:attr="aria-controls='accordion-panel'+${itemStat.index}" th:id="|accordion-${itemStat.index}|" title="질문">
+                        <span class="tag tag-green">[[${item.clNm}]]</span>
+                        <b>Q</b>
+                        <strong>[[${item.title}]]</strong>
+                    </button>
+                </h3>
+                <div th:id="|accordion-panel${itemStat.index}|" role="region" th:attr="aria-labelledby='accordion-'+${itemStat.index}" class="acc-panel" >
+                    <span class="blind">답변</span>
+                    <div class="acc-content">
+                        <th:block th:utext="${item.cntnts}"></th:block>
+                    </div>
                 </div>
-            </div>
-        </th:block>
-    </div>
+            </th:block>
+        </div>
+    </th:block>
+
 
     <th:block kattr:pagination="pagination" onclick="moveToPage"/>
 

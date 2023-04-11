@@ -51,9 +51,7 @@
             </div>
             <div class="col-12 col-md-6 text-right">
                 <div class="col-sm-12 btn-group-sm">
-                    <button type="button" id='exprtSearchBtn' class="btn btn-primary btn-sm" onclick="jdgGrpDetail.openExpertModal()"
-                            th:disabled="${jdgGrpInfo.grpId == null}">전문가 검색
-                    </button>
+                    <button type="button" id='exprtSearchBtn' class="btn btn-primary btn-sm" onclick="jdgGrpDetail.openExpertModal()">전문가 검색 </button>
                 </div>
             </div>
         </div>
@@ -95,13 +93,18 @@
         },
 
         openExpertModal: function () {
-            var url = "/mng/ass/jdgGrpMngExpertModal.html";
-            $("#expertSearchModal").load(url, function (response, status, xhr) {
-                if (status == "success") {
-                    expertSearchModal = new bootstrap.Modal($('#expertSearchModal'));
-                    expertSearchModal.show();
-                }
-            });
+            if(this.grpId == null) {
+                alert('심사위원 그룹 등록 후 전문가를 추가할 수 있습니다.');
+            }
+            else {
+                var url = "/mng/ass/jdgGrpMngExpertModal.html";
+                $("#expertSearchModal").load(url, function (response, status, xhr) {
+                    if (status == "success") {
+                        expertSearchModal = new bootstrap.Modal($('#expertSearchModal'));
+                        expertSearchModal.show();
+                    }
+                });
+            }
         },
 
         deleteExprt: function (userid) {
@@ -272,6 +275,7 @@
 
         cancel: function () {
             jdgGrpList.gridHelper.toggleContent()
+            jdgGrpList.gridHelper.removeHighlight()
         }
     }
     $(function () {
