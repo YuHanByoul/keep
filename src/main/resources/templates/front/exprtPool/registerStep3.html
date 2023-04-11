@@ -919,20 +919,33 @@
         };
 
         function renderMmbrQlfcs() {
+            let $cloneTable;
             // crtfctTableTemplate
             if (mmbrQlfcs != null) {
-                for (mmbrQlfc in mmbrQlfcs) {
+                for (mmbrQlfc of mmbrQlfcs) {
                     ++crtfctCnt;
                     $cloneTable = $('#crtfctTableTemplate').clone(true).attr('id', 'crtfctTable' + crtfctCnt).attr('name', 'crtfctTable');
-                    $cloneTable.find("crtfctNm").val("환경교육사 " + mmbrQlfc.crsGrd);
-                    $cloneTable.find("acqsInst").val("환경사");
-                    $cloneTable.find("acqsNo").val(mmbrQlfc.qlfcRsltCode);
-                    $cloneTable.find("acqsGrd").val("");
-                    $cloneTable.find("acqsDe").val("");
+                    $cloneTable.find("#crtfctNm").val("환경교육사 " + mmbrQlfc.crsGrd);
+                    $cloneTable.find("#acqsInst").val("환경부");
+                    $cloneTable.find("#acqsNo").val(mmbrQlfc.qlfcRsltCode);
+                    switch(mmbrQlfcs.crsGrdCdv) {
+                        case 'CRS_GRD_1' :
+                            $cloneTable.find("#acqsGrd").val("1급");
+                            break;
+                        case 'CRS_GRD_2' :
+                            $cloneTable.find("#acqsGrd").val("2급");
+                            break;
+                        case 'CRS_GRD_3' :
+                            $cloneTable.find("#acqsGrd").val("3급");
+                            break;
+                    }
 
+                    $cloneTable.find("#acqsDe").val(mmbrQlfc.lcncAcqsYmd);
                 }
             }
 
+            $cloneTable.show();
+            $('#crtfct').prepend($cloneTable)
         };
 
         $(function () {
@@ -955,6 +968,8 @@
                     $('#fldEtcCn').val('');
                 }
             });
+
+            renderMmbrQlfcs();
         })
 
         function uploadExprtFile(fileInput, event) {
