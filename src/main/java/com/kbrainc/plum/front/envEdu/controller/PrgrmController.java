@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.front.envEdu.model.PrgrmVo;
 import com.kbrainc.plum.front.envEdu.service.PrgrmService;
 import com.kbrainc.plum.mng.code.model.CodeVo;
@@ -49,6 +50,9 @@ public class PrgrmController {
     @Autowired
     private CodeService codeService;
     
+    @Autowired
+    private CommonService commonService;
+    
     /**
     * 프로그램 게시글 목록 화면 이동
     *
@@ -61,7 +65,8 @@ public class PrgrmController {
     * @return String
     */
     @RequestMapping(value="/front/envEdu/prgrmListForm.html")
-    public String prgrmListForm() throws Exception {
+    public String prgrmListForm(Model model) throws Exception {
+        model.addAttribute("sidoList", commonService.selectCtprvnList());
         return "front/envEdu/prgrmList";
     }
     
@@ -80,6 +85,7 @@ public class PrgrmController {
         
         model.addAttribute("mainEduSbjctCd", codeInfo.getUpprCd());
         model.addAttribute("eduSbjctCd", eduSbjctCd);
+        model.addAttribute("sidoList", commonService.selectCtprvnList());
         
         return "front/envEdu/prgrmList";
     }
