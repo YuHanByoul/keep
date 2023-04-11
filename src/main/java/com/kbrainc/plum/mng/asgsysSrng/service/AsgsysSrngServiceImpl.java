@@ -1009,7 +1009,8 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	AsgsysSrngVo chkInfo = null;
     	List<AsgsysSrngVo> qitemList = null;
     	List<AsgsysSrngVo> ansList = null;
-    	AsgsysSrngVo sbmsnInfo = null;
+    	AsgsysSrngVo sbmsnInfo = new AsgsysSrngVo();
+    	ChklstAnsVo delVo = null;
 
     	if(null != asgsysSrngVo.getSftyMngId() && 0 != asgsysSrngVo.getSftyMngId()){
     		ret = asgsysSrngDao.insertSftyMng(asgsysSrngVo);
@@ -1017,29 +1018,31 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	}else {
     		ret = asgsysSrngDao.updateSftyMng(asgsysSrngVo);
     	}
-    	//사전관리인증여부 Y
-    	if("Y".equals(asgsysSrngVo.getBfrCertYn())) {
-    		sbmsnInfo = asgsysSrngDao.selectChkListSbmsn(asgsysSrngVo);
-    		if(null != sbmsnInfo.getSbmsnid() && 0 != sbmsnInfo.getSbmsnid()){
 
-    		}
-    	}
 
     	//사전관리인증여부 Y
     	if("Y".equals(asgsysSrngVo.getBfrCertYn())) {
+
     		chkInfo = asgsysSrngDao.selectChkListInfo(asgsysSrngVo);
 
     		//체크리스트 제출 등록
     		asgsysSrngVo.setSbmsnSttsCd("128102");    /*제출상태 제출*/
-    		asgsysSrngVo.setSbmsnSeCd("242101");    /*제출자:신청자*/
     		asgsysSrngVo.setChklstid(chkInfo.getChklstid());    /*체크리스트id*/
-    		asgsysSrngVo.setSbmsnid(sbmsnInfo.getSbmsnid());    /*체크리스트id*/
 
-    		ret += asgsysSrngDao.insertChklstSbmsn(asgsysSrngVo);
+    		if(chkInfo.getSbmsnid() == null || chkInfo.getSbmsnid() == 0){
+    			ret += asgsysSrngDao.insertChklstSbmsn(asgsysSrngVo);
+    		}
 
     		sbmsnInfo = asgsysSrngDao.selectChkListSbmsn(asgsysSrngVo);
 
-    		asgsysSrngVo.setChklstid(chkInfo.getChklstid());
+    		asgsysSrngVo.setSbmsnid(sbmsnInfo.getSbmsnid());
+
+    		//delete 자가진단 답변
+    		delVo = new ChklstAnsVo();
+    		delVo.setSbmsnid(asgsysSrngVo.getSbmsnid());
+    		asgsysSrngDao.deleteChklstAns(delVo);
+    		//delete 자가진단 답변 순서
+    		asgsysSrngDao.deleteChklstSeOrdrAnsList(delVo);
 
     		qitemList = asgsysSrngDao.selectQitemList(asgsysSrngVo);
     		for(AsgsysSrngVo vo :  qitemList) {

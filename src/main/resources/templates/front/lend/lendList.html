@@ -6,31 +6,31 @@
 <body>
     <div layout:fragment="content">
         <!-- content -->
-        <form class="search-filter" id="searchForm" name="searchForm" onsubmit="return false;">
+        <form class="search-filter" id="searchForm" name="searchForm" onsubmit="return false;" >
         
             <div class="form-input-wrap">
                     <div class="form-row">
                         <div class="form-header"><strong class="label">교구명</strong></div>
                         <div class="form-body">
-                            <input type="search" title="교구명" placeholder="교구명을 입력해 주세요." id="rcritNm" name="rcritNm" >
+                            <input type="search" title="교구명" placeholder="교구명을 입력해 주세요." id="rcritNm" name="rcritNm" th:value="${params.rcritNm}">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-header"><strong class="label">교육유형</strong></div>
                         <div class="form-body">
-                            <span kattr:select_code="eduTypeCd" grpCd="187" title="교육유형" firstOptTxt="- 전체 -" >
+                            <span kattr:select_code="eduTypeCd" grpCd="187" title="교육유형" firstOptTxt="- 전체 -"  th:attr ="selectedCd=${params.eduTypeCd}">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-header"><strong class="label">교육대상</strong></div>
                         <div class="form-body">
-                           <span kattr:select_code="eduTrgtCd" grpCd="185" title="교육유형" firstOptTxt="- 전체 -" >  
+                           <span kattr:select_code="eduTrgtCd" grpCd="185" title="교육유형" firstOptTxt="- 전체 -" th:attr ="selectedCd=${params.eduTrgtCd}">  
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-header"><strong class="label">교구유형</strong></div>
                         <div class="form-body">
-                           <span kattr:select_code="typeCd" grpCd="184" title="교육유형" firstOptTxt="- 전체 -" >
+                           <span kattr:select_code="typeCd" grpCd="184" title="교육유형" firstOptTxt="- 전체 -" th:attr ="selectedCd=${params.typeCd}">
                                                    
                         </div>
                     </div>
@@ -51,12 +51,13 @@
             
             <div class="search-filter-submit">
                 <button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="initSearch();">초기화</button>
-                <button type="submit" class="btn-medium btn-green btn-before-search" onclick="onSearch();">검색</button>
+                <button type="button" class="btn-medium btn-green btn-before-search" onclick="onSearch();">검색</button>
             </div>
-            <input type="hidden" id="pageNumber" name="pageNumber" value="1">
-            <input type="hidden" id="rowPerPage" name="rowPerPage" value="12">
+            <input type="hidden" id="pageNumber"     name="pageNumber"     th:value="${(params != null and params.pageNumber > 0 )? params.pageNumber:1}"    >
+            <input type="hidden" id="rowPerPage"     name="rowPerPage"     value="12" >
             <input type="hidden" id="orderDirection" name="orderDirection" value="desc">
-            <input type="hidden" id="orderField" name="orderField" value="REG_DT">
+            <input type="hidden" id="orderField"     name="orderField"     value="REG_DT">
+            <input type="hidden" id="rcritid"        name="rcritid"        value="0">
         </form>
         <div class="rank-list" th:if="${#lists.size(rankList)}  > 0 ">
              <ul>
@@ -119,9 +120,19 @@
     
 	    /*<![CDATA[*/ 
 	    var rankList = /*[[${rankList}]]*/null; 
+	    var params = /*[[${params}]]*/null; 
 	    /*]]>*/
 	    var noDataMeg = '<li class="block"><div class="nodata"><p><span class="icon icon-notice bg-black9"></span>데이터가 없습니다.</p></div></li>';
+
+	    
 	    $(function(){
+		    
+	    	var returnEduSbjctCd = "";
+	    	if(params.eduSbjctCd !=null && params.eduSbjctCd != "" && params.eduSbjctCd.length > 0){
+	    		returnEduSbjctCd = params.eduSbjctCd.substring(0,6)
+		    }
+            setSearchSelectBox.fn_getNextDepthList(155 , 0, 'searchEduSbjctCd_1',returnEduSbjctCd);
+            setSearchSelectBox.setNextDepth(155,returnEduSbjctCd,'eduSbjctCd',params.eduSbjctCd)
 		    selectLendList();
 		})
 		
@@ -141,8 +152,9 @@
 		function selectLendList() {
 		    if (displayWorkProgress(true)){
 		        $.ajax({
-		            url : "/front/lend/selectLendList.do",
+		            url   : "/front/lend/selectLendList.do",
 		            cache : false,
+                    async : false,
 		            dataType : 'json',
 		            data : $("#searchForm").serialize(),
 		            type : 'POST',
@@ -188,26 +200,28 @@
 		    }
 		}
 		function goDetail(rcritid){
-	        var portalUrl = /*[[${T(com.kbrainc.plum.rte.util.CommonUtil).portalUrl}]]*/ "";
-	        //location.href = portalUrl + "front/lend/lendDetail.html?rcritid="+rcritid;
-	        location.href = "/front/lend/lendDetail.html?rcritid="+rcritid;
+            var f = document.forms.searchForm ;
+            f.action = "/front/lend/lendDetail.html";
+            f.rcritid.value=rcritid;
+            f.submit();
 		}
 		
         var getCodeListUrl = "/mng/customAttr/grpCodeList.do"
             
             var setSearchSelectBox = {
-                fn_getNextDepthList : function(grpcd , upprcd, targetId){
+                fn_getNextDepthList : function(grpcd , upprcd, targetId,selected){
                     $.ajax({
                         url : getCodeListUrl,
                         type: 'GET',
                         cache : false,
+                        async:false,
                         dataType: 'json',
                         data: {
                               grpcd  : grpcd
                             , upprcd : upprcd
                         }, 
                         success : function (data){
-                            setSearchSelectBox.writeHtml(grpcd,targetId,data,"");
+                            setSearchSelectBox.writeHtml(grpcd,targetId,data,selected);
                         },
                         error : function (error){
                         } 
@@ -222,28 +236,26 @@
                        
                     var html ="<select id='"+targetId+"' onchange=setSearchSelectBox.setNextDepth('"+grpcd+"',this.value,'"+nextTarget+"')>";
                         html +="    <option value='' selected>- 전체 -</option>";
-                       
+                        
                       for(var i=0 ; i < list.length;i++){
-                        if(list[i].cdid==selected){
+                        if(list[i].cd==selected ){
                         html +="    <option value="+list[i].cd+" selected>"+ list[i].cdNm+ "</option>";
                         }else{
                         html +="    <option value="+list[i].cd+">"+ list[i].cdNm+ "</option>";
                         }
                       }
                       if(list.length == 0 && jQuery("#"+nextTarget)[0] != undefined){
-                        setSearchSelectBox.writeHtml(grpcd,nextTarget,list,selected);
+                        setSearchSelectBox.writeHtml(grpcd,nextTarget,list,"");
                       }
                       html +="    </select>";
                       $("#"+targetId).html(html);
                 },
                 
-                setNextDepth : function(grpcd , upprcd , targetId){
-                    setSearchSelectBox.fn_getNextDepthList(grpcd , upprcd , targetId);
+                setNextDepth : function(grpcd , upprcd , targetId,selected){
+                    setSearchSelectBox.fn_getNextDepthList(grpcd , upprcd , targetId,selected);
                 }
             }
-            
-            setSearchSelectBox.fn_getNextDepthList(155 , 0, 'searchEduSbjctCd_1');
-		
+        
         </script>
     </div>
 </body>

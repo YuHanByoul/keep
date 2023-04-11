@@ -148,10 +148,10 @@
         <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">전체 <span class="fw-400 ml5">([[${#numbers.formatInteger(countInfo.all,1,'COMMA')}]])</span></button>
         <ul class="tab-list target" role="tablist">
             <li th:class="${search.gtype == 'all' ? 'tab active' : 'tab'}"><a href="javascript:searchGtype('all')" role="tab">전체 <span class="fw-400 ml5">([[${#numbers.formatInteger(countInfo.all,1,'COMMA')}]])</span></a></li>
-            <li th:class="${search.gtype == '10' ? 'tab active' : 'tab'}"><a href="javascript:searchGtype('10')" role="tab">프로그램&middot;콘텐츠 <span class="fw-400 ml5">([[${#numbers.formatInteger(countInfo.cnt10,1,'COMMA')}]])</span></a></li>
-            <li th:class="${search.gtype == '20' ? 'tab active' : 'tab'}"><a href="javascript:searchGtype('20')" role="tab">참여&middot;신청 <span class="fw-400 ml5">([[${#numbers.formatInteger(countInfo.cnt20,1,'COMMA')}]])</span></a></li>
-            <li th:class="${search.gtype == '30' ? 'tab active' : 'tab'}"><a href="javascript:searchGtype('30')" role="tab">알림&middot;문의 <span class="fw-400 ml5">([[${#numbers.formatInteger(countInfo.cnt30,1,'COMMA')}]])</span></a></li>
             <li th:class="${search.gtype == '50' ? 'tab active' : 'tab'}"><a href="javascript:searchGtype('50')" role="tab">메뉴 <span class="fw-400 ml5">([[${#numbers.formatInteger(countInfo.cnt50,1,'COMMA')}]])</span></a></li>
+            <li th:class="${search.gtype == '10' ? 'tab active' : 'tab'}"><a href="javascript:searchGtype('10')" role="tab">게시물 <span class="fw-400 ml5">([[${#numbers.formatInteger(countInfo.cnt10,1,'COMMA')}]])</span></a></li>
+            <li th:class="${search.gtype == '20' ? 'tab active' : 'tab'}"><a href="javascript:searchGtype('20')" role="tab">환경교육 및 자원 <span class="fw-400 ml5">([[${#numbers.formatInteger(countInfo.cnt20,1,'COMMA')}]])</span></a></li>
+            <li th:class="${search.gtype == '30' ? 'tab active' : 'tab'}"><a href="javascript:searchGtype('30')" role="tab">기관 및 시설 <span class="fw-400 ml5">([[${#numbers.formatInteger(countInfo.cnt30,1,'COMMA')}]])</span></a></li>
             <li th:class="${search.gtype == '40' ? 'tab active' : 'tab'}"><a href="javascript:searchGtype('40')" role="tab">첨부파일 <span class="fw-400 ml5">([[${#numbers.formatInteger(countInfo.cnt40,1,'COMMA')}]])</span></a></li>
         </ul>
         <div class="tabpanel active" role="tabpanel" th:if="${search.gtype == 'all'}">
@@ -162,9 +162,27 @@
                 </div>
             </div>
             <div class="search-page-result" th:if="${countInfo.all > 0}">
+                <div class="table-caption" th:if="${countInfo.cnt50 > 0}">
+                    <div class="left">
+                        <h3 class="sub-title">메뉴 ([[${#numbers.formatInteger(countInfo.cnt50,1,'COMMA')}]])</h3>
+                    </div>
+                    <div class="right">
+                        <a href="javascript:searchGtype('50')" class="btn-small btn-outline-black" th:if="${countInfo.cnt50 > 3}">검색결과 더보기</a>
+                    </div>
+                </div>
+
+                <ul th:if="${countInfo.cnt50 > 0}">
+                    <li th:each="item : ${gtype50}">
+                        <a th:href="${T(com.kbrainc.plum.front.search.controller.SearchController).getLink(item)}" class="underline" th:target="${#strings.startsWith(item.URL,'http') ? '_blank' : ''}">
+                            <strong class="title" th:utext="${#strings.replace(T(com.kbrainc.plum.rte.util.StringUtil).removeHTMLTag(item.CN),search.keyword,'<i>' + search.keyword +'</i>')}"></strong>
+                        </a>
+                        <span class="text" th:if="${#strings.startsWith(item.URL,'http')}" th:text="${item.URL}"></span>
+                    </li>
+                </ul>
+                
                 <div class="table-caption" th:if="${countInfo.cnt10 > 0}">
                     <div class="left">
-                        <h3 class="sub-title">프로그램·콘텐츠 ([[${#numbers.formatInteger(countInfo.cnt10,1,'COMMA')}]])</h3>
+                        <h3 class="sub-title">게시물 ([[${#numbers.formatInteger(countInfo.cnt10,1,'COMMA')}]])</h3>
                     </div>
                     <div class="right">
                         <a href="javascript:searchGtype('10')" class="btn-small btn-outline-black" th:if="${countInfo.cnt10 > 3}">검색결과 더보기</a>
@@ -187,7 +205,7 @@
             
                 <div class="table-caption" th:if="${countInfo.cnt20 > 0}">
                     <div class="left">
-                        <h3 class="sub-title">참여ㆍ신청 ([[${#numbers.formatInteger(countInfo.cnt20,1,'COMMA')}]])</h3>
+                        <h3 class="sub-title">환경교육 및 자원 ([[${#numbers.formatInteger(countInfo.cnt20,1,'COMMA')}]])</h3>
                     </div>
                     <div class="right">
                         <a href="javascript:searchGtype('20')" class="btn-small btn-outline-black" th:if="${countInfo.cnt20 > 3}">검색결과 더보기</a>
@@ -209,7 +227,7 @@
 
                 <div class="table-caption" th:if="${countInfo.cnt30 > 0}">
                     <div class="left">
-                        <h3 class="sub-title">알림ㆍ문의 ([[${#numbers.formatInteger(countInfo.cnt30,1,'COMMA')}]])</h3>
+                        <h3 class="sub-title">기관 및 시설 ([[${#numbers.formatInteger(countInfo.cnt30,1,'COMMA')}]])</h3>
                     </div>
                     <div class="right">
                         <a href="javascript:searchGtype('30')" class="btn-small btn-outline-black" th:if="${countInfo.cnt30 > 3}">검색결과 더보기</a>
@@ -254,24 +272,6 @@
                     </li>
                 </ul>
 
-                <div class="table-caption" th:if="${countInfo.cnt50 > 0}">
-                    <div class="left">
-                        <h3 class="sub-title">메뉴 ([[${#numbers.formatInteger(countInfo.cnt50,1,'COMMA')}]])</h3>
-                    </div>
-                    <div class="right">
-                        <a href="javascript:searchGtype('50')" class="btn-small btn-outline-black" th:if="${countInfo.cnt50 > 3}">검색결과 더보기</a>
-                    </div>
-                </div>
-
-                <ul th:if="${countInfo.cnt50 > 0}">
-                    <li th:each="item : ${gtype50}">
-                        <a th:href="${T(com.kbrainc.plum.front.search.controller.SearchController).getLink(item)}" class="underline" th:target="${#strings.startsWith(item.URL,'http') ? '_blank' : ''}">
-                            <strong class="title" th:utext="${#strings.replace(T(com.kbrainc.plum.rte.util.StringUtil).removeHTMLTag(item.CN),search.keyword,'<i>' + search.keyword +'</i>')}"></strong>
-                        </a>
-                        <span class="text" th:if="${#strings.startsWith(item.URL,'http')}" th:text="${item.URL}"></span>
-                    </li>
-                </ul>
-
                 <div class="table-caption" th:if="${countInfo.cnt40 > 0}">
                     <div class="left">
                         <h3 class="sub-title">첨부파일 ([[${#numbers.formatInteger(countInfo.cnt40,1,'COMMA')}]])</h3>
@@ -298,7 +298,34 @@
             
 
         </div>
+        
+        <div class="tabpanel active" th:if="${search.gtype == '50'}">
+            
+            <div class="search-page-result" th:if="${countInfo.cnt50 == 0}">
+                <div class="nodata bg3">
+                    <p class="fc-black6"><span class="icon icon-notice bg-black6"></span>검색된 내용이 없습니다.</p>
+                </div>
+            </div>
+            <div class="search-page-result" th:if="${countInfo.cnt50 > 0}">
+                <div class="table-caption">
+                    <div class="left">
+                        <h3 class="sub-title">메뉴 ([[${#numbers.formatInteger(countInfo.cnt50,1,'COMMA')}]])</h3>
+                    </div>
+                </div>
 
+                <ul>
+                    <li th:each="item : ${gtype50}">
+                        <a th:href="${T(com.kbrainc.plum.front.search.controller.SearchController).getLink(item)}" class="underline" th:target="${#strings.startsWith(item.URL,'http') ? '_blank' : ''}">
+                            <strong class="title" th:utext="${#strings.replace(T(com.kbrainc.plum.rte.util.StringUtil).removeHTMLTag(item.CN),search.keyword,'<i>' + search.keyword +'</i>')}"></strong>
+                        </a>
+                        <span class="text" th:if="${#strings.startsWith(item.URL,'http')}" th:text="${item.URL}"></span>
+                    </li>
+                </ul>
+            </div>
+
+            <th:block kattr:pagination="list" onclick="goPage" th:if="${countInfo.cnt50 > 0}" />
+
+        </div>
         <div class="tabpanel active" role="tabpanel" th:if="${search.gtype == '10'}">
             
             <div class="search-page-result" th:if="${countInfo.cnt10 == 0}">
@@ -309,7 +336,7 @@
             <div class="search-page-result" th:if="${countInfo.cnt10 > 0}">
                 <div class="table-caption">
                     <div class="left">
-                        <h3 class="sub-title">프로그램·콘텐츠 ([[${#numbers.formatInteger(countInfo.cnt10,1,'COMMA')}]])</h3>
+                        <h3 class="sub-title">게시물 ([[${#numbers.formatInteger(countInfo.cnt10,1,'COMMA')}]])</h3>
                     </div>
                 </div>
                 
@@ -342,7 +369,7 @@
             
                 <div class="table-caption">
                     <div class="left">
-                        <h3 class="sub-title">참여ㆍ신청 ([[${#numbers.formatInteger(countInfo.cnt20,1,'COMMA')}]])</h3>
+                        <h3 class="sub-title">환경교육 및 자원 ([[${#numbers.formatInteger(countInfo.cnt20,1,'COMMA')}]])</h3>
                     </div>
                 </div>
 
@@ -373,7 +400,7 @@
             <div class="search-page-result" th:if="${countInfo.cnt30 > 0}">
                 <div class="table-caption">
                     <div class="left">
-                        <h3 class="sub-title">알림ㆍ문의 ([[${#numbers.formatInteger(countInfo.cnt30,1,'COMMA')}]])</h3>
+                        <h3 class="sub-title">기관 및 시설 ([[${#numbers.formatInteger(countInfo.cnt30,1,'COMMA')}]])</h3>
                     </div>
                 </div>
 
@@ -420,37 +447,6 @@
             <th:block kattr:pagination="list" onclick="goPage" th:if="${countInfo.cnt30 > 0}" />
 
         </div>
-        
-
-        
-        <div class="tabpanel active" th:if="${search.gtype == '50'}">
-            
-            <div class="search-page-result" th:if="${countInfo.cnt50 == 0}">
-                <div class="nodata bg3">
-                    <p class="fc-black6"><span class="icon icon-notice bg-black6"></span>검색된 내용이 없습니다.</p>
-                </div>
-            </div>
-            <div class="search-page-result" th:if="${countInfo.cnt50 > 0}">
-                <div class="table-caption">
-                    <div class="left">
-                        <h3 class="sub-title">메뉴 ([[${#numbers.formatInteger(countInfo.cnt50,1,'COMMA')}]])</h3>
-                    </div>
-                </div>
-
-                <ul>
-                    <li th:each="item : ${gtype50}">
-                        <a th:href="${T(com.kbrainc.plum.front.search.controller.SearchController).getLink(item)}" class="underline" th:target="${#strings.startsWith(item.URL,'http') ? '_blank' : ''}">
-                            <strong class="title" th:utext="${#strings.replace(T(com.kbrainc.plum.rte.util.StringUtil).removeHTMLTag(item.CN),search.keyword,'<i>' + search.keyword +'</i>')}"></strong>
-                        </a>
-                        <span class="text" th:if="${#strings.startsWith(item.URL,'http')}" th:text="${item.URL}"></span>
-                    </li>
-                </ul>
-            </div>
-
-            <th:block kattr:pagination="list" onclick="goPage" th:if="${countInfo.cnt50 > 0}" />
-
-        </div>
-        
         <div class="tabpanel active" role="tabpanel" th:if="${search.gtype == '40'}">
             
             <div class="search-page-result" th:if="${countInfo.cnt40 == 0}">

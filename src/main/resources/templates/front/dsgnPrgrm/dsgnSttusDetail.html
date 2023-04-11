@@ -7,7 +7,7 @@
     <div layout:fragment="content">
 
         <!-- content -->
-        <div class="product-wrap">
+        <div class="product-wrap sub-banner-swiper">
             <div class="thumb-swiper">
                 <div class="swiper gallery-thumb">
                     <div class="swiper-wrapper">
@@ -17,6 +17,8 @@
                             </div>
                         </th:block>
                     </div>
+                    <button type="button" class="swiper-button-next"></button>
+                    <button type="button" class="swiper-button-prev"></button>
                 </div>
                 <div thumbsSlider="" class="swiper gallery-list">
                     <div class="swiper-wrapper">
@@ -47,7 +49,7 @@
                         </div>
                         <div class="list">
                             <dt>기관주소 :</dt>
-                            <dd><th:block th:text="${dsgnSttus.instAddr}"></th:block> <th:block th:text="${dsgnSttus.instDtlAddr}"></th:block></dd>
+                            <dd><th:block th:text="${dsgnSttus.instAddr}"></th:block> <th:block th:text="${dsgnSttus.instDtladdr}"></th:block></dd>
                         </div>
                         <div class="list">
                             <dt>지정일 :</dt>
@@ -199,56 +201,99 @@
             <h3 class="sub-title">해당 기관 지정 프로그램 목록</h3>
         </div>
 
-        <div class="table-col table-layout-auto table-col-mo">
-            <table>
-                <caption>프로그램 - 지정번호, 프로그램명, 교육주제, 숙박유형, 교육대상, 참가비(1인)</caption>
-                <colgroup>
-                    <col style="width:11%;">
-                    <col>
-                    <col style="width:19%;">
-                    <col style="width:13%;">
-                    <col style="width:17%;">
-                    <col style="width:12%;">
-                </colgroup>
-                <thead>
-                    <tr>
-                        <th scope="col">지정번호</th>
-                        <th scope="col">프로그램명</th>
-                        <th scope="col">교육주제</th>
-                        <th scope="col">숙박유형</th>
-                        <th scope="col">교육대상</th>
-                        <th scope="col">참가비(1인)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <th:block th:if="${prgrmList != 'null'}">
-                        <th:block th:each="item : ${prgrmList}">
+        <div class="pc-only">
+            <div class="table-col table-layout-auto table-col-mo">
+                <table>
+                    <caption>프로그램 - 지정번호, 프로그램명, 교육주제, 숙박유형, 교육대상, 참가비(1인)</caption>
+                    <colgroup>
+                        <col style="width:11%;">
+                        <col>
+                        <col style="width:19%;">
+                        <col style="width:13%;">
+                        <col style="width:17%;">
+                        <col style="width:12%;">
+                    </colgroup>
+                    <thead>
                         <tr>
-                            <td><th:block th:text="${item.dsgnNo}" /></td>
-                            <td class="al article"><a  class="link ellipsis"><th:block th:text="${item.prgrmNm}" /></a></td>
-                            <td><th:block th:text="${item.eduSbjctCdNm}" /></td>
-                            <td>
-                                <th:block th:if="${dsgnSttus.styYn} == 'Y'">
-                                    숙박
-                                </th:block>
-                                <th:block th:unless="${dsgnSttus.styYn} == 'Y'">
-                                    비숙박
-                                </th:block>
-                            </td>
-                            <td><th:block th:text="${item.eduTarget}" /></td>
-                            <td><th:block th:text="${item.etrfeeStr}" /></td>
+                            <th scope="col">지정번호</th>
+                            <th scope="col">프로그램명</th>
+                            <th scope="col">지역</th>
+                            <th scope="col">교육주제</th>
+                            <th scope="col">교육대상</th>
+                            <th scope="col">참가비</th>
                         </tr>
+                    </thead>
+                    <tbody>
+                        <th:block th:if="${prgrmList != 'null'}">
+                            <th:block th:each="item : ${prgrmList}">
+                            <tr>
+                                <td><th:block th:text="${item.dsgnNo}" /></td>
+                                <td class="al article"><a  class="link ellipsis"><th:block th:text="${item.prgrmNm}" /></a></td>
+                                <td><th:block th:text="${item.ctprvnNm}" /></td>
+                                <td><th:block th:text="${item.eduSbjctCdNm}" /></td>
+                                <td><th:block th:text="${item.wholAge == 'Y' ? '전연령' : item.eduTarget}" /></td>
+                                <td><th:block th:text="${item.etrfeeStr}" /></td>
+                            </tr>
+                            </th:block>
                         </th:block>
+                        <th:block th:unless="${prgrmList != 'null'}">
+                            <tr>
+                                <td class="nodata" colspan="6">
+                                    <p><span class="icon icon-notice bg-black9"></span>등록된 프로그램이 없습니다</p>
+                                </td>
+                            </tr>
+                        </th:block>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mo-only">
+            <div class="table-list">
+                <ul>
+                    <th:block th:if="${prgrmList != 'null'}">
+                    <li class="block"  th:each="item : ${prgrmList}">
+                        <div class="tbody">
+                            <dl>
+                                <div class="list">
+                                    <dt>지정번호</dt>
+                                    <dd><th:block th:text="${item.dsgnNo}" /></dd>
+                                </div>
+                                <div class="list">
+                                    <dt>프로그램</dt>
+                                    <dd><a href="" class="link ellpisis"><th:block th:text="${item.prgrmNm}" /></a></dd>
+                                </div>
+                                <div class="list">
+                                    <dt>지역</dt>
+                                    <dd><th:block th:text="${item.ctprvnNm}" /></dd>
+                                <td></td>
+                                </div>
+                                <div class="list">
+                                    <dt>교육주제</dt>
+                                    <dd><th:block th:text="${item.eduSbjctCdNm}" /></dd>
+                                </div>
+                                <div class="list">
+                                    <dt>교육대상</dt>
+                                    <dd><th:block th:text="${item.wholAge == 'Y' ? '전연령' : item.eduTarget}" /></dd>
+                                </div>
+                                <div class="list">
+                                    <dt>참가비</dt>
+                                    <dd><th:block th:text="${item.etrfeeStr}" /></dd>
+                                </div>
+                            </dl>
+                        </div>
+                    </li>
                     </th:block>
-                    <th:block th:unless="${prgrmList != 'null'}">
-                        <tr>
-                            <td class="nodata" colspan="6">
-                                <p><span class="icon icon-notice bg-black9"></span>등록된 프로그램이 없습니다</p>
-                            </td>
-                        </tr>
-                    </th:block>
-                </tbody>
-            </table>
+
+                    <th:block th:if="${prgrmList == 'null'}">
+                    <li class="block">
+                        <div class="nodata">
+                            <p><span class="icon icon-notice bg-black9"></span>등록된 해당 기관 지정 프로그램이 없습니다.</p>
+                        </div>
+                    </li>
+                    <th:block th:if="${prgrmList == 'null'}">
+                </ul>
+            </div>
         </div>
 
         <div class="btn-wrap">
@@ -259,6 +304,7 @@
         <!-- //content -->
 
         <script th:inline="javascript">
+
             function moveToDetail() {
                 location.href = '/front/dsgnPrgrm/dsgnSttusList.html';
             }

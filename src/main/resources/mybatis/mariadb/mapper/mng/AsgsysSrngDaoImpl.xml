@@ -176,6 +176,8 @@
           , D.SPRTGRP_EML
           , D.SPRTGRP_MOBLPHON
           , E.SBMSNID
+          , INST.RPRSV_NM
+          , INST.BRNO
         FROM
             TB_ASS_PRGRM A
         LEFT OUTER JOIN
@@ -229,6 +231,7 @@
                 TB_ASS_CHKLST_SBMSN CHK ON SRNG.PRGRMID = CHK.PRGRMID
                                        AND SRNG.SPRTGRPID = CHK.USERID
         ) E ON A.PRGRMID = E.PRGRMID
+        LEFT OUTER JOIN TB_CMM_INST INST ON A.INSTID = INST.INSTID
         WHERE 1=1
         AND A.PRGRMID = #{prgrmid}
     </select>
@@ -2724,6 +2727,12 @@
         )
     </insert>
 
+    <!-- 체크리스트 답변 삭제 -->
+    <delete id="deleteChklstAns" parameterType="ChklstAnsVo" >
+        DELETE FROM TB_ASS_CHKLST_ANS
+        WHERE SBMSNID = #{sbmsnid}
+    </delete>
+
     <!-- 지원단심사의견 수정 -->
     <update id="updateSprtgrpOpnn" parameterType="AsgsysSrngVo" >
         /* AsgsysSrngDao.updateSprtgrpOpnn */
@@ -2950,12 +2959,12 @@
                , A.GRP_NM
                , A.USE_YN
                , A.REG_DT
-               , COUNT(B.USERID)          AS REG_EXPRT_CNT
-               , GROUP_CONCAT(B.USERID)   AS USERID_GRP
-               , GROUP_CONCAT(C.ACNT)     AS USER_ACNT_GRP
-               , GROUP_CONCAT(C.NM)       AS USER_NM_GRP
-               , GROUP_CONCAT(C.EML)      AS USER_EML_GRP
-               , GROUP_CONCAT(C.MOBLPHON) AS USER_MOBLPHON_GRP
+               , COUNT(B.USERID)                     AS REG_EXPRT_CNT
+               , GROUP_CONCAT(NULLIF(B.USERID  ,'')) AS USERID_GRP
+               , GROUP_CONCAT(NULLIF(C.ACNT    ,'')) AS USER_ACNT_GRP
+               , GROUP_CONCAT(NULLIF(C.NM      ,'')) AS USER_NM_GRP
+               , GROUP_CONCAT(NULLIF(C.EML     ,'')) AS USER_EML_GRP
+               , GROUP_CONCAT(IFNULL(C.MOBLPHON,'')) AS USER_MOBLPHON_GRP
             FROM
                 TB_ASS_EXPRT_GRP A
             LEFT OUTER JOIN
@@ -3004,7 +3013,7 @@
         LEFT OUTER JOIN TB_ASS_CHKLST C ON B.OPER_FRM_CD = C.OPER_FRM_CD AND C.USE_YN ='Y'
         LEFT OUTER JOIN TB_ASS_CHKLST_SBMSN D ON A.PRGRMID = D.PRGRMID
                                              AND A.CHKLSTID = D.CHKLSTID
-                                             AND D.SBMSN_SE_CD ='N'   /*신청자 자가진단*/
+                                             AND D.SBMSN_SE_CD = #{sbmsnSeCd}   /*신청자 자가진단*/
         WHERE A.PRGRMID = #{prgrmid}
     </select>
 

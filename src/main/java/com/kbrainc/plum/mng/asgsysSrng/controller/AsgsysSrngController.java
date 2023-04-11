@@ -33,6 +33,8 @@ import com.kbrainc.plum.mng.asgsysSrng.model.TchaidFcltVo;
 import com.kbrainc.plum.mng.asgsysSrng.service.AsgsysSrngServiceImpl;
 import com.kbrainc.plum.mng.code.model.CodeVo;
 import com.kbrainc.plum.mng.code.service.CodeServiceImpl;
+import com.kbrainc.plum.mng.inst.model.InstVo;
+import com.kbrainc.plum.mng.inst.service.InstServiceImpl;
 import com.kbrainc.plum.mng.member.model.MemberVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -69,6 +71,9 @@ public class AsgsysSrngController {
 
 	@Autowired
     private CodeServiceImpl codeService;
+
+	@Autowired
+	private InstServiceImpl instService;
 
 	/**********************************************************************************
      * 지정신청
@@ -193,6 +198,9 @@ public class AsgsysSrngController {
         } else {
             model.addAttribute("fileList", Collections.emptyList());
         }
+
+        InstVo instVo = new InstVo();
+        model.addAttribute("typeCdList", instService.selectInstTypeCdList(instVo));
 
         return "mng/asgsysSrng/aplyInfo";
     }

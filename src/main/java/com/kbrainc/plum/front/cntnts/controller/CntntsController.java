@@ -55,7 +55,9 @@ public class CntntsController {
     * @return String
     */
     @RequestMapping(value = "/front/cntnts/cntntsListForm.html")
-    public String cntntsListForm() throws Exception {
+    public String cntntsListForm(Model model) throws Exception {
+        model.addAttribute("menuPrgrmCntntsCd", "all");
+        
         return "front/cntnts/cntntsList";
     }
     
@@ -74,6 +76,7 @@ public class CntntsController {
         
         model.addAttribute("mainEduSbjctCd", codeInfo.getUpprCd());
         model.addAttribute("eduSbjctCd", eduSbjctCd);
+        model.addAttribute("menuPrgrmCntntsCd", null);
         
         return "front/cntnts/cntntsList";
     }

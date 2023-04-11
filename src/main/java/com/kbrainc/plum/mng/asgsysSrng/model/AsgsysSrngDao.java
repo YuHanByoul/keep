@@ -1174,5 +1174,16 @@ public interface AsgsysSrngDao {
 	*/
 	public List<AsgsysSrngVo> selectQitemList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
+	/**
+	* 체크리스트 답변 삭제
+	*
+	* @Title : deleteChklstAns
+	* @Description : 체크리스트 답변 삭제
+	* @param chklstAnsVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int deleteChklstAns(ChklstAnsVo chklstAnsVo) throws Exception;
 
 }

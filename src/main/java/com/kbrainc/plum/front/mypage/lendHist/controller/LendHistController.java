@@ -68,7 +68,8 @@ public class LendHistController {
     * @throws Exception 예외
     */
     @RequestMapping(value = "/front/mypage/lendHist/LendHistList.html")
-    public String LendHistList(Model model) throws Exception {
+    public String LendHistList(LendVo lendVo,Model model) throws Exception {
+        model.addAttribute("params",lendVo);
         return "front/mypage/lendHist/lendHistList";
     }
     /**
@@ -111,6 +112,8 @@ public class LendHistController {
     */
     @RequestMapping(value = "/front/mypage/lendHist/lendHistDetail.html")
     public String lendHistDetail(LendAplyVo lendAplyVo,LendVo lendVo,Model model, @UserInfo UserVo user) throws Exception {
+        
+        model.addAttribute("params",lendVo);
         
         if(lendAplyVo.getAplyid()==null || lendAplyVo.getAplyid()==0) {
             return "redirect:/front/mypage/lendHist/LendHistList.html";
