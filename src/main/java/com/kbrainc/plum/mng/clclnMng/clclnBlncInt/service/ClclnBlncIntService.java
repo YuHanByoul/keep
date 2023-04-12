@@ -2,6 +2,9 @@ package com.kbrainc.plum.mng.clclnMng.clclnBlncInt.service;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.kbrainc.plum.mng.clclnMng.clclnBlncInt.model.ClclnBlncIntVo;
 
 
@@ -89,4 +92,9 @@ public interface ClclnBlncIntService {
     * @return int
     */
     public int updateClclnBlncIntRturnYn(ClclnBlncIntVo clclnBlncIntVo) throws Exception;
+    
+    public void clclnBlncIntDetailExcelDownList(ClclnBlncIntVo clclnBlncIntVo, HttpServletResponse response, HttpServletRequest request) throws Exception;
+    
+    public void clclnBlncIntOutlListExcelDownList(ClclnBlncIntVo clclnBlncIntVo, HttpServletResponse response, HttpServletRequest request) throws Exception;
+
 }
