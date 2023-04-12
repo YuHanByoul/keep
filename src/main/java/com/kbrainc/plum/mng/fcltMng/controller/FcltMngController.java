@@ -72,7 +72,7 @@ public class FcltMngController {
     */
     @RequestMapping(value = "/mng/fcltMng/fcltMngList.html")
     public String fcltMngList(Model model) throws Exception {
-        model.addAttribute("sidoList", commonService.selectAllRgnList());
+        model.addAttribute("sidoList", commonService.selectCtprvnList());
         return "mng/fcltMng/fcltMngList";
     }
     
