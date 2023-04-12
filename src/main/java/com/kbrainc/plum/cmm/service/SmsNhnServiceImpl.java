@@ -62,7 +62,7 @@ public class SmsNhnServiceImpl extends PlumAbstractServiceImpl implements SmsNhn
     * @throws Exception 예외
     */
     @Override
-    public Map<String, Object> sendSms(String msg, String[] phoneList) throws Exception {
+    public Map<String, Object> sendSms(String msg, String[] phoneList, String requestDate) throws Exception {
         List<Map<String, Object>> recipientList = new ArrayList<>();
         for(int i = 0; i < phoneList.length; i++) {
             Map<String, Object> recipientInfo = new HashMap<>();
@@ -73,6 +73,9 @@ public class SmsNhnServiceImpl extends PlumAbstractServiceImpl implements SmsNhn
         Map<String, Object> params = new HashMap<>();
         params.put("body", msg);
         params.put("sendNo", sendNo);
+        if(requestDate != null && !requestDate.equals("")) {
+            params.put("requestDate", requestDate);
+        }
         params.put("recipientList", recipientList);
         
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -99,7 +102,7 @@ public class SmsNhnServiceImpl extends PlumAbstractServiceImpl implements SmsNhn
     * @throws Exception 예외
     */
     @Override
-    public Map<String, Object> sendMms(String title, String msg, String[] phoneList) throws Exception {
+    public Map<String, Object> sendMms(String title, String msg, String[] phoneList, String requestDate) throws Exception {
         List<Map<String, Object>> recipientList = new ArrayList<>();
         for(int i = 0; i < phoneList.length; i++) {
             Map<String, Object> recipientInfo = new HashMap<>();
@@ -111,6 +114,9 @@ public class SmsNhnServiceImpl extends PlumAbstractServiceImpl implements SmsNhn
         params.put("title", title);
         params.put("body", msg);
         params.put("sendNo", sendNo);
+        if(requestDate != null && !requestDate.equals("")) {
+            params.put("requestDate", requestDate);
+        }
         params.put("recipientList", recipientList);
         
         Gson gson = new GsonBuilder().setPrettyPrinting().create();

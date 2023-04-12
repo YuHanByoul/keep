@@ -29,8 +29,8 @@
                             </div>
                         </div>
                         <div class="m-t-20 text-center">
-                            <button class="btn btn-disabled m-r-5" data-bs-dismiss="modal">초기화</button>
-                            <button class="btn btn-primary" onclick="fn_searchForm();">검색</button>
+                            <button type="button" class="btn btn-disabled m-r-5" onclick="initPopupSearch()">초기화</button>
+                            <button type="button" class="btn btn-primary"        onclick="fn_searchForm();">검색</button>
                         </div>
                     </div>
 				</form>
@@ -48,33 +48,25 @@
             </div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-inverse" data-bs-dismiss="modal">취소</button>
-				<button type="button" class="btn btn-primary waves-effect waves-light" onclick="instSetInfo();">확인</button>
+				<button type="button" class="btn btn-primary waves-effect waves-light" onclick="setInstInfo();">확인</button>
 			</div>
 		</div>
 	</div>
 <script th:inline="javascript">
-	var gridHelper1;
-	
-	var instNm = '';
-	var instid = '';
-	var sidoNm = '';
-	var signguNm = '';
-	var signguCd = '';
-	var instTypeCdNm = '';
-	var instTypeCd = '';
-	var hmpg = '';
-	var telno = '';
-	var fxno = '';
-	var addr = '';
-	var addrDtl = '';
+	var instPopGridHelper;
+	var selectedInstItem = null;
 	
 	$(function() {
-		gridHelper1 = new GridHelper('instSearchJsGrid', 'contentPanel');
+		instPopGridHelper = new GridHelper('instSearchJsGrid', 'contentPanel');
 		writeJsGridData();
 	});
+	function initPopupSearch(){
+		$("#instSearchFrm #instNm").val("");
+		$("#brno").val(""); 
+	}
 	
     function fn_searchForm(){
-        gridHelper1.resetListContent();
+    	instPopGridHelper.resetListContent();
     }
 	
 	function writeJsGridData() {
@@ -150,37 +142,20 @@
 			],
 			rowClick: function(args) {
                 $("#instchk_"+args.item.instid).prop("checked",true);
-                instNm = args.item.instNm;
-                instid = args.item.instid;
-                sidoNm = args.item.sidoNm;
-                signguNm = args.item.signguNm;
-                signguCd = args.item.signguCd;
-            	instTypeCdNm = args.item.instTypeCdNm;
-            	instTypeCd = args.item.instTypeCd;
-            	hmpg = args.item.hmpg;
-            	telno = args.item.telno;
-            	fxno = args.item.fxno;
-            	addr = args.item.addr;
-            	addrDtl = args.item.addrDtl;
+            	selectedInstItem = args.item;
             },
 			onPageChanged : function(args) {
-				selectedItems = [];
+				selectedInstItem = null;
 			}
 		});
 	}
-	function instSetInfo() {
-		$('#instNm').val(instNm);
-		$('#instid').val(instid);
-		$('#sidoNm').val(sidoNm);
-		$('#signguNm').val(signguNm);
-		$('#signguCd').val(signguCd);
-    	$('#instTypeCdNm').val(instTypeCdNm);
-    	$('#instTypeCd').val(instTypeCd);
-    	$('#hmpg').val(hmpg);
-    	$('#telno').val(telno);
-    	$('#fxno').val(fxno);
-    	//$('#addr').val(addr);
-    	//$('#addrDtl').val(addrDtl);
+	function setInstInfo() {
+		if(selectedInstItem == null || selectedInstItem.instid == null){
+			alert("기관을 선택해주십시오");
+			return;
+		}
+		$('#instNm').val(selectedInstItem.instNm);
+		$('#instid').val(selectedInstItem.instid);
     	instSearchAddModal.hide();
     }
 </script>

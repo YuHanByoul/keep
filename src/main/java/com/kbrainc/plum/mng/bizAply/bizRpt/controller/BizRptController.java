@@ -596,7 +596,7 @@ public class BizRptController {
 
 		BizRptVo rsltRptSbmsnInfo = new BizRptVo();
 		// 결과보고제출 상세 조회
-		// rsltRptSbmsnInfo = bizRptService.selectRsltRptSbmsnDetail(bizRptVo);
+		 rsltRptSbmsnInfo = bizRptService.selectMdlRptSbmsnDetail(bizRptVo);
 
 		// 보고운영목록 조회
 		model.addAttribute("reportOperList", bizRptService.selectReportOperList(bizRptVo));

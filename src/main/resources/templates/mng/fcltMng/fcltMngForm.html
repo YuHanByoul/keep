@@ -3,9 +3,11 @@
     <div class="tab-content tabs p-t-20">
 
         <div class="tab-pane active" id="agencyInfo" role="tabpanel">
+        
             <div class="card-header p-t-0 p-b-0">
                 <h3 class="sub-title"><strong>시설 정보</strong></h3>
             </div>
+            
             <div class="card-block-small p-t-0">
                 <div class="row">
                     <div class="col-lg-6 mb-3">
@@ -74,7 +76,7 @@
                             <div class="col-12 row align-items-center">
                                 <div class="col-12 col-lg-auto mb-2 mb-lg-0 p-r-0">
                                     <div class="form-radio">
-                                        <span kattr:radio_code="aplyMthdCd" grpCd="153" isAdmin="true" addStyle="margin-top:4px" addClass="col-sm-6"></span>
+                                        <span kattr:radio_code="aplyMthdCd" grpCd="153" isAdmin="true" selectedCd="153101" addStyle="margin-top:4px" addClass="col-sm-6"></span>
                                     </div>
                                 </div>
                                 <div class="col-12 col-lg-auto">
@@ -109,7 +111,7 @@
                                 <div class="form-radio">
                                     <div class="radio radio-inline">
                                         <label class="mb-0 form-label">
-                                            <input type="radio" name="useYnChk" id="useYnChkY" value="Y">
+                                            <input type="radio" name="useYnChk" id="useYnChkY" value="Y" checked>
                                             <i class="helper"></i>사용
                                         </label>
                                     </div>
@@ -134,7 +136,7 @@
                         <div class="mb-0 form-group required">
                             <div class="col-12 form-label m-b-0 pb-1">
                                 <label class="col-form-label pb-0" for="rprsImgFile"><strong>대표 이미지</strong></label>
-                                <span>(권장 사이즈 : 000x000)</span>
+                                <!-- <span>(권장 사이즈 : 000x000)</span> -->
                             </div>
                             <div class="col-12">
                                 <input type="file" class="form-control form-control-sm" id="rprsImgFile" name="rprsImgFile"/>
@@ -411,17 +413,45 @@
             });
             $("#gdncFile").val("");
         }
-
+        
         event.preventDefault();
-
+        
     });
+
+    var validator= $("#fcltMngFrm").validate({
+        onsubmit: false,
+          rules: {
+        	    fcltNm    : { required: true , maxlength: 50 }
+                ,addr     : { required: true }
+                ,addrDtl  : { required: true , maxlength: 200}
+                ,bankCd   : { required: true }
+                ,bacntNo  : { required: true , maxlength: 20, number:true}
+                ,dpstrNm  : { required: true , maxlength: 10}
+            },
+            messages: {
+            	fcltNm    : { required: "시설명을 입력해주십시오." , maxlength: "기관명은 50자 이하여야 합니다." }  
+                ,addr     : { required: "주소를 입력해주십시오" }
+                ,addrDtl  : { required: "상세주소를 입력해주십시오" , maxlength: "상세주소는 200자 이하여야 합니다." }
+                ,bankCd   : { required: "입금졔좌 은행을 선택해주십시오." }
+                ,bacntNo  : { required: "입금 계좌번호를 입력해주십시오." ,maxlength: "계좌번호는 20자 이하여야 합니다.", number:"계좌번호는 숫자여야 합니다."}
+                ,dpstrNm  : { required: "예금주명을 입력해주십시오." ,maxlength: "예금주명은 10자 이하여야 합니다."}
+            }
+    })
     
     // 데이터 submit
  	function fn_insertFcltMng(){
- 	 	
+     	
+     	if($("#instid").val() == null || $("#instid").val()==""){
+         	alert("기관을 선택해주십시오.");
+         	return;
+        }
+        
 	 	if(!($("#fcltMngFrm").valid())) return;
-	 	
-  	 	if(!confirm("저장하시겠습니까?")) return;
+		
+	 	if($("#rprsImgFileid").val() == null || $("#rprsImgFileid").val() == 0){
+         	alert("대표 이미지를 선택해주십시오.");
+         	return;
+		}
   	 	
   	 	let data =  $("#fcltMngFrm").serialize() ;
   	 	let tailStr = "&useYn="+($('#useYnChk').is(':checked'))?"Y":"N";
@@ -430,14 +460,17 @@
   	 	let extnlUrl = $('#extnlUrl').val();
   	 	
   	 	if( aplyMthdCd == "153102" ){
-            if( extnlUrl == '' ){
+            if( extnlUrl == '' || extnlUrl == null ){
                 alert('외부 URL을 입력해주세요.');
+                showErrorMark("#extnlUrl");
                 return false;
             }
         }
   	 	
   	 	data = data+useYn;
   	 	 
+  	 	if(!confirm("저장하시겠습니까?")) return;
+  	 	
 	    if(displayWorkProgress()){
 			$.ajax({
 				url : "/mng/fcltMng/insertFcltMng.do",
@@ -468,7 +501,6 @@
                 } else {
                     addr = data.jibunAddress;
                 }
-                console.log(data);
                 $('#rgnCd').val(data.sigunguCode)
                 $('#zip').val(data.zonecode);
                 $('#addr').val(addr);
@@ -480,6 +512,7 @@
    // 대표 이미지 삭제
    var fn_deleteRprsImgFile = (fileid,fileIdntfcKey) =>{
         $("#rprs_img_"+fileid).remove();
+        $("#rprsImgFileid").val(0);
         fn_deleteFile(fileid, fileIdntfcKey);
     }
 

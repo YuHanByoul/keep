@@ -599,6 +599,9 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     /** 구분 코드 */
     private String seCd;
 
+    /** 제출 구분 코드 */
+    private String sbmsnSeCd;
+
     /** 내용 */
     private String cn;
 

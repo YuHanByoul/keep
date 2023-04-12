@@ -119,7 +119,7 @@ public class SearchController {
         countInfo.put("cnt40", 0);
         countInfo.put("cnt50", 0);
         
-        if (!"".equals(StringUtil.nvl(search.getKeyword()))) {
+        //if (!"".equals(StringUtil.nvl(search.getKeyword()))) {
             if ("all".equals(search.getGtype())) {
                 searchParam.setNget("3");
                 searchMap = searchService.getSearchInfo(makeQueryString(searchParam));
@@ -184,7 +184,7 @@ public class SearchController {
                     }
                 }
             }
-        }
+        //}
         
         model.addAttribute("gtype10", gtype10);
         model.addAttribute("gtype20", gtype20);

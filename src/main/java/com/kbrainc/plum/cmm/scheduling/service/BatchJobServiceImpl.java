@@ -194,7 +194,7 @@ public class BatchJobServiceImpl implements BatchJobService {
                 
                 String recipientListStr = mapper.writeValueAsString(recipientList);
                 
-                //발송 - 아직 탬플릿 없음
+                
                 alimtalkNhnService.sendAlimtalk("infntEnveduMsg", (String) alimTalkSendUser.get("SENDRSVTIME"), recipientListStr);
             }
             
@@ -307,7 +307,7 @@ public class BatchJobServiceImpl implements BatchJobService {
                  
                  String recipientListStr = mapper.writeValueAsString(recipientList);
                  
-                 //발송 - 아직 탬플릿 없음
+                 
                  alimtalkNhnService.sendAlimtalk("enveduAfterMsg", (String) alimTalkSendUser.get("SENDRSVTIME"), recipientListStr);
              }
              
@@ -319,24 +319,24 @@ public class BatchJobServiceImpl implements BatchJobService {
      }
       
     /**
-     * 유아환경교육 만족도 조사 안내 메시지 발송
-     *
-     * @Title       : infntEnveduDgstfnMsgSend 
-     * @Description : 유아환경교육 만족도 조사 안내 메시지 발송
-     * @param triggerid
-     * @return void 리턴값없음
-     * @throws Exception 예외
-     */
-     @SchedulingHistory
-     public void infntEnveduDgstfnMsgSend(@Triggerid int triggerid) throws Exception {
-         
-         //발송대상자 확인
-         List<Map<String, Object>> alimTalkSendUserList = batchJobDao.selectInfntEnveduSmsSendList(2);
-           
-         if(alimTalkSendUserList.size() > 0) {
-             ObjectMapper mapper = new ObjectMapper();
+    * 유아환경교육 만족도 조사 안내 메시지 발송
+    *
+    * @Title       : infntEnveduDgstfnMsgSend 
+    * @Description : 유아환경교육 만족도 조사 안내 메시지 발송
+    * @param triggerid
+    * @return void 리턴값없음
+    * @throws Exception 예외
+    */
+    @SchedulingHistory
+    public void infntEnveduDgstfnMsgSend(@Triggerid int triggerid) throws Exception {
+     
+        //발송대상자 확인
+        List<Map<String, Object>> alimTalkSendUserList = batchJobDao.selectInfntEnveduSmsSendList(2);
+       
+        if(alimTalkSendUserList.size() > 0) {
+            ObjectMapper mapper = new ObjectMapper();
             
-             for(Map<String, Object> alimTalkSendUser : alimTalkSendUserList) {
+            for(Map<String, Object> alimTalkSendUser : alimTalkSendUserList) {
                  List<Object> recipientList = new ArrayList<>(); 
                  
                  Map<String, Object> map = new HashMap<String, Object>();
@@ -355,7 +355,7 @@ public class BatchJobServiceImpl implements BatchJobService {
                  
                  String recipientListStr = mapper.writeValueAsString(recipientList);
                  
-                 //발송 - 아직 탬플릿 없음
+                 
                  alimtalkNhnService.sendAlimtalk("enveduAfterMsg", (String) alimTalkSendUser.get("SENDRSVTIME"), recipientListStr);
             }
                  
@@ -398,7 +398,7 @@ public class BatchJobServiceImpl implements BatchJobService {
                 recipientList1.add(map); 
                 
                 String recipientListStr1 = mapper.writeValueAsString(recipientList1);
-                //발송 - 아직 탬플릿 없음
+                
                 alimtalkNhnService.sendAlimtalk("exprtEduBeforeMsg", (String) alimTalkSendUser.get("BFR_SEND_DT"), recipientListStr1);
             }
                   
@@ -421,7 +421,7 @@ public class BatchJobServiceImpl implements BatchJobService {
                 recipientList2.add(map); 
                 
                 String recipientListStr2 = mapper.writeValueAsString(recipientList2);
-                //발송 - 아직 탬플릿 없음
+                
                 alimtalkNhnService.sendAlimtalk("exprtEduBeforeMsg", (String) alimTalkSendUser.get("BFR_SEND_DT"), recipientListStr2);
             }
                   
@@ -464,7 +464,7 @@ public class BatchJobServiceImpl implements BatchJobService {
                  recipientList.add(map); 
                  
                  String recipientListStr = mapper.writeValueAsString(recipientList);
-                 //발송 - 아직 탬플릿 없음
+                 
                  alimtalkNhnService.sendAlimtalk("exprtEduAfterMsg", (String) alimTalkSendUser.get("AFTR_SEND_DT"), recipientListStr);
              }
              
@@ -558,10 +558,543 @@ public class BatchJobServiceImpl implements BatchJobService {
                   recipientList.add(map); 
                   
                   String recipientListStr = mapper.writeValueAsString(recipientList);
-                  //발송 - 아직 탬플릿 없음
+                  
                   alimtalkNhnService.sendAlimtalk("fcltDgstfnMsg", (String) alimTalkSendUser.get("END_DT_STR"), recipientListStr);
               }
-
            }
-    }
+     }
+     
+     /**
+      * 유아환경교육관, 푸름이 이동환경교실 교육 3일 전 안내 메시지 발송
+      *
+      * @Title       : infntMvnEnveduBfrMsgSend 
+      * @Description : 유아환경교육관, 푸름이 이동환경교실 교육 3일 전 안내 메시지 발송
+      * @param triggerid
+      * @return void 리턴값없음
+      * @throws Exception 예외
+      */
+     @SchedulingHistory
+     public void infntMvnEnveduBfrMsgSend(@Triggerid int triggerid) throws Exception {
+         //발송대상자 확인
+         List<Map<String, Object>> sendUserList = batchJobDao.selectEnvEduMsgSendUserList(1);
+         
+         if(sendUserList.size() > 0) {
+             ObjectMapper mapper = new ObjectMapper();
+             
+             for(Map<String, Object> sendUser : sendUserList) {
+                 if(sendUser.get("MOBLPHON") != null && !"".equals(sendUser.get("MOBLPHON"))) {
+                     List<Object> recipientList = new ArrayList<>(); 
+                     
+                     Map<String, Object> map = new HashMap<String, Object>();
+                     map.put("recipientNo", sendUser.get("MOBLPHON")); 
+           
+                     Map<String, Object> templateParameter = new HashMap<String, Object>();
+                     templateParameter.put("nm", sendUser.get("USER_NM"));
+                     templateParameter.put("prgrmNm", sendUser.get("PRGRM_NM"));
+                     templateParameter.put("eduDt", sendUser.get("START_TIME"));
+           
+                     map.put("templateParameter", templateParameter);
+           
+                     recipientList.add(map); 
+                     
+                     String recipientListStr = mapper.writeValueAsString(recipientList);
+                     
+                     
+                     alimtalkNhnService.sendAlimtalk("keep-012", (String) sendUser.get("SENDRSVTIME"), recipientListStr);
+                 }
+                 if(sendUser.get("EML") != null && !"".equals(sendUser.get("EML"))) {
+                     Context context = new Context();
+                     context.setVariable("title", "[환경보전협회] " + sendUser.get("START_TIME").toString().substring(0, 10) + " 진행 예정인 환경교육이 있습니다.");
+                     context.setVariable("portalUrl", CommonUtil.portalUrl); // 필수값
+                     String content = "<tr>"
+                         + "    <td align=\"center\" style=\"font-family:'맑은 고딕','Malgun Gothic','돋움',dotum,sans-serif;font-size:16px;font-weight:400;font-stretch:normal;font-style:normal;line-height:1.5;letter-spacing:-1px;color:#333333;padding:0 10px;\">"
+                         + "        " + sendUser.get("USER_NM") + "님. 진행 예정인 환경교육이 있습니다.<br>"
+                         + "        교육 일정을 확인해주세요<br>"
+                         + "        <br>"
+                         + "        교육일자 : " + sendUser.get("START_TIME").toString().substring(0, 10) + "<br>"
+                         + "        <br>"
+                         + "        자세한 내용은 국가환경교육 통합플랫폼의 마이페이지를 확인해주세요."
+                         + "    </td>"
+                         + "</tr>"
+                         + "<tr>"
+                         + "    <td style=\"height:30px;font-size:0px;mso-line-height-rule:exactly;line-height:0px;\">&nbsp;</td>"
+                         + "</tr>";
+                     context.setVariable("content", content);
+                     String contents = templateEngine.process("mail/mail_basic_template", context);
+                         
+                     MailVo mailVo = new MailVo();
+                     mailVo.setRcptnEmail((String) sendUser.get("EML"));
+                     mailVo.setTitle("[환경보전협회] " + sendUser.get("START_TIME").toString().substring(0, 10) + " 진행 예정인 환경교육이 있습니다.");
+                     mailVo.setCntnts(contents);
+                      
+                     Map<String, Object> resMap = mailService.sendMail(mailVo); // 이메일 발송
+                 }
+             }
+         }
+     }
+     
+     /**
+      * 유아환경교육관, 푸름이 이동환경교실 교육 3일 후 만족도 평가 요청 안내 메시지 발송
+      *
+      * @Title       : infntMvnEnveduAftrMsgSend 
+      * @Description : 유아환경교육관, 푸름이 이동환경교실 교육 3일 후 만족도 평가 요청 안내 메시지 발송
+      * @param triggerid
+      * @return void 리턴값없음
+      * @throws Exception 예외
+      */
+     @SchedulingHistory
+     public void infntMvnEnveduAftrMsgSend(@Triggerid int triggerid) throws Exception {
+         //발송대상자 확인
+         List<Map<String, Object>> sendUserList = batchJobDao.selectEnvEduMsgSendUserList(2);
+         
+         if(sendUserList.size() > 0) {
+             for(Map<String, Object> sendUser : sendUserList) {
+                 ObjectMapper mapper = new ObjectMapper();
+                 
+                 if(sendUser.get("MOBLPHON") != null && !"".equals(sendUser.get("MOBLPHON"))) {
+                     List<Object> recipientList = new ArrayList<>(); 
+                     
+                     Map<String, Object> map = new HashMap<String, Object>();
+                     map.put("recipientNo", sendUser.get("MOBLPHON")); 
+           
+                     Map<String, Object> templateParameter = new HashMap<String, Object>();
+                     templateParameter.put("nm", sendUser.get("USER_NM"));
+                     templateParameter.put("prgrmNm", sendUser.get("PRGRM_NM"));
+                     templateParameter.put("eduDt", sendUser.get("START_TIME"));
+           
+                     map.put("templateParameter", templateParameter);
+           
+                     recipientList.add(map); 
+                     
+                     String recipientListStr = mapper.writeValueAsString(recipientList);
+                     
+                     
+                     alimtalkNhnService.sendAlimtalk("keep-013", (String) sendUser.get("SENDRSVTIME"), recipientListStr);
+                 }
+                 if(sendUser.get("EML") != null && !"".equals(sendUser.get("EML"))) {
+                     Context context = new Context();
+                     context.setVariable("title", "[환경보전협회] 수강하신 교육의 후기를 남겨주세요.");
+                     context.setVariable("portalUrl", CommonUtil.portalUrl); // 필수값
+                     String content = "<tr>"
+                         + "    <td align=\"center\" style=\"font-family:'맑은 고딕','Malgun Gothic','돋움',dotum,sans-serif;font-size:16px;font-weight:400;font-stretch:normal;font-style:normal;line-height:1.5;letter-spacing:-1px;color:#333333;padding:0 10px;\">"
+                         + "        " + sendUser.get("USER_NM") + "님, 수강하신 교육은 어떠셨나요?<br>"
+                         + "        " + sendUser.get("PRGRM_NM") +"에 대한 후기를 남겨주세요.<br>"
+                         + "        자세한 내용은 국가환경교육 통합플랫폼의 마이페이지를 확인해주세요."
+                         + "    </td>"
+                         + "</tr>"
+                         + "<tr>"
+                         + "    <td style=\"height:30px;font-size:0px;mso-line-height-rule:exactly;line-height:0px;\">&nbsp;</td>"
+                         + "</tr>";
+                     context.setVariable("content", content);
+                     String contents = templateEngine.process("mail/mail_basic_template", context);
+                         
+                     MailVo mailVo = new MailVo();
+                     mailVo.setRcptnEmail((String) sendUser.get("EML"));
+                     mailVo.setTitle("[환경보전협회] 수강하신 교육의 후기를 남겨주세요.");
+                     mailVo.setCntnts(contents);
+                      
+                     Map<String, Object> resMap = mailService.sendMail(mailVo); // 이메일 발송
+                 }
+             }
+         }
+     }
+     
+     /**
+      * 전문가 섭외자와 대상 전문가 대상 3일전 교육 알림 메시지 발송
+      *
+      * @Title       : exprtBfrMsgSend 
+      * @Description : 전문가 섭외자와 대상 전문가 대상 3일전 교육 알림 메시지 발송
+      * @param triggerid
+      * @return void 리턴값없음
+      * @throws Exception 예외
+      */
+      @SchedulingHistory
+      public void exprtBfrMsgSend(@Triggerid int triggerid) throws Exception {
+             
+          //발송대상자 확인
+          List<Map<String, Object>> alimTalkSendUserList = batchJobDao.selectExprtMsgSendUser(1);
+             
+          if(alimTalkSendUserList.size() > 0) {
+              ObjectMapper mapper = new ObjectMapper();
+                 
+             // 전문가 대상 메세지 발송
+             for(Map<String, Object> alimTalkSendUser : alimTalkSendUserList) {
+                 if(alimTalkSendUser.get("ASS_MOBLPHON") != null && !"".equals(alimTalkSendUser.get("ASS_MOBLPHON"))) {
+                     List<Object> recipientList1 = new ArrayList<>(); 
+                     
+                     Map<String, Object> map = new HashMap<String, Object>();
+                     map.put("recipientNo", alimTalkSendUser.get("ASS_MOBLPHON")); 
+           
+                     Map<String, Object> templateParameter = new HashMap<String, Object>();
+                     templateParameter.put("nm", alimTalkSendUser.get("ASS_NM"));
+                     templateParameter.put("eduNope", alimTalkSendUser.get("EDU_NOPE"));
+                     templateParameter.put("eduDt", alimTalkSendUser.get("LCTR_BGNG_DT"));
+           
+                     map.put("templateParameter", templateParameter);
+               
+                     recipientList1.add(map); 
+                     
+                     String recipientListStr1 = mapper.writeValueAsString(recipientList1);
+                     
+                     alimtalkNhnService.sendAlimtalk("keep-012", (String) alimTalkSendUser.get("BFR_SEND_DT"), recipientListStr1);
+                 }
+                 if(alimTalkSendUser.get("ASS_EML") != null && !"".equals(alimTalkSendUser.get("ASS_EML"))) {
+                     Context context = new Context();
+                     context.setVariable("title", "[환경보전협회] " + alimTalkSendUser.get("LCTR_BGNG_DT").toString().substring(0, 10) + " 진행 예정인 환경교육이 있습니다.");
+                     context.setVariable("portalUrl", CommonUtil.portalUrl); // 필수값
+                     String content = "<tr>"
+                         + "    <td align=\"center\" style=\"font-family:'맑은 고딕','Malgun Gothic','돋움',dotum,sans-serif;font-size:16px;font-weight:400;font-stretch:normal;font-style:normal;line-height:1.5;letter-spacing:-1px;color:#333333;padding:0 10px;\">"
+                         + "        " + alimTalkSendUser.get("ASS_NM") + "님. 진행 예정인 환경교육이 있습니다.<br>"
+                         + "        교육 일정을 확인해주세요<br>"
+                         + "        <br>"
+                         + "        교육일자 : " + alimTalkSendUser.get("LCTR_BGNG_DT").toString().substring(0, 10) + "<br>"
+                         + "        <br>"
+                         + "        자세한 내용은 국가환경교육 통합플랫폼의 마이페이지를 확인해주세요."
+                         + "    </td>"
+                         + "</tr>"
+                         + "<tr>"
+                         + "    <td style=\"height:30px;font-size:0px;mso-line-height-rule:exactly;line-height:0px;\">&nbsp;</td>"
+                         + "</tr>";
+                     context.setVariable("content", content);
+                     String contents = templateEngine.process("mail/mail_basic_template", context);
+                         
+                     MailVo mailVo = new MailVo();
+                     mailVo.setRcptnEmail((String) alimTalkSendUser.get("ASS_EML"));
+                     mailVo.setTitle("[환경보전협회] " + alimTalkSendUser.get("LCTR_BGNG_DT").toString().substring(0, 10) + " 진행 예정인 환경교육이 있습니다.");
+                     mailVo.setCntnts(contents);
+                      
+                     Map<String, Object> resMap = mailService.sendMail(mailVo); // 이메일 발송
+                 }
+             }
+             
+             // 전문가 섭외자 대상 메세지 발송
+             for(Map<String, Object> alimTalkSendUser : alimTalkSendUserList) {
+                 if(alimTalkSendUser.get("MOBLPHON") != null && !"".equals(alimTalkSendUser.get("MOBLPHON"))) {
+                     List<Object> recipientList2 = new ArrayList<>(); 
+                     
+                     Map<String, Object> map = new HashMap<String, Object>();
+                     map.put("recipientNo", alimTalkSendUser.get("MOBLPHON")); 
+           
+                     Map<String, Object> templateParameter = new HashMap<String, Object>();
+                     templateParameter.put("nm", alimTalkSendUser.get("NM"));
+                     templateParameter.put("eduNope", alimTalkSendUser.get("EDU_NOPE"));
+                     templateParameter.put("eduDt", alimTalkSendUser.get("LCTR_BGNG_DT"));
+               
+                     map.put("templateParameter", templateParameter);
+               
+                     recipientList2.add(map); 
+                     
+                     String recipientListStr2 = mapper.writeValueAsString(recipientList2);
+                     
+                     alimtalkNhnService.sendAlimtalk("keep-012", (String) alimTalkSendUser.get("BFR_SEND_DT"), recipientListStr2);
+                 }
+                 if(alimTalkSendUser.get("EML") != null && !"".equals(alimTalkSendUser.get("EML"))) {
+                     Context context = new Context();
+                     context.setVariable("title", "[환경보전협회] " + alimTalkSendUser.get("LCTR_BGNG_DT").toString().substring(0, 10) + " 진행 예정인 환경교육이 있습니다.");
+                     context.setVariable("portalUrl", CommonUtil.portalUrl); // 필수값
+                     String content = "<tr>"
+                         + "    <td align=\"center\" style=\"font-family:'맑은 고딕','Malgun Gothic','돋움',dotum,sans-serif;font-size:16px;font-weight:400;font-stretch:normal;font-style:normal;line-height:1.5;letter-spacing:-1px;color:#333333;padding:0 10px;\">"
+                         + "        " + alimTalkSendUser.get("NM") + "님. 진행 예정인 환경교육이 있습니다.<br>"
+                         + "        교육 일정을 확인해주세요<br>"
+                         + "        <br>"
+                         + "        교육일자 : " + alimTalkSendUser.get("LCTR_BGNG_DT").toString().substring(0, 10) + "<br>"
+                         + "        <br>"
+                         + "        자세한 내용은 국가환경교육 통합플랫폼의 마이페이지를 확인해주세요."
+                         + "    </td>"
+                         + "</tr>"
+                         + "<tr>"
+                         + "    <td style=\"height:30px;font-size:0px;mso-line-height-rule:exactly;line-height:0px;\">&nbsp;</td>"
+                         + "</tr>";
+                     context.setVariable("content", content);
+                     String contents = templateEngine.process("mail/mail_basic_template", context);
+                         
+                     MailVo mailVo = new MailVo();
+                     mailVo.setRcptnEmail((String) alimTalkSendUser.get("EML"));
+                     mailVo.setTitle("[환경보전협회] " + alimTalkSendUser.get("LCTR_BGNG_DT").toString().substring(0, 10) + " 진행 예정인 환경교육이 있습니다.");
+                     mailVo.setCntnts(contents);
+                      
+                     Map<String, Object> resMap = mailService.sendMail(mailVo); // 이메일 발송
+                 }
+                 
+             }
+                   
+         }
+             
+     }
+         
+     /**
+      * 전문가 섭외자 대상 3일 후 만족도 평가 안내 메시지 발송
+      *
+      * @Title       : exprtAftrMsgSend 
+      * @Description : 전문가 섭외자 대상 3일 후 만족도 평가 안내 메시지 발송
+      * @param triggerid
+      * @return void 리턴값없음
+      * @throws Exception 예외
+      */
+      @SchedulingHistory
+      public void exprtAftrMsgSend(@Triggerid int triggerid) throws Exception {
+              
+          //발송대상자 확인
+          List<Map<String, Object>> alimTalkSendUserList = batchJobDao.selectExprtMsgSendUser(2);
+              
+          if(alimTalkSendUserList.size() > 0) {
+              ObjectMapper mapper = new ObjectMapper();
+              
+              // 전문가 섭외자 대상 메세지 발송
+              for(Map<String, Object> alimTalkSendUser : alimTalkSendUserList) {
+                  if(alimTalkSendUser.get("MOBLPHON") != null && !"".equals(alimTalkSendUser.get("MOBLPHON"))) {
+                      List<Object> recipientList = new ArrayList<>(); 
+                      
+                      Map<String, Object> map = new HashMap<String, Object>();
+                      map.put("recipientNo", alimTalkSendUser.get("MOBLPHON")); 
+            
+                      Map<String, Object> templateParameter = new HashMap<String, Object>();
+                      templateParameter.put("nm", alimTalkSendUser.get("NM"));
+                      templateParameter.put("eduNope", alimTalkSendUser.get("EDU_NOPE"));
+                      templateParameter.put("eduDt", alimTalkSendUser.get("LCTR_END_DT"));
+            
+                      map.put("templateParameter", templateParameter);
+                
+                      recipientList.add(map); 
+                      
+                      String recipientListStr = mapper.writeValueAsString(recipientList);
+                      
+                      alimtalkNhnService.sendAlimtalk("keep-013", (String) alimTalkSendUser.get("AFTR_SEND_DT"), recipientListStr);
+                  }
+                  if(alimTalkSendUser.get("EML") != null && !"".equals(alimTalkSendUser.get("EML"))) {
+                      Context context = new Context();
+                      context.setVariable("title", "[환경보전협회] 수강하신 교육의 후기를 남겨주세요.");
+                      context.setVariable("portalUrl", CommonUtil.portalUrl); // 필수값
+                      String content = "<tr>"
+                          + "    <td align=\"center\" style=\"font-family:'맑은 고딕','Malgun Gothic','돋움',dotum,sans-serif;font-size:16px;font-weight:400;font-stretch:normal;font-style:normal;line-height:1.5;letter-spacing:-1px;color:#333333;padding:0 10px;\">"
+                          + "        " + alimTalkSendUser.get("NM") + "님, 수강하신 교육은 어떠셨나요?<br>"
+                          + "        " + alimTalkSendUser.get("LCTR_END_DT").toString().substring(0, 10) +" 진행된 환경교육의 후기를 남겨주세요.<br>"
+                          + "        자세한 내용은 국가환경교육 통합플랫폼의 마이페이지를 확인해주세요."
+                          + "    </td>"
+                          + "</tr>"
+                          + "<tr>"
+                          + "    <td style=\"height:30px;font-size:0px;mso-line-height-rule:exactly;line-height:0px;\">&nbsp;</td>"
+                          + "</tr>";
+                      context.setVariable("content", content);
+                      String contents = templateEngine.process("mail/mail_basic_template", context);
+                          
+                      MailVo mailVo = new MailVo();
+                      mailVo.setRcptnEmail((String) alimTalkSendUser.get("EML"));
+                      mailVo.setTitle("[환경보전협회] 수강하신 교육의 후기를 남겨주세요.");
+                      mailVo.setCntnts(contents);
+                       
+                      Map<String, Object> resMap = mailService.sendMail(mailVo); // 이메일 발송
+                  }
+              }
+              
+          }
+              
+      }
+      
+      /**
+       * 공동구매 진행 마감일 안내 메시지 발송
+       *
+       * @Title       : jntpurchsEndMsgSend 
+       * @Description : 공동구매 진행 마감일 안내 메시지 발송
+       * @param triggerid
+       * @return void 리턴값없음
+       * @throws Exception 예외
+       */
+       @SchedulingHistory
+       public void jntpurchsEndMsgSend(@Triggerid int triggerid) throws Exception {
+               
+           //발송대상자 확인
+           List<Map<String, Object>> sendUserList = batchJobDao.selectJntPurchsSendMsgUserList(1);
+               
+           if(sendUserList.size() > 0) {
+               ObjectMapper mapper = new ObjectMapper();
+               
+               // 공동구매 진행 마감일 안내 메시지 발송
+               for(Map<String, Object> sendUser : sendUserList) {
+                   if(sendUser.get("MOBLPHON") != null && !"".equals(sendUser.get("MOBLPHON"))) {
+                       List<Object> recipientList = new ArrayList<>(); 
+                       
+                       Map<String, Object> map = new HashMap<String, Object>();
+                       map.put("recipientNo", sendUser.get("MOBLPHON")); 
+             
+                       Map<String, Object> templateParameter = new HashMap<String, Object>();
+                       templateParameter.put("nm", sendUser.get("NM"));
+                       templateParameter.put("jntpurchsNm", sendUser.get("JNTPURCHS_NM"));
+                       templateParameter.put("qnty", sendUser.get("QNTY"));
+                       templateParameter.put("amt", sendUser.get("AMT"));
+             
+                       map.put("templateParameter", templateParameter);
+                 
+                       recipientList.add(map); 
+                       
+                       String recipientListStr = mapper.writeValueAsString(recipientList);
+                       
+                       alimtalkNhnService.sendAlimtalk("keep-020", (String) sendUser.get("END_DT"), recipientListStr);
+                   }
+                   if(sendUser.get("EML") != null && !"".equals(sendUser.get("EML"))) {
+                       Context context = new Context();
+                       context.setVariable("title", "[환경보전협회] " + sendUser.get("JNTPURCHS_NM") + " 공동구매 대금을 입금해주세요.");
+                       context.setVariable("portalUrl", CommonUtil.portalUrl); // 필수값
+                       String content = "<tr>"
+                           + "    <td align=\"center\" style=\"font-family:'맑은 고딕','Malgun Gothic','돋움',dotum,sans-serif;font-size:16px;font-weight:400;font-stretch:normal;font-style:normal;line-height:1.5;letter-spacing:-1px;color:#333333;padding:0 10px;\">"
+                           + "        " + sendUser.get("NM") + "님, 다음 공동구매가 진행될 예정입니다.<br>"
+                           + "        <br>"
+                           + "        공동구매명 : " + sendUser.get("JNTPURCHS_NM") +"<br>"
+                           + "        구매수량 : " + sendUser.get("QNTY") +"<br>"
+                           + "        결제 예상금액 : " + sendUser.get("AMT") +"<br>"
+                           + "        <br>"
+                           + "        구매내역은 국가환경교육 통합플랫폼의 마이페이지에서 확인하실 수 있습니다.<br>"
+                           + "        입금, 배송 등 교구 공동구매와 관련된 문의는 공동구매를 진행한 제휴사에 문의해주시기 바랍니다."
+                           + "    </td>"
+                           + "</tr>"
+                           + "<tr>"
+                           + "    <td style=\"height:30px;font-size:0px;mso-line-height-rule:exactly;line-height:0px;\">&nbsp;</td>"
+                           + "</tr>";
+                       context.setVariable("content", content);
+                       String contents = templateEngine.process("mail/mail_basic_template", context);
+                           
+                       MailVo mailVo = new MailVo();
+                       mailVo.setRcptnEmail((String) sendUser.get("EML"));
+                       mailVo.setTitle("[환경보전협회] " + sendUser.get("JNTPURCHS_NM") + " 공동구매 대금을 입금해주세요.");
+                       mailVo.setCntnts(contents);
+                        
+                       Map<String, Object> resMap = mailService.sendMail(mailVo); // 이메일 발송
+                   }
+               }
+           }
+       }
+       
+       /**
+        * 공동구매 진행 마감일 30일 후 안내 메시지 발송
+        *
+        * @Title       : jntpurchsEndAftrMsgSend 
+        * @Description : 공동구매 진행 마감일 30일 후 안내 메시지 발송
+        * @param triggerid
+        * @return void 리턴값없음
+        * @throws Exception 예외
+        */
+        @SchedulingHistory
+        public void jntpurchsEndAftrMsgSend(@Triggerid int triggerid) throws Exception {
+                
+            //발송대상자 확인
+            List<Map<String, Object>> sendUserList = batchJobDao.selectJntPurchsSendMsgUserList(2);
+                
+            if(sendUserList.size() > 0) {
+                ObjectMapper mapper = new ObjectMapper();
+                
+                // 공동구매 진행 마감일 안내 메시지 발송
+                for(Map<String, Object> sendUser : sendUserList) {
+                    if(sendUser.get("MOBLPHON") != null && !"".equals(sendUser.get("MOBLPHON"))) {
+                        List<Object> recipientList = new ArrayList<>(); 
+                        
+                        Map<String, Object> map = new HashMap<String, Object>();
+                        map.put("recipientNo", sendUser.get("MOBLPHON")); 
+              
+                        Map<String, Object> templateParameter = new HashMap<String, Object>();
+                        templateParameter.put("nm", sendUser.get("NM"));
+                        templateParameter.put("jntpurchsNm", sendUser.get("JNTPURCHS_NM"));
+                        templateParameter.put("qnty", sendUser.get("QNTY"));
+                        templateParameter.put("amt", sendUser.get("AMT"));
+              
+                        map.put("templateParameter", templateParameter);
+                  
+                        recipientList.add(map); 
+                        
+                        String recipientListStr = mapper.writeValueAsString(recipientList);
+                        
+                        alimtalkNhnService.sendAlimtalk("keep-021", (String) sendUser.get("SEND_DT"), recipientListStr);
+                    }
+                    if(sendUser.get("EML") != null && !"".equals(sendUser.get("EML"))) {
+                        Context context = new Context();
+                        context.setVariable("title", "[환경보전협회] " + sendUser.get("JNTPURCHS_NM") + " 공동구매 후기를 남겨주세요. ");
+                        context.setVariable("portalUrl", CommonUtil.portalUrl); // 필수값
+                        String content = "<tr>"
+                            + "    <td align=\"center\" style=\"font-family:'맑은 고딕','Malgun Gothic','돋움',dotum,sans-serif;font-size:16px;font-weight:400;font-stretch:normal;font-style:normal;line-height:1.5;letter-spacing:-1px;color:#333333;padding:0 10px;\">"
+                            + "        " + sendUser.get("NM") + "님, 참여하신 교구 공동구매는 어떠셨나요?<br>"
+                            + "        교구를 받아보셨다면 " + sendUser.get("JNTPURCHS_NM") +" 공동구매에 대한 후기 작성을 부탁드립니다.<br>"
+                            + "        자세한 내용은 국가환경교육 통합플랫폼 로그인 후 마이페이지에서 확인해주세요."
+                            + "    </td>"
+                            + "</tr>"
+                            + "<tr>"
+                            + "    <td style=\"height:30px;font-size:0px;mso-line-height-rule:exactly;line-height:0px;\">&nbsp;</td>"
+                            + "</tr>";
+                        context.setVariable("content", content);
+                        String contents = templateEngine.process("mail/mail_basic_template", context);
+                            
+                        MailVo mailVo = new MailVo();
+                        mailVo.setRcptnEmail((String) sendUser.get("EML"));
+                        mailVo.setTitle("[환경보전협회] " + sendUser.get("JNTPURCHS_NM") + " 공동구매 후기를 남겨주세요. ");
+                        mailVo.setCntnts(contents);
+                         
+                        Map<String, Object> resMap = mailService.sendMail(mailVo); // 이메일 발송
+                    }
+                }
+            }
+        }
+    
+        /**
+         * 교구 대여 반납후 이용후기 안내 메시지 발송
+         *
+         * @Title       : lendAplyDgstfnMsgSend 
+         * @Description : 교구 대여 반납후 이용후기 안내 메시지 발송
+         * @param triggerid
+         * @return void 리턴값없음
+         * @throws Exception 예외
+         */
+         @SchedulingHistory
+         public void lendAplyDgstfnMsgSend(@Triggerid int triggerid) throws Exception {
+                 
+             //발송대상자 확인
+             List<Map<String, Object>> sendUserList = batchJobDao.selectLendAplyDgstfnMsgSendUserList();
+                 
+             if(sendUserList.size() > 0) {
+                 ObjectMapper mapper = new ObjectMapper();
+                 
+                 // 공동구매 진행 마감일 안내 메시지 발송
+                 for(Map<String, Object> sendUser : sendUserList) {
+                     if(sendUser.get("TELNO") != null && !"".equals(sendUser.get("TELNO"))) {
+                         List<Object> recipientList = new ArrayList<>(); 
+                         
+                         Map<String, Object> map = new HashMap<String, Object>();
+                         map.put("recipientNo", sendUser.get("TELNO")); 
+               
+                         Map<String, Object> templateParameter = new HashMap<String, Object>();
+                         templateParameter.put("nm", sendUser.get("NM"));
+                         templateParameter.put("tchaidNm", sendUser.get("PACKAGE_NM"));
+               
+                         map.put("templateParameter", templateParameter);
+                   
+                         recipientList.add(map); 
+                         
+                         String recipientListStr = mapper.writeValueAsString(recipientList);
+                         
+                         alimtalkNhnService.sendAlimtalk("keep-019", (String) sendUser.get("SEND_DT"), recipientListStr);
+                     }
+                     if(sendUser.get("EML") != null && !"".equals(sendUser.get("EML"))) {
+                         Context context = new Context();
+                         context.setVariable("title", "[환경보전협회] 대여하신 " + sendUser.get("PACKAGE_NM") + " 의 후기를 남겨주세요.");
+                         context.setVariable("portalUrl", CommonUtil.portalUrl); // 필수값
+                         String content = "<tr>"
+                             + "    <td align=\"center\" style=\"font-family:'맑은 고딕','Malgun Gothic','돋움',dotum,sans-serif;font-size:16px;font-weight:400;font-stretch:normal;font-style:normal;line-height:1.5;letter-spacing:-1px;color:#333333;padding:0 10px;\">"
+                             + "        " + sendUser.get("NM") + "님, 이용하신 교구 대여 서비스는 어떠셨나요?<br>"
+                             + "        대여하신 " + sendUser.get("PACKAGE_NM") +"에 대한 후기를 남겨주세요.<br>"
+                             + "        자세한 내용은 국가환경교육 통합플랫폼 로그인 후 마이페이지에서 확인해주세요."
+                             + "    </td>"
+                             + "</tr>"
+                             + "<tr>"
+                             + "    <td style=\"height:30px;font-size:0px;mso-line-height-rule:exactly;line-height:0px;\">&nbsp;</td>"
+                             + "</tr>";
+                         context.setVariable("content", content);
+                         String contents = templateEngine.process("mail/mail_basic_template", context);
+                             
+                         MailVo mailVo = new MailVo();
+                         mailVo.setRcptnEmail((String) sendUser.get("EML"));
+                         mailVo.setTitle("[환경보전협회] 대여하신 " + sendUser.get("PACKAGE_NM") + " 의 후기를 남겨주세요. ");
+                         mailVo.setCntnts(contents);
+                          
+                         Map<String, Object> resMap = mailService.sendMail(mailVo); // 이메일 발송
+                     }
+                 }
+             }
+         }
 }

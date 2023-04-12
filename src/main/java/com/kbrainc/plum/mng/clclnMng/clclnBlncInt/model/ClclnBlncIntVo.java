@@ -3,11 +3,7 @@ package com.kbrainc.plum.mng.clclnMng.clclnBlncInt.model;
 import java.util.Date;
 import java.util.List;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Pattern;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.kbrainc.plum.mng.banner.model.BannerVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 

@@ -137,5 +137,47 @@ public interface BatchJobDao {
         */
        public List<Map<String, Object>> selectFlctRsvDgstfnNtcMsgSend() throws Exception;
        
+       /**
+        * 유아환경교육관, 푸름이 이동환경교실 교육 3일 전후 알림톡 발송 대상자 리스트
+        *
+        * @Title       : selectEnvEduMsgSendUserList 
+        * @Description : 유아환경교육관, 푸름이 이동환경교실 교육 3일 전후 알림톡 발송 대상자 리스트
+        * @return List<Map<String, Object>>
+        * @throws Exception 예외
+        */
+       public List<Map<String, Object>> selectEnvEduMsgSendUserList(int type) throws Exception;
+       
+       /**
+        * 전문가 섭외자와 대상 전문가 대상 3일 전후 교육 알림 메시지 발송 대상자 리스트
+        *
+        * @Title       : selectExprtEduMsgSendUser 
+        * @Description : 전문가 섭외자와 대상 전문가 대상 3일 전후 교육 알림 메시지 발송 대상자 리스트
+        * @param type
+        * @return List<Map<String, Object>>
+        * @throws Exception 예외
+        */
+       public List<Map<String, Object>> selectExprtMsgSendUser(int type) throws Exception;
+       
+       /**
+        * 공동구매 신청자 알림 메시지 발송 대상자 리스트
+        *
+        * @Title       : selectExprtEduMsgSendUser 
+        * @Description : 공동구매 신청자 알림 메시지 발송 대상자 리스트
+        * @param type
+        * @return List<Map<String, Object>>
+        * @throws Exception 예외
+        */
+       public List<Map<String, Object>> selectJntPurchsSendMsgUserList(int type) throws Exception;
+       
+       /**
+        * 교구대여자 대여후기 메시지 발송 대상자 리스트
+        *
+        * @Title       : selectLendAplyDgstfnMsgSendUserList 
+        * @Description : 교구대여자 대여후기 메시지 발송 대상자 리스트
+        * @param type
+        * @return List<Map<String, Object>>
+        * @throws Exception 예외
+        */
+       public List<Map<String, Object>> selectLendAplyDgstfnMsgSendUserList() throws Exception;
        
 }

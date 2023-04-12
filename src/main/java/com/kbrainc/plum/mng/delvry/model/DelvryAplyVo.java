@@ -34,6 +34,9 @@ public class DelvryAplyVo extends ParentRequestVo {
     private UserVo user;
     
     /** 신청 아이디 */
+    private int aplyid;
+    
+    /** 교부 신청 아이디 */
     private int delvryAplyid;
     
     /** 공모 아이디 */

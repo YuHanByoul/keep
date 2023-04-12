@@ -104,8 +104,8 @@
 	                        <tr>
 	                            <th scope="row">포기사유<i class="ast" title="필수입력">*</i></th>
 	                            <td>
-	                                <textarea title="포기사유" placeholder="내용을 입력해주세요." id="cn" name="cn"><th:block th:text="${detail.cn}"/></textarea><p class="form-msg"></p>
-	                                <div class="desc ar size"><span>0</span> / 1,000자</div>
+	                                <textarea title="포기사유" placeholder="내용을 입력해주세요." id="cn" name="cn" maxlength="500"><th:block th:text="${detail.cn}"/></textarea><p class="form-msg"></p>
+	                                <div class="desc ar size"><span class="cn">0</span> / 500자</div>
 	                            </td>
 	                        </tr>
 	                    </tbody>
@@ -131,11 +131,18 @@
         var dmndSttsCd = /*[[${detail.dmndSttsCd}]]*/null;
         /*]]>*/
 		$(function () {
+			$(".cn").text($("#cn").val().length);
             $("#fldCd, #aplyid, #prgrmNm").attr("readonly", Number(dmndid) > 0 ? true : false);
             if (dmndSttsCd == "220102" || dmndSttsCd == "220103") {
             	$("select,input,data,textarea").attr("readonly", true);
             	
             }
+            
+            $("#cn").on("keyup", function(){
+                var id = $(this).attr("id");
+                $("." + id).text($(this).val().length);
+            });
+            
             var validator = $("#saveForm").validate({
                 rules: {
                 	fldCd : { required: true } 
@@ -235,16 +242,25 @@
                         		alert("이미 사업포기신청한 공모입니다.");
                         		return false;
                         	}
-                            var option = $('<option value="'+vData.aplyid+'">'+vData.pcntstNm+'</option>');
+                            var option = $('<option value="'+vData.aplyid+'">'+vData.prgrmNm+'</option>');
                         	$('#prgrmNm').append(option);
                         	$("#prgrmNm").val(vData.aplyid).prop("selected", true);
+	                        $("#userInfo").text((vData.instid == null ? '-' : vData.instNm + " / " + vData.aplcntNm));
+	                        $("#userid").val(vData.userid);
+	                        $("#instid").val(vData.instid);
+	                        $("#bankCd").val(vData.bankCd).prop("selected", true);
+	                        $("#bacntno").val(vData.bacntno);
+	                        $("#dpstrNm").val(vData.dpstrNm);
                         }
-                        $("#userInfo").text((vData.instid == null ? '-' : vData.instNm + " / " + vData.aplcntNm));
-                        $("#userid").val(vData.userid);
-                        $("#instid").val(vData.instid);
-                        $("#bankCd").val(vData.bankCd).prop("selected", true);
-                        $("#bacntno").val(vData.bacntno);
-                        $("#dpstrNm").val(vData.dpstrNm);
+                        if (vData == null) {
+                        	$("#prgrmNm").children('option:not(:first)').remove();
+                        	$("#userInfo").text(" / ");
+                            $("#userid").val("");
+                            $("#instid").val("");
+                            $("#bankCd").val("").prop("selected", true);
+                            $("#bacntno").val("");
+                            $("#dpstrNm").val("");
+                        }                        
                         closeWorkProgress();
                     }
                 });
