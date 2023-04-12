@@ -16,7 +16,7 @@
                         <!-- 키워드 filter -->
                         <form name="searchFrm" id="searchFrm" action="" onsubmit="return false;">
                             <div class="row">
-                                <div class="col-lg-3 col-md-6 mb-3">
+                                <div class="col-lg-4 col-md-6 mb-3">
                                     <div class="mb-0 form-group row">
                                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사업분야</strong></div>
                                         <div class="col-12">
@@ -24,7 +24,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-3 col-md-6 mb-3">
+                                <div class="col-lg-4 col-md-6 mb-3">
                                     <div class="mb-0 form-group row">
                                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchPcntstNm"><strong>공모명</strong></label>
                                         <div class="col-12">
@@ -32,18 +32,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <script type="text/javascript" src="/files/bower_components/moment/min/moment.min.js"></script>
-                                <script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
-                                <link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
-                                <div class="col-lg-3 col-md-6 mb-3">
-                                    <div class="mb-0 form-group row">
-                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchPeriod"><strong>교부신청발표기간</strong></label>
-                                        <div class="col-sm-12">
-                                            <input type="text" name="searchPeriod" class="form-control form-control-sm" value="" id="searchPeriod">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 mb-3">
+                                <div class="col-lg-4 col-md-6 mb-3">
                                     <div class="mb-0 form-group row">
                                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>진행상태</strong></div>
                                         <div class="col-sm-12">
@@ -53,6 +42,24 @@
                                                 <option value="pending">신청중</option>
                                                 <option value="end">마감</option>
                                             </select> 
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+                                    <div class="mb-0 form-group required">
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchBgngDt"><strong>발표 시작일</strong></label>
+                                        <div class="col-12">
+                                            <input type="date" class="form-control form-control-sm" name="searchBgngDt" id="searchBgngDt" placeholder="설문 시작일을 입력해주세요." value=""/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-lg-6">
+                                    <div class="mb-0 form-group required">
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchEndDt"><strong>발표 종료일</strong></label>
+                                        <div class="col-12">
+                                            <input type="date" class="form-control form-control-sm" name="searchEndDt" id="searchEndDt" placeholder="설문 종료일을 입력해주세요." value=""/>
                                         </div>
                                     </div>
                                 </div>
@@ -204,12 +211,6 @@
                 delvryGrid = new GridHelper("delvryGrid", "contentPanel");
                 aplyGrid = new GridHelper("aplyGrid", "aplyContentPanel");
                 $("input[name='cycl']").val(this.cycl);
-                $("#searchPeriod, #searchRegDtPeriod").daterangepicker({
-                    autoUpdateInput: false
-                    , locale: {
-                        format: "YYYY-MM-DD"
-                    }
-                });
                 this.setGrid();
                 this.registEvent();                
             }
@@ -217,10 +218,6 @@
             , registEvent: function() {
                 // TODO
                 var _this = this;
-                $("#searchPeriod, #searchRegDtPeriod").on("apply.daterangepicker", function(e, picker) {
-                    $(this).val(picker.startDate.format("YYYY-MM-DD") + " ~ " + picker.endDate.format("YYYY-MM-DD")); 
-                });
-                
                 $(".nav-tabs a").on("show.bs.tab", function(event) {
                     var tabId = event.currentTarget.attributes.id.value;
                     _this.selectTab(tabId);
@@ -244,7 +241,7 @@
             
             , initSearch: function(type) {
                 if(type == "delvry") {
-                    $("#searchFldCd, #searchPcntstNm, #searchPeriod, #searchPrgrsStts").val("");
+                    $("#searchFldCd, #searchPcntstNm, #searchBgngDt, #searchEndDt, #searchPrgrsStts").val("");
                 } else {
                     $("#searchDelvrySttsCd, #searchPcntstNm, #searchPeriod, #searchPrgrsStts").val("");
                 }
@@ -293,8 +290,8 @@
                                 "searchFldCd": $('#searchFldCd').val(),
                                 "searchPcntstNm": $('#searchPcntstNm').val(),
                                 "searchPrgrsStts": $('#searchPrgrsStts').val(),
-                                "searchBgngDt": $.trim($('#searchPeriod').val().split("~")[0]),
-                                "searchEndDt": $.trim($('#searchPeriod').val().split("~")[1]),
+                                "searchBgngDt": $('#searchBgngDt').val(),
+                                "searchEndDt": $('#searchEndDt').val(),
                                 "pageNumber": filter.pageIndex,
                                 "rowPerPage": filter.pageSize
                             };
