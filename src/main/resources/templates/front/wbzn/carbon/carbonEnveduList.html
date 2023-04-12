@@ -63,9 +63,10 @@
 							<button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="envedu.searchInit()">초기화</button>
 						</div>
 					</div>
-					<input type="hidden" id="compareDate" name="compareDate">
-					<input type="hidden" id="beforeMonth" name="beforeMonth">
-					<input type="hidden" id="nextMonth" name="nextMonth">
+					<input type="hidden" id="compareQuarter" name="compareQuarter">
+					<input type="hidden" id="compareYear" name="compareYear">
+					<input type="hidden" id="beforeQuarter" name="beforeQuarter">
+					<input type="hidden" id="nextQuarter" name="nextQuarter">
 				</form>
 
 				<div class="table-caption">
@@ -103,7 +104,12 @@
 							<select title="지난호 보기 월 선택" name="prgrmgdSearchMm" id="prgrmgdSearchMm">
 								<option value="">- 전체 -</option>
 								<th:block th:each="item : ${prgrmgdMm}">
-									<option th:value="${item.qu}"><th:block th:text="${item.qu}"></th:block>분기</option>
+									<th:block th:if="${item.qu} != '특별호'">
+										<option th:value="${item.qu}"><th:block th:text="${item.qu}"></th:block>분기</option>
+									</th:block>
+									<th:block th:unless="${item.qu} != '특별호'">
+										<option th:value="${item.qu}"><th:block th:text="${item.qu}"></th:block></option>
+									</th:block>									
 								</th:block>		
 							</select>
 						</div>
@@ -112,14 +118,15 @@
 							<button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="prgrmgd.searchInit()">초기화</button>
 						</div>
 					</div>
-					<input type="hidden" id="prgrmgd-compareDate" name="compareDate">
-					<input type="hidden" id="prgrmgd-beforeMonth" name="beforeMonth">
-					<input type="hidden" id="prgrmgd-nextMonth" name="nextMonth">
+					<input type="hidden" id="prgrmgd-compareQuarter" name="compareQuarter">
+					<input type="hidden" id="prgrmgd-compareYear" name="compareYear">
+					<input type="hidden" id="prgrmgd-beforeQuarter" name="beforeQuarter">
+					<input type="hidden" id="prgrmgd-nextQuarter" name="nextQuarter">
 				</form>
 
 				<div class="table-caption">
 					<div class="left">
-						<h3 class="sub-title" id="prgrmgdNowDate">11월 환경교육 프로그램</h3>
+						<h3 class="sub-title" id="prgrmgdNowDate">탄소중립 환경교육 프로그램</h3>
 					</div>
 				</div>
 
@@ -161,10 +168,24 @@
 			},
 			
 			search() {
+				if($("#enveduSearchYr").val() == "" && $("#enveduSearchMm").val() != "") {
+					alert("년도를 선택해 주십시오.");
+					return false;
+				}
+				
 				$('#pageNumber').val('1');
-				transformMonth("search");
-				$("#enveduNowDate").text(month+"월호 환경교육");
-				$("#compareDate").val(`${year}-${month}-${date}`)
+				
+				if($("#enveduSearchYr").val() != "" && $("#enveduSearchMm").val() != "") {
+					transformMonth("search");
+					$("#compareQuarter").val($("#enveduSearchMm").val());
+					$("#compareYear").val($("#enveduSearchYr").val());				
+				}
+				
+				if(quarter != "") {
+					$("#enveduNowDate").text(quarter+"분기 환경교육");	
+				}else {
+					$("#enveduNowDate").text("환경교육");
+				}
 				
 				this.selectEnveduList();
 				prgrmgd.init();
@@ -173,6 +194,21 @@
 			searchInit() {
 				$("#enveduSearchYr").val('');
 				$("#enveduSearchMm").val('');
+				
+				month = now.getMonth() + 1;
+				quarter = null;
+				
+				transformMonth();
+				$("#beforeQuarter").val("");
+				$("#nextQuarter").val("");
+				$("#compareQuarter").val("");
+				$("#compareYear").val("");
+				
+				if(quarter != "") {
+					$("#enveduNowDate").text(quarter+"분기 환경교육");	
+				}else {
+					$("#enveduNowDate").text("환경교육");
+				}
 				
 				this.selectEnveduList();
 				prgrmgd.init();
@@ -188,11 +224,13 @@
 						dataType: 'json',
 						data: formData,
 						type: 'GET',
-						success: function (data) {
-							if(data.list.length != 0){
+						success: function (result) {
+							if(result.list.length != 0){
 								$('#envedu-card-list').removeClass();
 								$('#envedu-card-list').addClass('card-list card-list-n4 card-list-mo-n2');
 							}
+							
+							var data = escapeData(result);
 							envedu.makeListHtml(data);
 							closeWorkProgress();
 						}
@@ -209,7 +247,6 @@
 
 			makeListHtml(data) {
 				var enveduListHtml = "";
-				
 				if (data.list == null || data.list.length <= 0) {
 					$('#compareDate').val(year+"-"+month+"-"+date)
 					
@@ -217,7 +254,7 @@
 					$('#envedu-card-list').addClass('nodata');
 					
 					enveduListHtml += `
-					<p><span class="icon icon-notice bg-black9"></span>등록된 내용이 없습니다</p>
+					<p><span class="icon icon-notice bg-black9"></span>등록된 환경교육이 없습니다</p>
 					`;
 				} else {
 					data.list.forEach(function(item) {
@@ -283,11 +320,28 @@
 			},
 			
 			search() {
+				if($("#prgrmgdSearchYr").val() == "" && $("#prgrmgdSearchMm").val() != "") {
+					alert("년도를 선택해 주십시오.");
+					return false;
+				}
+				
 				$('#pageNumber').val('1');
 				
-				transformMonth("search");
-				$("#prgrmgdNowDate").text(month+"월호 환경교육 프로그램");
-				$("#compareDate").val(`${year}-${month}-${date}`)
+				if($("#prgrmgdSearchYr").val() != "" && $("#prgrmgdSearchMm").val() != "") {
+					transformMonth("search");
+					$("#prgrmgd-compareQuarter").val($("#prgrmgdSearchMm").val());
+					$("#prgrmgd-compareYear").val($("#prgrmgdSearchYr").val());
+				}
+				
+				if(quarter != "") {
+					if(quarter != "특별호") {
+						$("#prgrmgdNowDate").text(quarter+"분기 탄소중립 환경교육 프로그램");						
+					}else {
+						$("#prgrmgdNowDate").text(quarter+" 탄소중립 환경교육 프로그램");
+					}
+				}else {
+					$("#prgrmgdNowDate").text("탄소중립 환경교육 프로그램");
+				}
 				
 				this.selectPrgrmgdList();
 				envedu.init();
@@ -296,8 +350,23 @@
 			searchInit() {
 				$("#prgrmgdSearchYr").val('');
 				$("#prgrmgdSearchMm").val('');
+				
+				month = now.getMonth() + 1;
+				quarter = null;
+				
+				transformMonth();
+				$("#prgrmgd-beforeQuarter").val("");
+				$("#prgrmgd-nextQuarter").val("");
+				$("#prgrmgd-compareQuarter").val("");
+				$("#prgrmgd-compareYear").val("");
+				if(quarter != "") {
+					$("#prgrmgdNowDate").text(quarter+"분기 탄소중립 환경교육 프로그램");
+				}else {
+					$("#prgrmgdNowDate").text("탄소중립 환경교육 프로그램");
+				}
+				
 				this.selectPrgrmgdList();
-				envedu.init();
+				envedu.searchInit();
 			},
 			
 			selectPrgrmgdList() {
@@ -338,14 +407,14 @@
 					$('#prgrmgd-card-list').addClass('nodata');
 					
 					prgrmgdListHtml += `
-					<p><span class="icon icon-notice bg-black9"></span>등록된 내용이 없습니다</p>
+						<p><span class="icon icon-notice bg-black9"></span>등록된 내용이 없습니다</p>
 					`;
 				} else {
 					data.list.forEach(function(item) {
 						prgrmgdListHtml += `
 						<li>
 						<a href="/front/wbzn/carbon/prgrmgdDetailForm.html?prgrmid=${item.prgrmid}">
-						<div class="thumb"><img src="https://picsum.photos/468/127" alt=""></div>
+						<div class="thumb"><img src="/downloadFileByFileid.do?fileid=${item.thmbnFileid}&file_idntfc_key=${item.fileIdntfcKey}" alt=""></div>
 						<dl class="card-program-list">
 						<dt>
 						`;
@@ -400,74 +469,120 @@
 		var year = now.getFullYear();
 		var month = now.getMonth() + 1;
 		var date = now.getDate();
+		var quarter = null;
 		
 		function transformMonth(type) {
 			if(type == "before"){
-				if (month === 1) {
+				if (month <= 1) {
 				  year--;
 				  month = 12;
-				} else {
-				  month--;
+				}else{
+					month -= 3;
 				}
-				return month;
+				
+				if(month == 1 || month == 2 || month == 3) {
+					quarter = 1
+				}else if(month == 4 || month == 5 || month == 6) {
+					quarter = 2
+				}else if(month == 7 || month == 8 || month == 9) {
+					quarter = 3;
+				}else {
+					quarter = 4;
+				}
+				
+				return quarter;
 			}else if(type == "next"){
-				if(month === 12){
+				console.log(month)
+				if(month >= 12){
 					year++;
 					month = 1;
-				}else{
-					month++;
-				}				
-				return month;
+				}
+				
+				if(month == 1 || month == 2 || month == 3) {
+					quarter = 1;
+				}else if(month == 4 || month == 5 || month == 6) {
+					quarter = 2;
+				}else if(month == 7 || month == 8 || month == 9) {
+					quarter = 3;
+				}else {
+					quarter = 4;
+				}
+				
+				return quarter;
 			}else if(type == "search"){
 				if($("#enveduSearchYr").val() != '' || $("#enveduSearchMm").val() != ''){
 					year = $("#enveduSearchYr").val();
-					month = $("#enveduSearchMm").val();
+					quarter = $("#enveduSearchMm").val();
 				}else if($("#prgrmgdSearchYr").val() != '' || $("#prgrmgdSearchMm").val() != ''){
 					year = $("#prgrmgdSearchYr").val();
-					month = $("#prgrmgdSearchMm").val();
+					quarter = $("#prgrmgdSearchMm").val();
 				}
 			}else{
-				return month;
+				console.log(month)
+				if(month == 1 || month == 2 || month == 3) {
+					quarter = 1;
+				}else if(month == 4 || month == 5 || month == 6) {
+					quarter = 2;
+				}else if(month == 7 || month == 8 || month == 9) {
+					quarter = 3;
+				}else {
+					quarter = 4;
+				}
+				
+				return quarter;
 			}
 		}
 		
 		function beforeList() {
-			$("#beforeMonth").val("before");
-			$("#nextMonth").val("");
-			$("#prgrmgd-beforeMonth").val("before");
-			$("#prgrmgd-nextMonth").val("");
+			$("#enveduSearchYr").val('');
+			$("#enveduSearchMm").val('');
+			$("#prgrmgdSearchYr").val('');
+			$("#prgrmgdSearchMm").val('');
+			$("#beforeQuarter").val("before");
+			$("#nextQuarter").val("");
+			$("#prgrmgd-beforeQuarter").val("before");
+			$("#prgrmgd-nextQuarter").val("");
 			
 			transformMonth("before");
-			$("#enveduNowDate").text(month+"월호 환경교육");
-			$("#prgrmgdNowDate").text(month+"월호 환경교육 프로그램");
+			$("#enveduNowDate").text(quarter+"분기 환경교육");
+			$("#prgrmgdNowDate").text(quarter+"분기 탄소중립 환경교육 프로그램");
 			
-			$("#compareDate").val(`${year}-${month}-${date}`);
-			$("#prgrmgd-compareDate").val(`${year}-${month}-${date}`);
+			$("#compareQuarter").val(quarter);
+			$("#compareYear").val(year);
+			$("#prgrmgd-compareQuarter").val(quarter);
+			$("#prgrmgd-compareYear").val(year);
 			
 			envedu.selectEnveduList();
 			prgrmgd.selectPrgrmgdList();
 		}
 		
 		function nextList() {
-			$("#beforeMonth").val("");
-			$("#nextMonth").val("next");
-			$("#prgrmgd-beforeMonth").val("");
-			$("#prgrmgd-nextMonth").val("next");
+			$("#enveduSearchYr").val('');
+			$("#enveduSearchMm").val('');
+			$("#prgrmgdSearchYr").val('');
+			$("#prgrmgdSearchMm").val('');			
+			$("#beforeQuarter").val("");
+			$("#nextQuarter").val("next");
+			$("#prgrmgd-beforeQuarter").val("");
+			$("#prgrmgd-nextQuarter").val("next");
 			
+			month += 3;
 			transformMonth("next");
-			$("#enveduNowDate").text(month+"월호 환경교육");
-			$("#prgrmgdNowDate").text(month+"월호 환경교육 프로그램");
+			$("#enveduNowDate").text(quarter+"분기 환경교육");
+			$("#prgrmgdNowDate").text(quarter+"분기 탄소중립 환경교육 프로그램");
 			
-			$("#compareDate").val(`${year}-${month}-${date}`);
-			$("#prgrmgd-compareDate").val(`${year}-${month}-${date}`);
+			$("#compareQuarter").val(quarter);
+			$("#compareYear").val(year);
+			$("#prgrmgd-compareQuarter").val(quarter);
+			$("#prgrmgd-compareYear").val(year);
 			
 			envedu.selectEnveduList();
 			prgrmgd.selectPrgrmgdList();
 		}
 
 		$(function () {
-			$("#enveduNowDate").text(transformMonth()+"월호 환경교육")
-			$("#prgrmgdNowDate").text(transformMonth()+"월호 환경교육 프로그램")
+			$("#enveduNowDate").text(transformMonth()+"분기 환경교육")
+			$("#prgrmgdNowDate").text(transformMonth()+"분기 탄소중립 환경교육 프로그램")
 			envedu.init();
 			prgrmgd.init();
 		})
