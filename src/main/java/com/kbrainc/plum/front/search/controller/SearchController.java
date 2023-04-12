@@ -119,7 +119,7 @@ public class SearchController {
         countInfo.put("cnt40", 0);
         countInfo.put("cnt50", 0);
         
-        if (!"".equals(StringUtil.nvl(search.getKeyword()))) {
+        //if (!"".equals(StringUtil.nvl(search.getKeyword()))) {
             if ("all".equals(search.getGtype())) {
                 searchParam.setNget("3");
                 searchMap = searchService.getSearchInfo(makeQueryString(searchParam));
@@ -184,7 +184,7 @@ public class SearchController {
                     }
                 }
             }
-        }
+        //}
         
         model.addAttribute("gtype10", gtype10);
         model.addAttribute("gtype20", gtype20);
@@ -348,7 +348,7 @@ public class SearchController {
             } else if ("12".equals(etype)) { // 알림/문의 > 웹진 > 환경교육 NOW
                 return String.format("/front/wbzn/now/enveduDetailForm.html?enveduid=%s", data.get("PSTID"));
             } else if ("13".equals(etype)) { // 알림/문의 > 웹진 > 탄소중립 환경교육
-                return String.format("/front/wbzn/carbon/enveduDetailForm.html?enveduid=%s", data.get("PSTID"));
+                return String.format("/front/wbzn/carbon/carbonEnveduDetailForm.html?enveduid=%s", data.get("PSTID"));
             } else if ("14".equals(etype)) { // 알림/문의 > 자주하는 질문
                 return String.format("/front/faq/faqList.html?faqid=%s", data.get("PSTID"));
             } else if ("15".equals(etype)) { // 참여/신청 > 체험 환경교육 프로그램 지원

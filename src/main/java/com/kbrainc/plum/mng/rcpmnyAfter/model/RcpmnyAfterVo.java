@@ -282,6 +282,8 @@ public class RcpmnyAfterVo extends ParentRequestVo {
     private String searchSeCd;
     private String searchKeyword;
     private String searchRgnCd;
-    private String searchUseYn;
-
+    private String searchAplySttsCd;
+    private String searchBgngDt;
+    private String searchEndDt;
+    private String searchStlmSttsCd;
 }

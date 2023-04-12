@@ -87,10 +87,11 @@ public class CarbonPrgrmgdVo extends ParentRequestVo {
     /** 연-월*/
     private String yrMm;
     
-    private String beforeMonth;
-    private String nextMonth;
+    private String beforeQuarter;
+    private String nextQuarter;
     private String nowDate;
-    private String compareDate;
+    private String compareQuarter;
+    private String compareYear;
     
     /** 첨부파일 관련*/
     private String filegrpid;

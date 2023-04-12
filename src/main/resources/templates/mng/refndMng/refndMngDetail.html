@@ -1,73 +1,111 @@
-    
-    
-  <div class="card-header p-b-0">
-	    <ul class="nav nav-tabs tabs" role="tablist">
-	    
-	        <li class="nav-item" id="refnd_tab">
-	            <a class="nav-link refnd active" href="javascript:moveTab('refnd')"><strong>시설정보</strong></a>
-	        </li>
-	        
-	        <th:block th:if ="${spceList.size() > 0}">
-                <li class="nav-item" id="spce_tab">
-                    <a class="nav-link spce" href="javascript:moveTab('spce')"><strong>공간정보</strong></a>
-                </li>
-             </th:block>
-		    
-	    </ul>
-  </div>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/mng/mainLayout">
 
-  <div class="tab-content tabs p-t-20" id="tab_content_area">
-  </div>
+<body>
+    <div layout:fragment="content">
 
-<script th:inline="javascript">
+        <form name="searchFrm" id="searchFrm" action="" onsubmit="return false;" class="card">
+            <div class="card-block-small">
+                <!-- 키워드 filter -->
+                <div class="row">
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="mb-0 form-group row">
+                            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                                <strong>키워드</strong>
+                            </div>
+                            <div
+                                    class="input-group input-group-sm input-group-dropdown mb-0">
+                                <select name="searchType" id="searchType"
+                                        class="form-select form-control">
+                                    <option value="fcltNm">시설</option>
+                                    <option value="instNm">운영기관</option>
+                                </select>
+                                <input type="text" name="searchKeyword" id="searchKeyword" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="mb-0 form-group row">
+                            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                                <strong>검색시작일</strong></div>
+                            <div class="col-12">
+                                <input type="date" class="form-control form-control-sm" name="searchBgngDt" id="searchBgngDt" placeholder="Text Input Validation">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="mb-0 form-group row">
+                            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                                <strong>검색종료일</strong></div>
+                            <div class="col-12">
+                                <input type="date" class="form-control form-control-sm" name="searchEndDt" id="searchEndDt" placeholder="Text Input Validation">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- //키워드 filter -->
+                <!-- 키워드 filter-btn -->
+                <div class="m-t-20 text-center">
+                    <button type="button" class="btn btn-disabled m-r-5" onclick="fn_init()">초기화</button>
+                    <button type="submit" class="btn btn-primary" onclick="fn_searchForm()">검색</button>
+                </div>
+            </div>
+        </form>
 
-	/*<![CDATA[*/ 
-	var mode = /*[[${param.mode}]]*/null;
-	var refndid = /*[[${param.refndid}]]*/null;
-	/*]]>*/
-	var currentTab ="refnd";
-	var updateUrl ="/mng/refndMng/refndMngUpdate.html?refndid="+refndid;
-	var spceListUrl ="/mng/refndMng/refndMngSpceList.html?refndid="+refndid;
-	
-	 $(function(){
+        <ul class="nav nav-tabs tabs gray-tabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link ing active" href="javascript:moveTab('ing')">환불요청</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link complete" href="javascript:moveTab('complete')">환불완료</a>
+            </li>
+        </ul>
 
-       if(mode == "refnd"){
-           $("#tab_content_area").load(updateUrl);
-       }else{
-           $("#tab_content_area").load(spceListUrl);
-       }
-       setTimeout(function(){scrollIntoView('contentPanel');},100 )
-       
-   });
-	   
-   function initTab() {
-         var tabFlag = false;
-         if(tabFlag == false) {
-        	 moveTab("refnd");
-             tabFlag = true;
-         }
-         if(tabFlag == false) {
-        	 moveTab("spce");
-             tabFlag = true;
-         }
-   }
-   
-   var moveTab =(mode)=>{
-		
-		//if(mode==currentTab)return;
-		
-		$(".nav-link").removeClass("active");
-		
-		if(mode=="refnd"){
-			currentTab = "refnd"
-			$("#tab_content_area").load(updateUrl);
-		}else{
-			currentTab = "spce"
-			$("#tab_content_area").load(spceListUrl);
-		}
-		$("."+currentTab).addClass("active");
-       setTimeout(function(){scrollIntoView('contentPanel');},100 )  
+        <div class="tab-content tabs card-block p-0" id="tab_content_area">
+        </div>
 
-	}
-	    
-</script>
+        <script th:inline="javascript">
+
+            var currentTab ="ing";
+            var ingUrl ="/mng/refndMng/refndMngList.html";
+            var completeListUrl ="/mng/refndMng/refndMngCompleteList.html";
+             $(function(){
+
+               if(currentTab == "ing"){
+                   $("#tab_content_area").load(ingUrl);
+               }else{
+                   $("#tab_content_area").load(completeListUrl);
+               }
+
+           });
+
+           function initTab() {
+                 var tabFlag = false;
+                 if(tabFlag == false) {
+                     moveTab("ing");
+                     tabFlag = true;
+                 }
+                 if(tabFlag == false) {
+                     moveTab("complete");
+                     tabFlag = true;
+                 }
+           }
+
+           var moveTab =(currentTab)=>{
+                $(".nav-link").removeClass("active");
+
+                if(currentTab=="ing"){
+                    $("#tab_content_area").load(ingUrl);
+                }else{
+                    $("#tab_content_area").load(completeListUrl);
+                }
+                $("."+currentTab).addClass("active");
+            }
+
+        </script>
+    </div>
+</body>
+</html>

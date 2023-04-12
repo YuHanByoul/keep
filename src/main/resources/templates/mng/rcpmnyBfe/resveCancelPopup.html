@@ -4,7 +4,7 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content type_2">
             <div class="modal-header">
-                <h4 class="modal-title">입금확인</h4>
+                <h4 class="modal-title">예약신청 취소사유</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true"></span>
                 </button>
@@ -12,21 +12,25 @@
             <div class="modal-body">
                 <div class="card m-b-10">
                     <div class="card-block-small">
-                        <div class="mb-2 form-group row">
-                            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사유</strong></div>
+                        <div class="mb-3 form-group row">
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cnclRsnCd"><strong>사유</strong></label>
                             <div class="col-12">
-                                <span kattr:select_code="cnclRsnCd" th:value="${rcpmnyBfe.cnclRsnCd}" name="cnclRsnCd" onchange="changeCnclRsnCd(this)" th:attr="grpCd=215,selectedCd=${rcpmnyBfe.cnclRsnCd}" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true">
+                                <span kattr:select_code="cnclRsnCd" th:value="${rcpmnyBfe.cnclRsnCd}" id="cnclRsnCd" name="cnclRsnCd" onchange="changeCnclRsnCd" th:attr="grpCd=215,selectedCd=${rcpmnyBfe.cnclRsnCd}" firstOptTxt="- 전체 -" addClass="form-select form-control" isAdmin="true">
                             </div>
                         </div>
-                        <div class="mb-2 form-group row required" id="rsvtCnclRsnCon" style="display:none;">
-                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="rsvtCnclRsn"><strong>기타사유</strong></label>
+                        <!-- [case] 사유 기타 선택 시 -->
+                        <div class="mb-0 form-group row required" id="rsvtCnclRsnCon" style="display:none;">
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="rsvtCnclRsn"><strong>기타 사유</strong></label>
                             <div class="col-12">
-                                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="기타사유를 입력해주세요." id="rsvtCnclRsn" name="rsvtCnclRsn"><th:block th:text="${rcpmnyBfe.rsvtCnclRsn}"/></textarea>
+                                <textarea rows="5" cols="5" class="form-control form-control-sm" id="rsvtCnclRsn" name="rsvtCnclRsn"><th:block th:text="${rcpmnyBfe.rsvtCnclRsn}"/></textarea>
                             </div>
                         </div>
+                        <!-- // -->
                     </div>
                 </div>
             </div>
+
+
             <div class="modal-footer">
                 <button type="button" id="saveBtn" class="btn btn-primary waves-effect waves-light "   onclick="saveResveCancel()">저장</button>
             </div>
@@ -35,8 +39,9 @@
 </form>
 <script th:inline="javascript">
 
-    function changeCnclRsnCd(el){
-        if( el.value == '215104' ){
+    function changeCnclRsnCd(){
+        var val = $('select[name="cnclRsnCd"]').val();
+        if( val == '215104' ){
             $('#rsvtCnclRsnCon').show();
         }else{
             $('#rsvtCnclRsnCon').hide();

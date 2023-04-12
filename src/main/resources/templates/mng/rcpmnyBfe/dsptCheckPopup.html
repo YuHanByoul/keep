@@ -10,63 +10,59 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="card">
-                    <div class="mb-10 card-block-small">
-                        <div class="mb-2 row align-items-end">
-                            <div class="mb-2 row">
-                                <div class="col-12 col-lg-6">
-                                    <div class="mb-0 form-group row">
-                                        <label class="col-md-2 control-label"><span class="text-danger"> </span>시설</label>
-                                        <div class="col-md-10 form-control-static" style="text-align:left;">
-                                            <label class="form-control-static"><th:block th:text="${rcpmnyBfe.fcltNm}"/></label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-lg-6">
-                                    <div class="mb-0 form-group row">
-                                        <label class="col-md-2 control-label"><span class="text-danger"> </span>공간</label>
-                                        <div class="col-md-10 form-control-static" style="text-align:left;">
-                                            <label class="form-control-static"><th:block th:text="${rcpmnyBfe.spceNm}"/></label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mb-2 row">
-                                <div class="col-12 col-lg-6">
-                                    <div class="mb-0 form-group row">
-                                        <label class="col-md-2 control-label"><span class="text-danger"> </span>이용일(시)</label>
-                                        <div class="col-md-10 form-control-static" style="text-align:left;">
-                                            <label class="form-control-static">
-                                                <th:block th:text="${rcpmnyBfe.bgngDt}"/> ~
-                                                <th:block th:text="${rcpmnyBfe.endDt}"/>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-lg-6">
-                                    <div class="mb-0 form-group row">
-                                        <label class="col-md-2 control-label"><span class="text-danger"> </span>결제금액</label>
-                                        <div class="col-md-10 form-control-static" style="text-align:left;">
-                                            <label class="form-control-static"><th:block th:text="${rcpmnyBfe.amt}"/></label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 <div class="card m-b-10">
                     <div class="card-block-small">
-                        <div class="mb-2 form-group row">
-                            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>입금일</strong></div>
-                            <div class="col-12">
-                                <input type="date" class="form-control form-control-sm" name="dpstDe" id="dpstDe" th:value="${rcpmnyBfe.dpstDe}"/>
-                            </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered td-wrap">
+                                <colgroup>
+                                    <col style="width:18%">
+                                    <col style="width:32%">
+                                    <col style="width:18%">
+                                    <col style="width:32%">
+                                </colgroup>
+                                <tbody>
+                                <tr>
+                                    <th class="text-center v-middle table-light">시설</th>
+                                    <td class="v-middle"><th:block th:text="${rcpmnyBfe.fcltNm}"/></td>
+                                    <th class="text-center v-middle table-light">공간</th>
+                                    <td class="v-middle"><th:block th:text="${rcpmnyBfe.spceNm}"/></td>
+                                </tr>
+                                <tr>
+                                    <th class="text-center v-middle table-light">이용일(시)</th>
+                                    <td class="v-middle">
+                                        <th:block th:if ="${#dates.format(rcpmnyBfe.bgngDt, 'yyyy-MM-dd')} != ${#dates.format(rcpmnyBfe.endDt, 'yyyy-MM-dd')}">
+                                            <th:block th:text="${#dates.format(rcpmnyBfe.bgngDt, 'yyyy-MM-dd')}+' ~ '+${#dates.format(rcpmnyBfe.endDt, 'yyyy-MM-dd')}"/>
+                                        </th:block>
+                                        <th:block th:if ="${#dates.format(rcpmnyBfe.bgngDt, 'yyyy-MM-dd')} == ${#dates.format(rcpmnyBfe.endDt, 'yyyy-MM-dd')}">
+                                            <th:block th:text="${#dates.format(rcpmnyBfe.bgngDt, 'yyyy-MM-dd HH:mm')}+' ~ '+${#dates.format(rcpmnyBfe.endDt, 'HH:mm')}"/>
+                                        </th:block>
+                                    </td>
+                                    <th class="text-center v-middle table-light">결제금액</th>
+                                    <td class="v-middle"><th:block th:text="${#numbers.formatInteger(rcpmnyBfe.amt, 0, 'COMMA') + '원'}"/></td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <div class="mb-2 form-group row required">
-                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="dpstAmt"><strong>입금금액</strong></label>
-                            <div class="col-12">
-                                <input type="text" class="form-control form-control-sm" name="dpstAmt" id="dpstAmt" th:value="${rcpmnyBfe.dpstAmt}"/>
+                        <h3 class="sub-title mt-2"><strong>입금 정보</strong></h3>
+                        <div class="row">
+                            <div class="col-12 col-lg-6 mb-2">
+                                <div class="mb-0 form-group required">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="dpstDe"><strong>입금일</strong></label>
+                                    <div class="col-12">
+                                        <input type="date" class="form-control form-control-sm" name="dpstDe" id="dpstDe" th:value="${rcpmnyBfe.dpstDe}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 mb-3">
+                                <div class="mb-0 form-group required">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="dpstAmt"><strong>입금금액</strong></label>
+                                    <div class="d-flex align-items-center">
+                                        <div class="col">
+                                            <input type="text" class="form-control form-control-sm" name="dpstAmt" id="dpstAmt" th:value="${rcpmnyBfe.dpstAmt}">
+                                        </div>
+                                        <span class="ps-2">원</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

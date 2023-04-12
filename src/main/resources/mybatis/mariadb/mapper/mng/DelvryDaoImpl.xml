@@ -178,6 +178,7 @@
         <include refid="PaginationMapper.footer"/>
     </select>
     
+    <!-- 교부상태 업데이트 -->
     <update id="updateDelvryStts" parameterType="DelvryAplyVo">
         /* DelvryDao.updateDelvryStts */
         UPDATE TB_SPB_DELVRY_APLY SET
@@ -197,7 +198,7 @@
         SELECT
             A.DELVRY_APLYID
             , A.RCPTNO
-            , B.INST_NM
+            , C.INST_NM
             , C.PRGRM_NM
             , D.CLUB_NM
             , A.APLCNT_NM
@@ -214,6 +215,7 @@
             , I.CD_NM AS DELVRY_STTS_CD_NM
             , A.ATCH_FILEGRPID
             , G.FLD_CD
+            , C.APLYID
         FROM
             TB_SPB_DELVRY_APLY A
         LEFT OUTER JOIN
@@ -418,6 +420,17 @@
             , #{user.userid}
         )
     </insert>
+    
+    <!-- 보완요청 등록시 교부상태 변경 -->
+    <update id="changeDelvryStts" parameterType="DelvryAplySplmntVo">
+        /* DelvryDao.changeDelvryStts */
+        UPDATE TB_SPB_DELVRY_APLY SET
+            DELVRY_STTS_CD = '202103'
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE 
+            DELVRY_APLYID = #{delvryAplyid}
+    </update>
     
     <!-- 보완요청 업데이트 -->
     <update id="updateDelvryAplySplmnt" parameterType="DelvryAplySplmntVo">

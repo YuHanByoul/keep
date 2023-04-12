@@ -1,5 +1,6 @@
 package com.kbrainc.plum.front.mypage.mypageEnvReqst.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import lombok.Data;
@@ -7,6 +8,7 @@ import lombok.Data;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 지역 환경교육센처 Vo
@@ -103,9 +105,20 @@ public class MypageEnvReqstVo extends ParentRequestVo {
     /** 예약구분코드 */
     private String utztnSeCd;
 
-    private String bgngDt;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    private Date bgngDt;
 
-    private String endDt;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    private Date regDt;
+
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    private Date endDt;
+
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="HH:mm:ss", timezone = "Asia/Seoul")
+    private Date chkinHr;
+
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="HH:mm:ss", timezone = "Asia/Seoul")
+    private Date chcktHr;
 
     private String aplcntNm;
 
@@ -114,6 +127,10 @@ public class MypageEnvReqstVo extends ParentRequestVo {
     private String pyrNm;
 
     private String aplcntEml;
+
+    private String aplcntEmlId;
+
+    private String aplcntEmlDomain;
 
     private int nopeAdult;
 
@@ -142,4 +159,71 @@ public class MypageEnvReqstVo extends ParentRequestVo {
 
     /** 공간 사이즈 (평수)*/
     private String size;
+
+    /** 취소사유 */
+    private String cnclRsnCdNm;
+
+    /** 입금 금액 */
+    private int dpstAmt;
+
+    /** 환불 요청 금액 */
+    private int rfndDmndAmt;
+
+    /** 환불 금액 */
+    private int rfndAmt;
+
+    /** 결제 방법 코드 */
+    private String stlmMthdCd;
+
+    /** 입금 일자 */
+    private String dpstDe;
+
+    /** 입금 확인 일시 */
+    private Date dpstIdntyDt;
+
+    /** 취소 일시 */
+    private Date cnclDt;
+
+    /** 환불 요청 일시 */
+    private Date rfndDmndDt;
+
+    /** 환불 일자 */
+    private String rfndDe;
+
+    /** 환불 완료 일시 */
+    private Date rfndCmptnDt;
+
+    /** 환불 은행 코드 */
+    private String rfndBankCd;
+
+    /** 환불 계좌 */
+    private String rfndBacnt;
+
+    /** 환불 입금자 이름 */
+    private String rfndPyrNm;
+
+    /** 신청 상태 코드 */
+    private String aplySttsCd;
+
+    /** 신청 상태 코드명 */
+    private String aplySttsCdNm;
+
+
+    /** 결제 상태 코드 */
+    private String stlmSttsCd;
+
+    /** 결제 상태 코드명 */
+    private String stlmSttsCdNm;
+
+    /** 취소 사유 코드 */
+    private String cnclRsnCd;
+
+    /** 예약 거절 사유 */
+    private String rsvtRejectRsn;
+
+    /** 예약 취소 사유 */
+    private String rsvtCnclRsn;
+
+    /** 환불 거절 사유 */
+    private String rfndRejectRsn;
 }

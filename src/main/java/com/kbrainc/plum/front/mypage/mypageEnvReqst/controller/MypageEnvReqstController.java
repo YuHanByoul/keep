@@ -94,15 +94,15 @@ public class MypageEnvReqstController {
     /**
      * 환경교육시설 예약 상세화면으로 이동
      *
-     * @Title : resveEnvView
+     * @Title : mypageResveEnvView
      * @Description : 환경교육시설 예약 상세화면으로 이동
      * @param mypageEnvReqstVo 환경교육시설 예약 객체
      * @param model model 객체
      * @throws Exception 예외
      * @return String
      */
-    @RequestMapping(value = "/front/mypage/mypageEnvReqst/resveEnvView.html")
-    public String resveEnvView(MypageEnvReqstVo mypageEnvReqstVo, Model model, @UserInfo UserVo user, SpceVo spceVo) throws Exception {
+    @RequestMapping(value = "/front/mypage/mypageEnvReqst/mypageResveEnvView.html")
+    public String mypageResveEnvView(MypageEnvReqstVo mypageEnvReqstVo, Model model, @UserInfo UserVo user, SpceVo spceVo) throws Exception {
 
         model.addAttribute("param", mypageEnvReqstVo);
 
@@ -148,13 +148,7 @@ public class MypageEnvReqstController {
             model.addAttribute("gdncCurrentFileCnt", 0);
         }
 
-        // 공간 보유개수 조회
-        spceVo.setFcltid(mypageEnvReqstVo.getFcltid());
-        spceVo.setUser(user);
-
-        model.addAttribute("spceList", spceService.selectSpceList(spceVo));
-
-        return "front/mypage/mypageEnvReqst/resveEnvView";
+        return "front/mypage/mypageEnvReqst/mypageResveEnvView";
     }
 
     /**

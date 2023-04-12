@@ -73,7 +73,7 @@
             ) C ON A.PRGRMID = C.PRGRMID
             WHERE 1=1
         <if test="user.userid != null and user.userid != ''">
-<!--             AND B.APLCNTID = #{user.userid} -->
+            AND A.APLCNTID = #{user.userid}
         </if>
         <include refid="PaginationMapper.footer"/>
     </select>
@@ -169,7 +169,7 @@
             LEFT OUTER JOIN TB_ASS_OPER_RSLT D ON A.CYCLID = D.CYCLID
             WHERE 1=1
         <if test="user.userid != null and user.userid != ''">
-<!--             AND B.APLCNTID = #{user.userid} -->
+            AND B.APLCNTID = #{user.userid}
         </if>
         <include refid="PaginationMapper.footer"/>
     </select>
@@ -517,10 +517,10 @@
         LEFT OUTER JOIN TB_ASS_IMPLMNT_IDNTY_SRNG F ON E.CYCLID = F.CYCLID
         LEFT OUTER JOIN TB_ASS_SPLMNT_DMND G ON F.SRNGID = G.SRNGID
         LEFT OUTER JOIN TB_ASS_SPLMNT_PLAN H ON G.DMNDID = H.DMNDID
-        ORDER BY  A.DSGN_NO DESC
         <if test="user.userid != null and user.userid != ''">
-<!--             AND B.APLCNTID = #{user.userid} -->
+            AND C.APLCNTID = #{user.userid}
         </if>
+        ORDER BY  A.DSGN_NO DESC
         <include refid="PaginationMapper.footer"/>
     </select>
 
@@ -530,6 +530,7 @@
         <include refid="PaginationMapper.header"/>
         SELECT
             A.APLYID
+          , A.APLCNTID
           , A.PRGRMID
           , B.DSGN_NO
           , B.PRGRM_NM
@@ -553,7 +554,7 @@
         ) B ON A.PRGRMID = B.PRGRMID
         WHERE 1=1
         <if test="user.userid != null and user.userid != ''">
-<!--             AND B.APLCNTID = #{user.userid} -->
+            AND A.APLCNTID = #{user.userid}
         </if>
         <include refid="PaginationMapper.footer"/>
     </select>
@@ -848,6 +849,7 @@
     <select id="selectCnsltngMngList" parameterType="front.dsgnMngVo" resultType="front.dsgnMngVo">
         /* front.DsgnMngDao.selectCnsltngMngList*/
         <include refid="PaginationMapper.header"/>
+<!--
         SELECT
             A.PRGRMID
           , A.CNSLTNG_PRGRS_YN
@@ -890,8 +892,57 @@
         ) BB ON AA.PRGRMID = BB.PRGRMID
             AND AA.HSTRYID = BB.HSTRYID
         LEFT OUTER JOIN TB_CMM_CD CD ON B.CNSLTNG_KND_CD = CD.CD
+ -->
+        SELECT
+            A.CNSLTNGID             /*컨설팅아이디*/
+          , A.INSTID                /*기관아이디*/
+          , A.USERID                /*사용자아이디*/
+          , A.USER_NM               /*사용자_이름*/
+          , A.PIC_TELNO             /*담당자_전화번호*/
+          , A.INST_TELNO            /*기관_전화번호*/
+          , A.PIC_EML               /*담당자_이메일*/
+          , A.ZIP                   /*우편번호*/
+          , A.ADDR                  /*주소*/
+          , A.ADDR_DTL              /*주소_상세*/
+          , A.PRGRM_NM              /*프로그램_이름*/
+          , A.CNSLTNG_KND_CD        /*컨설팅_종류_코드*/
+          , CD.CD_NM                /*컨설팅유형*/
+          , A.HOPE_DE1              /*희망_일자1*/
+          , A.HOPE_DE1_AM_PM_CD     /*희망_일자1_오전_오후_코드*/
+          , A.HOPE_DE2              /*희망_일자2*/
+          , A.HOPE_DE2_AM_PM_CD     /*희망_일자2_오전_오후_코드*/
+          , A.PRGRM                 /*프로그램*/
+          , A.LDR                   /*지도자*/
+          , A.SFTYMNG               /*안전관리*/
+          , A.ETC                   /*기타*/
+          , A.FILEGRPID             /*파일그룹아이디*/
+          , A.STTS_CD               /*상태_코드*/
+          , A.SRVYID                /*설문아이디*/
+          , A.MDFCN_DT              /*수정_일시*/
+          , A.MDFRID                /*수정자아이디*/
+          , A.REG_DT                /*등록_일시*/
+          , A.RGTRID                /*등록자아이디*/
+          , CASE WHEN A.STTS_CD = 131103
+                 THEN CASE WHEN D.CNSLTNGID IS NOT NULL
+                            THEN '평가완료'
+                            ELSE '평가'
+                       END
+                 ELSE '-'
+            END EVL_STTS
+          , C.VST_DE
+          , C.VST_BGNG_DT
+          , C.VST_END_DT
+          , CONCAT(DATE_FORMAT(C.VST_BGNG_DT, '%Y-%m-%d %h:%i'),' ~ ', DATE_FORMAT(C.VST_END_DT, '%h:%i')) AS VST_PRD
+          , D.CNSTNTID
+          , USR.NM    AS CNSTNT_NM
+        FROM TB_ASS_CNSLTNG A
+        LEFT OUTER JOIN TB_ASS_CNSLTNG_RSLT C   ON A.CNSLTNGID = C.CNSLTNGID
+        LEFT OUTER JOIN TB_ASS_CNSLTNG_CNSTNT D ON A.CNSLTNGID = D.CNSLTNGID
+        LEFT OUTER JOIN TB_CMM_USER USR         ON D.CNSTNTID = USR.USERID
+        LEFT OUTER JOIN TB_CMM_CD CD ON A.CNSLTNG_KND_CD = CD.CD
+        WHERE 1=1
         <if test="user.userid != null and user.userid != ''">
-<!--             AND A.APLCNTID = #{user.userid} -->
+            AND A.USERID = #{user.userid}
         </if>
         <include refid="PaginationMapper.footer"/>
     </select>
@@ -899,9 +950,8 @@
     <!-- 컨설팅관리 신청정보 조회 -->
     <select id="selectAplyInfo" parameterType="front.dsgnMngVo" resultType="front.dsgnMngVo">
         /* front.DsgnMngDao.selectAplyInfo*/
-        SELECT
-            A.PRGRMID
-          , B.SRVYID
+          SELECT
+            A.SRVYID
           , E.INST_NM
           , A.PRGRM_NM
           , E.INST_TYPE_CD
@@ -919,29 +969,35 @@
           , E.ADDR_DTL
           , E.ZIP
           , CONCAT(E.ADDR,' ',E.ADDR_DTL) AS ADDR_ALL
-          , B.CNSLTNG_KND_CD
+          , A.CNSLTNG_KND_CD
           , A.PRGRM_NM
-          , B.HOPE_DE1
-          , B.HOPE_DE1_AM_PM_CD
-          , B.HOPE_DE2
-          , B.HOPE_DE2_AM_PM_CD
-          , B.PRGRM
-          , B.LDR
-          , B.ETC
-          , B.FILEGRPID
-          , B.STTS_CD
-          , B.CNSLTNGID
+          , A.HOPE_DE1
+          , A.HOPE_DE1_AM_PM_CD
+          , A.HOPE_DE2
+          , A.HOPE_DE2_AM_PM_CD
+          , A.PRGRM
+          , A.LDR
+          , A.ETC
+          , A.FILEGRPID
+          , A.STTS_CD
+          , A.CNSLTNGID
           , SRVY.QESTNRID
           , F.SBMSNID
+          , C.VST_DE
+          , C.VST_BGNG_DT
+          , C.VST_END_DT
+          , CONCAT(DATE_FORMAT(C.VST_BGNG_DT, '%Y-%m-%d %h:%i'),' ~ ', DATE_FORMAT(C.VST_END_DT, '%h:%i')) AS VST_PRD
+          , B.CNSTNTID
+          , USR.NM    AS CNSTNT_NM
         FROM
-            TB_ASS_PRGRM A
-        INNER JOIN
-            TB_ASS_CNSLTNG B ON A.CNSLTNGID = B.CNSLTNGID
-        LEFT OUTER JOIN TB_CMM_SRVY SRVY ON B.SRVYID = SRVY.SRVYID
+            TB_ASS_CNSLTNG A
+        LEFT OUTER JOIN TB_CMM_SRVY SRVY ON A.SRVYID = SRVY.SRVYID
+        LEFT OUTER JOIN TB_ASS_CNSLTNG_CNSTNT B ON A.CNSLTNGID = B.CNSLTNGID
+        LEFT OUTER JOIN TB_CMM_USER USR         ON B.CNSTNTID = USR.USERID
         LEFT OUTER JOIN
             TB_ASS_CNSLTNG_RSLT C ON A.CNSLTNGID = C.CNSLTNGID
         LEFT OUTER JOIN
-            TB_CMM_USER D ON A.APLCNTID = D.USERID
+            TB_CMM_USER D ON A.USERID = D.USERID
         LEFT OUTER JOIN
             TB_CMM_INST E ON A.INSTID = E.INSTID
         LEFT OUTER JOIN
@@ -950,7 +1006,6 @@
             TB_CMM_CD CD ON E.INST_TYPE_CD = CD.CD
         LEFT OUTER JOIN TB_CMM_SRVY_SBMSN F ON A.CNSLTNGID = F.CNSLTNGID
         WHERE 1=1
-        AND A.PRGRMID = #{prgrmid}
         AND A.CNSLTNGID = #{cnsltngid}
     </select>
 

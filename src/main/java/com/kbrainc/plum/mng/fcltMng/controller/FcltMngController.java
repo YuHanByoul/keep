@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.kbrainc.plum.cmm.service.CommonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -57,6 +58,9 @@ public class FcltMngController {
     
     @Autowired
     private SpceService spceService;
+
+    @Autowired
+    private CommonService commonService;
     
     /**
     * 시설관리 리스트화면으로 이동
@@ -67,7 +71,8 @@ public class FcltMngController {
     * @return String
     */
     @RequestMapping(value = "/mng/fcltMng/fcltMngList.html")
-    public String fcltMngList() throws Exception {
+    public String fcltMngList(Model model) throws Exception {
+        model.addAttribute("sidoList", commonService.selectCtprvnList());
         return "mng/fcltMng/fcltMngList";
     }
     

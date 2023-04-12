@@ -25,9 +25,7 @@
         ,A.REG_DT
         ,A1.CD_NM AS APLY_STTS_CD_NM
         ,A2.CD_NM AS STLM_STTS_CD_NM
-        ,B.RSVTDEID
         ,C.INSTID
-        ,B.DE
         ,B.BGNG_DT
         ,B.END_DT
         ,E.SPCE_NM
@@ -54,19 +52,51 @@
         WHERE
         CDGRPID = 161
         ) A2 ON (A.STLM_STTS_CD = A2.CD)
-        INNER JOIN TB_FCL_APLY_RSVTDE B
+        INNER JOIN (SELECT B.APLYID, D.SPCEID, MIN(D.BGNG_DT) AS BGNG_DT, MAX(D.END_DT) AS END_DT
+        FROM TB_FCL_APLY_RSVTDE B
+        LEFT JOIN TB_FCL_SPCE_RSVTDE D ON B.RSVTDEID = D.RSVTDEID
+        GROUP BY APLYID) B
         ON A.APLYID = B.APLYID
-        INNER JOIN TB_CMM_INST C
-        ON A.INSTID = C.INSTID
-        INNER JOIN TB_FCL_SPCE_RSVTDE D
-        ON B.RSVTDEID = D.RSVTDEID
         INNER JOIN TB_FCL_SPCE E
-        ON D.SPCEID = E.SPCEID
+        ON B.SPCEID = E.SPCEID
         INNER JOIN TB_FCL_FCLT F
         ON E.FCLTID = F.FCLTID
+        INNER JOIN TB_CMM_INST C
+        ON F.INSTID = C.INSTID
         LEFT OUTER JOIN TB_CMM_USER G ON A.APLCNTID = G.USERID
         WHERE 1=1
-        AND APLY_STTS_CD IN(161103, 161104)
+        <if test="stlmSttsCd != null and stlmSttsCd != ''">
+            AND STLM_STTS_CD IN(#{stlmSttsCd})
+        </if>
+        <if test="searchKeyword != null and searchKeyword != '' and searchType.equals('spceNm')">
+            AND E.SPCE_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchKeyword != null and searchKeyword != '' and searchType.equals('fcltNm')">
+            AND F.FCLT_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchKeyword != null and searchKeyword != '' and searchType.equals('instNm')">
+            AND C.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchKeyword != null and searchKeyword != '' and searchType.equals('acnt')">
+            AND G.ACNT LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchKeyword != null and searchKeyword != '' and searchType.equals('aplcntNm')">
+            AND A.APLCNT_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchAplySttsCd != null and searchAplySttsCd != ''">
+            AND A.APLY_STTS_CD = #{searchAplySttsCd}
+        </if>
+        <if test="searchStlmSttsCd != null and searchStlmSttsCd != ''">
+            AND A.STLM_STTS_CD = #{searchStlmSttsCd}
+        </if>
+        <!-- 신청일 검색시작일  -->
+        <if test="searchBgngDt != null and searchBgngDt != ''">
+            AND B.BGNG_DT >= date(#{searchBgngDt})
+        </if>
+        <!-- 신청일 검색종료일  -->
+        <if test="searchEndDt  != null and searchEndDt != ''">
+            AND B.END_DT <![CDATA[<=]]> date(#{searchEndDt})
+        </if>
         <include refid="PaginationMapper.footer"/>
     </select>
 
@@ -81,16 +111,28 @@
              ,A.APLCNT_NM
              ,A.APLCNT_MOBLPHON
              ,A.APLCNT_EML
+             ,A.AMT
+             ,A.APLY_DT
              ,A.CNCL_DT
              ,A.RFND_DMND_DT
+             ,A.RFND_DMND_AMT
+             ,A.RFND_AMT
+             ,A.RFND_BANK_CD
+             ,A.RFND_BACNT
+             ,A.RFND_PYR_NM
+             ,A.RFND_DE
              ,A.DPST_DE
              ,A.DPST_AMT
+             ,A.NOPE_ADULT
+             ,A.NOPE_CHIL
+             ,A.NOPE_INFNT
+             ,A.UTZTN_PRPS
+             ,A.PYR_NM
+             ,A.RSVT_CNCL_RSN
              ,A1.CD_NM AS APLY_STTS_CD_NM
              ,A2.CD_NM AS STLM_STTS_CD_NM
-             ,B.RSVTDEID
              ,C.INSTID
              ,C.INST_NM
-             ,B.DE
              ,B.BGNG_DT
              ,B.END_DT
              ,E.SPCE_NM
@@ -99,8 +141,6 @@
              ,F.BACNT_NO
              ,F.DPSTR_NM
              ,G.CD_NM AS INST_TYPE_CD_NM
-             ,'예약신청' AS PAY_STTUS
-             ,'입금대기' AS REQST_STTUS
              ,CASE WHEN IFNULL(I.ROLECD,'U') = 'U' AND H.INSTID IS NOT NULL THEN '기업회원'
                    WHEN IFNULL(I.ROLECD,'U') = 'U' AND H.INSTID IS NULL THEN '개인회원'
                    ELSE '관리자'
@@ -109,12 +149,10 @@
              ,H.MOBLPHON
              ,H.EML
              ,H.ACNT
-             ,J.INST_NM AS USER_INST_NM
+             ,IFNULL(J.INST_NM, '-') AS USER_INST_NM
              ,K.CD_NM AS STLM_MTHD_CD_NM
         FROM
             TB_FCL_SPCE_APLY A
-                INNER JOIN TB_FCL_APLY_RSVTDE B
-                           ON A.APLYID = B.APLYID
                 INNER JOIN (
                 SELECT
                     CD
@@ -133,14 +171,17 @@
                 WHERE
                     CDGRPID = 161
             ) A2 ON (A.STLM_STTS_CD = A2.CD)
-                INNER JOIN TB_CMM_INST C
-                           ON A.INSTID = C.INSTID
-                INNER JOIN TB_FCL_SPCE_RSVTDE D
-                           ON B.RSVTDEID = D.RSVTDEID
+                INNER JOIN (SELECT B.APLYID, D.SPCEID, MIN(D.BGNG_DT) AS BGNG_DT, MAX(D.END_DT) AS END_DT
+                            FROM TB_FCL_APLY_RSVTDE B
+                                     LEFT JOIN TB_FCL_SPCE_RSVTDE D ON B.RSVTDEID = D.RSVTDEID
+                            GROUP BY APLYID) B
+                           ON A.APLYID = B.APLYID
                 INNER JOIN TB_FCL_SPCE E
-                           ON D.SPCEID = E.SPCEID
+                           ON B.SPCEID = E.SPCEID
                 INNER JOIN TB_FCL_FCLT F
                            ON E.FCLTID = F.FCLTID
+                INNER JOIN TB_CMM_INST C
+                           ON F.INSTID = C.INSTID
                 INNER JOIN (
                 SELECT
                     CD
@@ -197,10 +238,8 @@
              ,A.AMT
              ,CASE WHEN A.DPST_DE IS NULL THEN DATE_FORMAT(CURRENT_DATE(), '%Y-%m-%d') ELSE A.DPST_DE END AS DPST_DE
              ,CASE WHEN A.DPST_AMT IS NULL THEN A.AMT ELSE A.DPST_AMT END AS DPST_AMT
-             ,B.RSVTDEID
              ,C.INSTID
              ,C.INST_NM
-             ,B.DE
              ,B.BGNG_DT
              ,B.END_DT
              ,E.SPCE_NM
@@ -209,40 +248,61 @@
              ,F.DPSTR_NM
         FROM
             TB_FCL_SPCE_APLY A
-                INNER JOIN TB_FCL_APLY_RSVTDE B
+                INNER JOIN (SELECT B.APLYID, D.SPCEID, MIN(D.BGNG_DT) AS BGNG_DT, MAX(D.END_DT) AS END_DT
+                            FROM TB_FCL_APLY_RSVTDE B
+                                     LEFT JOIN TB_FCL_SPCE_RSVTDE D ON B.RSVTDEID = D.RSVTDEID
+                            GROUP BY APLYID) B
                            ON A.APLYID = B.APLYID
-                INNER JOIN TB_CMM_INST C
-                           ON A.INSTID = C.INSTID
-                INNER JOIN TB_FCL_SPCE_RSVTDE D
-                           ON B.RSVTDEID = D.RSVTDEID
                 INNER JOIN TB_FCL_SPCE E
-                           ON D.SPCEID = E.SPCEID
+                           ON B.SPCEID = E.SPCEID
                 INNER JOIN TB_FCL_FCLT F
                            ON E.FCLTID = F.FCLTID
+                INNER JOIN TB_CMM_INST C
+                           ON F.INSTID = C.INSTID
         WHERE
             1=1
           AND A.APLYID = #{aplyid}
     </select>
 
-    <!-- 입금 확인 처리 -->
-    <update id="updateDsptCheck" parameterType="RefndMngVo" keyProperty="userid">
-        /* RefndMngDao.updateDsptCheck */
+    <!-- 환불 확인 처리 -->
+    <update id="updateRefndComplete" parameterType="RefndMngVo" keyProperty="userid">
+        /* RefndMngDao.updateRefndComplete */
         UPDATE TB_FCL_SPCE_APLY SET
-             DPST_DE                = #{dpstDe}
-             ,APLY_STTS_CD                    = '160102'
-             ,DPST_AMT                    = #{dpstAmt}
+            RFND_DE                = #{rfndDe}
+             ,RFND_AMT                    = #{rfndAmt}
+             ,APLY_STTS_CD                 = '160103'
+             ,STLM_STTS_CD                 = '161104'
+             ,RFND_BANK_CD                    = #{rfndBankCd}
+             ,RFND_BACNT                    = #{rfndBacnt}
+             ,RFND_PYR_NM                    = #{rfndPyrNm}
              ,MDFCN_DT                 = NOW()
              ,MDFRID                 = #{user.userid}
         WHERE APLYID = #{aplyid}
     </update>
 
-    <!-- 예약신청 취소 처리 -->
-    <update id="updateResveCancel" parameterType="RefndMngVo" keyProperty="userid">
+    <!-- 환불요청 취소 처리 -->
+    <update id="updateRefndCancel" parameterType="RefndMngVo" keyProperty="userid">
         /* RefndMngDao.updateResveCancel */
         UPDATE TB_FCL_SPCE_APLY SET
              CNCL_RSN_CD                    = #{cnclRsnCd}
-             ,RSVT_CNCL_RSN                    = #{dpstAmt}
+             ,APLY_STTS_CD                    = '160102'
+             ,STLM_STTS_CD                    = '161102'
+             ,RFND_AMT                    = 0
+             ,RFND_REJECT_RSN                    = #{rfndRejectRsn}
              ,CNCL_DT                 = NOW()
+             ,MDFRID                 = #{user.userid}
+             ,MDFCN_DT                 = NOW()
+        WHERE APLYID = #{aplyid}
+    </update>
+
+    <!-- 환불완료취소 처리 -->
+    <update id="updateRefndRollback" parameterType="RefndMngVo" keyProperty="userid">
+        /* RefndMngDao.updateRefndRollback */
+        UPDATE TB_FCL_SPCE_APLY SET
+             CNCL_RSN_CD                    = ''
+             ,STLM_STTS_CD                    = '161103'
+             ,RFND_REJECT_RSN                    = ''
+             ,CNCL_DT                 = null
              ,MDFRID                 = #{user.userid}
              ,MDFCN_DT                 = NOW()
         WHERE APLYID = #{aplyid}

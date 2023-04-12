@@ -1,5 +1,6 @@
 package com.kbrainc.plum.mng.refndMng.service;
 
+import com.kbrainc.plum.mng.refndMng.model.RefndMngVo;
 import com.kbrainc.plum.mng.refndMng.model.RefndMngDao;
 import com.kbrainc.plum.mng.refndMng.model.RefndMngVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
@@ -42,63 +43,21 @@ public class RefndMngServiceImpl extends PlumAbstractServiceImpl implements Refn
     public List<RefndMngVo> selectRefndMngList(RefndMngVo refndMngVo) throws Exception{
         return refndMngDao.selectRefndMngList(refndMngVo);
     }
-    
-    /**
-     * 시설명 중복 조회.
-     *
-     * @Title : checkDuplicateFcltNm
-     * @Description : 시설명 중복 조회.
-     * @param refndMngVo
-     * @return int
-     * @throws Exception 예외
-     */
-     @Override
-     public int checkDuplicateFcltNm(RefndMngVo refndMngVo) throws Exception {
-         return refndMngDao.checkDuplicateFcltNm(refndMngVo);
-     }
-     
-     /**
-      * 마지막 시설번호 조회.
-      *
-      * @Title : selectFcltNo
-      * @Description : 마지막 시설번호 (제일 큰 값) 조회.
-      * @param refndMngVo
-      * @return RefndMngVo
-      * @throws Exception 예외
-      */
-     @Override
-     public RefndMngVo selectFcltNo(RefndMngVo refndMngVo) throws Exception {
-         return refndMngDao.selectFcltNo(refndMngVo);
-     }
-     
-     /**
-      * 회원 기관데이터 조회.
-      *
-      * @Title : selectUserInst
-      * @Description : 회원 기관데이터 조회.
-      * @param instid
-      * @return RefndMngVo
-      * @throws Exception 예외
-      */
-     @Override
-     public RefndMngVo selectUserInst(Integer instid) throws Exception {
-         return refndMngDao.selectUserInst(instid);
-     }
 
-    
     /**
-    * 시설 등록
+    * 시설 목록 조회
     *
-    * @Title : insertRefndMng
-    * @Description : 시설 등록
-    * @param refndMngVo 시설 객체
+    * @Title : selectRefndMngCompleteList
+    * @Description : 시설 목록 조회
+    * @param refndMngVo 시설정보 객체
     * @throws Exception 예외
-    * @return int
+    * @return List<RefndMngVo>
     */
     @Override
-    public int insertRefndMng(RefndMngVo refndMngVo) throws Exception {
-        return refndMngDao.insertRefndMng(refndMngVo);
+    public List<RefndMngVo> selectRefndMngCompleteList(RefndMngVo refndMngVo) throws Exception{
+        return refndMngDao.selectRefndMngCompleteList(refndMngVo);
     }
+
     
     /**
     * 시설 상세정보
@@ -113,46 +72,46 @@ public class RefndMngServiceImpl extends PlumAbstractServiceImpl implements Refn
     public RefndMngVo selectRefndMngInfo(RefndMngVo refndMngVo) throws Exception {
         return refndMngDao.selectRefndMngInfo(refndMngVo);
     }
-    
+
     /**
-    * 시설 수정
-    *
-    * @Title : updateRefndMng
-    * @Description : 시설 수정
-    * @param refndMngVo 시설 객체
-    * @throws Exception 예외
-    * @return int
-    */
+     * 입금 확인 처리
+     *
+     * @Title : updateRefndComplete
+     * @Description : 입금 확인 처리
+     * @param refndMngVo 입금 전 객체
+     * @throws Exception 예외
+     * @return int
+     */
     @Override
-    public int updateRefndMng(RefndMngVo refndMngVo) throws Exception {
-        return refndMngDao.updateRefndMng(refndMngVo);
-    }
-    
-    /**
-    * 시설 삭제
-    *
-    * @Title : deleteRefndMng
-    * @Description : 시설 삭제
-    * @param refndMngVo 시설 객체
-    * @throws Exception 예외
-    * @return int
-    */
-    @Override
-    public int deleteRefndMng(RefndMngVo refndMngVo) throws Exception {
-        return refndMngDao.deleteRefndMng(refndMngVo);
+    public int updateRefndComplete(RefndMngVo refndMngVo) throws Exception {
+        return refndMngDao.updateRefndComplete(refndMngVo);
     }
 
     /**
-    * 공간 목록 조회
-    *
-    * @Title : selectRefndMngSpceList
-    * @Description : 공간 목록 조회
-    * @param refndMngVo 시설정보 객체
-    * @throws Exception 예외
-    * @return List<RefndMngVo>
-    */
+     * 예약 신청 취소 처리
+     *
+     * @Title : updateRefndCancel
+     * @Description : 예약 신청 취소 처리
+     * @param refndMngVo 입금 전 객체
+     * @throws Exception 예외
+     * @return int
+     */
     @Override
-    public List<RefndMngVo> selectRefndMngSpceList(RefndMngVo refndMngVo) throws Exception{
-        return refndMngDao.selectRefndMngSpceList(refndMngVo);
+    public int updateRefndCancel(RefndMngVo refndMngVo) throws Exception {
+        return refndMngDao.updateRefndCancel(refndMngVo);
+    }
+
+    /**
+     * 환불완료취소 처리
+     *
+     * @Title : updateRefndRollback
+     * @Description : 예약 신청 취소 처리
+     * @param refndMngVo 입금 전 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    @Override
+    public int updateRefndRollback(RefndMngVo refndMngVo) throws Exception {
+        return refndMngDao.updateRefndRollback(refndMngVo);
     }
 }

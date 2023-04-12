@@ -82,6 +82,11 @@ public class BbsController {
             /* 공지사항인 경우 submit 페이징 방식으로 처리 */
             paramVo.setUser(user);
             paramVo.setSite(site);
+            paramVo.setHotUseStdrHits(bbsInfo.getHotUseStdrHits());
+            paramVo.setHotUseYn(bbsInfo.getHotUseYn());
+            paramVo.setNewUseYn(bbsInfo.getNewUseYn());
+            paramVo.setNewIndictDaycnt(bbsInfo.getNewIndictDaycnt());
+
             if (paramVo.getTabType().equals(2)) {
                 paramVo.setOrderField("GRP DESC,ORD");
             } else {

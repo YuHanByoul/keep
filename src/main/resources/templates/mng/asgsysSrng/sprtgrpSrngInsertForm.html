@@ -90,13 +90,15 @@
 	                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
 	                            <strong>첨부파일</strong>
                             </div>
+                            <div class="mb-2 col-12">
+                                <input type="file" multiple id="evdncDcmntFile1" name="evdncDcmntFile1" class="form-control form-control-sm" th:if="${#lists.isEmpty(bfrCertFileList)}" disabled/>
+                            </div>
                             <!-- 안전관리 첨부파일 -->
                             <div class="row">
                                 <div class="col-auto" id="sftyFileListDiv">
                                     <th:block th:unless="${#lists.isEmpty(bfrCertFileList)}" th:each="item, i : ${bfrCertFileList}" th:if = "${item.fileid} > 0">
                                     <span class ='label label-inverse ' th:id="'bfrCertFile_'+${item.fileid}">
                                         <th:block th:text="${item.orginlFileNm}"></th:block>&nbsp;&nbsp;
-                                        <a  class = 'text-white' href = "javascript:void(0)" th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick=""></a>
                                     </span>
                                 </div>
                             </div>
@@ -110,11 +112,13 @@
 	                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
 	                            <strong>증빙서류</strong></div>
 	                        <div class="row">
+                            <div class="mb-2 col-12">
+                                <input type="file" multiple id="evdncDcmntFile2" name="evdncDcmntFile2" class="form-control form-control-sm" th:if="${#lists.isEmpty(aplyFileList)}" disabled/>
+                            </div>
                                 <div class="col-auto" id="aplyFileListDiv">
                                     <th:block th:unless="${#lists.isEmpty(aplyFileList)}" th:each="item, i : ${aplyFileList}" th:if = "${item.fileid} > 0">
                                     <span class ='label label-inverse ' th:id="'aplyFile_'+${item.fileid}">
                                         <th:block th:text="${item.orginlFileNm}"></th:block>&nbsp;&nbsp;
-                                        <a  class = 'text-white' href = "javascript:void(0)" th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" ></a>
                                     </span>
                                 </div>
                             </div>
@@ -266,7 +270,7 @@
             </div>
 	        <div class="card-block-small">
 	            <button class="btn btn-inverse m-r-5">목록</button>
-	            <button type="button" class="btn btn-primary" onclick="fn_insertSprtgrpSrng()">저장</button>
+	            <button type="button" class="btn btn-primary" onclick="fn_insertSprtgrpSrng()" id="srngBtnSave" >저장</button>
 	        </div>
 	    </div>
 	</div>
@@ -284,6 +288,8 @@
     initSprtgrpSrngFrm();
 
     function initSprtgrpSrngFrm() {
+
+    	//srngBtnSave
 
     	initScrSum();
     	splmntDmndGridHelper = new GridHelper('splmntDmndGrid','splmntDmndContentPanel');
@@ -508,13 +514,14 @@
         param["prgrmid"     ]= $("#prgrmid").val();
         param["sbmsnid"     ]= $("#sbmsnid").val();
         param["rsltid"      ]= $("#rsltid").val();
-        param["sbmsnSttsCd" ]= "128102";    //제출
         param["sprtgrpid"   ]= $("#sprtgrpid").val();
+        param["userid"]      = $("#sprtgrpid").val();
+        param["chklstid"]    = $("#chklstid").val();
+        param["sbmsnSttsCd" ]= "128102";    //제출
+        param["sbmsnSeCd"]   = "242102";    /*심사구분:심사위원(지원단)*/
+
         param["srngOpnn"    ]= $("#srngOpnn").val();
         param["chklstRsltCn"]= $("#chklstRsltCn").val();
-
-        param["userid"]= $("#sprtgrpid").val();
-        param["sbmsnSeCd"]= "242102";    /*심사구분:심사위원(지원단)*/
 
         var vScr = 0;
         $("[id^=scrSum]").each(
@@ -523,6 +530,7 @@
             });
         param["scr"] = vScr;
 
+        debugger;
         if(!confirm("저장하시겠습니까?")) return;
 
         if(displayWorkProgress()){

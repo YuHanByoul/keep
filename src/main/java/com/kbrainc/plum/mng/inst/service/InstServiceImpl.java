@@ -1,13 +1,8 @@
 package com.kbrainc.plum.mng.inst.service;
 
-import java.security.MessageDigest;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -15,27 +10,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import com.kbrainc.plum.cmm.file.model.FileVo;
-import com.kbrainc.plum.cmm.file.service.FileService;
-import com.kbrainc.plum.cmm.file.service.FileStorageService;
-import com.kbrainc.plum.cmm.service.SmsService;
 import com.kbrainc.plum.mng.inst.model.InstDao;
 import com.kbrainc.plum.mng.inst.model.InstVo;
-import com.kbrainc.plum.mng.member.model.BlcklstDsctnVo;
-import com.kbrainc.plum.mng.member.model.ContractVo;
-import com.kbrainc.plum.mng.member.model.EmailVo;
-import com.kbrainc.plum.mng.member.model.LoginHistVo;
 import com.kbrainc.plum.mng.member.model.MemberDao;
-import com.kbrainc.plum.mng.member.model.MemberDtlVo;
 import com.kbrainc.plum.mng.member.model.MemberVo;
-import com.kbrainc.plum.mng.member.model.SmsVo;
-import com.kbrainc.plum.mng.member.model.TempPwdVo;
-import com.kbrainc.plum.rte.constant.Constant;
-import com.kbrainc.plum.rte.exception.MailSendFailException;
+import com.kbrainc.plum.mng.ntcn.model.NtcnDao;
+import com.kbrainc.plum.mng.ntcn.model.NtcnVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import com.kbrainc.plum.rte.util.CommonUtil;
-import com.kbrainc.plum.rte.util.StringUtil;
-import com.kbrainc.plum.rte.util.mail.model.MailRcptnVo;
 import com.kbrainc.plum.rte.util.mail.model.MailVo;
 import com.kbrainc.plum.rte.util.mail.service.MailService;
 
@@ -63,6 +45,15 @@ public class InstServiceImpl extends PlumAbstractServiceImpl implements InstServ
     
     @Autowired
     private MemberDao memberDao;
+    
+    @Autowired
+    private NtcnDao ntcnDao;
+    
+    @Autowired @Qualifier("MailNhnService")
+    private MailService mailService;
+    
+    @Autowired
+    private TemplateEngine templateEngine;
 
     /**
     * 기관정보 목록 리스트
@@ -112,6 +103,21 @@ public class InstServiceImpl extends PlumAbstractServiceImpl implements InstServ
         
         if ("2".equals(instVo.getAprvSttsCd())) { // 승인
             retVal += instDao.insertInstPool(instVo);
+            
+            if(!instVo.getPreAprvSttsCd().equals("2")) {
+                //승인 일경우 알림과 이메일 발송
+                MemberVo memberVo = new MemberVo();
+                memberVo.setInstid(instVo.getInstid());
+                memberVo.setInstpicRoleCd("109101");
+                List<MemberVo> list = instDao.selectInstMemberList(instVo);
+                if(list.size() > 0 ) {
+                    MemberVo parmaVo = new MemberVo();
+                    parmaVo = list.get(0);
+                    parmaVo.setUser(instVo.getUser());
+                    insertNtcnForInst(parmaVo);
+                    sendEmailForInst(parmaVo);
+                }
+            }
         }
         retVal += instDao.updateInst(instVo);
         retVal += instDao.updateInstCd(instVo);
@@ -269,5 +275,53 @@ public class InstServiceImpl extends PlumAbstractServiceImpl implements InstServ
     */
     public int updateInstCd(InstVo instVo) throws Exception{
         return instDao.updateInstCd(instVo);
+     }
+    /**
+     * 기관 승인 알림 등록 
+     *
+     * @Title       : insertNtcnForInst 
+     * @Description : 기관 승인 알림 등록
+     * @param instVo Instvo객체
+     * @return int insert로우수
+     * @throws Exception 예외
+     */
+     public int insertNtcnForInst(MemberVo memberVo) throws Exception{
+             NtcnVo ntcnVo = new NtcnVo();
+             ntcnVo.setUserid(memberVo.getUserid());
+             ntcnVo.setTtl("기관회원 승인 완료");
+             ntcnVo.setCn("기관회원 신청이 승인되었습니다.\r\n"
+                     + "기관회원 권한으로 사이트를 이용할 수 있습니다.\r\n"
+                     + "지금 바로 국가환경교육 통합플랫폼을 이용해보세요.");
+             ntcnVo.setInqYn("N");
+             ntcnVo.setKndCd("156102");
+             ntcnDao.insertNtcn(ntcnVo);
+         return 1;
+      }
+     /**
+      * 기관 승인 이메일 발송 
+      *
+      * @Title       : sendEmailForInst 
+      * @Description : 기관 승인 이메일 발송
+      * @param instVo Instvo객체
+      * @return int insert로우수
+      * @throws Exception 예외
+      */
+     public int sendEmailForInst(MemberVo memberVo) throws Exception{
+         
+             StringBuilder contents = new StringBuilder();
+             contents.append("<tr><td align=\"center\" style=\"font-family:'맑은 고딕','Malgun Gothic','돋움',dotum,sans-serif;font-size:16px;font-weight:400;font-stretch:normal;font-style:normal;line-height:1.5;letter-spacing:-1px;color:#333333;padding:0 10px;\">");
+             contents.append("기관회원 신청이 승인되었습니다.<br /><br />기관회원 권한으로 사이트를 이용할 수 있습니다.<br /><br />지금 바로 국가환경교육 통합플랫폼을 이용해보세요.<br /><br />");
+             contents.append("&nbsp;</td></tr><tr><td style=\"height:30px;font-size:0px;mso-line-height-rule:exactly;line-height:0px;\">&nbsp;</td></tr>");
+             Context context = new Context();
+             context.setVariable("title", "기관회원 승인 완료");
+             context.setVariable("content", contents.toString());
+             context.setVariable("portalUrl", CommonUtil.portalUrl);
+             String mailContents = templateEngine.process("mail/mail_basic_template", context);
+             String mailTitle = "기관회원 승인 완료";
+             MailVo mailVo = new MailVo(null, memberVo.getEml(), mailTitle, mailContents, Integer.valueOf(memberVo.getUser().getUserid()), "U", memberVo.getUserid());
+             Map<String, Object> resMap = mailService.sendMail(mailVo); // 이메일 발송
+             String result = (String)resMap.get("result");
+         
+         return 1;
      }
 }

@@ -51,7 +51,7 @@ public class CancelVo extends ParentRequestVo {
     private String prgrmNm;
     
     /** 공모신청아이디 */
-    private Integer aplyid;
+    private String aplyid;
     
     /** 사업분야 */
     private String fldCd;

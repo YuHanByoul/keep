@@ -244,7 +244,8 @@
                   WHERE C.DE IS NOT NULL
            ) X
          WHERE 1=1
-           AND X.PRGRMID = #{prgrmid}        
+           AND X.PRGRMID = #{prgrmid}       
+           AND NOW() <![CDATA[<=]]> DATE_FORMAT(X.DE,'%Y.%m.%d') 
     </select>
     
     <!-- 푸름이 이동환경교실 교육신청 등록정보 상세조회 -->
@@ -279,7 +280,7 @@
                 , A.EDU_HR_MNT
                 , A.EDU_NOPE
                 , J.SIGNGU_CD
-                , CONCAT(E.CD_NM,' <![CDATA[>]]> ', G.CD_NM) SIGNGU_DESC
+                , CONCAT(E.CTPRVN_NM,' <![CDATA[>]]> ', G.SIGNGU_NM) SIGNGU_DESC
                 , CONCAT(C.TME_NM, C.BGNG_TM, ' ~ ', C.END_TM) TME_NM
                 -- , CASE WHEN A.OPER_FOM_CD = '197101' THEN REPLACE(D.DE, '.', '-') ELSE (SELECT GROUP_CONCAT(T1.DE SEPARATOR', ') FROM T1 WHERE MONTH(T1.DE) = MONTH(D.DE)) END DE
                 , GROUP_CONCAT(REPLACE(D.DE, '.', '-') SEPARATOR', ') DE
@@ -305,8 +306,8 @@
                 LEFT OUTER JOIN TB_EDU_SAREA_SIGNGU J ON J.CTPRVN_CD = I.CTPRVN_CD AND J.SAREAID = B.SAREAID
                 LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME C ON C.PRGRMID = A.PRGRMID
                 LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME_SCHDL D ON D.TMEID = C.TMEID 
-                LEFT OUTER JOIN TB_CMM_CD E ON E.CD = I.CTPRVN_CD
-                LEFT OUTER JOIN TB_CMM_CD G ON G.CD = J.SIGNGU_CD
+                LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN E ON E.CTPRVN_CD = I.CTPRVN_CD
+                LEFT OUTER JOIN TB_CMM_ADDR_SIGNGU G ON G.SIGNGU_CD = J.SIGNGU_CD
                 LEFT OUTER JOIN TB_CMM_USER F ON F.USERID = #{user.userid}
                 LEFT OUTER JOIN TB_CMM_INST H ON H.INSTID = F.INSTID   
             WHERE A.USE_YN = 'Y'
@@ -410,18 +411,18 @@
 
     <!-- 푸름이 이동환경교실 신청 지역선택 시군구 목록 조회 -->
     <select id="selectMvmnAplySignguList" parameterType="front.MvmnAplyVo" resultType="front.MvmnAplyVo">
-        /* MvmnAplyDao.selectEduSareaList */
+        /* MvmnAplyDao.selectMvmnAplySignguList */
         SELECT
               A.SAREAID
             , A.SAREA_NM
             , CONCAT(A.SAREAID,'^',B.CTPRVN_CD,'^',C.SIGNGU_CD) AS SAREA_SIGNGU_CD
-            , CONCAT(A.SAREA_NM,' <![CDATA[>]]>',D.CD_NM,' ',E.CD_NM) AS SAREA_SIGNGU_DESC
+            , CONCAT(A.SAREA_NM,' <![CDATA[>]]>',D.CTPRVN_NM,' ',E.SIGNGU_NM) AS SAREA_SIGNGU_DESC
         FROM 
             TB_EDU_SAREA A
             LEFT OUTER JOIN TB_EDU_SAREA_CTPRVN_MAPNG B ON B.SAREAID = A.SAREAID
             LEFT OUTER JOIN TB_EDU_SAREA_SIGNGU C ON C.CTPRVN_CD = B.CTPRVN_CD AND C.SAREAID = A.SAREAID
-            LEFT OUTER JOIN TB_CMM_CD D ON D.CD = B.CTPRVN_CD
-            LEFT OUTER JOIN TB_CMM_CD E ON E.CD = C.SIGNGU_CD
+            LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN D ON D.CTPRVN_CD = B.CTPRVN_CD
+            LEFT OUTER JOIN TB_CMM_ADDR_SIGNGU E ON E.SIGNGU_CD = C.SIGNGU_CD
         WHERE A.USE_YN = 'Y'
           AND A.SAREAID = #{sareaid}
           AND C.SAREAID IS NOT NULL

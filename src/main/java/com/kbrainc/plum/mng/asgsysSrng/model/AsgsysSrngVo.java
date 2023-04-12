@@ -238,6 +238,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
     /** 기관_지역_코드 */
 	private String instRgnCd;
 
+	/** 기관_지역_코드 명*/
+	private String instRgnCdNm;
+
     /** 기관_우편번호 */
 	private String instZip;
 

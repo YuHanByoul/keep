@@ -63,7 +63,7 @@ public class InfntSchdlController {
      * @return String
      */
     @RequestMapping(value = "/mng/prtpn/infntSchdl/infntSchdlListForm.html")
-    public String infntSchdlListForm(Model model, HttpServletRequest request) throws Exception {
+    public String infntSchdlListForm(@RequestParam(value ="currentDate",required = false) String currentDate, Model model, HttpServletRequest request) throws Exception {
 
         EduClssRmVo eduClssRmVo = new EduClssRmVo();
         model.addAttribute("clssList", eduClssRmService.selectEduClssRmList(eduClssRmVo));
@@ -75,6 +75,7 @@ public class InfntSchdlController {
             years[j] = i;
         }
         model.addAttribute("years", years);
+        model.addAttribute("currentDate", currentDate);
 
         return "mng/prtpn/infntSchdl/infntSchdlList";
     }

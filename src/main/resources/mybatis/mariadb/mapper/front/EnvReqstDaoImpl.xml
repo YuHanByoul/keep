@@ -16,10 +16,12 @@
         , B.ADDR_DTL
         , B.RPRS_IMG_FILEID
         , B.APLY_MTHD_CD
-        , B1.CD_NM AS APLY_MTHD_NM
+        , B1.CD_NM                                                                     AS APLY_MTHD_NM
         , C.INSTID
         , C.INST_NM
         , D.FILE_IDNTFC_KEY
+        , F.BGNG_DT
+        , F.END_DT
         from TB_FCL_SPCE A
         INNER JOIN TB_FCL_FCLT B ON A.FCLTID = B.FCLTID
         INNER JOIN (
@@ -30,7 +32,32 @@
         ) B1 ON (B1.CD = B.APLY_MTHD_CD)
         LEFT OUTER JOIN TB_CMM_INST C ON B.INSTID = C.INSTID
         LEFT OUTER JOIN TB_CMM_FILE D ON B.RPRS_IMG_FILEID = D.FILEID
-        WHERE 1=1
+        INNER JOIN (SELECT SPCEID, MIN(BGNG_DT) BGNG_DT, MAX(END_DT) END_DT FROM TB_FCL_SPCE_RSVTDE F GROUP BY SPCEID) F ON A.SPCEID = F.SPCEID
+        WHERE 1 = 1
+        AND A.USE_YN = 'Y'
+        <if test="instNm != null and instNm != ''">
+            AND C.INST_NM LIKE CONCAT('%',#{instNm},'%')
+        </if>
+        <if test="fcltNm != null and fcltNm != ''">
+            AND B.FCLT_NM LIKE CONCAT('%',#{fcltNm},'%')
+        </if>
+        <if test="maxNope != null and maxNope != ''">
+            AND A.MAX_NOPE = #{maxNope}
+        </if>
+        <if test="searchSiGunGuCd != null and searchSiGunGuCd != '' ">
+            AND SUBSTRING( B.RGN_CD,1,2)  =  #{searchSiGunGuCd}
+        </if>
+        <if test="searchAplyMthdCd != null and searchAplyMthdCd != '' ">
+            AND B.APLY_MTHD_CD = #{searchAplyMthdCd}
+        </if>
+        <!-- 신청일 검색시작일  -->
+        <if test="searchBgngDt != null and searchBgngDt != ''">
+            AND B.BGNG_DT >= date(#{searchBgngDt})
+        </if>
+        <!-- 신청일 검색종료일  -->
+        <if test="searchEndDt  != null and searchEndDt != ''">
+            AND B.END_DT <![CDATA[<=]]> date(#{searchEndDt})
+        </if>
         <include refid="PaginationMapper.footer"/>
     </select>
 
@@ -61,22 +88,19 @@
              , A.REG_DT
              , A.RGTRID
              , B.INST_NM
-             , C.CD_NM AS RGN_NM
+             , C.SIGNGU_NM AS RGN_NM
              , D.CD_NM AS APLY_MTHD_NM
              , E.NM
         FROM
             TB_FCL_FCLT A
                 LEFT OUTER JOIN TB_CMM_INST B ON A.INSTID = B.INSTID
                 LEFT OUTER JOIN TB_CMM_USER E ON A.RGTRID = E.USERID
-                INNER JOIN (
-                SELECT
-                    CD
-                     , CD_NM
-                FROM
-                    TB_CMM_CD
-                WHERE
-                    CDGRPID = 143
-            ) C ON (C.CD = A.RGN_CD)
+                INNER JOIN (SELECT
+                A.SIGNGU_CD AS RGN_CD,
+                B.CTPRVN_NM,
+                A.SIGNGU_NM,
+                A.CTPRVN_CD FROM
+                TB_CMM_ADDR_SIGNGU A INNER JOIN TB_CMM_ADDR_CTPRVN B ON A.CTPRVN_CD = B.CTPRVN_CD) C ON C.RGN_CD = A.RGN_CD
                 INNER JOIN (
                 SELECT
                     CD
@@ -158,6 +182,8 @@
             ,DPST_BACNT
             ,PYR_NM
             ,APLY_DT
+            ,APLY_STTS_CD
+            ,STLM_STTS_CD
             ,MDFCN_DT
             ,MDFRID
             ,REG_DT
@@ -177,6 +203,8 @@
             ,#{bacntNo}
             ,#{pyrNm}
             ,NOW()
+            ,'160101'
+            ,'161101'
             ,NOW()
             ,#{user.userid}
             ,NOW()
@@ -235,6 +263,8 @@
                                      ,DPST_BACNT
                                      ,PYR_NM
                                      ,APLY_DT
+                                     ,APLY_STTS_CD
+                                     ,STLM_STTS_CD
                                      ,MDFCN_DT
                                      ,MDFRID
                                      ,REG_DT
@@ -255,6 +285,8 @@
             ,#{bacntNo}
             ,#{pyrNm}
             ,NOW()
+            ,'160101'
+            ,'161101'
             ,NOW()
             ,#{user.userid}
             ,NOW()

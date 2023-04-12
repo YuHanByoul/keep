@@ -49,7 +49,7 @@
                         <div class="btn-wrap">
                             <div class="center">
                                 <button type="button" class="btn-large btn-gray"  onclick="doSave()">중간저장</button>
-                                <button type="button" class="btn-large btn-green" onclick="goNext()">다음</button>
+                                <button type="button" class="btn-large btn-green" onclick="doSave('next')">다음</button>
                             </div>
                         </div>
                     </div>
@@ -95,7 +95,7 @@
                                             <label class="inp"><input type="radio" id="cnsltngPrgrsYn1" name="cnsltngPrgrsYn1" th:checked="${aplyInfo.cnsltngPrgrsYn=='N'}" value="N"><b>컨설팅 미진행</b></label>
                                             <label class="inp"><input type="radio" id="cnsltngPrgrsYn2" name="cnsltngPrgrsYn2" th:checked="${aplyInfo.cnsltngPrgrsYn=='Y'}" value="Y"><b class="mr10">컨설팅 진행</b>
 
-                                                <select title="컨설팅 진행"  id="cnsltngid" name="cnsltngid" >
+                                                <select title="컨설팅 진행"  id="cnsltngid" name="cnsltngid" th:attr="disabled=${aplyInfo.cnsltngPrgrsYn == Y ? true:false}">
                                                     <option value=""> - 선택 - </option>
                                                     <th:block th:if="${#lists.size(csltngList) > 0}" th:each="list, i: ${csltngList}">
                                                         <option th:value="${list.cnsltngid}" th:selected="${list.cnsltngid == aplyInfo.cnsltngid}"><th:block th:text="${list.prgrmNm}" /></option>
@@ -118,8 +118,8 @@
                                         <label class="inp"><input type="radio" id="styYn1" name="styYn1" th:checked="${aplyInfo.styYn=='Y'}" value="Y"><b class="mr10">숙박</b></label>
 
                                             <span class="form-input mo-flex-wrap">
-                                                <input type="number" class="ar" title="박" style="flex: 0 0 50px; width: 50px;" id="styNight" name="styNight" th:value="${aplyInfo.styNight}" /><div class="bul">박</div>
-                                                <input type="number" class="ar" title="일" style="flex: 0 0 50px; width: 50px;" id="styDaytm" name="styDaytm" th:value="${aplyInfo.styDaytm}" /><div class="bul">일</div>
+                                                <input type="number" class="ar" title="박" style="flex: 0 0 50px; width: 50px;" id="styNight" name="styNight" th:value="${aplyInfo.styNight}" th:attr="disabled=${aplyInfo.styYn == Y ? 'disabled': ''}" /><div class="bul">박</div>
+                                                <input type="number" class="ar" title="일" style="flex: 0 0 50px; width: 50px;" id="styDaytm" name="styDaytm" th:value="${aplyInfo.styDaytm}" th:attr="disabled=${aplyInfo.styYn == Y ? 'disabled': ''}" /><div class="bul">일</div>
                                                 <p class="feedback"></p>
                                             </span>
                                         </label>
@@ -235,7 +235,7 @@
                                         <label class="inp"><input type="radio" id="pchrgYn1" name="pchrgYn1" th:checked="${aplyInfo.pchrgYn=='N'}" value="N"><b>무료</b></label>
                                         <label class="inp"><input type="radio" id="pchrgYn2" name="pchrgYn2" th:checked="${aplyInfo.pchrgYn=='Y'}" value="Y"><b class="mr10">유료</b>
                                             <span class="form-input mo-flex-wrap">
-                                                <input type="number" class="ar" title="" style="flex: 0 0 100px; width: 100px;" id="etrfee" name="etrfee" th:value="${#numbers.formatDecimal(aplyInfo.etrfee, 0,'COMMA',0,'POINT')}" />
+                                                <input type="number" class="ar" title="" style="flex: 0 0 100px; width: 100px;" id="etrfee" name="etrfee" th:value="${#numbers.formatDecimal(aplyInfo.etrfee, 0,'COMMA',0,'POINT')}"  th:attr="disabled=${aplyInfo.pchrgYn != Y ? 'disabled': ''}" />
                                                 <div class="bul">원 (1인당 비용)</div>
                                                 <p class="feedback"></p>
                                             </span>
@@ -303,35 +303,39 @@
                         <tbody>
                             <tr>
                                 <th scope="row">교육목적<i class="ast" title="필수입력">*</i></th>
-                                <td><textarea title="교육목적" placeholder="내용을 입력해주세요." id="eduPrps" name="eduPrps" ><th:block th:text="${aplyInfo.eduPrps}" /></textarea>
-                                    <p class="feedback"></p>
+                                <td><textarea maxlength="50" title="교육목적" placeholder="내용을 입력해주세요." id="eduPrps" name="eduPrps" ><th:block th:text="${aplyInfo.eduPrps}" /></textarea>
                                     <div class="desc ar size">
                                         <span>0</span> / 50
-                                    </div></td>
+                                    </div>
+                                    <p class="feedback"></p>
+                                </td>
                             </tr>
                             <tr>
                                 <th scope="row">환경교육적 <br class="pc-only"> 적절성<i class="ast" title="필수입력">*</i></th>
-                                <td><textarea title="환경교육적 적절성" placeholder="내용을 입력해주세요." id="appro" name="appro" ><th:block th:text="${aplyInfo.appro}" /></textarea>
-                                    <p class="feedback"></p>
+                                <td><textarea maxlength="50" title="환경교육적 적절성" placeholder="내용을 입력해주세요." id="appro" name="appro" ><th:block th:text="${aplyInfo.appro}" /></textarea>
                                     <div class="desc ar size">
                                         <span>0</span> / 50
-                                    </div></td>
+                                    </div>
+                                    <p class="feedback"></p>
+                                </td>
                             </tr>
                             <tr>
                                 <th scope="row">프로그램 우수성<i class="ast" title="필수입력">*</i></th>
-                                <td><textarea title="프로그램 우수성" placeholder="내용을 입력해주세요." id="dstnctn" name="dstnctn" ><th:block th:text="${aplyInfo.dstnctn}" /></textarea>
-                                    <p class="feedback"></p>
+                                <td><textarea maxlength="50" title="프로그램 우수성" placeholder="내용을 입력해주세요." id="dstnctn" name="dstnctn" ><th:block th:text="${aplyInfo.dstnctn}" /></textarea>
                                     <div class="desc ar size">
                                         <span>0</span> / 50
-                                    </div></td>
+                                    </div>
+                                    <p class="feedback"></p>
+                                </td>
                             </tr>
                             <tr>
                                 <th scope="row">교육내용 <br class="pc-only"> (체험활동 등)<i class="ast" title="필수입력">*</i></th>
-                                <td><textarea title="교육내용 (체험활동 등)" placeholder="내용을 입력해주세요." id="eduCn" name="eduCn" ><th:block th:text="${aplyInfo.eduCn}" /></textarea>
-                                    <p class="feedback"></p>
+                                <td><textarea maxlength="300" title="교육내용 (체험활동 등)" placeholder="내용을 입력해주세요." id="eduCn" name="eduCn" ><th:block th:text="${aplyInfo.eduCn}" /></textarea>
                                     <div class="desc ar size">
                                         <span>0</span> / 300
-                                    </div></td>
+                                    </div>
+                                    <p class="feedback"></p>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -416,19 +420,21 @@
                         <tbody>
                             <tr>
                                 <th scope="row">기상상황<i class="ast" title="필수입력">*</i></th>
-                                <td><textarea title="기상상황" placeholder="내용을 입력해주세요." id="wetherSttn" name="wetherSttn" ><th:block th:text="${aplyInfo.wetherSttn}" /></textarea>
-                                    <p class="feedback"></p>
+                                <td><textarea maxlength="50" title="기상상황" placeholder="내용을 입력해주세요." id="wetherSttn" name="wetherSttn" ><th:block th:text="${aplyInfo.wetherSttn}" /></textarea>
                                     <div class="desc ar size">
                                         <span>0</span> / 50
-                                    </div></td>
+                                    </div>
+                                    <p class="feedback"></p>
+                                </td>
                             </tr>
                             <tr>
                                 <th scope="row">대처방법<i class="ast" title="필수입력">*</i></th>
-                                <td><textarea title="대처방법" placeholder="내용을 입력해주세요." id="actnMthd" name="actnMthd" ><th:block th:text="${aplyInfo.actnMthd}" /></textarea>
-                                    <p class="feedback"></p>
+                                <td><textarea maxlength="50" title="대처방법" placeholder="내용을 입력해주세요." id="actnMthd" name="actnMthd" ><th:block th:text="${aplyInfo.actnMthd}" /></textarea>
                                     <div class="desc ar size">
                                         <span>0</span> / 50
-                                    </div></td>
+                                    </div>
+                                    <p class="feedback"></p>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -465,13 +471,13 @@
                         <tbody id="planBody">
                             <tr th:id="'planTr' + ${i.count}" th:each="plan ,i : ${planList}">
                                 <td><input type="text" title="본 프로그램명"
-                                    th:id="planPrgrmNm + ${i.count}"
-                                    th:name="planPrgrmNm + ${i.count}"
+                                    th:id="prgrmNm + ${i.count}"
+                                    th:name="prgrmNm + ${i.count}"
                                     th:value="${plan.prgrmNm}">
                                 </td>
                                 <td><input type="text" title="대체 프로그램명"
-                                    th:id="sbstnPrgrmNm + ${i.count}"
-                                    th:name="sbstnPrgrmNm + ${i.count}"
+                                    th:id="sbstnNm + ${i.count}"
+                                    th:name="sbstnNm + ${i.count}"
                                     th:value="${plan.sbstnPrgrmNm}"></td>
                                 <td class="ac">
                                     <button th:if="${i.count} > 1" type="button" class="btn-remove-table" title="열 삭제"
@@ -496,7 +502,7 @@
                     </div>
                     <div class="btn-wrap">
                         <div class="center">
-                            <button type="button" class="btn-medium btn-gray" onclick="goPrev()">이전</button>
+                            <button type="button" class="btn-medium btn-gray"  onclick="goPrev()">이전</button>
                             <button type="button" class="btn-medium btn-green" onclick="goNext()">다음</button>
                         </div>
                     </div>
@@ -619,13 +625,13 @@
                       , eduHr       : { required: true , maxlength:100  }
                       , pchrgYn     : { required: true , maxlength:100  }
                       , etrfee      : { required: true , maxlength:100  }
-                      , eduPrps     : { required: true , maxlength:100  }
-                      , appro       : { required: true , maxlength:100  }
-                      , dstnctn     : { required: true , maxlength:100  }
-                      , eduCn       : { required: true , maxlength:100  }
+                      , eduPrps     : { required: true , maxlength:50  }
+                      , appro       : { required: true , maxlength:50  }
+                      , dstnctn     : { required: true , maxlength:50  }
+                      , eduCn       : { required: true , maxlength:300  }
 
-                      , wetherSttn  : { required: true , maxlength:100  }
-                      , actnMthd    : { required: true , maxlength:100  }
+                      , wetherSttn  : { required: true , maxlength:50  }
+                      , actnMthd    : { required: true , maxlength:50  }
                      },
                      messages: {
                          prgrmNm     : { required: "프로그램명을 입력해 주십시오." , maxlength:"프로그램명은 100자를 넘을 수 없습니다."  }
@@ -641,7 +647,7 @@
                        , eduPrps     : { required: "교육목적 을 입력해 주십시오." , maxlength:"프로그램명은 100자를 넘을 수 없습니다."  }
                        , appro       : { required: "환경교육적 적절성 을 입력해 주십시오." , maxlength:"프로그램명은 100자를 넘을 수 없습니다."  }
                        , dstnctn     : { required: "프로그램 우수성 입력해 주십시오." , maxlength:"프로그램명은 100자를 넘을 수 없습니다."  }
-                       , eduCn       : { required: "교육내용 (체험활동 등) 을 입력해 주십시오." , maxlength:"프로그램명은 100자를 넘을 수 없습니다."  }
+                       , eduCn       : { required: "교육내용 (체험활동 등) 을 입력해 주십시오." , maxlength:"프로그램명은 300자를 넘을 수 없습니다."  }
 
                        , wetherSttn  : { required: "기상상황 을 입력해 주십시오." , maxlength:"기상상황은 50자를 넘을 수 없습니다."  }
                        , actnMthd    : { required: "대처방법 을 입력해 주십시오." , maxlength:"대처방법은 50자를 넘을 수 없습니다."  }
@@ -692,8 +698,8 @@ debugger;
 
                 //프로그램 대처계획
                 $("#planBody [id^=planTr]").each(function(index, item)       { param["emrgcyActnPlanLst[" + index + "].prgrmid"     ] = $("#prgrmid").val()});       //프로그램 id (key)
-                $("#planBody [id^=sbstnPrgrmNm]").each(function(index, item) { param["emrgcyActnPlanLst[" + index + "].sbstnPrgrmNm"] = item.value; });    //차수
-                $("#planBody [id^=planPrgrmNm]").each(function(index, item)  { param["emrgcyActnPlanLst[" + index + "].prgrmNm"     ] = item.value; });    //프로그램명
+                $("#planBody [id^=sbstnNm]").each(function(index, item) { param["emrgcyActnPlanLst[" + index + "].sbstnPrgrmNm"] = item.value; });    //대처 프로그램명
+                $("#planBody [id^=prgrmNm]").each(function(index, item)      { param["emrgcyActnPlanLst[" + index + "].prgrmNm"     ] = item.value; });    //본 프로그램명
 
                 //숙박여부와 프로그램우수성의 운영형태로 체크리스트의 운영형태를 판단하여 체크리스트 결정
                 if($("#operFrmCd").val() == "120104") {
@@ -706,6 +712,8 @@ debugger;
                 		param["chkOperFrmCd"] = "145102";
                 	}
                 }
+
+        		param["cnsltngid"] = $("#cnsltngid").val();
 
                 if(call == "next") {
                     if(!$("#dstnctnForm").valid()) return false;
@@ -736,7 +744,7 @@ debugger;
                     //일정표 시간 체크
                     //if (!schdlChk()) return false;
                 }
-
+                debugger;
                 if(!confirm("저장하시겠습니까?")) return;
 
                 $.ajax({
@@ -749,12 +757,10 @@ debugger;
                         if(data.result=="success"){
 
                             if(call == "next") {
-                                document.dstnctnForm.action = nextUrl;
-                                $("#dstnctnForm").submit();
+                                location.href = nextUrl+"?prgrmid=" + $("#prgrmid").val()+"&opner="+$("#opner").val();
                             }else{
                                 alert(data.msg);
-                                document.dstnctnForm.action = reUrl;
-                                $("#dstnctnForm").submit();
+                                location.href = reUrl+"?prgrmid=" + $("#prgrmid").val()+"&opner="+$("#opner").val();
                             }
 
                         }else{
@@ -780,8 +786,8 @@ debugger;
                 var idx = $("[id^='schdlTr']").length;
 
                 html +=`
-                        <tr id="schdlTr`+`${idx+1}`+`">
-                            <td>1차시</td>
+                        <tr id="schdlTr${idx+1}">
+                            <td>${idx+1}차시</td>
                             <td>
                                 <div class="form-input d-flex">
                                     <select title="시" style="flex: 1 1 100%; width: 0;" id="bgngHr`+`${idx+1}`+`" name="bgngHr`+`${idx+1}`+`">`
@@ -816,13 +822,14 @@ debugger;
             }
 
             function addPlan(){
+            	debugger;
                 var html="";
-                var idx = $("[id^='planTr']").length+1;
+                var idx = $("[id^='planTr']").length;
 
                 html +=`
                     <tr id="planTr`+`${idx+1}`+`" >
                         <td><input type="text" title="본 프로그램명" id="prgrmNm`+`${idx+1}`+`" name="prgrmNm`+`${idx+1}`+`" ></td>
-                        <td><input type="text" title="대체 프로그램명" id="sbstnPrgrmNm`+`${idx+1}`+`" name="sbstnPrgrmNm`+`${idx+1}`+`" ></td>
+                        <td><input type="text" title="대체 프로그램명" id="sbstnNm`+`${idx+1}`+`" name="sbstnNm`+`${idx+1}`+`" ></td>
                         <td class="ac">
                         ${idx>1 ? `
                             <button type="button" class="btn-remove-table" title="열 삭제" id="delPlanBtn`+`${idx+1}`+`" onclick="delPlan(`+`${idx+1}`+`) ">
@@ -870,10 +877,10 @@ debugger;
                         $("#cnsltngPrgrsYn2").prop("checked", $("#cnsltngPrgrsYn").val() == "Y");
 
                         if($("#cnsltngPrgrsYn").val() == "Y") {
-                        	$("#cnsltngid").prop("readonly",true);
+                            $("#cnsltngid").prop("disabled", "")
                         }else if($("#cnsltngPrgrsYn").val() == "N") {
                         	$("#cnsltngid").val("");
-                            $("#cnsltngid").prop("readonly",false);
+                        	$("#cnsltngid").prop("disabled", "disabled")
                         }
                     }
 
@@ -882,6 +889,17 @@ debugger;
                         $("#styYn").val( $("#"+id).val() );
                         $("#styYn1").prop("checked", $("#styYn").val() == "Y");
                         $("#styYn2").prop("checked", $("#styYn").val() == "N");
+
+                        if($("#styYn").val() == "Y"){
+                            $("#styNight").prop("disabled", "")
+                            $("#styDaytm").prop("disabled", "")
+                        }
+                        else{
+                            $("#styNight").prop("disabled", "disabled")
+                            $("#styDaytm").prop("disabled", "disabled")
+                            $("#styNight").val("");
+                            $("#styDaytm").val("");
+                        }
                     }
 
                     //유료 여부
@@ -889,6 +907,14 @@ debugger;
                         $("#pchrgYn").val( $("#"+id).val() );
                         $("#pchrgYn1").prop("checked", $("#pchrgYn").val() == "N");
                         $("#pchrgYn2").prop("checked", $("#pchrgYn").val() == "Y");
+
+                        if($("#pchrgYn").val() == "Y"){
+                            $("#etrfee").prop("disabled","");
+                        }
+                        else{
+                            $("#etrfee").prop("disabled","disabled");
+                            $("#etrfee").val("0");
+                        }
                     }
                 });
 

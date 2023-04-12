@@ -1,20 +1,21 @@
 <!--탭영역 start -->
 <div class="tab-content tabs p-t-20">
 
-    <div class="row p-20 p-b-0">
-        <div class="col-12 col-md-6 mb-2 mb-md-0">
-            <h5><strong>상태변경이력</strong></h5>
+    <div class="tab-pane active" id="updateRecord" role="tabpanel">
+        <div class="card-header p-t-0 p-b-0">
+            <h3 class="sub-title"><strong>상태변경 이력</strong></h3>
         </div>
-    </div>
-    <div class="card-block-small">
-        <div class="dt-responsive table-responsive">
-            <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
-                <table id="resveReqstHstryGrid" class="table-responsive"></table>
+        <div class="card-block-small p-t-0">
+            <div class="col-12 table-border-style">
+                <div class="col-12 table-responsive" id="resveReqstHstryGrid">
+                    <div class="table table-framed table-bordered">
+                    </div>
+                </div>
                 <div id="resveReqstHstryListPager" class="text-center"></div>
             </div>
         </div>
     </div>
-    <!-- Content Area -->
+
     <div id="resveReqstHstryGridPanel" style="display: none" class="card"></div>
 </div>
 
@@ -33,9 +34,8 @@
         writeSpceMemGridData();
     });
 
-    var fn_openResveCnclRsnModal = () => {
-        $("#resveCnclRsnPopup").load(resveCnclRsnPopupUrl+"?hstryid=1", function(response, status, xhr) {
-            console.log(status);
+    var fn_openResveCnclRsnModal = (hstryid) => {
+        $("#resveCnclRsnPopup").load(resveCnclRsnPopupUrl+"?hstryid="+hstryid, function(response, status, xhr) {
             if (status == "success") {
                 resveCnclRsnAddModal = new bootstrap.Modal($('#resveCnclRsnPopup'));
                 resveCnclRsnAddModal.show();
@@ -161,12 +161,13 @@
                 ,{ title: '사유확인'   ,name: 'rsn' ,type: "text" , align:"center"
                     , itemTemplate: function(value, item){
                         var str = '-';
-                        if( (item.stlmSttsCd == 161101 && item.aplySttsCd == 160103) || (item.stlmSttsCd == 161102 && item.aplySttsCd == 160102) ){
-                            str = '<div class="col-4 btn-group-sm">'+
-                                '<button type="button" class="btn btn-inverse" onClick="fn_openResveCnclRsnModal('+item.hstryid+');">'+
-                                '사유'+
-                                '</button>'+
-                                '</div>';
+                        if( (item.stlmSttsCd == 161101 && item.aplySttsCd == 160103) || (item.stlmSttsCd == 161102 && item.aplySttsCd == 160102 && item.rfndRejectRsn != null && item.rfndRejectRsn != '') ){
+                            /* 예약취소 됐거나, 환불요청 취소 됐거나(예약승인, 입금완료 - 이 경우엔 환불요청 취소사유가 있음 RFND_REJECT_RSN 가 있을경우) */
+                            str = '<div class="btn-group-sm text-center">\n' +
+                                      '<button type="button" class="btn btn-primary" onClick="fn_openResveCnclRsnModal('+item.hstryid+');">\n' +
+                                        '확인\n' +
+                                      '</button>\n' +
+                                   '</div>';
                         }
                         return str;
                     }

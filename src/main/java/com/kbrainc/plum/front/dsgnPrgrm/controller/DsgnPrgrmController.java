@@ -354,13 +354,6 @@ public class DsgnPrgrmController {
     		fileVo.setFilegrpid(aplyInfo.getEduPhotoFilegrpid());
     		eduPhotoFileList = asgsysSrngService.selectEvdncDcmntFileList(fileVo);
     	}
-//    	for(int i=1; i < 4; i++) {    //교육사진 3개
-//    		if(eduPhotoFileList.size() == (i-1)) {
-//    			FileVo rowVo = new FileVo();
-//    			rowVo.setFileIdntfcKey("");
-//    			eduPhotoFileList.add((i-1), rowVo);
-//    		}
-//    	}
 
     	model.addAttribute("aplyInfo", aplyInfo);        //신청정보
 		model.addAttribute("schdlList", schdlList);
@@ -701,7 +694,7 @@ public class DsgnPrgrmController {
 	* @throws Exception
 	* @return Map<String,Object>
 	*/
-	@RequestMapping(value = "/front/dsgnPrgrm/insertPrgrmSftyMngForm.do")
+	@RequestMapping(value = "/front/dsgnPrgrm/insertPrgrmSftyMngForm.do"	)
 	@ResponseBody
 	public Map<String, Object> insertPrgrmSftyMngForm(AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user,HttpServletRequest request) throws Exception {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
@@ -736,6 +729,8 @@ public class DsgnPrgrmController {
 	public String chkListForm(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
 
 		DsgnPrgrmVo chkListInfo = null;
+		dsgnPrgrmVo.setSbmsnSeCd("242101");    /*신청자 자가진단*/
+
 		chkListInfo = dsgnPrgrmService.selectChkListInfo(dsgnPrgrmVo);
 		dsgnPrgrmVo.setChklstid(chkListInfo.getChklstid());
 		dsgnPrgrmVo.setSbmsnid(chkListInfo.getSbmsnid());
@@ -772,10 +767,6 @@ public class DsgnPrgrmController {
 
         //체크리스트 등록
         retVal = asgsysSrngService.updateAssChklst(asgsysSrngVo);
-
-        if(asgsysSrngVo.getSttsCd().equals("111102")){
-        	retVal = asgsysSrngService.updatePrgrSttsCd(asgsysSrngVo);
-        }
 
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
