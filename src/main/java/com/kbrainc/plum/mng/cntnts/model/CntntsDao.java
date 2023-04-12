@@ -90,7 +90,7 @@ public interface CntntsDao {
     
     public int insertEduTrgt(@Param("cntntsid") int cntntsid, @Param("eduTrgt") String[] eduTrgt, @Param("user") UserVo user) throws Exception;
 
-    public List<CntntsEduSbjctVo> selectCntntsEduSbjctList(CntntsVo cntntsVo) throws Exception;
+    public List<CntntsEduSbjctVo> selectCntntsEduSbjctList(CntntsEduSbjctVo cntntsVo) throws Exception;
 
     public List<CntntsEduTrgtVo> selectCntntsEduTrgtList(CntntsVo cntntsVo) throws Exception;
 

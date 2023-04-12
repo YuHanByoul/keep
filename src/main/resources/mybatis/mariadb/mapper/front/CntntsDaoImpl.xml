@@ -109,6 +109,7 @@
         /* CntntsDao.selectCntntsInfo */
         SELECT
               A.CNTNTSID
+            , TB1.MAIN_EDU_SBJCT AS MAIN_EDU_SBJCT_CD
             , TB1.EDU_SBJCT AS EDU_SBJCT_CD
             , TB2.EDU_TRGT AS EDU_TRGT_CD
             , D1.CD_NM AS TYPE_CD
@@ -136,7 +137,8 @@
             TB_CMM_CNTNTS A
             LEFT OUTER JOIN (
                             SELECT
-                                GROUP_CONCAT(ESUPPRCD.CD_NM, ' > ', ESCD.CD_NM separator ', ') EDU_SBJCT
+                                GROUP_CONCAT(DISTINCT ESUPPRCD.CD_NM separator ', ') MAIN_EDU_SBJCT
+                              , GROUP_CONCAT(ESCD.CD_NM separator ', ') EDU_SBJCT
                               , ES.CNTNTSID
                               , ES.EDU_SBJCT_CD
                               , ESCD.UPPR_CD AS EDU_SBJCT_UPPR_CD

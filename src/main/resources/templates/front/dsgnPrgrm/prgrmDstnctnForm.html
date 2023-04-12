@@ -118,8 +118,8 @@
                                         <label class="inp"><input type="radio" id="styYn1" name="styYn1" th:checked="${aplyInfo.styYn=='Y'}" value="Y"><b class="mr10">숙박</b></label>
 
                                             <span class="form-input mo-flex-wrap">
-                                                <input type="number" class="ar" title="박" style="flex: 0 0 50px; width: 50px;" id="styNight" name="styNight" th:value="${aplyInfo.styNight}" th:attr="readonly=${aplyInfo.styYn == Y ? true: false}" /><div class="bul">박</div>
-                                                <input type="number" class="ar" title="일" style="flex: 0 0 50px; width: 50px;" id="styDaytm" name="styDaytm" th:value="${aplyInfo.styDaytm}" th:attr="readonly=${aplyInfo.styYn == Y ? true: false}" /><div class="bul">일</div>
+                                                <input type="number" class="ar" title="박" style="flex: 0 0 50px; width: 50px;" id="styNight" name="styNight" th:value="${aplyInfo.styNight}" th:attr="disabled=${aplyInfo.styYn == Y ? 'disabled': ''}" /><div class="bul">박</div>
+                                                <input type="number" class="ar" title="일" style="flex: 0 0 50px; width: 50px;" id="styDaytm" name="styDaytm" th:value="${aplyInfo.styDaytm}" th:attr="disabled=${aplyInfo.styYn == Y ? 'disabled': ''}" /><div class="bul">일</div>
                                                 <p class="feedback"></p>
                                             </span>
                                         </label>
@@ -235,7 +235,7 @@
                                         <label class="inp"><input type="radio" id="pchrgYn1" name="pchrgYn1" th:checked="${aplyInfo.pchrgYn=='N'}" value="N"><b>무료</b></label>
                                         <label class="inp"><input type="radio" id="pchrgYn2" name="pchrgYn2" th:checked="${aplyInfo.pchrgYn=='Y'}" value="Y"><b class="mr10">유료</b>
                                             <span class="form-input mo-flex-wrap">
-                                                <input type="number" class="ar" title="" style="flex: 0 0 100px; width: 100px;" id="etrfee" name="etrfee" th:value="${#numbers.formatDecimal(aplyInfo.etrfee, 0,'COMMA',0,'POINT')}"  th:attr="readonly=${aplyInfo.pchrgYn != Y ? true: false}" />
+                                                <input type="number" class="ar" title="" style="flex: 0 0 100px; width: 100px;" id="etrfee" name="etrfee" th:value="${#numbers.formatDecimal(aplyInfo.etrfee, 0,'COMMA',0,'POINT')}"  th:attr="disabled=${aplyInfo.pchrgYn != Y ? 'disabled': ''}" />
                                                 <div class="bul">원 (1인당 비용)</div>
                                                 <p class="feedback"></p>
                                             </span>
@@ -625,13 +625,13 @@
                       , eduHr       : { required: true , maxlength:100  }
                       , pchrgYn     : { required: true , maxlength:100  }
                       , etrfee      : { required: true , maxlength:100  }
-                      , eduPrps     : { required: true , maxlength:100  }
-                      , appro       : { required: true , maxlength:100  }
-                      , dstnctn     : { required: true , maxlength:100  }
-                      , eduCn       : { required: true , maxlength:100  }
+                      , eduPrps     : { required: true , maxlength:50  }
+                      , appro       : { required: true , maxlength:50  }
+                      , dstnctn     : { required: true , maxlength:50  }
+                      , eduCn       : { required: true , maxlength:300  }
 
-                      , wetherSttn  : { required: true , maxlength:100  }
-                      , actnMthd    : { required: true , maxlength:100  }
+                      , wetherSttn  : { required: true , maxlength:50  }
+                      , actnMthd    : { required: true , maxlength:50  }
                      },
                      messages: {
                          prgrmNm     : { required: "프로그램명을 입력해 주십시오." , maxlength:"프로그램명은 100자를 넘을 수 없습니다."  }
@@ -647,7 +647,7 @@
                        , eduPrps     : { required: "교육목적 을 입력해 주십시오." , maxlength:"프로그램명은 100자를 넘을 수 없습니다."  }
                        , appro       : { required: "환경교육적 적절성 을 입력해 주십시오." , maxlength:"프로그램명은 100자를 넘을 수 없습니다."  }
                        , dstnctn     : { required: "프로그램 우수성 입력해 주십시오." , maxlength:"프로그램명은 100자를 넘을 수 없습니다."  }
-                       , eduCn       : { required: "교육내용 (체험활동 등) 을 입력해 주십시오." , maxlength:"프로그램명은 100자를 넘을 수 없습니다."  }
+                       , eduCn       : { required: "교육내용 (체험활동 등) 을 입력해 주십시오." , maxlength:"프로그램명은 300자를 넘을 수 없습니다."  }
 
                        , wetherSttn  : { required: "기상상황 을 입력해 주십시오." , maxlength:"기상상황은 50자를 넘을 수 없습니다."  }
                        , actnMthd    : { required: "대처방법 을 입력해 주십시오." , maxlength:"대처방법은 50자를 넘을 수 없습니다."  }
@@ -891,12 +891,12 @@
                         $("#styYn2").prop("checked", $("#styYn").val() == "N");
 
                         if($("#styYn").val() == "Y"){
-                            $("#styNight").prop("readonly",false);
-                            $("#styDaytm").prop("readonly",false);
+                            $("#styNight").prop("disabled", "")
+                            $("#styDaytm").prop("disabled", "")
                         }
                         else{
-                            $("#styNight").prop("readonly",true);
-                            $("#styDaytm").prop("readonly",true);
+                            $("#styNight").prop("disabled", "disabled")
+                            $("#styDaytm").prop("disabled", "disabled")
                             $("#styNight").val("");
                             $("#styDaytm").val("");
                         }
@@ -909,11 +909,11 @@
                         $("#pchrgYn2").prop("checked", $("#pchrgYn").val() == "Y");
 
                         if($("#pchrgYn").val() == "Y"){
-                            $("#etrfee").prop("readonly",false);
+                            $("#etrfee").prop("disabled","");
                         }
                         else{
-                            $("#etrfee").prop("readonly",true);
-                            $("#etrfee").val("");
+                            $("#etrfee").prop("disabled","disabled");
+                            $("#etrfee").val("0");
                         }
                     }
                 });

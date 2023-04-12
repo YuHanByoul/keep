@@ -127,7 +127,7 @@ public class CntntsServiceImpl extends PlumAbstractServiceImpl implements Cntnts
     }
 
     @Override
-    public List<CntntsEduSbjctVo> selectCntntsEduSbjctList(CntntsVo cntntsVo) throws Exception {
+    public List<CntntsEduSbjctVo> selectCntntsEduSbjctList(CntntsEduSbjctVo cntntsVo) throws Exception {
         return cntntsDao.selectCntntsEduSbjctList(cntntsVo);
     }
 
