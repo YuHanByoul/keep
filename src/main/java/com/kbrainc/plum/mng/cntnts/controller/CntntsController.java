@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
+import com.kbrainc.plum.mng.cntnts.model.CntntsEduSbjctVo;
 import com.kbrainc.plum.mng.cntnts.model.CntntsEduTrgtVo;
 import com.kbrainc.plum.mng.cntnts.model.CntntsVo;
 import com.kbrainc.plum.mng.cntnts.service.CntntsService;
@@ -110,7 +111,7 @@ public class CntntsController {
     * @return String
     */
     @RequestMapping(value = "/mng/cntnts/cntntsUpdateForm.html")
-    public String cntntsUpdateForm(Model model, CntntsVo cntntsVo, @UserInfo UserVo user) throws Exception {
+    public String cntntsUpdateForm(Model model, CntntsVo cntntsVo, CntntsEduSbjctVo cntntsEduSbjctVo, @UserInfo UserVo user) throws Exception {
         CntntsVo result = null;
         result =  cntntsService.selectCntntsInfo(cntntsVo);
         
@@ -152,7 +153,7 @@ public class CntntsController {
         Map<String,String> map = new HashMap();
         map.put("cdgrpid", "155");
         model.addAttribute("sbjctCdLsit", cntntsService.selectCntntsCdList(map));
-        model.addAttribute("mySbjctLsit", cntntsService.selectCntntsEduSbjctList(cntntsVo));
+        model.addAttribute("mySbjctLsit", cntntsService.selectCntntsEduSbjctList(cntntsEduSbjctVo));
         
         List<String> trgtCds = new ArrayList();
         List<CntntsEduTrgtVo> list = cntntsService.selectCntntsEduTrgtList(cntntsVo); 
