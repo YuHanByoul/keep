@@ -47,14 +47,13 @@
             TB_SPB_PCNTST TSP 
             INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID
             INNER JOIN (SELECT TSDA.APLYID
-                                , TSDA.TOT_AMT AS TOT_AMT
-                                , IFNULL(SUM(AMT), 0) AMT
-                                , ROUND(IFNULL(SUM(AMT), 0) / TSDA.TOT_AMT * 100, 1) AS CLCLN_RATE
-                                , TSDA.TOT_AMT - IFNULL(SUM(AMT), 0) AS NOW_AMT 
-                            FROM TB_SPB_DELVRY_APLY TSDA
-                            LEFT OUTER JOIN TB_SPB_EXCUT_DSCTN TSED ON TSDA.APLYID = TSED.APLYID AND SE_CD = '210102'
-                            WHERE DELVRY_STTS_CD = '202102'
-                            GROUP BY TSDA.TOT_AMT, TSDA.APLYID) TSED1 ON TSED1.APLYID = TSA.APLYID    -- 교부신청 필수 
+                            , TSDA.TOT_AMT
+                            , IFNULL(SUM(AMT), 0) AMT
+                            , ROUND(IFNULL(SUM(AMT), 0) / TSDA.TOT_AMT * 100, 1) AS CLCLN_RATE
+                            , TSDA.TOT_AMT - IFNULL(SUM(AMT), 0) AS NOW_AMT  
+                        FROM (SELECT APLYID, SUM(TOT_AMT) AS TOT_AMT FROM TB_SPB_DELVRY_APLY WHERE DELVRY_STTS_CD = '202102' GROUP BY APLYID) TSDA
+                        LEFT OUTER JOIN TB_SPB_EXCUT_DSCTN TSED ON TSDA.APLYID = TSED.APLYID AND SE_CD = '210102'
+                        GROUP BY TSDA.APLYID, TSDA.TOT_AMT) TSED1 ON TSED1.APLYID = TSA.APLYID    -- 교부신청 필수 
             LEFT OUTER JOIN (SELECT APLYID, IFNULL(SUM(AMT), 0) AMT FROM TB_SPB_EXCUT_DSCTN WHERE SE_CD = '210101' GROUP BY APLYID) TSED2 ON TSED2.APLYID = TSA.APLYID
             LEFT OUTER JOIN TB_CMM_CD TCC ON TSP.FLD_CD = TCC.CD
             LEFT OUTER JOIN TB_CMM_CD TCC2 ON TSA.EXCCLC_STTS_CD = TCC2.CD
@@ -237,9 +236,10 @@
                 , B.CD AS ARTCL_CD
                 , TCC.CD_NM AS ARTCL_UPPER_NM
                 , B.CD_NM AS ARTCL_NM
-                , (SELECT AMT FROM TB_SPB_DELVRY_APLY_COMPUT TSDAC 
+                , (SELECT SUM(AMT) FROM TB_SPB_DELVRY_APLY_COMPUT TSDAC 
                     INNER JOIN TB_SPB_DELVRY_APLY TSDA ON TSDA.DELVRY_APLYID = TSDAC.DELVRY_APLYID AND B.CD = TSDAC.EXPITM_CD
                     WHERE TSDA.APLYID = #{aplyid}
+                    AND DELVRY_STTS_CD = '202102'
                 ) AS AMT
                 , IFNULL(SUM(T.AMT) OVER (PARTITION BY B.CD), 0) AS MINUS_SUM 
                 , COUNT(T.ARTCL_CD) OVER (PARTITION BY B.CD) AS CNT
@@ -276,7 +276,7 @@
             , FORMAT(MINUS_SUM, 0) AS MINUS_SUM
             , CNT
             , FORMAT(AMT - MINUS_SUM, 0) AS NOW_AMT
-            , ROUND(IFNULL(MINUS_SUM, 0) / AMT * 100, 1) AS CLCLN_RATE
+            , IF(AMT = 0, 0, ROUND(IFNULL(MINUS_SUM, 0) / AMT * 100, 1)) AS CLCLN_RATE
         FROM (
             SELECT 
                 ARTCL_UPPER_NM
@@ -310,9 +310,14 @@
                 , B.ORD AS SCND_ORD
                 , T.SE_CD 
             FROM TB_CMM_CD B
-                INNER JOIN TB_SPB_EXCUT_DSCTN T ON T.ARTCL_CD = B.CD
-                INNER JOIN TB_SPB_DELVRY_APLY TSDA ON T.APLYID = TSDA.APLYID
-                INNER JOIN TB_CMM_CD TCC ON TCC.CD = B.UPPR_CD 
+                INNER JOIN TB_CMM_CD TCC ON TCC.CD = B.UPPR_CD
+                INNER JOIN (SELECT TSDA.APLYID
+                                , IFNULL(SUM(AMT), 0) AMT
+                                , SE_CD
+                                , ARTCL_CD
+                            FROM (SELECT APLYID, SUM(TOT_AMT) AS TOT_AMT FROM TB_SPB_DELVRY_APLY WHERE DELVRY_STTS_CD = '202102' GROUP BY APLYID) TSDA
+                            LEFT OUTER JOIN TB_SPB_EXCUT_DSCTN TSED ON TSDA.APLYID = TSED.APLYID AND SE_CD = '210102'
+                            GROUP BY TSDA.APLYID, SE_CD, ARTCL_CD) T ON T.ARTCL_CD = B.CD   
             WHERE 1 = 1 
             AND B.CDGRPID = '218'
             <choose>
