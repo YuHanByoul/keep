@@ -193,6 +193,97 @@ public class QuartzExecConfig extends QuartzJobBean {
                 throw new JobExecutionException(jobName);
             }
         }
+        
+        // 유아환경교육관, 푸름이 이동환경교실 교육 3일 전 안내 메시지 발송
+        if (triggerid == 17 && "enveduBfrMsgJob".equals(jobName)) {
+            try {
+                batchJobService.infntMvnEnveduBfrMsgSend(triggerid);
+            } catch (SQLException e) { 
+                log.error("executeInternal.SQLException.51L");
+                throw new JobExecutionException(jobName);
+            } catch (Exception e) {
+                log.error("executeInternal.Exception.51L");
+                throw new JobExecutionException(jobName);
+            }
+        }
+        
+        // 유아환경교육관, 푸름이 이동환경교실 교육 3일 후 만족도 평가 요청 안내 메시지 발송
+        if (triggerid == 18 && "enveduAftrMsgJob".equals(jobName)) {
+            try {
+                batchJobService.infntMvnEnveduAftrMsgSend(triggerid);
+            } catch (SQLException e) { 
+                log.error("executeInternal.SQLException.51L");
+                throw new JobExecutionException(jobName);
+            } catch (Exception e) {
+                log.error("executeInternal.Exception.51L");
+                throw new JobExecutionException(jobName);
+            }
+        }
+        
+        // 전문가 섭외자와 대상 전문가 대상 3일전 교육 알림 메시지 발송
+        if (triggerid == 19 && "exprt3BfrMsgJob".equals(jobName)) {
+            try {
+                batchJobService.exprtBfrMsgSend(triggerid);
+            } catch (SQLException e) { 
+                log.error("executeInternal.SQLException.51L");
+                throw new JobExecutionException(jobName);
+            } catch (Exception e) {
+                log.error("executeInternal.Exception.51L");
+                throw new JobExecutionException(jobName);
+            }
+        }
+        
+        // 전문가 섭외자 대상 3일 후 만족도 평가 안내 메시지 발송
+        if (triggerid == 20 && "exprt3AftrMsgJob".equals(jobName)) {
+            try {
+                batchJobService.exprtAftrMsgSend(triggerid);
+            } catch (SQLException e) { 
+                log.error("executeInternal.SQLException.51L");
+                throw new JobExecutionException(jobName);
+            } catch (Exception e) {
+                log.error("executeInternal.Exception.51L");
+                throw new JobExecutionException(jobName);
+            }
+        }
+        
+        // 공동구매 진행 마감일 안내 메시지 발송
+        if (triggerid == 21 && "jntpurchsEndJob".equals(jobName)) {
+            try {
+                batchJobService.jntpurchsEndMsgSend(triggerid);
+            } catch (SQLException e) { 
+                log.error("executeInternal.SQLException.51L");
+                throw new JobExecutionException(jobName);
+            } catch (Exception e) {
+                log.error("executeInternal.Exception.51L");
+                throw new JobExecutionException(jobName);
+            }
+        }
+        
+        // 공동구매 진행 마감일 30일 후 안내 메시지 발송
+        if (triggerid == 22 && "jntpurchsEndAftrJob".equals(jobName)) {
+            try {
+                batchJobService.jntpurchsEndAftrMsgSend(triggerid);
+            } catch (SQLException e) { 
+                log.error("executeInternal.SQLException.51L");
+                throw new JobExecutionException(jobName);
+            } catch (Exception e) {
+                log.error("executeInternal.Exception.51L");
+                throw new JobExecutionException(jobName);
+            }
+        }
+        
+        // 교구 대여 반납후 이용후기 안내 메시지 발송
+        if (triggerid == 23 && "lndAplyDgstfnJob".equals(jobName)) {
+            try {
+                batchJobService.lendAplyDgstfnMsgSend(triggerid);
+            } catch (SQLException e) { 
+                log.error("executeInternal.SQLException.51L");
+                throw new JobExecutionException(jobName);
+            } catch (Exception e) {
+                log.error("executeInternal.Exception.51L");
+                throw new JobExecutionException(jobName);
+            }
+        }
     	
     	log.info("================= batch job end ({}) ================", jobName);
     }

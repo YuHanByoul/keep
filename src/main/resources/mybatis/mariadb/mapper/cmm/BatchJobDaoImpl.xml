@@ -44,12 +44,11 @@
                 LEFT JOIN TB_EDU_INFNT_PRGRM_TME IPT ON IPTS.TMEID = IPT.TMEID 
                 LEFT JOIN TB_EDU_INFNT_PRGRM IP ON IPT.PRGRMID = IP.PRGRMID
         WHERE 1=1
-                <!-- AND IPA.STTS_CD = '180103'
-                AND CU.MARKT_SMS_AGRE_YN = 'Y' -->
+                AND IPA.STTS_CD = '180103'
                 AND IPA.MOBLPHON IS NOT NULL
                 AND LENGTH(IPA.MOBLPHON) > 9
         ) A
-        <!-- WHERE 1=1
+        WHERE 1=1
             <if test="type == 1">
             AND STR_TO_DATE(A.START_TIME, '%Y.%m.%d %H:%i:%S') 
                 BETWEEN DATE_ADD(NOW(), INTERVAL 1 HOUR) 
@@ -59,7 +58,7 @@
             AND STR_TO_DATE(A.END_TIME, '%Y.%m.%d %H:%i:%S') 
                 BETWEEN DATE_ADD(NOW(), INTERVAL 1 HOUR) 
                 AND DATE_ADD(NOW(), INTERVAL 2 HOUR)
-            </if> -->
+            </if>
     </select>
     
     <!-- 푸름이 이동 환경교육 안내 알림톡 발송 대상자 리스트를 반환한다 -->
@@ -92,7 +91,6 @@
                 LEFT JOIN TB_EDU_MVMN_PRGRM MP ON MPT.PRGRMID = MP.PRGRMID
             WHERE 1=1 
                 AND MPA.STTS_CD = '180103'
-                AND CU.MARKT_SMS_AGRE_YN = 'Y'
                 AND CU.MOBLPHON IS NOT NULL
                 AND LENGTH(CU.MOBLPHON) > 9
         ) A
@@ -318,5 +316,177 @@
             AND FSA.STLM_STTS_CD = '161101'
             AND FSR.END_DT BETWEEN DATE_ADD(NOW(), INTERVAL 1 HOUR) AND DATE_ADD(NOW(), INTERVAL 2 HOUR)
     </select>
+    
+    <!-- 유아환경교육, 푸름이 이동환경교육 신청자 교육 3일전후 알림 메시지 발송 대상자 리스트를 반환한다 -->
+    <select id="selectEnvEduMsgSendUserList" resultType="java.util.Map">
+        /* BatchJobDao.selectEnvEduMsgSendUserList */
+        SELECT 
+            A.*
+        FROM 
+            (SELECT 
+                IPA.APLYID
+                , IP.PRGRM_NM 
+                , IPA.INSTID 
+                , IPA.USERID 
+                , CU.NM AS USER_NM
+                , IPA.MOBLPHON 
+                , IPA.EML
+                , IPA.EDU_NOPE
+                , CONCAT(IPTS.DE, ' ', IPT.BGNG_TM) AS START_TIME
+                , CONCAT(IPTS.DE, ' ', IPT.END_TM) AS END_TIME
+                <if test="type == 1">
+                , DATE_FORMAT(DATE_ADD(STR_TO_DATE(CONCAT(IPTS.DE, ' ', IPT.BGNG_TM), '%Y.%m.%d %H:%i:%S'), INTERVAL -3 DAY), '%Y-%m-%d %H:%i') AS SENDRSVTIME
+                </if>
+                <if test="type == 2">
+                , DATE_FORMAT(DATE_ADD(STR_TO_DATE(CONCAT(IPTS.DE, ' ', IPT.END_TM), '%Y.%m.%d %H:%i:%S'), INTERVAL 3 DAY), '%Y-%m-%d %H:%i') AS SENDRSVTIME
+                </if>
+            FROM TB_EDU_INFNT_PRGRM_APLY IPA
+                LEFT JOIN TB_CMM_USER CU ON IPA.USERID = CU.USERID 
+                LEFT JOIN TB_EDU_INFNT_PRGRM_TME_SCHDL IPTS ON IPA.TME_SCHDLID = IPTS.TME_SCHDLID 
+                LEFT JOIN TB_EDU_INFNT_PRGRM_TME IPT ON IPTS.TMEID = IPT.TMEID 
+                LEFT JOIN TB_EDU_INFNT_PRGRM IP ON IPT.PRGRMID = IP.PRGRMID
+            WHERE 1=1
+                AND IPA.STTS_CD = '180103'
+            UNION ALL 
+            SELECT 
+                MPA.APLYID
+                , MP.PRGRM_NM 
+                , MPA.INSTID 
+                , MPA.USERID 
+                , CU.NM AS USER_NM
+                , CU.MOBLPHON 
+                , MPA.EML
+                , MPA.EDU_NOPE 
+                , CONCAT(MPTS.DE, ' ', MPT.BGNG_TM) AS START_TIME
+                , CONCAT(MPTS.DE, ' ', MPT.END_TM) AS END_TIME
+                <if test="type == 1">
+                , DATE_FORMAT(DATE_ADD(STR_TO_DATE(CONCAT(MPTS.DE, ' ', MPT.BGNG_TM), '%Y.%m.%d %H:%i:%S'), INTERVAL -3 DAY), '%Y-%m-%d %H:%i') AS SENDRSVTIME
+                </if>
+                <if test="type == 2">
+                , DATE_FORMAT(DATE_ADD(STR_TO_DATE(CONCAT(MPTS.DE, ' ', MPT.END_TM), '%Y.%m.%d %H:%i:%S'), INTERVAL -3 DAY), '%Y-%m-%d %H:%i') AS SENDRSVTIME
+                </if>
+            FROM TB_EDU_MVMN_PRGRM_APLY MPA
+                LEFT JOIN TB_CMM_USER CU ON MPA.USERID = CU.USERID 
+                LEFT JOIN TB_EDU_MVMN_PRGRM_APLY_SCHDL MPAS ON MPA.APLYID = MPAS.APLYID
+                LEFT JOIN TB_EDU_MVMN_PRGRM_TME_SCHDL MPTS ON MPAS.TME_SCHDLID = MPTS.TME_SCHDLID 
+                LEFT JOIN TB_EDU_MVMN_PRGRM_TME MPT ON MPTS.TMEID = MPT.TMEID 
+                LEFT JOIN TB_EDU_MVMN_PRGRM MP ON MPT.PRGRMID = MP.PRGRMID
+            WHERE 1=1 
+                AND MPA.STTS_CD = '180103'
+            ) A
+        WHERE 1=1
+            AND LEFT(A.SENDRSVTIME, 10) = DATE_FORMAT(NOW(), '%Y-%m-%d')
+    </select>
+    
+    <!-- 전문가 섭외자와 대상 전문가 대상 교육 3일 전후 알림 메시지 발송 대상자 리스트를 반환한다 -->
+    <select id="selectExprtMsgSendUser" parameterType="int" resultType="java.util.Map">
+        /* BatchJobDao.selectExprtMsgSendUser */
+        SELECT 
+            A.*
+        FROM (
+            SELECT 
+                ALD.DMNDID 
+                , ALD.EXPRTID
+                , ECU.NM AS ASS_NM
+                , ECU.MOBLPHON AS ASS_MOBLPHON
+                , ECU.EML AS ASS_EML
+                , ALD.USERID 
+                , CU.NM 
+                , ALD.MOBLPHON 
+                , ALD.EML 
+                , ALD.DMND_STTS_CD 
+                , ALD.EDU_NOPE 
+                , DATE_FORMAT(ALD.LCTR_BGNG_DT, '%Y.%m.%d %H:%i:%S') AS LCTR_BGNG_DT
+                , DATE_FORMAT(DATE_ADD(ALD.LCTR_BGNG_DT, INTERVAL -3 DAY), '%Y-%m-%d %H:%i') AS BFR_SEND_DT
+                , DATE_FORMAT(ALD.LCTR_END_DT, '%Y.%m.%d %H:%i:%S') AS LCTR_END_DT
+                , DATE_FORMAT(DATE_ADD(ALD.LCTR_END_DT, INTERVAL 3 DAY), '%Y-%m-%d %H:%i') AS AFTR_SEND_DT
+                , AE.EXPRT_TYPE_CD 
+                , AE.LCTR_GDNC_RCPTN_YN 
+                , AE.STTS_CD 
+            FROM TB_ASS_LCTR_DMND ALD
+                LEFT JOIN TB_CMM_USER ECU ON ALD.EXPRTID = ECU.USERID 
+                LEFT JOIN TB_CMM_USER CU ON ALD.USERID = CU.USERID 
+                LEFT JOIN TB_ASS_EXPRT AE ON ALD.EXPRTID = AE.USERID 
+            WHERE 1=1
+                AND ALD.DMND_STTS_CD = '139104'
+                AND AE.STTS_CD = '134103'
+        ) A
+        WHERE 1=1
+            <if test="type == 1">
+                AND LEFT(A.BFR_SEND_DT, 10) = DATE_FORMAT(NOW(), '%Y-%m-%d')
+            </if>
+            <if test="type == 2">
+                AND LEFT(A.AFTR_SEND_DT, 10) = DATE_FORMAT(NOW(), '%Y-%m-%d')
+            </if>
+    </select>
+    
+    <!-- 공동구매 신청자 알림 메시지 발송 대상자 리스트를 반환한다 -->
+    <select id="selectJntPurchsSendMsgUserList" parameterType="int" resultType="java.util.Map">
+        /* BatchJobDao.selectJntPurchsSendMsgUserList */
+        SELECT
+            *
+        FROM (
+            SELECT
+                A.ORDERID
+                , A.ORDERNO
+                , B.QNTY
+                , FORMAT(B.AMT, 0) AS AMT
+                , D.MOBLPHON
+                , D.EML
+                , D.NM
+                , C.JNTPURCHS_NM
+                , DATE_FORMAT(C.END_DT, '%Y-%m-%d %H:%i') AS END_DT
+                , DATE_FORMAT(DATE_ADD(C.END_DT, INTERVAL 1 MONTH), '%Y-%m-%d %H:%i') AS SEND_DT
+            FROM
+                TB_THA_TCHAID_JNTPURCHS_ORDER A
+                LEFT JOIN TB_THA_TCHAID_JNTPURCHS_ORDER_GOODS B ON (B.ORDERID = A.ORDERID)
+                LEFT OUTER JOIN TB_THA_TCHAID_JNTPURCHS C ON (C.JNTPURCHSID = B.JNTPURCHSID)
+                INNER JOIN TB_CMM_USER D ON (D.USERID = A.USERID)
+            WHERE
+                A.STTS_CD = '181100'
+            GROUP BY A.ORDERID
+        ) TBL
+        WHERE 1=1
+            <if test="type == 1">
+             AND LEFT(END_DT, 10) = DATE_FORMAT(NOW(), '%Y-%m-%d')
+            </if>
+            <if test="type == 2">
+             AND LEFT(SEND_DT, 10) = DATE_FORMAT(NOW(), '%Y-%m-%d')
+            </if>
+    </select>
 	
+    <!-- 교구대여자 대여후기 메시지 발송 대상자 리스트-->
+    <select id="selectLendAplyDgstfnMsgSendUserList" resultType="java.util.Map">
+        SELECT 
+            A.*
+        FROM (
+            SELECT 
+                TPLA.APLYID 
+                , TPLA.APLCNTID 
+                , CONCAT(TPLA.INST_NM, ' ', TPLA.APLCNT_NM ) AS NM <!-- 신청기관 신청자 -->
+                , TPLA.PACKAGEID 
+                , TP.PACKAGE_NM  <!-- 꾸러미명 -->
+                , TPID.PACKAGEINDVD_NM  <!-- 꾸러미 개체명 -->
+                , TPLA.TELNO
+                , TPLA.EML 
+                , TPLA.LEND_BGNG_DE 
+                , TPLA.LEND_END_DE 
+                , CONCAT(DATE_FORMAT(DATE_ADD(STR_TO_DATE(TPLA.LEND_END_DE, '%Y-%m-%d'), INTERVAL 3 DAY), '%Y-%m-%d'), ' ', '12:00') AS SEND_DT
+                , TPLA.STTS_CD 
+                , TPLA.DLVY_STTS_CD 
+                , TPLAD.WRHOUSNG_PRCS_DT 
+                , TPLAD.WRHOUSNG_PICID 
+            FROM TB_THA_PACKAGE_LEND_APLY TPLA
+                LEFT JOIN TB_THA_PACKAGE TP ON TPLA.PACKAGEID = TP.PACKAGEID
+                LEFT JOIN TB_THA_PACKAGE_LEND_APLY_DLIVY TPLAD ON TPLA.APLYID = TPLAD.APLYID 
+                LEFT JOIN TB_THA_PACKAGEINDVD TPID ON TPLAD.PACKAGEINDVDID = TPID.PACKAGEINDVDID 
+            WHERE 1=1
+                AND TPLA.STTS_CD ='231102'  <!-- 대여 승인 -->
+                AND TPLA.DLVY_STTS_CD ='230102'  <!-- 출고완료 -->
+                AND TPLAD.WRHOUSNG_PRCS_DT IS NOT NULL
+                AND TPLAD.WRHOUSNG_PICID IS NOT NULL
+            GROUP BY TPLA.APLYID 
+        ) A
+        WHERE LEFT(A.SEND_DT, 10) = DATE_FORMAT(NOW(), '%Y-%m-%d')
+    </select>
 </mapper>
