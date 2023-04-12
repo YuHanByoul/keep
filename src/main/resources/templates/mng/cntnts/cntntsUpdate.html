@@ -10,22 +10,24 @@
 		    <div class="row">
 		        <div class="col-lg-6 mb-3">
 		            <div class="mb-0 form-group required">
-		                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육주제(대분류)</strong></div>
+		                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육주제</strong></div>
 						<div id="sbjctArea" >
-							<th:block th:each="sbjct,stat : ${mySbjctLsit}">
-								<div class="row mb-3 mb-md-2 subject-form" th:id="subject+${stat.count}" th:name="${stat.count}">
-						    	<div class="col-md-10 mt-1 mt-md-0">
-						        	<select th:id="subjectSelect+${stat.count}" name="eduSbjctCds" class="form-select form-select-sm" th:count ="${stat.count}" th:onchange="duplCheck(this.getAttribute('count'))">
-						            	<option value="" >-선택-</option>
-						            	<option th:each="item : ${sbjctCdLsit}"   th:value="${item.CD}" th:selected="${sbjct.eduSbjctCd == item.CD}"> <th:block th:text="${item.CD_NM}" /> </option>
-						        	</select>
-						    	</div>
-						      	<div class="col-md-auto">
-						        	<button type="button" class="input-group-text btn btn-primary btn-sm"  onclick="plusSubjectForm()" >+</button>
-						        	<button type="button" class="input-group-text btn btn-primary btn-sm"  th:count ="${stat.count}"  th:onclick="removeSubjectForm(this.getAttribute('count'))" th:disabled="${stat.count == 1}">-</button>
-						      	</div>						    	
-						  </div>
-						 </th:block>
+							
+                           <th:block th:each="sbjct,stat : ${mySbjctLsit}">
+                               <div class="row mb-12 mb-md-6 mb-2 subject-form " th:id="subject+${stat.count}" th:name="${stat.count}">
+                                   <div class="col-md-10 mt-1 mt-md-0">
+                                       <select th:id="subjectSelect+${stat.count}" name="eduSbjctCds" class="form-select form-select-sm" th:count ="${stat.count}" th:onchange="duplCheck(this.getAttribute('count'))">
+                                           <option value="" >-선택-</option>
+                                           <option th:each="item : ${sbjctCdLsit}"   th:value="${item.CD}" th:selected="${sbjct.eduSbjctCd == item.CD}"> <th:block th:text="${item.CD_NM}" /> </option>
+                                       </select>
+                                   </div>
+                                   <div class="col-md-auto">
+                                       <button type="button" class="input-group-text btn btn-primary btn-sm"  onclick="plusSubjectForm()" >+</button>
+                                       <button type="button" class="input-group-text btn btn-primary btn-sm"  th:count ="${stat.count}"  th:onclick="removeSubjectForm(this.getAttribute('count'))" th:disabled="${stat.count == 1}">-</button>
+                                   </div>
+                               </div>
+                           </th:block>				
+							
 						</div>
 		            </div>
 		        </div>
@@ -223,8 +225,9 @@
 	    </div>
 		<!-- Tab Container End -->
 </form>
+<script type="text/javascript" src="/files/bower_components/handlebars/handlebars.min.js" charset="utf-8" ></script>
 <script  id="subjectFrm" type="text/x-handlebars-template">
-    <div class="row mb-3 mb-md-2 subject-form" id="subject{{frmNum}}" name="{{frmNum}}">
+    <div class="row mb-6 mb-md-2 mb-2 subject-form" id="subject{{frmNum}}" name="{{frmNum}}"  > 
          <div class="col-md-10 mt-1 mt-md-0">
              <select id="subjectSelect{{frmNum}}" name="eduSbjctCds" class="form-select form-select-sm" onchange="duplCheck('{{frmNum}}')">
                  <option value="" >-선택-</option>
@@ -235,7 +238,7 @@
          </div>
          <div class="col-md-auto">
             <button type="button" class="input-group-text btn btn-primary btn-sm"  onclick="plusSubjectForm()" >+</button>
-            <button type="button" class="input-group-text btn btn-primary btn-sm"  onclick="removeSubjectForm('{{frmNum}}')">-</button>
+            <button type="button" class="input-group-text btn btn-primary btn-sm"  onclick="removeSubjectForm('{{frmNum}}')"  {{#if firstKey}}disabled {{/if}}>-</button>
          </div>
      </div>
 </script>
@@ -249,25 +252,76 @@
 	var mainTypeCd = /*[[${cntnts.mainTypeCd}]]*/null;
 	/*]]>*/
 	
-    var subjectLength = 0; 
-    var subjectNum = [1]; 	
-	
 	setUpdateSelectBox.fn_getNextDepthList(164 , 0, 'typeCd_1', mainTypeCd);
 	setUpdateSelectBox.fn_getNextDepthList(164 , mainTypeCd, 'typeCd_2', typeCd);
+	
+    var subjectLength = 0; 
+    var subjectNum = [1]; 	
 
 	var editor;
 	
 	$(function () {
 	    editor = CKEDITOR.replace('cn');
 	    
-    	if(sbjctCdLsit!= null && sbjctCdLsit.length > 0 ){
-	    	subjectLength = sbjctCdLsit.length 
-        }
-    	//등록되어 있는 교육 주제 폼 넘버   
-        for(var i = 0;i < mySbjctLsit.length;i++){
-            subjectNum.push((i+1));
-        }
+	    if(sbjctCdLsit!= null && sbjctCdLsit.length > 0 ){
+	         subjectLength = sbjctCdLsit.length 
+	     }
+	     if(mySbjctLsit!= null && mySbjctLsit.length >0){
+		     //등록되어 있는 교육 주제 폼 넘버   
+		     for(var i = 0;i < mySbjctLsit.length;i++){
+		         subjectNum.push((i+1));
+		     }
+		 }else{
+			 plusSubjectForm('first');
+		 }
 	});
+    duplCheck=(frmNum)=>{
+        var isDupl = false;
+        var selectCd = $("#subjectSelect"+frmNum).val();
+        if(selectCd==""){return;}
+		
+        $(".subject-form").each(function(){
+        	console.log($(this))
+            var itemId = ($(this).attr("id")).replace("subject","")
+            if( itemId != frmNum  &&  $("#subjectSelect"+itemId).val() == selectCd){
+                isDupl = true;
+            }
+        })
+        if(isDupl){
+            $("#subjectSelect"+frmNum).val("");
+            alert("교육주제는 중복 선택 할 수 없습니다."); 
+            return; 
+        }
+    }
+    plusSubjectForm =(firstKey)=>{
+
+        var subjectFormCnt = 0 ; 
+        $(".subject-form").each(function(){ subjectFormCnt++ })
+        
+        if(subjectFormCnt >= subjectLength){
+            alert("더이상 생성 할수 없습니다.");
+            return;
+        }
+        var maxValue = Math.max.apply(null, subjectNum);
+        subjectNum.push(maxValue+1);
+        
+        var source = $("#subjectFrm").html();
+        var template = Handlebars.compile(source);
+        var data = {
+                    'frmNum' : maxValue+1
+                    ,'list':sbjctCdLsit
+                    ,'firstKey':(firstKey==null)? false:true 
+                   };
+        console.log(data)
+        $("#sbjctArea").append(template(data));
+    }
+
+    removeSubjectForm=(frmNum)=>{
+        $("#subject"+frmNum).remove();
+        var filterArr = subjectNum.filter(function(data) {return data != frmNum;});
+        subjectNum = filterArr;
+    }
+	
 
 	var validator= $("#cntntsUpdateForm").validate({
 	    rules: {
@@ -418,13 +472,29 @@
 	
  	function fn_updateCntnts(){
 	 	if(!($("#cntntsUpdateForm").valid())) return;
-
+		
+  	 	var subjectParamArr=[];
+        var errorFrmNum = 0;
+        if(subjectNum.length<=0){
+            alert("교육 주제를 선택해주십시오.")
+            return;
+        }else{
+           $(".subject-form").each(function(){
+                var frmNum = $(this).attr("name");
+                subjectParamArr.push($("#subjectSelect"+frmNum).val());
+                if($("#subjectSelect"+frmNum).val() == ""){
+                    errorFrmNum = (errorFrmNum > 0)? errorFrmNum : frmNum;
+                }
+           })
+        }
+        
+        if(errorFrmNum > 0){
+           alert("교육 주제를 선택해주십시오.");
+           showErrorMark("#subjectSelect"+errorFrmNum);
+           return;
+        }
+	 	
   	 	if(!confirm("저장하시겠습니까?")) return;
-  	 	
-  	 	if(subjectNum.length<=0){
-  	  	 	alert("교육 주제를 선택해주십시오.")
-  	  	 	return;
-  	  	}
   	 	
   	 	var editorData = editor.getData();
         $("#cn").val(editorData);
@@ -474,50 +544,5 @@
 	    	}
 	    	
 		
-    }
- 	
-    duplCheck=(frmNum)=>{
-        var isDupl = false;
-    	var selectCd = $("#subjectSelect"+frmNum).val();
-    	if(selectCd==""){return;}
-
-    	$(".subject-form").each(function(){
-    		var itemId = ($(this).attr("id")).replace("subject","")
-        	if( itemId != frmNum  &&  $("#subjectSelect"+itemId).val() == selectCd){
-        		isDupl = true;
-            }
-        })
-        if(isDupl){
-        	$("#subjectSelect"+frmNum).val("");
-            alert("교육주제는 중복 선택 할 수 없습니다."); 
-            return; 
-        }
-    }
-    
-    plusSubjectForm =()=>{
-
-    	var subjectFormCnt = 0 ; 
-    	$(".subject-form").each(function(){	subjectFormCnt++ })
-    	
-    	if(subjectFormCnt >= subjectLength){
-        	alert("더이상 생성 할수 없습니다.");
-        	return;
-        }
-    	var maxValue = Math.max.apply(null, subjectNum);
-    	subjectNum.push(maxValue+1);
-        
-	    var source = $("#subjectFrm").html();
-        var template = Handlebars.compile(source);
-        var data = {
-                    'frmNum' : maxValue+1
-                    ,'list':sbjctCdLsit 
-                   };
-        $("#sbjctArea").append(template(data));
-    }
-
-    removeSubjectForm=(frmNum)=>{
-    	$("#subject"+frmNum).remove();
-    	var filterArr = subjectNum.filter(function(data) {return data != frmNum;});
-    	subjectNum = filterArr;
     }
 </script>

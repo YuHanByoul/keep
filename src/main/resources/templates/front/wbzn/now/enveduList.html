@@ -224,10 +224,23 @@
 			},
 			
 			search() {
+				if($("#enveduSearchYr").val() == "" && $("#enveduSearchMm").val() != "") {
+					alert("년도를 선택해 주십시오.");
+					return false;
+				}
+				
 				$('#pageNumber').val('1');
-				transformMonth("search");
-				$("#enveduNowDate").text(month+"월호 환경교육");
-				$("#compareDate").val(`${year}-${month}-${date}`)
+				
+				if($("#enveduSearchYr").val() != "" && $("#enveduSearchMm").val() != "") {
+					transformMonth("search");
+					$("#compareDate").val($("#enveduSearchYr").val() + "-" + $("#enveduSearchMm").val() + "-" + date);
+				}
+				
+				if(month != "") {
+					$("#enveduNowDate").text(month+"월호 환경교육 프로그램");
+				}else {
+					$("#enveduNowDate").text("환경교육 프로그램");
+				}
 				
 				this.selectEnveduList();
 				prgrmgd.init();
@@ -236,6 +249,19 @@
 			searchInit() {
 				$("#enveduSearchYr").val('');
 				$("#enveduSearchMm").val('');
+				
+				year = now.getFullYear();
+				month = now.getMonth() + 1;
+				
+				transformMonth();
+				$("#beforeMonth").val("");
+				$("#nextMonth").val("");
+				$("#compareDate").val("");
+				if(month != "") {
+					$("#enveduNowDate").text(month+"월호 환경교육");
+				}else {
+					$("#enveduNowDate").text("환경교육");
+				}
 				
 				this.selectEnveduList();
 				prgrmgd.init();
@@ -346,11 +372,23 @@
 			},
 			
 			search() {
+				if($("#prgrmgdSearchYr").val() == "" && $("#prgrmgdSearchMm").val() != "") {
+					alert("년도를 선택해 주십시오.");
+					return false;
+				}
+				
 				$('#pageNumber').val('1');
 				
-				transformMonth("search");
-				$("#prgrmgdNowDate").text(month+"월호 환경교육 프로그램");
-				$("#compareDate").val(`${year}-${month}-${date}`)
+				if($("#prgrmgdSearchYr").val() != "" && $("#prgrmgdSearchMm").val() != "") {
+ 					transformMonth("search");
+					$("#prgrmgd-compareDate").val($("#prgrmgdSearchYr").val() + "-" + $("#prgrmgdSearchMm").val() + "-" + date);
+				}
+				
+				if(month != "") {
+					$("#prgrmgdNowDate").text(month+"월호 환경교육 프로그램");
+				}else {
+					$("#prgrmgdNowDate").text("환경교육 프로그램");
+				}
 				
 				this.selectPrgrmgdList();
 				envedu.init();
@@ -359,8 +397,22 @@
 			searchInit() {
 				$("#prgrmgdSearchYr").val('');
 				$("#prgrmgdSearchMm").val('');
+				
+				year = now.getFullYear();
+				month = now.getMonth() + 1;
+				
+				transformMonth();
+				$("#prgrmgd-beforeMonth").val("");
+				$("#prgrmgd-nextMonth").val("");
+				$("#prgrmgd-compareDate").val("");
+				if(month != "") {
+					$("#prgrmgdNowDate").text(month+"월호 환경교육 프로그램");
+				}else {
+					$("#prgrmgdNowDate").text("환경교육 프로그램");
+				}
+				
 				this.selectPrgrmgdList();
-				envedu.init();
+				envedu.searchInit();
 			},
 			
 			selectPrgrmgdList() {
@@ -408,7 +460,7 @@
 						prgrmgdListHtml += `
 						<li>
 						<a href="/front/wbzn/now/prgrmgdDetailForm.html?prgrmid=${item.prgrmid}">
-						<div class="thumb"><img src="https://picsum.photos/468/127" alt=""></div>
+						<div class="thumb"><img src="/downloadFileByFileid.do?fileid=${item.thmbnFileid}&file_idntfc_key=${item.fileIdntfcKey}" alt=""></div>
 						<dl class="card-program-list">
 						<dt>
 						`;
@@ -480,10 +532,10 @@
 			}else if(type == "search"){
 				if($("#enveduSearchYr").val() != '' || $("#enveduSearchMm").val() != ''){
 					year = $("#enveduSearchYr").val();
-					month = $("#enveduSearchMm").val();
+					month = parseInt($("#enveduSearchMm").val());
 				}else if($("#prgrmgdSearchYr").val() != '' || $("#prgrmgdSearchMm").val() != ''){
 					year = $("#prgrmgdSearchYr").val();
-					month = $("#prgrmgdSearchMm").val();
+					month = parseInt($("#prgrmgdSearchMm").val());
 				}
 			}else{
 				return month;

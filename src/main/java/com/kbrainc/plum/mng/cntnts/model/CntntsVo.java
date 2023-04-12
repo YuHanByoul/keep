@@ -3,7 +3,6 @@ package com.kbrainc.plum.mng.cntnts.model;
 import java.sql.Date;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
@@ -100,6 +99,5 @@ public class CntntsVo  extends ParentRequestVo{
     private String searchMdleTypeCd;
     private String searchBgngDt;
     private String searchEndDt;
-    
     
 }

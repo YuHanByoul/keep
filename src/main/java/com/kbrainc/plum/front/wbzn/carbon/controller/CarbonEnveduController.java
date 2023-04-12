@@ -51,7 +51,7 @@ public class CarbonEnveduController {
     * @throws Exception
     * @return String
     */
-    @RequestMapping(value = "/front/wbzn/carbon/enveduListForm.html")
+    @RequestMapping(value = "/front/wbzn/carbon/carbonEnveduList.html")
     public String enveduListForm(Model model, CarbonBannerVo carbonBannerVo, CarbonEnveduVo carbonEnveduVo, CarbonPrgrmgdVo carbonPrgrmgdVo) throws Exception {
         List<CarbonBannerVo> banner = null;
         banner =  carbonEnveduService.selectBannerList(carbonBannerVo);
@@ -84,7 +84,7 @@ public class CarbonEnveduController {
     * @throws Exception
     * @return String
     */
-    @RequestMapping(value = "/front/wbzn/carbon/enveduDetailForm.html")
+    @RequestMapping(value = "/front/wbzn/carbon/carbonEnveduDetailForm.html")
     public String enveduDetailForm(Model model, CarbonEnveduVo carbonEnveduVo) throws Exception {
         CarbonEnveduVo result = null;
         result =  carbonEnveduService.selectEnveduInfo(carbonEnveduVo);
