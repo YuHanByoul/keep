@@ -130,6 +130,9 @@ public class DsgnMngVo extends ParentRequestVo {
     /** 방문 일자 */
     private String vstDe;
 
+    /** 방문 기간 */
+    private String vstPrd;
+
     /** 요청아이디 */
     private Integer dmndid;
 
@@ -424,6 +427,9 @@ public class DsgnMngVo extends ParentRequestVo {
 
     /** 컨설턴트아이디 */
     private Integer cnstntid;
+
+    /** 컨설턴트 이름 */
+    private String cnstntNm;
 
     /** 평가상태 */
     private String evlStts;

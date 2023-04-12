@@ -186,8 +186,8 @@ public class ReqMngServiceImpl extends PlumAbstractServiceImpl implements ReqMng
         int result = 0;
         result = reqMngDao.insertPrgrmInfo(programInfoVo);
         
+        result += reqMngDao.deletePrgrmOutline(programInfoVo);
         if (null != programInfoVo.getPrgrmNm() && programInfoVo.getPrgrmNm().length > 0) {
-            result += reqMngDao.deletePrgrmOutline(programInfoVo);
             for (int i = 0; i < programInfoVo.getPrgrmNm().length; i++) {
                 PrgrmInfoOutlineVo param = new PrgrmInfoOutlineVo();
                 param.setUser(programInfoVo.getUser());
@@ -211,8 +211,8 @@ public class ReqMngServiceImpl extends PlumAbstractServiceImpl implements ReqMng
         int result = 0;
         result = reqMngDao.updatePrgrmInfo(programInfoVo);
         
+        result += reqMngDao.deletePrgrmOutline(programInfoVo);
         if (null != programInfoVo.getPrgrmNm() && programInfoVo.getPrgrmNm().length > 0) {
-            result += reqMngDao.deletePrgrmOutline(programInfoVo);
             for (int i = 0; i < programInfoVo.getPrgrmNm().length; i++) {
                 PrgrmInfoOutlineVo param = new PrgrmInfoOutlineVo();
                 param.setUser(programInfoVo.getUser());
@@ -278,8 +278,8 @@ public class ReqMngServiceImpl extends PlumAbstractServiceImpl implements ReqMng
         result += reqMngDao.updateSmrLeaderMgt(smrLeaderVo);
         result += reqMngDao.insertSmrLeaderInfo(smrLeaderVo);
         
+        result += reqMngDao.deleteLeaderPlan(smrLeaderVo);   
         if (null != smrLeaderVo.getSe() && smrLeaderVo.getSe().length > 0) {
-            result += reqMngDao.deleteLeaderPlan(smrLeaderVo);   
             for (int i = 0; i < smrLeaderVo.getSe().length; i++) {
                 SmrLeaderJobVo param = new SmrLeaderJobVo();
                 param.setUser(smrLeaderVo.getUser());
@@ -292,16 +292,18 @@ public class ReqMngServiceImpl extends PlumAbstractServiceImpl implements ReqMng
             }
         }
         
+        result += reqMngDao.deleteLeaderAbil(smrLeaderVo);   
         if (null != smrLeaderVo.getSchlNm() && smrLeaderVo.getSchlNm().length > 0) {
-            result += reqMngDao.deleteLeaderAbil(smrLeaderVo);   
             for (int i = 0; i < smrLeaderVo.getSchlNm().length; i++) {
                 SmrLeaderAcbgVo param = new SmrLeaderAcbgVo();
                 param.setUser(smrLeaderVo.getUser());
                 param.setAplyid(smrLeaderVo.getAplyid());
                 param.setDgr(smrLeaderVo.getDgr()[i]);
                 String de[] = smrLeaderVo.getEduDe()[i].split("~");
-                param.setBgngDe(de[0].trim());
-                param.setEndDe(de[1].trim());
+                if (de.length == 2) {
+                    param.setBgngDe(de[0].trim());
+                    param.setEndDe(de[1].trim());
+                }
                 param.setMjr(smrLeaderVo.getMjr()[i]);
                 param.setSchlNm(smrLeaderVo.getSchlNm()[i]);
                 
@@ -309,8 +311,8 @@ public class ReqMngServiceImpl extends PlumAbstractServiceImpl implements ReqMng
             }
         }
         
+        result += reqMngDao.deleteLeaderLic(smrLeaderVo);   
         if (null != smrLeaderVo.getQlfcNm() && smrLeaderVo.getQlfcNm().length > 0) {
-            result += reqMngDao.deleteLeaderLic(smrLeaderVo);   
             for (int i = 0; i < smrLeaderVo.getQlfcNm().length; i++) {
                 SmrLeaderLicVo param = new SmrLeaderLicVo();
                 param.setUser(smrLeaderVo.getUser());
@@ -324,8 +326,8 @@ public class ReqMngServiceImpl extends PlumAbstractServiceImpl implements ReqMng
             }
         }
         
+        result += reqMngDao.deleteLeaderCarr(smrLeaderVo);   
         if (null != smrLeaderVo.getPrd() && smrLeaderVo.getPrd().length > 0) {
-            result += reqMngDao.deleteLeaderCarr(smrLeaderVo);   
             for (int i = 0; i < smrLeaderVo.getPrd().length; i++) {
                 SmrLeaderCarrVo param = new SmrLeaderCarrVo();
                 param.setUser(smrLeaderVo.getUser());

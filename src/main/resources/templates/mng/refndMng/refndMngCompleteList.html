@@ -1,0 +1,235 @@
+<style>
+    .hide
+    {
+        display:none;
+    }
+</style>
+<div class="page-body">
+    <div class="row">
+
+        <div class="card">
+            <div class="row p-20 p-b-0">
+                <div class="col-12 col-md-6">
+                    <h5>
+                        <strong>환불완료 검색결과</strong>
+                    </h5>
+                </div>
+                <div class="col-12 col-md-6 text-right">
+                </div>
+            </div>
+            <div class="card-block">
+                <table id="jsGridComplete" class="table-responsive"></table>
+                <div id="listPagerComplete" class="text-center"></div>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div id="contentPanelComplete" style="display: none" class="card"></div>
+    </div>
+</div>
+
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script type="text/javascript" src="/js/common/jsgrid-master/dist/jsgrid.min.js"></script>
+<script th:inline="javascript">
+    var selectedItems = [];
+    var gridHelperComplete;
+    $(function(){
+        gridHelperComplete = new GridHelper('jsGridComplete','contentPanelComplete');
+        writeJsGridData();
+    });
+
+    function fn_searchForm(){
+        gridHelperComplete.resetListContent();
+    }
+
+    function fn_init() {
+        $("#searchType").val('');
+        $("#searchKeyword").val('');
+        gridHelperComplete.resetListContent();
+    }
+
+    function writeJsGridData(){
+        $("#jsGridComplete").jsGrid({
+            height: "auto",
+            width: "100%",
+            autoload: true,
+            sorting: false,
+            paging: true,
+            pagerContainer: "#listPagerComplete",
+            pagerFormat: "{first} {prev} {pages} {next} {last}",
+            pagePrevText: "이전",
+            pageNextText: "다음",
+            pageFirstText: " < 처음 ㅣ",
+            pageLastText: " | 마지막 >",
+            pageSize: 10,
+            pageButtonCount: 10,
+            pageLoading: true,
+            pageIndex: 1,
+            noDataContent: "데이터가 없습니다.",
+
+            controller: {
+                loadData: function (filter) {
+                    var data = $.Deferred();
+
+                    var formData = $('#searchFrm').serializeArray();
+                    var params = [
+                        {name: "pageNumber", value: filter.pageIndex},
+                        {name: "rowPerPage", value: filter.pageSize},
+                    ]
+
+                    if(filter.sortField != undefined){
+                        params.push({name: "orderField", value: filter.sortField});
+                        params.push({name: "orderDirection", value: filter.sortOrder});
+                    }else{
+                        params.push({name: "orderField", value: 'reg_dt'});
+                    }
+
+                    params.push({name: "stlmSttsCd", value: '161104'});
+
+                    formData = formData.concat(params);
+
+                    $.ajax({
+                        type: "GET",
+                        contentType: "application/json; charset=utf-8",
+                        url: "/mng/refndMng/selectRefndMngList.do",
+                        dataType: "json",
+                        data: formData
+                    }).done(function(response){
+                        var da = {
+                            data : escapeGridData(response.list)
+                            ,itemsCount : response.totalCount
+                        };
+                        data.resolve(da);
+                    });
+                    return data.promise();
+                },
+            },
+            fields: [
+                { name: 'aplyid', css: 'hide' }
+                ,{ title: 'No.' ,name: 'rowNumber',    type: "number", width : "80", align:"center",  sorting :false }
+                ,{ title: '신청자ID'    ,name: 'acnt',    type: "text", width: "100px"}
+                ,{ title: '공간'   ,name: 'spceNm',   type: "text", width: "150", align:"center"  }
+                ,{ title: '이용일(시)'   ,name: 'bgngDt',   type: "text", width: "300", align:"center"
+                    , itemTemplate: function(value, item){
+                        if( new Date(item.bgngDt).valueOf() === new Date(item.endDt).valueOf() ){
+                            return date2str(parseDate(item.bgngDt), 'yyyy-mm-dd HH:mm') +' ~ '+ date2str(parseDate(item.endDt), 'HH:mm');
+                        }else{
+                            return date2str(parseDate(item.bgngDt), 'yyyy-mm-dd HH:mm') +' ~ '+ date2str(parseDate(item.endDt), 'yyyy-mm-dd HH:mm');
+                        }
+                    }
+                }
+                ,{ title: '결제금액' ,name: 'amt',  type: "text", width: "150", align:"center", itemTemplate: function(value) {
+                    return value.toLocaleString()+'원';
+                }}
+                ,{ title: '입금금액' ,name: 'dpstAmt',  type: "text", width: "150", align:"center", itemTemplate: function(value) {
+                    return value.toLocaleString()+'원';
+                }}
+                ,{ title: '환불요청금액' ,name: 'rfndDmndAmt',  type: "text", width: "150", align:"center", itemTemplate: function(value) {
+                    return value.toLocaleString()+'원';
+                }}
+                ,{ title: '신청상태' ,name: 'aplySttsCdNm',  type: "text", width: "150", align:"center" }
+                ,{ title: '결제상태' ,name: 'stlmSttsCdNm',  type: "text", width: "150", align:"center" }
+                ,{ title: '환불요청일' ,name: 'mdfcnDt',  type: "text", width: "150", align:"center"
+                    , itemTemplate: function(value, item){
+                        return date2str(parseDate(item.mdfcnDt), 'yyyy-mm-dd');
+                    }
+                }
+            ],
+            rowClick: function(args) {
+                if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+                var detailUrl = "/mng/refndMng/refndMngView.html?mode=ing&aplyid=" + args.item.aplyid;
+                gridHelperComplete.loadContent(detailUrl);
+                gridHelperComplete.rowClick(args);
+            },
+            onPageChanged: function(args) {
+                selectedItems = [];
+            }
+        });
+
+        function date2str(x, y) {
+            var z = {
+                m: x.getMonth() + 1,
+                d: x.getDate(),
+                H: x.getHours(),
+                M: x.getMinutes(),
+                S: x.getSeconds()
+            };
+
+            y = y.replace(/(m+|d+|H+|M+|S+)/g, function(v) {
+                return ((v.length > 1 ? "0" : "") + z[v.slice(-1)]).slice(-2)
+            });
+
+            return y.replace(/(y+)/g, function(v) {
+                return x.getFullYear().toString().slice(-v.length)
+            });
+        }
+
+        function parseDate(strDate) {
+            var _strDate = strDate;
+            var _dateObj = new Date(_strDate);
+            if (_dateObj.toString() == 'Invalid Date') {
+                _strDate = _strDate.split('.').join('-');
+                _dateObj = new Date(_strDate);
+            }
+            if (_dateObj.toString() == 'Invalid Date') {
+                var _parts = _strDate.split(' ');
+
+                var _dateParts = _parts[0];
+                _dateObj = new Date(_dateParts);
+
+                if (_parts.length > 1) {
+                    var _timeParts = _parts[1].split(':');
+                    _dateObj.setHours(_timeParts[0]);
+                    _dateObj.setMinutes(_timeParts[1]);
+                    if (_timeParts.length > 2) {
+                        _dateObj.setSeconds(_timeParts[2]);
+                    }
+                }
+            }
+
+            return _dateObj;
+        }
+
+        var selectItem = function(item) {
+            selectedItems.push(item);
+            if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                $("#selectAllCheckbox").prop("checked", true);
+            } else {
+                $("#selectAllCheckbox").prop("checked", false);
+            }
+        };
+
+        var unselectItem = function(item) {
+            selectedItems = $.grep(selectedItems, function(i) {
+                return i !== item;
+            });
+            if(selectedItems.length == 0) {
+                $('#selectAllCheckbox').attr('checked', false);
+            }
+            if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                $("#selectAllCheckbox").prop("checked", true);
+            } else {
+                $("#selectAllCheckbox").prop("checked", false);
+            }
+        };
+
+        $("#selectAllCheckbox").click(function(item) {
+            selectedItems = [];
+            if(this.checked) { // check select status
+                $('.singleCheckbox').each(function() {
+                    this.checked = true;
+                    selectItem($(this).parent().next().text());
+                });
+            }else {
+                $('.singleCheckbox').each(function() {
+                    this.checked = false;
+                    unselectItem(item);
+                });
+                selectedItems = [];
+            }
+        });
+    }
+
+</script>
+
+<script src="/js/ckeditor/ckeditor.js"></script>

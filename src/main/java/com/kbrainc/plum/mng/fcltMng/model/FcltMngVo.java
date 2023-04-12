@@ -71,7 +71,6 @@ public class FcltMngVo extends ParentRequestVo {
     public String fcltNo;
     
     /** 기관아이디 */
-    @NotEmpty(message = "운영기관을 선택해주십시오.")
     private int instid;
     
     /** 기관아이디 */
@@ -145,5 +144,10 @@ public class FcltMngVo extends ParentRequestVo {
     private String searchKeyword;
     private String searchRgnCd;
     private String searchUseYn;
-    
+
+    /** 시도 명 */
+    private String ctprvnNm;
+
+    /** 시도 명 */
+    private String ctprvnCd;
 }

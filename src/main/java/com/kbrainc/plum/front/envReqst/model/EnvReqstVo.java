@@ -129,4 +129,17 @@ public class EnvReqstVo extends ParentRequestVo {
     private String utztnPrps;
 
     private String aplyDt;
+
+    /** 최대 인원수 */
+    private Integer maxNope;
+
+    /** 검색 관련*/
+    private String searchSeCd;
+    private String searchKeyword;
+    private String searchRgnCd;
+    private String searchAplyMthdCd;
+    private String searchBgngDt;
+    private String searchEndDt;
+    /** 지역 코드*/
+    private String searchSiGunGuCd;
 }

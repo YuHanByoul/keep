@@ -11,8 +11,8 @@
                 <input type="hidden" id="mode" name="mode" value="">
                 <input type="hidden" id="pageNumber" name="pageNumber" value="1">
                 <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
-                <input type="hidden" id="orderField" name="orderField" value="APLY_DT">
-                <input type="hidden" id="prgrmid" name="prgrmid" value="">
+                <input type="hidden" id="orderField" name="orderField" value="REG_DT">
+
 
             <!-- content -->
                 <div class="table-caption">
@@ -99,12 +99,11 @@
                     }
                 },
 
-                goDtl(id1, id2){
+                goDtl(id1){
                     var f = document.forms.searchForm;
 
                     f.action = cnsltngMngList.dtlUrl;
-                    f.prgrmid.value = id1;
-                    f.cnsltngid.value = id2;
+                    f.cnsltngid.value = id1;
                     f.submit();
                 },
 
@@ -129,29 +128,35 @@
                     } else {
                         list.forEach(function (item, idx) {
                         	var rowNumber = item?.rowNumber ?? '';
-                        	var prgrmid   = item?.prgrmid   ?? '';
                         	var cnsltngid = item?.cnsltngid ?? '';
                         	var prgrmNm   = item?.prgrmNm   ?? '';
-                        	var aplyDt    = item?.aplyDt    ?? '';
+                        	var regDt     = item?.regDt     ?? '';
                         	var cdNm      = item?.cdNm      ?? '';
-                        	var nm        = item?.nm        ?? '';
+                        	var cnstntNm  = item?.cnstntNm  ?? '';
                         	var evlStts   = item?.evlStts   ?? '';
-                        	var vstDt     = item?.vstDt     ?? '';
+                        	var vstPrd    = item?.vstPrd    ?? '';
+                        	var cnstntid  = item?.cnstntid  ?? '';
                         	var sttsCdNm  = item?.sttsCdNm  ?? '';
 
                             html += `<tr>
                                      <td>${rowNumber}</td>
-                                     <td><button type="button" class="link ellipsis" onclick="cnsltngMngList.goDtl('${prgrmid}','${cnsltngid}')">${prgrmNm}</a></td>
-                                     <td>${aplyDt}</td>
+                                     <td><button type="button" class="link ellipsis" onclick="cnsltngMngList.goDtl('${cnsltngid}')">${prgrmNm}</a></td>
+                                     <td>${regDt}</td>
                                      <td>${cdNm}</td>
-                                     <td>${nm}</td>
-                                     <td>${vstDt}</td>
+                                     <td>${cnstntNm}</td>
+                                     <td>${vstPrd}</td>
                                      <td>${sttsCdNm}</td>
+                            ${evlStts == '-'? `<td>-<td>`:``}
+                            ${evlStts == '평가완료'? `
                                      <td>
-                                         <a href="#" class="btn-small btn-outline-black">${evlStts}</a>
-                                     </td>
+                                         <a href="#" onClick="alert('평가 완료된 컨설팅입니다.')" class="btn-small btn-outline-black">${evlStts}</a>
+                                     </td>`:``}
+                            ${evlStts == '평가'? `
+                                     <td>
+                                         <td><button type="button" class="link ellipsis" onclick="cnsltngMngList.goDtl('${cnsltngid}')">${evlStts}</a></td>
+                                     </td>`:``}
                                      </tr>
-                                    `
+                                     `
 //                                 if(item.operReg == '대기중'){
 //                                     html += `<td>${item.operReg}</td>`
 //                                 }
