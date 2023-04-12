@@ -19,6 +19,21 @@ import com.kbrainc.plum.front.envLrnQlfcFnshHstry.service.EnvLrnQlfcFnshHstrySer
 import com.kbrainc.plum.front.envWord.model.EnvWordVo;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 
+/**
+* 환경학습 수료/자격 이력 Controller 클래스
+*
+* <pre>
+* com.kbrainc.plum.front.envLrnQlfcFnshHstry.controller
+* - EnvLrnQlfcFnshHstryController.java
+* </pre>
+*
+* @ClassName : EnvLrnQlfcFnshHstryController
+* @Description : 환경학습 수료/자격 이력 Controller 클래스
+* @author : JD
+* @date : 2023. 4. 12.
+* @Version :
+* @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
+*/
 @Controller("front.envLrnQlfcFnshHstryController")
 @Alias("front.envLrnQlfcFnshHstryController")
 public class EnvLrnQlfcFnshHstryController {
@@ -26,25 +41,55 @@ public class EnvLrnQlfcFnshHstryController {
     @Resource(name = "front.envLrnQlfcFnshHstryServiceImpl")
     private EnvLrnQlfcFnshHstryService envLrnQlfcFnshHstryService;
     
-    // 수료정보 자격정보 탭
+    /**
+    * 환경학습 수료/자격 이력 목록 화면
+    *
+    * @Title : envLrnQlfcFnshHstryListForm
+    * @Description : 수료정보 목록 화면
+    * @throws Exception
+    * @return String
+    */
     @RequestMapping(value="/front/envLrnQlfcFnshHstry/envLrnQlfcFnshHstryListForm.html")
     public String envLrnQlfcFnshHstryListForm() throws Exception {
         return "front/envLrnQlfcFnshHstry/envLrnQlfcFnshHstryList";
     }
     
-    // 수료정보 리스트
+    /**
+    * 수료정보 탭 목록 화면
+    *
+    * @Title : envLrnFnshInfoList
+    * @Description : 수료정보 탭 목록 화면
+    * @throws Exception
+    * @return String
+    */
     @RequestMapping(value="/front/envLrnQlfcFnshHstry/envLrnFnshInfoList.html")
     public String envLrnFnshInfoList() throws Exception {
         return "front/envLrnQlfcFnshHstry/envLrnFnshInfoList";
     }
     
-    // 자격정보 리스트
+    /**
+    * 자격정보 탭 목록 화면
+    *
+    * @Title : envLrnQlfcInfoList
+    * @Description : 자격정보 탭 목록 화면
+    * @throws Exception
+    * @return String
+    */
     @RequestMapping(value="/front/envLrnQlfcFnshHstry/envLrnQlfcInfoList.html")
     public String envLrnQlfcInfoList() throws Exception {
         return "front/envLrnQlfcFnshHstry/envLrnQlfcInfoList";
     }
     
-    // 수료정보 디테일
+    /**
+    * 수료정보 상세 화면
+    *
+    * @Title : envLrnFnshInfoDetailForm
+    * @Description : 수료정보 상세 화면
+    * @param envLrnQlfcFnshHstryVo
+    * @param model
+    * @throws Exception
+    * @return String
+    */
     @RequestMapping(value="/front/envLrnQlfcFnshHstry/envLrnFnshInfoDetailForm.html")
     public String envLrnFnshInfoDetailForm(EnvLrnQlfcFnshHstryVo envLrnQlfcFnshHstryVo, Model model) throws Exception {
         EnvLrnQlfcFnshHstryVo result = null;
@@ -54,7 +99,16 @@ public class EnvLrnQlfcFnshHstryController {
         return "front/envLrnQlfcFnshHstry/envLrnFnshInfoDetail";
     }
     
-    // 자격정보 디테일
+    /**
+    * 자격정보 상세 화면
+    *
+    * @Title : envLrnQlfcInfoDetailForm
+    * @Description : 자격정보 상세 화면
+    * @param envLrnQlfcFnshHstryVo
+    * @param model
+    * @throws Exception
+    * @return String
+    */
     @RequestMapping(value="/front/envLrnQlfcFnshHstry/envLrnQlfcInfoDetailForm.html")
     public String envLrnQlfcInfoDetailForm(EnvLrnQlfcFnshHstryVo envLrnQlfcFnshHstryVo, Model model) throws Exception {
         EnvLrnQlfcFnshHstryVo result = null;
@@ -64,6 +118,15 @@ public class EnvLrnQlfcFnshHstryController {
         return "front/envLrnQlfcFnshHstry/envLrnQlfcInfoDetail";
     }
     
+    /**
+    * 수료정보 목록 조회
+    *
+    * @Title : selectFnshInfoList
+    * @Description : 수료정보 목록 조회
+    * @param envLrnQlfcFnshHstryVo
+    * @throws Exception
+    * @return Map<String,Object>
+    */
     @RequestMapping(value = "/front/envLrnQlfcFnshHstry/selectFnshInfoList.do")
     @ResponseBody
     public Map<String, Object> selectFnshInfoList(EnvLrnQlfcFnshHstryVo envLrnQlfcFnshHstryVo) throws Exception {
@@ -83,6 +146,15 @@ public class EnvLrnQlfcFnshHstryController {
         return resultMap;
     }
     
+    /**
+    * 자격정보 목록 조회
+    *
+    * @Title : selectQlfcInfoList
+    * @Description : 자격정보 목록 조회
+    * @param envLrnQlfcFnshHstryVo
+    * @throws Exception
+    * @return Map<String,Object>
+    */
     @RequestMapping(value = "/front/envLrnQlfcFnshHstry/selectQlfcInfoList.do")
     @ResponseBody
     public Map<String, Object> selectQlfcInfoList(EnvLrnQlfcFnshHstryVo envLrnQlfcFnshHstryVo) throws Exception {
