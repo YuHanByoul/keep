@@ -30,7 +30,7 @@ public interface SmsNhnService {
     * @return Map<String, Object> 발송결과
     * @throws Exception 예외
     */
-    Map<String, Object> sendSms(String msg, String[] phoneList) throws Exception;
+    Map<String, Object> sendSms(String msg, String[] phoneList, String requestDate) throws Exception;
     
     /**
      * 장문 MMS 발송
@@ -43,7 +43,7 @@ public interface SmsNhnService {
      * @return Map<String, Object> 발송결과
      * @throws Exception 예외
      */
-     Map<String, Object> sendMms(String title, String msg, String[] phoneList) throws Exception;
+     Map<String, Object> sendMms(String title, String msg, String[] phoneList, String requestDate) throws Exception;
      
      /**
       * 인증용(긴급) SMS 발송
