@@ -1412,9 +1412,15 @@ public class AsgsysSrngController {
     * @throws Exception 예외
     */
    @RequestMapping(value = "/mng/asgsysSrng/jdgsSrngMainForm.html")
-   public String jdgsSrngMainForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
+   public String jdgsSrngMainForm(AsgsysSrngVo asgsysSrngVo, Model model, @UserInfo UserVo user) throws Exception {
 
-	 //심사위원 목록 조회
+	   model.addAttribute("userid",user.getUserid());
+	   model.addAttribute("userRoleInfo",user.getRoleInfo());
+
+	   log.info("@@@@@@@@@@@@@@@ : "+ user.getRoleInfo().toString());
+	   //RoleInfoVo(roleid=1, nm=시스템관리자, kndCd=A, seCd=A, trgtInstCd=A, trgtRgnCd=A)
+
+	   //심사위원 목록 조회
 	   model.addAttribute("list",asgsysSrngService.selectjdgsList(asgsysSrngVo));
        return "mng/asgsysSrng/jdgsSrngMain";
    }
@@ -1579,7 +1585,9 @@ public class AsgsysSrngController {
     * @throws Exception 예외
     */
     @RequestMapping(value = "/mng/asgsysSrng/sprtgrpSrngListForm.html")
-    public String sprtgrpSrngListForm() throws Exception {
+    public String sprtgrpSrngListForm(AsgsysSrngVo asgsysSrngVo, Model model ,@UserInfo UserVo user) throws Exception {
+
+    	model.addAttribute("userid", user.getUserid());
         return "mng/asgsysSrng/sprtgrpSrngList";
     }
 

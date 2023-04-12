@@ -952,18 +952,23 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     @Transactional
     public int insertJdgsSrngDetail(AsgsysSrngVo asgsysSrngVo) throws Exception {
     	int ret = 0;
+    	AsgsysSrngVo sbmsnVo =null;
+
+    	ret += asgsysSrngDao.insertJdgsSrngDetail(asgsysSrngVo);
+
+    	sbmsnVo = asgsysSrngDao.selectJdgsSrngDetail(asgsysSrngVo);
 
     	List<DsgnSrngFormVo> dsgnSrngFormLst = asgsysSrngVo.getDsgnSrngFormLst();
 
     	if( 0 < dsgnSrngFormLst.size()) {
     		for(DsgnSrngFormVo dsgnSrngFormVo : dsgnSrngFormLst) {
     			dsgnSrngFormVo.setUser(asgsysSrngVo.getUser());
+    			dsgnSrngFormVo.setSbmsnid(sbmsnVo.getSbmsnid());
 				ret += asgsysSrngDao.insertJdgsSrngAns(dsgnSrngFormVo);    //심사 답변 저장
 				ret += asgsysSrngDao.insertJdgsSrngOrdrAns(dsgnSrngFormVo);    //심사 순서 답변 저장
     		}
     	}
 
-        ret += asgsysSrngDao.insertJdgsSrngDetail(asgsysSrngVo);
         return ret;
 	}
 
@@ -1013,12 +1018,10 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	ChklstAnsVo delVo = null;
 
     	if(null != asgsysSrngVo.getSftyMngId() && 0 != asgsysSrngVo.getSftyMngId()){
-    		ret = asgsysSrngDao.insertSftyMng(asgsysSrngVo);
-
-    	}else {
     		ret = asgsysSrngDao.updateSftyMng(asgsysSrngVo);
+    	}else {
+    		ret = asgsysSrngDao.insertSftyMng(asgsysSrngVo);
     	}
-
 
     	//사전관리인증여부 Y
     	if("Y".equals(asgsysSrngVo.getBfrCertYn())) {
@@ -1483,6 +1486,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	assPrgrmVo.setPrgrmNm(asgsysSrngVo.getPrgrmNm());
     	assPrgrmVo.setCnsltngPrgrsYn(asgsysSrngVo.getCnsltngPrgrsYn());
     	assPrgrmVo.setCnsltngKndCd(asgsysSrngVo.getCnsltngKndCd());
+    	assPrgrmVo.setCnsltngid(asgsysSrngVo.getCnsltngid());
     	ret += asgsysSrngDao.updatePrgrm(assPrgrmVo);
 
     	//프로그램_일정 저장*/
@@ -1571,6 +1575,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	assPrgrmVo.setPrgrmNm(asgsysSrngVo.getPrgrmNm());
     	assPrgrmVo.setCnsltngPrgrsYn(asgsysSrngVo.getCnsltngPrgrsYn());
     	assPrgrmVo.setCnsltngKndCd(asgsysSrngVo.getCnsltngKndCd());
+    	assPrgrmVo.setCnsltngid(asgsysSrngVo.getCnsltngid());
     	ret += asgsysSrngDao.updatePrgrm(assPrgrmVo);
 
     	if( schdLst != null && 0 < schdLst.size()) {
