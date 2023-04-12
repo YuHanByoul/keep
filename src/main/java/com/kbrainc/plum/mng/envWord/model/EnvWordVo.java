@@ -64,6 +64,6 @@ public class EnvWordVo extends ParentRequestVo {
     private String rgtridNm;
     
     private String searchEngl;
-    private String startDt;
-    private String endDt;
+    private String searchBgngDt;
+    private String searchEndDt;
 }
