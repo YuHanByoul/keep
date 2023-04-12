@@ -93,7 +93,7 @@ public class MypageEnvReqstVo extends ParentRequestVo {
     private String de;
 
     /** 금액 */
-    private BigDecimal amt;
+    private int amt;
 
     /** 예약가능여부 */
     @Pattern(regexp="[YN]")
@@ -105,13 +105,11 @@ public class MypageEnvReqstVo extends ParentRequestVo {
     /** 예약구분코드 */
     private String utztnSeCd;
 
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date bgngDt;
 
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date regDt;
 
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date endDt;
 
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="HH:mm:ss", timezone = "Asia/Seoul")
@@ -226,4 +224,13 @@ public class MypageEnvReqstVo extends ParentRequestVo {
 
     /** 환불 거절 사유 */
     private String rfndRejectRsn;
+
+    /** 검색 관련*/
+    private String searchSeCd;
+    private String searchKeyword;
+    private String searchRgnCd;
+    private String searchAplySttsCd;
+    private String searchBgngDt;
+    private String searchEndDt;
+    private String searchStlmSttsCd;
 }

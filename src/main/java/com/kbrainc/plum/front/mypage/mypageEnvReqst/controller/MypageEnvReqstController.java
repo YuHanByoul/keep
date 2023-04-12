@@ -261,4 +261,38 @@ public class MypageEnvReqstController {
     public String mypageEnvReqstComplete(MypageEnvReqstVo mypageEnvReqstVo, Model model) throws Exception {
         return "front/mypage/mypageEnvReqst/mypageEnvReqstComplete";
     }
+
+    /**
+     * 사유 확인 팝업
+     * Title : rsnPopup
+     * Description : 환경교육시설 예약 완료 화면
+     *
+     * @param mypageEnvReqstVo
+     * @param model
+     * @return string
+     * @throws Exception
+     */
+    @RequestMapping(value = "/front/mypage/mypageEnvReqst/rsnPopup.html")
+    public String rsnPopup(MypageEnvReqstVo mypageEnvReqstVo, Model model) throws Exception {
+        MypageEnvReqstVo data = mypageEnvReqstService.selectRsnInfo(mypageEnvReqstVo);
+        model.addAttribute("mypageEnvReqst",data);
+        return "front/mypage/mypageEnvReqst/rsnPopup";
+    }
+
+    /**
+     * 입금정보 팝업
+     * Title : dpstInfoPopup
+     * Description : 환경교육시설 예약 완료 화면
+     *
+     * @param mypageEnvReqstVo
+     * @param model
+     * @return string
+     * @throws Exception
+     */
+    @RequestMapping(value = "/front/mypage/mypageEnvReqst/dpstInfoPopup.html")
+    public String dpstInfoPopup(MypageEnvReqstVo mypageEnvReqstVo, Model model) throws Exception {
+        MypageEnvReqstVo data = mypageEnvReqstService.selectDpstInfo(mypageEnvReqstVo);
+        model.addAttribute("mypageEnvReqst",data);
+        return "front/mypage/mypageEnvReqst/dpstInfoPopup";
+    }
 }

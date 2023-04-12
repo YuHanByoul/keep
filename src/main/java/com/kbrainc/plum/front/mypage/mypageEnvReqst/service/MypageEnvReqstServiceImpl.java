@@ -73,6 +73,34 @@ public class MypageEnvReqstServiceImpl extends PlumAbstractServiceImpl implement
     }
 
     /**
+     * 사유 확인 팝업
+     *
+     * @Title : selectRsnInfo
+     * @Description : 사유 확인 팝업
+     * @param mypageEnvReqstVo 환경교육시설 예약 객체
+     * @throws Exception 예외
+     * @return MypageEnvReqstVo
+     */
+    @Override
+    public MypageEnvReqstVo selectRsnInfo(MypageEnvReqstVo mypageEnvReqstVo) throws Exception {
+        return mypageEnvReqstDao.selectRsnInfo(mypageEnvReqstVo);
+    }
+
+    /**
+     * 입금정보 팝업
+     *
+     * @Title : selectDpstInfo
+     * @Description : 입금정보 팝업
+     * @param mypageEnvReqstVo 환경교육시설 예약 객체
+     * @throws Exception 예외
+     * @return MypageEnvReqstVo
+     */
+    @Override
+    public MypageEnvReqstVo selectDpstInfo(MypageEnvReqstVo mypageEnvReqstVo) throws Exception {
+        return mypageEnvReqstDao.selectDpstInfo(mypageEnvReqstVo);
+    }
+
+    /**
      * 환경교육시설 예약 등록(시설 예약)
      *
      * @Title : insertResveEnvFclSpceAply
