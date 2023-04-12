@@ -108,17 +108,30 @@
             </div>
             <div class="mb-3 form-group">
                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="addFile"><strong>첨부파일</strong></label>
-                <div class="col-sm-12">
-                    <div id="fileUploader"></div>
-                    <!-- <input type="file" class="form-control form-control-sm" id="addFile"> -->
+                <div class="col-12">
+                   <input type="file" multiple id="delvryAplyAtchFile" name="delvryAplyAtchFile" class="form-control form-control-sm"/>
                 </div>
-                <!--
-                <div class="mt-2">
-                    <span class="label label-inverse">
-                        sampleFile.pptx <a href="javascript:void(0)" class="text-white">X</a>
-                    </span>
+                <div class="mt-2 row">
+                    <div class="col-auto">
+                        <th:block th:if = "${delvryAplyInfo.atchFilegrpid != null and delvryAplyInfo.atchFilegrpid != 0}">
+                            <input type="hidden" id="atchFilegrpid" name="atchFilegrpid" th:value="${delvryAplyInfo.atchFilegrpid}"/>
+                        </th:block>
+                        <th:block th:unless = "${delvryAplyInfo.atchFilegrpid != null and delvryAplyInfo.atchFilegrpid != 0}">
+                            <input type="hidden" id="atchFilegrpid" name="atchFilegrpid" th:value="0"/>
+                        </th:block>
+                        <!-- 파일 명 및 삭제 버튼 영역-->
+                        <span id="delvryAplyAtchFileArea">
+                            <th:block th:if = "${fileList} != null">
+                                <th:block th:if = "${fileList} != null">
+                                    <span th:each="item: ${fileList}" th:id="'delvryAplyAtchFile' + ${item.fileid}" class="label label-inverse">
+                                        <th:block th:text = "${item.orginlFileNm}"></th:block>&nbsp;&nbsp;&nbsp;
+                                        <a href="javascript:void(0);" onclick="delvryAplyUpdate.removeFile(this.getAttribute('spanid'), this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'));" th:spanid="'delvryAplyAtchFile' + ${item.fileid}" th:fileid="${item.fileid}" th:fileIdntfcKey="${item.fileIdntfcKey}" class="text-white">X</a>
+                                    </span>
+                                </th:block>
+                            </th:block>
+                        </span>
+                    </div>
                 </div>
-                -->
             </div>
         </div>
     
@@ -497,14 +510,12 @@
 <script th:inline="javascript">
     var delvryAplyUpdate = {
         delvryAplyInfo: /*[[${delvryAplyInfo}]]*/
-        , fileList: /*[[${fileList}]]*/
         , computList: /*[[${computList}]]*/
         , listUrl: "/mng/delvry/selectDelvryAplySplmntList.do"
         
         , init: function() {
             splmntGrid = new GridHelper("splmntGrid");
             
-            fileUploader($("#fileUploader"), "delvryAplyAtchFile", "atchFilegrpid", this.fileList, {multiple: true});
             this.setValid();
             this.setComputList();
             this.setGrid();
@@ -512,7 +523,74 @@
         }
         
         , registEvent: function() {
-            // TODO
+            $("#delvryAplyAtchFile").on("change", function(e) {
+                var fileInput = e.target;
+                var inputid = $(e.target).attr("id");
+                var grpid = "atchFilegrpid";
+                var fileid = "delvryAplyAtchFile";
+                var areaid = "delvryAplyAtchFileArea";
+                var formData = new FormData();
+                for(var i = 0; i < fileInput.files.length; i++) {
+                    formData.append("files", fileInput.files[i]);
+                }
+                formData.append("filegrpNm", inputid);
+                formData.append("filegrpid", $("#" + grpid).val());
+                if(displayWorkProgress()) {
+                    $.ajax({
+                        url: '/uploadMultipleFiles.do'
+                        , processData: false
+                        , contentType: false
+                        , data: formData
+                        , type: "POST"
+                        , success: function(response) {
+                            if(response.result == "fail") {
+                                alert(response.msg);
+                            } else {
+                                if($("#" + grpid).val() == "0" || $("#" + grpid).val() == "" || $("#" + grpid).val() == null) {
+                                    $("#" + grpid).val(response[0].filegrpid);
+                                }
+                                var displayFile = "";
+                                for(var i = 0; i < response.length; i++) {
+                                    displayFile = '<span id="' + inputid + response[i].fileid + '" class="label label-inverse">' + response[i].orginlFileNm;
+                                    displayFile += ' &nbsp;&nbsp;&nbsp;<a href="javascript:delvryAplyUpdate.removeFile(' + "'" + inputid + response[i].fileid + "', "; 
+                                    displayFile += response[i].fileid + ", '" + response[i].fileIdntfcKey + "'" + ');" class="text-white">X</a>';
+                                    displayFile += '</span>';
+                                    $("#" + areaid).append(displayFile);                                    
+                                }
+                            }
+                            delvryAplyUpdate.initFileInput(inputid);
+                            closeWorkProgress();
+                        }
+                    });
+                }
+            });
+        }
+        
+        , initFileInput: function(inputid) {
+            if(detectBrowser() == "other") {
+                $("#" + inputid).val("");
+            } else {
+                $("#" + inputid).replaceWith($("#" + inputid).clone(true));
+            }
+        }
+        
+         , removeFile: function(inputid, fileid, fileIdntfcKey) {
+            $("#" + inputid).remove();
+            delvryAplyUpdate.deleteFile(fileid, fileIdntfcKey);
+        }
+        
+        , deleteFile: function(fileid, fileIdntfcKey) {
+            var path = "/deleteFile.do?fileid=" + fileid + "&file_idntfc_key=" + fileIdntfcKey;
+            $.ajax({
+                url: path
+                , type: "GET"
+                , cache: false
+                , dataType: "json"
+                , success: function(result) {
+                }
+                , error: function(error) {
+                }
+            });
         }
         
         , setComputList: function() {
