@@ -27,15 +27,15 @@
                             <th scope="row">내용</th>
                             <td>
                                 <textarea title="내용" readonly><th:block th:text="${detail.dmndCn}"/></textarea>
-                                <div class="desc ar size"><span>0</span> / 200자</div>
+                                <div class="desc ar size"><span class="dmndCn">0</span> / 200자</div>
                             </td>
                         </tr>
                         <tr>
                             <th scope="row">답변<i class="ast" title="필수입력">*</i></th>
                             <td>
-                                <textarea title="답변" id="ansCn" name="ansCn" placeholder="답변을 입력해주세요." th:readonly="${detail.ansSttsCd == '201102' ? true : false}"><th:block th:text="${detail.ansCn}"/></textarea>
+                                <textarea title="답변" id="ansCn" name="ansCn" placeholder="답변을 입력해주세요." maxlength="500" th:readonly="${detail.ansSttsCd == '201102' ? true : false}"><th:block th:text="${detail.ansCn}"/></textarea>
                                 <p class="form-msg"></p>
-                                <div class="desc ar size"><span>0</span> / 200자</div>
+                                <div class="desc ar size"><span class="ansCn">0</span> / 200자</div>
                             </td>
                         </tr>
                     </tbody>
@@ -61,8 +61,15 @@
 /*<![CDATA[*/
 var delvryid = /*[[${delvryid}]]*/null;
 var fldCd = /*[[${fldCd}]]*/null;
+var dmndCn = /*[[${detail.dmndCn}]]*/null;
 /*]]>*/
 $(function () {
+    $(".dmndCn").text(dmndCn.length);
+    $(".ansCn").text($("#ansCn").val().length);
+    $("#ansCn").on("keyup", function(){
+        var id = $(this).attr("id");
+        $("." + id).text($(this).val().length);
+    });
 	var validator= $("#updateForm").validate({
 	    rules    : { ansCn : { required: true, maxlength: 500 } }
 	  , messages : { ansCn : { required:"보완요청에 대한 답변을 입력해 주십시오." , maxlength: '내용은 500자를 넘을 수 없습니다.' } }
