@@ -213,7 +213,6 @@
              <button type="button" class="btn btn-disabled m-r-5" onclick = "gridHelper1.toggleContent()" > 취소</button>
              <button type="button" class="btn btn-primary" onclick="fn_updateInst()">저장</button>
          </div>
-         
      </div>
      
      <div class="tab-pane" id="managerInfo" role="tabpanel"></div>
@@ -225,6 +224,7 @@
     <input type="hidden" id="logoFileid" name="logoFileid" th:value="${inst.logoFileid}"/>
     <input type="hidden" id="filegrpid" name="filegrpid" th:value="${inst.filegrpid == null or inst.filegrpid == ''}? 0: ${inst.filegrpid}"/>
     <input type="hidden" id="instid" name="instid" th:value="${inst.instid}"/>
+    <input type="hidden" id="preAprvSttsCd" name="preAprvSttsCd" th:value="${inst.aprvSttsCd}" />    
     
 </form>
 
@@ -237,29 +237,33 @@
 
 <script th:inline="javascript">
 
+  /*<![CDATA[*/
+  var preSttsCd = /*[[ ${inst.aprvSttsCd}]]*/null;
+  /*]]>*/
+  
   var validator= $("#instFrm").validate({
 		    onsubmit: false,
 		    rules: {
-		    	instNm      :   { required: true , maxlength: 100 }
-		    	,instTypeCd :   { required: true }
-	            ,brno       :   { required: true ,number :true ,maxlength:10}
-		    	,rprsvNm    :   { required: true }
-		    	,aprvSttsCd :   { required: true }
-		    	,telno      :   { number  : true ,maxlength: 12}
-		    	,fxno       :   { number  : true ,maxlength: 12}
-		    	,zip        :   { required: true }
-		    	,addr       :   { required: true }
+		    	instNm      : { required: true , maxlength: 100 }
+		    	,instTypeCd : { required: true }
+	            ,brno       : { required: true ,number :true ,maxlength:10}
+		    	,rprsvNm    : { required: true }
+		    	,aprvSttsCd : { required: true }
+		    	,telno      : { number  : true ,maxlength: 12}
+		    	,fxno       : { number  : true ,maxlength: 12}
+		    	,zip        : { required: true }
+		    	,addr       : { required: true }
 		    },
 		    messages: {
-		    	instNm      :   { required: "기관명을 입력해주십시오." , maxlength: "기관명은 100자 이하여야 합니다." }  
-	    	    ,instTypeCd :   { required: "기관유형을 선택해주십시오." }
-	            ,brno       :   { required: "사업자번호를 입력해주세요." ,number : "숫자만 입력가능합니다.", maxlength:"사업자 번호는 10자리 이하여야 합니다." }
-		    	,rprsvNm    :   { required: "대표자명을 입력하세요"  }
-	    	    ,aprvSttsCd :   { required: "승인상태를 선택해주십시오." }
-		    	,telno      :   { number  : "숫자만 입력가능합니다." , maxlength:"전화 번호는 12자리 이하여야 합니다."}
-		    	,fxno       :   { number  : "숫자만 입력가능합니다." , maxlength:"팩스번호는 12자리 이하여야 합니다."}
-		    	,zip        :   { required: "우편번호를 입력해주십시오" }
-		    	,addr       :   { required: "주소를 입력해주십시오" }
+		    	instNm      : { required: "기관명을 입력해주십시오." , maxlength: "기관명은 100자 이하여야 합니다." }  
+	    	    ,instTypeCd : { required: "기관유형을 선택해주십시오." }
+	            ,brno       : { required: "사업자번호를 입력해주세요." ,number : "숫자만 입력가능합니다.", maxlength:"사업자 번호는 10자리 이하여야 합니다." }
+		    	,rprsvNm    : { required: "대표자명을 입력하세요"  }
+	    	    ,aprvSttsCd : { required: "승인상태를 선택해주십시오." }
+		    	,telno      : { number  : "숫자만 입력가능합니다." , maxlength:"전화 번호는 12자리 이하여야 합니다."}
+		    	,fxno       : { number  : "숫자만 입력가능합니다." , maxlength:"팩스번호는 12자리 이하여야 합니다."}
+		    	,zip        : { required: "우편번호를 입력해주십시오" }
+		    	,addr       : { required: "주소를 입력해주십시오" }
 		    }
 	})
     
@@ -284,6 +288,10 @@
 				success : function (data){
 					if(data.result=="success"){
 						alert(data.msg);
+
+						console.log("success");
+
+						
 						gridHelper1.resetListContent();
 					}else{
 						alert(data.msg);
