@@ -4,8 +4,11 @@ import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.mng.inst.model.InstVo;
 import com.kbrainc.plum.mng.inst.service.InstService;
+import com.kbrainc.plum.mng.rcpmnyBfe.model.RcpmnyBfeVo;
 import com.kbrainc.plum.mng.refndMng.model.RefndMngVo;
 import com.kbrainc.plum.mng.refndMng.service.RefndMngService;
+import com.kbrainc.plum.mng.resveReqst.model.ResveReqstVo;
+import com.kbrainc.plum.mng.resveReqst.service.ResveReqstService;
 import com.kbrainc.plum.mng.spce.model.SpceVo;
 import com.kbrainc.plum.mng.spce.service.SpceService;
 import com.kbrainc.plum.rte.constant.Constant;
@@ -45,15 +48,12 @@ public class RefndMngController {
     
     @Autowired
     private RefndMngService refndMngService;
-    
-    @Autowired
-    private FileService fileService;
-    
-    @Autowired
-    private InstService instService;
-    
+
     @Autowired
     private SpceService spceService;
+
+    @Autowired
+    private ResveReqstService resveReqstService;
     
     /**
     * 시설관리 리스트화면으로 이동
@@ -83,58 +83,35 @@ public class RefndMngController {
         // 공간 보유개수 조회
         spceVo.setFcltid(refndMngVo.getFcltid());
         spceVo.setUser(user);
-        model.addAttribute("spceList", spceService.selectSpceList(spceVo));
         return "mng/refndMng/refndMngDetail";
     }
-    
-    /**
-     * 등록 화면
-     *
-     * @Title       : refndMngForm 
-     * @Description : 등록화면 이동.
-     * @param model 모델객체
-     * @return String 이동화면경로
-     * @throws Exception 예외
-     */
-    @RequestMapping(value = "/mng/refndMng/refndMngForm.html")
-    public String refndMngForm(RefndMngVo refndMngVo, Model model, @UserInfo UserVo user, InstVo instVo) throws Exception {
-        model.addAttribute("user", user);
-        
-        // 기관회원일 경우
-        if( user.getInstid() != null ) {
-            instVo.setInstid(user.getInstid());
-            model.addAttribute("inst", instService.selectInstInfo(instVo));
-        }
-        return "mng/refndMng/refndMngForm";
-    }
-    
+
     /**
      * 공간정보 조회화면
      *
-     * @Title       : refndMngSpceList
+     * @Title       : refndMngCompleteList
      * @Description : 공간정보 조회화면 이동.
-     * @param model 모델객체
      * @return String 이동화면경로
      * @throws Exception 예외
      */
-    @RequestMapping(value = "/mng/refndMng/refndMngSpceList.html")
-    public String refndMngSpceList() throws Exception {
-        return "mng/refndMng/refndMngSpceList";
+    @RequestMapping(value = "/mng/refndMng/refndMngCompleteList.html")
+    public String refndMngCompleteList() throws Exception {
+        return "mng/refndMng/refndMngCompleteList";
     }
     
     
     /**
     * 공간정보 조회 기능
     *
-    * @Title : selectRefndMngSpceList
+    * @Title : selectRefndMngCompleteList
     * @Description : 공간정보 조회 기능
     * @param refndMngVo 시설 객체
     * @throws Exception 예외
     * @return Map<String,Object>
     */
-    @RequestMapping(value = "/mng/refndMng/selectRefndMngSpceList.do")
+    @RequestMapping(value = "/mng/refndMng/selectRefndMngCompleteList.do")
     @ResponseBody
-    public Map<String, Object> selectRefndMngSpceList(RefndMngVo refndMngVo, @UserInfo UserVo user, SpceVo spceVo) throws Exception {
+    public Map<String, Object> selectRefndMngCompleteList(RefndMngVo refndMngVo, @UserInfo UserVo user, SpceVo spceVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         List<SpceVo> result = null;
         
@@ -160,125 +137,26 @@ public class RefndMngController {
     }
     
     /**
-     * 시설 등록
-     *
-     * @Title : insertRefndMng
-     * @Description : 시설 등록
-     * @param refndMngVo 시설 객체
-     * @param bindingResult 시설 유효성 검증결과
-     * @param user 사용자 세션정보
-     * @throws Exception 예외
-     * @return Map<String,Object>
-     */
-     @RequestMapping(value = "/mng/refndMng/insertRefndMng.do")
-     @ResponseBody
-     public Map<String, Object> insertRefndMng(@Valid RefndMngVo refndMngVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
-         Map<String, Object> resultMap = new HashMap<String, Object>();
-         
-         if (bindingResult.hasErrors()) {
-             FieldError fieldError = bindingResult.getFieldError();
-             if (fieldError != null) {
-                 resultMap.put("msg", fieldError.getDefaultMessage());
-             }
-             return resultMap;
-         }
-         
-         refndMngVo.setUser(user);
-
-         // 시설명 중복확인
-         int cnt = 0;
-         cnt = refndMngService.checkDuplicateFcltNm(refndMngVo);
-         RefndMngVo.dupCnt = cnt;
-         if (cnt > 0) {
-             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-             resultMap.put("msg", "시설명이 중복되었습니다.");
-             
-             return resultMap;
-         }
-         
-         // 시설번호 생성        
-         String fcltVal = "FA-".concat(Integer.toString(refndMngVo.getInstid()));
-         RefndMngVo.fcltVal = fcltVal;
-         RefndMngVo result = refndMngService.selectFcltNo(refndMngVo);
-         refndMngVo.fcltNo = fcltVal.concat("-").concat(result.fcltNo);
-         
-         int retVal = 0;
-         retVal = refndMngService.insertRefndMng(refndMngVo);
-         if (retVal > 0) {
-             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-             resultMap.put("msg", "등록에 성공하였습니다.");
-         } else {
-             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-             resultMap.put("msg", "등록에 실패했습니다.");
-         }
-
-         return resultMap;
-     }
-     
-     
-    /**
     * 시설 수정화면으로 이동
     *
-    * @Title : refndMngUpdate
+    * @Title : refndMngView
     * @Description : 시설 수정화면으로 이동
     * @param refndMngVo 시설 객체
     * @param model model 객체
     * @throws Exception 예외
     * @return String
     */
-    @RequestMapping(value = "/mng/refndMng/refndMngUpdate.html")
-    public String refndMngUpdate(RefndMngVo refndMngVo, Model model, @UserInfo UserVo user, InstVo instVo) throws Exception {
-        
+    @RequestMapping(value = "/mng/refndMng/refndMngView.html")
+    public String refndMngView(RefndMngVo refndMngVo, Model model, @UserInfo UserVo user, InstVo instVo) throws Exception {
+
         model.addAttribute("param", refndMngVo);
         
         refndMngVo.setUser(user);
         RefndMngVo resultVo = refndMngService.selectRefndMngInfo(refndMngVo);
-        
-        FileVo fileVo = new FileVo();
-        fileVo.setUser(user);
-        
-        // 기관회원일 경우
-        if( user.getInstid() != null ) {
-            instVo.setInstid(user.getInstid());
-            model.addAttribute("inst", instService.selectInstInfo(instVo));
-        }
-        
-        // 대표 이미지
-        if (resultVo.getRprsImgFileid() != null && !resultVo.getRprsImgFileid().equals(0)) {
-            fileVo.setFilegrpid(Integer.parseInt(resultVo.getRprsImgFileid().toString()));
-            ArrayList<FileVo> fileList= fileService.getFileList(fileVo);
-            model.addAttribute("rprsImgFileMap",fileList );
-            model.addAttribute("rprsCurrentFileCnt", fileList.size());
-        } else {
-            model.addAttribute("rprsImgFileMap", null);
-            model.addAttribute("rprsCurrentFileCnt", 0);
-        }
 
-        // 상세 이미지
-        if (resultVo.getDtlImgFilegrpid() != null && !resultVo.getDtlImgFilegrpid().equals(0)) {
-            fileVo.setFilegrpid(Integer.parseInt(resultVo.getDtlImgFilegrpid().toString()));
-            ArrayList<FileVo> fileList= fileService.getFileList(fileVo);
-            model.addAttribute("dtlImgFileMap",fileList );
-            model.addAttribute("dtlCurrentFileCnt", fileList.size());
-        } else {
-            model.addAttribute("dtlImgFileMap", null);
-            model.addAttribute("dtlCurrentFileCnt", 0);
-        }
-        
-        // 안내자료
-        if (resultVo.getGdncFileid() != null && !resultVo.getGdncFileid().equals(0)) {
-            fileVo.setFilegrpid(Integer.parseInt(resultVo.getGdncFileid().toString()));
-            ArrayList<FileVo> fileList= fileService.getFileList(fileVo);
-            model.addAttribute("gdncFileMap",fileList );
-            model.addAttribute("gdncCurrentFileCnt", fileList.size());
-        } else {
-            model.addAttribute("gdncFileMap", null);
-            model.addAttribute("gdncCurrentFileCnt", 0);
-        }
-        
         model.addAttribute("refndMng", resultVo);
         
-        return "mng/refndMng/refndMngUpdate";
+        return "mng/refndMng/refndMngView";
     }
    
     /**
@@ -295,11 +173,7 @@ public class RefndMngController {
     public Map<String, Object> selectRefndMngList(RefndMngVo refndMngVo, @UserInfo UserVo user, InstVo instVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         List<RefndMngVo> result = null;
-        
-        // 기관회원일 경우
-        if( user.getInstid() != null ) {
-            refndMngVo.setInstid(user.getInstid());
-        }
+
         result =  refndMngService.selectRefndMngList(refndMngVo);
         
         if (result.size() > 0) {
@@ -311,23 +185,57 @@ public class RefndMngController {
 
         return resultMap;
     }
-    
+
     /**
-    * 시설 수정 기능
-    *
-    * @Title : updateRefndMng
-    * @Description : 시설 수정 기능
-    * @param refndMngVo 시설 객체
-    * @param bindingResult 시설 유효성 검증결과
-    * @param user 사용자 세션정보
-    * @throws Exception 예외
-    * @return Map<String,Object>
-    */
-    @RequestMapping(value = "/mng/refndMng/updateRefndMng.do")
+     * @Title : refndCancelPopup
+     * @Description : 환불요청취소 팝업
+     * @throws Exception :
+     * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/refndMng/refndCancelPopup.html")
+    public String refndCancelPopup(RefndMngVo refndMngVo, Model model) throws Exception {
+        model.addAttribute("param", refndMngVo);
+
+        RefndMngVo resultVo = refndMngService.selectRefndMngInfo(refndMngVo);
+
+        model.addAttribute("refndMng", resultVo);
+        return "mng/refndMng/refndCancelPopup";
+    }
+
+    /**
+     * @Title : refndCompletePopup
+     * @Description : 환불 완료 팝업
+     * @throws Exception :
+     * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/refndMng/refndCompletePopup.html")
+    public String refndCompletePopup(RefndMngVo refndMngVo, Model model) throws Exception {
+        model.addAttribute("param", refndMngVo);
+
+        RefndMngVo resultVo = refndMngService.selectRefndMngInfo(refndMngVo);
+
+        model.addAttribute("refndMng", resultVo);
+        return "mng/refndMng/refndCompletePopup";
+    }
+
+    /**
+     * 환불 완료 처리
+     *
+     * @Title : updateRefndComplete
+     * @Description : 환불 완료 처리
+     * @param refndMngVo 입금 전 객체
+     * @param bindingResult 입금 전 유효성 검증결과
+     * @param user 사용자 세션정보
+     * @throws Exception 예외
+     * @return Map<String,Object>
+     */
+    @RequestMapping(value = "/mng/refndMng/updateRefndComplete.do")
     @ResponseBody
-    public Map<String, Object> updateRefndMng(@Valid RefndMngVo refndMngVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> updateRefndComplete(@Valid RefndMngVo refndMngVo, BindingResult bindingResult, @UserInfo UserVo user, ResveReqstVo resveReqstVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
-        
+
         if (bindingResult.hasErrors()) {
             FieldError fieldError = bindingResult.getFieldError();
             if (fieldError != null) {
@@ -335,71 +243,119 @@ public class RefndMngController {
             }
             return resultMap;
         }
-        
+
         refndMngVo.setUser(user);
 
         int retVal = 0;
-                
-        retVal = refndMngService.updateRefndMng(refndMngVo);
-        
+
+        retVal = refndMngService.updateRefndComplete(refndMngVo);
+
+        // 상태변경 데이터 세팅
+        resveReqstVo.setAplyid(refndMngVo.getAplyid());
+        resveReqstVo.setUser(user);
+        // 상태변경이력 추가
+        resveReqstService.insertHstry(resveReqstVo);
+
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "수정에 성공하였습니다.");
+            resultMap.put("msg", "환불 완료처리에 성공하였습니다.");
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-            resultMap.put("msg", "수정에 실패했습니다.");
+            resultMap.put("msg", "환불 완료처리에 실패했습니다.");
         }
 
         return resultMap;
     }
-    
-    /**
-    * 시설 삭제 기능
-    *
-    * @Title : deleteRefndMng
-    * @Description : 시설 삭제 기능
-    * @param refndMngVo refndMngVo
-    * @throws Exception 예외
-    * @return Map<String,Object>
-    */
-    @RequestMapping(value = "/mng/refndMng/deleteRefndMng.do")
-    @ResponseBody
-    public Map<String, Object> deleteRefndMng(RefndMngVo refndMngVo, SpceVo spceVo, @UserInfo UserVo user) throws Exception {
-        Map<String, Object> resultMap = new HashMap<String, Object>();
-        int retVal = 0;
-        
-        // 시설 삭제 전, 공간부터 삭제(공간삭제 전 공간예약있는지부터 조회해서 삭제하기때문에 공간삭제 바로 호출)
-        // 공간 보유개수 조회
-        spceVo.setFcltid(refndMngVo.getFcltid());
-        spceVo.setUser(user);
-        List<SpceVo> spceList = spceService.selectSpceList(spceVo);
 
-        // 공간이 1개라도 있을시, 예약까지 조회
-        if( spceList.size() > 0 ) {
-            String[] spceids = new String[spceList.size()];
-            for( int i = 0; i < spceList.size(); i++ ) {
-                spceids[i] = Integer.toString(spceList.get(i).getSpceid());
+    /**
+     * 예약 신청 취소 처리
+     *
+     * @Title : updateRefndCancel
+     * @Description : 예약 신청 취소 처리
+     * @param refndMngVo 입금 전 객체
+     * @param bindingResult 입금 전 유효성 검증결과
+     * @param user 사용자 세션정보
+     * @throws Exception 예외
+     * @return Map<String,Object>
+     */
+    @RequestMapping(value = "/mng/refndMng/updateRefndCancel.do")
+    @ResponseBody
+    public Map<String, Object> updateRefndCancel(@Valid RefndMngVo refndMngVo, BindingResult bindingResult, @UserInfo UserVo user, ResveReqstVo resveReqstVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
             }
-            
-            spceVo.setSpceids(spceids);
-            
-            if(spceService.isThereSpceRsvt(spceVo).equals("Y")) {
-                resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-                resultMap.put("msg", "예약 신청(내역)건이 존재하여 삭제할 수 없습니다.");
-                return resultMap;
-            }
-            
-            retVal = spceService.deleteSpce(spceVo);
+            return resultMap;
         }
-        
-        retVal = refndMngService.deleteRefndMng(refndMngVo);
-        
+
+        refndMngVo.setUser(user);
+
+        int retVal = 0;
+
+        retVal = refndMngService.updateRefndCancel(refndMngVo);
+
+        // 상태변경 데이터 세팅
+        resveReqstVo.setAplyid(refndMngVo.getAplyid());
+        resveReqstVo.setUser(user);
+        // 상태변경이력 추가
+        resveReqstService.insertHstry(resveReqstVo);
+
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "삭제에 성공하였습니다.");
+            resultMap.put("msg", "예약신청 취소에 성공하였습니다.");
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-            resultMap.put("msg", "삭제에 실패했습니다.");
+            resultMap.put("msg", "예약신청 취소에 실패했습니다.");
+        }
+
+        return resultMap;
+    }
+
+    /**
+     * 환불완료취소 처리
+     *
+     * @Title : updateRefndRollback
+     * @Description : 환불 완료취소 처리
+     * @param refndMngVo 입금 전 객체
+     * @param bindingResult 입금 전 유효성 검증결과
+     * @param user 사용자 세션정보
+     * @throws Exception 예외
+     * @return Map<String,Object>
+     */
+    @RequestMapping(value = "/mng/refndMng/updateRefndRollback.do")
+    @ResponseBody
+    public Map<String, Object> updateRefndRollback(@Valid RefndMngVo refndMngVo, BindingResult bindingResult, @UserInfo UserVo user, ResveReqstVo resveReqstVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+
+        refndMngVo.setUser(user);
+
+        int retVal = 0;
+
+        retVal = refndMngService.updateRefndRollback(refndMngVo);
+
+        // 상태변경 데이터 세팅
+        resveReqstVo.setAplyid(refndMngVo.getAplyid());
+        resveReqstVo.setUser(user);
+        // 상태변경이력 추가
+        resveReqstService.insertHstry(resveReqstVo);
+
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "환불완료취소 처리에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "환불완료취소 처리에 실패했습니다.");
         }
 
         return resultMap;

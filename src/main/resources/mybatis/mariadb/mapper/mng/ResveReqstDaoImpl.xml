@@ -24,9 +24,8 @@
         ,A.MDFCN_DT
         ,A1.CD_NM AS APLY_STTS_CD_NM
         ,A2.CD_NM AS STLM_STTS_CD_NM
-        ,B.RSVTDEID
         ,C.INSTID
-        ,B.DE
+        ,C.INST_NM
         ,B.BGNG_DT
         ,B.END_DT
         ,E.SPCE_NM
@@ -53,18 +52,48 @@
         WHERE
         CDGRPID = 161
         ) A2 ON (A.STLM_STTS_CD = A2.CD)
-        INNER JOIN TB_FCL_APLY_RSVTDE B
+        INNER JOIN (SELECT B.APLYID, D.SPCEID, MIN(D.BGNG_DT) AS BGNG_DT, MAX(D.END_DT) AS END_DT
+        FROM TB_FCL_APLY_RSVTDE B
+        LEFT JOIN TB_FCL_SPCE_RSVTDE D ON B.RSVTDEID = D.RSVTDEID
+        GROUP BY APLYID) B
         ON A.APLYID = B.APLYID
-        INNER JOIN TB_CMM_INST C
-        ON A.INSTID = C.INSTID
-        INNER JOIN TB_FCL_SPCE_RSVTDE D
-        ON B.RSVTDEID = D.RSVTDEID
         INNER JOIN TB_FCL_SPCE E
-        ON D.SPCEID = E.SPCEID
+        ON B.SPCEID = E.SPCEID
         INNER JOIN TB_FCL_FCLT F
         ON E.FCLTID = F.FCLTID
+        INNER JOIN TB_CMM_INST C
+        ON F.INSTID = C.INSTID
         LEFT OUTER JOIN TB_CMM_USER G ON A.APLCNTID = G.USERID
         WHERE 1=1
+        <if test="searchKeyword != null and searchKeyword != '' and searchType.equals('spceNm')">
+            AND E.SPCE_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchKeyword != null and searchKeyword != '' and searchType.equals('fcltNm')">
+            AND F.FCLT_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchKeyword != null and searchKeyword != '' and searchType.equals('instNm')">
+            AND C.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchKeyword != null and searchKeyword != '' and searchType.equals('acnt')">
+            AND G.ACNT LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchKeyword != null and searchKeyword != '' and searchType.equals('aplcntNm')">
+            AND A.APLCNT_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchAplySttsCd != null and searchAplySttsCd != ''">
+            AND A.APLY_STTS_CD = #{searchAplySttsCd}
+        </if>
+        <if test="searchStlmSttsCd != null and searchStlmSttsCd != ''">
+            AND A.STLM_STTS_CD = #{searchStlmSttsCd}
+        </if>
+        <!-- 신청일 검색시작일  -->
+        <if test="searchBgngDt != null and searchBgngDt != ''">
+            AND B.BGNG_DT >= date(#{searchBgngDt})
+        </if>
+        <!-- 신청일 검색종료일  -->
+        <if test="searchEndDt  != null and searchEndDt != ''">
+            AND B.END_DT <![CDATA[<=]]> date(#{searchEndDt})
+        </if>
         <include refid="PaginationMapper.footer"/>
     </select>
 
@@ -89,12 +118,15 @@
              ,A.RFND_PYR_NM
              ,A.RFND_AMT
              ,A.RFND_DE
+             ,A.NOPE_ADULT
+             ,A.NOPE_CHIL
+             ,A.NOPE_INFNT
+             ,A.UTZTN_PRPS
+             ,A.AMT
              ,A1.CD_NM AS APLY_STTS_CD_NM
              ,A2.CD_NM AS STLM_STTS_CD_NM
-             ,B.RSVTDEID
              ,C.INSTID
              ,C.INST_NM
-             ,B.DE
              ,B.BGNG_DT
              ,B.END_DT
              ,E.SPCE_NM
@@ -113,12 +145,10 @@
              ,H.MOBLPHON
              ,H.EML
              ,H.ACNT
-             ,J.INST_NM AS USER_INST_NM
+             ,IFNULL(J.INST_NM, '-') AS USER_INST_NM
              ,K.CD_NM AS STLM_MTHD_CD_NM
         FROM
             TB_FCL_SPCE_APLY A
-                INNER JOIN TB_FCL_APLY_RSVTDE B
-                           ON A.APLYID = B.APLYID
                 INNER JOIN (
                 SELECT
                     CD
@@ -137,14 +167,17 @@
                 WHERE
                     CDGRPID = 161
             ) A2 ON (A.STLM_STTS_CD = A2.CD)
-                INNER JOIN TB_CMM_INST C
-                           ON A.INSTID = C.INSTID
-                INNER JOIN TB_FCL_SPCE_RSVTDE D
-                           ON B.RSVTDEID = D.RSVTDEID
+                INNER JOIN (SELECT B.APLYID, D.SPCEID, MIN(D.BGNG_DT) AS BGNG_DT, MAX(D.END_DT) AS END_DT
+                            FROM TB_FCL_APLY_RSVTDE B
+                                     LEFT JOIN TB_FCL_SPCE_RSVTDE D ON B.RSVTDEID = D.RSVTDEID
+                            GROUP BY APLYID) B
+                           ON A.APLYID = B.APLYID
                 INNER JOIN TB_FCL_SPCE E
-                           ON D.SPCEID = E.SPCEID
+                           ON B.SPCEID = E.SPCEID
                 INNER JOIN TB_FCL_FCLT F
                            ON E.FCLTID = F.FCLTID
+                INNER JOIN TB_CMM_INST C
+                           ON F.INSTID = C.INSTID
                 INNER JOIN (
                 SELECT
                     CD
@@ -197,13 +230,10 @@
                                   ,NOPE_INFNT     = #{nopeInfnt}
                                   ,UTZTN_PRPS     = #{utztnPrps}
                                   ,DPST_AMT       = #{dpstAmt}
-                                  ,RFND_DMND_AMT      = #{rfndDmndAmt}
-                                  ,RFND_AMT       = #{rfndAmt}
                                   ,PYR_NM     = #{pyrNm}
                                   ,DPST_DE        = #{dpstDe}
-                                  ,RFND_DMND_DT       = #{rfndDmndDt}
+                                  ,RFND_AMT       = #{rfndAmt}
                                   ,RFND_DE        = #{rfndDe}
-                                  ,RFND_CMPTN_DT      = #{rfndCmptnDt}
                                   ,RFND_BANK_CD       = #{rfndBankCd}
                                   ,RFND_BACNT     = #{rfndBacnt}
                                   ,RFND_PYR_NM        = #{rfndPyrNm}
@@ -279,16 +309,17 @@
         WHERE
         CDGRPID = 161
         ) A2 ON (A.STLM_STTS_CD = A2.CD)
-        INNER JOIN TB_FCL_APLY_RSVTDE B
+        INNER JOIN (SELECT B.APLYID, D.SPCEID, MIN(D.BGNG_DT) AS BGNG_DT, MAX(D.END_DT) AS END_DT
+        FROM TB_FCL_APLY_RSVTDE B
+        LEFT JOIN TB_FCL_SPCE_RSVTDE D ON B.RSVTDEID = D.RSVTDEID
+        GROUP BY APLYID) B
         ON A.APLYID = B.APLYID
-        INNER JOIN TB_CMM_INST C
-        ON A.INSTID = C.INSTID
-        INNER JOIN TB_FCL_SPCE_RSVTDE D
-        ON B.RSVTDEID = D.RSVTDEID
         INNER JOIN TB_FCL_SPCE E
-        ON D.SPCEID = E.SPCEID
+        ON B.SPCEID = E.SPCEID
         INNER JOIN TB_FCL_FCLT F
         ON E.FCLTID = F.FCLTID
+        INNER JOIN TB_CMM_INST C
+        ON F.INSTID = C.INSTID
         LEFT OUTER JOIN TB_CMM_USER G ON A.MDFRID = G.USERID
         WHERE 1=1
         AND A.APLYID = #{aplyid}
@@ -302,7 +333,7 @@
         SELECT CASE
                    WHEN A.STLM_STTS_CD = 161101 AND A.APLY_STTS_CD = 160101 THEN '' /* 입금대기 - 예약신청 */
                    WHEN A.STLM_STTS_CD = 161101 AND A.APLY_STTS_CD = 160103 THEN A.RSVT_CNCL_RSN /* 입금대기 - 예약취소 - 예약취소사유 */
-                   WHEN A.STLM_STTS_CD = 161102 AND A.APLY_STTS_CD = 160102 THEN '' /* 입금완료 - 예약승인 */
+                   WHEN A.STLM_STTS_CD = 161102 AND A.APLY_STTS_CD = 160102 THEN A.RFND_REJECT_RSN /* 입금완료 - 예약승인 */
                    WHEN A.STLM_STTS_CD = 161103 AND A.APLY_STTS_CD = 160103 THEN '' /* 환불요청 - 예약취소 */
                    WHEN A.STLM_STTS_CD = 161104 AND A.APLY_STTS_CD = 160103 THEN '' /* 환불완료 - 예약취소 */
                    WHEN A.STLM_STTS_CD = 161102 AND A.APLY_STTS_CD = 160102

@@ -2,6 +2,7 @@ package com.kbrainc.plum.front.envReqst.controller;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
+import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.front.envReqst.model.EnvReqstVo;
 import com.kbrainc.plum.front.envReqst.service.EnvReqstService;
 import com.kbrainc.plum.mng.inst.model.InstVo;
@@ -54,6 +55,9 @@ public class EnvReqstController {
     @Autowired
     private SpceService spceService;
 
+    @Autowired
+    private CommonService commonService;
+
     /**
      * 환경교육시설 예약 목록 화면
      * Title : envReqstList
@@ -66,9 +70,7 @@ public class EnvReqstController {
      */
     @RequestMapping(value = "/front/envReqst/envReqstList.html")
     public String envReqstList(EnvReqstVo envReqstVo, Model model) throws Exception {
-        Map<String,List<EnvReqstVo>> listMap = new HashMap<>();
-        List<EnvReqstVo> list = envReqstService.selectEnvReqstList(envReqstVo);
-        model.addAttribute("list",listMap);
+        model.addAttribute("sidoList", commonService.selectAllRgnList());
         return "front/envReqst/envReqstList";
     }
 

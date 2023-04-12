@@ -45,59 +45,99 @@
     <!-- 환경교육시설 예약 상세조회 -->
     <select id="selectResveEnvInfo" resultType="com.kbrainc.plum.front.mypage.mypageEnvReqst.model.MypageEnvReqstVo">
         /* EnvReqstDao.selectResveEnvInfo */
-        SELECT
-            A.FCLTID
-             , A.FCLT_NM
-             , A.FCLT_NO
-             , A.INSTID
-             , A.ZIP
-             , A.ADDR
-             , A.ADDR_DTL
-             , A.RGN_CD
-             , A.APLY_MTHD_CD
-             , A.EXTNL_URL
-             , A.BANK_CD
-             , A.BACNT_NO
-             , A.DPSTR_NM
-             , A.RPRS_IMG_FILEID
-             , A.DTL_IMG_FILEGRPID
-             , A.GDNC_FILEID
-             , A.DTL_CN
-             , A.USE_YN
-             , A.MDFCN_DT
-             , A.MDFRID
-             , A.REG_DT
+        SELECT A.APLYID
              , A.RGTRID
-             , B.INST_NM
-             , C.CD_NM AS RGN_NM
-             , D.CD_NM AS APLY_MTHD_NM
-             , E.NM
-        FROM
-            TB_FCL_FCLT A
-                LEFT OUTER JOIN TB_CMM_INST B ON A.INSTID = B.INSTID
-                LEFT OUTER JOIN TB_CMM_USER E ON A.RGTRID = E.USERID
-                INNER JOIN (
-                SELECT
-                    CD
-                     , CD_NM
-                FROM
-                    TB_CMM_CD
-                WHERE
-                    CDGRPID = 143
-            ) C ON (C.CD = A.RGN_CD)
-                INNER JOIN (
-                SELECT
-                    CD
-                     , CD_NM
-                FROM
-                    TB_CMM_CD
-                WHERE
-                    CDGRPID = 153
-            ) D ON (D.CD = A.APLY_MTHD_CD)
-        WHERE
-            1=1
-          AND A.INSTID = B.INSTID
-          AND FCLTID = #{fcltid}
+             , A.RSVTDEID
+             , A.UTZTN_SE_CD
+             , A.DE
+             , A.BGNG_DT
+             , A.END_DT
+             , A.REG_DT
+             , B.APLCNT_NM
+             , B.APLCNT_MOBLPHON
+             , SUBSTRING_INDEX(SUBSTRING_INDEX(B.APLCNT_EML, '@', 1), '@', -1) AS APLCNT_EML_ID
+             , SUBSTRING_INDEX(SUBSTRING_INDEX(B.APLCNT_EML, '@', 2), '@', -1) AS APLCNT_EML_DOMAIN
+             , B.NOPE_ADULT
+             , B.NOPE_CHIL
+             , B.NOPE_INFNT
+             , B.UTZTN_PRPS
+             , B.AMT
+             , B.DPST_AMT
+             , B.RFND_DMND_AMT
+             , B.RFND_AMT
+             , B.STLM_MTHD_CD
+             , B.DPST_BACNT
+             , B.PYR_NM
+             , B.APLY_DT
+             , B.DPST_DE
+             , B.DPST_IDNTY_DT
+             , B.CNCL_DT
+             , B.RFND_DMND_DT
+             , B.RFND_DE
+             , B.RFND_CMPTN_DT
+             , B.RFND_BANK_CD
+             , B.RFND_BACNT
+             , B.RFND_PYR_NM
+             , B.APLY_STTS_CD
+             , B.STLM_STTS_CD
+             , B.CNCL_RSN_CD
+             , B1.CD_NM AS CNCL_RSN_CD_NM
+             , B.RSVT_REJECT_RSN
+             , B.RSVT_CNCL_RSN
+             , B.RFND_REJECT_RSN
+             , CASE
+                   WHEN B.STLM_STTS_CD = 161101 AND B.APLY_STTS_CD = 160101 THEN '' /* 입금대기 - 예약신청 */
+                   WHEN B.STLM_STTS_CD = 161101 AND B.APLY_STTS_CD = 160103 THEN B.RSVT_CNCL_RSN /* 입금대기 - 예약취소 - 예약취소사유 */
+                   WHEN B.STLM_STTS_CD = 161102 AND B.APLY_STTS_CD = 160102 THEN '' /* 입금완료 - 예약승인 */
+                   WHEN B.STLM_STTS_CD = 161103 AND B.APLY_STTS_CD = 160103 THEN '' /* 환불요청 - 예약취소 */
+                   WHEN B.STLM_STTS_CD = 161104 AND B.APLY_STTS_CD = 160103 THEN '' /* 환불완료 - 예약취소 */
+                   WHEN B.STLM_STTS_CD = 161102 AND B.APLY_STTS_CD = 160102
+                       THEN B.RFND_REJECT_RSN /* 환불완료 - 예약취소 - 환불완료취소 - 환불완료취소사유 and 환불완료취소사유코드 */
+                   ELSE ''
+            END AS CHG_RSN
+             , D.SPCE_NM
+             , D.SIZE
+             , D.MAX_NOPE
+             , D.CHKIN_HR
+             , D.CHCKT_HR
+             , E.FCLT_NM
+             , E.RGN_CD
+             , E.BANK_CD
+             , E.BACNT_NO
+             , E.DPSTR_NM
+             , E.FCLTID
+             , E.FCLT_NM
+             , E.FCLT_NO
+             , E.ADDR
+             , E.ADDR_DTL
+             , E.APLY_MTHD_CD
+             , E1.CD_NM AS BANK_CD_NM
+             , F.INST_NM
+        FROM TB_FCL_APLY_RSVTDE A
+                 INNER JOIN TB_FCL_SPCE_APLY B ON A.APLYID = B.APLYID
+                 LEFT OUTER JOIN (
+                        SELECT
+                            CD
+                             , CD_NM
+                        FROM
+                            TB_CMM_CD
+                        WHERE
+                            CDGRPID = 215
+                    ) B1 ON (B.CNCL_RSN_CD = B1.CD)
+                 INNER JOIN TB_FCL_SPCE_RSVTDE C ON A.RSVTDEID = C.RSVTDEID
+                 INNER JOIN TB_FCL_SPCE D ON C.SPCEID = D.SPCEID
+                 INNER JOIN TB_FCL_FCLT E ON D.FCLTID = E.FCLTID
+                 INNER JOIN (
+                        SELECT
+                            CD
+                             , CD_NM
+                        FROM
+                            TB_CMM_CD
+                        WHERE
+                            CDGRPID = 154
+                    ) E1 ON (E.BANK_CD = E1.CD)
+                 INNER JOIN TB_CMM_INST F ON E.INSTID = F.INSTID
+        WHERE A.APLYID = #{aplyid} AND A.RSVTDEID = #{rsvtdeid}
     </select>
 
     <select id="selectSpceInfo" resultType="com.kbrainc.plum.front.mypage.mypageEnvReqst.model.MypageEnvReqstVo">

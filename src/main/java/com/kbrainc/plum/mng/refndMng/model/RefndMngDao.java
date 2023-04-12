@@ -1,5 +1,6 @@
 package com.kbrainc.plum.mng.refndMng.model;
 
+import com.kbrainc.plum.mng.refndMng.model.RefndMngVo;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import java.util.List;
@@ -34,50 +35,6 @@ public interface RefndMngDao {
     public List<RefndMngVo> selectRefndMngList(RefndMngVo refndMngVo) throws Exception;
     
     /**
-     * 마지막 시설번호 조회.
-     *
-     * @Title : selectFcltNo
-     * @Description : 마지막 시설번호 조회.
-     * @param refndMngVo
-     * @return RefndMngVo
-     * @throws Exception 예외
-     */
-     public RefndMngVo selectFcltNo(RefndMngVo refndMngVo) throws Exception;
-     
-     /**
-      * 시설명 중복 조회.
-      *
-      * @Title : checkDuplicateFcltNm
-      * @Description : 시설명 중복 조회.
-      * @param refndMngVo
-      * @return RefndMngVo
-      * @throws Exception 예외
-      */
-     public int checkDuplicateFcltNm(RefndMngVo refndMngVo) throws Exception;
-     
-     /**
-      * 회원 기관데이터 조회.
-      *
-      * @Title : selectUserInst
-      * @Description : 회원 기관데이터 조회.
-      * @param instid
-      * @return RefndMngVo
-      * @throws Exception 예외
-      */
-     public RefndMngVo selectUserInst(Integer instid) throws Exception;
-     
-    /**
-    * 시설 등록
-    *
-    * @Title : insertRefndMng
-    * @Description : 시설 등록
-    * @param refndMngVo 시설 객체
-    * @throws Exception 예외
-    * @return int
-    */
-    public int insertRefndMng(RefndMngVo refndMngVo) throws Exception;
-    
-    /**
     * 시설 상세정보 조회
     *
     * @Title : selectRefndMngInfo
@@ -88,36 +45,48 @@ public interface RefndMngDao {
     */
     public RefndMngVo selectRefndMngInfo(RefndMngVo refndMngVo) throws Exception;
     
-    /**
-    * 시설 수정
-    *
-    * @Title : updateRefndMng
-    * @Description : 시설 게시글 수정
-    * @param refndMngVo 시설 객체
-    * @throws Exception 예외
-    * @return int
-    */
-    public int updateRefndMng(RefndMngVo refndMngVo) throws Exception;
-    
-    /**
-    * 시설 삭제
-    *
-    * @Title : deleteRefndMng
-    * @Description : 시설 삭제
-    * @param refndMngVo 시설 객체
-    * @throws Exception 예외
-    * @return int
-    */
-    public int deleteRefndMng(RefndMngVo refndMngVo) throws Exception;
     
     /**
      * 공간 목록 조회
      *
-     * @Title : selectRefndMngSpceList
+     * @Title : selectRefndMngCompleteList
      * @Description : 공간 목록 조회
      * @param refndMngVo 시설 객체
      * @throws Exception 예외
      * @return List<RefndMngVo>
      */
-     public List<RefndMngVo> selectRefndMngSpceList(RefndMngVo refndMngVo) throws Exception;
+     public List<RefndMngVo> selectRefndMngCompleteList(RefndMngVo refndMngVo) throws Exception;
+
+    /**
+     * 입금 확인 처리
+     *
+     * @Title : updateRefndComplete
+     * @Description : 입금 확인 처리
+     * @param refndMngVo 입금 전 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    public int updateRefndComplete(RefndMngVo refndMngVo) throws Exception;
+
+    /**
+     * 예약 신청 취소 처리
+     *
+     * @Title : updateRefndCancel
+     * @Description : 예약 신청 취소 처리
+     * @param refndMngVo 입금 전 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    public int updateRefndCancel(RefndMngVo refndMngVo) throws Exception;
+
+    /**
+     * 환불완료취소 처리
+     *
+     * @Title : updateRefndRollback
+     * @Description : 예약 신청 취소 처리
+     * @param refndMngVo 입금 전 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    public int updateRefndRollback(RefndMngVo refndMngVo) throws Exception;
 }

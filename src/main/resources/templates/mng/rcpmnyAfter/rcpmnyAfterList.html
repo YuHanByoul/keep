@@ -18,62 +18,45 @@
 
 			<form name="searchFrm" id="searchFrm" action="" onsubmit="return false;" class="card">
 				<div class="card-block-small">
-					<!-- 키워드 filter -->
 					<div class="row">
 						<div class="col-lg-3 col-md-6 mb-3">
 							<div class="mb-0 form-group row">
-								<div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
-									<strong>키워드</strong>
-								</div>
-								<div
-										class="input-group input-group-sm input-group-dropdown mb-0">
+								<div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
+								<div class="input-group input-group-sm input-group-dropdown mb-0">
 									<select name="searchType" id="searchType"
-											class="form-select form-control form-control-primary form-bg-primary">
+											class="form-select form-control">
+										<option value="spceNm">공간</option>
 										<option value="fcltNm">시설</option>
 										<option value="instNm">운영기관</option>
+										<option value="acnt">신청자ID</option>
+										<option value="aplcntNm">신청자명</option>
 									</select>
-									<input type="text" name="searchKeyword" id="searchKeyword" class="form-control input-sm" style="padding: 0; width: 180px; display: inline-block;">
+									<input type="text" name="searchKeyword" id="searchKeyword" class="form-control" aria-label="Text input with dropdown button">
 								</div>
 							</div>
 						</div>
 						<div class="col-lg-3 col-md-6 mb-3">
 							<div class="mb-0 form-group row">
 								<div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
-									<strong>신청상태</strong>
-								</div>
-								<div class="col-sm-12">
-                                        <span kattr:select_code="searchSeCd" name="searchSeCd" id="searchSeCd" grpCd="153" firstOptTxt="- 전체 -" addClass="input-sm" isAdmin="true">
-								</div>
-							</div>
-						</div>
-						<div class="col-lg-3 col-md-6 mb-3">
-							<div class="mb-0 form-group row">
-								<div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
-									<strong>지역</strong>
-								</div>
-								<div class="col-sm-12">
-                                        <span kattr:select_code="searchRgnCd" name="searchRgnCd" id="searchRgnCd" grpCd="143" firstOptTxt="- 전체 -" addClass="input-sm" isAdmin="true">
-								</div>
-							</div>
-						</div>
-						<div class="col-lg-3 col-md-6 mb-3">
-							<div class="mb-0 form-group row">
-								<div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사용여부</strong></div>
+									<strong>예약승인일-검색시작일</strong></div>
 								<div class="col-12">
-									<select name="searchUseYn" id="searchUseYn" class="form-select form-select-sm form-control-sm">
-										<option value="">- 전체 -</option>
-										<option value="Y">사용</option>
-										<option value="N">미사용</option>
-									</select>
+									<input type="date" class="form-control form-control-sm" name="searchBgngDt" id="searchBgngDt" placeholder="Text Input Validation">
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-3 col-md-6 mb-3">
+							<div class="mb-0 form-group row">
+								<div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+									<strong>예약승인일 - 검색종료일</strong></div>
+								<div class="col-12">
+									<input type="date" class="form-control form-control-sm" name="searchEndDt" id="searchEndDt" placeholder="Text Input Validation">
 								</div>
 							</div>
 						</div>
 					</div>
-					<!-- //키워드 filter -->
-					<!-- 키워드 filter-btn -->
-					<div class="m-t-20 text-center">
+					<div class="mt-1 p-t-20 text-center border-top">
 						<button class="btn btn-disabled m-r-5" onclick="fn_init()">초기화</button>
-						<button type="submit" class="btn btn-primary" onclick="fn_searchForm()">검색</button>
+						<button class="btn btn-primary" onclick="fn_searchForm()">검색</button>
 					</div>
 				</div>
 			</form>
@@ -182,11 +165,25 @@
 					,{ title: '신청자ID'    ,name: 'acnt',    type: "text", width: "auto"}
 					,{ title: '신청자명'    ,name: 'nm', type: "text", width: "150", align:"center" }
 					,{ title: '공간'   ,name: 'spceNm',   type: "text", width: "150", align:"center"  }
-					,{ title: '이용일(시)'   ,name: 'bgng_dt ~ end_dt',   type: "text", width: "150", align:"center" }
-					,{ title: '결제금액' ,name: 'amt',  type: "text", width: "150", align:"center" }
-					,{ title: '신청상태' ,name: 'useYn',  type: "text", width: "150", align:"center" }
-					,{ title: '결제상태' ,name: 'useYn',  type: "text", width: "150", align:"center" }
-					,{ title: '예약신청일' ,name: 'useYn',  type: "text", width: "150", align:"center" }
+					,{ title: '이용일(시)'   ,name: 'bgngDt',   type: "text", width: "300", align:"center"
+						, itemTemplate: function(value, item){
+							if( new Date(item.bgngDt).valueOf() === new Date(item.endDt).valueOf() ){
+								return date2str(parseDate(item.bgngDt), 'yyyy-mm-dd HH:mm') +' ~ '+ date2str(parseDate(item.endDt), 'HH:mm');
+							}else{
+								return date2str(parseDate(item.bgngDt), 'yyyy-mm-dd HH:mm') +' ~ '+ date2str(parseDate(item.endDt), 'yyyy-mm-dd HH:mm');
+							}
+						}
+					}
+					,{ title: '결제금액' ,name: 'amt',  type: "text", width: "150", align:"center", itemTemplate: function(value) {
+						return value.toLocaleString()+'원';
+					}}
+					,{ title: '신청상태' ,name: 'aplySttsCdNm',  type: "text", width: "150", align:"center" }
+					,{ title: '결제상태' ,name: 'stlmSttsCdNm',  type: "text", width: "150", align:"center" }
+					,{ title: '예약신청일' ,name: 'regDt',  type: "text", width: "150", align:"center"
+						, itemTemplate: function(value, item){
+							return date2str(parseDate(item.regDt), 'yyyy-mm-dd');
+						}
+					}
 				],
 				rowClick: function(args) {
 					if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
@@ -237,6 +234,50 @@
 					selectedItems = [];
 				}
 			});
+		}
+
+		function date2str(x, y) {
+			var z = {
+				m: x.getMonth() + 1,
+				d: x.getDate(),
+				H: x.getHours(),
+				M: x.getMinutes(),
+				S: x.getSeconds()
+			};
+
+			y = y.replace(/(m+|d+|H+|M+|S+)/g, function(v) {
+				return ((v.length > 1 ? "0" : "") + z[v.slice(-1)]).slice(-2)
+			});
+
+			return y.replace(/(y+)/g, function(v) {
+				return x.getFullYear().toString().slice(-v.length)
+			});
+		}
+
+		function parseDate(strDate) {
+			var _strDate = strDate;
+			var _dateObj = new Date(_strDate);
+			if (_dateObj.toString() == 'Invalid Date') {
+				_strDate = _strDate.split('.').join('-');
+				_dateObj = new Date(_strDate);
+			}
+			if (_dateObj.toString() == 'Invalid Date') {
+				var _parts = _strDate.split(' ');
+
+				var _dateParts = _parts[0];
+				_dateObj = new Date(_dateParts);
+
+				if (_parts.length > 1) {
+					var _timeParts = _parts[1].split(':');
+					_dateObj.setHours(_timeParts[0]);
+					_dateObj.setMinutes(_timeParts[1]);
+					if (_timeParts.length > 2) {
+						_dateObj.setSeconds(_timeParts[2]);
+					}
+				}
+			}
+
+			return _dateObj;
 		}
 	</script>
 

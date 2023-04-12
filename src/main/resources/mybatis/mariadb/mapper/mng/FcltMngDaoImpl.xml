@@ -35,22 +35,19 @@
             , A.REG_DT
             , A.RGTRID
             , B.INST_NM
-            , C.CD_NM AS RGN_NM
+            , CONCAT(C.CTPRVN_NM, ' ', C.SIGNGU_NM) AS RGN_NM
             , D.CD_NM AS APLY_MTHD_NM
             , IFNULL(E.CNT, 0) AS OWN_CNT
         FROM 
             TB_FCL_FCLT A
             LEFT OUTER JOIN TB_CMM_INST B ON A.INSTID = B.INSTID
             LEFT OUTER JOIN (SELECT COUNT(*) AS CNT, FCLTID FROM TB_FCL_SPCE GROUP BY FCLTID) E ON A.FCLTID = E.FCLTID
-            INNER JOIN (
-                SELECT
-                    CD
-                    , CD_NM
-                FROM
-                    TB_CMM_CD
-                WHERE
-                    CDGRPID = 143
-            ) C ON (C.CD = A.RGN_CD)
+            INNER JOIN (SELECT
+            A.SIGNGU_CD AS RGN_CD,
+            B.CTPRVN_NM,
+            A.SIGNGU_NM,
+            A.CTPRVN_CD FROM
+            TB_CMM_ADDR_SIGNGU A INNER JOIN TB_CMM_ADDR_CTPRVN B ON A.CTPRVN_CD = B.CTPRVN_CD) C ON C.RGN_CD = A.RGN_CD
             INNER JOIN (
                 SELECT
                     CD
@@ -66,10 +63,10 @@
             <if test="instid != null and instid != 0">
             AND A.INSTID = #{instid}
             </if>
-            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'fcltNm'">
+            <if test="searchKeyword != null and searchKeyword != '' and searchType.equals('fcltNm')">
             AND A.FCLT_NM LIKE CONCAT('%',#{searchKeyword},'%')
             </if>
-            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'instNm'">
+            <if test="searchKeyword != null and searchKeyword != '' and searchType.equals('instNm')">
             AND B.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
             </if>
             <if test="searchSeCd != null and searchSeCd != ''">
@@ -182,22 +179,14 @@
             , A.REG_DT
             , A.RGTRID
             , B.INST_NM
-            , C.CD_NM AS RGN_NM
+            , C.SIGNGU_NM AS RGN_NM
             , D.CD_NM AS APLY_MTHD_NM
             , E.NM
         FROM 
             TB_FCL_FCLT A
             LEFT OUTER JOIN TB_CMM_INST B ON A.INSTID = B.INSTID
             LEFT OUTER JOIN TB_CMM_USER E ON A.RGTRID = E.USERID
-            INNER JOIN (
-                SELECT
-                    CD
-                    , CD_NM
-                FROM
-                    TB_CMM_CD
-                WHERE
-                    CDGRPID = 143
-            ) C ON (C.CD = A.RGN_CD)
+            INNER JOIN TB_CMM_ADDR_SIGNGU C ON C.SIGNGU_CD = A.RGN_CD
             INNER JOIN (
                 SELECT
                     CD
