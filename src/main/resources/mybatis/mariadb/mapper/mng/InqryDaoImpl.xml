@@ -18,7 +18,10 @@
 		      ,A.STTS_CD AS INQRY_STTS_CD /*상태*/
 		      ,A.REG_DT AS REG_DT /*작성일*/
 			  ,D.NM AS OPETR_NM /*처리자*/
-			  ,CASE WHEN B.OPETRID = #{user.userid} THEN 'Y' ELSE 'N' END ASSIGN_YN
+			  ,CASE WHEN B.OPETRID = #{user.userid}
+					THEN 1
+					ELSE 2
+			   END ASSIGN_YN
         FROM TB_CMM_INQRY A
             LEFT OUTER JOIN TB_CMM_INQRY_ANSWR B ON A.INQRYID = B.INQRYID
             LEFT OUTER JOIN TB_CMM_USER D ON B.OPETRID = D.USERID
@@ -121,7 +124,7 @@
 	     ,#{user.userid}
 	     ,NOW()
 	     ,#{user.userid}
- 		 <if test="inqrySttsCd == '103104' or inqrySttsCd == '103103">
+ 		 <if test="inqrySttsCd == '103104' or inqrySttsCd == '103103'">
  		 ,NOW()
 		 ,DATE_FORMAT(NOW(), '%Y-%m-%d')
 		 </if>
@@ -198,7 +201,10 @@
 			, A.MDFRID
 			, A.REG_DT
 			, A.RGTRID
-			, CASE WHEN A.PICID = #{user.userid} THEN 'Y' ELSE 'N' END ASSIGN_YN
+			, CASE WHEN A.PICID = #{user.userid}
+			    THEN 1
+			    ELSE 2
+			  END ASSIGN_YN
 		FROM TB_CMM_TELINQRY A
 			LEFT OUTER JOIN TB_CMM_USER B ON B.USERID = A.PICID
 			LEFT OUTER JOIN TB_CMM_USER C ON C.USERID = A.USERID

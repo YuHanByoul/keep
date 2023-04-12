@@ -89,7 +89,7 @@ public interface CntntsService {
 
     public List<Map<String,String>> selectCntntsCdList(Map<String,String> map) throws Exception;
 
-    public List<CntntsEduSbjctVo> selectCntntsEduSbjctList(CntntsVo cntntsVo) throws Exception;
+    public List<CntntsEduSbjctVo> selectCntntsEduSbjctList(CntntsEduSbjctVo cntntsEduSbjctVo) throws Exception;
 
     public List<CntntsEduTrgtVo> selectCntntsEduTrgtList(CntntsVo cntntsVo) throws Exception;
 }
