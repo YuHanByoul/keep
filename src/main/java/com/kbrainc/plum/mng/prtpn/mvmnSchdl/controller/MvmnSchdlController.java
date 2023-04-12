@@ -63,7 +63,7 @@ public class MvmnSchdlController {
      * @return String
      */
     @RequestMapping(value = "/mng/prtpn/mvmnSchdl/mvmnSchdlListForm.html")
-    public String mvmnSchdlListForm(Model model, HttpServletRequest request) throws Exception {
+    public String mvmnSchdlListForm(@RequestParam(value ="currentDate",required = false) String currentDate, Model model, HttpServletRequest request) throws Exception {
 
         EduSareaVo eduSareaVo = new EduSareaVo();
         model.addAttribute("sareaList", eduSareaService.selectEduSareaList(eduSareaVo));
@@ -75,7 +75,8 @@ public class MvmnSchdlController {
             years[j] = i;
         }
         model.addAttribute("years", years);
-
+        model.addAttribute("currentDate", currentDate);
+        
         return "mng/prtpn/mvmnSchdl/mvmnSchdlList";
     }
 

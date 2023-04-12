@@ -164,6 +164,12 @@ public class InstVo extends ParentRequestVo {
     /** MODE */
     private String mode;
     
+    /** 비교 검색용 */
+    private String preAprvSttsCd;
+    
+    /** 검색용 */
+    private String instpicRoleCd;
+    
     public void setInstTypeCd(String instTypeCd) throws Exception{
         this.instTypeCd = instTypeCd;
         
