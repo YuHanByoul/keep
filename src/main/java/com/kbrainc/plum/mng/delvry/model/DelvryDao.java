@@ -167,6 +167,17 @@ public interface DelvryDao {
     * @throws Exception 예외
     */
     public int insertDelvryAplySplmnt(DelvryAplySplmntVo delvryAplySplmntVo) throws Exception;
+    
+    /**
+    * 보완요청 등록시 교부상태 변경
+    *
+    * @Title : changeDelvryStts
+    * @Description : 보완요청 등록시 교부상태 변경
+    * @param delvryAplySplmntVo DelvryAplySplmntVo 객체
+    * @return int update 로우수
+    * @throws Exception 예외
+    */
+    public int changeDelvryStts(DelvryAplySplmntVo delvryAplySplmntVo) throws Exception;
        
     /**
     * 교부 신청 보완요청 업데이트

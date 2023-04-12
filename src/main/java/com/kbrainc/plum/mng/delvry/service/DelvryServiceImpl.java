@@ -196,9 +196,11 @@ public class DelvryServiceImpl extends PlumAbstractServiceImpl implements Delvry
     * @throws Exception 예외
     */
     @Override
+    @Transactional
     public int insertDelvryAplySplmnt(DelvryAplySplmntVo delvryAplySplmntVo) throws Exception {
         int retVal = 0;
-        retVal = delvryDao.insertDelvryAplySplmnt(delvryAplySplmntVo);
+        retVal += delvryDao.insertDelvryAplySplmnt(delvryAplySplmntVo);
+        retVal += delvryDao.changeDelvryStts(delvryAplySplmntVo);
         
         return retVal;
     }
