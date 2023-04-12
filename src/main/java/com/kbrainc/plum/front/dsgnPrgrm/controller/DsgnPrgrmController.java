@@ -729,6 +729,8 @@ public class DsgnPrgrmController {
 	public String chkListForm(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
 
 		DsgnPrgrmVo chkListInfo = null;
+		dsgnPrgrmVo.setSbmsnSeCd("242101");    /*신청자 자가진단*/
+
 		chkListInfo = dsgnPrgrmService.selectChkListInfo(dsgnPrgrmVo);
 		dsgnPrgrmVo.setChklstid(chkListInfo.getChklstid());
 		dsgnPrgrmVo.setSbmsnid(chkListInfo.getSbmsnid());
@@ -765,10 +767,6 @@ public class DsgnPrgrmController {
 
         //체크리스트 등록
         retVal = asgsysSrngService.updateAssChklst(asgsysSrngVo);
-
-        if(asgsysSrngVo.getSttsCd().equals("111102")){
-        	retVal = asgsysSrngService.updatePrgrSttsCd(asgsysSrngVo);
-        }
 
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);

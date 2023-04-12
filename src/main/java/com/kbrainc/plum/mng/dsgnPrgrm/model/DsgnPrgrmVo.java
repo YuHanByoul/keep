@@ -233,6 +233,9 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     /** 기관지역코드 */
     private String instRgnCd;
 
+    /** 기관지역코드 */
+    private String instRgnCdNm;
+
     /** 신청일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date aplyDt;
