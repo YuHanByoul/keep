@@ -48,6 +48,7 @@ public class CntntsVo  extends ParentRequestVo{
     @NotEmpty(message = "콘텐츠 유형(대분류) 선택해주십시오.")
     private String mainTypeCd;
     /** 출처 */
+    @NotEmpty(message = "출처를 입력해주십시오.")
     private String origin;
     /** 제작_년 */
     private Integer mnfctYy;
