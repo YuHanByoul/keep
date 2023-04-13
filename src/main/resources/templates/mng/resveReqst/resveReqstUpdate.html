@@ -64,7 +64,7 @@
                             <div class="mb-0 form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>예약취소일시</strong></label>
                                 <div class="col-12">
-                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${resveReqst.cnclDt}">
+                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${#dates.format(resveReqst.cnclDt, 'yyyy-MM-dd HH:mm:ss')}">
                                 </div>
                             </div>
                         </div>
@@ -103,7 +103,7 @@
                             <div class="mb-0 form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>환불요청일시</strong></label>
                                 <div class="col-12">
-                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${resveReqst.rfndDmndDt}">
+                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${#dates.format(resveReqst.rfndDmndDt, 'yyyy-MM-dd HH:mm:ss')}">
                                 </div>
                             </div>
                         </div>
@@ -255,6 +255,7 @@
                     </div>
                 </div>
             </div>
+            
             <!-- 입금정보 -->
             <div class="card-header p-t-0 p-b-0">
                 <h3 class="sub-title"><strong>입금정보</strong></h3>
@@ -374,28 +375,60 @@
     var validator= $("#resveReqstUpdate").validate({
         onsubmit: false,
           rules: {
-              
-                 tchaidTypeCd :   { required: true }
-                ,tchaidNm     :   { required: true , maxlength: 100}
-                ,eduTrgtCds   :   { required: true }
-                ,teamCmpstnCd :   { required: true }
+                 nopeAdult  : { number :true }
+                , nopeChil  : { number :true }
+                , nopeInfnt : { number :true }
+                , utztnPrps : { required :true, maxlength: 100}
+                , aplcntNm  : { required :true, maxlength: 10}
+                , aplcntMoblphon  : { required :true, number :true, maxlength: 20}
+                , aplcntEml  : { required :true, email :true, maxlength: 100}
+                , pyrNm  : { required :true, maxlength: 10}
+                , dpstAmt  : { required :true, maxlength: 10, number:true }
+                , dpstDe  : { required :true}
+                , rfndBankCd  : { required :true}
+                , rfndBacnt  : { required :true ,maxlength: 20 }
+                , rfndPyrNm  : { required :true ,maxlength: 10 }
+                , rfndAmt  : { required :true ,maxlength: 20 ,number:true}
+                , rfndDe  : { required :true}
                 
             },
             messages: {
-                
-                 tchaidTypeCd : { required: " 교구 유형을 선택 해주십시오" }
-                ,tchaidNm     : { required: "교구명을 입력해주십시오" ,maxlength :"교구명은  100자를 넘을 수 없습니다."}
-                ,eduTrgtCds   : { required: "교육대상을 체크해주십시오" }
-                ,teamCmpstnCd : { required: "모둠구성을 선택 해주십시오" }
+                 nopeAdult  : { number :"숫자만 입력 가능합니다." }
+                , nopeChil  : { number :"숫자만 입력 가능합니다." }
+                , nopeInfnt : { number :"숫자만 입력 가능합니다." }
+                , utztnPrps : { required :"이용목적을 입력해주세요" ,maxlength: "이용목적은 100자 이하여야 합니다."}
+                , aplcntNm  : { required :"신청자명을 입력해주세요" ,maxlength: "신청자명은 10자 이하여야 합니다."}
+                , aplcntMoblphon  : { required : "휴대전화번호를 입력해주십시오", number : "숫자만 입력 가능합니다.", maxlength : "20자리 미만이어야 합니다." }
+                , aplcntEml  : { required : "이메일을 입력해주십시오.", email:"올바른 이메일 형식이 아닙니다." , maxlength : "100자 미만이어야 합니다."}
+                , pyrNm   : { required :"입금자명을 입력해주십시오.", maxlength : "입금자명은 10자 이하여야 합니다." }
+                , dpstAmt : { required :"입금금액을 입력해주십시오.", maxlength: "입금금액은 10자리 이하입니다." , number :"숫자만 입력 가능합니다." }
+                , dpstDe : { required :"입금 일자를 입력해주십시오."}
+                , rfndBankCd : { required :"환불 일자를 선택해주십시오."}
+                , rfndBacnt : { required :"환불계좌를 입력해주십시오." , maxlength: "환불계좌는 20자리 이하입니다." }
+                , rfndPyrNm : { required :"환불계좌 예금주명를 입력해주십시오." , maxlength: "환불계좌 예금주명은 10자리 이하입니다." }
+                , rfndAmt : { required :"환불 금액을 입력해주십시오." , maxlength: "환불 금액은 10자리 이하입니다." , number :"숫자만 입력 가능합니다." }
+                , rfndDe : { required :"환불 일자를 입력해주십시오."}
                 
             }
     })
     
     // 데이터 submit
     function fn_updateResveReqst(){
-
+        
         if(!($("#resveReqstUpdate").valid())) return;
 
+    	var nopeAdult = Number($("#nopeAdult").val());
+    	var nopeChil  = Number($("#nopeChil" ).val());
+    	var nopeInfnt = Number($("#nopeInfnt").val());
+    	
+        if((nopeAdult+nopeChil+nopeInfnt) <= 0 ){
+            alert("이용 인원을 입력해주십시오.");
+            showErrorMark("#nopeAdult");
+            showErrorMark("#nopeChil" );
+            showErrorMark("#nopeInfnt");
+            return;
+        }
+        
         if(!confirm("저장하시겠습니까?")) return;
 
         let data =  $("#resveReqstUpdate").serialize() ;

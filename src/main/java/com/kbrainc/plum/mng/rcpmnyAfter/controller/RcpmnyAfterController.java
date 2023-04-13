@@ -54,7 +54,8 @@ public class RcpmnyAfterController {
      * @return String
      */
     @RequestMapping(value = "/mng/rcpmnyAfter/rcpmnyAfterList.html")
-    public String rcpmnyAfterList() throws Exception {
+    public String rcpmnyAfterList(RcpmnyAfterVo rcpmnyAfterVo, Model model) throws Exception {
+        model.addAttribute("param", rcpmnyAfterVo);
         return "mng/rcpmnyAfter/rcpmnyAfterList";
     }
 

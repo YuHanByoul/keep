@@ -61,4 +61,7 @@ public class MymsgVo extends ParentRequestVo {
     private String trgtDelYn;
     /** 등록_일시 */
     private String regDt;
+    
+    /** 검색어 */
+    private String searchKeyword;
 }
