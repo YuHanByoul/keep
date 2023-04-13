@@ -1,6 +1,7 @@
 package com.kbrainc.plum.front.mypage.mypageEnvReqst.service;
 
 import com.kbrainc.plum.front.mypage.mypageEnvReqst.model.MypageEnvReqstVo;
+import com.kbrainc.plum.mng.rcpmnyBfe.model.RcpmnyBfeVo;
 
 import java.util.List;
 import java.util.Map;
@@ -130,4 +131,26 @@ public interface MypageEnvReqstService {
      * @return MypageEnvReqstVo
      */
     public List<Map<String,Object>> selectFclRsvtdeList(MypageEnvReqstVo mypageEnvReqstVo) throws Exception;
+
+    /**
+     * 예약 신청 취소 처리
+     *
+     * @Title : insertRsn
+     * @Description : 예약 신청 취소 처리
+     * @param mypageEnvReqstVo 입금 전 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    public int insertRsn(MypageEnvReqstVo mypageEnvReqstVo) throws Exception;
+
+    /**
+     * 예약 신청 취소 처리
+     *
+     * @Title : insertHstry
+     * @Description : 예약 신청 취소 처리
+     * @param mypageEnvReqstVo 입금 전 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    public int insertHstry(MypageEnvReqstVo mypageEnvReqstVo) throws Exception;
 }

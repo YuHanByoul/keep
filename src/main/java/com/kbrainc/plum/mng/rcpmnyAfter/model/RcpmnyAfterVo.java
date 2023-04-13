@@ -277,6 +277,7 @@ public class RcpmnyAfterVo extends ParentRequestVo {
 
     /** 중복 입금 후명 수 */
     public static Integer dupCnt;
+    private String alldayYn;
 
     /** 검색 관련*/
     private String searchSeCd;

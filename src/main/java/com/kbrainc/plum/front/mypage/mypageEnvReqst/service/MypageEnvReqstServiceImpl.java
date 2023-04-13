@@ -2,6 +2,7 @@ package com.kbrainc.plum.front.mypage.mypageEnvReqst.service;
 
 import com.kbrainc.plum.front.mypage.mypageEnvReqst.model.MypageEnvReqstDao;
 import com.kbrainc.plum.front.mypage.mypageEnvReqst.model.MypageEnvReqstVo;
+import com.kbrainc.plum.mng.rcpmnyBfe.model.RcpmnyBfeVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -168,5 +169,33 @@ public class MypageEnvReqstServiceImpl extends PlumAbstractServiceImpl implement
     @Override
     public List<Map<String,Object>> selectFclRsvtdeList(MypageEnvReqstVo mypageEnvReqstVo) throws Exception {
         return mypageEnvReqstDao.selectFclRsvtdeList(mypageEnvReqstVo);
+    }
+
+    /**
+     * 예약 신청 취소 처리
+     *
+     * @Title : insertRsn
+     * @Description : 예약 신청 취소 처리
+     * @param mypageEnvReqstVo 입금 전 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    @Override
+    public int insertRsn(MypageEnvReqstVo mypageEnvReqstVo) throws Exception {
+        return mypageEnvReqstDao.insertRsn(mypageEnvReqstVo);
+    }
+
+    /**
+     * 예약 신청 취소 처리
+     *
+     * @Title : insertHstry
+     * @Description : 예약 신청 취소 처리
+     * @param mypageEnvReqstVo 입금 전 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    @Override
+    public int insertHstry(MypageEnvReqstVo mypageEnvReqstVo) throws Exception {
+        return mypageEnvReqstDao.insertHstry(mypageEnvReqstVo);
     }
 }
