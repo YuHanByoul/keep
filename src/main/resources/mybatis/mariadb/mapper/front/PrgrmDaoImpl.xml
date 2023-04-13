@@ -16,15 +16,17 @@
                 , A.PRGRM_NM
                 , ADDR.CTPRVN_NM
                 , A.INST_NM
-                , CONCAT_WS(', ',
-                         CASE WHEN B.INFNT = 'Y' THEN '유아' END
-                       , CASE WHEN B.SCHBOY = 'Y' THEN '초등학생' END
-                       , CASE WHEN B.MSKLSD = 'Y' THEN '중학생' END
-                       , CASE WHEN B.HGSCHST = 'Y' THEN '고등학생' END
-                       , CASE WHEN B.ADULT = 'Y' THEN '성인' END
-                       ) AS EDU_TARGET
+                , CONCAT_WS(',',
+                     CASE WHEN B.INFNT = 'Y' THEN '유아' END
+                   , CASE WHEN B.SCHBOY = 'Y' THEN '초등' END
+                   , CASE WHEN B.MSKLSD = 'Y' THEN '중등' END
+                   , CASE WHEN B.HGSCHST = 'Y' THEN '고등' END
+                   , CASE WHEN B.ADULT = 'Y' THEN '성인' END
+                   ) AS EDU_TARGET
                 , B.WHOL_AGE
-                , CASE WHEN B.ETRFEE > 0 THEN CONCAT(FORMAT(B.ETRFEE, '0'), '원') ELSE '무료' END ETRFEE
+                , CASE WHEN B.ETRFEE > 0 THEN FORMAT(B.ETRFEE, '0') ELSE '무료' END ETRFEE
+                , GROUP_CONCAT(CD1.CD_NM) AS EDU_SBJCT_CD_NM
+                , NVL(OPERFRMCD.CD_NM, '') AS CD_NM
                 , C.DSGN_NO
                 , A.DSGN_DE
                 , A.REG_DT
@@ -37,11 +39,11 @@
             	LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN ADDR ON A.INST_RGN_CD = ADDR.CTPRVN_CD
                 LEFT OUTER JOIN (SELECT FILEID, FILEGRPID, FILE_IDNTFC_KEY FROM TB_CMM_FILE GROUP BY FILEGRPID) D ON B.EDU_PHOTO_FILEGRPID = D.FILEGRPID
                 
-                <if test="searchManinEduSbjctCd != null and searchManinEduSbjctCd != ''">
+                LEFT OUTER JOIN TB_CMM_CD OPERFRMCD ON B.OPER_FRM_CD = OPERFRMCD.CD
+                
                 LEFT OUTER JOIN (SELECT PRGRMID, EDU_SBJCT_CD FROM TB_ASS_PRGRM_EDU_SBJCT) E ON A.PRGRMID = E.PRGRMID
                 LEFT OUTER JOIN TB_CMM_CD CD1 ON E.EDU_SBJCT_CD = CD1.CD
                 LEFT OUTER JOIN TB_CMM_CD CD2 ON CD1.UPPR_CD = CD2.CD
-                </if>
             WHERE
             	A.STTS_CD = 111111
                 <!-- 프로그램명 -->
@@ -86,6 +88,7 @@
                 <if test="searchMdleEduSbjctCd != null and searchMdleEduSbjctCd != ''">
                 AND CD1.CD = #{searchMdleEduSbjctCd}
                 </if>
+            GROUP BY A.PRGRMID
         <include refid="PaginationMapper.footer"/>
     </select>
     
