@@ -730,6 +730,21 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 		return asgsysSrngDao.selectSftyMng(asgsysSrngVo);
 	}
 
+	/**
+	* 체크리스트 form 조회
+	*
+	* @Title : selectAssChklstForm
+	* @Description : 체크리스트 form 조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return AsgsysSrngVo
+	*/
+	@Override
+	public AsgsysSrngVo selectAssChklstForm(AsgsysSrngVo asgsysSrngVo) throws Exception{
+		return asgsysSrngDao.selectAssChklstForm(asgsysSrngVo);
+	}
+
     /**
     * @Title : dsgnSrngMainForm
     * @Description : 심사위원심사 목록조회
@@ -1808,6 +1823,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 	public List<AsgsysSrngVo> selectSrngQitemList(AsgsysSrngVo asgsysSrngVo) throws Exception{
 		return asgsysSrngDao.selectSrngQitemList(asgsysSrngVo);
 	}
+
 
 
 }
