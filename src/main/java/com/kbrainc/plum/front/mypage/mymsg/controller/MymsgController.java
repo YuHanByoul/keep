@@ -77,6 +77,12 @@ public class MymsgController {
     public Map<String, Object> selectRecvMsgList(MymsgVo mymsgVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> result = new HashMap<>();
         mymsgVo.setUser(user);
+        
+        boolean success = false;
+        /*
+         * if (mymsgService.updateInqMsg(mymsgVo) > 0) { success = true; }
+         */
+        //result.put("success", success);
         List<MymsgVo> list = mymsgService.selectRecvMsgList(mymsgVo);
         //List<MvmnAplyVo> list = null;
         if (list.size() > 0) {

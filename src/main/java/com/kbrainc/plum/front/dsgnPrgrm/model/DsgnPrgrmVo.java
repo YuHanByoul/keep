@@ -623,6 +623,7 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     /** 기관 담당자 연락처 */
     private String instPicTelno;
 
+    private Integer rnum;
     private String dp1;
     private String dp2;
     private String lv;

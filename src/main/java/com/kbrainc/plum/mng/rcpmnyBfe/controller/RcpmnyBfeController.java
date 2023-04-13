@@ -54,7 +54,8 @@ public class RcpmnyBfeController {
      * @return String
      */
     @RequestMapping(value = "/mng/rcpmnyBfe/rcpmnyBfeList.html")
-    public String rcpmnyBfeList() throws Exception {
+    public String rcpmnyBfeList(RcpmnyBfeVo rcpmnyBfeVo, Model model) throws Exception {
+        model.addAttribute("param", rcpmnyBfeVo);
         return "mng/rcpmnyBfe/rcpmnyBfeList";
     }
 

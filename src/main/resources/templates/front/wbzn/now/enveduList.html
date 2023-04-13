@@ -12,7 +12,7 @@
 					<div class="swiper-wrapper">		
 						<th:block th:each="item : ${banner}">
 							<div class="swiper-slide">
-								<a href="${item.url}">
+								<a th:href="${item.url}">
 									<div class="thumb" style="height:260px;"><img th:src="${'/downloadFileByFileid.do?fileid=' + item.bannerFileid + '&file_idntfc_key=' + item.fileIdntfcKey}" alt=""></div>
 								</a>
 							</div>
@@ -77,8 +77,8 @@
 					</div>
 				</div>
 
-				<div class="card-list card-list-n4 card-list-mo-n2" id="envedu-card-list">
-					<ul id="envedu-list-area">
+				<div class="card-section" id="envedu-card-list">
+					<ul class="n4" id="envedu-list-area">
 					</ul>
 				</div>
 
@@ -129,8 +129,8 @@
 					</div>
 				</div>
 
-				<div class="card-list card-list-n2" id="prgrmgd-card-list">
-					<ul id="prgrmgd-list-area">
+				<div class="card-section" id="prgrmgd-card-list">
+					<ul class="n3" id="prgrmgd-list-area">
 					</ul>
 				</div>
 
@@ -280,7 +280,7 @@
 						success: function (data) {
 							if(data.list.length != 0){
 								$('#envedu-card-list').removeClass();
-								$('#envedu-card-list').addClass('card-list card-list-n4 card-list-mo-n2');
+								$('#envedu-card-list').addClass('card-section');
 							}
 							envedu.makeListHtml(data);
 							closeWorkProgress();
@@ -306,43 +306,56 @@
 					$('#envedu-card-list').addClass('nodata');
 					
 					enveduListHtml += `
-					<p><span class="icon icon-notice bg-black9"></span>등록된 내용이 없습니다</p>
+					<p><span class="icon icon-notice bg-black9"></span>등록된 환경교육이 없습니다.</p>
 					`;
 				} else {
 					data.list.forEach(function(item) {
+						var enveduSe = item.enveduSeCdNm;
+						var enveduSeTag = "";
+						
+						switch(enveduSe) {
+							case "현장" :
+								enveduSeTag = `<div class="tag tag-green">${item.enveduSeCdNm}</div>`;
+							break;
+							
+							case "환경시사" :
+								enveduSeTag = `<div class="tag tag-blue">${item.enveduSeCdNm}</div>`;
+							break;
+
+							case "전문자료" :
+								enveduSeTag = `<div class="tag tag-brown">${item.enveduSeCdNm}</div>`;
+							break;
+
+							case "교육자료" :
+								enveduSeTag = `<div class="tag tag-red">${item.enveduSeCdNm}</div>`;
+							break;
+
+							case "환경문화" :
+								enveduSeTag = `<div class="tag tag-purple">${item.enveduSeCdNm}</div>`;
+							break;
+
+							case "환경소식" :
+								enveduSeTag = `<div class="tag tag-olive">${item.enveduSeCdNm}</div>`;
+							break;
+
+							case "행사정보":
+								enveduSeTag = `<div class="tag tag-purple">${item.enveduSeCdNm}</div>`;
+							break;
+
+							case "채용공모":
+								enveduSeTag = `<div class="tag tag-green">${item.enveduSeCdNm}</div>`;
+							break;
+                        }
+						
 						enveduListHtml += `
 						<li>
-						<a href="/front/wbzn/now/enveduDetailForm.html?enveduid=${item.enveduid}">
-						<div class="thumb"><img src="/downloadFileByFileid.do?fileid=${item.thmbnFileid}&file_idntfc_key=${item.fileIdntfcKey}" alt=""></div>
-						<dl class="card-cate-list">
-						<dt>
-						`;
-						
-						if(item.enveduSeCdNm == "현장"){
-							enveduListHtml += `<div class="tag tag-green">${item.enveduSeCdNm}</div>`;
-						}else if(item.enveduSeCdNm == "환경시사"){
-							enveduListHtml += `<div class="tag tag-blue">${item.enveduSeCdNm}</div>`;
-						}else if(item.enveduSeCdNm == "전문자료"){
-							enveduListHtml += `<div class="tag tag-brown">${item.enveduSeCdNm}</div>`;
-						}else if(item.enveduSeCdNm == "교육자료"){
-							enveduListHtml += `<div class="tag tag-red">${item.enveduSeCdNm}</div>`;
-						}else if(item.enveduSeCdNm == "환경문화"){
-							enveduListHtml += `<div class="tag tag-purple">${item.enveduSeCdNm}</div>`;
-						}else if(item.enveduSeCdNm == "환경소식"){
-							enveduListHtml += `<div class="tag tag-olive">${item.enveduSeCdNm}</div>`;
-						}else if(item.enveduSeCdNm == "행사정보"){
-							enveduListHtml += `<div class="tag tag-purple">${item.enveduSeCdNm}</div>`;
-						}else if(item.enveduSeCdNm == "채용공모"){
-							enveduListHtml += `<div class="tag tag-green">${item.enveduSeCdNm}</div>`;
-						}else{
-							enveduListHtml += `<div class="tag tag-green">${item.enveduSeCdNm}</div>`;
-						}
-						
-						enveduListHtml += `
-						</dt>
-						<dd class="ellipsis" data-ellipsis="2">${item.ttl}</dd>
-						</dl>
-						</a>
+							<div class="thumb">
+								<img src="/downloadFileByFileid.do?fileid=${item.thmbnFileid}&file_idntfc_key=${item.fileIdntfcKey}" alt="">
+								${enveduSeTag}
+							</div>
+							<div class="cont mt0">
+								<a href="/front/wbzn/now/enveduDetailForm.html?enveduid=${item.enveduid}" class="title ellipsis" data-ellipsis="2">${item.ttl}</a>
+							</div>
 						</li>
 						`;
 					});
@@ -428,7 +441,7 @@
 						success: function (data) {
 							if(data.list.length != 0){
 								$('#prgrmgd-card-list').removeClass();
-								$('#prgrmgd-card-list').addClass('card-list card-list-n2');
+								$('#prgrmgd-card-list').addClass('card-section');
 							}
 							prgrmgd.makeListHtml(data);
 							closeWorkProgress();
@@ -453,53 +466,58 @@
 					$('#prgrmgd-card-list').addClass('nodata');
 					
 					prgrmgdListHtml += `
-					<p><span class="icon icon-notice bg-black9"></span>등록된 내용이 없습니다</p>
+					<p><span class="icon icon-notice bg-black9"></span>등록된 환경교육 프로그램이 없습니다.</p>
 					`;
 				} else {
 					data.list.forEach(function(item) {
+						var rgnCdNm = item.rgnCdNm;
+						var rgnCdTag = "";
+						
+						switch(rgnCdNm) {
+                            case "서울":
+                            	rgnCdTag = `<span class="tag tag-green">${rgnCdNm}</span>`;
+                            break;
+                            
+                            case "경기/인천":
+                            	rgnCdTag = `<span class="tag tag-blue">${rgnCdNm}</span>`;
+                            break;       
+                                   
+                            case "강원/제주":       
+                            	rgnCdTag = `<span class="tag tag-brown">${rgnCdNm}</span>`;
+                            break;
+                                   
+                            case "호남권":       
+                            	rgnCdTag = `<span class="tag tag-red">${rgnCdNm}</span>`;
+                            break;
+                                   
+                            case "충청권":       
+                            	rgnCdTag = `<span class="tag tag-purple">${rgnCdNm}</span>`;
+                            break;
+                                  
+                            case "영남권":       
+                            	rgnCdTag = `<span class="tag tag-olive">${rgnCdNm}</span>`;
+                            break;
+	                    }
+						
 						prgrmgdListHtml += `
 						<li>
-						<a href="/front/wbzn/now/prgrmgdDetailForm.html?prgrmid=${item.prgrmid}">
-						<div class="thumb"><img src="/downloadFileByFileid.do?fileid=${item.thmbnFileid}&file_idntfc_key=${item.fileIdntfcKey}" alt=""></div>
-						<dl class="card-program-list">
-						<dt>
-						`;
-						
-						if(item.rgnCdNm == "서울"){
-							prgrmgdListHtml += `<span class="tag tag-green">${item.rgnCdNm}</span>`;
-						}else if(item.rgnCdNm == "경기/인천"){
-							prgrmgdListHtml += `<span class="tag tag-blue">${item.rgnCdNm}</span>`;
-						}else if(item.rgnCdNm == "강원/제주"){
-							prgrmgdListHtml += `<span class="tag tag-brown">${item.rgnCdNm}</span>`;
-						}else if(item.rgnCdNm == "호남권"){
-							prgrmgdListHtml += `<span class="tag tag-red">${item.rgnCdNm}</span>`;
-						}else if(item.rgnCdNm == "충청권"){
-							prgrmgdListHtml += `<span class="tag tag-purple">${item.rgnCdNm}</span>`;
-						}else if(item.rgnCdNm == "영남권"){
-							prgrmgdListHtml += `<span class="tag tag-olive">${item.rgnCdNm}</span>`;
-						}else{
-							prgrmgdListHtml += `<span class="tag tag-green">${item.rgnCdNm}</span>`;
-						}
-						
-						prgrmgdListHtml += `
-						${item.ttl}
-						</dt>
-						<dd>
-						<ul>
-						<li>
-						<span class="icon icon-datepicker"></span>
-						<p>진행일정 : ${item.schdl}</p>
+							<div class="thumb">
+								<img src="/downloadFileByFileid.do?fileid=${item.thmbnFileid}&file_idntfc_key=${item.fileIdntfcKey}" alt="">
+								${rgnCdTag}
+							</div>
+							<div class="cont mt0">
+								<a href="/front/wbzn/now/prgrmgdDetailForm.html?prgrmid=${item.prgrmid}" class="title ellipsis" data-ellipsis="2">${item.ttl}</a>
+								<ul class="df">
+									<li class="d-flex">
+										<span class="tit">진행일정 : </span>
+										<span class="dc">${item.schdl}</span>
+									</li>
+								</ul>
+								<div class="fs-14 fc-black6">${item.cnSumry}</div>
+
+							</div>
 						</li>
-						<li>
-						<span class="icon icon-doc" title=""></span>
-						<p>${item.cnSumry}</p>
-						</li>
-						</ul>
-						</dd>
-						</dl>
-						</a>
-						</li>
-						`;
+						`;						
 						
 					});
 				}

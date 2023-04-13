@@ -92,8 +92,8 @@
 				</div>
 			</div>
 			<div id="tab-album1" class="tabpanel" role="tabpanel" aria-labelledby="album-tab1">
-				<div class="card-list card-list-n4" id="card-table"> 
-					<ul id="cardList-area">
+				<div class="card-section" id="card-table"> 
+					<ul class="n3" id="cardList-area">
 					</ul>
 				</div>
 				<div id="pagination1" aria-label="pagination">
@@ -301,7 +301,7 @@
                             type: 'GET',
                             success: function (result) {
                             	$('#card-table').removeClass();
-                                $('#card-table').addClass('card-list card-list-n4');
+                                $('#card-table').addClass('card-section');
                 				
                                 $("#pagination1").html(result.pagination);
                                 $("#pagination2").html(result.pagination);
@@ -323,7 +323,7 @@
                     	pc_listHtml += `
                         <tr>
                             <td class="nodata" colSpan="7">
-                                <p><span class="icon icon-notice bg-black9"></span>등록된 콘텐츠가 없습니다</p>
+                                <p><span class="icon icon-notice bg-black9"></span>등록된 콘텐츠가 없습니다.</p>
                             </td>
                         </tr>
                         `;
@@ -339,7 +339,7 @@
                         $('#card-table').removeClass();
                         $('#card-table').addClass('nodata');
                         cardListHtml += `
-            				<p><span class="icon icon-notice bg-black9"></span>등록된 콘텐츠가 없습니다</p>
+            				<p><span class="icon icon-notice bg-black9"></span>등록된 콘텐츠가 없습니다.</p>
                         `;
                     } else {
                         data.list.forEach(function(item) {
@@ -391,37 +391,192 @@
 								</div>
 							</li>
    							`;
-   							if(`${item.mainTypeCd}` == '교육영상'){
+   							
+   							// 콘텐츠 유형
+   							var cntntsType = item.typeCd;
+   							var cntntsTypeTag = "";   							
+   							switch(cntntsType) {
+                                case "교육지도안":
+                                	cntntsTypeTag = `<div class="tag tag-blue">${cntntsType}</div>`;
+                               	break;
+                               	
+                                case "인포그래픽":
+                                	cntntsTypeTag = `<div class="tag tag-green">${cntntsType}</div>`;
+                               	break;
+                               	
+                                case "카드뉴스":
+                                	cntntsTypeTag = `<div class="tag tag-brown">${cntntsType}</div>`;
+                               	break;
+                               	
+                                case "학습자료":
+                                	cntntsTypeTag = `<div class="tag tag-red">${cntntsType}</div>`;
+                               	break;
+                               	
+                                case "기타":
+                                	cntntsTypeTag = `<div class="tag tag-purple">${cntntsType}</div>`;
+                               	break;
+                               	
+                                case "교육영상":
+                                	cntntsTypeTag = `<div class="tag tag-blue">${cntntsType}</div>`;
+                                break;       
+                                
+                                case "홍보영상":
+                                	cntntsTypeTag = `<div class="tag tag-green">${cntntsType}</div>`;
+                               	break;
+                               	
+                                case "강연영상":       
+                                	cntntsTypeTag = `<div class="tag tag-brown">${cntntsType}</div>`;
+                                break;
+                                
+                                case "포럼 및 세미나":
+                                	cntntsTypeTag = `<div class="tag tag-red">${cntntsType}</div>`;
+                               	break;
+                            }
+   							
+   	  	    				// 교육대상
+   	  	    				var eduTargetStr = item.eduTrgtCd;
+   	  	    				var eduTarget = [];
+   	  	    				var eduTargetTag = "";
+   	  	    				
+   	  	    				if(eduTargetStr != null && eduTargetStr != ""){
+   	  	    					eduTarget = eduTargetStr.split(",");   	  	    					
+	  	    				}
+   	  	    				
+   	  	    				eduTarget.forEach(function(index) {
+   	  	    					switch(index) {
+   	  	    					case "185101" :
+   	  	    						index = "유아";
+   	  	    					break;
+   	  	    					
+   	  	    					case "185102" :
+   	  	    						index = "아동";
+   	  	    					break;
+   	  	    					
+   	  	    					case "185103" :
+   	  	    						index = "청소년";
+   	  	    					break;
+   	  	    					
+   	  	    					case "185104" :
+   	  	    						index = "성인";
+   	  	    					break;
+	  	    					}
+   	  	    					eduTargetTag += `<div>${index}</div>`;
+   	  	    				});
+   	  	    				
+   	  	    				// 교육주제
+   	  	    				// 생활환경, 자연환경, 지구환경, 환경문화
+   	  	    				var livingEnv = "";   	  	    				
+   	  	    				var naturalEnv = "";   	  	    				
+   	  	    				var globalEnv = "";   	  	    				
+   	  	    				var cultureEnv = "";
+   	  	    				var other =  "";
+   	  	    				
+   	  	    				var eduSbjctStr = item.eduSbjctCd;
+   	  	    				var eduSbjct = [];
+   	  	    				var eduSbjctTag = "";
+   	  	    			
+   	  	    				if(eduSbjctStr != null && eduSbjctStr != ""){
+	   	  	    				eduSbjct = eduSbjctStr.split(",");   	  	    					
+   	  	    				}
+   	  	    				
+   	  	    				eduSbjct.forEach(function(index) {
+   	  	    					switch(index) {
+   	  	    					case "소음" :
+   	  	    					case "폐기물 및 자원순환" :
+   	  	    					case "환경보건" :
+   	  	    						livingEnv += ', ' + index;
+   	  	    					break;
+   	  	    					
+   	  	    					case "물" :
+   	  	    					case "토양" :
+   	  	    					case "생태계" :
+   	  	    						naturalEnv += ', ' + index;
+   	  	    					break;
+   	  	    					
+   	  	    					case "기후변화 및 탄소중립" :
+   	  	    					case "대기" :
+   	  	    					case "에너지" :
+   	  	    						globalEnv += ', ' + index;
+   	  	    					break;
+   	  	    					
+   	  	    					case "지속가능발전" :
+   	  	    					case "생명윤리" :
+   	  	    						cultureEnv += ', ' + index;
+   	  	    					break;
+   	  	    					
+   	  	    					case "기타" :
+   	  	    						other += ', ' + index;
+   	  	    					break;	
+	  	    					}
+   	  	    				});
+   	  	    				
+   	  	    				if(livingEnv != ""){
+   	  	    					eduSbjctTag += `<li><button type="button" title="툴팁">#생활환경</button><div>${livingEnv.slice(2)}</div></li>`
+   	  	    				}
+   	  	    				if(naturalEnv != ""){
+   	  	    					eduSbjctTag += `<li><button type="button" title="툴팁">#자연환경</button><div>${naturalEnv.slice(2)}</div></li>`
+   	  	    				}
+   	  	    				if(globalEnv != ""){
+   	  	    					eduSbjctTag += `<li><button type="button" title="툴팁">#지구환경</button><div>${globalEnv.slice(2)}</div></li>`
+   	  	    				}
+   	  	    				if(cultureEnv != ""){
+   	  	    					eduSbjctTag += `<li><button type="button" title="툴팁">#환경문화</button><div>${cultureEnv.slice(2)}</div></li>`
+   	  	    				}
+   	  	    				if(other != ""){
+   	  	    					eduSbjctTag += `<li><button type="button" title="툴팁">#기타</button><div>${other.slice(2)}</div></li>`
+   	  	    				}
+   							
+   							if(`${item.typeCd}` == '교육영상'){
    	                            cardListHtml += `
-   	                             <li>
-   	 	                            <a href="javascript:void(0)" onclick="cntnts.moveToDetail(${item.cntntsid}, ${eduSbjctCd})">
-   	 		                            <div class="thumb" style="height:127px;">
-   	 		                            	<img src="/downloadFileByFileid.do?fileid=${item.rprsImgFileid}&file_idntfc_key=${item.fileIdntfcKey}" alt="">
-   	 		                            	<div class="video" title="동영상 콘텐츠"><span class="icon icon-video-play"></span></div>
-   	 		                            </div>
-   	 		                            <dl class="card-cate-list">
-   	 										<dt class="mo-ellipsis" data-ellipsis="2">${item.ttl}</dt>
-   	 										<dd class="mo-ellipsis fc-black6" data-ellipsis="1">조회수 ${item.hits}회</dd>
-   	 										<dd class="mo-ellipsis fc-black6" data-ellipsis="1">${item.regDt}</dd>
-   	 									</dl>
-   	 								</a>
-   	 							</li>
-   	    						`;
+								<li>
+									<div class="thumb">
+										<img src="/downloadFileByFileid.do?fileid=${item.rprsImgFileid}&file_idntfc_key=${item.fileIdntfcKey}" alt="">
+										<div class="video" title="동영상 콘텐츠"><span class="icon icon-video-play"></span></div>
+										${cntntsTypeTag}
+										<dl class="target">
+											<dt class="blind">대상</dt>
+											<dd>
+												${eduTargetTag}
+											</dd>
+										</dl>
+									</div>
+									<div class="cont">
+										<a href="javascript:void(0)" onclick="cntnts.moveToDetail(${item.cntntsid}, ${eduSbjctCd})" class="title ellipsis" data-ellipsis="2">${item.ttl}</a>
+										<ul class="hash">
+											${eduSbjctTag}
+										</ul>
+										<div class="d-flex a-center j-between description">
+											<div class="fs-14 fc-black6 ellipsis">출처 : ${item.instNm}</div>
+											<div class="fs-14 fc-black6 nowrap">${item.regDt}</div>
+										</div>
+									</div>
+								</li>
+  	    						`;
    							}else {
    	                            cardListHtml += `
-   	                             <li>
-   	 	                            <a href="javascript:void(0)" onclick="cntnts.moveToDetail(${item.cntntsid}, ${eduSbjctCd})">
-   	 		                            <div class="thumb" style="height:127px;">
-   	 		                            	<img src="/downloadFileByFileid.do?fileid=${item.rprsImgFileid}&file_idntfc_key=${item.fileIdntfcKey}" alt="">
-   	 		                            </div>
-   	 		                            <dl class="card-cate-list">
-   	 										<dt class="mo-ellipsis" data-ellipsis="2">${item.ttl}</dt>
-   	 										<dd class="mo-ellipsis fc-black6" data-ellipsis="1">조회수 ${item.hits}회</dd>
-   	 										<dd class="mo-ellipsis fc-black6" data-ellipsis="1">${item.regDt}</dd>
-   	 									</dl>
-   	 								</a>
-   	 							</li>
-   	    						`;
+								<li>
+									<div class="thumb">
+										<img src="/downloadFileByFileid.do?fileid=${item.rprsImgFileid}&file_idntfc_key=${item.fileIdntfcKey}" alt="">
+										${cntntsTypeTag}
+										<dl class="target">
+											<dt class="blind">대상</dt>
+											<dd>
+												${eduTargetTag}
+											</dd>
+										</dl>
+									</div>
+									<div class="cont">
+										<a href="javascript:void(0)" onclick="cntnts.moveToDetail(${item.cntntsid}, ${eduSbjctCd})" class="title ellipsis" data-ellipsis="2">${item.ttl}</a>
+										<ul class="hash">
+											${eduSbjctTag}
+										</ul>
+										<div class="d-flex a-center j-between description">
+											<div class="fs-14 fc-black6 ellipsis">출처 : ${item.instNm}</div>
+											<div class="fs-14 fc-black6 nowrap">${item.regDt}</div>
+										</div>
+									</div>
+								</li>
+  	    						`;   	    						
    							}
 
                         });

@@ -95,6 +95,7 @@ public class MvmnAplyController {
         CodeVo codeVo = new CodeVo();
         codeVo.setCdgrpid("180");
         model.addAttribute("sttCodeList", codeService.selectCodeList(codeVo));
+        model.addAttribute("mvmnAplyParamVo", mvmnAplyVo);
         
         return "mng/prtpn/mvmnAply/mvmnAplyDetailForm";
     }
@@ -217,6 +218,7 @@ public class MvmnAplyController {
     @RequestMapping(value = "/mng/prtpn/mvmnAply/mvmnAplyClosePopup.html")
     public String mvmnAplyClosePopup(MvmnAplyVo mvmnAplyVo, Model model, @UserInfo UserVo user) throws Exception {
         model.addAttribute("user",user);
+        model.addAttribute("mvmnAplyParamVo",mvmnAplyVo);
         return "mng/prtpn/mvmnAply/mvmnAplyClosePopup";
     }
 

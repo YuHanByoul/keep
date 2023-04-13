@@ -91,12 +91,15 @@ public class ResveReqstVo extends ParentRequestVo {
     private String dpstDe;
 
     /** 입금 확인 일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date dpstIdntyDt;
 
     /** 취소 일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date cnclDt;
 
     /** 환불 요청 일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date rfndDmndDt;
 
     /** 환불 일자 */

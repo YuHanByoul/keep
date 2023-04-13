@@ -16,12 +16,13 @@
               , A.TTL
               , TB1.EDU_SBJCT AS EDUSBJCTCD
               , TB2.EDU_TRGT EDUTRGTCD
-              , CONCAT(D2.CD_NM, ' > ', D1.CD_NM) AS TYPECD
+              , CONCAT(D1.CD_NM) AS TYPECD
               , NVL(A.HITS, 0) AS HITS
               , A.DEL_YN
               , A.RPRS_IMG_FILEID
               , E.FILEGRPID
               , E.FILE_IDNTFC_KEY
+              , NVL(G.INST_NM, '') AS INST_NM
               , A.REG_DT
             FROM
                 TB_CMM_CNTNTS A
@@ -41,7 +42,7 @@
             
                     LEFT OUTER JOIN (
                                     SELECT
-                                        GROUP_CONCAT(ETCD.CD_NM separator ',') EDU_TRGT
+                                        GROUP_CONCAT(ETCD.CD separator ',') EDU_TRGT
                                       , CNTNTSID
                                       , ET.EDU_TRGT_CD
                                     FROM
@@ -55,6 +56,9 @@
                     LEFT OUTER JOIN TB_CMM_CD D2 ON D1.UPPR_CD = D2.CD
             
                     LEFT OUTER JOIN TB_CMM_FILE E ON A.RPRS_IMG_FILEID = E.FILEID
+                    
+                    LEFT OUTER JOIN TB_CMM_USER F ON A.RGTRID = F.USERID
+                    LEFT OUTER JOIN TB_CMM_INST G ON F.INSTID = G.INSTID                    
             WHERE
                 1 = 1
             <!-- 키워드 -->

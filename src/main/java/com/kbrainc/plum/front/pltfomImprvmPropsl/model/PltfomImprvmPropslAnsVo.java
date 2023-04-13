@@ -50,6 +50,9 @@ public class PltfomImprvmPropslAnsVo {
     /** 파일 목록*/
     private List<FileVo> fileList;
 
+    /** 공개 여부 */
+    private String rlsYn;
+
     public void setNm(String nm) {
         this.nm = StringUtil.maskingName(nm);
     }

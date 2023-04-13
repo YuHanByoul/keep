@@ -47,18 +47,11 @@
 						<div class="col-lg-3 col-md-6 mb-3">
 							<div class="mb-0 form-group row">
 								<div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
-									<strong>예약신청일 - 검색시작일</strong></div>
+									<strong>예약신청일</strong></div>
 								<div class="col-12">
-									<input type="date" class="form-control form-control-sm" name="searchBgngDt" id="searchBgngDt" placeholder="Text Input Validation">
-								</div>
-							</div>
-						</div>
-						<div class="col-lg-3 col-md-6 mb-3">
-							<div class="mb-0 form-group row">
-								<div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
-									<strong>예약신청일 - 검색종료일</strong></div>
-								<div class="col-12">
-									<input type="date" class="form-control form-control-sm" name="searchEndDt" id="searchEndDt" placeholder="Text Input Validation">
+								     <input type="text" class="form-control form-control-sm" name="filterSearchSelectDate" id="filterSearchSelectDate">
+								     <input type="hidden" id="searchBgngDt" name="searchBgngDt"/>
+								     <input type="hidden" id="searchEndDt" name="searchEndDt"/>
 								</div>
 							</div>
 						</div>
@@ -90,13 +83,21 @@
 		</div>
 	</div>
 
+	<link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
 	<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 	<script type="text/javascript" src="/js/common/jsgrid-master/dist/jsgrid.min.js"></script>
 	<script th:inline="javascript">
+        /*<![CDATA[*/
+        var selectedApplyid = /*[[${param.selectedApplyid}]]*/null;
+        /*]]>*/
 		var selectedItems = [];
 		var gridHelper2;
+		
 		$(function(){
 			gridHelper2 = new GridHelper('jsGrid','contentPanel');
+			initDateRangePicker("filterSearchSelectDate","searchBgngDt","searchEndDt");
 			writeJsGridData();
 		});
 
@@ -115,6 +116,7 @@
 			$("#searchAplySttsCd").val('');
 			$("#searchBgngDt").val('');
 			$("#searchEndDt").val('');
+			$("#filterSearchSelectDate").val('');
 			gridHelper2.resetListContent();
 		}
 
@@ -154,6 +156,10 @@
 							params.push({name: "orderField", value: 'aplyid'});
 						}
 
+						if(selectedApplyid !=null && selectedApplyid !='' && selectedApplyid != 0){
+							params.push({name: "selectedApplyid", value: selectedApplyid});
+						}
+
 						formData = formData.concat(params);
 
 						$.ajax({
@@ -176,7 +182,7 @@
 					{ name: 'aplyid', css: 'hide' }
 					,{ title: 'No.' ,name: 'rowNumber',    type: "number", width : "80", align:"center",  sorting :false }
 					,{ title: '신청자ID'    ,name: 'acnt',    type: "text", width: "auto"}
-					,{ title: '신청자명'    ,name: 'nm', type: "text", width: "150", align:"center" }
+					,{ title: '신청자명'    ,name: 'aplcntNm', type: "text", width: "150", align:"center" }
 					,{ title: '공간'   ,name: 'spceNm',   type: "text", width: "150", align:"center"  }
 					,{ title: '이용일(시)'   ,name: 'bgngDt',   type: "text", width: "300", align:"center"
 						, itemTemplate: function(value, item){
@@ -208,6 +214,12 @@
 					gridHelper2.loadContent(updateUrl);
 					gridHelper2.rowClick(args);
 				},
+	            onDataLoaded: function(args) { 
+                    if(selectedApplyid == null || args.grid.data == null || args.grid.data.length == 0) return;
+                    var detailUrl = "/mng/rcpmnyBfe/rcpmnyBfeView.html?aplyid=" + selectedApplyid;
+                    gridHelper2.loadContent(detailUrl);
+                    selectedApplyid = null;
+                },
 				onPageChanged: function(args) {
 					selectedItems = [];
 				}
@@ -298,8 +310,6 @@
 		}
 
 	</script>
-
-	<script src="/js/ckeditor/ckeditor.js"></script>
 </div>
 </body>
 </html>

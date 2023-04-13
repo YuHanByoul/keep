@@ -12,14 +12,15 @@
         /* MvmnAplyDao.selectMvmnAplyList */
         <include refid="PaginationMapper.header"/>
         SELECT Z.PRGRM_SCHDLID
-             , Z.EDU_YR
-             , Z.EDU_MM
+             , Z.EDU_YR AS EDUYR
+             , Z.EDU_MM AS EDUMM
              , Z.PRGRMID
-             , Z.PRGRM_NM
+             , Z.PRGRM_NM AS PRGRMNM
              , Z.EDU_NOPE
              , Z.SAREAID
-             , Z.RCPT_MTHD_NM
-             , Z.SAREA_NM
+             , Z.RCPT_MTHD_NM AS RCPTMTHDNM
+             , Z.SAREA_NM AS SAREANM
+             , Z.YM
              , SUM(Z.ORG_WTNG_APLY_CNT) WTNG_APLY_CNT
              , SUM(Z.ORG_WTNG_APPRV_CNT) WTNG_APPRV_CNT
              , SUM(Z.ORG_APLY_CMPLT_CNT) APLY_CMPLT_CNT
@@ -169,8 +170,13 @@
         , A.REG_DT 
         FROM TB_EDU_MVMN_PRGRM_TME A 
         LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME_SCHDL B ON B.TMEID = A.TMEID 
+        LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_SCHDL C ON C.PRGRM_SCHDLID = B.PRGRM_SCHDLID 
         WHERE 1=1
         AND NOW() >= DATE_FORMAT(STR_TO_DATE(CONCAT(B.DE,' ', A.BGNG_TM), '%Y.%m.%d %H:%i:%s'),'%Y-%m-%d %H:%i:%s')
+        AND SUBSTRING_INDEX(C.YM, '-', 1) = #{eduYr}
+        AND C.SAREAID = #{sareaId}
+        AND A.PRGRMID = #{prgrmId}
+        AND SUBSTRING_INDEX(C.YM, '-', -1) = SUBSTRING_INDEX(#{ym}, '-', -1)
         <include refid="PaginationMapper.footer"/>        
     </select>
 

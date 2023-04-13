@@ -34,11 +34,9 @@ public class HelpDeskAnswrVo extends ParentRequestVo {
     /** 답변 일련번호 */
     private Integer ansid;
     /** 답변 제목 */
-    @NotEmpty(message = "제목을 입력해 주십시오.")
     @Size(max = 100, message = "제목은 100자를 넘을 수 없습니다.")
     private String ttl;
     /** 답변 내용 */
-    @NotEmpty(message = "답변을 입력해 주십시오.")
     @Size(max = 4000, message = "답변 내용은 4000자를 넘을 수 없습니다.")
     private String cn;
     /** 파일그룹 아이디 */

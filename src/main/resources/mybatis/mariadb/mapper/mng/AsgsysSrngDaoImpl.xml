@@ -1517,6 +1517,20 @@
             A.PRGRMID = #{prgrmid}
     </select>
 
+    <!-- 신청정보탭 체크리스트 상세 조회 -->
+    <select id="selectAssChklstForm" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        /* AsgsysSrngDao.selectAssChklstForm*/
+        SELECT
+            A.PRGRMID
+          , B.SPRTGRPID
+          , C.SBMSNID
+          , C.CHKLSTID
+        FROM TB_ASS_PRGRM A
+        LEFT OUTER JOIN TB_ASS_SPRTGRP_SRNG B ON A.PRGRMID = B.PRGRMID
+        LEFT OUTER JOIN TB_ASS_CHKLST_SBMSN C ON B.SPRTGRPID = C.USERID
+        WHERE A.PRGRMID = #{prgrmid}
+    </select>
+
     <!-- 안전관리 등록 -->
     <update id="insertSftyMng" parameterType="AsgsysSrngVo" >
         /* AsgsysSrngDao.insertSftyMng */
@@ -2575,8 +2589,8 @@
             ) VALUES(
                 #{chklstid     }
               , #{prgrmid      }
-              , #{user.userid  }
-              , #{sbmsnDt      }
+              , #{sprtgrpid    }
+              , NOW()
               , #{sbmsnSttsCd  }
               , #{userIp       }
               , #{scr          }
@@ -2621,7 +2635,7 @@
           , USER_IP         = #{userIp}
           , SBMSN_STTS_CD   = #{sbmsnSttsCd}
           , SBMSN_DT        = NOW()
-          , USERID          = #{user.userid}
+          , USERID          = #{sprtgrpid}
           , MDFCN_DT        = NOW()
           , MDFRID          = #{user.userid}
         WHERE SBMSNID       = #{sbmsnid}
@@ -2884,59 +2898,68 @@
     <select id="selectSprtgrpPicList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
 
         <include refid="PaginationMapper.header"/>
-        SELECT
-            AA.USERID
-          , ACNT
-          , SEARCH_STR
-          , NM
-          , EML
-          , TELNO
-          , MOBLPHON
-          , CRTFCT_NM
-          , SBJCT_CD
-          , RGN_CD
-        FROM
-            TB_ASS_EXPRT  AA
-        INNER JOIN
+            SELECT
+                B.USERID
+              , B.ACNT
+              , B.NM
+              , CONCAT( B.ACNT," ",B.NM) AS SEARCH_STR
+              , B.EML
+              , B.MOBLPHON    AS TELNO
+              , B.REG_DT
+              , B.MDFCN_DT
+              , C.RGN_CD_NM
+              , D.SBJCT_CD_NM
+              , E.CRTFCT_NM
+            FROM TB_ASS_EXPRT A
+            INNER JOIN TB_CMM_USER B ON A.USERID = B.USERID
+            LEFT OUTER JOIN
+            (
+                SELECT
+                    A.USERID    AS USERID
+                  , GROUP_CONCAT(B.CTPRVN_NM SEPARATOR ', ')    AS RGN_CD_NM
+                  , GROUP_CONCAT(B.CTPRVN_CD SEPARATOR ', ')    AS RGN_CD
+                FROM TB_ASS_EXPRT_ACTVT_RGN A
+                INNER JOIN TB_CMM_ADDR_CTPRVN B
+                ON A.RGN_CD = B.CTPRVN_CD
+                GROUP BY A.USERID
+            ) C ON A.USERID = C.USERID
+            LEFT OUTER JOIN
             (
                 SELECT
                     A.USERID
-                  , B.ACNT
-                  , B.NM
-                  , CONCAT( B.ACNT," ",B.NM) AS SEARCH_STR
-                  , B.EML
-                  , B.TELNO
-                  , B.MOBLPHON
-                  , GROUP_CONCAT(C.CRTFCT_NM ) AS CRTFCT_NM
-                  , D.SBJCT_CD
-                  , E.RGN_CD
-                FROM
-                    TB_ASS_EXPRT A
-                INNER JOIN
-                    TB_CMM_USER B ON A.USERID = B.USERID
-                LEFT OUTER JOIN    /*전문가 자격증*/
-                    TB_ASS_EXPRT_CRTFCT C ON A.USERID = C.USERID
-                LEFT OUTER JOIN    /* 전문가 주제? */
-                    TB_ASS_EXPRT_SBJCT D ON A.USERID = D.USERID
-                LEFT OUTER JOIN    /* 전문가 범위 */
-                    TB_ASS_EXPRT_ACTVT_SCOPE E ON A.USERID = E.USERID
-            ) BB ON AA.USERID = BB.USERID
-        WHERE 1=1
+                  , GROUP_CONCAT(CD.CD_NM SEPARATOR ', ')    AS SBJCT_CD_NM
+                  , GROUP_CONCAT(CD.CD SEPARATOR ', ')    AS SBJCT_CD
+                FROM TB_ASS_EXPRT_SBJCT A
+                INNER JOIN TB_CMM_CD CD
+                ON A.SBJCT_CD = CD.CD
+                GROUP BY A.USERID
+            ) D ON A.USERID= D.USERID
+            LEFT OUTER JOIN
+            (
+                SELECT
+                     A.USERID
+                   , GROUP_CONCAT(A.CRTFCT_NM SEPARATOR ', ')   AS CRTFCT_NM
+                FROM TB_ASS_EXPRT_CRTFCT A
+                GROUP BY A.USERID
+            ) E ON A.USERID = E.USERID
+            WHERE 1=1
+            AND B.DEL_YN     = 'N'
+            AND B.BLCKLST_YN = 'N'
         <!-- 키워드.계정 -->
         <if test="searchKeyword != null and searchKeyword != ''">
-            AND SEARCH_STR LIKE CONCAT('%',#{searchKeyword},'%')
+            AND CONCAT(B.ACNT,B.NM) LIKE CONCAT('%',#{searchKeyword},'%')
         </if>
         <!-- 키워드.자격증명 -->
         <if test="searchCrtfctNm != null and searchCrtfctNm != ''">
-            AND CRTFCT_NM LIKE CONCAT('%',#{searchCrtfctNm},'%')
+            AND E.CRTFCT_NM LIKE CONCAT('%',#{searchCrtfctNm},'%')
         </if>
         <!-- 전문분야(환경주제)  -->
         <if test="searchSbjctCd != null and searchSbjctCd != ''">
-            AND SBJCT_CD = #{searchSbjctCd}
+            AND D.SBJCT_CD LIKE CONCAT('%',#{searchSbjctCd},'%')
         </if>
         <!-- 활동가능지역 -->
         <if test="searchRgnCd != null and searchRgnCd != ''">
-            AND RGN_CD = #{searchRgnCd}
+            AND C.RGN_CD LIKE CONCAT('%',#{searchRgnCd},'%')
         </if>
 
         <include refid="PaginationMapper.footer"/>

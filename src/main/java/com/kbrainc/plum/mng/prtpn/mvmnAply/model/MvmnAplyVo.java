@@ -126,6 +126,8 @@ public class MvmnAplyVo extends ParentRequestVo {
     /** 사용_유무 */
     private String useYn;
 
+    private String ym;
+
     /** 수정_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date mdfcnDt;

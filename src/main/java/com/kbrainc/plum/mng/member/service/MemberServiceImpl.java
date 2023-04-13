@@ -294,7 +294,7 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
                 }
                 String[] phonlist = new String[]{phone};
                 String msg = "[임시비밀번호 : " + password + "] KEEP 에서 보낸 임시비밀번호 입니다.";
-                Map<String, Object> resMap = smsNhnService.sendSms(msg,phonlist); // sms 발송
+                Map<String, Object> resMap = smsNhnService.sendSms(msg,phonlist,""); // sms 발송
                 String result = (String)((Map<String, Object>)(resMap.get("header"))).get("resultMessage");
                 
                 return ("SUCCESS".equals(result))? true:false;

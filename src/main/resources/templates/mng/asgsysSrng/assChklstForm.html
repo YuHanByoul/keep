@@ -1,8 +1,9 @@
 <form id="assChklstFrm">
-    <input type="hidden" id="prgrmid" name="prgrmid" th:value="${aplyInfo.prgrmid}">
-    <input type="hidden" id="sbmsnid" name="sbmsnid" th:value="${aplyInfo.sbmsnid}">
-    <input type="hidden" id="sprtgrpid" name="sprtgrpid" th:value="${aplyInfo.sprtgrpid}">
-    <input type="hidden" id="chklstid" name="chklstid" th:value="${aplyInfo.chklstid}">
+    <input type="hidden" id="loginUserid" name="loginUserid" th:value="${loginUserid}">
+    <input type="hidden" id="prgrmid" name="prgrmid" th:value="${assChklstInfo.prgrmid}">
+    <input type="hidden" id="sbmsnid" name="sbmsnid" th:value="${assChklstInfo.sbmsnid}">
+    <input type="hidden" id="sprtgrpid" name="sprtgrpid" th:value="${assChklstInfo.sprtgrpid}">
+    <input type="hidden" id="chklstid" name="chklstid" th:value="${assChklstInfo.chklstid}">
     <div th:each="title , a : ${sprtgrpCheckList}">
 
         <div th:if="${title.treeOrd==1}" >
@@ -174,12 +175,15 @@
 
 		$("[id^=cnY]").each(function(index, item) {
 			param["ansLst[" + index + "].cn"] = item.innerText;
+			param["ansLst[" + index + "].idntyMttr"] = item.innerText;
 		});
 
 		param["prgrmid"] = prgrmid;
 		param["sbmsnid"] = $("#sbmsnid").val();
 		param["sprtgrpid"] = $("#sprtgrpid").val();
 		param["chklstid"] = $("#chklstid").val();
+		param["sbmsnSeCd"] = "242102";    /*심사구분:심사위원 심사(지원단 )*/
+		param["sttsCd"] = "114104";    /*심사구분:심사위원 심사(지원단 )*/
 
 		var vScr = 0;
 		$("[id^=scrSum]").each(
@@ -188,6 +192,11 @@
 	        });
 		param["scr"] = vScr;
 
+// 		if($("#loginUserid").val()!=$("#sprtgrpid").val()){
+// 			 alert("지원단심사 담당자가 아닙니다.");
+// 			 return;
+// 		}
+debugger;
 		if (!confirm("저장하시겠습니까?")) return;
 
 		if (displayWorkProgress()) {

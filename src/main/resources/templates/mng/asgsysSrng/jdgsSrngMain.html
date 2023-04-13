@@ -4,7 +4,6 @@
     xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
     layout:decorator="layout/mng/mainLayout"
 >
-
 <body>
 <div layout:fragment="content">
 <style>
@@ -18,11 +17,11 @@
     <link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
 	<div class="page-body">
 	    <div class="row">
-
+            <div class="col-12">
 		    <form name="searchFrm" id="searchFrm" action="" onsubmit="return false;" class="card">
                 <input type="hidden" id="searchRegStartDt" name="searchRegStartDt" value="" />
                 <input type="hidden" id="searchRegEndDt"   name="searchRegEndDt"   value="" />
-                <input type="hidden" id="userid"           name="userid"           th:value="${userid}" />
+                <input type="hidden" id="rolid"            name="rolid"            th:value="${rolid}" />
 		    <!-- 필터 부분 -->
 		        <div class="card-block-small">
 		            <div class="row">
@@ -31,7 +30,7 @@
                             <div class="mb-0 form-group row">
                                 <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>심사위원</strong></div>
                                 <div class="col-12">
-                                    <select class="js-example-basic-single col-sm-12" name="searchUserid" id="searchUserid">
+                                    <select class="js-example-basic-single col-sm-12" name="searchUserid" id="searchUserid" >
                                         <option value="">- 선택 -</option>
                                         <th:block th:if="${#lists.size(list) > 0}" th:each="list, i: ${list}">
                                             <option th:value="${list.userid}" th:selected="${list.userid == userid}"><th:block th:text="${list.nm}" /></option>
@@ -100,9 +99,11 @@
 		            </div>
 		        </div>
             </form>
+            </div>
             <!-- //필터 부분 -->
 
 			<!-- 그리드 부분 -->
+            <div class="col-12">
 		    <div class="card">
 		        <div class="row p-20 p-b-0">
 		            <div class="col-12 col-md-6">
@@ -121,8 +122,12 @@
 		            </div>
 		        </div>
 		    </div>
-			<!-- Content Area -->
-            <div id="contentPanel" class="panel panel-default" style="display:none"></div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="col-12">
+                <div id="contentPanel" style="display:none" class="card"></div>
+            </div>
 		</div>
     </div>
 
@@ -139,10 +144,11 @@
 
 	$(function(){
 
-		debugger;
-		//userRoleInfo
-
+		if($("#rolid").val()=='15'){
+			$("#searchUserid").prop("disabled","disabled")
+		}
 	    gridHelper1 = new GridHelper('jsGrid','contentPanel');
+	    debugger;
 	    writeJsGridData();
 
 	    $("#filterSearchSelectDate").daterangepicker({
@@ -182,9 +188,11 @@
 	    $("#searchRegEndDt").val('');
 	    $("#searchStyYn").val('');
 	    $("#filterSearchSelectDate").val('');
-	    //관리자인경우 초기화
-	    $("#searchUserid").val('')
-	    //
+
+	    if($("#rolid").val()!=15){
+	        $("#searchUserid").val("")
+	        $("#select2-searchUserid-container")[0].innerText="- 선택 -";
+	    }
 	}
 
 	//검색버튼
@@ -224,6 +232,7 @@
 		                var data = $.Deferred();
 
 		                var formData = $('#searchFrm').serializeArray();
+		                formData.push({name : "searchUserid" , value : $("#searchUserid").val()});
 		                var params = [
 		                        {name: "pageNumber", value: filter.pageIndex},
 		                        {name: "rowPerPage", value: filter.pageSize},
@@ -245,9 +254,7 @@
 		                  dataType: "json",
 		                  data: formData
 		                }).done(function(response){
-		console.log("@@@@@1");
-		//
-		console.log("@@@@@2");
+
 		                    var da = {
 		                            data : escapeGridData(response.list)
 		                            ,itemsCount : response.totalCount
@@ -258,33 +265,15 @@
 		            },
 		        },
 		        fields: [
-		            /*
-		             {
-		                 headerTemplate: function() {
-		                     return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
-		                 },
-		                 itemTemplate: function(_, item) {
-		                     return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox")
-		                     .prop("checked", $.inArray(String(item.userid), selectedItems) > -1)
-		                     .on("change", function () {
-		                     $(this).is(":checked") ? selectItem($(this).parent().next().text()) : unselectItem($(this).parent().next().text());
-		                     });
-		                 },
-		                 align: "center",
-		                 width: "50",
-		                 sorting: false
-		             }
-		            ,
-		            */
 		             { name: 'prgrmid', css:'hide'}
 		            ,{ name: 'jdgsid', css:'hide'}
-		            ,{ title: 'No.'               ,name: 'rowNumber',    type: "number", width : "80", align:"center",  sorting :false }
-		            ,{ title: '심사위원'          ,name: 'jdgsNm',    type: "text", width: "100", align:"left"}
-		            ,{ title: '프로그램명'        ,name: 'prgrmNm',    type: "text", width: "100", align:"left"}
-		            ,{ title: '기관명'            ,name: 'instNm', type: "text", width: "100", align:"left"}
-		            ,{ title: '심사진행상태'      ,name: 'srngSttsCd',   type: "text", width: "100", align:"center"
+		            ,{ title: 'No.'             ,name: 'rowNumber',   type: "number", width : "80", align:"center",  sorting :false }
+		            ,{ title: '심사위원'        ,name: 'jdgsNm',      type: "text", width: "100", align:"left"}
+		            ,{ title: '프로그램명'      ,name: 'prgrmNm',     type: "text", width: "100", align:"left"}
+		            ,{ title: '기관명'          ,name: 'instNm',      type: "text", width: "100", align:"left"}
+		            ,{ title: '심사진행상태'    ,name: 'srngSttsCd',  type: "text", width: "100", align:"center"
 		                ,itemTemplate: function(value, item) {
-		                                   if(value=='114101')    return "심사전";
+		                                   if(value=='114101')          return "심사전";
 		                                   else if(value=='114102')    return "심사중";
 		                                   else if(value=='114103')    return "심사완료";
 		                                   else    return "";
@@ -308,7 +297,6 @@
 		            var detailUrl = "/mng/asgsysSrng/jdgsSrngDetailForm.html?jdgsid=" + args.item.jdgsid+"&prgrmid="+ args.item.prgrmid;
 
 		            gridHelper1.loadContent(detailUrl);
-		            //gridHelper1.rowClick(args);
 		        },
 		        onPageChanged: function(args) {
 		            selectedItems = [];
