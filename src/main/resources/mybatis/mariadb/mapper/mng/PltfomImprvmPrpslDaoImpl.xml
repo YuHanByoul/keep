@@ -2,11 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <!--
-	SQL File Name : PltfomImprvmPropslDaoImpl.xml
+	SQL File Name : PltfomImprvmPrpslDaoImpl.xml
 	Description : 플랫폼개선제안 관리
 -->
-<mapper namespace="com.kbrainc.plum.mng.pltfomImprvmPropsl.model.PltfomImprvmPropslDao">
-    <select id="selectPltfomImprvmPropslList" resultType="PltfomImprvmPropslVo">
+<mapper namespace="com.kbrainc.plum.mng.pltfomImprvmPrpsl.model.PltfomImprvmPrpslDao">
+    <select id="selectPltfomImprvmPrpslList" resultType="PltfomImprvmPrpslVo">
         <include refid="PaginationMapper.header"/>
             SELECT
                 A.PRPSLID
@@ -64,7 +64,7 @@
         <include refid="PaginationMapper.footer"/>
     </select>
 
-    <select id="selectPltfomImprvmPropsl" resultType="PltfomImprvmPropslVo">
+    <select id="selectPltfomImprvmPrpsl" resultType="PltfomImprvmPrpslVo">
         SELECT
             A.PRPSLID
              , A.USERID
@@ -97,31 +97,72 @@
         WHERE A.PRPSLID = #{prpslid}
     </select>
 
-    <select id="selectPltfomImprvmPropslAns" resultType="PltfomImprvmPropslAnsVo">
+    <select id="selectPltfomImprvmPrpslAns" resultType="PltfomImprvmPrpslAnsVo">
         SELECT
-            ANSID
-            , PRPSLID
-            , TTL
-            , CN
+            A.ANSID
+            , A.PRPSLID
+            , A.TTL
+            , A.CN
+            , A.USERID
+            , A.USERNM
+            , A.RLS_YN
+            , A.ANS_DT
+            , A.FILEGRPID
+            , A.MDFCN_DT
+            , A.MDFRID
+            , A.REG_DT
+            , A.RGTRID
+            , B.NM AS RGTR_NM
+        FROM TB_CMM_PLTFOM_IMPRVM_PRPSL_ANS A
+        INNER JOIN TB_CMM_USER B
+            ON A.RGTRID = B.USERID
+        WHERE PRPSLID = #{prpslid}
+    </select>
+
+    <insert id="insertPltfomImprvmPrpslAns">
+        INSERT INTO TB_CMM_PLTFOM_IMPRVM_PRPSL_ANS(
+            PRPSLID
             , USERID
             , USERNM
+            , TTL
+            , CN
+            , FILEGRPID
             , RLS_YN
             , ANS_DT
-            , FILEGRPID
             , MDFCN_DT
             , MDFRID
             , REG_DT
             , RGTRID
-        FROM TB_CMM_PLTFOM_IMPRVM_PRPSL_ANS
-        WHERE PRPSLID = #{prpslid}
-    </select>
-
-    <insert id="insertPltfomImprvmPropslAns">
-
+        )
+        VALUES(
+            #{prpslid}
+            , #{user.userid}
+            , #{userNm}
+            , #{ttl}
+            , #{cn}
+            , #{filegrpid}
+            , #{rlsYn}
+            , #{ansDt}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
     </insert>
 
-    <update id="updatePltfomImprvmPropslAns">
-
+    <update id="updatePltfomImprvmPrpslAns">
+        UPDATE TB_CMM_PLTFOM_IMPRVM_PRPSL_ANS
+        SET
+            USERNM = #{userNm}
+            , TTL = #{ttl}
+            , CN = #{cn}
+            , FILEGRPID = #{filegrpid}
+            , RLS_YN = #{rlsYn}
+            , ANS_DT = #{ansDt}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE
+            ANSID = #{ansid}
     </update>
 
     <update id="deletePltfomImprvmPrpsl">
@@ -135,5 +176,11 @@
         <foreach collection="deleteIds" item="deleteId" separator="," open="(" close=")">
             #{deleteId}
         </foreach>
+    </update>
+
+    <update id="updatePltfomImprvmPrpslStts">
+        UPDATE TB_CMM_PLTFOM_IMPRVM_PRPSL
+        SET PRCS_STTS_CD = #{prcsSttsCd}
+        WHERE PRPSLID = #{prpslid}
     </update>
 </mapper>
