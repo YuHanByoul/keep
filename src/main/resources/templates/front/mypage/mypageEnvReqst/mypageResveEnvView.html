@@ -7,6 +7,11 @@
     <script src="/js/front/flatpickr.js"></script>
     <script src="/js/front/flatpickr-locale-ko.js"></script>
 
+    <div class="table-caption">
+        <div class="left">
+            <h3 class="sub-title">예약정보</h3>
+        </div>
+    </div>
     <div class="table-row">
         <table>
             <caption>예약정보  - 예약상태, 신청일시, 결제상태, 운영기관, 시설, 공간, 위치, 이용일시, 최대 수용인원/평형, 입실시간, 퇴실시간, 이용금액</caption>
@@ -19,13 +24,13 @@
             <tbody>
             <tr>
                 <th scope="row">예약상태</th>
-                <td>예약승인</td>
+                <td th:text="${mypageEnvReqst.aplySttsCdNm}"></td>
                 <th scope="row">신청일시</th>
                 <td th:text="${#dates.format(mypageEnvReqst.regDt, 'yyyy-MM-dd')}"></td>
             </tr>
             <tr>
                 <th scope="row">결제상태</th>
-                <td>입금완료</td>
+                <td th:text="${mypageEnvReqst.stlmSttsCdNm}"></td>
                 <th scope="row">운영기관</th>
                 <td th:text="${mypageEnvReqst.instNm}"></td>
             </tr>
@@ -178,23 +183,24 @@
                 <th scope="row">예금주</th>
                 <td th:text="${mypageEnvReqst.dpstrNm}">(재)환경교육재단 </td>
             </tr>
-            <tr>
-                <th scope="row">입금일</th>
-                <td th:text="${mypageEnvReqst.dpstDe}">2022-12-03</td>
-                <th scope="row">입금금액</th>
-                <td th:text="${#numbers.formatInteger(mypageEnvReqst.dpstAmt, 0, 'COMMA') + '원'}"></td>
-            </tr>
+            <th:block th:if ="${mypageEnvReqst.stlmSttsCd} == '161102'">
+                <tr>
+                    <th scope="row">입금일</th>
+                    <td th:text="${mypageEnvReqst.dpstDe}"></td>
+                    <th scope="row">입금금액</th>
+                    <td th:text="${#numbers.formatInteger(mypageEnvReqst.dpstAmt, 0, 'COMMA') + '원'}"></td>
+                </tr>
+            </th:block>
             </tbody>
         </table>
     </div>
 
-    <div class="table-caption">
-        <div class="left">
-            <h3 class="sub-title">예약취소사유</h3>
+    <th:block th:if ="${mypageEnvReqst.aplySttsCd} == '160103'">
+        <div class="table-caption">
+            <div class="left">
+                <h3 class="sub-title">예약취소사유</h3>
+            </div>
         </div>
-    </div>
-
-    <th:block th:if ="${mypageEnvReqst.cnclRsnCd} != ''">
         <div class="table-row table-row-mo">
             <table>
                 <caption>예약취소사유  - 사유</caption>
@@ -215,579 +221,101 @@
         </div>
     </th:block>
 
-    <div class="table-caption">
-        <div class="left">
-            <h3 class="sub-title">환불요청정보</h3>
+    <th:block th:if ="${mypageEnvReqst.rfndDmndDt} != null and ${mypageEnvReqst.rfndDmndDt} != ''">
+        <div class="table-caption">
+            <div class="left">
+                <h3 class="sub-title">환불요청정보</h3>
+            </div>
         </div>
-    </div>
 
-    <div class="table-row">
-        <table>
-            <caption>환불요청정보 - 환불요청일, 환불요청금액, 환불계좌은행, 환불계좌번호, 예금주</caption>
-            <colgroup>
-                <col style="width:140px;">
-                <col>
-                <col style="width:140px;">
-                <col>
-            </colgroup>
-            <tr>
-                <th scope="row">환불요청일</th>
-                <td>2022-12-05</td>
-                <th scope="row">환불요청금액</th>
-                <td>50,000원 </td>
-            </tr>
-            <tr>
-                <th scope="row">환불계좌은행</th>
-                <td>농협</td>
-                <th scope="row">환불계좌번호</th>
-                <td>00-0000000-00 </td>
-            </tr>
-            <tr>
-                <th scope="row">예금주</th>
-                <td colspan="3">홍길동</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div class="table-caption">
-        <div class="left">
-            <h3 class="sub-title">환불요청취소사유</h3>
+        <div class="table-row">
+            <table>
+                <caption>환불요청정보 - 환불요청일, 환불요청금액, 환불계좌은행, 환불계좌번호, 예금주</caption>
+                <colgroup>
+                    <col style="width:140px;">
+                    <col>
+                    <col style="width:140px;">
+                    <col>
+                </colgroup>
+                <tr>
+                    <th scope="row">환불요청일</th>
+                    <td><th:block th:text="${#dates.format(mypageEnvReqst.rfndDmndDt, 'yyyy-MM-dd HH:mm:ss')}"/></td>
+                    <th scope="row">환불요청금액</th>
+                    <td><th:block th:text="${#numbers.formatInteger(mypageEnvReqst.rfndDmndAmt, 0, 'COMMA') + '원'}"/></td>
+                </tr>
+                <tr>
+                    <th scope="row">환불계좌은행</th>
+                    <td th:text="${mypageEnvReqst.rfndBankCdNm}"></td>
+                    <th scope="row">환불계좌번호</th>
+                    <td th:text="${mypageEnvReqst.rfndBacnt}"></td>
+                </tr>
+                <tr>
+                    <th scope="row">예금주</th>
+                    <td colspan="3" th:text="${mypageEnvReqst.rfndPyrNm}">홍길동</td>
+                </tr>
+                </tbody>
+            </table>
         </div>
-    </div>
+    </th:block>
 
-    <div class="table-row table-row-mo">
-        <table>
-            <caption>환불요청취소사유  - 사유</caption>
-            <colgroup>
-                <col style="width:140px;">
-                <col>
-            </colgroup>
-            <tbody>
-            <tr>
-                <th scope="row">사유</th>
-                <td>
-                    <input type="text" title="환불요청취소사유" readonly>
-                    <textarea title="환불요청취소사유 상세" readonly class="mt10">환불이 불가합니다.</textarea>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div class="btn-wrap">
-        <div class="right">
-            <button type="button" class="fc-black6 fs-14 fw-300 underline">예약취소</button>
+    <th:block th:if ="${mypageEnvReqst.cnclRsnCd} != '' and ${mypageEnvReqst.stlmSttsCd} == '161102'">
+        <!-- 환불요청취소 사유가 있고, 입금완료일 경우 -->
+        <div class="table-caption">
+            <div class="left">
+                <h3 class="sub-title">환불요청취소사유</h3>
+            </div>
         </div>
-    </div>
+
+        <div class="table-row table-row-mo">
+            <table>
+                <caption>환불요청취소사유  - 사유</caption>
+                <colgroup>
+                    <col style="width:140px;">
+                    <col>
+                </colgroup>
+                <tbody>
+                <tr>
+                    <th scope="row">사유</th>
+                    <td>
+                        <input type="text" title="환불요청취소사유" readonly th:value="${mypageEnvReqst.cnclRsnCdNm}">
+                        <textarea title="환불요청취소사유 상세" readonly class="mt10"><th:block th:text="${mypageEnvReqst.rfndRejectRsn}"/></textarea>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </th:block>
+
+    <th:block th:if ="${mypageEnvReqst.aplySttsCd} == '160101' and ${mypageEnvReqst.stlmSttsCd} == '161101'">
+        <div class="btn-wrap">
+            <div class="right">
+                <button type="button" class="fc-black6 fs-14 fw-300 underline" onclick="fn_openDpstInfoPopup();">예약취소</button>
+            </div>
+        </div>
+    </th:block>
 
     <div class="btn-wrap">
         <div class="center">
-            <button type="button" class="btn-medium btn-gray">목록</button>
+            <button type="button" class="btn-medium btn-gray" onclick="location.href='/front/mypage/mypageEnvReqst/mypageEnvReqstList.html'">목록</button>
+        </div>
+    </div>
+
+    <!-- layerpopup -->
+    <div class="layer-popup layer-large" data-layer-id="insertRsnPopup">
+        <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+        <div class="layer-wrap" id="insertRsnPopup">
         </div>
     </div>
 
     <script th:inline="javascript">
+        var insertRsnPopupUrl = "/front/mypage/mypageEnvReqst/insertRsnPopup.html";
 
-        // 선택한 날짜 seq 리스트
-        var selectedRsvtdeidList = [];
-        // 최대정원
-        var maxNope;
-        // 선택한 인원 수
-        var userCnt;
-        // 이용금액
-        var selectedAmt;
-        // 대여인지, 숙박인지 구분값(대여 : 1, 숙박 : 0)
-        var utztnSeCd = /*[[${mypageEnvReqst.utztnSeCd}]]*/null;
-        console.log(utztnSeCd);
-
-        function date2str(x, y) {
-            var z = {
-                m: x.getMonth() + 1,
-                d: x.getDate(),
-                H: x.getHours(),
-                M: x.getMinutes(),
-                S: x.getSeconds()
-            };
-
-            y = y.replace(/(m+|d+|H+|M+|S+)/g, function(v) {
-                return ((v.length > 1 ? "0" : "") + z[v.slice(-1)]).slice(-2)
-            });
-
-            return y.replace(/(y+)/g, function(v) {
-                return x.getFullYear().toString().slice(-v.length)
-            });
-        }
-
-        function parseDate(strDate) {
-            var _strDate = strDate;
-            var _dateObj = new Date(_strDate);
-            if (_dateObj.toString() == 'Invalid Date') {
-                _strDate = _strDate.split('.').join('-');
-                _dateObj = new Date(_strDate);
-            }
-            if (_dateObj.toString() == 'Invalid Date') {
-                var _parts = _strDate.split(' ');
-
-                var _dateParts = _parts[0];
-                _dateObj = new Date(_dateParts);
-
-                if (_parts.length > 1) {
-                    var _timeParts = _parts[1].split(':');
-                    _dateObj.setHours(_timeParts[0]);
-                    _dateObj.setMinutes(_timeParts[1]);
-                    if (_timeParts.length > 2) {
-                        _dateObj.setSeconds(_timeParts[2]);
-                    }
-                }
-            }
-
-            return _dateObj;
-        }
-
-        var today = date2str(parseDate(new Date()), 'yyyy-mm-dd');
-        var newToday = new Date(today);
-
-        var envReqstView = {
-            updateFormUrl: '/front/envReqst/envReqstForm.html',
-            updateUrl: '/front/envReqst/updateEnvReqst.html',
-            listUrl: '/front/envReqst/envReqstList.html',
-            deleteUrl: '/front/envReqst/deleteHelpdesk.do',
-            cancelUrl: '/front/envReqst/cancelHelpdesk.do',
-
-            update(mode) {
-                if (mode == 'cancel') {
-                    if (!confirm('접수를 취소 하시겠습니까?')) return;
-                    this.ajaxForSttsUpdate(this.cancelUrl);
-                } else if (mode == 'delete') {
-                    if (!confirm('등록하신 게시글을 삭제 하시겠습니까?')) return;
-                    this.ajaxForSttsUpdate(this.deleteUrl);
-                }
-            },
-
-            ajaxForSttsUpdate(url) {
-                if (displayWorkProgress(true)) {
-                    $.ajax({
-                        method: 'post',
-                        url: url,
-                        dataType: 'json',
-                        data: {fcltid: envReqstView.fcltid},
-                        success: function (response) {
-                            closeWorkProgress();
-                            alert(response.msg);
-                            if (response.success)
-                                envReqstView.submit(envReqstView.listUrl);
-                        }
-                    })
-                }
-            },
-            moveToList() {
-                this.submit(this.listUrl);
-            },
-
-            moveToUpdateForm() {
-                this.submit(this.updateFormUrl);
-            },
-
-            moveToUpdate() {
-                this.submit(this.updateUrl);
-            },
-
-            submit(url) {
-                let f = document.forms.viewForm;
-                f.action = url;
-                f.submit();
-            }
-        };
-
-        var swiper = new Swiper(".gallery-list", {
-            loop: false,
-            spaceBetween: 0,
-            slidesPerView: 5,
-            freeMode: true,
-            watchSlidesProgress: true,
-        });
-        var swiper2 = new Swiper(".gallery-thumb", {
-            loop: false,
-            spaceBetween: 10,
-            thumbs: {
-                swiper: swiper,
-            },
-            navigation: {
-                nextEl: ".swiper-button-next",
-                prevEl: ".swiper-button-prev",
-            },
-            a11y: {
-                prevSlideMessage: '이전 슬라이드',
-                nextSlideMessage: '다음 슬라이드',
-            },
-        });
-
-
-        const dates01 = {
-            '2023-02-09': '0',
-            '2023-02-21': '0',
-            '2023-02-22': '0',
-            '2023-02-23': '0',
-            '2023-02-24': '0',
-            '2023-02-25': '1',
-        }
-
-        const classDict01 = {
-            '0' : ['dot-green','모집중'],
-            '1' : ['dot-gray','모집전'],
-        };
-
-        const classDict02 = {
-            '0' : ['dot-blue','숙박가능'],
-            '1' : ['dot-red','대여가능'],
-        };
-        const list01 = `<ul><li class="dot-green">모집중</li><li class="dot-gray">모집전</li><li class="dot-white">마감</li></ul>`;
-        const list02 = `<ul><li class="dot-white">예약불가</li><li class="dot-blue">숙박가능</li><li class="dot-red">대여가능</li><ul>`;
-
-        // Better always use a two digit format in your dates obj
-        function get2DigitFmt(val) {
-            return ('0' + val).slice(-2);
-        }
-
-        function resetData(){
-            userCnt = 0;
-            selectedAmt = 0;
-            $('.form-input-number input[type="number"]').val(0);
-            $('#timeTable').hide();
-            $('#utztnPrps').val('');
-            $('#useTime').empty();
-            $('#useDate').empty();
-        }
-
-        function checkData(){
-            let spceid = $('#spceid').val();
-            let startDate = $('#startDate').val();
-            let endDate = $('#endDate').val();
-            let time = null;
-            let nopeCnt = userCnt;
-            let utztnPrps = $('#utztnPrps').val();
-            let utztnSeCd = $('#utztnSeCd').val();
-
-            if( spceid == '' ){
-                alert('이용공간을 선택해 주세요.');
-                return false;
-            }
-
-            if( startDate == '' || endDate == '' ){
-                alert('이용날짜를 선택해 주세요.');
-                return false;
-            }
-
-            if( utztnSeCd == 1 && time == '' ){
-                alert('이용시간을 선택해 주세요.');
-                return false;
-            }
-
-            if( nopeCnt == 0 ){
-                alert('이용인원수를 입력해 주세요.');
-                return false;
-            }
-
-            if( utztnPrps == '' ){
-                alert('이용목적을 입력해 주세요.');
-                return false;
-            }
-
-            return true;
-        }
-
-        function makeCalendarEvent(gotoYYYYMM, spceid){
-
-            var date = new Date();
-            y = date.getFullYear();
-            m = date.getMonth();
-            var firstDay = new Date(y, m, 1);
-            var lastDay = new Date(y, m + 1, 0);
-
-            var firstDay_string = date2str(parseDate(firstDay), 'yyyy-mm-dd');
-
-            var lastDayOfMonth = "";
-
-            if(gotoYYYYMM != null && gotoYYYYMM != '' && gotoYYYYMM != 'undefined'){
-                lastDayOfMonth = date2str(parseDate(lastDay), 'yyyy-mm-dd');
-            }else{
-                lastDayOfMonth = date2str(parseDate(lastDay), 'yyyy-mm-dd');
-            }
-
-            var params = {
-                spceid  : spceid
-                ,bgngDt : firstDay_string
-                ,endDt  : lastDayOfMonth
-            }
-
-            if(displayWorkProgress()){
-                $.ajax({
-                    url : "/mng/spce/selectSpceRsvtdeList.do",
-                    type: 'POST',
-                    cache : false,
-                    dataType: 'json',
-                    data : params,
-                    success : function (data){
-
-                        let list = data.rsvtdelist;
-
-                        console.log(data.rsvtdelist);
-
-                        let enableDates = [
-                        ];
-
-                        let disableDates = [
-                        ];
-
-                        let dates02 = {};
-
-                        if(list.length > 0){
-
-                            var schdul_events = { events: []};
-
-                            list.forEach(function(item){
-
-                                // let title  = "";
-                                let background_color  = "";
-                                let de = item.de;
-                                // let amt = (item.amt=='0')? "무료":addComma3(item.amt)+'원';
-
-                                if(item.utztnSeCd == '169102'){//대여
-                                    // title  +=  item.strtTm +' ~ '+ item.endTm+' | '+amt
-                                    dates02[de] = '1';
-                                    enableDates.push(de);
-                                }else{//숙박
-                                    // title  +=  '숙박 | '+amt
-                                    dates02[de] = '0';
-                                    enableDates.push(de);
-                                }
-
-                                // let elementColor = '#0ac282';
-                                // let backgroundColor = '#effcee !important';
-
-                                //현재일자보다 이전 (운영종료)
-                                if( newToday > new Date(de)){
-                                    // disableDates.push(de);
-                                    //운영 중지 상태
-                                }else if(item.rsvtPsbltyYn == 'N'){
-                                    // disableDates.push(de);
-                                }else{
-                                    // $("#rsvt_stts"+de).val("R");
-                                }
-                            })
-
-                            let datepicker = flatpickr("[datepicker=true]",{
-                                mode: "range",
-                                dateFormat: "Y-m-d",
-                                // disable: disableDates,
-                                enable: enableDates,
-                                minDate: "today",
-                                locale: "ko",
-                                position: "bottom center",
-                                onDayCreate: function(dObj, dStr, fp, dayElem) {
-                                    var date = dayElem.dateObj,
-                                        // Note the + 1 in the month.
-                                        key = date.getFullYear() + '-' + get2DigitFmt(date.getMonth() + 1) + '-' + get2DigitFmt(date.getDate()),
-                                        value = classDict02[dates02[key]];
-                                    if (value) {
-                                        dayElem.className += ' ' + value[0];
-                                        dayElem.title = value[1]
-                                    }
-                                },
-                                onReady : function () {
-                                    const datepickerWrap = this.calendarContainer;
-                                    const datepickerList = document.createElement('div')
-                                    datepickerList.classList.add('datepicker-list')
-                                    datepickerWrap.appendChild(datepickerList)
-                                    datepickerList.insertAdjacentHTML('beforeend', list02);
-                                },
-                                onChange : function(selectedDates, dateStr, instance){
-                                    selectedRsvtdeidList = [];
-                                    for( var d=0; d<Object.keys(dates02).length; d++ ){
-                                        if( dates02[dateStr] == 1 ){
-                                            // 대여
-                                            var str = '';
-                                            utztnSeCd = 1;
-                                            $('#timeList').empty();
-                                            for( var t=0; t<data.rsvtdelist.length; t++ ){
-                                                let innerData = data.rsvtdelist[t];
-                                                let target1 = new Date(innerData.de);
-                                                let target2 = new Date(dateStr);
-                                                if( target1.getFullYear() === target2.getFullYear() &&
-                                                    target1.getMonth() === target2.getMonth() &&
-                                                    target1.getDate()=== target2.getDate() ){
-                                                    selectedRsvtdeidList.push({rsvtdeid : innerData.rsvtdeid});
-                                                    $('#rsvtdeid').val(JSON.stringify(selectedRsvtdeidList));
-                                                    let amt = (innerData.amt=='0')? "무료":addComma3(innerData.amt)+'원';
-                                                    str = '<label class="inp j-start">\n' +
-                            '                                    <input type="checkbox" id="rsvtdeTime'+innerData.rsvtdeid+'" name="rsvtdeTime" data-amt="'+innerData.amt+'" value="'+innerData.rsvtdeid+'">\n' +
-                            '                                    <b class="d-flex j-between normal-wrap" style="flex:1 1 100%;">\n' +
-                            '                                        <span class="al pr5 timeStr">'+innerData.strtTm +' ~ '+ innerData.endTm+'</span>\n' +
-                            '                                        <span class="ar pl5">'+amt+'</span>\n' +
-                            '                                    </b>\n' +
-                            '                                </label>';
-                                                    $('#timeList').append(str);
-                                                }
-                                            }
-                                            $('#timeTable').show();
-                                            $('#startDate').val(dateStr);
-                                            $('#endDate').val(dateStr);
-                                            $('#useDate').text(date2str(parseDate(dateStr), 'yyyy년 mm월 dd일'));
-                                            break;
-                                        }else{
-                                            utztnSeCd = 0;
-                                            $('#timeTable').hide();
-                                        }
-                                    }
-                                    if( selectedDates.length > 1 ) {
-                                        let selectedDatesList = [];
-                                        let target1 = new Date(selectedDates[0]);
-                                        let target2 = new Date(selectedDates[1]);
-                                        $('#startDate').val(date2str(parseDate(selectedDates[0]), 'yyyy-mm-dd'));
-                                        $('#endDate').val(date2str(parseDate(selectedDates[1]), 'yyyy-mm-dd'));
-                                        if( !( target1.getFullYear() === target2.getFullYear() &&
-                                            target1.getMonth() === target2.getMonth() &&
-                                            target1.getDate()=== target2.getDate() ) ){
-                                            let dateList = getDatesStartToLast(date2str(parseDate(selectedDates[0]), 'yyyy-mm-dd'), date2str(parseDate(selectedDates[1]), 'yyyy-mm-dd'));
-                                            for( var s=0; s<selectedDates.length; s++ ){
-                                                selectedDatesList.push(date2str(parseDate(selectedDates[s]), 'yyyy년 mm월 dd일'));
-                                            }
-                                            for( var da=0; da<dateList.length; da++ ){
-                                                for( da2=0; da2<data.rsvtdelist.length; da2++ ){
-                                                    let innerData = data.rsvtdelist[da2];
-                                                    let daTarget1 = new Date(dateList[da]);
-                                                    let daTarget2 = new Date(innerData.de);
-                                                    if( daTarget1.getFullYear() === daTarget2.getFullYear() &&
-                                                        daTarget1.getMonth() === daTarget2.getMonth() &&
-                                                        daTarget1.getDate()=== daTarget2.getDate() ){
-                                                        selectedRsvtdeidList.push({rsvtdeid : innerData.rsvtdeid});
-                                                        selectedAmt += innerData.amt;
-                                                    }
-                                                }
-                                            }
-
-                                            $('#useDate').text(selectedDatesList.join(' ~ '));
-                                            $('#useAmt').text(addComma3(selectedAmt)+'원');
-                                            $('#amt').val(selectedAmt);
-                                            $('#rsvtdeid').val(JSON.stringify(selectedRsvtdeidList));
-                                        };
-                                    }
-                                }
-                            });
-
-
-                        }
-
-                        closeWorkProgress();
-                    }
-                });
-            }
-        }
-
-        function getDatesStartToLast(startDate, lastDate) {
-            var regex = RegExp(/^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/);
-            if(!(regex.test(startDate) && regex.test(lastDate))) return "Not Date Format";
-            var result = [];
-            var curDate = new Date(startDate);
-            while(curDate <= new Date(lastDate)) {
-                result.push(curDate.toISOString().split("T")[0]);
-                curDate.setDate(curDate.getDate() + 1);
-            }
-            return result;
-        }
-
-        $(document).on('change', 'input[name="rsvtdeTime"]' , function () {
-            if( $(this).prop('checked') ){
-                // 이용시간 선택 시
-                selectedAmt += parseInt($(this).attr('data-amt'));
-                $('#useTime').text($($($(this).siblings('b')).find('.timeStr')).text());
-            }else{
-                selectedAmt -= parseInt($(this).attr('data-amt'));
-                $('#useTime').text('');
-            }
-            $('#useAmt').text(addComma3(selectedAmt)+'원');
-            $('#amt').val(selectedAmt);
-        });
-
-        $(document).on('click', '#submitData', function(){
-            if( checkData() ){
-                $('input[name="utztnPrps"]').val($('#utztnPrps').val());
-                envReqstView.moveToUpdate()
-            }
-        })
-
-        $(function(){
-            $(document).off('keyup', '.form-input-number input[type="number"]');
-            $(document).off('click', '.form-input-number button');
-
-            $(document).on('keyup', '.form-input-number input[type="number"]' , function () {
-                const numInput = $(this);
-                const valueMin = parseInt(numInput[0].min);
-                const valueMax = parseInt(numInput[0].max);
-                if (numInput.val() > valueMax) {
-                    numInput.val(valueMax)
-                }
-                if (numInput.val() < valueMin) {
-                    numInput.val(valueMin)
-                }
-
-                let tempCnt = 0;
-                $('.form-input-number input[type="number"]').each(function(){
-                    tempCnt += parseInt(this.value);
-                })
-                let inputId = $(this).attr('id');
-
-                if( tempCnt > maxNope ){
-                    alert('최대 '+maxNope+'명 까지만 신청 가능합니다.');
-                    $('input[name='+inputId+']').val(0);
-                    numInput.val(0);
-                }else{
-                    userCnt = tempCnt;
-                    $('input[name='+inputId+']').val(this.value);
+        function fn_openDpstInfoPopup(){
+            $("#insertRsnPopup").load(insertRsnPopupUrl+"?aplyid="+/*[[${mypageEnvReqst.aplyid}]]*/null, function(response, status, xhr) {
+                if (status == "success") {
+                    layerPopup.open({target:'insertRsnPopup'});
                 }
             });
-
-            $(document).on('click', '.form-input-number button' , function () {
-                const par = $(this).closest('.form-input-number');
-                const numInput = par.find('input[type="number"]');
-                const valueMin = parseInt(numInput[0].min);
-                const valueMax = parseInt(numInput[0].max);
-
-                //value up
-                if ($(this).hasClass('num-up')) {
-                    userCnt++;
-                    if (numInput.val() === '') {
-                        numInput.val(0)
-                    }
-                    if (valueMax > numInput.val() || numInput[0].max === '') {
-                        if( userCnt > maxNope ){
-                            userCnt--;
-                            if( userCnt == maxNope ){
-                                alert('최대 '+maxNope+'명 까지만 신청 가능합니다.');
-                                numInput.val(parseInt(numInput.val()));
-                            }
-                        }else{
-                            numInput[0].value++;
-                        }
-                    }
-                }
-
-                //value down
-                if ($(this).hasClass('num-down')) {
-                    if (numInput.val() === '') {
-                        numInput.val(0)
-                    }
-                    if (numInput.val() > valueMin || numInput[0].min === '') {
-                        numInput[0].value--;
-                        userCnt--;
-                    }
-                }
-
-                let inputId = $(numInput).attr('id');
-                $('input[name='+inputId+']').val(numInput.val());
-
-            });
-        })
+        }
     </script>
 </div>

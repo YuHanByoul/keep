@@ -1,5 +1,6 @@
 package com.kbrainc.plum.front.mypage.mypageEnvReqst.model;
 
+import com.kbrainc.plum.mng.rcpmnyBfe.model.RcpmnyBfeVo;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import java.util.List;
@@ -132,4 +133,26 @@ public interface MypageEnvReqstDao {
      * @return MypageEnvReqstVo
      */
     public List<Map<String,Object>> selectFclRsvtdeList(MypageEnvReqstVo mypageEnvReqstVo) throws Exception;
+
+    /**
+     * 예약 신청 취소 처리
+     *
+     * @Title : insertRsn
+     * @Description : 예약 신청 취소 처리
+     * @param mypageEnvReqstVo 입금 전 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    public int insertRsn(MypageEnvReqstVo mypageEnvReqstVo) throws Exception;
+
+    /**
+     * 예약 신청 취소 처리
+     *
+     * @Title : insertHstry
+     * @Description : 예약 신청 취소 처리
+     * @param mypageEnvReqstVo 입금 전 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    public int insertHstry(MypageEnvReqstVo mypageEnvReqstVo) throws Exception;
 }

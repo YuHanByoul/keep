@@ -282,6 +282,8 @@ public class ResveReqstVo extends ParentRequestVo {
     /** 아이디 */
     private String acnt;
 
+    private String alldayYn;
+
     /** 중복 시설명 수 */
     public static Integer dupCnt;
     

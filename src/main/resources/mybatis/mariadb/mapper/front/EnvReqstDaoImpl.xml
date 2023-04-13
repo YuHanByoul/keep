@@ -24,7 +24,7 @@
         , F.END_DT
         from TB_FCL_SPCE A
         INNER JOIN TB_FCL_FCLT B ON A.FCLTID = B.FCLTID
-        INNER JOIN (
+        LEFT OUTER JOIN (
         SELECT CD
         , CD_NM
         FROM TB_CMM_CD
@@ -35,6 +35,7 @@
         INNER JOIN (SELECT SPCEID, MIN(BGNG_DT) BGNG_DT, MAX(END_DT) END_DT FROM TB_FCL_SPCE_RSVTDE F GROUP BY SPCEID) F ON A.SPCEID = F.SPCEID
         WHERE 1 = 1
         AND A.USE_YN = 'Y'
+        AND B.USE_YN = 'Y'
         <if test="instNm != null and instNm != ''">
             AND C.INST_NM LIKE CONCAT('%',#{instNm},'%')
         </if>
@@ -101,7 +102,7 @@
                 A.SIGNGU_NM,
                 A.CTPRVN_CD FROM
                 TB_CMM_ADDR_SIGNGU A INNER JOIN TB_CMM_ADDR_CTPRVN B ON A.CTPRVN_CD = B.CTPRVN_CD) C ON C.RGN_CD = A.RGN_CD
-                INNER JOIN (
+                LEFT OUTER JOIN (
                 SELECT
                     CD
                      , CD_NM
@@ -146,13 +147,15 @@
              , B1.CD_NM AS BANK_CD_NM
              , C.INST_NM
              , C.INSTID
+             , F.BGNG_DT
+             , F.END_DT
         FROM
             TB_FCL_SPCE A
                 INNER JOIN TB_FCL_FCLT B
                            ON A.FCLTID = B.FCLTID
                 INNER JOIN TB_CMM_INST C
                            ON B.INSTID = C.INSTID
-                INNER JOIN (
+                LEFT OUTER JOIN (
                     SELECT
                         CD
                          , CD_NM
@@ -161,6 +164,13 @@
                     WHERE
                         CDGRPID = 154
                 ) B1 ON (B.BANK_CD = B1.CD)
+                INNER JOIN (SELECT SPCEID, MIN(BGNG_DT) BGNG_DT, MAX(END_DT) END_DT FROM TB_FCL_SPCE_RSVTDE F
+                WHERE RSVTDEID IN(
+                <foreach item="item" collection="rsvtdeid"  separator=",">
+                    #{item.rsvtdeid}
+                </foreach>
+                )
+        GROUP BY SPCEID) F ON A.SPCEID = F.SPCEID
         WHERE 1=1
           AND A.SPCEID = #{spceid}
     </select>
@@ -170,6 +180,7 @@
         /* EnvReqstDao.insertResveEnvFclAply */
         INSERT INTO TB_FCL_SPCE_APLY (
             APLCNTID
+            ,INSTID
             ,APLCNT_NM
             ,APLCNT_MOBLPHON
             ,APLCNT_EML
@@ -192,6 +203,7 @@
         (
             #{user.userid}
             ,#{aplcntNm}
+            ,#{instid}
             ,#{aplcntMoblphon}
             ,#{aplcntEml}
             ,#{nopeAdult}
@@ -219,6 +231,7 @@
                 APLYID,
                 RSVTDEID,
                 UTZTN_SE_CD,
+                ALLDAY_YN,
                 DE,
                 BGNG_DT,
                 END_DT,
@@ -233,9 +246,10 @@
             #{aplyid}
             ,#{item}
             ,#{utztnSeCd}
-            ,#{de}
-            ,#{bgngDt}
-            ,#{endDt}
+            ,#{alldayYn}
+            ,#{startDt}
+            ,#{startDt}
+            ,#{enddDt}
             ,#{amt}
             ,NOW()
             ,#{user.userid}
@@ -347,6 +361,7 @@
         SPCEID,
         DE,
         AMT,
+        ALLDAY_YN,
         RSVT_PSBLTY_YN
         FROM TB_FCL_SPCE_RSVTDE A
         WHERE 1 = 1
@@ -355,5 +370,58 @@
             #{item.rsvtdeid}
         </foreach>
         )
+    </select>
+
+    <!--************* 공간 예약 일자 *************** -->
+    <!-- 공간 예약 일자 목록 -->
+    <select id="selectSpceRsvtdeList" parameterType="EnvReqstVo" resultType="com.kbrainc.plum.front.envReqst.model.EnvReqstVo">
+        SELECT
+        A.RSVTDEID
+        ,DE
+        ,date_format(A.BGNG_DT, '%H:%i' )   AS STRT_TM
+        ,date_format(A.END_DT, '%H:%i' )    AS END_TM
+        ,A.UTZTN_SE_CD
+        ,A.ALLDAY_YN
+        ,A.AMT
+        ,A.RSVT_PSBLTY_YN
+        ,A.BGNG_DT
+        ,A.END_DT
+        ,IFNULL(B.RSVTDEID, '0')         AS FULL_YN
+        FROM
+        TB_FCL_SPCE_RSVTDE A
+        LEFT JOIN (SELECT B.RSVTDEID
+        FROM TB_FCL_APLY_RSVTDE B
+        INNER JOIN TB_FCL_SPCE_APLY C ON B.APLYID = C.APLYID
+        WHERE (C.APLY_STTS_CD = '160102'
+        AND C.STLM_STTS_CD = '161102')
+        OR
+        (C.APLY_STTS_CD = '160101'
+        AND C.STLM_STTS_CD = '161101')
+        ) B ON A.RSVTDEID = B.RSVTDEID
+        WHERE 1=1
+        AND A.SPCEID = #{spceid}
+        <if test="utztnSe.equals('single')">
+            AND A.UTZTN_SE_CD = '169102'
+        </if>
+        <if test="utztnSe.equals('range')">
+            AND A.UTZTN_SE_CD = '169101'
+        </if>
+        <if test="startDt != null and startDt != '' ">
+            AND A.DE <![CDATA[>=]]> #{startDt}
+        </if>
+        <if test="enddDt != null and enddDt != '' ">
+            AND A.DE <![CDATA[<=]]> #{enddDt}
+        </if>
+        <if test="rsvtdeList != null and rsvtdeList.size!=0 ">
+            AND A.DE IN
+            (
+            <foreach item="item" collection="rsvtdeList"  separator=",">
+                #{item.de}
+            </foreach>
+            )
+        </if>
+        <if test='de != null and de !=""'>
+            AND A.DE = #{de}
+        </if>
     </select>
 </mapper>

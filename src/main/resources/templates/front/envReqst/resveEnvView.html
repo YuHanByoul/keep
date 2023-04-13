@@ -60,118 +60,142 @@
                     </th:block>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div class="reservation-wrap">
-
-        <div class="form-input">
-            <select title="공간 선택" onchange="selectSpce(this);">
-                <option value="공간 선택">공간 선택</option>
-                <option th:each="item : ${spceList}" th:value="${item.spceid}" th:text="${item.spceNm}+', 최대'+${item.maxNope}+'명, '+${item.size}+'평형'"
-                ></option>
-            </select>
-        </div>
-
-
-        <div class="reservation-inner">
-            <div class="left">
-                <input type="date" datepicker="true" class="blind">
-            </div>
-            <div class="right">
-                <div>
-                    <div class="table-col table-layout-auto table-col-sm" id="timeTable" style="display:none;">
-                        <table>
-                            <caption>환경교육시설 예약 - 선택, 시간, 가격</caption>
-                            <colgroup>
-                                <col style="width:65px;">
-                            </colgroup>
-                            <thead>
-                            <tr>
-                                <th scope="col"><span class="blind">선택</span></th>
-                                <th scope="col">시간</th>
-                                <th scope="col">가격</th>
-                            </tr>
-                            </thead>
-                            <tbody id="timeList">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            <th:block th:if="${envReqst.aplyMthdCd} == '153102'">
                 <div class="detail">
+                    <div class="desc">
+                        <p>해당 시설은 별도 홈페이지를 통해 예약을 신청할 수 있으며, 아래 예약신청 바로가기 버튼을 눌러 예약 페이지로 이동하실 수 있습니다.</p>
+                        <p class="desc-info fc-blue mt10">외부 사이트에서 신청한 예약은 통합환경플랫폼 마이페이지에서 확인하실 수 없습니다.</p>
+                    </div>
                     <dl>
                         <div class="list">
-                            <dt><span>이용인원<i class="ast" title="필수 입력">*</i></span><p class="fs-14 fc-black6">최대 <span id="maxNope">0</span>인</p></dt>
+                            <dt></dt>
                             <dd>
-                                <div class="form-input d-flex mo-flex-wrap al a-center j-between pt0 pb0">
-                                    <div class="form-input" style="flex:1;max-width:calc(100% / 3 - 10px)">
-                                        <div class="bul fs-14">성인</div>
-                                        <div class="form-input form-input-number">
-                                            <input type="number" id="nopeAdult" min="0" max="15" title="성인" class="ac pl0 pr0">
-                                            <div class="btn-number"><button type="button" class="num-up" title="숫자 증가"></button><button type="button" class="num-down" title="숫자 감소"></button></div>
-                                        </div>
-                                    </div>
-                                    <div class="form-input" style="flex:1;max-width:calc(100% / 3 - 10px)">
-                                        <div class="bul fs-14">아동</div>
-                                        <div class="form-input form-input-number">
-                                            <input type="number" id="nopeChil" min="0" max="15" title="아동" class="ac pl0 pr0">
-                                            <div class="btn-number"><button type="button" class="num-up" title="숫자 증가"></button><button type="button" class="num-down" title="숫자 감소"></button></div>
-                                        </div>
-                                    </div>
-                                    <div class="form-input" style="flex:1;max-width:calc(100% / 3 - 10px)">
-                                        <div class="bul fs-14">유아</div>
-                                        <div class="form-input form-input-number">
-                                            <input type="number" id="nopeInfnt" min="0" max="15" title="유아" class="ac pl0 pr0">
-                                            <div class="btn-number"><button type="button" class="num-up" title="숫자 증가"></button><button type="button" class="num-down" title="숫자 감소"></button></div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <a th:href="${envReqst.extnlUrl}" target="_blank" class="btn-medium btn-green">예약신청 바로가기</a>
                             </dd>
-                        </div>
-                    </dl>
-                    <dl>
-                        <div class="list">
-                            <dt><span>이용목적<i class="ast" title="필수 입력">*</i></dt>
-                            <dd>
-                                <div class="form-input">
-                                    <textarea title="이용목적" id="utztnPrps"></textarea>
-                                </div>
-                            </dd>
-                        </div>
-                    </dl>
-                    <dl class="last">
-                        <div class="list">
-                            <dt>이용일시</dt>
-                            <dd><span id="useDate"></span> <span id="useTime"></span></dd>
-                        </div>
-                        <div class="list">
-                            <dt>금액</dt>
-                            <dd><span class="fc-blue fw-700 fs-18" id="useAmt">0원</span></dd>
                         </div>
                     </dl>
                 </div>
-                <div class="btn-wrap">
-                    <div class="right">
-                        <a href="#" class="btn-medium btn-green" id="submitData">예약신청</a>
+            </th:block>
+        </div>
+    </div>
+    <th:block th:if="${envReqst.aplyMthdCd} == '153101'">
+        <div class="reservation-wrap">
+
+            <div class="search-filter mb20">
+                <div class="form-input mo-flex-wrap">
+                    <strong class="label">공간 선택</strong>
+                    <div class="form-input">
+                        <select title="공간 선택" style="width:auto;" name="spceList" onchange="selectSpce(this);">
+                            <option value="">전체</option>
+                            <option th:each="item : ${spceList}" th:value="${item.spceid}" th:text="${item.spceNm}+', 최대'+${item.maxNope}+'명, '+${item.size}+'평형'"
+                            ></option>
+                        </select>
+                    </div>
+                    <strong class="label">이용 형태</strong>
+                    <div class="form-check-list">
+                        <label class="inp"><input type="radio" name="utztnSe" value="0"><b>숙박</b></label>
+                        <label class="inp"><input type="radio" name="utztnSe" value="1"><b>대여</b></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="reservation-inner">
+                <div class="left">
+                    <input type="date" datepicker="true" class="blind">
+                </div>
+                <div class="right">
+                    <div>
+                        <div class="table-col table-layout-auto table-col-sm" id="timeTable" style="display:none;">
+                            <table>
+                                <caption>환경교육시설 예약 - 선택, 시간, 가격</caption>
+                                <colgroup>
+                                    <col style="width:65px;">
+                                </colgroup>
+                                <thead>
+                                <tr>
+                                    <th scope="col"><span class="blind">선택</span></th>
+                                    <th scope="col">시간</th>
+                                    <th scope="col">가격</th>
+                                </tr>
+                                </thead>
+                                <tbody id="timeList">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="detail">
+                        <dl>
+                            <div class="list">
+                                <dt><span>이용인원<i class="ast" title="필수 입력">*</i></span><p class="fs-14 fc-black6">최대 <span id="maxNope">0</span>인</p></dt>
+                                <dd>
+                                    <div class="form-input d-flex mo-flex-wrap al a-center j-between pt0 pb0">
+                                        <div class="form-input" style="flex:1;max-width:calc(100% / 3 - 10px)">
+                                            <div class="bul fs-14">성인</div>
+                                            <div class="form-input form-input-number">
+                                                <input type="number" id="nopeAdult" min="0" max="15" title="성인" class="ac pl0 pr0">
+                                                <div class="btn-number"><button type="button" class="num-up" title="숫자 증가"></button><button type="button" class="num-down" title="숫자 감소"></button></div>
+                                            </div>
+                                        </div>
+                                        <div class="form-input" style="flex:1;max-width:calc(100% / 3 - 10px)">
+                                            <div class="bul fs-14">아동</div>
+                                            <div class="form-input form-input-number">
+                                                <input type="number" id="nopeChil" min="0" max="15" title="아동" class="ac pl0 pr0">
+                                                <div class="btn-number"><button type="button" class="num-up" title="숫자 증가"></button><button type="button" class="num-down" title="숫자 감소"></button></div>
+                                            </div>
+                                        </div>
+                                        <div class="form-input" style="flex:1;max-width:calc(100% / 3 - 10px)">
+                                            <div class="bul fs-14">유아</div>
+                                            <div class="form-input form-input-number">
+                                                <input type="number" id="nopeInfnt" min="0" max="15" title="유아" class="ac pl0 pr0">
+                                                <div class="btn-number"><button type="button" class="num-up" title="숫자 증가"></button><button type="button" class="num-down" title="숫자 감소"></button></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </dd>
+                            </div>
+                        </dl>
+                        <dl>
+                            <div class="list">
+                                <dt><span>이용목적<i class="ast" title="필수 입력">*</i></dt>
+                                <dd>
+                                    <div class="form-input">
+                                        <textarea title="이용목적" id="utztnPrps"></textarea>
+                                    </div>
+                                </dd>
+                            </div>
+                        </dl>
+                        <dl class="last">
+                            <div class="list">
+                                <dt>이용일시</dt>
+                                <dd><span id="useDate"></span> <span id="useTime"></span></dd>
+                            </div>
+                            <div class="list">
+                                <dt>금액</dt>
+                                <dd><span class="fc-blue fw-700 fs-18" id="useAmt">0원</span></dd>
+                            </div>
+                        </dl>
+                    </div>
+                    <div class="btn-wrap">
+                        <div class="right">
+                            <a href="#" class="btn-medium btn-green" id="submitData">예약신청</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+        <div class="tab-content tab-sub dropDown">
+            <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">상세정보</button>
+            <ul class="tab-list target" role="tablist">
+                <li class="tab active"><button aria-controls="tab-subpanel01" id="tab-sub01" role="tab">상세정보</button></li>
+                <li class="tab"><button aria-controls="tab-subpanel02" id="tab-sub02" role="tab">후기(211)</button></li>
+            </ul>
+            <div id="tab-subpanel01" class="tabpanel active" role="tabpanel" aria-labelledby="tab-sub01">
+                <th:block th:text="${envReqst.dtlCn}"/>
+            </div>
+            <div id="tab-subpanel02" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub02">
 
-    <div class="tab-content tab-sub dropDown">
-        <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">상세정보</button>
-        <ul class="tab-list target" role="tablist">
-            <li class="tab active"><button aria-controls="tab-subpanel01" id="tab-sub01" role="tab">상세정보</button></li>
-            <li class="tab"><button aria-controls="tab-subpanel02" id="tab-sub02" role="tab">후기(211)</button></li>
-        </ul>
-        <div id="tab-subpanel01" class="tabpanel active" role="tabpanel" aria-labelledby="tab-sub01">
-            <th:block th:text="${envReqst.dtlCn}"/>
-        </div>
-        <div id="tab-subpanel02" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub02">
-
-            <div class="accordion-content acc-list">
-                <h3 class="acc-title active">
+                <div class="accordion-content acc-list">
+                    <h3 class="acc-title active">
 										<span class="acc-trigger mo-flex-wrap">
 											<span class="name">ti**23</span>
 											<span class="rate" title="별점4">
@@ -181,26 +205,26 @@
 												<span class="icon icon-star" title=""></span>
 											</span>
 										</span>
-                </h3>
-                <div class="acc-panel active">
-                    <span class="blind">후기</span>
-                    <div class="acc-content bg-white p0 fc-black6 fw-300">
-                        Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. <br>Nullam id dolor id nibh ultricies vehicula. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla.
+                    </h3>
+                    <div class="acc-panel active">
+                        <span class="blind">후기</span>
+                        <div class="acc-content bg-white p0 fc-black6 fw-300">
+                            Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. <br>Nullam id dolor id nibh ultricies vehicula. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla.
+                        </div>
                     </div>
-                </div>
-                <h3 class="acc-title active">
+                    <h3 class="acc-title active">
 										<span class="acc-trigger mo-flex-wrap">
 											<span class="name">ti**23</span>
 											<span class="rate" title="별점0"></span>
 										</span>
-                </h3>
-                <div class="acc-panel active">
-                    <span class="blind">후기</span>
-                    <div class="acc-content bg-white p0 fc-black6 fw-300">
-                        Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. <br>Nullam id dolor id nibh ultricies vehicula. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla.
+                    </h3>
+                    <div class="acc-panel active">
+                        <span class="blind">후기</span>
+                        <div class="acc-content bg-white p0 fc-black6 fw-300">
+                            Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. <br>Nullam id dolor id nibh ultricies vehicula. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla.
+                        </div>
                     </div>
-                </div>
-                <h3 class="acc-title active">
+                    <h3 class="acc-title active">
 										<span class="acc-trigger mo-flex-wrap">
 											<span class="name">ti**23</span>
 											<span class="rate" title="별점5">
@@ -211,14 +235,14 @@
 												<span class="icon icon-star" title=""></span>
 											</span>
 										</span>
-                </h3>
-                <div class="acc-panel active">
-                    <span class="blind">후기</span>
-                    <div class="acc-content bg-white p0 fc-black6 fw-300">
-                        Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. <br>Nullam id dolor id nibh ultricies vehicula. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla.
+                    </h3>
+                    <div class="acc-panel active">
+                        <span class="blind">후기</span>
+                        <div class="acc-content bg-white p0 fc-black6 fw-300">
+                            Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. <br>Nullam id dolor id nibh ultricies vehicula. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla.
+                        </div>
                     </div>
-                </div>
-                <h3 class="acc-title active">
+                    <h3 class="acc-title active">
 										<span class="acc-trigger mo-flex-wrap">
 											<span class="name">ti**23</span>
 											<span class="rate" title="별점4">
@@ -228,38 +252,47 @@
 												<span class="icon icon-star" title=""></span>
 											</span>
 										</span>
-                </h3>
-                <div class="acc-panel active">
-                    <span class="blind">답변</span>
-                    <div class="acc-content bg-white p0 fc-black6 fw-300">
-                        Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. <br>Nullam id dolor id nibh ultricies vehicula. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla.
+                    </h3>
+                    <div class="acc-panel active">
+                        <span class="blind">답변</span>
+                        <div class="acc-content bg-white p0 fc-black6 fw-300">
+                            Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. <br>Nullam id dolor id nibh ultricies vehicula. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla.
+                        </div>
                     </div>
                 </div>
-            </div>
+옝
+                <div class="pagination" aria-label="pagination">
+                    <button type="button" class="first" title="처음"></button>
+                    <button type="button" class="prev" title="이전"></button>
+                    <button type="button" class="active" title="현재 페이지">1</button>
+                    <button type="button">2</button>
+                    <button type="button">3</button>
+                    <button type="button">4</button>
+                    <button type="button">5</button>
+                    <button type="button">6</button>
+                    <button type="button">7</button>
+                    <button type="button">8</button>
+                    <button type="button">9</button>
+                    <button type="button">10</button>
+                    <button type="button" class="next" title="다음"></button>
+                    <button type="button" class="last" title="마지막"></button>
+                </div>
 
-            <div class="pagination" aria-label="pagination">
-                <button type="button" class="first" title="처음"></button>
-                <button type="button" class="prev" title="이전"></button>
-                <button type="button" class="active" title="현재 페이지">1</button>
-                <button type="button">2</button>
-                <button type="button">3</button>
-                <button type="button">4</button>
-                <button type="button">5</button>
-                <button type="button">6</button>
-                <button type="button">7</button>
-                <button type="button">8</button>
-                <button type="button">9</button>
-                <button type="button">10</button>
-                <button type="button" class="next" title="다음"></button>
-                <button type="button" class="last" title="마지막"></button>
             </div>
-
         </div>
-    </div>
+    </th:block>
 
+    <th:block th:if="${envReqst.aplyMthdCd} == '153102'">
+        <div class="table-caption">
+            <div class="left">
+                <h3 class="sub-title">시설소개</h3>
+            </div>
+        </div>
+        <p th:text="${envReqst.dtlCn}"></p>
+    </th:block>
     <div class="btn-wrap">
         <div class="center">
-            <button type="button" class="btn-medium btn-gray">목록</button>
+            <button type="button" class="btn-medium btn-gray" onclick="javascript:location.href='/front/envReqst/envReqstList.html'">목록</button>
         </div>
     </div>
 
@@ -291,11 +324,6 @@
         // 대여인지, 숙박인지 구분값(대여 : 1, 숙박 : 0)
         var utztnSeCd = 0;
 
-
-        let classDict01 = {
-            '0' : ['dot-blue','숙박'],
-            '1' : ['dot-red','대여'],
-        };
         let list01 = `<ul><li class="dot-white">예약불가</li><li class="dot-blue">숙박</li><li class="dot-red">대여</li><ul>`;
 
         let datepicker = flatpickr("[datepicker=true]",{
@@ -453,7 +481,7 @@
             '0' : ['dot-blue','숙박'],
             '1' : ['dot-red','대여'],
         };
-        const list02 = `<ul><li class="dot-white">예약불가</li><li class="dot-blue">숙박</li><li class="dot-red">대여</li><ul>`;
+        let list02 = `<ul><li class="dot-white">예약불가</li><li class="dot-blue">숙박</li><li class="dot-red">대여</li><ul>`;
 
         // Better always use a two digit format in your dates obj
         function get2DigitFmt(val) {
@@ -461,19 +489,8 @@
         }
 
         function selectSpce(el){
-            var selectedVal = $(el).val();
-            if( selectedVal != '' ){
-                $('#spceid').val(selectedVal);
-                makeCalendarEvent(null, selectedVal);
-                for( var i=0; i<spceList.length; i++ ){
-                    if( spceList[i].spceid == selectedVal ){
-                        // 선택한 이용공간의 정보
-                        maxNope = spceList[i].maxNope;
-                        resetData();
-                        $('#maxNope').text(maxNope);
-                    }
-                }
-            }
+            $('input[name="utztnSe"]').prop('checked', false);
+            resetData();
         }
 
         function resetData(){
@@ -484,6 +501,28 @@
             $('#utztnPrps').val('');
             $('#useTime').empty();
             $('#useDate').empty();
+
+            $('.dot-blue').hide();
+            $('.dot-red').hide();
+
+            datepicker = flatpickr("[datepicker=true]",{
+                mode: "single",
+                minDate: "today",
+                dateFormat: "Y-m-d",
+                locale: "ko",
+                inline: true,
+                position: "bottom center",
+                onDayCreate: function(dObj, dStr, fp, dayElem) {
+                    var date = dayElem.dateObj,
+                        key = date.getFullYear() + '-' + get2DigitFmt(date.getMonth() + 1) + '-' + get2DigitFmt(date.getDate()),
+                        value = '';
+                    if (value) {
+                        dayElem.className += ' ' + value[0];
+                        dayElem.title = value[1]
+                    }
+                }
+            });
+
         }
 
         function checkData(){
@@ -523,7 +562,7 @@
             return true;
         }
 
-        function makeCalendarEvent(gotoYYYYMM, spceid){
+        function makeCalendarEvent(gotoYYYYMM, spceid, mode){
 
             var date = new Date();
             y = date.getFullYear();
@@ -543,13 +582,20 @@
 
             var params = {
                 spceid  : spceid
-                ,bgngDt : firstDay_string
-                ,endDt  : lastDayOfMonth
+                ,startDt : firstDay_string
+                ,enddDt  : lastDayOfMonth
+                ,utztnSe  : mode
+            }
+
+            if( mode == 'single' ){
+                list02 = `<ul><li class="dot-white">예약불가</li><li class="dot-red">대여</li><ul>`;
+            }else{
+                list02 = `<ul><li class="dot-white">예약불가</li><li class="dot-blue">숙박</li><ul>`;
             }
 
             if(displayWorkProgress()){
                 $.ajax({
-                    url : "/mng/spce/selectSpceRsvtdeList.do",
+                    url : "/front/envReqst/selectSpceRsvtdeList.do",
                     type: 'POST',
                     cache : false,
                     dataType: 'json',
@@ -571,18 +617,19 @@
                             var schdul_events = { events: []};
 
                             list.forEach(function(item){
-
                                 let de = item.de;
                                 // let amt = (item.amt=='0')? "무료":addComma3(item.amt)+'원';
 
-                                if(item.utztnSeCd == '169102'){//대여
-                                    // title  +=  item.strtTm +' ~ '+ item.endTm+' | '+amt
-                                    dates02[de] = '1';
-                                    enableDates.push(de);
-                                }else{//숙박
-                                    // title  +=  '숙박 | '+amt
-                                    dates02[de] = '0';
-                                    enableDates.push(de);
+                                if( item.fullYn == 0 ){
+                                    if(item.utztnSeCd == '169102'){//대여
+                                        // title  +=  item.strtTm +' ~ '+ item.endTm+' | '+amt
+                                        dates02[de] = '1';
+                                        enableDates.push(de);
+                                    }else{//숙박
+                                        // title  +=  '숙박 | '+amt
+                                        dates02[de] = '0';
+                                        enableDates.push(de);
+                                    }
                                 }
 
                                 //현재일자보다 이전 (운영종료)
@@ -597,7 +644,7 @@
                             })
 
                             datepicker = flatpickr("[datepicker=true]",{
-                                mode: "range",
+                                mode: mode,
                                 dateFormat: "Y-m-d",
                                 // disable: disableDates,
                                 enable: enableDates,
@@ -624,97 +671,99 @@
                                 },
                                 onChange : function(selectedDates, dateStr, instance){
                                     selectedRsvtdeidList = [];
-                                    resetData();
-                                    for( var d=0; d<Object.keys(dates02).length; d++ ){
-                                        if( dates02[dateStr] == 1 ){
-                                            // 대여
-                                            var str = '';
-                                            utztnSeCd = 1;
-                                            $('#timeList').empty();
-                                            for( var t=0; t<data.rsvtdelist.length; t++ ){
-                                                let innerData = data.rsvtdelist[t];
-                                                let target1 = new Date(innerData.de);
-                                                let target2 = new Date(dateStr);
-                                                if( target1.getFullYear() === target2.getFullYear() &&
-                                                    target1.getMonth() === target2.getMonth() &&
-                                                    target1.getDate()=== target2.getDate() ){
-                                                    selectedRsvtdeidList.push({rsvtdeid : innerData.rsvtdeid});
-                                                    $('#rsvtdeid').val(JSON.stringify(selectedRsvtdeidList));
-                                                    let amt = (innerData.amt=='0')? "무료":addComma3(innerData.amt)+'원';
-                                                    str = '<tr class="tr-check">\n' +
-                            '                                <td><label class="inp vm"><input type="checkbox" id="rsvtdeTime'+innerData.rsvtdeid+'" name="rsvtdeTime" data-amt="'+innerData.amt+'" value="'+innerData.rsvtdeid+'"></label></td>\n' +
-                            '                                <td class="timeStr">'+innerData.strtTm +' ~ '+ innerData.endTm+'</td>\n' +
-                            '                                <td>'+amt+'</td>\n' +
-                            '                            </tr>';
-                                                    $('#timeList').append(str);
-                                                }
+                                    if( mode == 'single' ){
+                                        // 대여
+                                        var str = '';
+                                        utztnSeCd = 1;
+                                        $('#timeList').empty();
+                                        for( var t=0; t<data.rsvtdelist.length; t++ ){
+                                            let innerData = data.rsvtdelist[t];
+                                            let target1 = new Date(innerData.de);
+                                            let target2 = new Date(dateStr);
+                                            let disabledStr = 'disabled';
+                                            if( innerData.fullYn == '0' ){
+                                                disabledStr = '';
                                             }
-                                            $('#timeTable').show();
-                                            $('#startDate').val(dateStr);
-                                            $('#endDate').val(dateStr);
-                                            $('#useDate').text(date2str(parseDate(dateStr), 'yyyy년 mm월 dd일'));
-                                            break;
-                                        }else{
-                                            utztnSeCd = 0;
-                                            $('#timeTable').hide();
+                                            if( target1.getFullYear() === target2.getFullYear() &&
+                                                target1.getMonth() === target2.getMonth() &&
+                                                target1.getDate()=== target2.getDate() ){
+                                                selectedRsvtdeidList.push({rsvtdeid : innerData.rsvtdeid});
+                                                $('#rsvtdeid').val(JSON.stringify(selectedRsvtdeidList));
+                                                let amt = (innerData.amt=='0')? "무료":addComma3(innerData.amt)+'원';
+                                                str = '<tr class="tr-check">\n' +
+                                                    '                                <td><label class="inp vm"><input type="checkbox" id="rsvtdeTime'+innerData.rsvtdeid+'" name="rsvtdeTime" data-amt="'+innerData.amt+'" value="'+innerData.rsvtdeid+'" '+disabledStr+'></label></td>\n' +
+                                                    '                                <td class="timeStr">'+innerData.strtTm +' ~ '+ innerData.endTm+'</td>\n' +
+                                                    '                                <td>'+amt+'</td>\n' +
+                                                    '                            </tr>';
+                                                $('#timeList').append(str);
+                                            }
                                         }
-                                    }
-                                    if( selectedDates.length > 1 ) {
-                                        let selectedDatesList = [];
-                                        let target1 = new Date(selectedDates[0]);
-                                        let target2 = new Date(selectedDates[1]);
-                                        $('#startDate').val(date2str(parseDate(selectedDates[0]), 'yyyy-mm-dd'));
-                                        $('#endDate').val(date2str(parseDate(selectedDates[1]), 'yyyy-mm-dd'));
-                                        if( !( target1.getFullYear() === target2.getFullYear() &&
-                                            target1.getMonth() === target2.getMonth() &&
-                                            target1.getDate()=== target2.getDate() ) ){
-                                            // 2일 이상
-                                            let dateList = getDatesStartToLast(date2str(parseDate(selectedDates[0]), 'yyyy-mm-dd'), date2str(parseDate(selectedDates[1]), 'yyyy-mm-dd'));
-                                            for( var s=0; s<selectedDates.length; s++ ){
-                                                selectedDatesList.push(date2str(parseDate(selectedDates[s]), 'yyyy년 mm월 dd일'));
-                                            }
-                                            for( var da=0; da<dateList.length; da++ ){
-                                                for( var da2=0; da2<data.rsvtdelist.length; da2++ ){
-                                                    let innerData = data.rsvtdelist[da2];
-                                                    let daTarget1 = new Date(dateList[da]);
-                                                    let daTarget2 = new Date(innerData.de);
-                                                    if( daTarget1.getFullYear() === daTarget2.getFullYear() &&
-                                                        daTarget1.getMonth() === daTarget2.getMonth() &&
-                                                        daTarget1.getDate()=== daTarget2.getDate() ){
-                                                        selectedRsvtdeidList.push({rsvtdeid : innerData.rsvtdeid});
-                                                        selectedAmt += innerData.amt;
-                                                    }
+                                        $('#timeTable').show();
+                                        $('#startDate').val(dateStr);
+                                        $('#endDate').val(dateStr);
+                                        $('#useDate').text(date2str(parseDate(dateStr), 'yyyy년 mm월 dd일'));
+                                    }else{
+                                        // 숙박
+                                        utztnSeCd = 0;
+                                        $('#timeTable').hide();
+
+                                        if( selectedDates.length > 1 ) {
+                                            let selectedDatesList = [];
+                                            let target1 = new Date(selectedDates[0]);
+                                            let target2 = new Date(selectedDates[1]);
+                                            $('#startDate').val(date2str(parseDate(selectedDates[0]), 'yyyy-mm-dd'));
+                                            $('#endDate').val(date2str(parseDate(selectedDates[1]), 'yyyy-mm-dd'));
+                                            if( !( target1.getFullYear() === target2.getFullYear() &&
+                                                target1.getMonth() === target2.getMonth() &&
+                                                target1.getDate()=== target2.getDate() ) ){
+                                                // 2일 이상
+                                                let dateList = getDatesStartToLast(date2str(parseDate(selectedDates[0]), 'yyyy-mm-dd'), date2str(parseDate(selectedDates[1]), 'yyyy-mm-dd'));
+                                                for( var s=0; s<selectedDates.length; s++ ){
+                                                    selectedDatesList.push(date2str(parseDate(selectedDates[s]), 'yyyy년 mm월 dd일'));
                                                 }
-                                            }
-
-                                            $('#useDate').text(selectedDatesList.join(' ~ '));
-                                            $('#useAmt').text(addComma3(selectedAmt)+'원');
-                                            $('#amt').val(selectedAmt);
-                                            $('#rsvtdeid').val(JSON.stringify(selectedRsvtdeidList));
-                                        }else{
-                                            if( dates02[dateStr] != 1 ){
-                                                // 당일 숙박
-                                                let dateList = getDatesStartToLast(date2str(parseDate(selectedDates[0]), 'yyyy-mm-dd'), date2str(parseDate(selectedDates[0]), 'yyyy-mm-dd'));
-                                                selectedDatesList.push(date2str(parseDate(selectedDates[0]), 'yyyy년 mm월 dd일'));
-
-                                                for( var da2=0; da2<data.rsvtdelist.length; da2++ ){
-                                                    let innerData = data.rsvtdelist[da2];
-                                                    let daTarget1 = new Date(dateList[0]);
-                                                    let daTarget2 = new Date(innerData.de);
-                                                    if( daTarget1.getFullYear() === daTarget2.getFullYear() &&
-                                                        daTarget1.getMonth() === daTarget2.getMonth() &&
-                                                        daTarget1.getDate()=== daTarget2.getDate() ){
-                                                        selectedRsvtdeidList.push({rsvtdeid : innerData.rsvtdeid});
-                                                        selectedAmt += innerData.amt;
+                                                for( var da=0; da<dateList.length; da++ ){
+                                                    for( var da2=0; da2<data.rsvtdelist.length; da2++ ){
+                                                        let innerData = data.rsvtdelist[da2];
+                                                        let daTarget1 = new Date(dateList[da]);
+                                                        let daTarget2 = new Date(innerData.de);
+                                                        if( daTarget1.getFullYear() === daTarget2.getFullYear() &&
+                                                            daTarget1.getMonth() === daTarget2.getMonth() &&
+                                                            daTarget1.getDate()=== daTarget2.getDate() ){
+                                                            selectedRsvtdeidList.push({rsvtdeid : innerData.rsvtdeid});
+                                                            selectedAmt += innerData.amt;
+                                                        }
                                                     }
                                                 }
 
-                                                $('#useDate').text(selectedDatesList);
+                                                $('#useDate').text(selectedDatesList.join(' ~ '));
                                                 $('#useAmt').text(addComma3(selectedAmt)+'원');
                                                 $('#amt').val(selectedAmt);
                                                 $('#rsvtdeid').val(JSON.stringify(selectedRsvtdeidList));
-                                            }
-                                        };
+                                            }else{
+                                                if( dates02[dateStr] != 1 ){
+                                                    // 당일 숙박
+                                                    let dateList = getDatesStartToLast(date2str(parseDate(selectedDates[0]), 'yyyy-mm-dd'), date2str(parseDate(selectedDates[0]), 'yyyy-mm-dd'));
+                                                    selectedDatesList.push(date2str(parseDate(selectedDates[0]), 'yyyy년 mm월 dd일'));
+
+                                                    for( var da2=0; da2<data.rsvtdelist.length; da2++ ){
+                                                        let innerData = data.rsvtdelist[da2];
+                                                        let daTarget1 = new Date(dateList[0]);
+                                                        let daTarget2 = new Date(innerData.de);
+                                                        if( daTarget1.getFullYear() === daTarget2.getFullYear() &&
+                                                            daTarget1.getMonth() === daTarget2.getMonth() &&
+                                                            daTarget1.getDate()=== daTarget2.getDate() ){
+                                                            selectedRsvtdeidList.push({rsvtdeid : innerData.rsvtdeid});
+                                                            selectedAmt += innerData.amt;
+                                                        }
+                                                    }
+
+                                                    $('#useDate').text(selectedDatesList);
+                                                    $('#useAmt').text(addComma3(selectedAmt)+'원');
+                                                    $('#amt').val(selectedAmt);
+                                                    $('#rsvtdeid').val(JSON.stringify(selectedRsvtdeidList));
+                                                }
+                                            };
+                                        }
                                     }
                                 }
                             });
@@ -751,6 +800,34 @@
             }
             $('#useAmt').text(addComma3(selectedAmt)+'원');
             $('#amt').val(selectedAmt);
+        });
+
+        /* 이용 형태 변경 event(숙박 or 대여) */
+        $(document).on('change', 'input[name="utztnSe"]' , function () {
+            resetData();
+            var mode = 'range';
+            if( $(this).val() == 0 ){
+                // 숙박
+                $('.dot-blue').show();
+                $('.dot-red').hide();
+            }else{
+                // 대여
+                mode = 'single';
+                $('.dot-blue').hide();
+                $('.dot-red').show();
+            }
+
+            var selectedVal = $('select[name="spceList"]').val()
+            $('#spceid').val(selectedVal);
+            makeCalendarEvent(null, selectedVal, mode);
+            for( var i=0; i<spceList.length; i++ ){
+                if( spceList[i].spceid == selectedVal ){
+                    // 선택한 이용공간의 정보
+                    maxNope = spceList[i].maxNope;
+                    $('#maxNope').text(maxNope);
+                }
+            }
+
         });
 
         $(document).on('click', '#submitData', function(){

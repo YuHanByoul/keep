@@ -107,7 +107,6 @@ public class MypageEnvReqstVo extends ParentRequestVo {
 
     private Date bgngDt;
 
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date regDt;
 
     private Date endDt;
@@ -193,6 +192,7 @@ public class MypageEnvReqstVo extends ParentRequestVo {
 
     /** 환불 은행 코드 */
     private String rfndBankCd;
+    private String rfndBankCdNm;
 
     /** 환불 계좌 */
     private String rfndBacnt;

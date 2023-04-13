@@ -5,6 +5,9 @@ import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.front.mypage.mypageEnvReqst.model.MypageEnvReqstVo;
 import com.kbrainc.plum.front.mypage.mypageEnvReqst.service.MypageEnvReqstService;
 import com.kbrainc.plum.mng.inst.model.InstVo;
+import com.kbrainc.plum.mng.rcpmnyBfe.model.RcpmnyBfeVo;
+import com.kbrainc.plum.mng.resveReqst.model.ResveReqstVo;
+import com.kbrainc.plum.mng.resveReqst.service.ResveReqstService;
 import com.kbrainc.plum.mng.spce.model.SpceVo;
 import com.kbrainc.plum.mng.spce.service.SpceService;
 import com.kbrainc.plum.rte.constant.Constant;
@@ -53,6 +56,9 @@ public class MypageEnvReqstController {
 
     @Autowired
     private SpceService spceService;
+
+    @Autowired
+    private ResveReqstService resveReqstService;
 
     /**
      * 환경교육시설 예약 목록 화면
@@ -152,120 +158,9 @@ public class MypageEnvReqstController {
     }
 
     /**
-     * 환경교육시설 예약 화면
-     *
-     * @Title : updateMypageEnvReqst
-     * @Description : 환경교육시설 예약 상세화면으로 이동
-     * @param mypageEnvReqstVo 환경교육시설 예약 객체
-     * @param model model 객체
-     * @throws Exception 예외
-     * @return String
-     */
-    @RequestMapping(value = "/front/mypage/mypageEnvReqst/updateMypageEnvReqst.html")
-    public String updateMypageEnvReqst(MypageEnvReqstVo mypageEnvReqstVo, Model model, @UserInfo UserVo user, SpceVo spceVo, int fcltid, int spceid, String rsvtdeid, String startDate, String endDate, int nopeAdult, int nopeChil, int nopeInfnt, String utztnPrps) throws Exception {
-
-        model.addAttribute("fcltid", fcltid);
-        model.addAttribute("spceid", spceid);
-        JSONParser parser = new JSONParser();
-        Object obj = parser.parse(rsvtdeid);
-
-        model.addAttribute("rsvtdeid", rsvtdeid);
-        model.addAttribute("startDate", startDate);
-        model.addAttribute("endDate", endDate);
-        model.addAttribute("utztnPrps", utztnPrps);
-        model.addAttribute("nopeAdult", nopeAdult);
-        model.addAttribute("nopeChil", nopeChil);
-        model.addAttribute("nopeInfnt", nopeInfnt);
-        model.addAttribute("param", mypageEnvReqstVo);
-
-        // 공간 보유개수 조회
-        mypageEnvReqstVo.setSpceid(spceid);
-        mypageEnvReqstVo.setRsvtdeid(obj);
-
-        model.addAttribute("user", user);
-        model.addAttribute("param", spceVo);
-        model.addAttribute("spceInfo", mypageEnvReqstService.selectSpceInfo(mypageEnvReqstVo));
-
-        List<Map<String, Object>> result = null;
-        result = mypageEnvReqstService.selectFclRsvtdeList(mypageEnvReqstVo);
-
-        int amt = 0;
-        if( result.size() > 0 ){
-            for( int i=0; i<result.size(); i++ ){
-                if( result.get(i).get("RSVT_PSBLTY_YN").equals("Y") ){
-                    amt += ((BigDecimal) result.get(i).get("AMT")).intValue();
-                }
-            }
-        }
-
-        model.addAttribute("amt", amt);
-
-        return "front/mypage/mypageEnvReqst/updateMypageEnvReqst";
-    }
-
-    /**
-     * 예약 등록
-     *
-     * @Title : resveEnvUpdate
-     * @Description : 예약 등록
-     * @param mypageEnvReqstVo 환경교육시설 예약 객체
-     * @param bindingResult 예약 유효성 검증결과
-     * @param user 사용자 세션정보
-     * @throws Exception 예외
-     * @return Map<String,Object>
-     */
-    @RequestMapping(value = "/front/mypage/mypageEnvReqst/resveEnvUpdate.do")
-    @ResponseBody
-    public Map<String, Object> resveEnvUpdate(@Valid MypageEnvReqstVo mypageEnvReqstVo, BindingResult bindingResult, @UserInfo UserVo user, InstVo instVo) throws Exception {
-        Map<String, Object> resultMap = new HashMap<String, Object>();
-
-        if (bindingResult.hasErrors()) {
-            FieldError fieldError = bindingResult.getFieldError();
-            if (fieldError != null) {
-                resultMap.put("msg", fieldError.getDefaultMessage());
-            }
-            return resultMap;
-        }
-
-        mypageEnvReqstVo.setUser(user);
-
-        int retVal = 0;
-        // 1. 공간 예약신청
-        retVal = mypageEnvReqstService.insertResveEnvFclSpceAply(mypageEnvReqstVo);
-        // 2. 시설 예약신청
-        mypageEnvReqstService.insertResveEnvFclAply(mypageEnvReqstVo);
-        // 3. 공간 예약로그
-        mypageEnvReqstService.insertResveEnvFclAplyHstry(mypageEnvReqstVo);
-        if (retVal > 0) {
-            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "등록에 성공하였습니다.");
-        } else {
-            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-            resultMap.put("msg", "등록에 실패했습니다.");
-        }
-
-        return resultMap;
-    }
-
-    /**
-     * 환경교육시설 예약 완료 화면
-     * Title : mypageEnvReqstComplete
-     * Description : 환경교육시설 예약 완료 화면
-     *
-     * @param mypageEnvReqstVo
-     * @param model
-     * @return string
-     * @throws Exception
-     */
-    @RequestMapping(value = "/front/mypage/mypageEnvReqst/mypageEnvReqstComplete.html")
-    public String mypageEnvReqstComplete(MypageEnvReqstVo mypageEnvReqstVo, Model model) throws Exception {
-        return "front/mypage/mypageEnvReqst/mypageEnvReqstComplete";
-    }
-
-    /**
      * 사유 확인 팝업
      * Title : rsnPopup
-     * Description : 환경교육시설 예약 완료 화면
+     * Description : 사유 확인 팝업
      *
      * @param mypageEnvReqstVo
      * @param model
@@ -282,7 +177,7 @@ public class MypageEnvReqstController {
     /**
      * 입금정보 팝업
      * Title : dpstInfoPopup
-     * Description : 환경교육시설 예약 완료 화면
+     * Description : 입금정보 팝업
      *
      * @param mypageEnvReqstVo
      * @param model
@@ -294,5 +189,69 @@ public class MypageEnvReqstController {
         MypageEnvReqstVo data = mypageEnvReqstService.selectDpstInfo(mypageEnvReqstVo);
         model.addAttribute("mypageEnvReqst",data);
         return "front/mypage/mypageEnvReqst/dpstInfoPopup";
+    }
+
+    /**
+     * 예약취소사유 등록 팝업
+     * Title : insertRsnPopup
+     * Description : 예약취소사유 등록 팝업
+     *
+     * @return string
+     * @throws Exception
+     */
+    @RequestMapping(value = "/front/mypage/mypageEnvReqst/insertRsnPopup.html")
+    public String insertRsnPopup(MypageEnvReqstVo mypageEnvReqstVo, Model model) throws Exception {
+        model.addAttribute("aplyid",mypageEnvReqstVo.getAplyid());
+        return "front/mypage/mypageEnvReqst/insertRsnPopup";
+    }
+
+    /**
+     * 예약 신청 취소 처리
+     *
+     * @Title : updateFcltMng
+     * @Description : 예약 신청 취소 처리
+     * @param mypageEnvReqstVo 입금 전 객체
+     * @param bindingResult 입금 전 유효성 검증결과
+     * @param user 사용자 세션정보
+     * @throws Exception 예외
+     * @return Map<String,Object>
+     */
+    @RequestMapping(value = "/front/mypage/mypageEnvReqst/insertRsn.do")
+    @ResponseBody
+    public Map<String, Object> insertRsn(@Valid MypageEnvReqstVo mypageEnvReqstVo, BindingResult bindingResult, @UserInfo UserVo user, ResveReqstVo resveReqstVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+
+        mypageEnvReqstVo.setUser(user);
+
+        int retVal = 0;
+
+        retVal = mypageEnvReqstService.insertRsn(mypageEnvReqstVo);
+
+        // 상태변경 데이터 세팅
+        resveReqstVo.setAplyid(mypageEnvReqstVo.getAplyid());
+        resveReqstVo.setUser(user);
+        // 상태변경이력 추가
+        resveReqstService.insertHstry(resveReqstVo);
+
+        // 상태변경이력 추가
+//        mypageEnvReqstService.insertHstry(mypageEnvReqstVo);
+
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "예약신청 취소에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "예약신청 취소에 실패했습니다.");
+        }
+
+        return resultMap;
     }
 }

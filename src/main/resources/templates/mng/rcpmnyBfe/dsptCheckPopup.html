@@ -30,11 +30,15 @@
                                 <tr>
                                     <th class="text-center v-middle table-light">이용일(시)</th>
                                     <td class="v-middle">
-                                        <th:block th:if ="${#dates.format(rcpmnyBfe.bgngDt, 'yyyy-MM-dd')} != ${#dates.format(rcpmnyBfe.endDt, 'yyyy-MM-dd')}">
-                                            <th:block th:text="${#dates.format(rcpmnyBfe.bgngDt, 'yyyy-MM-dd')}+' ~ '+${#dates.format(rcpmnyBfe.endDt, 'yyyy-MM-dd')}"/>
-                                        </th:block>
-                                        <th:block th:if ="${#dates.format(rcpmnyBfe.bgngDt, 'yyyy-MM-dd')} == ${#dates.format(rcpmnyBfe.endDt, 'yyyy-MM-dd')}">
+                                        <th:block th:if ="${rcpmnyBfe.alldayYn} == 'N'">
                                             <th:block th:text="${#dates.format(rcpmnyBfe.bgngDt, 'yyyy-MM-dd HH:mm')}+' ~ '+${#dates.format(rcpmnyBfe.endDt, 'HH:mm')}"/>
+                                        </th:block>
+                                        <th:block th:if ="${resveReqst.alldayYn} == 'Y' and ${#dates.format(rcpmnyBfe.bgngDt, 'yyyy-MM-dd')} == ${#dates.format(rcpmnyBfe.endDt, 'yyyy-MM-dd')}">
+                                            <th:block th:text="${#dates.format(rcpmnyBfe.bgngDt, 'yyyy-MM-dd')}"/>
+                                        </th:block>
+                                        <th:block th:if ="${resveReqst.alldayYn} == 'Y' and ${#dates.format(rcpmnyBfe.bgngDt, 'yyyy-MM-dd')} != ${#dates.format(rcpmnyBfe.endDt, 'yyyy-MM-dd')}">
+                                            <th:block th:text="${#dates.format(rcpmnyBfe.bgngDt, 'yyyy-MM-dd')}+' ~ '+${#dates.format(rcpmnyBfe.endDt, 'yyyy-MM-dd')}"/>
+                                            <input type="text" class="form-control form-control-sm" readonly="" th:value="">
                                         </th:block>
                                     </td>
                                     <th class="text-center v-middle table-light">결제금액</th>
@@ -58,7 +62,7 @@
                                     <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="dpstAmt"><strong>입금금액</strong></label>
                                     <div class="d-flex align-items-center">
                                         <div class="col">
-                                            <input type="text" class="form-control form-control-sm" name="dpstAmt" id="dpstAmt" th:value="${rcpmnyBfe.dpstAmt}">
+                                            <input type="text" class="form-control form-control-sm" name="dpstAmt" id="dpstAmt" th:value="${#numbers.formatInteger(rcpmnyBfe.dpstAmt, 0, 'COMMA')}">
                                         </div>
                                         <span class="ps-2">원</span>
                                     </div>
@@ -83,7 +87,7 @@ function saveDsptCheck() {
 	var data = {
         "aplyid"      : $("#aplyid").val()
         , "dpstDe"      : $("#dpstDe").val()
-        , "dpstAmt" : $("#dpstAmt").val()
+        , "dpstAmt" : $("#dpstAmt").val().replace(/,/g, "")
     }
 
     $.ajax({
