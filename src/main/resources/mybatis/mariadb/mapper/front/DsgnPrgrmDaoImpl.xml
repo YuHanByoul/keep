@@ -948,7 +948,8 @@
                WHERE A.CHKLSTID = #{chklstid}
                ORDER BY D.ORDR ,B.ORDR
         )
-        SELECT DP1 , DP2 , CN , LV , ORDR , QITEMID , ALTM, QROW FROM
+        SELECT * FROM        (
+        SELECT  @rownum := @rownum+1 AS RNUM, DP1 , DP2 , CN , LV , ORDR , QITEMID , ALTM, QROW FROM
         (
             SELECT
                 DP1
@@ -986,8 +987,10 @@
             FROM CHK_LST A
             GROUP BY A.QITEMID
             ORDER BY ORDR
-        ) AA
-        ORDER BY AA.DP1,AA.DP2, AA.ORDR, AA.LV, QROW
+        ) AA , (SELECT @rownum :=0) AS R
+        ORDER BY AA.DP1,AA.LV, AA.DP2, AA.ORDR, QROW
+        ) XX
+        ORDER BY XX.RNUM
     </select>
 
     <select id="selectChkAnsList" parameterType="front.dsgnPrgrmVo" resultType="front.dsgnPrgrmVo">

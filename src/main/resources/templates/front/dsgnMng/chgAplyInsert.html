@@ -41,19 +41,20 @@
                             <th scope="row">지정프로그램<span class="ast">*</span></th>
                             <td>
                                 <select id="prgrmid" name="prgrmid" value="" title="프로그램 선택" >
-                                    <th:block th:if="${dsgnPrgrmList != null}" th:each="item : ${dsgnPrgrmList}">
-                                        <option th:value="${item.prgrmid}">[[${item.prgrmNm}]]</option>
+                                    <th:block th:if="${dsgnPrgrmList != null}" th:each="item, idx : ${dsgnPrgrmList}">
+                                        <option th:if="${idx.count==1}" value="">선택</option>
+                                        <option th:value="${item.prgrmid}" >[[${item.prgrmNm}]]</option>
                                     </th:block>
                                 </select>
                             </td>
                             <th scope="row">지정번호</th>
-                            <td></td>
+                            <td id="dsgnNo" name="dsgnNo"></td>
                         </tr>
                         <tr>
                             <th scope="row">기관명</th>
-                            <td></td>
+                            <td id="instNm" name="instNm"></td>
                             <th scope="row">지정기간</th>
-                            <td></td>
+                            <td id="dsgnPrd" name="dsgnPrd"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -224,6 +225,7 @@
             <!-- //content -->
         </form>
         <script th:inline="javascript">
+            var dsgnPrgrmList = /*[[${dsgnPrgrmList}]]*/ null;
             var atchfileCnt = 5;
             var uploadFileCnt = 0;
 
@@ -261,12 +263,23 @@
 
             $(function () {
 
+                $("#prgrmid").on("change",function(e){
+                	for(var row of dsgnPrgrmList ){
+                		if(row.prgrmid == this.value){
+                			$("#dsgnPrd")[0].innerText= row?.dsgnPrd?? '';
+                			$("#dsgnNo") [0].innerText= row?.dsgnNo ?? '';
+                			$("#instNm") [0].innerText= row?.instNm ?? '';
+                		}
+                	}
+                });
+
                 $("textArea").keyup(function (e) {
                     var inTxt = $(this).val();
                     if($("#"+this.id).next().prop("class")=="desc ar size"){
                         $("#"+this.id).next().children().prop("innerHTML",inTxt.length);
                     }
                 });
+
 
                 $("textArea").trigger("keyup");
 
