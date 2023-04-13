@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--
+	SQL File Name : PltfomImprvmPropslDaoImpl.xml
+	Description : 플랫폼개선제안 관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.pltfomImprvmPropsl.model.PltfomImprvmPropslDao">
+    <select id="selectPltfomImprvmPropslList" resultType="PltfomImprvmPropslVo">
+        <include refid="PaginationMapper.header"/>
+            SELECT
+                A.PRPSLID
+                , A.USERID
+                , A.INSTID
+                , A.TTL
+                , A.CN
+                , A.CLSF_CD
+                , A.PRCS_STTS_CD
+                , A.FILEGRPID
+                , A.RLS_YN
+                , A.DEL_YN
+                , A.MDFCN_DT
+                , A.MDFRID
+                , A.REG_DT
+                , A.RGTRID
+                , B.NM
+                , B.ACNT
+                , D.NM AS PIC_NM
+            FROM
+                TB_CMM_PLTFOM_IMPRVM_PRPSL A
+            INNER JOIN
+                TB_CMM_USER B
+            ON A.USERID = B.USERID
+            LEFT OUTER JOIN
+                TB_CMM_PLTFOM_IMPRVM_PRPSL_ANS C
+            ON A.PRPSLID = C.PRPSLID
+            LEFT OUTER JOIN
+                TB_CMM_USER D
+            ON C.USERID = D.USERID
+            WHERE
+                A.DEL_YN = 'N'
+                <if test="searchKeyword != null and searchKeyword !=''">
+                    <if test="searchType == 'ttl'">
+                        AND A.TTL LIKE CONCAT('%', #{searchKeyword}, '%')
+                    </if>
+                    <if test="searchType == 'cn'">
+                        AND A.CN LIKE CONCAT('%', #{searchKeyword}, '%')
+                    </if>
+                    <if test="searchType == 'nm'">
+                        AND B.NM LIKE CONCAT('%', #{searchKeyword}, '%')
+                    </if>
+                    <if test="searchType == 'acnt'">
+                        AND B.ACNT LIKE CONCAT('%', #{searchKeyword}, '%')
+                    </if>
+                </if>
+
+                <if test="clsfCd != null and clsfCd != ''">
+                    AND A.CLSF_CD = #{clsfCd}
+                </if>
+
+                <if test="prcsSttsCd != null and prcsSttsCd != ''">
+                    AND A.PRCS_STTS_CD = #{prcsSttsCd}
+                </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <select id="selectPltfomImprvmPropsl" resultType="PltfomImprvmPropslVo">
+        SELECT
+            A.PRPSLID
+             , A.USERID
+             , A.INSTID
+             , E.INST_NM
+             , A.TTL
+             , A.CN
+             , A.CLSF_CD
+             , A.PRCS_STTS_CD
+             , A.FILEGRPID
+             , A.RLS_YN
+             , A.DEL_YN
+             , A.MDFCN_DT
+             , A.MDFRID
+             , A.REG_DT
+             , A.RGTRID
+             , B.NM
+             , B.ACNT
+             , D.NM AS PIC_NM
+        FROM
+            TB_CMM_PLTFOM_IMPRVM_PRPSL A
+            INNER JOIN TB_CMM_USER B
+                ON A.USERID = B.USERID
+            LEFT OUTER JOIN TB_CMM_PLTFOM_IMPRVM_PRPSL_ANS C
+                ON A.PRPSLID = C.PRPSLID
+            LEFT OUTER JOIN TB_CMM_USER D
+                ON C.USERID = D.USERID
+            LEFT OUTER JOIN TB_CMM_INST E
+                ON A.INSTID = E.INSTID
+        WHERE A.PRPSLID = #{prpslid}
+    </select>
+
+    <select id="selectPltfomImprvmPropslAns" resultType="PltfomImprvmPropslAnsVo">
+        SELECT
+            ANSID
+            , PRPSLID
+            , TTL
+            , CN
+            , USERID
+            , USERNM
+            , RLS_YN
+            , ANS_DT
+            , FILEGRPID
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        FROM TB_CMM_PLTFOM_IMPRVM_PRPSL_ANS
+        WHERE PRPSLID = #{prpslid}
+    </select>
+
+    <insert id="insertPltfomImprvmPropslAns">
+
+    </insert>
+
+    <update id="updatePltfomImprvmPropslAns">
+
+    </update>
+
+    <update id="deletePltfomImprvmPrpsl">
+        UPDATE TB_CMM_PLTFOM_IMPRVM_PRPSL
+        SET
+            DEL_YN = 'Y'
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE
+            PRPSLID IN
+        <foreach collection="deleteIds" item="deleteId" separator="," open="(" close=")">
+            #{deleteId}
+        </foreach>
+    </update>
+</mapper>

@@ -1,0 +1,313 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<div class="col-12 col-lg-6">
+    <div class="card">
+        <div class="card-header p-b-0">
+            <h4 class="sub-title"><strong>플랫폼개선제안</strong></h4>
+        </div>
+        <div class="card-block-small p-t-0">
+            <p>
+                <strong th:text="|[${pltfomImprvmPropsl.clsfCdNm}] ${pltfomImprvmPropsl.ttl}|">[분류] 제목</strong>
+            </p>
+            <p>
+                <th:block th:if="${not #strings.isEmpty(pltfomImprvmPropsl.instNm)}">
+                    <th:block th:text="${pltfomImprvmPropsl.instNm} "></th:block>
+                </th:block>
+
+                <th:block th:text="|${pltfomImprvmPropsl.nm}(${pltfomImprvmPropsl.acnt})|"></th:block>
+                <br/>
+                <th:block th:text="${#dates.format(pltfomImprvmPropsl.regDt, 'yyyy-MM-dd')}"/>
+            </p>
+        </div>
+        <div class="card-header p-t-0 p-b-0">
+            <h4 class="sub-title"><strong>제안 내용</strong></h4>
+        </div>
+        <div class="card-block-small p-t-0">
+            <p>
+                <th:block th:utext="${#strings.replace(#strings.escapeXml(pltfomImprvmPropsl.cn),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></th:block>
+            </p>
+            <div class="mt-2 row">
+                <ul th:if="${pltfomImprvmPropsl.fileList != null}">
+                    <th:block th:each="file : ${pltfomImprvmPropsl.fileList}">
+                        <li>
+                            <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                               th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                <i class="ion-paperclip f-18"></i> [[${file.orginlFileNm}]]
+                            </a>
+                        </li>
+                    </th:block>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-12 col-lg-6">
+    <div class="card">
+        <form name="registerForm" id="registerForm">
+            <input type="hidden" name="prpslid" id="prpslid" th:value="${pltfomImprvmPropsl.prpslid}"/>
+            <input type="hidden" name="ansid" id="ansid" th:value="${pltfomImprvmPropslAns.ansid}"/>
+
+            <div class="card-header p-b-0">
+                <h4 class="sub-title"><strong>답변</strong></h4>
+            </div>
+            <div class="card-block-small p-t-0">
+                <div class="mb-3 form-group row required">
+                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>상태</strong></div>
+                    <div class="col-sm-12">
+                        <span kattr:select_code="prcsSttsCd" th:attr="grpCd=188,selectedCd=${pltfomImprvmPropsl.prcsSttsCd}" isAdmin="true"></span>
+                    </div>
+                </div>
+                <div class="mb-3 form-group row">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="ttl"><strong>답변 제목</strong></label>
+                    <div class="col-sm-12">
+                        <input type="text" class="form-control form-control-sm" name="ttl" id="ttl" th:value="${pltfomImprvmPropslAns.ttl}"/>
+                    </div>
+                </div>
+                <div class="mb-3 form-group row">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cn"><strong>답변 내용</strong></label>
+                    <div class="col-sm-12">
+                        <textarea rows="5" cols="5" class="form-control form-control-sm" id="cn" name="cn" th:utext="${pltfomImprvmPropslAns.cn}"></textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-lg-6 mb-3">
+                        <div class="mb-0 form-group">
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="picNm"><strong>답변자</strong></label>
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control form-control-sm" name="picNm" id="picNm" readonly/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6 mb-3">
+                        <div class="mb-0 form-group">
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="userNm"><strong>답변자 이름</strong></label>
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control form-control-sm" name="userNm" id="userNm" placeholder="Text Input Validation"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-lg-6 mb-3">
+                        <div class="mb-0 form-group">
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="ansDt"><strong>답변등록 일시</strong></label>
+                            <div class="col-sm-12">
+                                <input type="datetime-local" class="form-control form-control-sm" id="ansDt" name="ansDt" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <div class="mb-0 form-group">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>첨부파일</strong></label>
+                        <div class="col-sm-12">
+                            <input id="multiFileInput" type="file" name="files" multiple accept="image/jpeg,image/gif,image/png,application/pdf" class="form-control form-control-sm"/>
+                        </div>
+                        <div class="mt-2 row">
+                            <div class="col-auto">
+                                <div id="multipleFileUploadError"></div>
+                                <div id="multipleFileUploadSuccess">
+                                    <th:block th:if="${pltfomImprvmPropslAns.fileList}">
+                                        <th:block th:each="fileInfo : ${pltfomImprvmPropslAns.fileList}" th:id="${fileInfo.fileid}">
+                                    <span class='label label-inverse mb-2 mr-0' th:id="${fileInfo.fileid}"><th:block th:text="${fileInfo.orginlFileNm}"/>
+                                    <a class='text-white' href="javascript:void(0)"
+                                       th:name="${fileInfo.fileid}" th:attr="data-idntfc-key=${fileInfo.fileIdntfcKey}"
+                                       th:onclick="deleteFile(this.name, this.dataset.idntfcKey)">X</a></span>
+                                        </th:block>
+                                    </th:block>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="filegrpid" name="filegrpid" th:value="${(pltfomImprvmPropslAns.filegrpid=='' or pltfomImprvmPropslAns.filegrpid==null)? 0 : pltfomImprvmPropslAns.filegrpid} "/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <span kattr:radio_yn="rlsYn" label1="공개 " label2="비공개 " th:attr="defaultVal=${pltfomImprvmPropslAns.rlsYn == null ? 'Y':pltfomImprvmPropslAns.rlsYn }" isAdmin="true"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-block-small">
+                <button type='button' class="btn btn-disabled m-r-5" onclick="gridHelper.toggleContent(); gridHelper.removeHighlight()">취소</button>
+                <button type='button' class="btn btn-primary" onclick="insertPropsl()">저장</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript" src="/files/assets/pages/advance-elements/swithces.js"></script>
+<script type="text/javascript" src="/files/assets/pages/advance-elements/select2-custom.js"></script>
+<script th:inline="javascript">
+    var insertUrl = '/mng/pltfomImprvmPropsl/insertPltfomImprvmPrpslAns.do';
+    var updateUrl = '/mng/pltfomImprvmPropslupdatePltfomImprvmPrpslAns.do/';
+
+    function validateForm() {
+        $("#registerForm").validate({
+            rules: {
+                userNm : {maxlength: 20},
+                ttl: { maxlength: 100 },
+                cn: { maxlength: 4000 }
+            },
+            messages: {
+                userNm : {maxlength: '답변자 이름은 20자를 넘을 수 없습니다.'},
+                ttl: { maxlength: "답변 제목은 100자를 넘을 수 없습니다."},
+                cn: { maxlength: "답변 내용은 4000자를 넘을 수 없습니다."}
+            }
+        });
+    }
+
+    function addClassRequired() {
+        if($('#registerForm #prcsSttsCd option:selected').val() == '188104') {
+            $('#ttl').closest('.form-group').addClass('required');
+            $('#cn').closest('.form-group').addClass('required');
+        }    else {
+            $('#ttl').closest('.form-group').removeClass('required');
+            $('#cn').closest('.form-group').removeClass('required');
+        }
+    }
+
+    function insertPropsl() {
+        var url = insertUrl;
+        if ($('#ansid').val() != '') {
+            url = updateUrl;
+        }
+
+        if (url == insertUrl) {
+            var isSec = false;
+            /*[# sec:authorize-url="/mng/helpDesk/insertHelpDeskAnswr.do"]*/
+            isSec = true;
+            /*[/]*/
+            if (!isSec) {
+                alert('접근권한이 없습니다.');
+                return;
+            }
+        }
+        else if (url == updateUrl) {
+            var isSec = false;
+            /*[# sec:authorize-url="/mng/helpDesk/updateHelpDeskAnswr.do"]*/
+            isSec = true;
+            /*[/]*/
+            if (!isSec) {
+                alert('접근권한이 없습니다.');
+                return;
+            }
+        }
+
+        var sttsCd = $('#helpDeskAnswrForm').find('#sttsCd').val();
+
+        /*
+            - 답변 최초 등록 시 상태가 ＂접수완료“,”접수취소＂인 경우 답변으로 입력하지 않음.
+            - 답변 최초 등록 시 상태가 ＂답변중“,”답변완료＂인 경우만 답변으로 입력.
+        */
+        if (sttsCd == '113101' || sttsCd == '113102') {
+            alert('답변중 또는 답변완료 상태인 경우에만 입력이 가능합니다.');
+            return;
+        }
+
+        /*
+            - 상태가 “접수완료”인 경우 : 필수 없음.
+            - 상태가 “접수취소＂인 경우 : 필수 없음.
+            - 상태가 “답변중“ 인 경우 : 필수 없음.
+            - 상태가 “답변완료＂인 경우 : 답변제목, 답변내용 필수.
+        */
+        if (sttsCd == '113104') {
+            var $ttl = $("#ttl");
+            var $cn = $("#cn");
+            if($ttl.val() == '' || $ttl.val() == null){
+                alert('답변 제목을 입력해주십시오.');
+                $ttl.css("border","2px solid #ff0000");
+                setTimeout(function() { $ttl.css("border","")}, 1000);
+                return;
+            }
+            if($cn.val() == '' || $cn.val() == null) {
+                alert('답변 내용을 입력해주십시오.');
+                $cn.css("border","2px solid #ff0000");
+                setTimeout(function() { $cn.css("border","")}, 1000);
+                return;
+            }
+        }
+
+        if (!$('#helpDeskAnswrForm').valid()) return;
+
+        var formData = $('#helpDeskAnswrForm').serializeArray();
+        var helpDeskManagerIds = [];
+
+        $("[name=managerInfo]").each(function(index,item){
+            helpDeskManagerIds.push($(this).data('id'));
+        });
+        formData = formData.concat({name:"helpDeskManager", value:helpDeskManagerIds});
+        if (displayWorkProgress()) {
+            $.ajax({
+                url: url,
+                cache: false,
+                dataType: 'json',
+                type:'post',
+                data: formData,
+                success: function (data) {
+                    alert(data.msg);
+                    closeWorkProgress();
+                    if(url == insertHelpDeskAnswrUrl) {
+                        gridHelper1.resetListContent();
+                    } else {
+                        gridHelper1.resetPageContent();
+                    }
+                }
+            });
+        }
+
+    }
+
+    $(function() {
+        validateForm();
+        addClassRequired();
+        $("#helpDeskAnswrForm #sttsCd").change(function(){
+            addClassRequired();
+        })
+
+        $('#multiFileInput').on("change", function (event) {
+
+            var objFile = document.querySelector('#multiFileInput');
+            var formData = new FormData();
+            var content = "";
+
+            for (i = 0; i < objFile.files.length; i++) {
+                formData.append("files", objFile.files[i]);
+            }
+
+            formData.append("filegrpid", $("#filegrpid").val());
+            formData.append("filegrpNm", "helpdesk_file");
+
+            if (displayWorkProgress()) {
+                $.ajax({
+                    url: '/uploadMultipleFiles.do',
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    type: 'POST',
+                    success: function (response) {
+                        if (response.result == 'fail') {
+                            alert(response.msg);
+                        } else {
+                            if ($("#filegrpid").val() == '0' || $("#filegrpid").val() == '' || $("#filegrpid").val() == null) {
+                                $("#filegrpid").val(response[0].filegrpid);
+                            }
+                            for (i = 0; i < response.length; i++) {
+                                content = "<span class ='label label-inverse' id='" + response[i].fileid + "'>" + response[i].orginlFileNm;
+                                content += "<a class='text-white' href=javascript:deleteFile('" + response[i].fileid + "','" + response[i].fileIdntfcKey + "')>X</a></span>";
+                                $('#multipleFileUploadSuccess').append(content);
+                            }
+                        }
+                        closeWorkProgress();
+                    }
+                })
+
+                if (detectBrowser() == "other") {
+                    $("#multiFileInput").val("");
+                } else {
+                    $("#multiFileInput").replaceWith($("#multiFileInput").clone(true))
+                }
+            }
+        });
+    })
+</script>
+</html>
