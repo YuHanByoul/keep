@@ -34,7 +34,7 @@ public class SearchVo extends ParentRequestVo implements Serializable {
     private String gtype;
     
     /** 검색어 */
-    private String keyword;
+    private String keyword = "";
     
     /** 교육주제코드 */
     private String sbjctCd;
