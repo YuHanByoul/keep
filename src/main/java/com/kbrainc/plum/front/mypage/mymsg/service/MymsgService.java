@@ -108,4 +108,16 @@ public interface MymsgService {
      * @return int
      */
     public int updateTrgtDelMsg(MymsgVo mymsgVo) throws Exception;
+    
+    /**
+     * 받은쪽지함 조회상태 수정
+     **
+     * @Title : updateInqMsg
+     * @Description : 받은쪽지함 조회상태 수정
+     * @param mymsgVo
+     * @return
+     * @throws Exception
+     * @return int
+     */
+    public int updateInqMsg(MymsgVo mymsgVo) throws Exception;        
 }

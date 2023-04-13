@@ -44,8 +44,8 @@
 				<p>총 <b id="totalCount">0</b> 건</p>
 			</div>
 		</div>
-		<div class="card-list card-list-n3" id="card-table">
-			<ul id="cardList-area">
+		<div class="card-section" id="card-table">
+			<ul class="n3" id="cardList-area">
 			</ul>
 		</div>
 
@@ -66,18 +66,9 @@
                     this.selectCntstList();
                 },
 
-                moveToDetail() {
-                    if (this.userid == null) {
-                        alert('로그인 후 이용하실 수 있습니다.');
-                        return;
-                    }
-                    location.href = '/front/cntst/cntstDetailForm.html';
-                },
-
                 search() {
                     $('#pageNumber').val('1');
-                	$('#card-table').removeClass();
-                    $('#card-table').addClass('card-list card-list-n3');
+
                     this.selectCntstList();
                 },
 
@@ -85,8 +76,7 @@
                 	$('#searchTtl').val('');
                 	$("#searchStts").val('');
                 	$("#searchType").val('');
-                	$('#card-table').removeClass();
-                    $('#card-table').addClass('card-list card-list-n3');
+                	
     				this.selectCntstList();
                 },
 
@@ -101,8 +91,13 @@
                             data: formData,
                             type: 'GET',
                             success: function (result) {
-                            	var data = escapeData(result);
+                            	$('#card-table').removeClass();
+                                $('#card-table').addClass('card-section');
+                                
                             	$("#pagination").html(result.pagination);
+                                $("#totalCount").html(result.totalCount);
+                                
+                            	var data = escapeData(result);
                             	cntst.makeListHtml(data);
                                 closeWorkProgress();
                             }
@@ -130,6 +125,23 @@
                         `;
                     } else {
                         data.list.forEach(function(item) {
+   							// 공모전 분류
+   							var cntstClsf = item.clsfCd;
+   							var cntstClsfTag = "";   							
+   							switch(cntstClsf) {
+                                case "일반":
+                                	cntstClsfTag = `<div class="tag tag-brown">${cntstClsf}</div>`;
+                               	break;
+                               	
+                                case "도서신청":
+                                	cntstClsfTag = `<div class="tag tag-green">${cntstClsf}</div>`;
+                               	break;
+                               	
+                                case "환경일기장신청":
+                                	cntstClsfTag = `<div class="tag tag-blue">${cntstClsf}</div>`;
+                               	break;
+                            }
+                        	
                         	if(item.clsfCd == '환경일기장신청') {
                            		prsntnDt_html = `
         						<li class="d-flex">
@@ -148,81 +160,68 @@
                         	
                         	if(`${item.stts}` == '접수중'){
    	                            cardListHtml += `
-	   	             			<li>
-   	                            	<a href="/front/cntst/cntstDetailForm.html?cntstid=${item.cntstid}">
-	   	         						<div class="flag bg-blue">접수중</div>
-	   	         						<div class="thumb" style="height:163px;"><img src="/downloadFileByFileid.do?fileid=${item.thmbnFileid}+&file_idntfc_key=${item.fileIdntfcKey}" alt=""></div>
-	   	         						<dl class="card-program-dot-list">
-	   	         							<dt>
-	   	         								<div class="tag tag-blue">${item.clsfCd}</div>
-	   	         							</dt>
-	   	         							<dd>
-	   	         								<p class="ellipsis" data-ellipsis="2">${item.ttl}</p>
-	   	         								<ul class="dot-list fc-black3">
-	   	         									<li class="d-flex">
-	   	         										<span class="tit">접수기간 :</span>
-	   	         										<span class="dc">${item.aplyBgngDt} ~ ${item.aplyEndDt}</span>
-	   	         									</li>
-													${prsntnDt_html}
-	   	         								</ul>
-	   	         							</dd>
-	   	         						</dl>
-	   	         					</a>
-	   	         				</li>
+                            	<li>
+									<div class="flag bg-blue">접수중</div>
+									<div class="thumb">
+										<img src="https://picsum.photos/296/167" alt="">
+										${cntstClsfTag}
+									</div>
+									<div class="cont mt0">
+										<a href="/front/cntst/cntstDetailForm.html?cntstid=${item.cntstid}" class="title ellipsis" data-ellipsis="2">${item.ttl}</a>
+										<ul class="df">
+											<li class="d-flex">
+												<span class="tit">접수기간 :</span>
+												<span class="dc">${item.aplyBgngDt} ~ ${item.aplyEndDt}</span>
+											</li>
+											${prsntnDt_html}
+										</ul>
+									</div>
+								</li>
    	    						`;
    							}else if(`${item.stts}` == '접수전'){
    	                            cardListHtml += `
-	   	             			<li>
-	   	         					<a href="/front/cntst/cntstDetailForm.html?cntstid=${item.cntstid}">
-	   	         						<div class="flag bg-green">접수전</div>
-	   	         						<div class="thumb" style="height:163px;"><img src="/downloadFileByFileid.do?fileid=${item.thmbnFileid}+&file_idntfc_key=${item.fileIdntfcKey}" alt=""></div>
-	   	         						<dl class="card-program-dot-list">
-	   	         							<dt>
-	   	         								<div class="tag tag-blue">${item.clsfCd}</div>
-	   	         							</dt>
-	   	         							<dd>
-	   	         								<p class="ellipsis" data-ellipsis="2">${item.ttl}</p>
-	   	         								<ul class="dot-list fc-black3">
-	   	         									<li class="d-flex">
-	   	         										<span class="tit">접수기간 :</span>
-	   	         										<span class="dc">${item.aplyBgngDt} ~ ${item.aplyEndDt}</span>
-	   	         									</li>
-	   	         									${prsntnDt_html}
-	   	         								</ul>
-	   	         							</dd>
-	   	         						</dl>
-	   	         					</a>
-	   	         				</li>
+								<li>
+									<div class="flag bg-green">접수전</div>
+									<div class="thumb">
+										<img src="https://picsum.photos/296/167" alt="">
+										${cntstClsfTag}
+									</div>
+									<div class="cont mt0">
+										<a href="/front/cntst/cntstDetailForm.html?cntstid=${item.cntstid}" class="title ellipsis" data-ellipsis="2">${item.ttl}</a>
+										<ul class="df">
+											<li class="d-flex">
+												<span class="tit">접수기간 :</span>
+												<span class="dc">${item.aplyBgngDt} ~ ${item.aplyEndDt}</span>
+											</li>
+											${prsntnDt_html}
+										</ul>
+									</div>
+								</li>
    	    						`;
    							}else{
-   	                            cardListHtml += `
-	   	             			<li>
-	   	         					<a href="/front/cntst/cntstDetailForm.html?cntstid=${item.cntstid}" class="disabled">
-	   	         						<div class="flag bg-black6">마감</div>
-	   	         						<div class="thumb" style="height:163px;"><img src="/downloadFileByFileid.do?fileid=${item.thmbnFileid}+&file_idntfc_key=${item.fileIdntfcKey}" alt=""></div>
-	   	         						<dl class="card-program-dot-list">
-	   	         							<dt>
-	   	         								<div class="tag tag-blue">${item.clsfCd}</div>
-	   	         							</dt>
-	   	         							<dd>
-	   	         								<p class="ellipsis" data-ellipsis="2">${item.ttl}</p>
-	   	         								<ul class="dot-list fc-black3">
-	   	         									<li class="d-flex">
-	   	         										<span class="tit">접수기간 :</span>
-	   	         										<span class="dc">${item.aplyBgngDt} ~ ${item.aplyEndDt}</span>
-	   	         									</li>
-	   	         									${prsntnDt_html}
-	   	         								</ul>
-	   	         							</dd>
-	   	         						</dl>
-	   	         					</a>
-	   	         				</li>
-   	    						`;
+	   	                        cardListHtml += `
+								<li class="disabled">
+									<div class="flag bg-black6">마감</div>
+									<div class="thumb">
+										<img src="https://picsum.photos/296/167" alt="">
+										${cntstClsfTag}
+									</div>
+									<div class="cont mt0">
+										<a href="/front/cntst/cntstDetailForm.html?cntstid=${item.cntstid}" class="title ellipsis" data-ellipsis="2">${item.ttl}</a>
+										<ul class="df">
+											<li class="d-flex">
+												<span class="tit">접수기간 :</span>
+												<span class="dc">${item.aplyBgngDt} ~ ${item.aplyEndDt}</span>
+											</li>
+											${prsntnDt_html}
+										</ul>
+									</div>
+								</li>
+   	    						`;   	    						
    							}
                         });
                     }
                     $('#cardList-area').html(cardListHtml);
-                    $("#totalCount").html(data.totalCount);
                 }
             };
 

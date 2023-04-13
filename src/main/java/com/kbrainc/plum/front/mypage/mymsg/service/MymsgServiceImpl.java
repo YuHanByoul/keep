@@ -137,4 +137,20 @@ public class MymsgServiceImpl extends PlumAbstractServiceImpl implements MymsgSe
         retVal += mymsgDao.updateTrgtDelMsg(mymsgVo);
         return retVal;
     }
+
+    /**
+     * 보낸쪽지함 조회상태 수정
+     **
+     * @Title : updateInqMsg
+     * @Description : 보낸쪽지함 조회상태 수정
+     * @param mymsgVo
+     * @return
+     * @throws Exception
+     * @return int
+     */
+    public int updateInqMsg(MymsgVo mymsgVo) throws Exception{
+        int retVal = 0;
+        retVal += mymsgDao.updateInqMsg(mymsgVo);
+        return retVal;
+    }
 }

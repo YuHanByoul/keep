@@ -6,6 +6,7 @@
 <body>
     <div layout:fragment="content">
     <form id="chkListForm" name="chkListForm" th:action="@{/front/dsgnPrgrm/aplyCmptnForm.html}" method="post">
+        <input type="hidden"  id="loginUserid" name="loginUserid" th:value="${loginUserid}" />
         <input type="hidden"  id="prgrmid" name="prgrmid" th:value="${chkListInfo.prgrmid}" />
         <input type="hidden"  id="sbmsnid" name="sbmsnid" th:value="${chkListInfo.sbmsnid}" />
         <input type="hidden"  id="sttsCd" name="sttsCd" th:value="${chkListInfo.sttsCd}" />
@@ -180,8 +181,8 @@
         	                <td>${row.qrow}</td>
         	                <td class="al">${row.cn}</td>
         	                <td>${row.altm}</td>
-        	                <td><label class="inp"><input type="radio" title="예"     id="chkRdo${row.qitemid}" lv1="${row.dp1}" altm="${row.altm}" name="chkRdo${row.qitemid}" value="Y" qitemid="${row.qitemid}" ordr="${ordr}"></label></td>
-        	                <td><label class="inp"><input type="radio" title="아니오" id="chkRdo${row.qitemid}" lv1="${row.dp1}" altm="${row.altm}" name="chkRdo${row.qitemid}" ></label></td>
+        	                <td><label class="inp"><input type="radio" title="예"     id="chkRdo${row.qitemid}" lv1="${row.dp1}" altm="${row.altm}" name="chkRdo${row.qitemid}" value="Y" qitemidY="${row.qitemid}" ordr="${ordr}"></label></td>
+        	                <td><label class="inp"><input type="radio" title="아니오" id="chkRdo${row.qitemid}" lv1="${row.dp1}" altm="${row.altm}" name="chkRdo${row.qitemid}" qitemidN="${row.qitemid}"></label></td>
         	            </tr>
                     `
                     idx++;
@@ -199,7 +200,9 @@
         		for(var row of list){
         			var scr = row?.scr?? 0
         			if(scr > 0 ){
-        				$("input[qitemid="+row.qitemid+"]").prop("checked",true);
+        				$("input[qitemidY="+row.qitemid+"]").prop("checked",true);
+        			}else{
+        				$("input[qitemidN="+row.qitemid+"]").prop("checked",true);
         			}
         		}
         	}
@@ -226,8 +229,8 @@
             		param["ansLst[" + index + "].seCd"] = row.dp2;
             		param["ansLst[" + index + "].qitemid"] = row.qitemid;
             		param["ansLst[" + index + "].cn"] = row.cn;
-            		param["ansLst[" + index + "].scr"] = $("input[qitemid="+row.qitemid+"]:checked").val() =="Y" ? row.altm : 0;
-            		param["ansLst[" + index + "].ordr"] = $("input[qitemid="+row.qitemid+"]").attr("ordr");
+            		param["ansLst[" + index + "].scr"] = $("input[qitemidY="+row.qitemid+"]:checked").val() =="Y" ? row.altm : 0;
+            		param["ansLst[" + index + "].ordr"] = $("input[qitemidY="+row.qitemid+"]").attr("ordr");
             		index++;
         		}
         	}
@@ -236,6 +239,7 @@
             param["sbmsnid"] = $("#sbmsnid").val();
             param["chklstid"] = $("#chklstid").val();
             param["sbmsnSeCd"] = "242101";    /*신청자 자가진단*/
+            param["sprtgrpid"] = $("#loginUserid").val();     /*심사자id :신청자 자가진단*/
             param["sttsCd"] = "111102";    /*상태코드 신청완료*/
 
             if(!confirm("저장하시겠습니까?")) return;
@@ -270,7 +274,7 @@
 
             $("#chkListForm [name^=chkRdo]").on("change",function(e){
 
-            	var id = $("#"+this.id).attr("qitemid");
+            	var id = $("#"+this.id).attr("qitemidY");
             	var lv1 = $("#"+this.id).attr("lv1");
             	var sumScr = 0 ;
             	var sumAltm = 0 ;
