@@ -1517,6 +1517,20 @@
             A.PRGRMID = #{prgrmid}
     </select>
 
+    <!-- 신청정보탭 체크리스트 상세 조회 -->
+    <select id="selectAssChklstForm" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        /* AsgsysSrngDao.selectAssChklstForm*/
+        SELECT
+            A.PRGRMID
+          , B.SPRTGRPID
+          , C.SBMSNID
+          , C.CHKLSTID
+        FROM TB_ASS_PRGRM A
+        LEFT OUTER JOIN TB_ASS_SPRTGRP_SRNG B ON A.PRGRMID = B.PRGRMID
+        LEFT OUTER JOIN TB_ASS_CHKLST_SBMSN C ON B.SPRTGRPID = C.USERID
+        WHERE A.PRGRMID = #{prgrmid}
+    </select>
+
     <!-- 안전관리 등록 -->
     <update id="insertSftyMng" parameterType="AsgsysSrngVo" >
         /* AsgsysSrngDao.insertSftyMng */
@@ -2575,8 +2589,8 @@
             ) VALUES(
                 #{chklstid     }
               , #{prgrmid      }
-              , #{user.userid  }
-              , #{sbmsnDt      }
+              , #{sprtgrpid    }
+              , NOW()
               , #{sbmsnSttsCd  }
               , #{userIp       }
               , #{scr          }
@@ -2621,7 +2635,7 @@
           , USER_IP         = #{userIp}
           , SBMSN_STTS_CD   = #{sbmsnSttsCd}
           , SBMSN_DT        = NOW()
-          , USERID          = #{user.userid}
+          , USERID          = #{sprtgrpid}
           , MDFCN_DT        = NOW()
           , MDFRID          = #{user.userid}
         WHERE SBMSNID       = #{sbmsnid}

@@ -1079,11 +1079,12 @@ public class AsgsysSrngController {
     public String assChklstForm(AsgsysSrngVo asgsysSrngVo, Model model,@UserInfo UserVo user) throws Exception {
 
     	//지정신청상세정보 조회
-    	AsgsysSrngVo aplyInfo = asgsysSrngService.selectDsgnAplyDtlInfo(asgsysSrngVo);
+    	//AsgsysSrngVo aplyInfo = asgsysSrngService.selectDsgnAplyDtlInfo(asgsysSrngVo);
+    	AsgsysSrngVo assChklstInfo = asgsysSrngService.selectAssChklstForm(asgsysSrngVo);
     	model.addAttribute("loginUserid", user.getUserid());
-    	model.addAttribute("aplyInfo", aplyInfo);
+    	model.addAttribute("assChklstInfo", assChklstInfo);
 
-    	model.addAttribute("sprtgrpCheckList", asgsysSrngService.selectCheckList(aplyInfo));
+    	model.addAttribute("sprtgrpCheckList", asgsysSrngService.selectCheckList(assChklstInfo));
 
     	return "mng/asgsysSrng/assChklstForm";
     }

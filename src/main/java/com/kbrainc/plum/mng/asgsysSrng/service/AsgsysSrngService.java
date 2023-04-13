@@ -338,6 +338,18 @@ public interface AsgsysSrngService {
 	*/
 	public AsgsysSrngVo selectSftyMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
+	/**
+	* 체크리스트 form 조회
+	*
+	* @Title : selectAssChklstForm
+	* @Description : 체크리스트 form 조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return AsgsysSrngVo
+	*/
+	public AsgsysSrngVo selectAssChklstForm(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
     /**
     * @Title : dsgnSrngMainForm
     * @Description : 심사위원심사 목록조회
@@ -729,6 +741,8 @@ public interface AsgsysSrngService {
 	* @return List<AsgsysSrngVo>
 	*/
 	public List<AsgsysSrngVo> selectSrngQitemList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+
 
 
 }
