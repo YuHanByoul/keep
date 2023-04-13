@@ -77,6 +77,9 @@ public class EnvReqstVo extends ParentRequestVo {
     /** 입금계좌 */
     private String bankCdNm;
 
+    /** 입금계좌 */
+    private String dtlCn;
+
     /** 계좌번호 */
     private String bacntNo;
 
@@ -142,4 +145,6 @@ public class EnvReqstVo extends ParentRequestVo {
     private String searchEndDt;
     /** 지역 코드*/
     private String searchSiGunGuCd;
+    private String searchAplySttsCd;
+    private String searchStlmSttsCd;
 }

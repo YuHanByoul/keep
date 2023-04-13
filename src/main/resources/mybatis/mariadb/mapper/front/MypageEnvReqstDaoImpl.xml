@@ -10,35 +10,87 @@
     <select id="selectMypageEnvReqstList" resultType="com.kbrainc.plum.front.mypage.mypageEnvReqst.model.MypageEnvReqstVo">
         <include refid="PaginationMapper.header"/>
         SELECT A.APLYID
-        , A.RSVTDEID
-        , A.UTZTN_SE_CD
-        , A.DE
-        , A.BGNG_DT
-        , A.END_DT
+        , A.STLM_STTS_CD
+        , A.APLY_STTS_CD
+        , A.APLCNTID
+        , A.APLCNT_NM
         , A.AMT
+        , A.DPST_AMT
+        , A.RFND_DMND_AMT
+        , A.RFND_AMT
+        , A.MDFCN_DT
         , CASE
-        WHEN B.STLM_STTS_CD = 161101 AND B.APLY_STTS_CD = 160101 THEN '' /* 입금대기 - 예약신청 */
-        WHEN B.STLM_STTS_CD = 161101 AND B.APLY_STTS_CD = 160103 THEN B.RSVT_CNCL_RSN /* 입금대기 - 예약취소 - 예약취소사유 */
-        WHEN B.STLM_STTS_CD = 161102 AND B.APLY_STTS_CD = 160102 THEN '' /* 입금완료 - 예약승인 */
-        WHEN B.STLM_STTS_CD = 161103 AND B.APLY_STTS_CD = 160103 THEN '' /* 환불요청 - 예약취소 */
-        WHEN B.STLM_STTS_CD = 161104 AND B.APLY_STTS_CD = 160103 THEN '' /* 환불완료 - 예약취소 */
-        WHEN B.STLM_STTS_CD = 161102 AND B.APLY_STTS_CD = 160102
-        THEN B.RFND_REJECT_RSN /* 환불완료 - 예약취소 - 환불완료취소 - 환불완료취소사유 and 환불완료취소사유코드 */
+        WHEN A.STLM_STTS_CD = 161101 AND A.APLY_STTS_CD = 160101 THEN '' /* 입금대기 - 예약신청 */
+        WHEN A.STLM_STTS_CD = 161101 AND A.APLY_STTS_CD = 160103 THEN A.RSVT_CNCL_RSN /* 입금대기 - 예약취소 - 예약취소사유 */
+        WHEN A.STLM_STTS_CD = 161102 AND A.APLY_STTS_CD = 160102 THEN '' /* 입금완료 - 예약승인 */
+        WHEN A.STLM_STTS_CD = 161103 AND A.APLY_STTS_CD = 160103 THEN '' /* 환불요청 - 예약취소 */
+        WHEN A.STLM_STTS_CD = 161104 AND A.APLY_STTS_CD = 160103 THEN '' /* 환불완료 - 예약취소 */
+        WHEN A.STLM_STTS_CD = 161102 AND A.APLY_STTS_CD = 160102
+        THEN A.RFND_REJECT_RSN /* 환불완료 - 예약취소 - 환불완료취소 - 환불완료취소사유 and 환불완료취소사유코드 */
         ELSE ''
-        END AS CHG_RSN
-        , D.SPCE_NM
-        , D.SIZE
-        , D.MAX_NOPE
-        , E.FCLT_NM
-        , E.ADDR
-        , E.ADDR_DTL
-        , E.RGN_CD
-        FROM TB_FCL_APLY_RSVTDE A
-        INNER JOIN TB_FCL_SPCE_APLY B ON A.APLYID = B.APLYID
-        INNER JOIN TB_FCL_SPCE_RSVTDE C ON A.RSVTDEID = C.RSVTDEID
-        INNER JOIN TB_FCL_SPCE D ON C.SPCEID = D.SPCEID
-        INNER JOIN TB_FCL_FCLT E ON D.FCLTID = E.FCLTID
-        WHERE A.RGTRID = #{user.userid}
+        END         AS CHG_RSN
+        , A1.CD_NM AS APLY_STTS_CD_NM
+        , A2.CD_NM AS STLM_STTS_CD_NM
+        , C.INSTID
+        , C.INST_NM
+        , B.BGNG_DT
+        , B.END_DT
+        , E.SPCE_NM
+        , E.SIZE
+        , E.MAX_NOPE
+        , F.ADDR
+        , F.ADDR_DTL
+        , F.FCLT_NM
+        , F.RGN_CD
+        , G.ACNT
+        , G.NM
+        FROM TB_FCL_SPCE_APLY A
+        INNER JOIN (
+        SELECT CD
+        , CD_NM
+        FROM TB_CMM_CD
+        WHERE CDGRPID = 160
+        ) A1 ON (A.APLY_STTS_CD = A1.CD)
+        INNER JOIN (
+        SELECT CD
+        , CD_NM
+        FROM TB_CMM_CD
+        WHERE CDGRPID = 161
+        ) A2 ON (A.STLM_STTS_CD = A2.CD)
+        INNER JOIN (SELECT B.APLYID, D.SPCEID, MIN(D.BGNG_DT) AS BGNG_DT, MAX(D.END_DT) AS END_DT
+        FROM TB_FCL_APLY_RSVTDE B
+        LEFT JOIN TB_FCL_SPCE_RSVTDE D ON B.RSVTDEID = D.RSVTDEID
+        GROUP BY APLYID) B
+        ON A.APLYID = B.APLYID
+        INNER JOIN TB_FCL_SPCE E
+        ON B.SPCEID = E.SPCEID
+        INNER JOIN TB_FCL_FCLT F
+        ON E.FCLTID = F.FCLTID
+        INNER JOIN TB_CMM_INST C
+        ON F.INSTID = C.INSTID
+        LEFT OUTER JOIN TB_CMM_USER G ON A.APLCNTID = G.USERID
+        WHERE 1 = 1
+        AND A.APLCNTID = #{user.userid}
+        <if test="searchKeyword != null and searchKeyword != '' and searchType.equals('spceNm')">
+            AND E.SPCE_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchKeyword != null and searchKeyword != '' and searchType.equals('fcltNm')">
+            AND F.FCLT_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchAplySttsCd != null and searchAplySttsCd != ''">
+            AND A.APLY_STTS_CD = #{searchAplySttsCd}
+        </if>
+        <if test="searchStlmSttsCd != null and searchStlmSttsCd != ''">
+            AND A.STLM_STTS_CD = #{searchStlmSttsCd}
+        </if>
+        <!-- 신청일 검색시작일  -->
+        <if test="searchBgngDt != null and searchBgngDt != ''">
+            AND B.BGNG_DT >= date(#{searchBgngDt})
+        </if>
+        <!-- 신청일 검색종료일  -->
+        <if test="searchEndDt  != null and searchEndDt != ''">
+            AND B.END_DT <![CDATA[<=]]> date(#{searchEndDt})
+        </if>
         <include refid="PaginationMapper.footer"/>
     </select>
 
@@ -371,5 +423,47 @@
             #{item.rsvtdeid}
         </foreach>
         )
+    </select>
+
+    <!-- 사유 확인 팝업 -->
+    <select id="selectRsnInfo" resultType="com.kbrainc.plum.front.mypage.mypageEnvReqst.model.MypageEnvReqstVo">
+        /* MypageEnvReqstDao.selectRsnInfo */
+        SELECT
+            RFND_REJECT_RSN
+        FROM TB_FCL_SPCE_APLY A
+        WHERE 1 = 1
+        AND A.APLYID = #{aplyid}
+    </select>
+
+    <!-- 입금정보 팝업 -->
+    <select id="selectDpstInfo" resultType="com.kbrainc.plum.front.mypage.mypageEnvReqst.model.MypageEnvReqstVo">
+        /* MypageEnvReqstDao.selectDpstInfo */
+        SELECT
+             A.AMT
+             ,F1.CD_NM AS BANK_CD_NM
+             ,F.BACNT_NO
+             ,F.DPSTR_NM
+        FROM
+            TB_FCL_SPCE_APLY A
+                INNER JOIN (SELECT B.APLYID, D.SPCEID FROM TB_FCL_APLY_RSVTDE B
+                                     LEFT JOIN TB_FCL_SPCE_RSVTDE D ON B.RSVTDEID = D.RSVTDEID
+                            GROUP BY APLYID) B
+                           ON A.APLYID = B.APLYID
+                INNER JOIN TB_FCL_SPCE E
+                           ON B.SPCEID = E.SPCEID
+                INNER JOIN TB_FCL_FCLT F
+                           ON E.FCLTID = F.FCLTID
+                INNER JOIN (
+                SELECT
+                    CD
+                     , CD_NM
+                FROM
+                    TB_CMM_CD
+                WHERE
+                    CDGRPID = 154
+            ) F1 ON (F.BANK_CD = F1.CD)
+        WHERE
+            1=1
+          AND A.APLYID = #{aplyid}
     </select>
 </mapper>

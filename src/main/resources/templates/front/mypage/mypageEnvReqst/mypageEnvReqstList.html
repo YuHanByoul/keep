@@ -4,27 +4,67 @@
       layout:decorator="layout/front/subLayout">
 
 <div layout:fragment="content">
-    <div id="list-area">
+    <div id="content" class="content">
+        <form class="search-filter">
+            <div class="form-input-wrap">
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">키워드</strong></div>
+                    <div class="form-body">
+                        <div class="form-input">
+                            <select title="키워드" name="searchType" id="searchType">
+                                <option value="fcltNm">시설명</option>
+                                <option value="spceNm">공간명</option>
+                            </select>
+                            <input type="search" title="키워드" name="searchKeyword" id="searchKeyword" placeholder="키워드를 입력해 주세요.">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">상태</strong></div>
+                    <div class="form-body">
+                        <span kattr:select_code="searchAplySttsCd" name="searchAplySttsCd" id="searchSeCd" grpCd="160" firstOptTxt="전체">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">이용일</strong></div>
+                    <div class="form-body">
+                        <div class="form-input">
+                            <input type="date" title="시작일" name="searchBgngDt" id="searchBgngDt">
+                            <div class="bul">~</div>
+                            <input type="date" title="종료일" name="searchEndDt" id="searchEndDt">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="search-filter-submit">
+                <button type="reset" class="btn-medium btn-gray btn-before-refresh">초기화</button>
+                <button type="button" class="btn-medium btn-green btn-before-search">검색</button>
+            </div>
+        </form>
+
+        <div id="list-area" class="card-list card-list-n3">
+        </div>
+
+        <div class="pagination" aria-label="pagination">
+            <button type="button" class="first" title="처음"></button>
+            <button type="button" class="prev" title="이전"></button>
+            <button type="button" class="active" title="현재 페이지">1</button>
+            <button type="button">2</button>
+            <button type="button">3</button>
+            <button type="button">4</button>
+            <button type="button">5</button>
+            <button type="button">6</button>
+            <button type="button">7</button>
+            <button type="button">8</button>
+            <button type="button">9</button>
+            <button type="button">10</button>
+            <button type="button" class="next" title="다음"></button>
+            <button type="button" class="last" title="마지막"></button>
+        </div>
+
     </div>
 
-    <div class="pagination" aria-label="pagination">
-        <button type="button" class="first" title="처음"></button>
-        <button type="button" class="prev" title="이전"></button>
-        <button type="button" class="active" title="현재 페이지">1</button>
-        <button type="button">2</button>
-        <button type="button">3</button>
-        <button type="button">4</button>
-        <button type="button">5</button>
-        <button type="button">6</button>
-        <button type="button">7</button>
-        <button type="button">8</button>
-        <button type="button">9</button>
-        <button type="button">10</button>
-        <button type="button" class="next" title="다음"></button>
-        <button type="button" class="last" title="마지막"></button>
-    </div>
-
-    <form class="search-filter" id="searchForm" name="searchForm" onsubmit="return false;">
+    <form id="searchForm" name="searchForm" onsubmit="return false;">
         <input type="hidden" id="aplyid" name="aplyid" value="0">
         <input type="hidden" id="rsvtdeid" name="rsvtdeid" value="0">
         <input type="hidden" id="pageNumber" name="pageNumber" value="1">
@@ -32,11 +72,29 @@
         <input type="hidden" id="rowPerPage" name="rowPerPage" value="10"/>
     </form>
 
+    <!-- layerpopup -->
+    <div class="layer-popup layer-large" data-layer-id="rsnPopup">
+        <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+        <div class="layer-wrap" id="rsnPopup">
+        </div>
+    </div>
+
+    <!-- layerpopup -->
+    <div class="layer-popup layer-large" data-layer-id="dpstInfoPopup">
+        <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+        <div class="layer-wrap" id="dpstInfoPopup">
+        </div>
+    </div>
+
     <script th:inline="javascript">
         var listUrl = "/front/mypage/mypageEnvReqst/selectMypageEnvReqstList.do";
         var viewUrl = '/front/mypage/mypageEnvReqst/mypageResveEnvView.html';
         var formUrl = '/front/mypage/mypageEnvReqst/mypage/mypageEnvReqstForm.html';
         var loginUserid = /*[[${loginUserid}]]*/null;
+
+        // 사유확인 팝업
+        var rsnPopupUrl = "/front/mypage/mypageEnvReqst/rsnPopup.html";
+        var dpstInfoPopupUrl = "/front/mypage/mypageEnvReqst/dpstInfoPopup.html";
 
         $(function () {
             selectEnvReqstList();
@@ -44,23 +102,11 @@
 
         function search() {
             $('#pageNumber').val(1);
-            selectEnvReqstList();rhks
+            selectEnvReqstList();
         }
 
         function searchInit() {
             $('#searchKeyword, #clsfCd').val('');
-        }
-
-        function getDatesStartToLast(startDate, lastDate) {
-            var regex = RegExp(/^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/);
-            if(!(regex.test(startDate) && regex.test(lastDate))) return "Not Date Format";
-            var result = [];
-            var curDate = new Date(startDate);
-            while(curDate <= new Date(lastDate)) {
-                result.push(curDate.toISOString().split("T")[0]);
-                curDate.setDate(curDate.getDate() + 1);
-            }
-            return result;
         }
 
         function date2str(x, y) {
@@ -134,86 +180,133 @@
                             '<p><span class="icon icon-notice bg-black9"></span>등록된 환경교육시설이 없습니다.</p>'+
                          '</div>`;
             } else {
-                html +='<div class="card-list card-list-n2">\n' +
-                    '            <ul>';
+                html +='<ul>';
                 list.forEach(function (item) {
-                    let selectedDatesList = [];
+                    let finalDate = '';
+
                     let target1 = new Date(item.bgngDt);
                     let target2 = new Date(item.endDt);
                     if( !( target1.getFullYear() === target2.getFullYear() &&
                         target1.getMonth() === target2.getMonth() &&
                         target1.getDate()=== target2.getDate() ) ) {
-                        let dateList = getDatesStartToLast(date2str(parseDate(item.bgngDt), 'yyyy-mm-dd'), date2str(parseDate(item.endDt), 'yyyy-mm-dd'));
-                        selectedDatesList.push(date2str(parseDate(item.bgngDt), 'yyyy년 mm월 dd일'));
-                        selectedDatesList.push(date2str(parseDate(item.endDt), 'yyyy년 mm월 dd일'));
+                        finalDate = date2str(parseDate(item.bgngDt), 'yyyy-mm-dd') +' ~ '+ date2str(parseDate(item.endDt), 'yyyy-mm-dd');
+                    }else{
+                        finalDate = date2str(parseDate(item.bgngDt), 'yyyy-mm-dd HH:MM') +' ~ '+ date2str(parseDate(item.endDt), 'HH:MM');
                     }
-                    let finalDate = selectedDatesList.join(' ~ ');
+
+                    let sttsTxt = '';
+                    let sttsBgColor = '';
+                    let btnTxt = '';
+
+                    switch(item.stlmSttsCd){
+                        case '161101' :
+                            if( item.aplySttsCd == '160101' ){
+                                sttsTxt = '입금대기';
+                                sttsBgColor = 'bg-green';
+                                btnTxt = '입금정보';
+                            }else{
+                                sttsTxt = '예약취소';
+                                sttsBgColor = 'bg-red';
+                                btnTxt = '사유확인';
+                            }
+                            break;
+                        case '161102' :
+                            if( item.aplySttsCd == '160102' ){
+                                sttsTxt = '입금완료';
+                                sttsBgColor = 'bg-blue';
+                                btnTxt = '후기작성';
+                            }else{
+                                sttsTxt = '';
+                                sttsBgColor = 'bg-blue';
+                            }
+                            break;
+                        case '161103' :
+                            if( item.aplySttsCd == '160103' ){
+                                sttsTxt = '환불요청';
+                                sttsBgColor = 'bg-green';
+                                btnTxt = '사유확인';
+                            }else{
+                                sttsTxt = '환불완료';
+                                sttsBgColor = 'bg-blue';
+                            }
+                        default :
+                            sttsTxt = '';
+                    }
 
                     html += '<li>\n' +
-                '                <div>\n' +
-                '                    <div class="flag bg-green">입금대기</div>\n' +
-                '                    <div class="thumb" style="height:163px;"><img th:src="\'/downloadFileByFileid.do?fileid='+item.rprsImgFileid+'&file_idntfc_key='+item.fileIdntfcKey+'" th:alt="'+item.fcltNm+'"></div>\n' +
-                '                    <dl class="card-program-dot-list">\n' +
-                '                        <dt><a href="javascript:moveToView('+item.aplyid+', '+item.rsvtdeid+')" class="after-link">['+item.fcltNm+'] '+item.spceNm+'</a></dt>\n' +
-                '                        <dd>\n' +
-                '                            <ul class="dot-list fc-black3">\n' +
-                '                                <li class="d-flex">\n' +
-                '                                    <span class="tit">주소 :</span>\n' +
-                '                                    <span class="dc">'+item.addr+ ' '+item.addrDtl+'</span>\n' +
-                '                                </li>\n' +
-                '                                <li class="d-flex">\n' +
-                '                                    <span class="tit">인원 :</span>\n' +
-                '                                    <span class="dc">최대 '+item.maxNope+'인</span>\n' +
-                '                                </li>\n' +
-                '                                <li class="d-flex">\n' +
-                '                                    <span class="tit">면적 :</span>\n' +
-                '                                    <span class="dc">'+item.size+'평형</span>\n' +
-                '                                </li>\n' +
-                '                                <li class="d-flex">\n' +
-                '                                    <span class="tit">날짜 :</span>\n' +
-                '                                    <span class="dc">'+finalDate+'</span>\n' +
-                '                                </li>\n' +
-                '                                <li class="d-flex j-between">\n' +
-                '                                    <div class="d-flex">\n' +
-                '                                        <span class="tit">가격 :</span>\n' +
-                '                                        <span class="dc">100,000원</span>\n' +
-                '                                    </div>\n' +
-                '                                    <button type="button" class="btn-small btn-outline-blue">입금정보</button>\n' +
-                '                                </li>\n' +
-                '                            </ul>\n' +
-                '                        </dd>\n' +
-                '                    </dl>\n' +
-                '                </div>\n' +
-                '            </li>';
-                        //
-                        // '<li>\n' +
-                        // '                <a href="javascript:moveToView('+item.fcltid+')">\n' +
-                        // '                    <div class="thumb" style="height:163px;"><img th:src="\'/downloadFileByFileid.do?fileid='+item.rprsImgFileid+'&file_idntfc_key='+item.fileIdntfcKey+'" th:alt="'+item.fcltNm+'"></div>\n' +
-                        // '                    <dl class="card-cate-list">\n' +
-                        // '                        <dt>\n' +
-                        // '                            <div class="tag tag-blue">'+item.aplyMthdNm+'</div>\n' +
-                        // '                        </dt>\n' +
-                        // '                        <dd>\n' +
-                        // '                            <p class="ellipsis" data-ellipsis="2">'+item.fcltNm+'</p>\n' +
-                        // '                            <p class="fw-400">'+item.addr+ ' '+item.addrDtl+'</p>\n' +
-                        // '                        </dd>\n' +
-                        // '                    </dl>\n' +
-                        // '                </a>\n' +
-                        // '            </li>';
-                    /*html += `<tr>
-                                    <td>${item.rowNumber}</td>
-                                    <td>${item.prcsSttsCdNm}</td>
-                                    <td class="al article"><a href="javascript:void(0)" class="link ellipsis" onclick="moveToView(${item.prpslid}, ${canGoToDetail})">${item.ttl}</a></td>
-                                    <td>${item.clsfCdNm}</td>
-                                    <td>${item.acnt}</td>
-                                    <td>${item.rlsYn == 'Y' ? '공개' : '비공개'}</td>
-                                    <td>${item.regDt}</td>
-                                </tr>`;*/
+                    '<div>\n' +
+                    '<div class="flag bg-green">'+sttsTxt+'</div>\n' +
+                    '<div class="thumb" style="height:163px;"><img th:src="\'/downloadFileByFileid.do?fileid='+item.rprsImgFileid+'&file_idntfc_key='+item.fileIdntfcKey+'" th:alt="'+item.fcltNm+'"></div>\n' +
+                    '<dl class="card-program-dot-list">\n' +
+                    '<dt><a href="javascript:moveToView('+item.aplyid+', '+item.rsvtdeid+')" class="after-link">['+item.fcltNm+'] '+item.spceNm+'</a></dt>\n' +
+                    '<dd>\n' +
+                    '<ul class="dot-list fc-black3">\n' +
+                    '<li class="d-flex">\n' +
+                    '<span class="tit">주소 :</span>\n' +
+                    '<span class="dc">'+item.addr+ ' '+item.addrDtl+'</span>\n' +
+                    '</li>\n' +
+                    '<li class="d-flex">\n' +
+                    '<span class="tit">인원 :</span>\n' +
+                    '<span class="dc">최대 '+item.maxNope+'인</span>\n' +
+                    '</li>\n' +
+                    '<li class="d-flex">\n' +
+                    '<span class="tit">면적 :</span>\n' +
+                    '<span class="dc">'+item.size+'평형</span>\n' +
+                    '</li>\n' +
+                    '<li class="d-flex">\n' +
+                    '<span class="tit">날짜 :</span>\n' +
+                    '<span class="dc">'+finalDate+'</span>\n' +
+                    '</li>\n' +
+                    '<li class="d-flex j-between">\n' +
+                    '<div class="d-flex">\n' +
+                    '<span class="tit">가격 :</span>\n' +
+                    '<span class="dc">100,000원</span>\n' +
+                    '</div>\n';
+                    if( btnTxt != '' ){
+                        if( btnTxt == '입금정보' ){
+                            html += '<button type="button" class="btn-small btn-outline-blue" onclick="fn_openDpstInfoPopup('+item.aplyid+');">'+btnTxt+'</button>\n';
+                        }else if( btnTxt == '사유확인' ){
+                            html += '<button type="button" class="btn-small btn-outline-blue" onclick="fn_openPopup('+item.aplyid+');">'+btnTxt+'</button>\n';
+                        }else if( btnTxt == '후기작성' ){
+                            html += '<button type="button" class="btn-small btn-outline-blue" onclick="fn_openInsertRvwPopup('+item.aplyid+');">'+btnTxt+'</button>\n';
+                        }else if( btnTxt == '후기확인' ){
+                            html += '<button type="button" class="btn-small btn-outline-blue" onclick="fn_openSelectRvwPopup('+item.aplyid+');">'+btnTxt+'</button>\n';
+                        }
+
+                    }
+                    html += '</li>\n' +
+                    '</ul>\n' +
+                    '</dd>\n' +
+                    '</dl>\n' +
+                    '</div>\n' +
+                    '</li>';
                 })
-                html += '</ul>' +
-                    '</div>';
+                html += '</ul>';
             }
             return html;
+        }
+
+        function fn_openPopup(aplyid){
+            $("#rsnPopup").load(rsnPopupUrl+"?aplyid="+aplyid, function(response, status, xhr) {
+                if (status == "success") {
+                    layerPopup.open({target:'rsnPopup'});
+                }
+            });
+        }
+
+        function fn_openDpstInfoPopup(aplyid){
+            $("#dpstInfoPopup").load(dpstInfoPopupUrl+"?aplyid="+aplyid, function(response, status, xhr) {
+                if (status == "success") {
+                    layerPopup.open({target:'dpstInfoPopup'});
+                }
+            });
+        }
+        function fn_openInsertRvwPopup(aplyid){
+            alert('확인중입니다.');
+        }
+
+        function fn_openSelectRvwPopup(aplyid){
+            alert('확인중입니다.');
         }
 
         function moveToInsertForm() {
@@ -223,11 +316,12 @@
         }
 
         function moveToView(aplyid, rsvtdeid) {
-            var f = document.forms.searchForm;
+            console.log($(this));
+            /*var f = document.forms.searchForm;
             f.aplyid.value = aplyid;
             f.rsvtdeid.value = rsvtdeid;
             f.action = viewUrl;
-            f.submit();
+            f.submit();*/
         }
 
         function goPage(num) {
