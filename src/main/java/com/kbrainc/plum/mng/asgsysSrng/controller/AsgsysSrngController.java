@@ -1415,10 +1415,10 @@ public class AsgsysSrngController {
    public String jdgsSrngMainForm(AsgsysSrngVo asgsysSrngVo, Model model, @UserInfo UserVo user) throws Exception {
 
 	   model.addAttribute("userid",user.getUserid());
-	   model.addAttribute("userRoleInfo",user.getRoleInfo());
+	   model.addAttribute("rolid" ,user.getRoleInfo().getRoleid());
 
-	   log.info("@@@@@@@@@@@@@@@ : "+ user.getRoleInfo().toString());
-	   //RoleInfoVo(roleid=1, nm=시스템관리자, kndCd=A, seCd=A, trgtInstCd=A, trgtRgnCd=A)
+	   log.info("@@@@@@@@@@@@@@@ : "+ user.getRoleInfo().getRoleid());
+	   log.info("@@@@@@@@@@@@@@@ : "+ user.toString());
 
 	   //심사위원 목록 조회
 	   model.addAttribute("list",asgsysSrngService.selectjdgsList(asgsysSrngVo));

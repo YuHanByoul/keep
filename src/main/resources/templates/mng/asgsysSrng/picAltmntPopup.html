@@ -9,6 +9,7 @@
         <div class="modal-body">
 
             <form name="picAltmntFrm" id="picAltmntFrm" action="" onsubmit="return false;" class="card">
+
                 <div class="card-block-small">
                     <div class="mb-2 form-group row">
                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>배정 방식</strong></div>
@@ -27,7 +28,7 @@
                             <div class="mb-0 form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="popupFilterIdNameInput"><strong>아이디/이름</strong></label>
                                 <div class="input-group input-group-sm input-group-dropdown mb-0">
-                                    <input type="text" class="form-control form-control-sm" aria-label="Text input with dropdown button" name="popupFilterIdNameInput" id="popupFilterIdNameInput">
+                                    <input type="text" class="form-control form-control-sm" aria-label="Text input with dropdown button" name="searchKeyword" id="searchKeyword">
                                 </div>
                             </div>
                         </div>
@@ -35,7 +36,7 @@
                             <div class="mb-0 form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="popupFilterCredentialInput"><strong>자격증명</strong></label>
                                 <div class="input-group input-group-sm input-group-dropdown mb-0">
-                                    <input type="text" class="form-control form-control-sm" aria-label="Text input with dropdown button" name="popupFilterCredentialInput" id="popupFilterCredentialInput">
+                                    <input type="text" class="form-control form-control-sm" aria-label="Text input with dropdown button" name="searchCrtfctNm" id="searchCrtfctNm">
                                 </div>
                             </div>
                         </div>
@@ -43,17 +44,14 @@
                             <div class="mb-0 form-group">
                                 <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>전문분야</strong></div>
                                 <div class="col-12">
-                                    <span kattr:select_code="instTypeCd" th:attr="grpCd=104" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true">
+                                    <span kattr:select_code="searchSbjctCd" th:attr="grpCd=126" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true" >
                                 </div>
                             </div>
                         </div>
                         <div class="col-12 col-lg-3">
                             <div class="mb-0 form-group">
                                 <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>활동가능지역</strong></div>
-                                <div class="col-12">
-                                    <span kattr:select_code="instTypeCd" th:attr="grpCd=125" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true">
-                                </div>
-
+                                <th:block kattr:select_ctprvn="searchRgnCd" firstOptTxt="- 선택 -" firstOptVal=""></th:block>
                             </div>
                         </div>
                     </div>
@@ -103,11 +101,16 @@
 		selectedItems=[];
 		picGridHelper = new GridHelper('picGrid','picContentPanel');
 
-	    $("input[name=picYn]").attr("disabled", true);    //담당자 구분
+	    //$("input[name=picYn]").attr("disabled", true);    //담당자 구분
 
 	    modeGridWrite();
 
-	    //writePicGridData();
+
+	    if(picSe=="Y"){
+	    	$("#selectAllCheckbox").prop("disabled","disabled")
+	    }
+
+
 	});
 
     function modeGridWrite() {
@@ -127,7 +130,7 @@
                             return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
                     },
                     itemTemplate: function(_, item) {
-                        return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox").attr("id","userid-"+item.userid)
+                        return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox").attr("id","userid-"+item.userid).attr("name","useridChk")
                             .prop("checked", $.inArray(item, selectedItems) > -1)
                             .on("change", function () {
 
@@ -282,7 +285,20 @@
             var index = selectedItems.findIndex(item => item.userid === id);
 
             if(index == -1) {
-            	selectedItems.push({"userid": id, "acnt":acnt, "nm" : name, "eml":eml, "telno":telno});
+            	if(picSe=="Y"){
+            		selectedItems = [{"userid": id, "acnt":acnt, "nm" : name, "eml":eml, "telno":telno}];
+
+            		$("[name=useridChk]").each(function(idx,chk){
+
+            			if(chk.id == "userid-"+id){
+            				this.checked=true;
+            			}else{
+            				this.checked=false;
+            			}
+            		})
+            	}else{
+                	selectedItems.push({"userid": id, "acnt":acnt, "nm" : name, "eml":eml, "telno":telno});
+            	}
             }
 
             if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
@@ -290,6 +306,7 @@
             } else {
                 $("#selectAllCheckbox").prop("checked", false);
             }
+
         };
 
         var unselectItem = function(item) {
@@ -326,20 +343,16 @@
 	}
 
 	//초기화 버튼
-	function fn_init() {
-	    $("#searchType").val("searchPrgrmNm");
+	function fn_initPopup() {
 	    $("#searchKeyword").val('');
-	    $("#searchSttsCd").val('');
-	    $("#searchAplyStartDt").val('');
-	    $("#searchAplyEndDt").val('');
-	    $("#searchSrngSttsCd").val('');
-	    $("#searchSrgnSttsCd").val('');
-	    $("#searchChckDsgnStartDt").val('');
-	    $("#searchChckDsgnEndDt").val('');
+	    $("#searchCrtfctNm").val('');
+	    $("#searchSbjctCd").val('');
+	    $("#searchRgnCd").val('');
 	}
 
 	//검색버튼
-	function fn_searchForm(){
+	function fn_searchPopup(){
+
 	    picGridHelper.resetListContent();
 	}
 
@@ -381,6 +394,7 @@
 
         for(var item of selectedItems) {
             var tempNo="";
+            var nm =item?.nm?? "";
 
         	if(item.userid !=""){
 
@@ -398,7 +412,7 @@
                     duplicate = true;
                 } else {
                     var content = "<span class='label label-inverse' id='picId-" + item.userid
-                    content    += "' name='picInfo' id='"+item.userid+"'>" + item.nm + "("+ item.acnt+ ") | " + item.eml +" | " +item.telno
+                    content    += "' name='picInfo' id='"+item.userid+"'>" + nm + "("+ item.acnt+ ") | " + item.eml +" | " +item.telno
                     content    += "&nbsp; <a href='javascript:void(0)' onclick='removePicInfo(" + item.userid+ ")' class='text-white'>X</a> </span>";
 
 
