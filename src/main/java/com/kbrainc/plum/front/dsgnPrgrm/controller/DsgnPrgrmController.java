@@ -726,15 +726,17 @@ public class DsgnPrgrmController {
 	* @return String
 	*/
 	@RequestMapping(value = "/front/dsgnPrgrm/chkListForm.html")
-	public String chkListForm(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
+	public String chkListForm(DsgnPrgrmVo dsgnPrgrmVo, Model model,@UserInfo UserVo user) throws Exception {
 
 		DsgnPrgrmVo chkListInfo = null;
 		dsgnPrgrmVo.setSbmsnSeCd("242101");    /*신청자 자가진단*/
+
 
 		chkListInfo = dsgnPrgrmService.selectChkListInfo(dsgnPrgrmVo);
 		dsgnPrgrmVo.setChklstid(chkListInfo.getChklstid());
 		dsgnPrgrmVo.setSbmsnid(chkListInfo.getSbmsnid());
 
+		model.addAttribute("loginUserid", user.getUserid());
 		model.addAttribute("chkListInfo", chkListInfo);
 		model.addAttribute("qitemList", dsgnPrgrmService.selectQitemList(dsgnPrgrmVo));
 		model.addAttribute("ansList", dsgnPrgrmService.selectChkAnsList(dsgnPrgrmVo));
