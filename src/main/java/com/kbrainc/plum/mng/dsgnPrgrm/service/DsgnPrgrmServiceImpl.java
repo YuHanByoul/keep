@@ -209,8 +209,6 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 
 		//지정 이력 update
 		ret += dsgnPrgrmDao.updateDsgnHstry(dsgnPrgrmVo);
-
-
 		//지정 프로그램 update
 		asgsysSrngVo.setPrgrmid(dsgnPrgrmVo.getPrgrmid());
 
