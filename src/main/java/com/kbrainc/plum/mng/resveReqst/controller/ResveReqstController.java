@@ -195,10 +195,11 @@ public class ResveReqstController {
     @ResponseBody
     public Map<String, Object> updateResveReqst(@Valid ResveReqstVo resveReqstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
-        String resultMsg = Constant.REST_API_RESULT_FAIL;
+        
         if (bindingResult.hasErrors()) {
             FieldError fieldError = bindingResult.getFieldError();
             if (fieldError != null) {
+                resultMap.put("result", Constant.REST_API_RESULT_FAIL);
                 resultMap.put("msg", fieldError.getDefaultMessage());
             }
             return resultMap;
@@ -212,10 +213,10 @@ public class ResveReqstController {
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "변경하신 정보가 저장되었습니다.");
+            resultMap.put("msg", "저장되었습니다.");
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-            resultMap.put("msg", "필수정보를 입력하지 않았습니다.");
+            resultMap.put("msg", "저장에 실패하였습니다.");
         }
 
         return resultMap;

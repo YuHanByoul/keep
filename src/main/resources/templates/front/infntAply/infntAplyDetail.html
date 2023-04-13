@@ -89,8 +89,8 @@
                         <input type="date" datepicker="true" class="blind" >
                     </div>      
                     <div class="right">
-                        <div class="select-date" id="selDayDiv">선택일 : <th:block th:text="${#calendars.format(#calendars.createNow(), 'yyyy년 MM월 dd일')}" /></div>
                         <div class="table-col table-layout-auto table-col-sm">
+                            <div class="select-date" id="selDayDiv">선택일 : <th:block th:text="${#calendars.format(#calendars.createNow(), 'yyyy년 MM월 dd일')}" /></div>
                             <table>
                                 <caption>유아환경교육관 교육신청 - 선택, 교육회차, 상태, 대기팀</caption>
                                 <colgroup>
@@ -388,17 +388,20 @@
 	                                           var mm = tempDt.getMonth()+1;
 	                                           var dd = tempDt.getDate();
 	                                           var returnStr = yyyy + '년 ' + mm + '월 ' + dd +'일';
+	                                           var tmeIdArr = [];
 	                                           $("#selDayDiv").val('선택일 : ' + returnStr);
 	                                    	   $("#tmeSchdlid").val(result[0].tmeSchdlid);
+                                               for(var i=0; i<result.length; i++){
+                                                   tmeIdArr.push(result[i].tmeid);
+                                               }
 	                                           $("input[name='tmeId']").each(function(){
-                                                   if($(this).val() == result[0].tmeid){
+                                                   if(tmeIdArr.indexOf(Number($(this).val())) >= 0)  {                                                 
                                                        $(this).prop("disabled", false);                                                    
                                                        $(this).prop("checked", true);
                                                    }else{
                                                        $(this).prop("disabled", true);
                                                        $(this).prop("checked", false);
                                                    }
-	                                               //if($(this).val() == result[0].tmeid) $(this).prop("checked", true);
 	                                           })     
                                                $("#tmeBasicDiv").hide();
                                                $("#tmeDataDiv").show();

@@ -286,4 +286,5 @@ public class RcpmnyAfterVo extends ParentRequestVo {
     private String searchBgngDt;
     private String searchEndDt;
     private String searchStlmSttsCd;
+    private String selectedApplyid;
 }

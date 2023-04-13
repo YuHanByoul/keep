@@ -1076,10 +1076,11 @@ public class AsgsysSrngController {
     * @throws Exception 예외
     */
     @RequestMapping(value = "/mng/asgsysSrng/assChklstForm.html")
-    public String assChklstForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
+    public String assChklstForm(AsgsysSrngVo asgsysSrngVo, Model model,@UserInfo UserVo user) throws Exception {
 
     	//지정신청상세정보 조회
     	AsgsysSrngVo aplyInfo = asgsysSrngService.selectDsgnAplyDtlInfo(asgsysSrngVo);
+    	model.addAttribute("loginUserid", user.getUserid());
     	model.addAttribute("aplyInfo", aplyInfo);
 
     	model.addAttribute("sprtgrpCheckList", asgsysSrngService.selectCheckList(aplyInfo));

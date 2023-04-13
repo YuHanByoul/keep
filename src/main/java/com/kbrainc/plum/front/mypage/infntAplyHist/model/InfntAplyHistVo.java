@@ -107,6 +107,8 @@ public class InfntAplyHistVo extends ParentRequestVo {
     private Integer stdntDgstfnSrvyid;
     /** 학생_만족도_설문지아이디 */
     private Integer stdntDgstfnQestnrid;
+    /** 설문제출유무 */
+    private String sbmsnYn;
     
     
     /** 등록일 */

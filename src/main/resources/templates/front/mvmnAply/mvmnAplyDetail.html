@@ -82,21 +82,26 @@
                </div>
                <th:block th:if="${mvmnAply.operFomCd == '197101'}">
 	               <div class="reservation-wrap">
-	                   <div class="form-input">
-		                   <select name="sareaSignguCd" id="sareaSignguCd" onchange="mvmnAplyDetail.fn_sareaSignguChange(this)">
-		                       <option value="">- 선택 -</option>
-		                       <th:block th:each="item : ${sareaSignguList}">
-		                           <option th:value="${item.sareaSignguCd}"><th:block th:text="${item.sareaSignguDesc}" /></option>
-		                       </th:block>
-		                   </select>
-	                   </div>
+		               <div class="search-filter mb20">
+		                   <div class="form-input mo-flex-wrap">
+		                       <strong class="label">지역 선택</strong>
+		                       <div class="form-input">
+		                          <select name="sareaSignguCd" id="sareaSignguCd" onchange="mvmnAplyDetail.fn_sareaSignguChange(this)">
+		                              <option value="">- 선택 -</option>
+		                              <th:block th:each="item : ${sareaSignguList}">
+		                                  <option th:value="${item.sareaSignguCd}"><th:block th:text="${item.sareaSignguDesc}" /></option>
+		                              </th:block>
+		                          </select>
+		                       </div>
+		                   </div>
+		               </div>	    
 	                   <div class="reservation-inner">
 	                       <div class="left">
 	                           <input type="date" datepicker="true" class="blind">
 	                       </div>
 	                       <div class="right">
-	                           <div class="select-date" id="selDayDiv">선택일 : <th:block th:text="${#calendars.format(#calendars.createNow(), 'yyyy년 MM월 dd일')}" /></div>
 	                           <div class="table-col table-layout-auto table-col-sm">
+	                               <div class="select-date" id="selDayDiv">선택일 : <th:block th:text="${#calendars.format(#calendars.createNow(), 'yyyy년 MM월 dd일')}" /></div>
 	                               <table>
 	                                   <caption>푸름이 이동환경교실 교육 신청 - 선택, 교육회차, 상태, 대기팀</caption>
 	                                   <colgroup>
@@ -149,16 +154,20 @@
                </th:block>  
                <th:block th:if="${mvmnAply.operFomCd == '197102'}">
 	               <div class="reservation-wrap">
-	
-	                   <div class="form-input">
-	                       <select name="sareaSignguCd" id="sareaSignguCd">
-	                           <option value="">- 선택 -</option>
-	                           <th:block th:each="item : ${sareaSignguList}">
-	                               <option th:value="${item.sareaSignguCd}"><th:block th:text="${item.sareaSignguDesc}" /></option>
-	                           </th:block>
-	                       </select>
-	                   </div>
-	
+	               
+                       <div class="search-filter mb20">
+                           <div class="form-input mo-flex-wrap">
+                               <strong class="label">지역 선택</strong>
+                               <div class="form-input">
+		                           <select name="sareaSignguCd" id="sareaSignguCd">
+		                               <option value="">- 선택 -</option>
+		                               <th:block th:each="item : ${sareaSignguList}">
+		                                   <option th:value="${item.sareaSignguCd}"><th:block th:text="${item.sareaSignguDesc}" /></option>
+		                               </th:block>
+		                           </select>
+                               </div>
+                           </div>
+                       </div>	
 	                   <div class="table-col table-layout-auto table-col-sm mt20 table-col-scroll">
 	                       <table>
 	                           <caption>푸름이 이동환경교실 교육신청 - 신청, 교육요일, 교육일자, 교육회사, 상태, 대기팀</caption>
@@ -484,17 +493,22 @@
                                                var mm = tempDt.getMonth()+1;
                                                var dd = tempDt.getDate();
                                                var returnStr = yyyy + '년 ' + mm + '월 ' + dd +'일';
+                                               var tmeIdArr = [];
                                                $("#selDayDiv").val('선택일 : ' + returnStr);
 	                                    	   $("#tmeid").val(result[0].tmeid);
 	                                    	   $("#tmeSchdlid").val(result[0].tmeSchdlid);
+	                                    	   for(var i=0; i<result.length; i++){
+	                                    		   tmeIdArr.push(result[i].tmeid);
+	                                    	   }
+	                                    	   debugger;
 	                                           $("input[name='tmeId']").each(function(){
-	                                               if($(this).val() == result[0].tmeid){
-	                                            	   $(this).prop("disabled", false);	                                            	   
-	                                            	   $(this).prop("checked", true);
-	                                               }else{
-	                                            	   $(this).prop("disabled", true);
-	                                            	   $(this).prop("checked", false);
-	                                               }
+	                                        	   if(tmeIdArr.indexOf(Number($(this).val())) >= 0)  {	                                        	   
+	                                                   $(this).prop("disabled", false);                                                    
+	                                                   $(this).prop("checked", true);
+                                                   }else{
+	                                                   $(this).prop("disabled", true);
+	                                                   $(this).prop("checked", false);
+                                                   }
 	                                           })   
 	                                           $("#tmeBasicDiv").hide();
 	                                           $("#tmeDataDiv").show();
@@ -517,7 +531,6 @@
                   });		        	
 	        },
 	        fn_tmeidChange(obj) {
-	        	debugger;
 	        	$("#tmeid").val(obj.value);
 	        },
 	        validateForm() {
