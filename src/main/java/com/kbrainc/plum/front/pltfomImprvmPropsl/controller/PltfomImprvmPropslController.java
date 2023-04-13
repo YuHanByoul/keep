@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
  * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
  */
 @Alias("front.pltfomImprvmPropslController")
-@Controller
+@Controller("front.pltfomImprvmPropslController")
 @RequestMapping("/front/pltfomImprvmPropsl")
 public class PltfomImprvmPropslController {
     private static final String VIEW_PREFIX = "/front/pltfomImprvmPropsl";

@@ -141,7 +141,7 @@ public class InqryController {
      */
     @RequestMapping(value = "/mng/inqry/insertInqryAnswr.do")
     @ResponseBody
-    public Map<String, Object> insertInqryAnswr(InqryAnswrVo inqryAnswrVO, BindingResult bindingResult,
+    public Map<String, Object> insertInqryAnswr(@Valid InqryAnswrVo inqryAnswrVO, BindingResult bindingResult,
                                                 @UserInfo UserVo user) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>();
 
