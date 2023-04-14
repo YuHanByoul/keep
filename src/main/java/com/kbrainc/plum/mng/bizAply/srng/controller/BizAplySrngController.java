@@ -81,6 +81,7 @@ public class BizAplySrngController {
         List<BizAplySrngVo> result = bizAplySrngService.selectCnsltngExprtList();
         model.addAttribute("list", result == null ? new BizAplySrngVo() : result);
         model.addAttribute("jdgsid", user.getUserid());
+        model.addAttribute("rolid" ,user.getRoleInfo().getRoleid());
         return "mng/bizAply/srng/srngList";
     }
     
@@ -169,8 +170,9 @@ public class BizAplySrngController {
      */
     @RequestMapping(value="/mng/bizAply/srng/selectSrngUserList.do")
     @ResponseBody
-    public Map<String, Object> selectSrngUserList(ReqUserVo reqUserVo) throws Exception {
+    public Map<String, Object> selectSrngUserList(ReqUserVo reqUserVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
+        reqUserVo.setUser(user);
         List<ReqUserVo> result = this.reqMngService.selectReqUserList(reqUserVo);
         
         if (result.size() > 0) {
@@ -212,10 +214,11 @@ public class BizAplySrngController {
     * @return String
      */
     @RequestMapping(value="/mng/bizAply/srng/detailSrngUserInfoTab.html")
-    public String detailSrngUserInfoTab(ReqUserVo reqUserVo, Model model) throws Exception {
+    public String detailSrngUserInfoTab(ReqUserVo reqUserVo, Model model, @UserInfo UserVo user) throws Exception {
         ReqUserVo detail = new ReqUserVo();
         if (reqUserVo != null) {
             if (reqUserVo.getAplyid() > 0) {
+                reqUserVo.setUser(user);
                 List<ReqUserVo> result = this.reqMngService.selectReqUserList(reqUserVo);                    
                 if (CollectionUtils.isNotEmpty(result)) {
                     detail = result.get(0);
