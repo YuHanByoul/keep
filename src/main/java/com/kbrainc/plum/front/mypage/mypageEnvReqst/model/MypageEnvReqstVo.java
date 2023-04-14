@@ -225,6 +225,8 @@ public class MypageEnvReqstVo extends ParentRequestVo {
     /** 환불 거절 사유 */
     private String rfndRejectRsn;
 
+    private String alldayYn;
+
     /** 검색 관련*/
     private String searchSeCd;
     private String searchKeyword;

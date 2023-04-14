@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : PrgrmCntntsDaoImpl.xml
+	Description : 프로그램·콘텐츠
+-->
+<mapper namespace="com.kbrainc.plum.front.prgrmCntnts.model.PrgrmCntntsDao">
+    <select id="selectPrgrmCntntsList" parameterType="front.PrgrmCntntsVo" resultType="front.PrgrmCntntsVo">
+        /* PrgrmCntntsDao.selectPrgrmCntntsList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            Z.*
+        FROM
+        (
+            SELECT
+                A.PRGRMID AS ID
+              , '프로그램' AS TYPE
+              , D.FILEID AS FILEID
+              , D.FILE_IDNTFC_KEY AS FILE_KEY
+              , CONCAT_WS(','
+                    , CASE
+                          WHEN B.INFNT = 'Y' THEN '유아'
+                      END
+                    , CASE
+                          WHEN B.SCHBOY = 'Y' THEN '초등'
+                      END
+                    , CASE
+                          WHEN B.MSKLSD = 'Y' THEN '중등'
+                      END
+                    , CASE
+                          WHEN B.HGSCHST = 'Y' THEN '고등'
+                      END
+                    , CASE
+                          WHEN B.ADULT = 'Y' THEN '성인'
+                      END
+                    ) AS EDU_TRGT
+              , A.INST_NM AS INST_NM
+              , A.PRGRM_NM AS TTL
+              , GROUP_CONCAT(CD1.CD_NM) AS EDU_SBJCT
+              , NVL(OPERFRMCD.CD_NM, '') AS ETC1 /*운영형태*/
+              , CASE
+                    WHEN B.ETRFEE > 0 THEN FORMAT(B.ETRFEE, '0')
+                    ELSE '무료'
+                END ETC2 /*참가비*/
+              , A.REG_DT
+            FROM
+                TB_ASS_PRGRM A
+                    LEFT OUTER JOIN TB_ASS_PRGRM_DSTNCTN B ON A.PRGRMID = B.PRGRMID
+                    LEFT OUTER JOIN (
+                                    SELECT
+                                        PRGRMID
+                                      , DSGN_NO
+                                      , DSGN_CYCL
+                                    FROM
+                                        TB_ASS_DSGN_HSTRY
+                                    ORDER BY DSGN_CYCL DESC
+                                    LIMIT 1
+                                    ) C ON A.PRGRMID = C.PRGRMID
+                    LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN ADDR ON A.INST_RGN_CD = ADDR.CTPRVN_CD
+                    LEFT OUTER JOIN (
+                                    SELECT
+                                        FILEID
+                                      , FILEGRPID
+                                      , FILE_IDNTFC_KEY
+                                    FROM
+                                        TB_CMM_FILE
+                                    GROUP BY FILEGRPID
+                                    ) D ON B.EDU_PHOTO_FILEGRPID = D.FILEGRPID
+            
+                    LEFT OUTER JOIN TB_CMM_CD OPERFRMCD ON B.OPER_FRM_CD = OPERFRMCD.CD
+            
+                    LEFT OUTER JOIN (
+                                    SELECT
+                                        PRGRMID
+                                      , EDU_SBJCT_CD
+                                    FROM
+                                        TB_ASS_PRGRM_EDU_SBJCT
+                                    ) E ON A.PRGRMID = E.PRGRMID
+                    LEFT OUTER JOIN TB_CMM_CD CD1 ON E.EDU_SBJCT_CD = CD1.CD
+                    LEFT OUTER JOIN TB_CMM_CD CD2 ON CD1.UPPR_CD = CD2.CD
+            WHERE
+                A.STTS_CD = 111111
+                <!-- 교육주제 -->
+                <if test="searchMainEduSbjct != null and searchMainEduSbjct != ''">
+                AND CD2.CD = #{searchMainEduSbjct}
+                </if>
+                <if test="searchSubEduSbjct != null and searchSubEduSbjct != ''">
+                AND CD1.CD = #{searchSubEduSbjct}
+                </if>
+                
+                <!-- 지역 -->
+                <if test="searchRgn != null and searchRgn != ''">
+                AND ADDR.CTPRVN_CD LIKE CONCAT('%',#{searchRgn},'%')
+                </if>
+                
+                <!-- 교육대상 -->
+                <if test="searchPrgrmEduTrgt != null and searchPrgrmEduTrgt != ''">
+                AND (
+                    <foreach collection="searchPrgrmEduTrgt" item="item" separator="OR">
+                        <choose>
+                            <when test="item == 'infnt' or item == 'all'">
+                                B.INFNT = 'Y'   
+                            </when>
+                            <when test="item == 'schboy' or item == 'all'">
+                                B.SCHBOY = 'Y'    
+                            </when>
+                            <when test="item == 'msklsd' or item == 'all'">
+                                B.MSKLSD = 'Y'    
+                            </when>
+                            <when test="item == 'hgschst' or item == 'all'">
+                                B.HGSCHST = 'Y'    
+                            </when>
+                            <when test="item == 'adult' or item == 'all'">
+                                B.ADULT = 'Y'    
+                            </when>
+                        </choose>
+                    </foreach>
+                )
+                </if>
+            GROUP BY A.PRGRMID
+            
+            UNION ALL
+            
+            SELECT
+                A.CNTNTSID AS ID
+              , '콘텐츠' AS TYPE
+              , A.RPRS_IMG_FILEID AS FILEID
+              , E.FILE_IDNTFC_KEY AS FILE_KEY
+              , TB2.EDU_TRGT AS EDU_TRGT
+              , G.INST_NM AS INST_NM
+              , A.TTL AS TTL
+              , TB1.EDU_SBJCT AS EDU_SBJCT
+              , '' AS ECT1
+              , DATE_FORMAT(A.REG_DT, '%Y-%m-%d') AS ECT2
+              , A.REG_DT
+            FROM
+                TB_CMM_CNTNTS A
+            
+                    LEFT OUTER JOIN (
+                                    SELECT
+                                        GROUP_CONCAT(ESCD.CD_NM separator ',') EDU_SBJCT
+                                      , ES.CNTNTSID
+                                      , ES.EDU_SBJCT_CD
+                                      , ESCD.UPPR_CD AS EDU_SBJCT_UPPR_CD
+                                    FROM
+                                        TB_CMM_CNTNTS_EDU_SBJCT ES
+                                            LEFT OUTER JOIN TB_CMM_CD ESCD ON ES.EDU_SBJCT_CD = ESCD.CD
+                                            LEFT OUTER JOIN TB_CMM_CD ESUPPRCD ON ESCD.UPPR_CD = ESUPPRCD.CD
+                                    GROUP BY CNTNTSID
+                                    ) TB1 ON A.CNTNTSID = TB1.CNTNTSID
+            
+                    LEFT OUTER JOIN (
+                                    SELECT
+                                        GROUP_CONCAT(ETCD.CD separator ',') EDU_TRGT
+                                      , CNTNTSID
+                                      , ET.EDU_TRGT_CD
+                                    FROM
+                                        TB_CMM_CNTNTS_EDU_TRGT ET
+                                            LEFT OUTER JOIN TB_CMM_CD ETCD ON ET.EDU_TRGT_CD = ETCD.CD
+                                    GROUP BY CNTNTSID
+                                    ) TB2 ON A.CNTNTSID = TB2.CNTNTSID
+            
+            
+                    LEFT OUTER JOIN TB_CMM_CD D1 ON A.TYPE_CD = D1.CD
+                    LEFT OUTER JOIN TB_CMM_CD D2 ON D1.UPPR_CD = D2.CD
+            
+                    LEFT OUTER JOIN TB_CMM_FILE E ON A.RPRS_IMG_FILEID = E.FILEID
+            
+                    LEFT OUTER JOIN TB_CMM_USER F ON A.RGTRID = F.USERID
+                    LEFT OUTER JOIN TB_CMM_INST G ON F.INSTID = G.INSTID
+            WHERE
+                1 = 1
+                <!-- 교육주제 -->
+                <if test="searchMainEduSbjct != null and searchMainEduSbjct != ''">
+                AND TB1.EDU_SBJCT_UPPR_CD = #{searchMainEduSbjct}
+                </if>
+                <if test="searchSubEduSbjct != null and searchSubEduSbjct != ''">
+                AND TB1.EDU_SBJCT_CD = #{searchSubEduSbjct}
+                </if>
+                
+                <!-- 콘텐츠 유형 -->
+                <if test="searchMainCntntsType != null and searchMainCntntsType != ''">
+                AND D2.CD = #{searchMainCntntsType}
+                </if>
+                <if test="searchSubCntntsType != null and searchSubCntntsType != ''">
+                AND D1.CD = #{searchSubCntntsType}
+                </if>                
+                
+                <!-- 교육대상 -->
+                <if test="searchCntntsEduTrgt != null and searchCntntsEduTrgt != ''">
+                AND (
+                    <foreach collection="searchCntntsEduTrgt" item="item" separator="OR">
+                        <choose>
+                            <when test="item == '185101' or item == 'all'">
+                                TB2.EDU_TRGT_CD = 185101   
+                            </when>
+                            <when test="item == '185102' or item == 'all'">
+                                TB2.EDU_TRGT_CD = 185102    
+                            </when>
+                            <when test="item == '185103' or item == 'all'">
+                                TB2.EDU_TRGT_CD = 185103    
+                            </when>
+                            <when test="item == '185104' or item == 'all'">
+                                TB2.EDU_TRGT_CD = 108104    
+                            </when>
+                        </choose>
+                    </foreach>
+                )
+                </if>           
+        ) Z
+        WHERE
+            1 = 1
+            <choose>
+                <when test="searchPrgrm == 'Y' and searchCntnts == 'N'">
+                    AND Z.TYPE = '프로그램'   
+                </when>
+                <when test="searchCntnts == 'Y' and searchPrgrm == 'N'">
+                    AND Z.TYPE = '콘텐츠'    
+                </when>
+                <when test="(searchPrgrm == 'Y' and searchCntnts == 'Y') or (searchPrgrm == 'N' and searchCntnts == 'N')">
+                    AND (Z.TYPE = '프로그램' OR Z.TYPE = '콘텐츠')    
+                </when>
+            </choose>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+</mapper>

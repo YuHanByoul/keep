@@ -111,6 +111,8 @@ public class MvmnAplyHistVo extends ParentRequestVo {
     private Integer stdntDgstfnQestnrid;
     /** 설문제출유무 */
     private String sbmsnYn;
+    /** 설문제출ID */
+    private Integer sbmsnid;
     
     /** 희망 교육 시작시간 */
     private String hopeEduBgngTm;

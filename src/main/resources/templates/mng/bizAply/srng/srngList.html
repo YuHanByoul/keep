@@ -20,7 +20,7 @@
 	                <form name="searchFrm" id="searchFrm" action="" onsubmit="return false;" class="card">
 	                    <input type="hidden" id="searchSrngBgngDe" name="searchSrngBgngDe" value="" />
 	                    <input type="hidden" id="searchSrngEndDe" name="searchSrngEndDe" value="" />
-	                    <input type="hidden" id="jdgsid" name="jdgsid" th:value="${jdgsid}" />
+<!-- 	                    <input type="hidden" id="jdgsid" name="jdgsid" th:value="${jdgsid}" /> -->
 	                    <div class="card-block-small">
 	                        <div class="row">
 	                            <div class="col-lg-3 col-md-6 mb-3">
@@ -30,7 +30,7 @@
 	                                        <select class="js-example-basic-single col-sm-12" name="jdgsid" id="jdgsid">
 	                                            <option value="">- 선택 -</option>
 	                                            <th:block th:if="${#lists.size(list) > 0}" th:each="list, i: ${list}">
-	                                                <option th:value="${list.userid}" th:selected="${list.userid == jdgsid}"><th:block th:text="${list.nm}"/></option>
+	                                                <option th:value="${list.userid}"><th:block th:text="${list.nm}"/></option>
 	                                            </th:block>
 	                                        </select>
 	                                    </div>
@@ -136,6 +136,10 @@
         <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
         <script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
         <script th:inline="javascript">
+	        /*<![CDATA[*/
+	        var jdgsid = /*[[${jdgsid}]]*/null;
+	        var rolid = /*[[${rolid}]]*/null;
+	        /*]]>*/
             var gridHelper1;
             var listUrl = "/mng/bizAply/srng/selectSrngList.do";
             var detailUrl = "/mng/bizAply/srng/selectSrngUserListForm.html";
@@ -149,6 +153,7 @@
 //             })
             
             $(function(){
+            	console.log("rolid ==> ", rolid);
                 gridHelper1 = new GridHelper('jsGrid','contentPanel');
                 
                 $("#srngDate").daterangepicker({
@@ -167,6 +172,10 @@
                 $("#srngDate").on('cancel.daterangepicker', function(ev, picker) {
                     $(this).val('');
                 });
+                
+                if(rolid == '15'){
+	                $("#jdgsid").val(jdgsid).prop("selected", true);
+                }
                 
                 $("#jsGrid").jsGrid({
                     height: "auto",
@@ -190,6 +199,7 @@
                         loadData: function (filter) {
                             var data = $.Deferred();
                             var formData = $('#searchFrm').serializeArray();
+                            formData.push({name : "jdgsid" , value : $("#jdgsid").val()});
                             var params = [
                                 {name: "pageNumber", value: filter.pageIndex},
                                 {name: "rowPerPage", value: filter.pageSize},
@@ -211,6 +221,9 @@
                                 dataType: "json",
                                 data: formData
                             }).done(function(response){
+                            	if(rolid == '15'){
+                                    $("#jdgsid").prop("disabled", "disabled");
+                                }
                                 var da = {
                                     data : escapeGridData(response.list)
                                     , itemsCount : response.totalCount
@@ -240,6 +253,12 @@
             });
 
             function searchInit() {
+            	if(rolid != '15'){
+	                $("#jdgsid").val('');
+	                $("#select2-jdgsid-container").attr('title','- 선택 -');
+	                $("#select2-jdgsid-container").text('- 선택 -');
+            	}
+            	
                 $("#searchFldCd").val('');
                 $("#searchPcntstNm").val('');
                 $("#searchSrngStts").val('');
