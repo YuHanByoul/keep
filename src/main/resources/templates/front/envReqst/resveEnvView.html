@@ -93,8 +93,8 @@
                     </div>
                     <strong class="label">이용 형태</strong>
                     <div class="form-check-list">
-                        <label class="inp"><input type="radio" name="utztnSe" value="0"><b>숙박</b></label>
-                        <label class="inp"><input type="radio" name="utztnSe" value="1"><b>대여</b></label>
+                        <label class="inp"><input type="radio" name="utztnSe" value="169101"><b>숙박</b></label>
+                        <label class="inp"><input type="radio" name="utztnSe" value="169102"><b>대여</b></label>
                     </div>
                 </div>
             </div>
@@ -321,8 +321,10 @@
         var userCnt;
         // 이용금액
         var selectedAmt;
-        // 대여인지, 숙박인지 구분값(대여 : 1, 숙박 : 0)
-        var utztnSeCd = 0;
+        // 대여인지, 숙박인지 구분값(대여 : 169102, 숙박 : 169101)
+        var utztnSeCd = '169101';
+
+        var selectedTimeList = [];
 
         let list01 = `<ul><li class="dot-white">예약불가</li><li class="dot-blue">숙박</li><li class="dot-red">대여</li><ul>`;
 
@@ -491,19 +493,6 @@
         function selectSpce(el){
             $('input[name="utztnSe"]').prop('checked', false);
             resetData();
-        }
-
-        function resetData(){
-            userCnt = 0;
-            selectedAmt = 0;
-            $('.form-input-number input[type="number"]').val(0);
-            $('#timeTable').hide();
-            $('#utztnPrps').val('');
-            $('#useTime').empty();
-            $('#useDate').empty();
-
-            $('.dot-blue').hide();
-            $('.dot-red').hide();
 
             datepicker = flatpickr("[datepicker=true]",{
                 mode: "single",
@@ -522,7 +511,19 @@
                     }
                 }
             });
+        }
 
+        function resetData(){
+            userCnt = 0;
+            selectedAmt = 0;
+            $('.form-input-number input[type="number"]').val(0);
+            $('#timeTable').hide();
+            $('#utztnPrps').val('');
+            $('#useTime').empty();
+            $('#useDate').empty();
+            $('#useAmt').text(0);
+            selectedStrtTmTimeList = [];
+            selectedEndTmTimeList = [];
         }
 
         function checkData(){
@@ -544,7 +545,7 @@
                 return false;
             }
 
-            if( utztnSeCd == 1 && time == '' ){
+            if( utztnSeCd == '169102' && time == '' ){
                 alert('이용시간을 선택해 주세요.');
                 return false;
             }
@@ -622,24 +623,30 @@
 
                                 if( item.fullYn == 0 ){
                                     if(item.utztnSeCd == '169102'){//대여
-                                        // title  +=  item.strtTm +' ~ '+ item.endTm+' | '+amt
-                                        dates02[de] = '1';
-                                        enableDates.push(de);
+                                        if( item.todayRsvtPsbltyYn == 'Y' ){
+                                            dates02[de] = '1';
+                                            enableDates.push(de);
+                                        }else{
+                                            if( !( newToday.getFullYear() === new Date(de).getFullYear() &&
+                                                newToday.getMonth() === new Date(de).getMonth() &&
+                                                newToday.getDate()=== new Date(de).getDate() ) ){
+                                                dates02[de] = '1';
+                                                enableDates.push(de);
+                                            }
+                                        }
                                     }else{//숙박
-                                        // title  +=  '숙박 | '+amt
-                                        dates02[de] = '0';
-                                        enableDates.push(de);
+                                        if( item.todayRsvtPsbltyYn == 'Y' ){
+                                            dates02[de] = '0';
+                                            enableDates.push(de);
+                                        }else{
+                                            if( !( newToday.getFullYear() === new Date(de).getFullYear() &&
+                                                newToday.getMonth() === new Date(de).getMonth() &&
+                                                newToday.getDate()=== new Date(de).getDate() ) ){
+                                                dates02[de] = '0';
+                                                enableDates.push(de);
+                                            }
+                                        }
                                     }
-                                }
-
-                                //현재일자보다 이전 (운영종료)
-                                if( newToday > new Date(de)){
-                                    // disableDates.push(de);
-                                    //운영 중지 상태
-                                }else if(item.rsvtPsbltyYn == 'N'){
-                                    // disableDates.push(de);
-                                }else{
-                                    // $("#rsvt_stts"+de).val("R");
                                 }
                             })
 
@@ -671,10 +678,10 @@
                                 },
                                 onChange : function(selectedDates, dateStr, instance){
                                     selectedRsvtdeidList = [];
+                                    resetData();
                                     if( mode == 'single' ){
                                         // 대여
                                         var str = '';
-                                        utztnSeCd = 1;
                                         $('#timeList').empty();
                                         for( var t=0; t<data.rsvtdelist.length; t++ ){
                                             let innerData = data.rsvtdelist[t];
@@ -687,11 +694,9 @@
                                             if( target1.getFullYear() === target2.getFullYear() &&
                                                 target1.getMonth() === target2.getMonth() &&
                                                 target1.getDate()=== target2.getDate() ){
-                                                selectedRsvtdeidList.push({rsvtdeid : innerData.rsvtdeid});
-                                                $('#rsvtdeid').val(JSON.stringify(selectedRsvtdeidList));
                                                 let amt = (innerData.amt=='0')? "무료":addComma3(innerData.amt)+'원';
                                                 str = '<tr class="tr-check">\n' +
-                                                    '                                <td><label class="inp vm"><input type="checkbox" id="rsvtdeTime'+innerData.rsvtdeid+'" name="rsvtdeTime" data-amt="'+innerData.amt+'" value="'+innerData.rsvtdeid+'" '+disabledStr+'></label></td>\n' +
+                                                    '                                <td><label class="inp vm"><input type="checkbox" data-strtTm="'+innerData.strtTm+'" data-endTm="'+innerData.endTm+'" id="rsvtdeTime'+innerData.rsvtdeid+'" name="rsvtdeTime" data-amt="'+innerData.amt+'" value="'+innerData.rsvtdeid+'" '+disabledStr+'></label></td>\n' +
                                                     '                                <td class="timeStr">'+innerData.strtTm +' ~ '+ innerData.endTm+'</td>\n' +
                                                     '                                <td>'+amt+'</td>\n' +
                                                     '                            </tr>';
@@ -704,7 +709,6 @@
                                         $('#useDate').text(date2str(parseDate(dateStr), 'yyyy년 mm월 dd일'));
                                     }else{
                                         // 숙박
-                                        utztnSeCd = 0;
                                         $('#timeTable').hide();
 
                                         if( selectedDates.length > 1 ) {
@@ -789,15 +793,69 @@
             return result;
         }
 
+        function minOfArray(arr) {
+            arr.reduce((prev,curr) => {
+                // 이전것과 비교해 더 작은 것 리턴
+                return prev <= curr ? prev : curr;
+            })
+        }
+
+        function maxOfArray(arr) {
+            arr.reduce((prev,curr) => {
+                // 이전것과 비교해 더 큰 것을 리턴
+                return prev <= curr ? curr : prev;
+            })
+        }
+
+
         $(document).on('change', 'input[name="rsvtdeTime"]' , function () {
+            var strtTm = $(this).attr('data-strtTm');
+            var endTm = $(this).attr('data-endTm');
             if( $(this).prop('checked') ){
                 // 이용시간 선택 시
                 selectedAmt += parseInt($(this).attr('data-amt'));
-                $('#useTime').text(' '+$($(this).closest('tr')).find('.timeStr').text());
+                selectedStrtTmTimeList.push(strtTm);
+                selectedEndTmTimeList.push($(this).attr('data-endTm'));
+
+                selectedRsvtdeidList.push({rsvtdeid : $(this).val()});
             }else{
                 selectedAmt -= parseInt($(this).attr('data-amt'));
+                for( var i=0; i<selectedStrtTmTimeList.length; i++){
+                    if( selectedStrtTmTimeList[i] === strtTm ){
+                        selectedStrtTmTimeList.splice(i, 1);
+                    }
+                }
+
+                for( var i=0; i<selectedEndTmTimeList.length; i++){
+                    if( selectedEndTmTimeList[i] === endTm ){
+                        selectedEndTmTimeList.splice(i, 1);
+                    }
+
+                    if( selectedRsvtdeidList[i].rsvtdeid == $(this).val() ){
+                        selectedRsvtdeidList.splice(i, 1);
+                    }
+                }
+            }
+
+            if( selectedStrtTmTimeList.length > 0 && selectedEndTmTimeList.length > 0 ){
+                var min = selectedStrtTmTimeList.reduce((prev,curr) => {
+                    // 이전것과 비교해 더 작은 것 리턴
+                    return prev <= curr ? prev : curr;
+                });
+
+                var max = selectedEndTmTimeList.reduce((prev,curr) => {
+                    // 이전것과 비교해 더 큰 것을 리턴
+                    return prev <= curr ? curr : prev;
+                });
+
+                $('#useTime').text(min+' ~ '+max);
+            }else{
                 $('#useTime').text('');
             }
+
+
+            $('#rsvtdeid').val(JSON.stringify(selectedRsvtdeidList));
+
             $('#useAmt').text(addComma3(selectedAmt)+'원');
             $('#amt').val(selectedAmt);
         });
@@ -806,7 +864,7 @@
         $(document).on('change', 'input[name="utztnSe"]' , function () {
             resetData();
             var mode = 'range';
-            if( $(this).val() == 0 ){
+            if( $(this).val() == '169101' ){
                 // 숙박
                 $('.dot-blue').show();
                 $('.dot-red').hide();
@@ -827,6 +885,8 @@
                     $('#maxNope').text(maxNope);
                 }
             }
+
+            utztnSeCd = $(this).val();
 
         });
 

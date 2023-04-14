@@ -161,6 +161,8 @@ public class EnvReqstVo extends ParentRequestVo {
     /** 종료일시   */
     private String endTm;
 
+    private String todayRsvtPsbltyYn;
+
     /** 검색 관련*/
     private String searchSeCd;
     private String searchKeyword;
