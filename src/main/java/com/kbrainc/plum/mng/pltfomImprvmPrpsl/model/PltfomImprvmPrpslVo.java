@@ -1,4 +1,4 @@
-package com.kbrainc.plum.mng.pltfomImprvmPropsl.model;
+package com.kbrainc.plum.mng.pltfomImprvmPrpsl.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.cmm.file.model.FileVo;
@@ -7,13 +7,9 @@ import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.ResCodeService;
 import com.kbrainc.plum.rte.util.CommonUtil;
-import com.kbrainc.plum.rte.util.StringUtil;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.ibatis.type.Alias;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
 
@@ -21,12 +17,12 @@ import java.util.List;
  * 플랫폼 개선 제안 Vo 클래스
  *
  * <pre>
- * com.kbrainc.plum.mng.pltfomImprvmPropsl.model
+ * com.kbrainc.plum.mng.pltfomImprvmPrpsl.model
  * - PltfomImprvmPropslVo.java
  * </pre>
  *
  * @author : KBRAINC_DEV
- * @ClassName : PltfomImprvmPropslVo
+ * @ClassName : PltfomImprvmPrpslVo
  * @Description : 플랫폼 개선 제안 Vo 클래스
  * @date : 2023. 04. 13.
  * @Version :
@@ -34,7 +30,7 @@ import java.util.List;
  */
 @Data
 @NoArgsConstructor
-public class PltfomImprvmPropslVo extends ParentRequestVo {
+public class PltfomImprvmPrpslVo extends ParentRequestVo {
     /** 로그인 사용자 정보 */
     private UserVo user;
 

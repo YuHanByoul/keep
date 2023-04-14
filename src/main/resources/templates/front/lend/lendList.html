@@ -69,7 +69,7 @@
                 <p>총 <b id="totalCount">0</b> 건</p>
             </div>
         </div>
-        <div class="card-list card-list-n3" id="lendList">
+        <div class="card-section" id="lendList">
         </div>
         <div id="pagination">
         </div>
@@ -77,8 +77,8 @@
     <!-- //content -->
     <script src="/js/common/handlebars/handlebars-v4.7.7.js"></script>   
     <script src="/js/common/handlebars/handlebars.helper.js"></script>
-    <script id="lendListTemplate" type="text/x-handlebars-template">
-       <ul>
+    <script id="lendListTemplate2" type="text/x-handlebars-template">
+       <ul >
        {{#each lendList}}
        <li>
            <a href="javascript:goDetail('{{rcritid}}')">
@@ -116,6 +116,45 @@
       {{/each}}
        </ul>
     </script>
+    <script id="lendListTemplate" type="text/x-handlebars-template">
+       <ul class="n3">
+       {{#each lendList}}
+       <li   {{#if isEnd }} class="disabled" {{/if}} >
+              <div class="flag {{tagStr}}">{{sttsStr}}</div>
+
+              <ul class="type">
+                  <li><button type="button" title="툴팁"><span class="icon {{typeIcon}} "></span></button><div>{{typeCdNm}}</div></li>
+                  <li><button type="button" title="툴팁"><span class="icon {{eduTypeIcon}}"></span></button><div>{{eduTypeCdNm}}</div></li>
+              </ul>
+
+              <div class="thumb">
+                  <img src="/downloadFileByFileid.do?fileid={{rprsImgFileid}}&file_idntfc_key={{rprsImgFileKey}}" alt="{{rcritNm}} 대표 이미지" >
+                  <dl class="target">
+                      <dt class="blind">대상</dt>
+                      <dd>
+                          {{#if eduTrgtCd1 }}<div>유아</div>{{/if}}
+                          {{#if eduTrgtCd2 }}<div>아동</div>{{/if}}
+                          {{#if eduTrgtCd3 }}<div>청소년</div>{{/if}}
+                          {{#if eduTrgtCd4 }}<div>성인</div>{{/if}}
+                      </dd>
+                  </dl>
+              </div>
+              <div class="cont">
+                  <a href="javascript:goDetail('{{rcritid}}')" class="title ellipsis" data-ellipsis="2">{{{dtlCn}}}</a>
+                  <div class="fs-14 fc-black6">모집기간 : {{{bgngDt}}} ~  {{endDt}}</div>
+                  <ul class="hash">
+                      {{#if eduSbjctCd1 }}<li><button type="button" title="툴팁">#생활환경</button><div>소음, 폐기물 및 자원순환, 환경보건</div></li>{{/if}}
+                      {{#if eduSbjctCd2 }}<li><button type="button" title="툴팁">#자연환경</button><div>물, 토양, 생태계</div></li>{{/if}}
+                      {{#if eduSbjctCd3 }}<li><button type="button" title="툴팁">#지구환경</button><div>기후변화 및 탄소중립, 대기, 에너지</div></li>{{/if}}
+                      {{#if eduSbjctCd4 }}<li><button type="button" title="툴팁">#환경문화</button><div>지속가능발전, 생명윤리</div></li>{{/if}}
+                      {{#if eduSbjctCd5 }}<li><button type="button" title="툴팁">#기타</button><div>기타</div></li>{{/if}}
+                  </ul>
+              </div>
+       </li>
+      {{/each}}
+       </ul>
+    </script>
+    
     <script th:inline="javascript">
     
 	    /*<![CDATA[*/ 
@@ -175,18 +214,45 @@
 			
 			list.forEach(function(item){
 				if(item.periodStts == 'W'){
-                    item.tagStr = ' tag-blue ';
+                    item.tagStr = ' bg-green';
                     item.sttsStr = '모집대기';
+					item.isEnd = false;
 				}else if(item.periodStts == 'E'){
-                    item.tagStr = ' tag-gray ';
+                    item.tagStr = ' bg-black6';
                     item.sttsStr = '모집종료';
+					item.isEnd = true;
 				}else{
-					item.tagStr = ' tag-green ';
+					item.tagStr = ' bg-blue ';
 					item.sttsStr = '모집중';
+					item.isEnd = false;
 				}
 				item.eduTrgtCdNm = item.eduTrgtCdNm.replaceAll(",","</br>") ;
-				item.eduSbjctCdNm = item.eduSbjctCdNm.replaceAll("/,","</br>").replaceAll("/",""); 
+				item.eduSbjctCdNm = item.eduSbjctCdNm.replaceAll("/,","</br>").replaceAll("/","");
+
+				item.eduTypeIcon = (item.eduTypeCd == "187101")?' icon-card-tooltip04 ':" icon icon-card-tooltip02 ";
+				item.typeIcon = (item.typeCd == "184101")?' icon-card-tooltip03 ':(item.typeCd == "184101")? ' icon-card-tooltip01 ':' icon-card-tooltip05';
+				
+				var eduTrgtCdArr = item.eduTrgtCd.split(",");
+				var eduSbjctCdArr = item.eduSbjctCd.split(",");
+				
+				eduSbjctCdArr.forEach(function(cd){
+					if( cd.substring(0,6) == "155101" ){item.eduSbjctCd1 = true };
+					if( cd.substring(0,6) == "155102" ){item.eduSbjctCd2 = true };
+					if( cd.substring(0,6) == "155103" ){item.eduSbjctCd3 = true };
+					if( cd.substring(0,6) == "155104" ){item.eduSbjctCd4 = true };
+					if( cd.substring(0,6) == "155105" ){item.eduSbjctCd5 = true };
+				})
+				eduTrgtCdArr.forEach(function(cd){
+					if( cd == "185101" ){item.eduTrgtCd1 = true };
+					if( cd == "185102" ){item.eduTrgtCd2 = true };
+					if( cd == "185103" ){item.eduTrgtCd3 = true };
+					if( cd == "185104" ){item.eduTrgtCd4 = true };
+				})
+				
+				item.bgngDt = (item.bgngDt).substring(0,10); 
+				item.endDt  = (item.endDt).substring(0,10); 
 			})
+			
 		    $("#lendList").html(listTemplet({lendList:list}));
 		}
 		function goPage(page) {

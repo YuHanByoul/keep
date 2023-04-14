@@ -278,6 +278,7 @@ public class RefndMngVo extends ParentRequestVo {
 
     /** 중복 시설명 수 */
     public static Integer dupCnt;
+    private String alldayYn;
 
     /** 검색 관련*/
     private String searchSeCd;

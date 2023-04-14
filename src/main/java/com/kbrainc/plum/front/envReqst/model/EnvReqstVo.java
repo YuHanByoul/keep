@@ -1,11 +1,14 @@
 package com.kbrainc.plum.front.envReqst.model;
 
+import com.kbrainc.plum.mng.spce.model.SpceRsvtdeVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import lombok.Data;
 
 import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 지역 환경교육센처 Vo
@@ -99,15 +102,23 @@ public class EnvReqstVo extends ParentRequestVo {
     @Pattern(regexp="[YN]")
     private String rsvtPsbltyYn;
 
+    private String alldayYn;
+
     /** 예약id리스트 */
     private String[] rsvtdeids;
 
     /** 예약구분코드 */
+    private String utztnSe;
+
     private String utztnSeCd;
 
-    private String bgngDt;
+    private Date bgngDt;
 
-    private String endDt;
+    private Date endDt;
+
+    private String startDt;
+
+    private String enddDt;
 
     private String aplcntNm;
 
@@ -135,6 +146,20 @@ public class EnvReqstVo extends ParentRequestVo {
 
     /** 최대 인원수 */
     private Integer maxNope;
+
+    /** 외부 Url */
+    private String extnlUrl;
+
+    /** 일괄등록용 list */
+    private List<EnvReqstVo> rsvtdeList;
+
+    private int fullYn;
+
+    /** 시작일시   */
+    private String strtTm;
+
+    /** 종료일시   */
+    private String endTm;
 
     /** 검색 관련*/
     private String searchSeCd;

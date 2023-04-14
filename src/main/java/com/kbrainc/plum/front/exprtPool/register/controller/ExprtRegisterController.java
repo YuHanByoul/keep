@@ -205,8 +205,8 @@ public class ExprtRegisterController {
             tempExprtRegister = new ExprtRegisterVo();
 
             /* 환경교육사 연동 테이블 */
-            List<MmbrQlfcVo> mmbrQlfcs = exprtRegisterService.selectMmbrQlfcList(exprtRegisterVo);
-            model.addAttribute("mmbrQlfcs", mmbrQlfcs);
+       /*     List<MmbrQlfcVo> mmbrQlfcs = exprtRegisterService.selectMmbrQlfcList(exprtRegisterVo);
+            model.addAttribute("mmbrQlfcs", mmbrQlfcs);*/
          }
 
         model.addAttribute("uploadFileExtsn", uploadFileExtsn);

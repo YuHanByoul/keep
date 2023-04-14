@@ -253,13 +253,11 @@ public class FcltMngController {
         
         // 대표 이미지
         if (resultVo.getRprsImgFileid() != null && !resultVo.getRprsImgFileid().equals(0)) {
-            fileVo.setFilegrpid(Integer.parseInt(resultVo.getRprsImgFileid().toString()));
-            ArrayList<FileVo> fileList= fileService.getFileList(fileVo);
-            model.addAttribute("rprsImgFileMap",fileList );
-            model.addAttribute("rprsCurrentFileCnt", fileList.size());
+            fileVo.setFileid(Integer.parseInt(resultVo.getRprsImgFileid().toString()));
+            FileVo logoVo= fileService.getFileInfo(fileVo);
+            model.addAttribute("rprsImgFileMap",logoVo );
         } else {
             model.addAttribute("rprsImgFileMap", null);
-            model.addAttribute("rprsCurrentFileCnt", 0);
         }
 
         // 상세 이미지

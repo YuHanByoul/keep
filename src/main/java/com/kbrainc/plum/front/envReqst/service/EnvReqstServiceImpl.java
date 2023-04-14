@@ -2,6 +2,7 @@ package com.kbrainc.plum.front.envReqst.service;
 
 import com.kbrainc.plum.front.envReqst.model.EnvReqstDao;
 import com.kbrainc.plum.front.envReqst.model.EnvReqstVo;
+import com.kbrainc.plum.mng.spce.model.SpceRsvtdeVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -140,5 +141,18 @@ public class EnvReqstServiceImpl extends PlumAbstractServiceImpl implements EnvR
     @Override
     public List<Map<String,Object>> selectFclRsvtdeList(EnvReqstVo envReqstVo) throws Exception {
         return envReqstDao.selectFclRsvtdeList(envReqstVo);
+    }
+
+    /**
+     * 예약일자 리스트 호출
+     *
+     * @Title       : selectSpceRsvtList
+     * @Description : 예약일자 리스트 호출
+     * @param envReqstVo EnvReqstVo envReqstVo 객체
+     * @return List<EnvReqstVo> 기관정보 목록
+     * @throws Exception 예외
+     */
+    public List<EnvReqstVo> selectSpceRsvtdeList(EnvReqstVo envReqstVo) throws Exception{
+        return envReqstDao.selectSpceRsvtdeList(envReqstVo);
     }
 }

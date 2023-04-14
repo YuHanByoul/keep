@@ -68,7 +68,7 @@ public class PrgrmVo extends ParentRequestVo {
     private String styDaytm;
     /** 숙박_여부 */
     private String styYn;
-    /** */
+    /** 운영형태*/
     private String cdNm;
     /** 운영일정 */
     private String targetMm;

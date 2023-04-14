@@ -57,7 +57,12 @@
         FROM TB_CMM_CD
         WHERE CDGRPID = 161
         ) A2 ON (A.STLM_STTS_CD = A2.CD)
-        INNER JOIN (SELECT B.APLYID, D.SPCEID, MIN(D.BGNG_DT) AS BGNG_DT, MAX(D.END_DT) AS END_DT
+        INNER JOIN (SELECT B.APLYID,
+        D.SPCEID,
+        MIN(D.BGNG_DT)             AS BGNG_DT,
+        CASE
+        WHEN B.ALLDAY_YN = 'N' THEN MAX(D.END_DT)
+        ELSE MAX(D.BGNG_DT) END AS END_DT
         FROM TB_FCL_APLY_RSVTDE B
         LEFT JOIN TB_FCL_SPCE_RSVTDE D ON B.RSVTDEID = D.RSVTDEID
         GROUP BY APLYID) B
@@ -97,99 +102,168 @@
     <!-- 환경교육시설 예약 상세조회 -->
     <select id="selectResveEnvInfo" resultType="com.kbrainc.plum.front.mypage.mypageEnvReqst.model.MypageEnvReqstVo">
         /* EnvReqstDao.selectResveEnvInfo */
-        SELECT A.APLYID
-             , A.RGTRID
-             , A.RSVTDEID
-             , A.UTZTN_SE_CD
-             , A.DE
-             , A.BGNG_DT
-             , A.END_DT
-             , A.REG_DT
-             , B.APLCNT_NM
-             , B.APLCNT_MOBLPHON
-             , SUBSTRING_INDEX(SUBSTRING_INDEX(B.APLCNT_EML, '@', 1), '@', -1) AS APLCNT_EML_ID
-             , SUBSTRING_INDEX(SUBSTRING_INDEX(B.APLCNT_EML, '@', 2), '@', -1) AS APLCNT_EML_DOMAIN
-             , B.NOPE_ADULT
-             , B.NOPE_CHIL
-             , B.NOPE_INFNT
-             , B.UTZTN_PRPS
-             , B.AMT
-             , B.DPST_AMT
-             , B.RFND_DMND_AMT
-             , B.RFND_AMT
-             , B.STLM_MTHD_CD
-             , B.DPST_BACNT
-             , B.PYR_NM
-             , B.APLY_DT
-             , B.DPST_DE
-             , B.DPST_IDNTY_DT
-             , B.CNCL_DT
-             , B.RFND_DMND_DT
-             , B.RFND_DE
-             , B.RFND_CMPTN_DT
-             , B.RFND_BANK_CD
-             , B.RFND_BACNT
-             , B.RFND_PYR_NM
-             , B.APLY_STTS_CD
-             , B.STLM_STTS_CD
-             , B.CNCL_RSN_CD
-             , B1.CD_NM AS CNCL_RSN_CD_NM
-             , B.RSVT_REJECT_RSN
-             , B.RSVT_CNCL_RSN
-             , B.RFND_REJECT_RSN
+        SELECT
+            A.APLYID
+             ,A.STLM_STTS_CD
+             ,A.APLY_STTS_CD
+             ,A.APLCNTID
+             ,A.APLCNT_NM
+             ,A.APLCNT_MOBLPHON
+             ,A.APLCNT_EML
+             ,A.CNCL_DT
+             ,A.RFND_DMND_DT
+             ,A.PYR_NM
+             ,A.DPST_AMT
+             ,A.DPST_DE
+             ,A.RFND_BANK_CD
+             ,A.RFND_BACNT
+             ,A.RFND_PYR_NM
+             ,A.RFND_AMT
+             ,A.RFND_DE
+             ,A.NOPE_ADULT
+             ,A.NOPE_CHIL
+             ,A.NOPE_INFNT
+             ,A.UTZTN_PRPS
+             ,A.AMT
+             ,A.REG_DT
+             ,A.RSVT_REJECT_RSN
+             ,A.RSVT_CNCL_RSN
+             ,A.RFND_REJECT_RSN
+             ,A.CNCL_RSN_CD
+             ,SUBSTRING_INDEX(SUBSTRING_INDEX(A.APLCNT_EML, '@', 1), '@', -1) AS APLCNT_EML_ID
+             ,SUBSTRING_INDEX(SUBSTRING_INDEX(A.APLCNT_EML, '@', 2), '@', -1) AS APLCNT_EML_DOMAIN
+             ,A1.CD_NM AS APLY_STTS_CD_NM
+             ,A2.CD_NM AS STLM_STTS_CD_NM
+             ,A3.CD_NM AS CNCL_RSN_CD_NM
+             ,A4.CD_NM AS RFND_BANK_CD_NM
              , CASE
-                   WHEN B.STLM_STTS_CD = 161101 AND B.APLY_STTS_CD = 160101 THEN '' /* 입금대기 - 예약신청 */
-                   WHEN B.STLM_STTS_CD = 161101 AND B.APLY_STTS_CD = 160103 THEN B.RSVT_CNCL_RSN /* 입금대기 - 예약취소 - 예약취소사유 */
-                   WHEN B.STLM_STTS_CD = 161102 AND B.APLY_STTS_CD = 160102 THEN '' /* 입금완료 - 예약승인 */
-                   WHEN B.STLM_STTS_CD = 161103 AND B.APLY_STTS_CD = 160103 THEN '' /* 환불요청 - 예약취소 */
-                   WHEN B.STLM_STTS_CD = 161104 AND B.APLY_STTS_CD = 160103 THEN '' /* 환불완료 - 예약취소 */
-                   WHEN B.STLM_STTS_CD = 161102 AND B.APLY_STTS_CD = 160102
-                       THEN B.RFND_REJECT_RSN /* 환불완료 - 예약취소 - 환불완료취소 - 환불완료취소사유 and 환불완료취소사유코드 */
+                   WHEN A.STLM_STTS_CD = 161101 AND A.APLY_STTS_CD = 160101 THEN '' /* 입금대기 - 예약신청 */
+                   WHEN A.STLM_STTS_CD = 161101 AND A.APLY_STTS_CD = 160103 THEN A.RSVT_CNCL_RSN /* 입금대기 - 예약취소 - 예약취소사유 */
+                   WHEN A.STLM_STTS_CD = 161102 AND A.APLY_STTS_CD = 160102 THEN '' /* 입금완료 - 예약승인 */
+                   WHEN A.STLM_STTS_CD = 161103 AND A.APLY_STTS_CD = 160103 THEN '' /* 환불요청 - 예약취소 */
+                   WHEN A.STLM_STTS_CD = 161104 AND A.APLY_STTS_CD = 160103 THEN '' /* 환불완료 - 예약취소 */
+                   WHEN A.STLM_STTS_CD = 161102 AND A.APLY_STTS_CD = 160102
+                       THEN A.RFND_REJECT_RSN /* 환불완료 - 예약취소 - 환불완료취소 - 환불완료취소사유 and 환불완료취소사유코드 */
                    ELSE ''
             END AS CHG_RSN
-             , D.SPCE_NM
-             , D.SIZE
-             , D.MAX_NOPE
-             , D.CHKIN_HR
-             , D.CHCKT_HR
-             , E.FCLT_NM
-             , E.RGN_CD
-             , E.BANK_CD
-             , E.BACNT_NO
-             , E.DPSTR_NM
-             , E.FCLTID
-             , E.FCLT_NM
-             , E.FCLT_NO
-             , E.ADDR
-             , E.ADDR_DTL
-             , E.APLY_MTHD_CD
-             , E1.CD_NM AS BANK_CD_NM
-             , F.INST_NM
-        FROM TB_FCL_APLY_RSVTDE A
-                 INNER JOIN TB_FCL_SPCE_APLY B ON A.APLYID = B.APLYID
-                 LEFT OUTER JOIN (
-                        SELECT
-                            CD
-                             , CD_NM
-                        FROM
-                            TB_CMM_CD
-                        WHERE
-                            CDGRPID = 215
-                    ) B1 ON (B.CNCL_RSN_CD = B1.CD)
-                 INNER JOIN TB_FCL_SPCE_RSVTDE C ON A.RSVTDEID = C.RSVTDEID
-                 INNER JOIN TB_FCL_SPCE D ON C.SPCEID = D.SPCEID
-                 INNER JOIN TB_FCL_FCLT E ON D.FCLTID = E.FCLTID
-                 INNER JOIN (
-                        SELECT
-                            CD
-                             , CD_NM
-                        FROM
-                            TB_CMM_CD
-                        WHERE
-                            CDGRPID = 154
-                    ) E1 ON (E.BANK_CD = E1.CD)
-                 INNER JOIN TB_CMM_INST F ON E.INSTID = F.INSTID
-        WHERE A.APLYID = #{aplyid} AND A.RSVTDEID = #{rsvtdeid}
+             ,C.INSTID
+             ,C.INST_NM
+             ,B.BGNG_DT
+             ,B.END_DT
+             ,B.UTZTN_SE_CD
+             ,E.SPCE_NM
+             ,E.CHKIN_HR
+             ,E.CHCKT_HR
+             ,E.MAX_NOPE
+             ,E.SIZE
+             ,F.EXTNL_URL
+             ,F.FCLT_NM
+             ,F1.CD_NM AS BANK_CD_NM
+             ,F.BACNT_NO
+             ,F.DPSTR_NM
+             ,F.ADDR
+             ,F.ADDR_DTL
+             ,G.CD_NM AS INST_TYPE_CD_NM
+             ,CASE WHEN IFNULL(I.ROLECD,'U') = 'U' AND H.INSTID IS NOT NULL THEN '기업회원'
+                   WHEN IFNULL(I.ROLECD,'U') = 'U' AND H.INSTID IS NULL THEN '개인회원'
+                   ELSE '관리자'
+            END AS ROLECDNM
+             ,H.NM
+             ,H.MOBLPHON
+             ,H.EML
+             ,H.ACNT
+             ,IFNULL(J.INST_NM, '-') AS USER_INST_NM
+             ,K.CD_NM AS STLM_MTHD_CD_NM
+        FROM
+            TB_FCL_SPCE_APLY A
+                INNER JOIN (
+                SELECT
+                    CD
+                     , CD_NM
+                FROM
+                    TB_CMM_CD
+                WHERE
+                    CDGRPID = 160
+            ) A1 ON (A.APLY_STTS_CD = A1.CD)
+                INNER JOIN (
+                SELECT
+                    CD
+                     , CD_NM
+                FROM
+                    TB_CMM_CD
+                WHERE
+                    CDGRPID = 161
+            ) A2 ON (A.STLM_STTS_CD = A2.CD)
+            LEFT OUTER JOIN (
+                SELECT
+                    CD
+                     , CD_NM
+                FROM
+                    TB_CMM_CD
+                WHERE
+                    CDGRPID = 215
+            ) A3 ON (A.CNCL_RSN_CD = A3.CD)
+                LEFT OUTER JOIN (
+                SELECT
+                    CD
+                     , CD_NM
+                FROM
+                    TB_CMM_CD
+                WHERE
+                    CDGRPID = 154
+            ) A4 ON (A.RFND_BANK_CD = A4.CD)
+                INNER JOIN (SELECT B.UTZTN_SE_CD, B.APLYID, D.SPCEID, MIN(D.BGNG_DT) AS BGNG_DT,
+                                   CASE
+                                       WHEN B.ALLDAY_YN = 'N' THEN MAX(D.END_DT)
+                                       ELSE MAX(D.BGNG_DT) END AS END_DT
+                            FROM TB_FCL_APLY_RSVTDE B
+                                     LEFT JOIN TB_FCL_SPCE_RSVTDE D ON B.RSVTDEID = D.RSVTDEID
+                            GROUP BY APLYID) B
+                           ON A.APLYID = B.APLYID
+                INNER JOIN TB_FCL_SPCE E
+                           ON B.SPCEID = E.SPCEID
+                INNER JOIN TB_FCL_FCLT F
+                           ON E.FCLTID = F.FCLTID
+                INNER JOIN TB_CMM_INST C
+                           ON F.INSTID = C.INSTID
+                INNER JOIN (
+                SELECT
+                    CD
+                     , CD_NM
+                FROM
+                    TB_CMM_CD
+                WHERE
+                    CDGRPID = 154
+            ) F1 ON (F.BANK_CD = F1.CD)
+                LEFT OUTER JOIN TB_CMM_CD G ON C.INST_TYPE_CD = G.CD
+                LEFT OUTER JOIN TB_CMM_USER H ON A.APLCNTID = H.USERID
+                LEFT OUTER JOIN (
+                SELECT
+                    A.USERID
+                     ,CASE WHEN INSTR(GROUP_CONCAT(A.ROLEID),'1') > 0 OR INSTR(GROUP_CONCAT(A.ROLEID),'5') > 0 THEN 'A'
+                           ELSE 'U'
+                    END AS ROLECD
+                FROM
+                    TB_CMM_ROLE_USER A
+                   ,TB_CMM_ROLE B
+                WHERE 1=1
+                  AND A.ROLEID = B.ROLEID
+                GROUP BY USERID
+            ) I
+                                ON(H.USERID = I.USERID)
+                LEFT OUTER JOIN TB_CMM_INST J ON H.INSTID = J.INSTID
+                INNER JOIN (
+                SELECT
+                    CD
+                     , CD_NM
+                FROM
+                    TB_CMM_CD
+                WHERE
+                    CDGRPID = 190
+            ) K ON (A.STLM_MTHD_CD = K.CD)
+        WHERE
+            1=1
+          AND A.APLYID = #{aplyid}
     </select>
 
     <select id="selectSpceInfo" resultType="com.kbrainc.plum.front.mypage.mypageEnvReqst.model.MypageEnvReqstVo">
@@ -362,52 +436,6 @@
             )
     </insert>
 
-    <!-- 예약 등록(공간 예약) -->
-    <!--<insert id="insertResveEnvSpceAply" keyProperty="userid">
-        /* EnvReqstDao.insertResveEnvSpceAply */
-        INSERT INTO TB_FCL_SPCE_APLY (
-                APLCNTID,
-                INSTID,
-                APLCNT_NM,
-                APLCNT_MOBLPHON,
-                APLCNT_EML,
-                NOPE_ADULT,
-                NOPE_CHIL,
-                NOPE_INFNT,
-                UTZTN_PRPS,
-                AMT,
-                DPST_BACNT,
-                PYR_NM,
-                APLY_DT,
-                APLY_STTS_CD,
-                STLM_STTS_CD,
-                MDFCN_DT,
-                MDFRID,
-                REG_DT,
-                RGTRID
-        )VALUES(
-               #{aplcntid},
-               #{instid},
-               #{aplcntNm},
-               #{aplcntMoblphon},
-               #{aplcntEml},
-               #{nopeAdult},
-               #{nopeChil},
-               #{nopeInfnt},
-               #{utztnPrps},
-               #{amt},
-               #{dpstBacnt},
-               #{pyrNm},
-               #{aplyDt},
-               '160101',
-               '161101',
-               ,NOW()
-               ,#{user.userid}
-               ,NOW()
-               ,#{user.userid}
-               )
-    </insert>-->
-
     <!-- 공간 예약 여부 확인 목록 -->
     <select id="selectFclRsvtdeList" resultType="map">
         /* SpceDao.selectFclRsvtdeList */
@@ -466,4 +494,101 @@
             1=1
           AND A.APLYID = #{aplyid}
     </select>
+
+    <!-- 예약 등록(공간 예약) -->
+    <update id="insertRsn" parameterType="com.kbrainc.plum.front.mypage.mypageEnvReqst.model.MypageEnvReqstVo" keyProperty="userid">
+        /* MypageEnvReqstDao.insertRsn */
+        UPDATE TB_FCL_SPCE_APLY SET
+            CNCL_RSN_CD                    = '215104'
+          ,APLY_STTS_CD                    = '160103'
+          ,RSVT_CNCL_RSN                    = #{rsvtCnclRsn}
+          ,CNCL_DT                 = NOW()
+          ,MDFRID                 = #{user.userid}
+          ,MDFCN_DT                 = NOW()
+        WHERE APLYID = #{aplyid}
+    </update>
+
+    <!-- 상태변경이력 추가 -->
+    <insert id="insertHstry" parameterType="ResveReqstVo" keyProperty="userid">
+        /* ResveReqstDao.insertHstry */
+        INSERT INTO TB_FCL_SPCE_APLY_HSTRY(
+                                           APLYID
+                                          ,RCPT_NO
+                                          ,APLCNTID
+                                          ,INSTID
+                                          ,APLCNT_NM
+                                          ,APLCNT_MOBLPHON
+                                          ,APLCNT_EML
+                                          ,NOPE_ADULT
+                                          ,NOPE_CHIL
+                                          ,NOPE_INFNT
+                                          ,UTZTN_PRPS
+                                          ,AMT
+                                          ,DPST_AMT
+                                          ,RFND_DMND_AMT
+                                          ,RFND_AMT
+                                          ,STLM_MTHD_CD
+                                          ,DPST_BACNT
+                                          ,PYR_NM
+                                          ,APLY_DT
+                                          ,DPST_DE
+                                          ,DPST_IDNTY_DT
+                                          ,CNCL_DT
+                                          ,RFND_DMND_DT
+                                          ,RFND_DE
+                                          ,RFND_CMPTN_DT
+                                          ,RFND_BANK_CD
+                                          ,RFND_BACNT
+                                          ,RFND_PYR_NM
+                                          ,APLY_STTS_CD
+                                          ,STLM_STTS_CD
+                                          ,CNCL_RSN_CD
+                                          ,RSVT_REJECT_RSN
+                                          ,RSVT_CNCL_RSN
+                                          ,RFND_REJECT_RSN
+                                          ,MDFCN_DT
+                                          ,MDFRID
+                                          ,REG_DT
+                                          ,RGTRID
+        )
+        SELECT APLYID
+             ,RCPT_NO
+             ,APLCNTID
+             ,INSTID
+             ,APLCNT_NM
+             ,APLCNT_MOBLPHON
+             ,APLCNT_EML
+             ,NOPE_ADULT
+             ,NOPE_CHIL
+             ,NOPE_INFNT
+             ,UTZTN_PRPS
+             ,AMT
+             ,DPST_AMT
+             ,RFND_DMND_AMT
+             ,RFND_AMT
+             ,STLM_MTHD_CD
+             ,DPST_BACNT
+             ,PYR_NM
+             ,APLY_DT
+             ,DPST_DE
+             ,DPST_IDNTY_DT
+             ,CNCL_DT
+             ,RFND_DMND_DT
+             ,RFND_DE
+             ,RFND_CMPTN_DT
+             ,RFND_BANK_CD
+             ,RFND_BACNT
+             ,RFND_PYR_NM
+             ,APLY_STTS_CD
+             ,STLM_STTS_CD
+             ,CNCL_RSN_CD
+             ,RSVT_REJECT_RSN
+             ,RSVT_CNCL_RSN
+             ,RFND_REJECT_RSN
+             ,MDFCN_DT
+             ,MDFRID
+             ,NOW()
+             ,#{user.userid}
+        FROM TB_FCL_SPCE_APLY WHERE APLYID = #{aplyid}
+    </insert>
 </mapper>

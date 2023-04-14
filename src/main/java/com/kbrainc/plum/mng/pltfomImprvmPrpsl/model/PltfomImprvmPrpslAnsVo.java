@@ -1,11 +1,9 @@
-package com.kbrainc.plum.mng.pltfomImprvmPropsl.model;
+package com.kbrainc.plum.mng.pltfomImprvmPrpsl.model;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.rte.model.UserVo;
-import com.kbrainc.plum.rte.util.StringUtil;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.ibatis.type.Alias;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.Size;
@@ -29,7 +27,7 @@ import java.util.List;
  */
 @Data
 @NoArgsConstructor
-public class PltfomImprvmPropslAnsVo {
+public class PltfomImprvmPrpslAnsVo {
     /** 로그인 사용자 정보 */
     private UserVo user;
 
@@ -65,8 +63,10 @@ public class PltfomImprvmPropslAnsVo {
     /** 파일 목록*/
     private List<FileVo> fileList;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private Date ansDt;
+
+    private String prcsSttsCd;
 
 }
 

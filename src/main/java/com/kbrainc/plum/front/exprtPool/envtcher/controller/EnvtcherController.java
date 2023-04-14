@@ -45,8 +45,8 @@ public class EnvtcherController {
 
     @GetMapping("/intro3.html")
     public String intro3(Model model) throws Exception {
-        List<EnvtcherAgncyVo> envtcherAgncys = envtcherService.selectEnvtcherAgncyList();
-        model.addAttribute("envtcherAgncys", envtcherAgncys);
+//        List<EnvtcherAgncyVo> envtcherAgncys = envtcherService.selectEnvtcherAgncyList();
+//        model.addAttribute("envtcherAgncys", envtcherAgncys);
         return VIEW_PATH + "/intro3";
     }
 }

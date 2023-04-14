@@ -27,6 +27,7 @@
         ,A2.CD_NM AS STLM_STTS_CD_NM
         ,C.INSTID
         ,C.INST_NM
+        ,B.ALLDAY_YN
         ,B.BGNG_DT
         ,B.END_DT
         ,E.SPCE_NM
@@ -53,7 +54,10 @@
         WHERE
         CDGRPID = 161
         ) A2 ON (A.STLM_STTS_CD = A2.CD)
-        INNER JOIN (SELECT B.APLYID, D.SPCEID, MIN(D.BGNG_DT) AS BGNG_DT, MAX(D.END_DT) AS END_DT
+        INNER JOIN (SELECT B.APLYID, D.SPCEID, MIN(D.BGNG_DT) AS BGNG_DT, B.ALLDAY_YN,
+        CASE
+        WHEN B.ALLDAY_YN = 'N' THEN MAX(D.END_DT)
+        ELSE MAX(D.BGNG_DT) END AS END_DT
         FROM TB_FCL_APLY_RSVTDE B
         LEFT JOIN TB_FCL_SPCE_RSVTDE D ON B.RSVTDEID = D.RSVTDEID
         GROUP BY APLYID) B
@@ -130,6 +134,7 @@
              ,A2.CD_NM AS STLM_STTS_CD_NM
              ,C.INSTID
              ,C.INST_NM
+             ,B.ALLDAY_YN
              ,B.BGNG_DT
              ,B.END_DT
              ,E.SPCE_NM
@@ -168,7 +173,10 @@
                 WHERE
                     CDGRPID = 161
             ) A2 ON (A.STLM_STTS_CD = A2.CD)
-                INNER JOIN (SELECT B.APLYID, D.SPCEID, MIN(D.BGNG_DT) AS BGNG_DT, MAX(D.END_DT) AS END_DT
+                INNER JOIN (SELECT B.APLYID, D.SPCEID, MIN(D.BGNG_DT) AS BGNG_DT, B.ALLDAY_YN,
+                                   CASE
+                                       WHEN B.ALLDAY_YN = 'N' THEN MAX(D.END_DT)
+                                       ELSE MAX(D.BGNG_DT) END AS END_DT
                             FROM TB_FCL_APLY_RSVTDE B
                                      LEFT JOIN TB_FCL_SPCE_RSVTDE D ON B.RSVTDEID = D.RSVTDEID
                             GROUP BY APLYID) B
@@ -238,6 +246,7 @@
              ,CASE WHEN A.RFND_AMT IS NULL THEN A.DPST_AMT ELSE A.RFND_AMT END AS RFND_AMT
              ,C.INSTID
              ,C.INST_NM
+             ,B.ALLDAY_YN
              ,B.BGNG_DT
              ,B.END_DT
              ,E.SPCE_NM
@@ -246,7 +255,10 @@
              ,F.DPSTR_NM
         FROM
             TB_FCL_SPCE_APLY A
-                INNER JOIN (SELECT B.APLYID, D.SPCEID, MIN(D.BGNG_DT) AS BGNG_DT, MAX(D.END_DT) AS END_DT
+                INNER JOIN (SELECT B.APLYID, D.SPCEID, MIN(D.BGNG_DT) AS BGNG_DT, B.ALLDAY_YN,
+                                   CASE
+                                       WHEN B.ALLDAY_YN = 'N' THEN MAX(D.END_DT)
+                                       ELSE MAX(D.BGNG_DT) END AS END_DT
                             FROM TB_FCL_APLY_RSVTDE B
                                      LEFT JOIN TB_FCL_SPCE_RSVTDE D ON B.RSVTDEID = D.RSVTDEID
                             GROUP BY APLYID) B

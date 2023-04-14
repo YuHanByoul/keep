@@ -6,6 +6,7 @@ import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.front.envReqst.model.EnvReqstVo;
 import com.kbrainc.plum.front.envReqst.service.EnvReqstService;
 import com.kbrainc.plum.mng.inst.model.InstVo;
+import com.kbrainc.plum.mng.spce.model.SpceRsvtdeVo;
 import com.kbrainc.plum.mng.spce.model.SpceVo;
 import com.kbrainc.plum.mng.spce.service.SpceService;
 import com.kbrainc.plum.rte.constant.Constant;
@@ -70,7 +71,7 @@ public class EnvReqstController {
      */
     @RequestMapping(value = "/front/envReqst/envReqstList.html")
     public String envReqstList(EnvReqstVo envReqstVo, Model model) throws Exception {
-        model.addAttribute("sidoList", commonService.selectAllRgnList());
+        model.addAttribute("sidoList", commonService.selectCtprvnList());
         return "front/envReqst/envReqstList";
     }
 
@@ -206,6 +207,7 @@ public class EnvReqstController {
         }
 
         model.addAttribute("amt", amt);
+        model.addAttribute("alldayYn", result.get(0).get("ALLDAY_YN"));
 
         return "front/envReqst/updateEnvReqst";
     }
@@ -267,5 +269,25 @@ public class EnvReqstController {
     @RequestMapping(value = "/front/envReqst/envReqstComplete.html")
     public String envReqstComplete(EnvReqstVo envReqstVo, Model model) throws Exception {
         return "front/envReqst/envReqstComplete";
+    }
+
+    /**
+     * 예약가능일자 리스트 호출
+     *
+     * @Title       : selectSpceRsvtdeList
+     * @Description : 예약가능일자 리스트 호출
+     * @param envReqstVo EnvReqstVo envReqstVo 객체
+     * @return List<SpceRsvtdeVo> 기관정보 목록
+     * @throws Exception 예외
+     */
+    @ResponseBody
+    @RequestMapping(value = "/front/envReqst/selectSpceRsvtdeList.do")
+    public Map<String, Object> selectSpceRsvtdeList(EnvReqstVo envReqstVo, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        List<EnvReqstVo> result = null;
+        envReqstVo.setUser(user);
+        result = envReqstService.selectSpceRsvtdeList(envReqstVo);
+        resultMap.put("rsvtdelist", result);
+        return resultMap;
     }
 }

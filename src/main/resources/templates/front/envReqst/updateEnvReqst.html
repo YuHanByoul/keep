@@ -13,8 +13,6 @@
 
     <form id="envReqstUpdate" >
         <input type="hidden" id="rsvtdeid" name="rsvtdeid" th:value="${rsvtdeid}">
-        <input type="hidden" id="startDate" name="startDate" th:value="${startDate}">
-        <input type="hidden" id="endDate" name="endDate" th:value="${endDate}">
         <input type="hidden" id="nopeAdult" name="nopeAdult" th:value="${nopeAdult}">
         <input type="hidden" id="nopeChil" name="nopeChil" th:value="${nopeChil}">
         <input type="hidden" id="nopeInfnt" name="nopeInfnt" th:value="${nopeInfnt}">
@@ -45,11 +43,16 @@
                 </tr>
                 <tr>
                     <th scope="row">이용일시</th>
-                    <th:block th:if ="${startDate} != ${endDate}">
-                        <td th:text ="${startDate}+' ~ '+${endDate}"></td>
+                    <th:block th:if ="${alldayYn} == 'N'">
+                        <td th:text ="${#dates.format(spceInfo.bgngDt, 'yyyy-MM-dd HH:mm')}+' ~ '+${#dates.format(spceInfo.endDt, 'yyyy-MM-dd HH:mm')}"></td>
                     </th:block>
-                    <th:block th:if ="${startDate} == ${endDate}">
-                        <td th:text ="${startDate}"></td>
+                    <th:block th:if ="${alldayYn} == 'Y'">
+                        <th:block th:if ="${#dates.format(spceInfo.bgngDt, 'yyyy-MM-dd')} != ${#dates.format(spceInfo.endDt, 'yyyy-MM-dd')}">
+                            <td th:text ="${#dates.format(spceInfo.bgngDt, 'yyyy-MM-dd')}+' ~ '+${#dates.format(spceInfo.endDt, 'yyyy-MM-dd')}"></td>
+                        </th:block>
+                        <th:block th:if ="${#dates.format(spceInfo.bgngDt, 'yyyy-MM-dd')} == ${#dates.format(spceInfo.endDt, 'yyyy-MM-dd')}">
+                            <td th:text ="${#dates.format(spceInfo.bgngDt, 'yyyy-MM-dd')}"></td>
+                        </th:block>
                     </th:block>
                     <th scope="row">이용인원</th>
                     <td th:text ="성인 +${nopeAdult}+'명, 아동'+${nopeChil}+'명, 유아'+${nopeInfnt}+'명'"></td>
@@ -139,33 +142,33 @@
             </div>
         </div>
 
-        <div class="table-row table-row-mo">
-            <table>
-                <caption>결제정보 - 결제방법, 입금계좌, 입금자명</caption>
-                <colgroup>
-                    <col style="width:140px;">
-                    <col>
-                    <col style="width:140px;">
-                    <col>
-                </colgroup>
-                <tbody>
-                <tr>
-                    <th scope="row">결제방법</th>
-                    <td>무통장입금</td>
-                    <th scope="row">입금계좌</th>
-                    <td th:text="${spceInfo.bankCdNm}+' '+${spceInfo.bacntNo}+' '+${spceInfo.dpstrNm}">농협 0000-000-0000 청소년교육재단</td>
-                </tr>
-                <tr>
-                    <th scope="row">입금자명<i class="ast" title="필수입력">*</i></th>
-                    <td colspan="3">
-                        <input type="text" title="입금자명" id="pyrNm" name="pyrNm" placeholder="입금자명 입력">
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-
-
+        <th:block th:if ="${spceInfo.aplyMthdCd} == '153101'">
+            <div class="table-row table-row-mo">
+                <table>
+                    <caption>결제정보 - 결제방법, 입금계좌, 입금자명</caption>
+                    <colgroup>
+                        <col style="width:140px;">
+                        <col>
+                        <col style="width:140px;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                    <tr>
+                        <th scope="row">결제방법</th>
+                        <td>무통장입금</td>
+                        <th scope="row">입금계좌</th>
+                        <td th:text="${spceInfo.bankCdNm}+' '+${spceInfo.bacntNo}+' '+${spceInfo.dpstrNm}">농협 0000-000-0000 청소년교육재단</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">입금자명<i class="ast" title="필수입력">*</i></th>
+                        <td colspan="3">
+                            <input type="text" title="입금자명" id="pyrNm" name="pyrNm" placeholder="입금자명 입력">
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </th:block>
 
         <div class="btn-wrap">
             <div class="center">
@@ -194,8 +197,8 @@
             // data = data+'&aplcntEml='+email+'&rsvtdeidLen='+rsvtdeidLen;
 
             var param = {
-                bgngDt: /*[[${startDate}]]*/null,
-                endDt: /*[[${endDate}]]*/null,
+                startDt: /*[[${startDate}]]*/null,
+                enddDt: /*[[${endDate}]]*/null,
                 nopeAdult: /*[[${nopeAdult}]]*/null,
                 nopeChil: /*[[${nopeChil}]]*/null,
                 nopeInfnt: /*[[${nopeInfnt}]]*/null,
@@ -206,7 +209,9 @@
                 bacntNo : /*[[${spceInfo.bacntNo}]]*/null,
                 aplcntNm : aplcntNm,
                 aplcntMoblphon : aplcntMoblphon,
-                pyrNm : pyrNm
+                pyrNm : pyrNm,
+                instid : /*[[${spceInfo.instid}]]*/null,
+                alldayYn : /*[[${alldayYn}]]*/null
             };
             /* 169101 숙박, 169102 대여 */
             for( var i=0; i<rsvtdeids.length; i++ ){

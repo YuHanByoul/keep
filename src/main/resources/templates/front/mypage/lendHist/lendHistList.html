@@ -56,7 +56,7 @@
                 <p>총 <b id="totalCount">0</b> 건</p>
             </div>
         </div>
-        <div class="card-list card-list-n2" id="lendList">
+        <div class="card-section" id="lendList">
         </div>
         <div id="pagination">
         </div>
@@ -70,8 +70,8 @@
     <script src="/js/common/handlebars/handlebars-v4.7.7.js"></script>   
     <script src="/js/common/handlebars/handlebars.helper.js"></script>
     
-    <script id="lendListTemplate" type="text/x-handlebars-template">
-       <ul>
+    <script id="lendListTemplate1" type="text/x-handlebars-template">
+       <ul class="n3">
        {{#each lendList}}
            <li>
               <div class="vertical-cont">
@@ -106,6 +106,41 @@
                    </div>
                </div>
            </li>
+      {{/each}}
+      </ul>
+    </script>
+    <script id="lendListTemplate" type="text/x-handlebars-template">
+       <ul class="n3">
+       {{#each lendList}}
+          <li>
+              <div class="flag {{tag_col}}">{{tag_text}}</div>
+              <div class="thumb">
+                  <img src="{{src}}" alt="{{rcritNm}} 대표 이미지" title=" {{rcritNm}} 대표 이미지">
+              </div>
+              <div class="cont mt0">
+                  <a href="javascript:goDetail('{{aplyid}}','{{rcritid}}');" class="title ellipsis" data-ellipsis="2">{{rcritNm}}</a>
+                  <div class="fs-14 fc-blue fw-500">신청차수/수량</div>
+                  <ul class="df">
+                      <li>{{ordr}}차 ({{lendBgngDe}} ~ {{lendEndDe}}) / {{qnty}}개</li>
+                  </ul>
+                  <div class="btn-wrap">
+                      <div class="left">
+                          {{#dlvy}}
+                          <button type="button" class="btn-small btn-outline-blue" onclick="openDlvyInfo('{{aplyid}}')">배송조회</button>
+                          {{/dlvy}}
+                          {{#replyInsert}}
+                          <button type="button" class="btn-small btn-outline-blue" onclick="openReplyForm('{{aplyid}}')">후기작성</button>
+                          {{/replyInsert}}
+                          {{#replyModify }}
+                          <button type="button" class="btn-small btn-outline-blue" onclick="openReplyModifyForm('{{aplyid}}')">작성완료</button>
+                          {{/replyModify}}
+                          {{#reject}}
+                          <button type="button" class="btn-small btn-outline-blue" onclick="openRejectInfo('{{aplyid}}')">사유확인</button>
+                          {{/reject}}
+                      </div>
+                  </div>
+              </div>
+          </li>
       {{/each}}
       </ul>
     </script>
@@ -152,7 +187,6 @@
 		    }
 		}
 		function renderingListData(list){
-			console.log(list);
 			//<!--bg-blue  bg-red:대여불가  bg-green:대여접수  bg-black6 :반납완료,대여취소--> 
 			list.forEach(function(item){
 
@@ -162,7 +196,7 @@
                     item.replyModify = (item.rvwCn != null && item.rvwCn != "")?true:false;
 				}else if(item.isLateYn == 'Y'){
 					item.tag_col = 'bg-red'; item.tag_text ='연체';
-				}else if(item.dlvySttsCd != null && item.dlvySttsCd ==230102 ){
+				}else if(item.dlvySttsCd != null && item.dlvySttsCd =="230102" ){
                     item.tag_col = 'bg-blue'; 
                     item.tag_text = item.dlvySttsCdNm;
                     item.dlvy = true;

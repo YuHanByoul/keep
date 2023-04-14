@@ -1,8 +1,8 @@
-package com.kbrainc.plum.mng.pltfomImprvmPropsl.controller;
+package com.kbrainc.plum.mng.pltfomImprvmPrpsl.controller;
 
-import com.kbrainc.plum.mng.pltfomImprvmPropsl.model.PltfomImprvmPropslAnsVo;
-import com.kbrainc.plum.mng.pltfomImprvmPropsl.model.PltfomImprvmPropslVo;
-import com.kbrainc.plum.mng.pltfomImprvmPropsl.service.PltfomImprvmPropslService;
+import com.kbrainc.plum.mng.pltfomImprvmPrpsl.model.PltfomImprvmPrpslAnsVo;
+import com.kbrainc.plum.mng.pltfomImprvmPrpsl.model.PltfomImprvmPrpslVo;
+import com.kbrainc.plum.mng.pltfomImprvmPrpsl.service.PltfomImprvmPrpslService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
@@ -25,24 +25,24 @@ import java.util.Map;
  * 알림/문의 > 고객센터 > 플랫폼개선제안 컨트롤러 클래스
  *
  * <pre>
- * com.kbrainc.plum.mng.pltfomImprvmPropsl.controller
- * - PltfomImprvmPropslController.java
+ * com.kbrainc.plum.mng.pltfomImprvmPrpsl.controller
+ * - PltfomImprvmPrpslController.java
  * </pre>
  *
  * @author : KBRAINC_DEV
- * @ClassName : PltfomImprvmPropslController
+ * @ClassName : PltfomImprvmPrpslController
  * @Description : 알림/문의 > 고객센터 > 플랫폼개선제안 컨트롤러 클래스
  * @date : 2023. 04. 13.
  * @Version :
  * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
  */
 @Controller
-@RequestMapping("/mng/pltfomImprvmPropsl")
-public class PltfomImprvmPropslController {
-    public static final String VIEW_PATH = "/mng/pltfomImprvmPropsl";
+@RequestMapping("/mng/pltfomImprvmPrpsl")
+public class PltfomImprvmPrpslController {
+    public static final String VIEW_PATH = "/mng/pltfomImprvmPrpsl";
 
     @Autowired
-    private PltfomImprvmPropslService pltfomImprvmPropslService;
+    private PltfomImprvmPrpslService pltfomImprvmPrpslService;
 
 
     /**
@@ -50,43 +50,43 @@ public class PltfomImprvmPropslController {
      *
      * @return string
      * @throws Exception
-     * @Title : pltfomImprvmPropslList
+     * @Title : pltfomImprvmPrpslList
      * @Description : 플랫폼개선제안 목록 화면
      */
-    @GetMapping("/pltfomImprvmPropslList.html")
-    public String pltfomImprvmPropslList() throws Exception {
-        return VIEW_PATH + "/pltfomImprvmPropslList.html";
+    @GetMapping("/pltfomImprvmPrpslList.html")
+    public String pltfomImprvmPrpslList() throws Exception {
+        return VIEW_PATH + "/pltfomImprvmPrpslList.html";
     }
 
     /**
      * 플랫폼개선제안 등록/수정 화면
      *
-     * @param pltfomImprvmPropslVo
+     * @param pltfomImprvmPrpslVo
      * @param model
      * @return string
      * @throws Exception
-     * @Title : pltfomImprvmPropslForm
+     * @Title : pltfomImprvmPrpslForm
      * @Description : 플랫폼개선제안 등록/수정 화면
      */
-    @GetMapping("/pltfomImprvmPropslForm.html")
-    public String pltfomImprvmPropslForm(PltfomImprvmPropslVo pltfomImprvmPropslVo, Model model) throws Exception {
-        PltfomImprvmPropslVo pltfomImprvmPropsl = pltfomImprvmPropslService.selectPltfomImprvmPropsl(pltfomImprvmPropslVo);
-        PltfomImprvmPropslAnsVo pltfomImprvmPropslAns = pltfomImprvmPropslService.selectPltfomImprvmPropslAns(pltfomImprvmPropslVo);
+    @GetMapping("/pltfomImprvmPrpslForm.html")
+    public String pltfomImprvmPrpslForm(PltfomImprvmPrpslVo pltfomImprvmPrpslVo, Model model) throws Exception {
+        PltfomImprvmPrpslVo pltfomImprvmPrpsl = pltfomImprvmPrpslService.selectPltfomImprvmPrpsl(pltfomImprvmPrpslVo);
+        PltfomImprvmPrpslAnsVo pltfomImprvmPrpslAns = pltfomImprvmPrpslService.selectPltfomImprvmPrpslAns(pltfomImprvmPrpslVo);
 
-        if (pltfomImprvmPropslAns == null) {
-            pltfomImprvmPropslAns = new PltfomImprvmPropslAnsVo();
+        if (pltfomImprvmPrpslAns == null) {
+            pltfomImprvmPrpslAns = new PltfomImprvmPrpslAnsVo();
         }
 
-        model.addAttribute("pltfomImprvmPropsl", pltfomImprvmPropsl);
-        model.addAttribute("pltfomImprvmPropslAns", pltfomImprvmPropslAns);
+        model.addAttribute("pltfomImprvmPrpsl", pltfomImprvmPrpsl);
+        model.addAttribute("pltfomImprvmPrpslAns", pltfomImprvmPrpslAns);
 
-        return VIEW_PATH + "/pltfomImprvmPropslForm.html";
+        return VIEW_PATH + "/pltfomImprvmPrpslForm.html";
     }
 
     /**
      * 플랫폼개선제안 답변 등록
      *
-     * @param pltfomImprvmPropslAnsVo
+     * @param pltfomImprvmPrpslAnsVo
      * @param bindingResult
      * @param user
      * @return map
@@ -96,7 +96,7 @@ public class PltfomImprvmPropslController {
      */
     @RequestMapping(value = "/insertPltfomImprvmPrpslAns.do")
     @ResponseBody
-    public Map<String, Object> insertPltfomImprvmPrpslAns(@Valid PltfomImprvmPropslAnsVo pltfomImprvmPropslAnsVo
+    public Map<String, Object> insertPltfomImprvmPrpslAns(@Valid PltfomImprvmPrpslAnsVo pltfomImprvmPrpslAnsVo
             , BindingResult bindingResult
             , @UserInfo UserVo user) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>();
@@ -109,11 +109,11 @@ public class PltfomImprvmPropslController {
             return map;
         }
 
-        pltfomImprvmPropslAnsVo.setUser(user);
+        pltfomImprvmPrpslAnsVo.setUser(user);
 
         int retVal = 0;
 
-        retVal = pltfomImprvmPropslService.insertPltfomImprvmPropslAns(pltfomImprvmPropslAnsVo);
+        retVal = pltfomImprvmPrpslService.insertPltfomImprvmPrpslAns(pltfomImprvmPrpslAnsVo);
 
         if (retVal > 0) {
             map.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -128,7 +128,7 @@ public class PltfomImprvmPropslController {
 
     @RequestMapping(value = "/updatePltfomImprvmPrpslAns.do")
     @ResponseBody
-    public Map<String, Object> updatePltfomImprvmPrpslAns(@Valid PltfomImprvmPropslAnsVo pltfomImprvmPropslAnsVo, BindingResult bindingResult,
+    public Map<String, Object> updatePltfomImprvmPrpslAns(@Valid PltfomImprvmPrpslAnsVo pltfomImprvmPrpslAnsVo, BindingResult bindingResult,
                                                           @UserInfo UserVo user) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>();
         if (bindingResult.hasErrors()) {
@@ -139,10 +139,10 @@ public class PltfomImprvmPropslController {
             return map;
         }
 
-        pltfomImprvmPropslAnsVo.setUser(user);
+        pltfomImprvmPrpslAnsVo.setUser(user);
         int retVal = 0;
 
-        retVal = pltfomImprvmPropslService.updatePltfomImprvmPropslAns(pltfomImprvmPropslAnsVo);
+        retVal = pltfomImprvmPrpslService.updatePltfomImprvmPrpslAns(pltfomImprvmPrpslAnsVo);
 
         if (retVal > 0) {
             map.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -156,11 +156,12 @@ public class PltfomImprvmPropslController {
     }
     @PostMapping(value = "/deletePltfomImprvmPrpsl.do")
     @ResponseBody
-    public Map<String, Object> deletePltfomImprvmPrpsl(PltfomImprvmPropslVo pltfomImprvmPropslVo,  @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> deletePltfomImprvmPrpsl(PltfomImprvmPrpslVo pltfomImprvmPrpslVo, @UserInfo UserVo user) throws Exception {
+        pltfomImprvmPrpslVo.setUser(user);
         Map<String, Object> reseultMap = new HashMap<>();
         int retVal = 0;
 
-        retVal = pltfomImprvmPropslService.deletePltfomImprvmPrpsl(pltfomImprvmPropslVo);
+        retVal = pltfomImprvmPrpslService.deletePltfomImprvmPrpsl(pltfomImprvmPrpslVo);
 
         if (retVal > 0) {
             reseultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -179,14 +180,14 @@ public class PltfomImprvmPropslController {
      *
      * @return map
      * @throws Exception
-     * @Title : selectPltfomImprvmPropslList
+     * @Title : selectPltfomImprvmPrpslList
      * @Description : 플랫폼개선제안 목록 조회
      */
-    @GetMapping("/selectPltfomImprvmPropslList.do")
+    @GetMapping("/selectPltfomImprvmPrpslList.do")
     @ResponseBody
-    public Map<String, Object> selectPltfomImprvmPropslList(PltfomImprvmPropslVo pltfomImprvmPropslVo) throws Exception {
+    public Map<String, Object> selectPltfomImprvmPrpslList(PltfomImprvmPrpslVo pltfomImprvmPrpslVo) throws Exception {
         Map<String, Object> response = new HashMap<>();
-        List<PltfomImprvmPropslVo> list = pltfomImprvmPropslService.selectPltfomImprvmPropslList(pltfomImprvmPropslVo);
+        List<PltfomImprvmPrpslVo> list = pltfomImprvmPrpslService.selectPltfomImprvmPrpslList(pltfomImprvmPrpslVo);
 
         if (list.size() > 0) {
             response.put("totalCount", (list.get(0).getTotalCount()));
