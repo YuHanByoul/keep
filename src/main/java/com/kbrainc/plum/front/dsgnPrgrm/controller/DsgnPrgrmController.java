@@ -650,11 +650,12 @@ public class DsgnPrgrmController {
 	* @return String
 	*/
 	@RequestMapping(value = "/front/dsgnPrgrm/sftyMngForm.html")
-	public String sftyMngForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
+	public String sftyMngForm(AsgsysSrngVo asgsysSrngVo, Model model,@UserInfo UserVo user) throws Exception {
 	    //신청정보
 		AsgsysSrngVo aplyInfo = null;
 		aplyInfo = asgsysSrngService.selectSftyMng(asgsysSrngVo);
 		model.addAttribute("aplyInfo", aplyInfo);
+		model.addAttribute("loginUserid", user.getUserid());
 
     	//안전관리 메뉴얼 첨부파일
     	if (!StringUtil.nvl(aplyInfo.getFilegrpid()).equals("") && !StringUtil.nvl(aplyInfo.getFilegrpid()).equals(0)) {

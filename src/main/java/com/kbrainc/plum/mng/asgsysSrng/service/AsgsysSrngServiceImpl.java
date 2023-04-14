@@ -1032,6 +1032,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	AsgsysSrngVo sbmsnInfo = new AsgsysSrngVo();
     	ChklstAnsVo delVo = null;
 
+
     	if(null != asgsysSrngVo.getSftyMngId() && 0 != asgsysSrngVo.getSftyMngId()){
     		ret = asgsysSrngDao.updateSftyMng(asgsysSrngVo);
     	}else {
