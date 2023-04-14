@@ -152,7 +152,7 @@
             , B.SBMSN_DT
             </if>
             <if test="sbmsnid != 0 and ((infntPrgrmAplyid != null and infntPrgrmAplyid != 0) or (mvmnPrgrmAplyid != null or mvmnPrgrmAplyid != 0))">
-            , DATE_FORMAT(D.SBMSN_DT, '%Y-%m-%d') AS APLY_SBMSN_DT
+            , DATE_FORMAT(MAX(D.SBMSN_DT), '%Y-%m-%d') AS APLY_SBMSN_DT
             , D.PRTPNT_NM            
             </if>            
         FROM
@@ -166,6 +166,9 @@
         </if>        
         WHERE 
             A.SRVYID = #{srvyid}
+        <if test="sbmsnid != 0 and ((infntPrgrmAplyid != null and infntPrgrmAplyid != 0) or (mvmnPrgrmAplyid != null or mvmnPrgrmAplyid != 0))">
+        GROUP BY A.SRVYID 
+        </if>            
     </select>
     
     <!-- 설문 문항 목록 조회 -->

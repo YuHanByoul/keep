@@ -109,6 +109,8 @@ public class InfntAplyHistVo extends ParentRequestVo {
     private Integer stdntDgstfnQestnrid;
     /** 설문제출유무 */
     private String sbmsnYn;
+    /** 설문제출ID */
+    private Integer sbmsnid;
     
     
     /** 등록일 */
