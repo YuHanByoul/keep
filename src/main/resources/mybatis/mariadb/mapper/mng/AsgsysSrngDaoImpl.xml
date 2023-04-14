@@ -176,7 +176,6 @@
           , D.SPRTGRP_NM
           , D.SPRTGRP_EML
           , D.SPRTGRP_MOBLPHON
-          , E.SBMSNID
           , INST.RPRSV_NM
           , INST.BRNO
         FROM
@@ -220,18 +219,6 @@
             INNER JOIN
                 TB_CMM_USER BB ON AA.SPRTGRPID = BB.USERID
         ) D ON A.PRGRMID = D.PRGRMID
-        LEFT OUTER JOIN
-        (
-        /*지원단 체크리스트*/
-            SELECT
-                SRNG.PRGRMID
-              , CHK.SBMSNID
-            FROM
-                TB_ASS_SPRTGRP_SRNG SRNG
-            LEFT OUTER JOIN
-                TB_ASS_CHKLST_SBMSN CHK ON SRNG.PRGRMID = CHK.PRGRMID
-                                       AND SRNG.SPRTGRPID = CHK.USERID
-        ) E ON A.PRGRMID = E.PRGRMID
         LEFT OUTER JOIN TB_CMM_INST INST ON A.INSTID = INST.INSTID
         LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN CTPRVN ON  A.INST_RGN_CD = CTPRVN.CTPRVN_CD
         WHERE 1=1
@@ -1524,10 +1511,12 @@
             A.PRGRMID
           , B.SPRTGRPID
           , C.SBMSNID
-          , C.CHKLSTID
+          , A.CHKLSTID
         FROM TB_ASS_PRGRM A
         LEFT OUTER JOIN TB_ASS_SPRTGRP_SRNG B ON A.PRGRMID = B.PRGRMID
-        LEFT OUTER JOIN TB_ASS_CHKLST_SBMSN C ON B.SPRTGRPID = C.USERID
+        LEFT OUTER JOIN TB_ASS_CHKLST_SBMSN C ON B.PRGRMID = C.PRGRMID
+                                             AND B.SPRTGRPID = C.USERID
+                                             AND C.SBMSN_SE_CD ='242102'
         WHERE A.PRGRMID = #{prgrmid}
     </select>
 
