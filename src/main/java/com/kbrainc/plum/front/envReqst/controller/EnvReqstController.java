@@ -6,7 +6,6 @@ import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.front.envReqst.model.EnvReqstVo;
 import com.kbrainc.plum.front.envReqst.service.EnvReqstService;
 import com.kbrainc.plum.mng.inst.model.InstVo;
-import com.kbrainc.plum.mng.spce.model.SpceRsvtdeVo;
 import com.kbrainc.plum.mng.spce.model.SpceVo;
 import com.kbrainc.plum.mng.spce.service.SpceService;
 import com.kbrainc.plum.rte.constant.Constant;
@@ -122,10 +121,8 @@ public class EnvReqstController {
             fileVo.setFilegrpid(Integer.parseInt(resultVo.getRprsImgFileid().toString()));
             ArrayList<FileVo> fileList= fileService.getFileList(fileVo);
             model.addAttribute("rprsImgFileMap",fileList );
-            model.addAttribute("rprsCurrentFileCnt", fileList.size());
         } else {
             model.addAttribute("rprsImgFileMap", null);
-            model.addAttribute("rprsCurrentFileCnt", 0);
         }
 
         // 상세 이미지
