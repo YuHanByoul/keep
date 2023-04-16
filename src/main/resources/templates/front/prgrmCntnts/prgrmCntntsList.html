@@ -10,7 +10,7 @@
 		<form class="search-filter" id="searchForm" name="searchForm">
 			<div class="form-input-wrap">
 				<div class="form-row">
-					<div class="form-header"><strong class="label">교육주제</strong></div>
+					<div class="form-header"><strong class="label">교육주제(공통)</strong></div>
 					<div class="form-body">
 						<div class="form-input">
 	                        <select name="searchMainEduSbjct" id="searchEduSbjct_1" title="교육주제" onchange="setSearchSelectBox.setNextDepth(155,this.value,'searchEduSbjct_2')">
@@ -41,7 +41,7 @@
                         <select id="searchRgn" name="searchRgn" title="지역">
                             <option value="">- 전체 -</option>
                             <th:block th:each="code : ${sidoList}">
-                                <option th:value="${code.CTPRVN_CD}">[[${code.CTPRVN_NM}]]</option>
+                                <option th:value="${code.CTPRVN_CD}" th:selected="${code.CTPRVN_CD} == ${rgnCd}">[[${code.CTPRVN_NM}]]</option>
                             </th:block>
                         </select>
 					</div>
@@ -65,14 +65,14 @@
 						<div class="form-check-list">
 							<label class="inp"><input type="checkbox" name="searchCntntsEduTrgt" id="cntntsAll" value="all"><b>전체</b></label>
 							<th:block th:each="item : ${codeInfo185}">
-							<label class="inp"><input type="checkbox" name="searchCntntsEduTrgt" th:id="${item.cd}" th:value="${item.cd}"><b th:text="${item.cdNm}">유아</b></label>							
+							<label class="inp"><input type="checkbox" name="searchCntntsEduTrgt" th:id="${item.cd}" th:checked="${item.cd} == ${cntntsEduTrgt}" th:value="${item.cd}"><b th:text="${item.cdNm}">유아</b></label>							
 							</th:block>							
 						</div>
 					</div>
 				</div>
 			</div>
 			<div class="search-filter-submit">
-				<button type="reset" class="btn-medium btn-gray btn-before-refresh" onclick="prgrmCntnts.searchInit()">초기화</button>
+				<button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="prgrmCntnts.searchInit()">초기화</button>
 				<button type="button" class="btn-medium btn-green btn-before-search" onclick="prgrmCntnts.search()">검색</button>
 			</div>
 			
@@ -99,13 +99,12 @@
 		</div>
 		<!-- //content -->
 	
-		<script th:inline="javascript">		
+		<script th:inline="javascript">
 		// 교육주제, 콘텐츠 유형
 		var mainEduSbjct = /*[[${mainEduSbjct}]]*/ null;
 		var subEduSbjct = /*[[${subEduSbjct}]]*/ null;
-		
 		var mainCntstType = /*[[${mainCntstType}]]*/ null;
-		var subCntstType = /*[[${subCntstType}]]*/ null;		
+		var subCntstType = /*[[${subCntstType}]]*/ null;
 		
 		var getCodeListUrl = "/mng/customAttr/grpCodeList.do";
 		var setSearchSelectBox = {
@@ -135,7 +134,7 @@
 				   	var nextTarget = cntArr[0]+"_"+nextCnt;
 				   	
 				    var html ="<select id='"+targetId+"' onchange=setSearchSelectBox.setNextDepth('"+grpcd+"',this.value,'"+nextTarget+"')>";
-				        html +=`<option value="">- 전체 -</option>`;
+				        html += `<option value="">- 전체 -</option>`;
 				        
 			  		for(var i=0 ; i < list.length;i++){
 			  			if(list[i].cd==selected){
@@ -146,20 +145,20 @@
 			  		}
 			  		
 					if(list.length == 0 && jQuery("#"+nextTarget)[0] != undefined){
-						setSearchSelectBox.writeHtml(grpcd,nextTarget,list,selected, sessionId);
+						setSearchSelectBox.writeHtml(grpcd, nextTarget, list, selected, sessionId);
 					}
 					html +="    </select>";
 					
 					$("#"+targetId).html(html);
 					
-					if(sessionId == "searchEduSbjctCd_2"){
-						sessionStorage.removeItem("searchEduSbjctCd_1");
-						sessionStorage.removeItem("searchEduSbjctCd_2");
+					if(sessionId == "searchEduSbjct_2"){
+						sessionStorage.removeItem("searchEduSbjct_1");
+						sessionStorage.removeItem("searchEduSbjct_2");
 					}
 					
-					if(sessionId == "searchTypeCd_2"){
-						sessionStorage.removeItem("searchTypeCd_1");
-						sessionStorage.removeItem("searchTypeCd_2");
+					if(sessionId == "searchCntntsType_2"){
+						sessionStorage.removeItem("searchCntntsType_1");
+						sessionStorage.removeItem("searchCntntsType_2");
 					}
 			 	},
 			 	
@@ -168,12 +167,78 @@
 				}
 		}
 		// 교육주제, 콘텐츠 유형 set
+		/* 상세에서 뒤로가시 필터값 유지가 필요없을때 사용 *사용시 교육주제, 콘텐츠 유형 초기화 필요
     	setSearchSelectBox.fn_getNextDepthList(155 , 0, 'searchEduSbjct_1', mainEduSbjct);
 		setSearchSelectBox.fn_getNextDepthList(155, mainEduSbjct, "searchEduSbjct_2", subEduSbjct);
 		
    		setSearchSelectBox.fn_getNextDepthList(164 , 0, 'searchCntntsType_1', mainCntstType);
-   		setSearchSelectBox.fn_getNextDepthList(164 , mainCntstType, 'searchCntntsType_2', subCntstType);
+   		setSearchSelectBox.fn_getNextDepthList(164 , mainCntstType, 'searchCntntsType_2', subCntstType);		
+		*/
 		
+		// 상세에서 뒤로가시 필터값 유지에 sessionStorage 필요
+		// 필터를 만들때, 검색버튼 누를때, 초기화 버튼 누를때, 상세페이지 이동할때 sessionStorage 
+    	if(sessionStorage.getItem("searchEduSbjct_2") != null){
+        	setSearchSelectBox.fn_getNextDepthList(
+        			155
+        			, 0
+        			, "searchEduSbjct_1"
+        			, sessionStorage.getItem("searchEduSbjct_1")
+        	);
+    		setSearchSelectBox.fn_getNextDepthList(
+    				155
+    				, sessionStorage.getItem("searchEduSbjct_1")
+    				, "searchEduSbjct_2"
+    				, sessionStorage.getItem("searchEduSbjct_2")
+    				, "searchEduSbjct_2"
+    		);            		
+    	}else{
+    		setSearchSelectBox.fn_getNextDepthList(
+	   				155
+	   				, 0
+	   				, "searchEduSbjct_1"
+	   				, mainEduSbjct == null ? sessionStorage.getItem("searchEduSbjct_1") : mainEduSbjct
+    		);
+    		setSearchSelectBox.fn_getNextDepthList(
+	   				155
+	   				, mainEduSbjct == null ? sessionStorage.getItem("searchEduSbjct_1") : mainEduSbjct
+	   				, "searchEduSbjct_2"
+	   				, subEduSbjct == null ? sessionStorage.getItem("searchEduSbjct_2") : subEduSbjct
+	   				, "searchEduSbjct_2"
+    		);	
+    	}
+    	
+    	if(sessionStorage.getItem("searchCntntsType_2") != null){
+        	setSearchSelectBox.fn_getNextDepthList(
+        			164
+        			, 0
+        			, "searchCntntsType_1"
+        			, sessionStorage.getItem("searchCntntsType_1")
+        	);
+    		setSearchSelectBox.fn_getNextDepthList(
+    				164
+    				, sessionStorage.getItem("searchCntntsType_1")
+    				, "searchCntntsType_2"
+    				, sessionStorage.getItem("searchCntntsType_2")
+    				, "searchCntntsType_2"
+    		);            		
+    	}else{
+    		setSearchSelectBox.fn_getNextDepthList(
+    				164
+	   				, 0
+	   				, "searchCntntsType_1"
+	   				, mainCntstType == null ? sessionStorage.getItem("searchCntntsType_1") : mainCntstType
+    		);
+    		setSearchSelectBox.fn_getNextDepthList(
+    				164
+	   				, mainCntstType == null ? sessionStorage.getItem("searchCntntsType_1") : mainCntstType
+	   				, "searchCntntsType_2"
+	   				, subCntstType == null ? sessionStorage.getItem("searchCntntsType_2") : subCntstType
+	   				, "searchCntntsType_2"
+    		);	
+    	}
+    	
+    	
+	   		
 		// 교육대상(프로그램) 체크박스
 		var prgrmCheckboxes = document.getElementsByName("searchPrgrmEduTrgt");
 		$('#prgrmAll').change(function() {
@@ -217,17 +282,63 @@
 		var prgrmCntnts = {
 				listUrl: '/front/prgrmCntnts/selectPrgrmCntntsList.do',
 				
-				init() {
-                	/* if(rowPerPage != null) {
+				init(rowPerPage) {
+                	if(rowPerPage != null) {
 	                    $("#rowPerPage").val(parseInt(rowPerPage));
 	                    $('#pageNumber').val('1');
-                	} */
+                	}
+                	
                     this.selectPrgrmCntntsList();
 				},
 				
+                moveToDetail(id, type) {
+                	if(subEduSbjct == null && $("#searchEduSbjct_2").val() != "") {
+                		sessionStorage.setItem("searchEduSbjct_1", $("#searchEduSbjct_1").val());
+                		sessionStorage.setItem("searchEduSbjct_2", $("#searchEduSbjct_2").val());
+                	}
+                	
+                	if($("#searchCntntsType_2").val() != "") {
+                		sessionStorage.setItem("searchCntntsType_1", $("#searchCntntsType_1").val());
+                		sessionStorage.setItem("searchCntntsType_2", $("#searchCntntsType_2").val());
+                	}    
+					
+                	if(type == 'prgrm') {
+   		                location.href = '/front/envEdu/prgrmDetailForm.html?prgrmid='+id;
+                	}
+                	if(type == 'cntnts') {
+                       	location.href = '/front/cntnts/cntntsDetailForm.html?cntntsid='+id;
+                	}
+                },
+				
                 search() {                	
                     $('#pageNumber').val('1');
+                    
+               		sessionStorage.setItem("searchEduSbjct_1", $("#searchEduSbjct_1").val());
+               		sessionStorage.setItem("searchEduSbjct_2", $("#searchEduSbjct_2").val());
+               		sessionStorage.setItem("searchCntntsType_1", $("#searchCntntsType_1").val());
+               		sessionStorage.setItem("searchCntntsType_2", $("#searchCntntsType_2").val());
+                    
                     this.selectPrgrmCntntsList();
+                },
+                
+                searchInit() {
+                	sessionStorage.clear();
+                	
+    				$("#searchEduSbjct_1").val("");
+    				$("#searchEduSbjct_2").val("");
+    				$("#searchCntntsType_1").val("");
+    				$("#searchCntntsType_2").val("");
+    				$("#searchRgn").val("");
+    				for (var i = 0; i < prgrmCheckboxes.length; i++) {
+    					prgrmCheckboxes[i].checked = false;
+    				}
+    				for (var i = 0; i < cntntsCheckboxes.length; i++) {
+    					cntntsCheckboxes[i].checked = false;
+    				}
+    				$("#searchPrgrm").val("N");
+    				$("#searchCntnts").val("N");
+    				
+    				this.selectPrgrmCntntsList();
                 },
 				
 	            selectPrgrmCntntsList() {
@@ -251,7 +362,7 @@
                 	}else {
                 		$("#searchCntnts").val("N");
                 	}
-					
+                	
 	                if (displayWorkProgress(true)) {
 	                	var formData = $('#searchForm').serializeArray();
 	                    $.ajax({
@@ -268,6 +379,7 @@
 	                            $("#totalCount").html(result.totalCount);
 	            				var data = escapeData(result);
 	            				prgrmCntnts.makeListHtml(data);
+	            				
 	                            closeWorkProgress();
 	                        }
 	                    });
@@ -376,7 +488,7 @@
    									</div>
    									<div class="cont">
    										<div class="part ellipsis">${item.instNm}</div>
-   										<a href="#" class="title ellipsis" data-ellipsis="2">${item.ttl}</a>
+   										<a href="javascript:void(0)" onclick="prgrmCntnts.moveToDetail(${item.id}, 'prgrm')" class="title ellipsis" data-ellipsis="2">${item.ttl}</a>
    										<ul class="hash">
    											${eduSbjctTag}
    										</ul>
@@ -431,7 +543,7 @@
 										</dl>
 									</div>
 									<div class="cont">
-										<a href="#" class="title ellipsis" data-ellipsis="2">${item.ttl}</a>
+										<a href="javascript:void(0)" onclick="prgrmCntnts.moveToDetail(${item.id}, 'cntnts')" class="title ellipsis" data-ellipsis="2">${item.ttl}</a>
 										<ul class="hash">
 											${eduSbjctTag}
 										</ul>

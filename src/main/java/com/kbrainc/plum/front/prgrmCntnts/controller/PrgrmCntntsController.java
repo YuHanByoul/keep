@@ -38,20 +38,22 @@ public class PrgrmCntntsController {
     @RequestMapping(value="/front/prgrmCntnts/prgrmCntntsListForm.html")
     public String prgrmCntntsListForm(String eduSbjct, String cntstType, String rgnCd,String prgrmEduTrgt, String cntntsEduTrgt, Model model) throws Exception {
         // 교육주제
-        eduSbjct = "155101101";
-        CodeInfoVo eduSbjctInfo = resCodeService.getCodeInfo(eduSbjct);
-        model.addAttribute("mainEduSbjct", eduSbjctInfo.getUpprCd());
-        model.addAttribute("subEduSbjct", eduSbjct);
+        if(eduSbjct != null) {
+            CodeInfoVo eduSbjctInfo = resCodeService.getCodeInfo(eduSbjct);
+            model.addAttribute("mainEduSbjct", eduSbjctInfo.getUpprCd());
+            model.addAttribute("subEduSbjct", eduSbjct);            
+        }
         
         // 콘텐츠 유형
-        cntstType = "164101104";
-        CodeInfoVo cntstTypeInfo = resCodeService.getCodeInfo(cntstType);
-        model.addAttribute("mainCntstType", cntstTypeInfo.getUpprCd());
-        model.addAttribute("subCntstType", cntstType);
+        if(cntstType != null) {
+            CodeInfoVo cntstTypeInfo = resCodeService.getCodeInfo(cntstType);
+            model.addAttribute("mainCntstType", cntstTypeInfo.getUpprCd());
+            model.addAttribute("subCntstType", cntstType);            
+        }
         
         // 지역코드
-        model.addAttribute("eduSbjct", eduSbjct);
         model.addAttribute("sidoList", commonService.selectCtprvnList());
+        model.addAttribute("rgnCd", rgnCd);
         
         // 교육대상(프로그램)
         model.addAttribute("prgrmEduTrgt", prgrmEduTrgt);
