@@ -58,8 +58,8 @@
           , A.STTS_CD
           , A.APLY_DT
           , A.REG_DT
-          , B.SRNG_STTS_CD
-          , C.SRGN_STTS_CD
+          , IFNULL( B.SRNG_STTS_CD,'114101')    AS SRNG_STTS_CD
+          , IFNULL( C.SRGN_STTS_CD,'114101')    AS SRGN_STTS_CD
           , C.VST_DE
           , C.VST_HR
           , C.VST_MNT
@@ -74,9 +74,9 @@
             SELECT
                 PRGRMID
               , SRNG_STTS_CD
-              , JDGSID
-              , COUNT(1) AS CNT
+              , MAX(JDGSID)
             FROM TB_ASS_PRGRM_JDGS
+            GROUP BY PRGRMID
         ) B ON A.PRGRMID  = B.PRGRMID
         LEFT OUTER JOIN    /* 지원단 */
             TB_ASS_SPRTGRP_SRNG C ON A.PRGRMID  = C.PRGRMID
@@ -1780,11 +1780,13 @@
             SELECT
                 SRNG.PRGRMID
               , CHK.SBMSNID
+              , CHK.SBMSN_SE_CD
             FROM
                 TB_ASS_SPRTGRP_SRNG SRNG
             LEFT OUTER JOIN
                 TB_ASS_CHKLST_SBMSN CHK ON SRNG.PRGRMID = CHK.PRGRMID
                                        AND SRNG.SPRTGRPID = CHK.USERID
+                                       AND CHK.SBMSN_SE_CD = '242102'
         ) E ON A.PRGRMID = E.PRGRMID
         WHERE 1=1
         AND A.PRGRMID = #{prgrmid}

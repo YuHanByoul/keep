@@ -1,6 +1,7 @@
 package com.kbrainc.plum.mng.asgsysSrng.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -600,6 +601,14 @@ public class AsgsysSrngController {
     	AsgsysSrngVo prgrmDstnctnInfo = asgsysSrngService.selectPrgrmDstnctn(asgsysSrngVo);
     	model.addAttribute("prgrmDstnctnInfo", prgrmDstnctnInfo);
 
+    	List<String> eduSbjctCdLst = new ArrayList<>();
+    	String cdLst = prgrmDstnctnInfo.getEduSbjctCdLst();
+    	if (cdLst != null && !cdLst.isEmpty()) {
+    	    String[] cdArray = cdLst.split(",");
+    	    eduSbjctCdLst = Arrays.asList(cdArray);
+    	}
+    	model.addAttribute("eduSbjctCdLst", eduSbjctCdLst);
+
     	BeanUtils.copyProperties(asgsysSrngVo, prgrmSchdlVo);
     	BeanUtils.copyProperties(asgsysSrngVo, emrgcyActnPlanVo);
 
@@ -726,7 +735,7 @@ public class AsgsysSrngController {
      * 프로그램 우수성 수정
      *
      * @Title       : updatePrgrmDstnctn
-     * @Description : 프로그램 우수성 등록
+     * @Description : 프로그램 우수성 수정
      * @param asgsysSrngVo AsgsysSrngVo객체
      * @param bindingResult1 asgsysSrngVo 유효성검증결과
      * @param memberDtlVo MemberDtlVo객체

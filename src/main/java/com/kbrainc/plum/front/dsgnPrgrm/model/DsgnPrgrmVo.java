@@ -261,6 +261,9 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     /** 담당자명 */
     private String aplcntNm;
 
+    /** 담당자명(계정)*/
+    private String aplcntNmAcnt;
+
     /** 담당자_아이디 */
     private Integer aplcntid;
 
