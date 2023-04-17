@@ -607,8 +607,11 @@ public class ReqMngServiceImpl extends PlumAbstractServiceImpl implements ReqMng
                 param.setUser(smrLeaderVo.getUser());
                 param.setAplyid(smrLeaderVo.getAplyid());
                 param.setDgr(smrLeaderVo.getDgr()[i]);
-                param.setBgngDe(smrLeaderVo.getBgngDe()[i]);
-                param.setEndDe(smrLeaderVo.getEndDe()[i]);
+                String de[] = smrLeaderVo.getEduDe()[i].split("~");
+                if (de.length == 2) {
+                    param.setBgngDe(de[0].trim());
+                    param.setEndDe(de[1].trim());
+                }
                 param.setMjr(smrLeaderVo.getMjr()[i]);
                 param.setSchlNm(smrLeaderVo.getSchlNm()[i]);
                 
