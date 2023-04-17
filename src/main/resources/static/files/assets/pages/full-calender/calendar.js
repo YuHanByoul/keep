@@ -57,8 +57,8 @@
 	                title: 'Conference',
 	                start: '2016-09-18',
 	                end: '2016-09-20',
-					borderColor: '#93BE52',
-					backgroundColor: '#93BE52',
+					borderColor: '#01A9AC',
+					backgroundColor: '#01A9AC',
 					textColor: '#fff'
 	            }, {
 	                title: 'Party',
