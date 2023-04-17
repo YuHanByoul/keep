@@ -67,7 +67,13 @@ public class JntpurchsController {
     * @throws Exception 예외
     */
     @RequestMapping(value = "/front/jntpurchs/jntpurchsListForm.html")
-    public String jntpurchsListForm() throws Exception {
+    public String jntpurchsListForm(JntpurchsVo jntpurchsVo, Model model) throws Exception {
+        Map<String, Object> searchInfo = new HashMap<String, Object>();
+        searchInfo.put("searchJntpurchsNm", jntpurchsVo.getSearchJntpurchsNm());
+        searchInfo.put("searchSttsCd", jntpurchsVo.getSearchSttsCd());
+        searchInfo.put("pageNumber", jntpurchsVo.getPageNumber());
+        model.addAttribute("searchInfo", searchInfo);
+        
         return "front/jntpurchs/jntpurchsList";
     }
     

@@ -1098,10 +1098,6 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     		//제출 점수 update
     		asgsysSrngVo.setScr(allSum);
     		ret+=asgsysSrngDao.updateChklstSbmsn(asgsysSrngVo);
-
-    		//지정프로그램 상태코드 신청완료 수정
-    		asgsysSrngVo.setSttsCd("111102");
-    		ret+=asgsysSrngDao.updatePrgrSttsCd(asgsysSrngVo);
     	}
 
     	return ret;

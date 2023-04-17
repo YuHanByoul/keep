@@ -52,6 +52,11 @@ public class NtcnHistController {
     public Map<String, Object> selectInqryList(NtcnHistVo ntcnHistVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> result = new HashMap<>();
         ntcnHistVo.setUser(user);
+        
+        //boolean success = false;
+        //if (ntcnHistService.updateInqMsg(ntcnHistVo) > 0) { success = true; }
+        
+        //result.put("success", success);        
         List<NtcnHistVo> list = ntcnHistService.selectNtcnHistList(ntcnHistVo);
         if (list.size() > 0) {
             result.put("totalCount", list.get(0).getTotalCount());
