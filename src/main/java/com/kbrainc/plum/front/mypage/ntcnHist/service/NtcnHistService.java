@@ -47,4 +47,16 @@ public interface NtcnHistService {
     * @return int
     */
     public int updateDeleteNtcn(NtcnHistVo ntcnHistVo) throws Exception;
+
+    /**
+     * 알림내역 조회여부 변경
+     **
+     * @Title : updateInqMsg
+     * @Description : 알림내역 조회여부 변경
+     * @param ntcnHistVo
+     * @return
+     * @throws Exception
+     * @return int
+     */
+    public int updateInqMsg(NtcnHistVo ntcnHistVo) throws Exception;
 }
