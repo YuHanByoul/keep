@@ -15,6 +15,7 @@ import org.thymeleaf.context.Context;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kbrainc.plum.cmm.scheduling.model.BatchJobDao;
 import com.kbrainc.plum.cmm.service.AlimtalkNhnService;
+import com.kbrainc.plum.cmm.service.SmsNhnServiceImpl;
 import com.kbrainc.plum.rte.scheduling.annotation.SchedulingHistory;
 import com.kbrainc.plum.rte.scheduling.annotation.Triggerid;
 import com.kbrainc.plum.rte.util.CommonUtil;
@@ -42,6 +43,9 @@ public class BatchJobServiceImpl implements BatchJobService {
 
 	@Autowired
     private BatchJobDao batchJobDao;
+	
+	@Autowired
+    private SmsNhnServiceImpl smsService;
 	
 	@Autowired
 	private AlimtalkNhnService alimtalkNhnService;
@@ -1050,14 +1054,19 @@ public class BatchJobServiceImpl implements BatchJobService {
              if(sendUserList.size() > 0) {
                  ObjectMapper mapper = new ObjectMapper();
                  
+                 List<String> smsSendList =  new ArrayList<String>();
+                 
                  // 공동구매 진행 마감일 안내 메시지 발송
                  for(Map<String, Object> sendUser : sendUserList) {
                      if(sendUser.get("TELNO") != null && !"".equals(sendUser.get("TELNO"))) {
+                         
                          List<Object> recipientList = new ArrayList<>(); 
                          
                          Map<String, Object> map = new HashMap<String, Object>();
                          map.put("recipientNo", sendUser.get("TELNO")); 
-               
+                         
+                         smsSendList.add((String) sendUser.get("TELNO"));
+                         
                          Map<String, Object> templateParameter = new HashMap<String, Object>();
                          templateParameter.put("nm", sendUser.get("NM"));
                          templateParameter.put("tchaidNm", sendUser.get("PACKAGE_NM"));
@@ -1069,7 +1078,9 @@ public class BatchJobServiceImpl implements BatchJobService {
                          String recipientListStr = mapper.writeValueAsString(recipientList);
                          
                          alimtalkNhnService.sendAlimtalk("keep-019", (String) sendUser.get("SEND_DT"), recipientListStr);
+                         
                      }
+                     
                      if(sendUser.get("EML") != null && !"".equals(sendUser.get("EML"))) {
                          Context context = new Context();
                          context.setVariable("title", "[환경보전협회] 대여하신 " + sendUser.get("PACKAGE_NM") + " 의 후기를 남겨주세요.");
@@ -1095,6 +1106,16 @@ public class BatchJobServiceImpl implements BatchJobService {
                          Map<String, Object> resMap = mailService.sendMail(mailVo); // 이메일 발송
                      }
                  }
+                 
+                 if(smsSendList.size() > 0) {
+                     String smsSendDt = (String) sendUserList.get(0).get("SEND_DT");
+                     String smsMsg = "[환경보전협회] 국가환경교육 통합플랫폼에서 교구 대여 만족도를 평가해주세요.";
+                     String[] phoneList = smsSendList.toArray(new String[smsSendList.size()]);
+                     
+                     smsService.sendSms(smsMsg, phoneList, smsSendDt);
+                 }
+                 
+                 
              }
          }
 }
