@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
-import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
+import com.kbrainc.plum.mng.resveReqst.model.ResveReqstVo;
 
 /**
 * 시설 Dao 클래스
@@ -111,7 +111,6 @@ public interface FcltMngDao {
     * @return int
     */
     public int deleteFcltMng(FcltMngVo fcltMngVo) throws Exception;
-    
     /**
      * 공간 목록 조회
      *
@@ -122,4 +121,35 @@ public interface FcltMngDao {
      * @return List<FcltMngVo>
      */
      public List<FcltMngVo> selectFcltMngSpceList(FcltMngVo fcltMngVo) throws Exception;
+     /**
+      * 공간 일괄 삭제
+      *
+      * @Title : deleteSpceByFclid
+      * @Description : 공간 일괄 삭제
+      * @param fcltMngVo 시설 객체
+      * @throws Exception 예외
+      * @return int
+      */
+      public int deleteSpceByFclid(FcltMngVo fcltMngVo) throws Exception;
+      /**
+       * 공간 예약 내역 여부 일괄 확인
+       *
+       * @Title : deleteSpceByFclid
+       * @Description : 공간 일괄 삭제
+       * @param fcltMngVo 시설 객체
+       * @throws Exception 예외
+       * @return int
+       */
+      public String isThereSpceRsvtByFclids(FcltMngVo fcltMngVo) throws Exception;
+      /**
+       * 시설 후기 내역 호출
+       *
+       * @Title : selectFcltMngReviewList
+       * @Description : 시설 후기 내역 호출
+       * @param fcltMngVo 시설 객체
+       * @throws Exception 예외
+       * @return List<ResveReqstVo> 객체
+       */
+      public List<ResveReqstVo> selectFcltMngReviewList(FcltMngVo fcltMngVo) throws Exception;
+      
 }

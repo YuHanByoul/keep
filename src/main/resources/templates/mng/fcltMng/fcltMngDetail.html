@@ -6,11 +6,15 @@
 	        <li class="nav-item" id="fclt_tab">
 	            <a class="nav-link fclt active" href="javascript:moveTab('fclt')"><strong>시설정보</strong></a>
 	        </li>
-	        <!-- <th:block th:if ="${spceList.size() > 0}"> -->
+	        
             <li class="nav-item" id="spce_tab">
                 <a class="nav-link spce" href="javascript:moveTab('spce')"><strong>공간정보</strong></a>
             </li>
-            <!-- </th:block> -->
+            
+            <li class="nav-item" id="review_tab">
+                <a class="nav-link review" href="javascript:moveTab('review')"><strong>후기내역</strong></a>
+            </li>
+            
 	    </ul>
   </div>
 
@@ -26,28 +30,39 @@
 	var currentTab ="fclt";
 	var updateUrl ="/mng/fcltMng/fcltMngUpdate.html?fcltid="+fcltid;
 	var spceListUrl ="/mng/fcltMng/fcltMngSpceList.html?fcltid="+fcltid;
+	var reviewListUrl ="/mng/fcltMng/fcltMngReviewList.html?fcltid="+fcltid;
 	
 	 $(function(){
-
        if(mode == "fclt"){
            $("#tab_content_area").load(updateUrl);
-       }else{
+       }else if(mode == "spce"){
            $("#tab_content_area").load(spceListUrl);
+       }else{
+           $("#tab_content_area").load(reviewListUrl);
        }
        setTimeout(function(){scrollIntoView('contentPanel');},300 )
-       
    });
 	   
    function initTab() {
          var tabFlag = false;
+         /*[# sec:authorize-url="/mng/fcltMng/fcltMngUpdate.html"]*/
          if(tabFlag == false) {
         	 moveTab("fclt");
              tabFlag = true;
          }
+         /*[/]*/
+         /*[# sec:authorize-url="/mng/fcltMng/fcltMngSpceList.html"]*/
          if(tabFlag == false) {
         	 moveTab("spce");
              tabFlag = true;
          }
+         /*[/]*/
+         /*[# sec:authorize-url="/mng/fcltMng/fcltMngReviewList.html"]*/
+         if(tabFlag == false) {
+        	 moveTab("review");
+             tabFlag = true;
+         }
+         /*[/]*/
    }
    
    var moveTab =(mode)=>{
@@ -59,13 +74,15 @@
 		if(mode=="fclt"){
 			currentTab = "fclt"
 			$("#tab_content_area").load(updateUrl);
-		}else{
+		}else if(mode=="spce"){
 			currentTab = "spce"
 			$("#tab_content_area").load(spceListUrl);
-		}
+		}else{
+            currentTab = "review"
+                $("#tab_content_area").load(reviewListUrl);
+        }
 		$("."+currentTab).addClass("active");
        setTimeout(function(){scrollIntoView('contentPanel');},300 )  
-
 	}
-	    
+	
 </script>

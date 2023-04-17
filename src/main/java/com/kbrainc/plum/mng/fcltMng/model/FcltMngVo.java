@@ -40,20 +40,9 @@ public class FcltMngVo extends ParentRequestVo {
     /** 로그인사용자정보 */
     private UserVo user;
     
-    /** 사용자 아이읻 */
+    /** 사용자 아이디 */
     private String acnt;
 
-    /** 수정 일시 */
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
-    private Date mdfcnDt;
-    /** 수정자 아이디 */
-    private int mdfrid;
-    /** 등록 일시 */
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
-    private Date regDt;
-    /** 등록자아이디 */
-    private int rgtrid;
-    
     /** MODE */
     private String mode;
     
@@ -65,6 +54,7 @@ public class FcltMngVo extends ParentRequestVo {
     
     /** 시설 */
     @NotEmpty(message = "시설명을 입력해주십시오.")
+    @Size(max = 50, message = "시설명은 50자를 넘을 수 없습니다.")
     private String fcltNm;
     
     /** 시설번호 */
@@ -139,6 +129,20 @@ public class FcltMngVo extends ParentRequestVo {
     /** 중복 시설명 수 */
     public static Integer dupCnt;
     
+    /** 수정 일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    private Date mdfcnDt;
+    
+    /** 수정자 아이디 */
+    private int mdfrid;
+    
+    /** 등록 일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    private Date regDt;
+    
+    /** 등록자아이디 */
+    private int rgtrid;
+    
     /** 검색 관련*/
     private String searchSeCd;
     private String searchKeyword;
@@ -150,4 +154,7 @@ public class FcltMngVo extends ParentRequestVo {
 
     /** 시도 명 */
     private String ctprvnCd;
+    
+    /** 시설 ids */
+    private String[] fcltids;
 }

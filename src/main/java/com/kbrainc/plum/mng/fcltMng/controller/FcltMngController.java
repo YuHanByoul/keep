@@ -5,10 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import com.kbrainc.plum.cmm.service.CommonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,10 +17,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
+import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.mng.fcltMng.model.FcltMngVo;
 import com.kbrainc.plum.mng.fcltMng.service.FcltMngService;
 import com.kbrainc.plum.mng.inst.model.InstVo;
 import com.kbrainc.plum.mng.inst.service.InstService;
+import com.kbrainc.plum.mng.resveReqst.model.ResveReqstVo;
 import com.kbrainc.plum.mng.spce.model.SpceVo;
 import com.kbrainc.plum.mng.spce.service.SpceService;
 import com.kbrainc.plum.rte.constant.Constant;
@@ -145,6 +145,8 @@ public class FcltMngController {
     public Map<String, Object> selectFcltMngSpceList(FcltMngVo fcltMngVo, @UserInfo UserVo user, SpceVo spceVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         List<SpceVo> result = null;
+        
+        fcltMngVo.setUser(user);
         
         // 공간 보유개수 조회
         spceVo.setFcltid(fcltMngVo.getFcltid());
@@ -302,6 +304,8 @@ public class FcltMngController {
         Map<String, Object> resultMap = new HashMap<>();
         List<FcltMngVo> result = null;
         
+        fcltMngVo.setUser(user);
+        
         // 기관회원일 경우
         if( user.getInstid() != null ) {
             fcltMngVo.setInstid(user.getInstid());
@@ -374,31 +378,15 @@ public class FcltMngController {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         int retVal = 0;
         
-        // 시설 삭제 전, 공간부터 삭제(공간삭제 전 공간예약있는지부터 조회해서 삭제하기때문에 공간삭제 바로 호출)
-        // 공간 보유개수 조회
-        spceVo.setFcltid(fcltMngVo.getFcltid());
-        spceVo.setUser(user);
-        List<SpceVo> spceList = spceService.selectSpceList(spceVo);
-
-        // 공간이 1개라도 있을시, 예약까지 조회
-        if( spceList.size() > 0 ) {
-            String[] spceids = new String[spceList.size()];
-            for( int i = 0; i < spceList.size(); i++ ) {
-                spceids[i] = Integer.toString(spceList.get(i).getSpceid());
-            }
-            
-            spceVo.setSpceids(spceids);
-            
-            if(spceService.isThereSpceRsvt(spceVo).equals("Y")) {
-                resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-                resultMap.put("msg", "예약 신청(내역)건이 존재하여 삭제할 수 없습니다.");
-                return resultMap;
-            }
-            
-            retVal = spceService.deleteSpce(spceVo);
+        fcltMngVo.setUser(user);
+        
+        if(fcltMngService.isThereSpceRsvtByFclids(fcltMngVo).equals("Y")) {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "예약 신청(내역)건이 존재하여 삭제할 수 없습니다.");
+            return resultMap;
         }
         
-        retVal = fcltMngService.deleteFcltMng(fcltMngVo);
+        retVal += fcltMngService.deleteFcltMng(fcltMngVo);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -407,6 +395,49 @@ public class FcltMngController {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
             resultMap.put("msg", "삭제에 실패했습니다.");
         }
+
+        return resultMap;
+    }
+    
+    /**
+     * 후기 조회 탭 
+     *
+     * @Title       : fcltMngSpceList
+     * @Description : 후기 조회 탭
+     * @param model 모델객체
+     * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/fcltMng/fcltMngReviewList.html")
+    public String fcltMngReviewList() throws Exception {
+        return "mng/fcltMng/fcltMngReviewList";
+    }
+    
+    
+    /**
+    * 공간정보 조회 기능
+    *
+    * @Title : selectFcltMngSpceList
+    * @Description : 공간정보 조회 기능
+    * @param fcltMngVo 시설 객체
+    * @throws Exception 예외
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/mng/fcltMng/selectFcltReviewList.do")
+    @ResponseBody
+    public Map<String, Object> selectFcltMngReviewList(FcltMngVo fcltMngVo, @UserInfo UserVo user, SpceVo spceVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        List<ResveReqstVo> result = null;
+        
+        fcltMngVo.setUser(user);
+        result = fcltMngService.selectFcltMngReviewList(fcltMngVo);
+        
+        if (result.size() > 0) {
+            resultMap.put("totalCount", (result.get(0).getTotalCount()));
+        } else {
+            resultMap.put("totalCount", 0);
+        }
+        resultMap.put("list", result);
 
         return resultMap;
     }
