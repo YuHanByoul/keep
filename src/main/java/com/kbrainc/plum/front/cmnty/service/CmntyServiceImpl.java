@@ -214,6 +214,7 @@ public class CmntyServiceImpl extends PlumAbstractServiceImpl implements CmntySe
      * @return boolean
      */
     @Override
+    @Transactional
     public boolean saveCmnty(CmntyVo cmntyVo) {
         boolean result = false;
         CmntyBbsVo cmntyBbsVo = new CmntyBbsVo();
@@ -369,6 +370,7 @@ public class CmntyServiceImpl extends PlumAbstractServiceImpl implements CmntySe
      * @return boolean
      */
     @Override
+    @Transactional
     public boolean insertCmnt(CmntyCmntVo paramVo) {
         boolean result = false;
         if(paramVo.getCmntid() != null){
