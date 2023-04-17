@@ -78,6 +78,10 @@
             <if test="searchUseYn != null and searchUseYn != ''">
             AND A.USE_YN = #{searchUseYn}
             </if>
+            <if test='user.roleInfo.trgtInstCd == "S"'>
+            AND C.INST_ID = #{user.instid}
+            </if>
+            
         <include refid="PaginationMapper.footer"/>
     </select>
     
@@ -231,7 +235,83 @@
     <delete id="deleteFcltMng" parameterType="FcltMngVo">
         /* FcltMngDao.deleteFcltMng */
 		DELETE FROM TB_FCL_FCLT 
-        WHERE FCLTID = #{fcltid}
+        WHERE FCLTID IN(
+            <foreach item="item" collection="fcltids"  separator=",">
+                #{item}
+             </foreach>
+        )
     </delete>
+    
+    <!-- 공간 일괄 삭제 --> 
+    <update id="deleteSpceByFclid" parameterType="FcltMngVo" >
+          /* FcltMngDao.deleteSpceByFclid */
+          DELETE FROM TB_FCL_SPCE
+           WHERE SPCEID IN
+           (
+               SELECT SPCEID FROM TB_FCL_SPCE WHERE FCLTID IN (
+                <foreach item="item" collection="fcltids"  separator=",">
+                    #{item}
+                 </foreach>
+               )
+            )
+    </update>
+    <!-- 공간 예약 내역 여부 일괄 확인 -->
+    <select id="isThereSpceRsvtByFclids" parameterType="FcltMngVo" resultType="String">
+          /* FcltMngDao.isThereSpceRsvtByFclids */
+          SELECT 
+              CASE WHEN COUNT(A.APLYID ) > 0 THEN 'Y'
+                   ELSE 'N'
+              END 
+            FROM 
+             TB_FCL_APLY_RSVTDE A
+             INNER JOIN TB_FCL_SPCE_APLY B
+             ON A.APLYID = B.APLYID 
+           WHERE 1=1
+             AND RSVTDEID IN (
+               SELECT 
+                   A.RSVTDEID 
+                 FROM 
+                   TB_FCL_SPCE_RSVTDE A
+                WHERE A.SPCEID IN (
+                SELECT SPCEID FROM TB_FCL_SPCE WHERE FCLTID IN (
+                <foreach item="item" collection="fcltids"  separator=",">
+                    #{item}
+                 </foreach>
+               )
+                )  
+            )
+    </select>
+    
+    <!-- 시설 후기 조회 -->
+    <select id="selectFcltMngReviewList" parameterType="FcltMngVo" resultType="ResveReqstVo">
+        /* FcltMngDao.selectFcltMngReviewList */
+        <include refid="PaginationMapper.header"/>
+            SELECT 
+               A.APLYID 
+               ,A.APLCNTID 
+               ,A.APLCNT_NM 
+               ,A.RVW_CN 
+               ,A.RVW_SCR  
+               ,A.RVW_DT
+               ,D.FCLTID
+               ,D.SPCE_NM 
+               ,E.ACNT 
+              FROM 
+               TB_FCL_SPCE_APLY A
+               INNER JOIN TB_FCL_APLY_RSVTDE B
+               ON A.APLYID = B.APLYID
+               INNER JOIN TB_FCL_SPCE_RSVTDE C
+               ON B.RSVTDEID = C.RSVTDEID 
+               INNER JOIN TB_FCL_SPCE D
+               ON C.SPCEID = D.SPCEID
+               INNER JOIN TB_CMM_USER E
+               ON A.APLCNTID = E.USERID 
+             WHERE 1=1 
+               AND A.RVW_SCR IS NOT NULL
+               AND A.RVW_DT IS NOT NULL
+               AND D.FCLTID = #{fcltid}
+             GROUP BY A.APLYID 
+        <include refid="PaginationMapper.footer"/>
+    </select>
     
 </mapper>

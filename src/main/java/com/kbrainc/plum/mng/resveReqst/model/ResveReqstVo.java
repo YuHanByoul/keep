@@ -201,9 +201,15 @@ public class ResveReqstVo extends ParentRequestVo {
     /** 입금정보 결제방법 */
     private int hstryid;
 
-
-
-
+    /** 후기 내용 */
+    private String rvwCn;
+    
+    /** 후기점수 */
+    private Integer rvwScr;
+    
+    /** 후기 등록 일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    private Date rvwDt;
 
 
     /** MODE */
@@ -281,7 +287,7 @@ public class ResveReqstVo extends ParentRequestVo {
 
     /** 아이디 */
     private String acnt;
-
+    
     private String alldayYn;
 
     /** 중복 시설명 수 */
