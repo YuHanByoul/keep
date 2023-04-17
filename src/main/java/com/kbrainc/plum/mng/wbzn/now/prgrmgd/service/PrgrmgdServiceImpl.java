@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.wbzn.now.prgrmgd.model.PrgrmgdDao;
 import com.kbrainc.plum.mng.wbzn.now.prgrmgd.model.PrgrmgdVo;
@@ -39,6 +40,7 @@ public class PrgrmgdServiceImpl extends PlumAbstractServiceImpl implements Prgrm
     * @throws Exception 예외
     * @return List<EnveduVo>
     */
+    @Override
     public List<PrgrmgdVo> selectPrgrmgdList(PrgrmgdVo prgrmgdVo) throws Exception {
         return prgrmgdDao.selectPrgrmgdList(prgrmgdVo);
     }
@@ -52,6 +54,8 @@ public class PrgrmgdServiceImpl extends PlumAbstractServiceImpl implements Prgrm
     * @throws Exception 예회
     * @return int
     */
+    @Override
+    @Transactional
     public int insertPrgrmgd(PrgrmgdVo prgrmgdVo) throws Exception{
         return prgrmgdDao.insertPrgrmgd(prgrmgdVo);
     }
@@ -65,6 +69,7 @@ public class PrgrmgdServiceImpl extends PlumAbstractServiceImpl implements Prgrm
     * @throws Exception 예외
     * @return PrgrmgdVo
     */
+    @Override
     public PrgrmgdVo selectPrgrmgdInfo(PrgrmgdVo prgrmgdVo) throws Exception{
         return prgrmgdDao.selectPrgrmgdInfo(prgrmgdVo);
     }
@@ -78,6 +83,8 @@ public class PrgrmgdServiceImpl extends PlumAbstractServiceImpl implements Prgrm
     * @throws Exception 예외
     * @return int
     */
+    @Override
+    @Transactional
     public int updatePrgrmgd(PrgrmgdVo prgrmgdVo) throws Exception{
         return prgrmgdDao.updatePrgrmgd(prgrmgdVo);
     }

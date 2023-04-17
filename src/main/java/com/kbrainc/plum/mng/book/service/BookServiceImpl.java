@@ -41,6 +41,7 @@ public class BookServiceImpl extends PlumAbstractServiceImpl implements BookServ
     * @throws Exception 예외
     * @return List<BookVo>
     */
+    @Override
     public List<BookVo> selectBookList(BookVo bookVo) throws Exception {
         return bookDao.selectBookList(bookVo);
     };
@@ -54,6 +55,7 @@ public class BookServiceImpl extends PlumAbstractServiceImpl implements BookServ
     * @throws Exception 예외
     * @return BookVo
     */
+    @Override
     public BookVo selectBookInfo(BookVo bookVo) throws Exception {
         return bookDao.selectBookInfo(bookVo);
     }
@@ -67,6 +69,7 @@ public class BookServiceImpl extends PlumAbstractServiceImpl implements BookServ
     * @throws Exception 예외
     * @return int
     */
+    @Override
     @Transactional
     public int insertBook(BookVo bookVo) throws Exception {
         int resInt = 0;
@@ -84,6 +87,7 @@ public class BookServiceImpl extends PlumAbstractServiceImpl implements BookServ
     * @throws Exception 예외
     * @return int
     */
+    @Override
     @Transactional
     public int updateBook(BookVo bookVo) throws Exception {
         int resInt = 0;
@@ -102,6 +106,7 @@ public class BookServiceImpl extends PlumAbstractServiceImpl implements BookServ
     * @throws Exception 예외
     * @return int
     */
+    @Override
     @Transactional
     public int deleteBook(BookVo bookVo) throws Exception {
         int resInt = 0;
@@ -119,6 +124,7 @@ public class BookServiceImpl extends PlumAbstractServiceImpl implements BookServ
     * @throws Exception 예외
     * @return List<BookSbjctVo>
     */
+    @Override
     public List<BookSbjctVo> selectBookSbjctList(BookVo bookVo) throws Exception{
         return bookDao.selectBookSbjctList(bookVo);
     }
@@ -131,6 +137,8 @@ public class BookServiceImpl extends PlumAbstractServiceImpl implements BookServ
      * @throws Exception 예외
      * @return int
      */
+    @Override
+    @Transactional
     public int deleteBookSbjct(BookVo bookVo) throws Exception{
         return bookDao.deleteBookSbjct(bookVo);
     }
@@ -143,6 +151,8 @@ public class BookServiceImpl extends PlumAbstractServiceImpl implements BookServ
      * @throws Exception 예외
      * @return int
      */
+    @Override
+    @Transactional
     public int insertBookSbjct(BookVo bookVo) throws Exception{
         return bookDao.insertBookSbjct(bookVo);
     }

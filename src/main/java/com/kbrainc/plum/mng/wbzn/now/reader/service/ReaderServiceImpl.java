@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.wbzn.now.reader.model.ReaderDao;
 import com.kbrainc.plum.mng.wbzn.now.reader.model.ReaderVo;
@@ -39,6 +40,7 @@ public class ReaderServiceImpl extends PlumAbstractServiceImpl implements Reader
     * @throws Exception 예외
     * @return List<EnveduVo>
     */
+    @Override
     public List<ReaderVo> selectReaderList(ReaderVo readerVo) throws Exception {
         return readerDao.selectReaderList(readerVo);
     }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.wbzn.now.banner.model.EnvBannerDao;
 import com.kbrainc.plum.mng.wbzn.now.banner.model.EnvBannerVo;
@@ -39,6 +40,7 @@ public class EnvBannerServiceImpl extends PlumAbstractServiceImpl implements Env
     * @throws Exception 예외
     * @return List<BannerVo>
     */
+    @Override
     public List<EnvBannerVo> selectBannerList(EnvBannerVo bannerVo) throws Exception {
         return bannerDao.selectBannerList(bannerVo);
     }
@@ -52,6 +54,7 @@ public class EnvBannerServiceImpl extends PlumAbstractServiceImpl implements Env
     * @throws Exception
     * @return List<BannerVo>
     */
+    @Override
     public List<EnvBannerVo> selectExpsrBannerList(EnvBannerVo bannerVo) throws Exception {
         return bannerDao.selectExpsrBannerList(bannerVo);
     }
@@ -65,6 +68,8 @@ public class EnvBannerServiceImpl extends PlumAbstractServiceImpl implements Env
     * @throws Exception 예외
     * @return int
     */
+    @Override
+    @Transactional
     public int updateExpsrBanner(EnvBannerVo bannerVo) throws Exception {
         return bannerDao.updateExpsrBanner(bannerVo);
     }
@@ -78,6 +83,8 @@ public class EnvBannerServiceImpl extends PlumAbstractServiceImpl implements Env
     * @throws Exception 예외
     * @return int
     */
+    @Override
+    @Transactional
     public int updateExpsrBannerSort(EnvBannerVo bannerVo) throws Exception {
         return bannerDao.updateExpsrBannerSort(bannerVo);
     }
@@ -92,6 +99,8 @@ public class EnvBannerServiceImpl extends PlumAbstractServiceImpl implements Env
     * @throws Exception
     * @return int
     */
+    @Override
+    @Transactional
     public int insertBanner(EnvBannerVo bannerVo) throws Exception {
         return bannerDao.insertBanner(bannerVo);
     }
@@ -105,6 +114,7 @@ public class EnvBannerServiceImpl extends PlumAbstractServiceImpl implements Env
     * @throws Exception 예외
     * @return BannerVo
     */
+    @Override
     public EnvBannerVo selectBannerInfo(EnvBannerVo bannerVo) throws Exception {
         return bannerDao.selectBannerInfo(bannerVo);
     }
@@ -118,6 +128,8 @@ public class EnvBannerServiceImpl extends PlumAbstractServiceImpl implements Env
     * @throws Exception
     * @return int
     */
+    @Override
+    @Transactional
     public int updateBanner(EnvBannerVo bannerVo) throws Exception {
         return bannerDao.updateBanner(bannerVo);
     }
@@ -131,6 +143,8 @@ public class EnvBannerServiceImpl extends PlumAbstractServiceImpl implements Env
     * @throws Exception 에외
     * @return int
     */
+    @Override
+    @Transactional
     public int deleteBanner(EnvBannerVo bannerVo) throws Exception {
         return bannerDao.deleteBanner(bannerVo);
     }

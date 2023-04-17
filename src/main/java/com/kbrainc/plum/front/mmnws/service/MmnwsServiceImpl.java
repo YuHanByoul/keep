@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import org.apache.ibatis.type.Alias;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.front.mmnws.model.MmnwsDao;
 import com.kbrainc.plum.front.mmnws.model.MmnwsVo;
@@ -58,6 +59,7 @@ public class MmnwsServiceImpl extends PlumAbstractServiceImpl implements MmnwsSe
     * @return int
     */
     @Override
+    @Transactional
     public int insertMmnws(MmnwsVo mmnwsVo) throws Exception {
         return mmnwsDao.insertMmnws(mmnwsVo);
     }
@@ -86,6 +88,7 @@ public class MmnwsServiceImpl extends PlumAbstractServiceImpl implements MmnwsSe
     * @return int
     */
     @Override
+    @Transactional
     public int updateMmnws(MmnwsVo mmnwsVo) throws Exception {
         return mmnwsDao.updateMmnws(mmnwsVo);
     }
@@ -100,6 +103,7 @@ public class MmnwsServiceImpl extends PlumAbstractServiceImpl implements MmnwsSe
     * @return int
     */
     @Override
+    @Transactional
     public int deleteMmnws(String[] nscvrgids) throws Exception {
         return mmnwsDao.deleteMmnws(nscvrgids);
     }

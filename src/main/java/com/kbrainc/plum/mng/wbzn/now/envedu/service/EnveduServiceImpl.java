@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.wbzn.now.envedu.model.EnveduDao;
 import com.kbrainc.plum.mng.wbzn.now.envedu.model.EnveduVo;
@@ -39,6 +40,7 @@ public class EnveduServiceImpl extends PlumAbstractServiceImpl implements Envedu
     * @throws Exception 예외
     * @return List<EnveduVo>
     */
+    @Override
     public List<EnveduVo> selectEnveduList(EnveduVo enveduVo) throws Exception {
         return envprgrmDao.selectEnveduList(enveduVo);
     }
@@ -52,6 +54,8 @@ public class EnveduServiceImpl extends PlumAbstractServiceImpl implements Envedu
     * @throws Exception 예회
     * @return int
     */
+    @Override
+    @Transactional
     public int insertEnvedu(EnveduVo enveduVo) throws Exception{
         return envprgrmDao.insertEnvedu(enveduVo);
     }
@@ -65,6 +69,7 @@ public class EnveduServiceImpl extends PlumAbstractServiceImpl implements Envedu
     * @throws Exception 예외
     * @return EnveduVo
     */
+    @Override
     public EnveduVo selectEnveduInfo(EnveduVo enveduVo) throws Exception{
         return envprgrmDao.selectEnveduInfo(enveduVo);
     }
@@ -78,6 +83,8 @@ public class EnveduServiceImpl extends PlumAbstractServiceImpl implements Envedu
     * @throws Exception 예외
     * @return int
     */
+    @Override
+    @Transactional
     public int updateEnvedu(EnveduVo enveduVo) throws Exception{
         return envprgrmDao.updateEnvedu(enveduVo);
     }

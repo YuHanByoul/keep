@@ -6,6 +6,7 @@ import javax.annotation.Resource;
 
 import org.apache.ibatis.type.Alias;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.front.cntnts.model.CntntsDao;
 import com.kbrainc.plum.front.cntnts.model.CntntsVo;
@@ -42,6 +43,7 @@ public class CntntsServiceImpl extends PlumAbstractServiceImpl implements Cntnts
     * @throws Exception 예외
     * @return List<CntntsVo>
     */
+    @Override
     public List<CntntsVo> selectCntntsList(CntntsVo cntntsVo) throws Exception {
         return cntntsDao.selectCntntsList(cntntsVo);
     };
@@ -55,6 +57,7 @@ public class CntntsServiceImpl extends PlumAbstractServiceImpl implements Cntnts
     * @throws Exception 예외
     * @return CntntsVo
     */
+    @Override
     public CntntsVo selectCntntsInfo(CntntsVo cntntsVo) throws Exception {
         return cntntsDao.selectCntntsInfo(cntntsVo);
     }
@@ -68,6 +71,8 @@ public class CntntsServiceImpl extends PlumAbstractServiceImpl implements Cntnts
     * @throws Exception 예외
     * @return int
     */
+    @Override
+    @Transactional
     public int updateCntntsHits(CntntsVo cntntsVo) throws Exception {
         return cntntsDao.updateCntntsHits(cntntsVo);
     };
@@ -81,6 +86,7 @@ public class CntntsServiceImpl extends PlumAbstractServiceImpl implements Cntnts
     * @throws Exception 예외
     * @return List<CntntsVo>
     */
+    @Override
     public List<CntntsVo> selectCntntsFileList(CntntsVo cntntsVo) throws Exception {
         return cntntsDao.selectCntntsFileList(cntntsVo);
     };

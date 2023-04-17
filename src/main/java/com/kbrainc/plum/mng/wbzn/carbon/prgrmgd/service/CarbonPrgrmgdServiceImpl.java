@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.wbzn.carbon.prgrmgd.model.CarbonPrgrmgdDao;
 import com.kbrainc.plum.mng.wbzn.carbon.prgrmgd.model.CarbonPrgrmgdVo;
@@ -39,6 +40,7 @@ public class CarbonPrgrmgdServiceImpl extends PlumAbstractServiceImpl implements
     * @throws Exception 예외
     * @return List<EnveduVo>
     */
+    @Override
     public List<CarbonPrgrmgdVo> selectPrgrmgdList(CarbonPrgrmgdVo prgrmgdVo) throws Exception {
         return prgrmgdDao.selectPrgrmgdList(prgrmgdVo);
     }
@@ -52,6 +54,8 @@ public class CarbonPrgrmgdServiceImpl extends PlumAbstractServiceImpl implements
     * @throws Exception 예회
     * @return int
     */
+    @Override
+    @Transactional
     public int insertPrgrmgd(CarbonPrgrmgdVo prgrmgdVo) throws Exception{
         return prgrmgdDao.insertPrgrmgd(prgrmgdVo);
     }
@@ -65,6 +69,7 @@ public class CarbonPrgrmgdServiceImpl extends PlumAbstractServiceImpl implements
     * @throws Exception 예외
     * @return PrgrmgdVo
     */
+    @Override
     public CarbonPrgrmgdVo selectPrgrmgdInfo(CarbonPrgrmgdVo prgrmgdVo) throws Exception{
         return prgrmgdDao.selectPrgrmgdInfo(prgrmgdVo);
     }
@@ -78,6 +83,8 @@ public class CarbonPrgrmgdServiceImpl extends PlumAbstractServiceImpl implements
     * @throws Exception 예외
     * @return int
     */
+    @Override
+    @Transactional
     public int updatePrgrmgd(CarbonPrgrmgdVo prgrmgdVo) throws Exception{
         return prgrmgdDao.updatePrgrmgd(prgrmgdVo);
     }
