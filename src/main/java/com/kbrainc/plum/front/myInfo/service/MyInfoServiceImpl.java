@@ -67,11 +67,15 @@ public class MyInfoServiceImpl extends PlumAbstractServiceImpl implements MyInfo
         
         // 맞춤환경정보 입력
         retVal += myInfoDao.deleteEnvfld(memberVo);
-        retVal += myInfoDao.insertEnvfld(memberVo);
+        if(memberVo.getEnvfldCds()!=null && memberVo.getEnvfldCds().length > 0) {
+            retVal += myInfoDao.insertEnvfld(memberVo);
+        }
         
         // 관심분야 입력
         retVal += myInfoDao.deleteItrstfld(memberVo);
-        retVal += myInfoDao.insertItrstfld(memberVo);
+        if(memberVo.getItrstfldCds()!=null && memberVo.getItrstfldCds().length > 0) {
+            retVal += myInfoDao.insertItrstfld(memberVo);
+        }
         
         return retVal;
     }
