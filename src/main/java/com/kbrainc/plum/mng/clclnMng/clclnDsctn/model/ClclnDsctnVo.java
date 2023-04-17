@@ -37,13 +37,13 @@ public class ClclnDsctnVo extends ParentRequestVo {
     private List<ClclnDsctnVo> clclnDsctnVoList;
     
     /** 내역아이디 */
-    private String dsctnid;
+    private Integer dsctnid;
     /** 분야_코드 */
     private String fldCd;
     /** 분야_코드명 */
     private String fldNm;
     /** 공모아이디 */
-    private String pcntstid;
+    private Integer pcntstid;
     /** 공모명 */
     private String pcntstNm;
     /** 진행상태_설명 */
@@ -154,6 +154,10 @@ public class ClclnDsctnVo extends ParentRequestVo {
     private String atchFileid;
     /** 제출상태_완료ID */
     private String completeAplyId;
+    
+    /** 통장사본 첨부파일 */
+    private Integer bnkbFileid;
+    
     /** 수정_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date mdfcnDt;

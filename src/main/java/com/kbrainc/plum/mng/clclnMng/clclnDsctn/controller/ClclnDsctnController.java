@@ -1,5 +1,6 @@
 package com.kbrainc.plum.mng.clclnMng.clclnDsctn.controller;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,12 +19,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.mng.bizAply.req.model.SupplementVo;
 import com.kbrainc.plum.mng.clclnMng.clclnDsctn.model.ClclnDsctnVo;
 import com.kbrainc.plum.mng.clclnMng.clclnDsctn.service.ClclnDsctnService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.util.StringUtil;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 
 /**
@@ -46,6 +50,9 @@ public class ClclnDsctnController {
     
     @Autowired
     private ClclnDsctnService clclnDsctnService;
+    
+    @Autowired
+    private FileService fileService;
     
     /**
     * 정산내역관리 리스트화면으로 이동
@@ -120,6 +127,7 @@ public class ClclnDsctnController {
 
         ClclnDsctnVo result = new ClclnDsctnVo();
         ClclnDsctnVo calResult = new ClclnDsctnVo();
+        List<FileVo> bnkbFileRsltList = null;
         
         List<ClclnDsctnVo> resultList = null;
         List<ClclnDsctnVo> resultDtlList = null;
@@ -168,9 +176,26 @@ public class ClclnDsctnController {
             StringBuffer atchFileBtn = new StringBuffer();
             atchFileBtn.append("<div class ='label label-inverse text-white' id='" + result.getAtchFileid() + "'>");
             atchFileBtn.append("<a href=javascript:downloadFileByFileid('" + result.getAtchFileid() + "','" + result.getAtchFileIdntfcKey() + "') class='text-white'>" + result.getAtchOrginlFileNm() + "&nbsp;&nbsp;</a>");
-            atchFileBtn.append("<a href=javascript:fn_deleteFileList('" + result.getAtchFileid() + "','" + result.getAtchFileIdntfcKey() + "') class='text-white'>X</a></div>");
+            atchFileBtn.append("<a href=javascript:fn_deleteAtchFileList('" + result.getAtchFileid() + "','" + result.getAtchFileIdntfcKey() + "') class='text-white'>X</a></div>");
             model.addAttribute("atchFileBtn", atchFileBtn);
         }
+        if (!StringUtil.nvl(result.getBnkbFileid()).equals("") && !StringUtil.nvl(result.getBnkbFileid()).equals(0)) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(result.getBnkbFileid());
+            
+            bnkbFileRsltList = fileService.getFileList(fileVo);
+            
+            if(bnkbFileRsltList.get(0).getFileIdntfcKey() != null) {
+                StringBuffer bnkbFileBtn = new StringBuffer();
+                bnkbFileBtn.append("<div class ='label label-inverse text-white' id='" + bnkbFileRsltList.get(0).getFileid() + "'>");
+                bnkbFileBtn.append("<a href=javascript:downloadFileByFileid('" + bnkbFileRsltList.get(0).getFileid() + "','" + bnkbFileRsltList.get(0).getFileIdntfcKey() + "') class='text-white'>" + bnkbFileRsltList.get(0).getOrginlFileNm() + "&nbsp;&nbsp;</a>");
+                bnkbFileBtn.append("<a href=javascript:fn_deleteBnkbFileList('" + bnkbFileRsltList.get(0).getFileid() + "','" + bnkbFileRsltList.get(0).getFileIdntfcKey() + "') class='text-white'>X</a></div>");
+                model.addAttribute("bnkbFileBtn", bnkbFileBtn);
+            }
+            model.addAttribute("bankFile", fileService.getFileList(fileVo).get(0));
+        } else {
+            model.addAttribute("bankFile", null);
+        }        
 
         model.addAttribute("clclnDsctn", result);
         model.addAttribute("calculateInfo", calResult);
