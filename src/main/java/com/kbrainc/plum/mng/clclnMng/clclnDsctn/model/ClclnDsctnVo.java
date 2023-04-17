@@ -151,7 +151,7 @@ public class ClclnDsctnVo extends ParentRequestVo {
     /** 집행비율_합계 */
     private double implRtSum;      
     /** 첨부파일 */
-    private String atchFileid;
+    private Integer atchFileid;
     /** 제출상태_완료ID */
     private String completeAplyId;
     
