@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/mng/mobileSubLayout"
+>
+<body>
+<div layout:fragment="content">
+
+    <div class="page-body">
+        <ul class="nav nav-tabs tabs gray-tabs" role="tablist" id="tabTitle">
+            <!-- 체크리스트 -->
+            <li class="nav-item" th:each="title , a : ${checkList}" th:if="${title.treeOrd == 1}">
+                <a class="nav-link" data-bs-toggle="tab" href="#home1" role="tab" th:text="${title.cn}"></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#messages1" role="tab">결과 및 심사평</a>
+            </li>
+        </ul>
+
+        <div class="tab-content tabs" id="tabContent">
+            <!-- 체크리스트 -->
+            <div class="tab-pane" role="tabpanel" th:each="title , a : ${checkList}" th:if="${title.treeOrd==2}" th:checkListKey="${title.lv2key}">
+                <div class="card">
+                    <div class="card-header p-b-0">
+                        <h3 class="sub-title">
+                            <div class="col"><strong th:text="${title.cn}"></strong></div>
+                        </h3>
+                    </div>
+                    <div class="card-block">
+                        <div class="row">
+                            <div class="col-12 mb-3" th:each="row, b : ${checkList}" th:if="${row.treeOrd==3 and title.lv2key==row.lv2key}">
+                                <div class="mb-0 form-group row">
+                                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong th:id="${'cnY' + row.lv1key}" th:text="${row.cn}"></strong></div>
+                                    <div class="col-12">
+                                        <div class="btn-group-sm">
+                                            <input type="radio" class="btn-check" th:checked="${row.scr > 0 ? true:false}" th:data-ordr="${row.ordr}"
+                                                   th:name="${'cRdoY' + row.lv2key + '_'+ row.qitemid}" th:id="${'cRdoY' + row.lv2key + '_'+  row.qitemid}"
+                                                   th:attr="altm=${row.altm}, lv1key=${row.lv1key} " value="Y" autocomplete="off">
+                                            <label class="btn btn-disabled d-block" th:for="${'cRdoY' + row.lv2key + '_'+  row.qitemid}">예</label>
+                                        </div>
+                                        <div class="btn-group-sm mt-1">
+                                            <input type="radio" class="btn-check" th:checked="${row.scr == 0 ? true:false}"
+                                                   th:name="${'cRdoN' + row.lv2key + '_'+  row.qitemid}" th:id="${'cRdoN' + row.lv2key + '_'+  row.qitemid}" th:attr="altm=${row.altm}" value="N" autocomplete="off">
+                                            <label class="btn btn-disabled d-block" th:for="${'cRdoN' + row.lv2key + '_'+  row.qitemid}">아니오</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-block-small row justify-content-between">
+                    <div class="col-auto">
+                        <button class="btn btn-disabled prevBtn" disabled="" th:btnBeforeKey="${title.lv2key}">이전</button>
+                    </div>
+                    <div class="col-auto">
+                        <button class="btn btn-primary notifications nextBtn" data-type="danger" data-from="bottom" data-align="center" data-message="점검하지 않은 문항이 있습니다." th:btnAfterKey="${title.lv2key}">다음</button>
+                    </div>
+                </div>
+            </div>
+            <!-- [탭] 결과 및 심사평 -->
+            <div class="tab-pane" id="messages1" role="tabpanel">
+                <div class="card">
+                    <div class="card-header p-b-0">
+                        <h3 class="sub-title"><strong>점검 점수</strong></h3>
+                    </div>
+                    <div class="card-block">
+                        <div class="col-12 table-responsive">
+                            <table class="table table-framed table-bordered">
+                                <tbody><tr class="border-bottom-inverse" style="border-top:1px solid #404E67;">
+                                    <th class="text-center table-active" colspan="3">현장점검 세부점검표</th>
+                                </tr>
+                                <tr>
+                                    <th class="text-center table-light">항목</th>
+                                    <th class="text-center table-light">배점</th>
+                                    <th class="text-center table-light">획득</th>
+                                </tr>
+                                <tr>
+                                    <td class="text-center v-middle">프로그램 예산의 적절성</td>
+                                    <td class="text-center v-middle">5</td>
+                                    <td class="text-center v-middle text-c-blue">5</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center v-middle">교육자원의 적절성</td>
+                                    <td class="text-center v-middle">5</td>
+                                    <td class="text-center v-middle text-c-blue">5</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center v-middle">홍보 및 참여방안</td>
+                                    <td class="text-center v-middle">5</td>
+                                    <td class="text-center v-middle text-c-blue">5</td>
+                                </tr>
+                                <tr class="border-bottom-inverse">
+                                    <th class="text-center table-light">소계</th>
+                                    <th class="text-center table-light">30</th>
+                                    <th class="text-center table-light text-c-blue">23</th>
+                                </tr>
+                                <tr class="border-bottom-inverse">
+                                    <th class="text-center table-active" colspan="3">안전관리 체크리스트</th>
+                                </tr>
+                                <tr>
+                                    <td class="text-center v-middle">실내or실외 / 비숙박</td>
+                                    <td class="text-center v-middle">5</td>
+                                    <td class="text-center v-middle text-c-blue">5</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-center table-light">총점</th>
+                                    <th class="text-center table-light">30</th>
+                                    <th class="text-center table-light text-c-blue">23</th>
+                                </tr>
+                                </tbody></table>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header p-b-0">
+                        <h3 class="sub-title"><strong>현장점검 결과 및 최종 심사평</strong></h3>
+                    </div>
+                    <div class="card-block">
+                        <div class="row form-group mb-3">
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="popupContents"><strong>현장점검 결과</strong></label>
+                            <div class="col-sm-12">
+                                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="위 지표 점수부여에 대한 평가 근거, 조정사유 및 추가의견을 기술하여 주십시오." id="popupContents" name="popupContents"></textarea>
+                            </div>
+                        </div>
+                        <div class="row form-group mb-3">
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="popupContents02"><strong>최종 심사평</strong></label>
+                            <div class="col-sm-12">
+                                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="현장점검 결과 총평을 적어주세요." id="popupContents02" name="popupContents02"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row justify-content-between">
+                    <div class="col-auto">
+                        <button class="btn btn-disabled">이전</button>
+                    </div>
+                    <div class="col-auto">
+                        <button class="btn btn-primary notifications" data-type="danger" data-from="bottom" data-align="center" data-message="점검 결과를 입력해주세요">심사완료</button>
+                    </div>
+                </div>
+            </div>
+            <!-- // [탭] 결과 및 심사평 -->
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        $(function(){
+            $('#tabTitle > li:first-child').addClass('active');
+            $('#tabTitle > li:first-child .nav-link').addClass('active');
+
+            $('#tabContent > .tab-pane:first-child').addClass('active');
+        })
+
+        //체크리스트 라디오 클릭
+        $("[name^='cRdo']").on('click', function() {
+
+            //라디오 id,name = cRdo+ lv2Cd + qitemid
+
+            var rdoId = this.id;
+            var lvCd = rdoId.substr(5,6)
+            var tail = rdoId.split("_")[1];
+
+            var opponentRdoId = rdoId.substr(4, 1) == "N" ? "cRdoY"+lvCd+"_"+tail: "cRdoN"+lvCd+"_"+tail;
+            $("#"+rdoId).prop("checked",true);
+            $("#"+opponentRdoId).prop("checked",false);
+
+            //$("[id^='scrSum']")
+
+            initScrSum();
+
+        });
+
+        $('button[class="nextBtn"]').on('click', function(){
+            let key = $(this).attr('btnafterkey');
+            for( var i=0; i<$('.tab-pane').length; i++ ){
+                if( $($('.tab-pane')[i]).attr('checklistkey') == key ){
+                    if(  )
+                    $($('.tab-pane')[i]).removeClass('active');
+                    $($('.tab-pane')[i]).next().addClass('active');
+                    break;
+                }
+            }
+            $('.tab-pane').attr('checklistkey')
+
+        });
+
+        function initScrSum(){
+
+            var allScr = $("[id^='scrSum']");
+            var totalscore = 0;
+
+            for (var i=0; i< allScr.length;i++ ){
+
+                var scrId = allScr[i].id;
+                var lvCd  = scrId.substr(6,6);
+
+                var rdoGrp = $("[name^='cRdoY"+lvCd+"']");
+                var sumScr = 0;
+
+                for(var k=0; k< rdoGrp.length; k++){
+                    var rdoId = rdoGrp[k].id
+
+                    if($("#"+rdoId).prop("checked") && false == isNaN( $("#"+rdoId).attr("altm")) ) {
+                        sumScr = Number(sumScr)+ Number($("#"+rdoId).attr("altm"));
+                    }
+                }
+
+                $("#scrSum"+lvCd).text(sumScr+"점");
+
+                totalscore = Number(totalscore) + Number(sumScr);
+            }
+
+            $("#scr").val(totalscore);
+
+            //title sum
+            $("[id^=chkTitle]").each(
+                function(index1, item1){
+
+                    var lvkey = item1.getAttribute("lv2key");
+                    var vAltm = 0;
+                    var vScr = 0;
+                    var vHtml = "";
+
+                    $("[id^='cRdoY'][lv1key="+lvkey+"]").each(
+                        function(index2, item2){
+
+                            vAltm = vAltm + Number(item2.getAttribute("altm"));
+                        });
+                    $("[id^='scrSum'][lv1key="+lvkey+"]").each(
+                        function(index3, item3){
+
+                            vScr = vScr + Number(item3.innerText.replace("점",""));
+                        });
+
+
+                    vHtml = '<strong><span class="text-danger d-inline fs-6">'+vScr+'</span> /'+vAltm+'점</strong>';
+                    $("#"+item1.id).html(vHtml)
+
+                });
+
+        }
+    </script>
+</div>
+</body>
+</html>
