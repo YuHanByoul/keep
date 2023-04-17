@@ -65,4 +65,20 @@ public class NtcnHistServiceImpl extends PlumAbstractServiceImpl implements Ntcn
         retVal += ntcnHistDao.updateDeleteNtcn(ntcnHistVo);
         return retVal;
     }
+
+    /**
+     * 알림 내역 조회여부 변경
+     **
+     * @Title : updateInqMsg
+     * @Description : 알림 내역 조회여부 변경
+     * @param ntcnHistVo
+     * @return
+     * @throws Exception
+     * @return int
+     */
+    public int updateInqMsg(NtcnHistVo ntcnHistVo) throws Exception{
+        int retVal = 0;
+        retVal += ntcnHistDao.updateInqMsg(ntcnHistVo);
+        return retVal;
+    }
 }

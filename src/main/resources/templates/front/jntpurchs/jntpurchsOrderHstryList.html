@@ -117,6 +117,11 @@
                 
                 , onLoadData: function() {
                     if(displayWorkProgress(true)) {
+                        if(document.URL.indexOf('#') > -1) { // 검색유지
+                            var historyData = document.URL.substring(document.URL.indexOf("#") + 1).split("&");
+                            $("#pageNumber").val(historyData[0].split("=")[1]);
+                            $("#searchJntpurchsNm").val(decodeURI(historyData[1].split("=")[1]));
+                        }
                         var param = $('#searchForm').serializeArray();
                         $.ajax({
                             url: jntpurchsOrderHstry.listUrl
@@ -211,6 +216,7 @@
                 
                 , onSearch: function() {
                     $("#pageNumber").val("1");
+                    this.setPage();
                     this.onLoadData();
                 }
                 
@@ -234,15 +240,30 @@
                 }
                 
                 , onDetail: function(orderid) {
-                    var form = document.forms.searchForm;
-                    form.orderid.value = orderid;
-                    form.action = this.detailUrl;
-                    form.submit();
+                    if($("#pageNumber").val() != 1 || $("#searchJntpurchsNm").val()) {
+                        this.setPage();                        
+                    }
+                    location.href = this.detailUrl + "?orderid=" + orderid;
+                }
+                
+                , setPage: function() {
+                    var hashUrl = "";
+                    if(document.URL.indexOf("#") > -1) {
+                        var url = document.URL.substring(0, document.URL.indexOf("#"));
+                        hashUrl = url + "#pageNumber=" + $("#pageNumber").val();
+                        hashUrl += "&searchJntpurchsNm=" + encodeURI($("#searchJntpurchsNm").val());
+                    } else {
+                        hashUrl = document.URL + "#pageNumber=" + $("#pageNumber").val();
+                        hashUrl += "&searchJntpurchsNm=" + encodeURI($("#searchJntpurchsNm").val());
+                    }
+                    
+                    location.replace(hashUrl);
                 }
             };
             
             function goPage(pageNumber) {
                 $("#pageNumber").val(pageNumber);
+                jntpurchsOrderHstry.setPage();
                 jntpurchsOrderHstry.onLoadData();
             }
             
