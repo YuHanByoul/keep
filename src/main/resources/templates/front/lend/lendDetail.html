@@ -41,9 +41,9 @@
         <div class="product-section">
             <div class="title">
             
-                <div class="tag tag-blue" th:if ="${lendInfo.periodStts == 'W'}">모집대기</div>
+                <div class="tag tag-green" th:if ="${lendInfo.periodStts == 'W'}">모집대기</div>
                 <div class="tag tag-gray" th:if ="${lendInfo.periodStts == 'E'}">모집종료</div>
-                <div class="tag tag-green" th:if ="${lendInfo.periodStts == 'C'}">모집대기</div>
+                <div class="tag tag-blue" th:if ="${lendInfo.periodStts == 'C'}">모집중</div>
                 
                 <h3><th:block th:text="${lendInfo.rcritNm}"/></h3>
                 <dl>
@@ -71,7 +71,7 @@
                         <dt>모집 기간 :</dt>
                         <dd><th:block th:text="${#dates.format(lendInfo.bgngDt, 'yyyy-MM-dd HH:mm')+' ~ '+#dates.format(lendInfo.endDt, 'yyyy-MM-dd HH:mm')}"/></dd>
                     </div>
-                    <div class="list">
+                    <!-- <div class="list">
                         <dt>대여 제한  :</dt>
                         <dd>
                             <th:block th:if="${lendInfo.lmtCd == '225101'}" th:text="'한개의 차시에서 1개까지 신청 가능합니다.'"/>
@@ -79,7 +79,7 @@
                             <th:block th:if="${lendInfo.lmtCd == '225103'}" th:text="'두개의 차시에서 차시당 1개까지 신청 가능합니다.'"/>
                             <th:block th:if="${lendInfo.lmtCd == '225104'}" th:text="'두개의 차시에서 차시당 2개까지 신청 가능합니다.'"/>
                         </dd>
-                    </div>
+                    </div> -->
                 </dl>
             </div>
             <div class="btn-wrap">
@@ -392,11 +392,29 @@
                showErrorMark("#rnd"+rndid+" #requestQnty");
                return;
            }
+
            $("#rndid").val(rndid);
            $("#qnty").val(qnty);
-           let f = document.forms.aplyForm;
-           f.action = "/front/lend/lendAply.html";
-           f.submit();
+           
+           if (displayWorkProgress(true)){
+               $.ajax({
+                   url : "/front/lend/checkLendAply.do",
+                   cache : false,
+                   dataType : 'json',
+                   data : $("#aplyForm").serialize(),
+                   type : 'POST',
+                   success : function(data) {
+                       if(data.result =="fail"){
+                           alert(data.msg);
+                       }else{
+				           let f = document.forms.aplyForm;
+				           f.action = "/front/lend/lendAply.html";
+				           f.submit();
+                       }
+                       closeWorkProgress();
+                   }
+               });
+           }
        }
        
        var swiper = new Swiper(".gallery-list", {

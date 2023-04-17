@@ -1,6 +1,7 @@
 package com.kbrainc.plum.mng.asgsysSrng.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -593,13 +594,20 @@ public class AsgsysSrngController {
     @RequestMapping(value = "/mng/asgsysSrng/prgrmDstnctn.html")
     public String prgrmDstnctnForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
 
-
     	PrgrmSchdlVo prgrmSchdlVo = new PrgrmSchdlVo();
     	EmrgcyActnPlanVo emrgcyActnPlanVo = new EmrgcyActnPlanVo();
 
     	//프로그램 우수성 상세 조회 tb_ass_prgrm_dstnctn
     	AsgsysSrngVo prgrmDstnctnInfo = asgsysSrngService.selectPrgrmDstnctn(asgsysSrngVo);
     	model.addAttribute("prgrmDstnctnInfo", prgrmDstnctnInfo);
+
+    	List<String> eduSbjctCdLst = new ArrayList<>();
+    	String cdLst = prgrmDstnctnInfo.getEduSbjctCdLst();
+    	if (cdLst != null && !cdLst.isEmpty()) {
+    	    String[] cdArray = cdLst.split(",");
+    	    eduSbjctCdLst = Arrays.asList(cdArray);
+    	}
+    	model.addAttribute("eduSbjctCdLst", eduSbjctCdLst);
 
     	BeanUtils.copyProperties(asgsysSrngVo, prgrmSchdlVo);
     	BeanUtils.copyProperties(asgsysSrngVo, emrgcyActnPlanVo);
@@ -727,7 +735,7 @@ public class AsgsysSrngController {
      * 프로그램 우수성 수정
      *
      * @Title       : updatePrgrmDstnctn
-     * @Description : 프로그램 우수성 등록
+     * @Description : 프로그램 우수성 수정
      * @param asgsysSrngVo AsgsysSrngVo객체
      * @param bindingResult1 asgsysSrngVo 유효성검증결과
      * @param memberDtlVo MemberDtlVo객체
@@ -1079,7 +1087,6 @@ public class AsgsysSrngController {
     public String assChklstForm(AsgsysSrngVo asgsysSrngVo, Model model,@UserInfo UserVo user) throws Exception {
 
     	//지정신청상세정보 조회
-    	//AsgsysSrngVo aplyInfo = asgsysSrngService.selectDsgnAplyDtlInfo(asgsysSrngVo);
     	AsgsysSrngVo assChklstInfo = asgsysSrngService.selectAssChklstForm(asgsysSrngVo);
     	model.addAttribute("loginUserid", user.getUserid());
     	model.addAttribute("assChklstInfo", assChklstInfo);

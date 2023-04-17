@@ -304,6 +304,51 @@ public class LendController {
         return resultMap;
     }
     /**
+     * 대여 신청 정보 유효성 체크
+     *
+     * @Title : checkLendAply
+     * @Description : 대여 신청 정보 유효성 체크
+     * @param LendAplyVo LendAplyVo 객체
+     * @param user 사용자 세션 정보
+     * @return Map<String, Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/front/lend/checkLendAply.do")
+    @ResponseBody
+    public Map<String, Object> checkLendAply(LendAplyVo lendAplyVo, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        
+        int retVal = 0;
+        lendAplyVo.setUser(user);
+        
+        //재고확인 처리 할 것 
+        if(lendService.checkOverStockYn(lendAplyVo).equals("Y")) {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "실시간 재고와 맞지 않는 신청이 있습니다. 다시한번 확인해주십시오.");
+            return resultMap;
+        }
+        
+        Map<String, Object> compareMap = lendService.checkLimitOverYn(lendAplyVo);
+        
+        //재고확인 처리 할 것 
+        if(compareMap.get("isOverRndCntYn").toString().equals("Y")) {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", compareMap.get("rnd_limit")+"개 차시만 신청 할 수 있습니다.\n 이미 신청한 차시를 확인 해주십시오");
+            return resultMap;
+        }
+        //재고확인 처리 할 것
+        if(compareMap.get("isOverPakcageCntYn").toString().equals("Y")) {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "한 차시에"+compareMap.get("packageindvd_limit")+" 개까지만 신청 할 수 있습니다.\n 이미 신청한 차시의 수량을 확인 해주십시오");
+            return resultMap;
+        }
+        
+        resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+        resultMap.put("msg", "신청이 완료되었습니다");
+        
+        return resultMap;
+    }
+    /**
     * 교구 대여 신청 완료 화면
     *
     * @Title       : lendDetail 

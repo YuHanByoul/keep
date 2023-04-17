@@ -177,8 +177,9 @@ public class ReqMngController {
      */
     @RequestMapping(value="/mng/bizAply/req/selectReqUserList.do")
     @ResponseBody
-    public Map<String, Object> selectReqUserList(ReqUserVo reqUserVo) throws Exception {
+    public Map<String, Object> selectReqUserList(ReqUserVo reqUserVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
+        reqUserVo.setUser(user);
         List<ReqUserVo> result = this.reqMngService.selectReqUserList(reqUserVo);
         
         if (result.size() > 0) {

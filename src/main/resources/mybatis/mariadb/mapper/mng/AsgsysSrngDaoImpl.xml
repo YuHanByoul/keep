@@ -58,8 +58,8 @@
           , A.STTS_CD
           , A.APLY_DT
           , A.REG_DT
-          , B.SRNG_STTS_CD
-          , C.SRGN_STTS_CD
+          , IFNULL( B.SRNG_STTS_CD,'114101')    AS SRNG_STTS_CD
+          , IFNULL( C.SRGN_STTS_CD,'114101')    AS SRGN_STTS_CD
           , C.VST_DE
           , C.VST_HR
           , C.VST_MNT
@@ -74,9 +74,9 @@
             SELECT
                 PRGRMID
               , SRNG_STTS_CD
-              , JDGSID
-              , COUNT(1) AS CNT
+              , MAX(JDGSID)
             FROM TB_ASS_PRGRM_JDGS
+            GROUP BY PRGRMID
         ) B ON A.PRGRMID  = B.PRGRMID
         LEFT OUTER JOIN    /* 지원단 */
             TB_ASS_SPRTGRP_SRNG C ON A.PRGRMID  = C.PRGRMID
@@ -176,7 +176,6 @@
           , D.SPRTGRP_NM
           , D.SPRTGRP_EML
           , D.SPRTGRP_MOBLPHON
-          , E.SBMSNID
           , INST.RPRSV_NM
           , INST.BRNO
         FROM
@@ -220,18 +219,6 @@
             INNER JOIN
                 TB_CMM_USER BB ON AA.SPRTGRPID = BB.USERID
         ) D ON A.PRGRMID = D.PRGRMID
-        LEFT OUTER JOIN
-        (
-        /*지원단 체크리스트*/
-            SELECT
-                SRNG.PRGRMID
-              , CHK.SBMSNID
-            FROM
-                TB_ASS_SPRTGRP_SRNG SRNG
-            LEFT OUTER JOIN
-                TB_ASS_CHKLST_SBMSN CHK ON SRNG.PRGRMID = CHK.PRGRMID
-                                       AND SRNG.SPRTGRPID = CHK.USERID
-        ) E ON A.PRGRMID = E.PRGRMID
         LEFT OUTER JOIN TB_CMM_INST INST ON A.INSTID = INST.INSTID
         LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN CTPRVN ON  A.INST_RGN_CD = CTPRVN.CTPRVN_CD
         WHERE 1=1
@@ -1524,10 +1511,12 @@
             A.PRGRMID
           , B.SPRTGRPID
           , C.SBMSNID
-          , C.CHKLSTID
+          , A.CHKLSTID
         FROM TB_ASS_PRGRM A
         LEFT OUTER JOIN TB_ASS_SPRTGRP_SRNG B ON A.PRGRMID = B.PRGRMID
-        LEFT OUTER JOIN TB_ASS_CHKLST_SBMSN C ON B.SPRTGRPID = C.USERID
+        LEFT OUTER JOIN TB_ASS_CHKLST_SBMSN C ON B.PRGRMID = C.PRGRMID
+                                             AND B.SPRTGRPID = C.USERID
+                                             AND C.SBMSN_SE_CD ='242102'
         WHERE A.PRGRMID = #{prgrmid}
     </select>
 
@@ -1791,11 +1780,13 @@
             SELECT
                 SRNG.PRGRMID
               , CHK.SBMSNID
+              , CHK.SBMSN_SE_CD
             FROM
                 TB_ASS_SPRTGRP_SRNG SRNG
             LEFT OUTER JOIN
                 TB_ASS_CHKLST_SBMSN CHK ON SRNG.PRGRMID = CHK.PRGRMID
                                        AND SRNG.SPRTGRPID = CHK.USERID
+                                       AND CHK.SBMSN_SE_CD = '242102'
         ) E ON A.PRGRMID = E.PRGRMID
         WHERE 1=1
         AND A.PRGRMID = #{prgrmid}
@@ -2384,9 +2375,17 @@
         LEFT OUTER JOIN
             TB_ASS_SPRTGRP_SRNG F ON A.PRGRMID = F.PRGRMID
         LEFT OUTER JOIN
-            TB_ASS_CHKLST_SBMSN G ON A.PRGRMID = G.PRGRMID AND F.SPRTGRPID = G.USERID
+        (
+            SELECT PRGRMID , SBMSNID ,CHKLSTID, CHKLST_RSLT_CN ,SCR
+            FROM TB_ASS_CHKLST_SBMSN
+            WHERE SBMSN_SE_CD ='242102'
+        ) G ON A.PRGRMID = G.PRGRMID
         LEFT OUTER JOIN
-            TB_ASS_CHKLST_SBMSN H ON A.PRGRMID = H.PRGRMID AND B.APLCNTID = H.USERID /*자가진단*/
+        (
+            SELECT PRGRMID , SBMSNID ,CHKLSTID, CHKLST_RSLT_CN ,SCR, USERID
+            FROM TB_ASS_CHKLST_SBMSN
+            WHERE SBMSN_SE_CD ='242101'
+        ) H ON A.PRGRMID = H.PRGRMID AND B.APLCNTID = H.USERID /*자가진단*/
         WHERE 1=1
         AND  A.PRGRMID = #{prgrmid}
     </select>

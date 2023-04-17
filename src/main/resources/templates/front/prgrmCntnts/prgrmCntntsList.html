@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" >
+<body>
+	<div layout:fragment="content">
+
+		<!-- content -->
+		<form class="search-filter" id="searchForm" name="searchForm">
+			<div class="form-input-wrap">
+				<div class="form-row">
+					<div class="form-header"><strong class="label">교육주제(공통)</strong></div>
+					<div class="form-body">
+						<div class="form-input">
+	                        <select name="searchMainEduSbjct" id="searchEduSbjct_1" title="교육주제" onchange="setSearchSelectBox.setNextDepth(155,this.value,'searchEduSbjct_2')">
+	                            <option value="">- 전체 -</option>
+	                        </select>
+							<select name="searchSubEduSbjct" id="searchEduSbjct_2" title="교육주제 상세" style="flex:auto">
+			                	<option value="">- 전체 -</option>
+			                </select>
+						</div>
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="form-header"><strong class="label">콘텐츠 유형</strong></div>
+					<div class="form-body">
+						<div class="form-input">
+	                        <select name="searchMainCntntsType" id="searchCntntsType_1" title="콘텐츠 유형" onchange="setSearchSelectBox.setNextDepth(164,this.value,'searchCntntsType_2')">
+	                            <option value="">- 전체 -</option>
+	                        </select>
+	                        <select name="searchSubCntntsType" id="searchCntntsType_2" title="콘텐츠 유형 상세" style="flex:auto">
+	                            <option value="">- 전체 -</option>
+	                        </select>
+	                	</div>
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="form-header"><strong class="label">지역</strong></div>
+					<div class="form-body">
+                        <select id="searchRgn" name="searchRgn" title="지역">
+                            <option value="">- 전체 -</option>
+                            <th:block th:each="code : ${sidoList}">
+                                <option th:value="${code.CTPRVN_CD}" th:selected="${code.CTPRVN_CD} == ${rgnCd}">[[${code.CTPRVN_NM}]]</option>
+                            </th:block>
+                        </select>
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="form-header"><strong class="label">교육대상(프로그램)</strong></div>
+					<div class="form-body">
+						<div class="form-check-list">
+							<label class="inp"><input type="checkbox" name="searchPrgrmEduTrgt" id="prgrmAll" value="all"><b>전체</b></label>
+							<label class="inp"><input type="checkbox" name="searchPrgrmEduTrgt" id="infnt" value="infnt"><b>유아</b></label>
+							<label class="inp"><input type="checkbox" name="searchPrgrmEduTrgt" id="schboy" value="schboy"><b>초등</b></label>
+							<label class="inp"><input type="checkbox" name="searchPrgrmEduTrgt" id="msklsd" value="msklsd"><b>중등</b></label>
+							<label class="inp"><input type="checkbox" name="searchPrgrmEduTrgt" id="hgschst" value="hgschst"><b>고등</b></label>
+							<label class="inp"><input type="checkbox" name="searchPrgrmEduTrgt" id="adult" value="adult"><b>성인</b></label>							
+						</div>
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="form-header"><strong class="label">교육대상(콘텐츠)</strong></div>
+					<div class="form-body">
+						<div class="form-check-list">
+							<label class="inp"><input type="checkbox" name="searchCntntsEduTrgt" id="cntntsAll" value="all"><b>전체</b></label>
+							<th:block th:each="item : ${codeInfo185}">
+							<label class="inp"><input type="checkbox" name="searchCntntsEduTrgt" th:id="${item.cd}" th:checked="${item.cd} == ${cntntsEduTrgt}" th:value="${item.cd}"><b th:text="${item.cdNm}">유아</b></label>							
+							</th:block>							
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="search-filter-submit">
+				<button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="prgrmCntnts.searchInit()">초기화</button>
+				<button type="button" class="btn-medium btn-green btn-before-search" onclick="prgrmCntnts.search()">검색</button>
+			</div>
+			
+	        <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+	        <input type="hidden" id="rowPerPage" name="rowPerPage" value="12">
+	        <input type="hidden" id="ORDER_DIRECTION" name="orderDirection" value="desc">
+	        <input type="hidden" id="orderField" name="orderField" value="REG_DT">
+	        <input type="hidden" id="searchPrgrm" name="searchPrgrm" value="N">
+	        <input type="hidden" id="searchCntnts" name="searchCntnts" value="N">
+		</form>
+
+		<div class="table-caption flex-nowrap">
+			<div class="left">
+				<p>총 <b id="totalCount">0</b> 건</p>
+			</div>
+		</div>
+
+		<div class="card-section" id="card-table">
+			<ul class="n3" id="cardList-area">
+			</ul>
+		</div>
+
+		<div class="pagination" aria-label="pagination">
+		</div>
+		<!-- //content -->
+	
+		<script th:inline="javascript">
+		// 교육주제, 콘텐츠 유형
+		var mainEduSbjct = /*[[${mainEduSbjct}]]*/ null;
+		var subEduSbjct = /*[[${subEduSbjct}]]*/ null;
+		var mainCntstType = /*[[${mainCntstType}]]*/ null;
+		var subCntstType = /*[[${subCntstType}]]*/ null;
+		
+		var getCodeListUrl = "/mng/customAttr/grpCodeList.do";
+		var setSearchSelectBox = {
+			 	fn_getNextDepthList : function(grpcd , upprcd, targetId, selected, sessionId){
+					$.ajax({
+						url : getCodeListUrl,
+						type: 'GET',
+						cache : false,
+						dataType: 'json',
+						async: false,
+						data: {
+							  grpcd  : grpcd
+							, upprcd : upprcd
+						}, 
+						success : function (data){
+							setSearchSelectBox.writeHtml(grpcd,targetId,data, selected, sessionId);
+						},
+					 	error : function (error){
+						} 
+						
+					});
+				},
+
+			 	writeHtml : function(grpcd,targetId, list, selected, sessionId){
+				 	var cntArr = targetId.split("_");
+				   	var nextCnt = Number(cntArr[1])+1;
+				   	var nextTarget = cntArr[0]+"_"+nextCnt;
+				   	
+				    var html ="<select id='"+targetId+"' onchange=setSearchSelectBox.setNextDepth('"+grpcd+"',this.value,'"+nextTarget+"')>";
+				        html += `<option value="">- 전체 -</option>`;
+				        
+			  		for(var i=0 ; i < list.length;i++){
+			  			if(list[i].cd==selected){
+			   				html +="    <option value="+list[i].cd+" selected>"+ list[i].cdNm+ "</option>";
+			  			}else{
+			  				html +="    <option value="+list[i].cd+">"+ list[i].cdNm+ "</option>";
+			  			}
+			  		}
+			  		
+					if(list.length == 0 && jQuery("#"+nextTarget)[0] != undefined){
+						setSearchSelectBox.writeHtml(grpcd, nextTarget, list, selected, sessionId);
+					}
+					html +="    </select>";
+					
+					$("#"+targetId).html(html);
+					
+					if(sessionId == "searchEduSbjct_2"){
+						sessionStorage.removeItem("searchEduSbjct_1");
+						sessionStorage.removeItem("searchEduSbjct_2");
+					}
+					
+					if(sessionId == "searchCntntsType_2"){
+						sessionStorage.removeItem("searchCntntsType_1");
+						sessionStorage.removeItem("searchCntntsType_2");
+					}
+			 	},
+			 	
+			    setNextDepth : function(grpcd , upprcd , targetId, selected){
+					setSearchSelectBox.fn_getNextDepthList(grpcd , upprcd , targetId);
+				}
+		}
+		// 교육주제, 콘텐츠 유형 set
+		/* 상세에서 뒤로가시 필터값 유지가 필요없을때 사용 *사용시 교육주제, 콘텐츠 유형 초기화 필요
+    	setSearchSelectBox.fn_getNextDepthList(155 , 0, 'searchEduSbjct_1', mainEduSbjct);
+		setSearchSelectBox.fn_getNextDepthList(155, mainEduSbjct, "searchEduSbjct_2", subEduSbjct);
+		
+   		setSearchSelectBox.fn_getNextDepthList(164 , 0, 'searchCntntsType_1', mainCntstType);
+   		setSearchSelectBox.fn_getNextDepthList(164 , mainCntstType, 'searchCntntsType_2', subCntstType);		
+		*/
+		
+		// 상세에서 뒤로가시 필터값 유지에 sessionStorage 필요
+		// 필터를 만들때, 검색버튼 누를때, 초기화 버튼 누를때, 상세페이지 이동할때 sessionStorage 
+    	if(sessionStorage.getItem("searchEduSbjct_2") != null){
+        	setSearchSelectBox.fn_getNextDepthList(
+        			155
+        			, 0
+        			, "searchEduSbjct_1"
+        			, sessionStorage.getItem("searchEduSbjct_1")
+        	);
+    		setSearchSelectBox.fn_getNextDepthList(
+    				155
+    				, sessionStorage.getItem("searchEduSbjct_1")
+    				, "searchEduSbjct_2"
+    				, sessionStorage.getItem("searchEduSbjct_2")
+    				, "searchEduSbjct_2"
+    		);            		
+    	}else{
+    		setSearchSelectBox.fn_getNextDepthList(
+	   				155
+	   				, 0
+	   				, "searchEduSbjct_1"
+	   				, mainEduSbjct == null ? sessionStorage.getItem("searchEduSbjct_1") : mainEduSbjct
+    		);
+    		setSearchSelectBox.fn_getNextDepthList(
+	   				155
+	   				, mainEduSbjct == null ? sessionStorage.getItem("searchEduSbjct_1") : mainEduSbjct
+	   				, "searchEduSbjct_2"
+	   				, subEduSbjct == null ? sessionStorage.getItem("searchEduSbjct_2") : subEduSbjct
+	   				, "searchEduSbjct_2"
+    		);	
+    	}
+    	
+    	if(sessionStorage.getItem("searchCntntsType_2") != null){
+        	setSearchSelectBox.fn_getNextDepthList(
+        			164
+        			, 0
+        			, "searchCntntsType_1"
+        			, sessionStorage.getItem("searchCntntsType_1")
+        	);
+    		setSearchSelectBox.fn_getNextDepthList(
+    				164
+    				, sessionStorage.getItem("searchCntntsType_1")
+    				, "searchCntntsType_2"
+    				, sessionStorage.getItem("searchCntntsType_2")
+    				, "searchCntntsType_2"
+    		);            		
+    	}else{
+    		setSearchSelectBox.fn_getNextDepthList(
+    				164
+	   				, 0
+	   				, "searchCntntsType_1"
+	   				, mainCntstType == null ? sessionStorage.getItem("searchCntntsType_1") : mainCntstType
+    		);
+    		setSearchSelectBox.fn_getNextDepthList(
+    				164
+	   				, mainCntstType == null ? sessionStorage.getItem("searchCntntsType_1") : mainCntstType
+	   				, "searchCntntsType_2"
+	   				, subCntstType == null ? sessionStorage.getItem("searchCntntsType_2") : subCntstType
+	   				, "searchCntntsType_2"
+    		);	
+    	}
+    	
+    	
+	   		
+		// 교육대상(프로그램) 체크박스
+		var prgrmCheckboxes = document.getElementsByName("searchPrgrmEduTrgt");
+		$('#prgrmAll').change(function() {
+			if ($(this).is(':checked')) {
+				for (var i = 0; i < prgrmCheckboxes.length; i++) {
+					prgrmCheckboxes[i].checked = true;
+				}
+			} else {
+				for (var i = 0; i < prgrmCheckboxes.length; i++) {
+					prgrmCheckboxes[i].checked = false;
+				}
+			}
+		});
+		
+		$('input[type="checkbox"][name="searchPrgrmEduTrgt"]').change(function() {
+			if(this.value != 'all') {
+				prgrmCheckboxes[0].checked = false;
+			}
+		});
+		
+		// 교육대상(콘텐츠) 체크박스
+		var cntntsCheckboxes = document.getElementsByName("searchCntntsEduTrgt");
+		$('#cntntsAll').change(function() {
+			if ($(this).is(':checked')) {
+				for (var i = 0; i < cntntsCheckboxes.length; i++) {
+					cntntsCheckboxes[i].checked = true;
+				}
+			} else {
+				for (var i = 0; i < cntntsCheckboxes.length; i++) {
+					cntntsCheckboxes[i].checked = false;
+				}
+			}
+		});
+		
+		$('input[type="checkbox"][name="searchCntntsEduTrgt"]').change(function() {
+			if(this.value != 'all') {
+				cntntsCheckboxes[0].checked = false;
+			}
+		});
+		
+		var prgrmCntnts = {
+				listUrl: '/front/prgrmCntnts/selectPrgrmCntntsList.do',
+				
+				init(rowPerPage) {
+                	if(rowPerPage != null) {
+	                    $("#rowPerPage").val(parseInt(rowPerPage));
+	                    $('#pageNumber').val('1');
+                	}
+                	
+                    this.selectPrgrmCntntsList();
+				},
+				
+                moveToDetail(id, type) {
+                	if(subEduSbjct == null && $("#searchEduSbjct_2").val() != "") {
+                		sessionStorage.setItem("searchEduSbjct_1", $("#searchEduSbjct_1").val());
+                		sessionStorage.setItem("searchEduSbjct_2", $("#searchEduSbjct_2").val());
+                	}
+                	
+                	if($("#searchCntntsType_2").val() != "") {
+                		sessionStorage.setItem("searchCntntsType_1", $("#searchCntntsType_1").val());
+                		sessionStorage.setItem("searchCntntsType_2", $("#searchCntntsType_2").val());
+                	}    
+					
+                	if(type == 'prgrm') {
+   		                location.href = '/front/envEdu/prgrmDetailForm.html?prgrmid='+id;
+                	}
+                	if(type == 'cntnts') {
+                       	location.href = '/front/cntnts/cntntsDetailForm.html?cntntsid='+id;
+                	}
+                },
+				
+                search() {                	
+                    $('#pageNumber').val('1');
+                    
+               		sessionStorage.setItem("searchEduSbjct_1", $("#searchEduSbjct_1").val());
+               		sessionStorage.setItem("searchEduSbjct_2", $("#searchEduSbjct_2").val());
+               		sessionStorage.setItem("searchCntntsType_1", $("#searchCntntsType_1").val());
+               		sessionStorage.setItem("searchCntntsType_2", $("#searchCntntsType_2").val());
+                    
+                    this.selectPrgrmCntntsList();
+                },
+                
+                searchInit() {
+                	sessionStorage.clear();
+                	
+    				$("#searchEduSbjct_1").val("");
+    				$("#searchEduSbjct_2").val("");
+    				$("#searchCntntsType_1").val("");
+    				$("#searchCntntsType_2").val("");
+    				$("#searchRgn").val("");
+    				for (var i = 0; i < prgrmCheckboxes.length; i++) {
+    					prgrmCheckboxes[i].checked = false;
+    				}
+    				for (var i = 0; i < cntntsCheckboxes.length; i++) {
+    					cntntsCheckboxes[i].checked = false;
+    				}
+    				$("#searchPrgrm").val("N");
+    				$("#searchCntnts").val("N");
+    				
+    				this.selectPrgrmCntntsList();
+                },
+				
+	            selectPrgrmCntntsList() {
+                	// filter Control
+                	// 프로그램 검색
+                	if( $("#searchEduSbjct_1").val() != ""
+                		|| $("#searchEduSbjct_2").val() != ""
+                		|| $("#searchRgn").val() != ""
+                		|| $('input:checkbox[name=searchPrgrmEduTrgt]:checked').length > 0) {
+                		$("#searchPrgrm").val("Y");
+                	}else {
+                		$("#searchPrgrm").val("N");
+                	}
+                	
+                	// 콘텐츠 검색
+                	if($("#searchEduSbjct_1").val() != ""
+                		|| $("#searchEduSbjct_2").val() != ""
+                		|| $("#searchCntntsType_1").val() != ""
+                		|| $('input:checkbox[name=searchCntntsEduTrgt]:checked').length > 0) {
+                		$("#searchCntnts").val("Y");
+                	}else {
+                		$("#searchCntnts").val("N");
+                	}
+                	
+	                if (displayWorkProgress(true)) {
+	                	var formData = $('#searchForm').serializeArray();
+	                    $.ajax({
+	                        url: prgrmCntnts.listUrl,
+	                        cache: false,
+	                        dataType: 'json',
+	                        data: formData,
+	                        type: 'GET',
+	                        success: function (result) {
+	                        	$('#card-table').removeClass();
+	                            $('#card-table').addClass('card-section');
+	            				
+	                            $("#pagination").html(result.pagination);
+	                            $("#totalCount").html(result.totalCount);
+	            				var data = escapeData(result);
+	            				prgrmCntnts.makeListHtml(data);
+	            				
+	                            closeWorkProgress();
+	                        }
+	                    });
+	                }
+	            },
+	            
+                makeListHtml(data) {
+                    var cardListHtml = "";
+                    
+                    if (data.list == null || data.list.length <= 0) {                        
+                        $('#card-table').removeClass();
+                        $('#card-table').addClass('nodata');
+                        cardListHtml += `
+                        	<p><span class="icon icon-notice bg-black9"></span>등록된 프로그램·콘텐츠가 없습니다.</p>
+                        `;
+                    } else {
+                    	data.list.forEach(function(item) {
+                    		// 교육주제
+   	  	    				// 생활환경, 자연환경, 지구환경, 환경문화
+   	  	    				var livingEnv = "";   	  	    				
+   	  	    				var naturalEnv = "";   	  	    				
+   	  	    				var globalEnv = "";   	  	    				
+   	  	    				var cultureEnv = "";
+   	  	    				var other =  "";
+   	  	    				
+   	  	    				var eduSbjctStr = item.eduSbjct;
+   	  	    				var eduSbjct = [];
+   	  	    				var eduSbjctTag = "";
+   	  	    			
+   	  	    				if(eduSbjctStr != null && eduSbjctStr != ""){
+	   	  	    				eduSbjct = eduSbjctStr.split(",");   	  	    					
+   	  	    				}
+   	  	    				
+   	  	    				eduSbjct.forEach(function(index) {
+   	  	    					switch(index) {
+   	  	    					case "소음" :
+   	  	    					case "폐기물 및 자원순환" :
+   	  	    					case "환경보건" :
+   	  	    						livingEnv += ', ' + index;
+   	  	    					break;
+   	  	    					
+   	  	    					case "물" :
+   	  	    					case "토양" :
+   	  	    					case "생태계" :
+   	  	    						naturalEnv += ', ' + index;
+   	  	    					break;
+   	  	    					
+   	  	    					case "기후변화 및 탄소중립" :
+   	  	    					case "대기" :
+   	  	    					case "에너지" :
+   	  	    						globalEnv += ', ' + index;
+   	  	    					break;
+   	  	    					
+   	  	    					case "지속가능발전" :
+   	  	    					case "생명윤리" :
+   	  	    						cultureEnv += ', ' + index;
+   	  	    					break;
+   	  	    					
+   	  	    					case "기타" :
+   	  	    						other += ', ' + index;
+   	  	    					break;	
+	  	    					}
+   	  	    				});
+   	  	    				
+   	  	    				if(livingEnv != ""){
+   	  	    					eduSbjctTag += `<li><button type="button" title="툴팁">#생활환경</button><div>${livingEnv.slice(2)}</div></li>`
+   	  	    				}
+   	  	    				if(naturalEnv != ""){
+   	  	    					eduSbjctTag += `<li><button type="button" title="툴팁">#자연환경</button><div>${naturalEnv.slice(2)}</div></li>`
+   	  	    				}
+   	  	    				if(globalEnv != ""){
+   	  	    					eduSbjctTag += `<li><button type="button" title="툴팁">#지구환경</button><div>${globalEnv.slice(2)}</div></li>`
+   	  	    				}
+   	  	    				if(cultureEnv != ""){
+   	  	    					eduSbjctTag += `<li><button type="button" title="툴팁">#환경문화</button><div>${cultureEnv.slice(2)}</div></li>`
+   	  	    				}
+   	  	    				if(other != ""){
+   	  	    					eduSbjctTag += `<li><button type="button" title="툴팁">#기타</button><div>${other.slice(2)}</div></li>`
+   	  	    				}
+                    		
+                    		if(item.type == '프로그램'){
+       	  	    				// 교육대상
+       	  	    				var eduTargetStr = item.eduTrgt;
+       	  	    				var eduTarget = [];
+       	  	    				var eduTargetTag = "";
+       	  	    				
+       	  	    				if(eduTargetStr != null && eduTargetStr != ""){
+       	  	    					eduTarget = eduTargetStr.split(",");   	  	    					
+    	  	    				}
+       	  	    				
+       	  	    				eduTarget.forEach(function(index) {
+       	  	    					eduTargetTag += `<div>${index}</div>`;
+       	  	    				});
+                    			
+    	                    	cardListHtml += `
+   								<li>
+   									<div class="thumb">
+   										<img src="/downloadFileByFileid.do?fileid=${item.fileid}&file_idntfc_key=${item.fileKey}" alt="">
+   										<div class="tag tag-blue">프로그램</div>
+   										<dl class="target">
+   											<dt class="blind">대상</dt>
+   											<dd>
+   												${eduTargetTag}
+   											</dd>
+   										</dl>
+   									</div>
+   									<div class="cont">
+   										<div class="part ellipsis">${item.instNm}</div>
+   										<a href="javascript:void(0)" onclick="prgrmCntnts.moveToDetail(${item.id}, 'prgrm')" class="title ellipsis" data-ellipsis="2">${item.ttl}</a>
+   										<ul class="hash">
+   											${eduSbjctTag}
+   										</ul>
+   										<div class="d-flex a-center j-between description">
+   											<div class="fs-14 fc-black6">운영형태 : 비대면</div>
+   											<div class="fs-16 fc-black3">참가비 <span class="fw-500">10,000</span>원</div>
+   										</div>
+   									</div>
+   								</li>
+   		   						`;
+                    		}else if(item.type == '콘텐츠') {
+       	  	    				// 교육대상
+       	  	    				var eduTargetStr = item.eduTrgt;
+       	  	    				var eduTarget = [];
+       	  	    				var eduTargetTag = "";
+       	  	    				
+       	  	    				if(eduTargetStr != null && eduTargetStr != ""){
+       	  	    					eduTarget = eduTargetStr.split(",");   	  	    					
+    	  	    				}
+       	  	    				
+       	  	    				eduTarget.forEach(function(index) {
+       	  	    					switch(index) {
+       	  	    					case "185101" :
+       	  	    						index = "유아";
+       	  	    					break;
+       	  	    					
+       	  	    					case "185102" :
+       	  	    						index = "아동";
+       	  	    					break;
+       	  	    					
+       	  	    					case "185103" :
+       	  	    						index = "청소년";
+       	  	    					break;
+       	  	    					
+       	  	    					case "185104" :
+       	  	    						index = "성인";
+       	  	    					break;
+    	  	    					}
+       	  	    					eduTargetTag += `<div>${index}</div>`;
+       	  	    				});
+                    			
+    	                    	cardListHtml += `
+    							<li>
+									<div class="thumb">
+										<img src="/downloadFileByFileid.do?fileid=${item.fileid}&file_idntfc_key=${item.fileKey}" alt="">
+										<div class="tag tag-green">콘텐츠</div>
+										<dl class="target">
+											<dt class="blind">대상</dt>
+											<dd>
+												${eduTargetTag}
+											</dd>
+										</dl>
+									</div>
+									<div class="cont">
+										<a href="javascript:void(0)" onclick="prgrmCntnts.moveToDetail(${item.id}, 'cntnts')" class="title ellipsis" data-ellipsis="2">${item.ttl}</a>
+										<ul class="hash">
+											${eduSbjctTag}
+										</ul>
+										<div class="d-flex a-center j-between description">
+											<div class="fs-14 fc-black6 ellipsis">출처 : ${item.etc1}</div>
+											<div class="fs-14 fc-black6 nowrap">${item.regDt}</div>
+										</div>
+									</div>
+								</li>
+  		   						`;                    			
+                    		}
+                    	});
+                    }
+                    	
+                    $('#cardList-area').html(cardListHtml);
+	            }
+		}
+		
+        $(function () {
+        	prgrmCntnts.init();
+        })
+		
+		function goPage(page) {
+			$("#pageNumber").val(page);
+			
+			prgrmCntnts.selectCntntsList();
+		} 
+		</script>
+	</div>
+
+</body>
+</html>
