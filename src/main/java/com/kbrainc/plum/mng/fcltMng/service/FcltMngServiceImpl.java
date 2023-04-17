@@ -4,10 +4,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.fcltMng.model.FcltMngDao;
 import com.kbrainc.plum.mng.fcltMng.model.FcltMngVo;
+import com.kbrainc.plum.mng.resveReqst.model.ResveReqstVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
@@ -140,8 +141,12 @@ public class FcltMngServiceImpl extends PlumAbstractServiceImpl implements FcltM
     * @return int
     */
     @Override
+    @Transactional
     public int deleteFcltMng(FcltMngVo fcltMngVo) throws Exception {
-        return fcltMngDao.deleteFcltMng(fcltMngVo);
+        int resInt = 0;
+        resInt += fcltMngDao.deleteSpceByFclid(fcltMngVo);
+        resInt += fcltMngDao.deleteFcltMng(fcltMngVo);
+        return resInt;
     }
 
     /**
@@ -157,4 +162,40 @@ public class FcltMngServiceImpl extends PlumAbstractServiceImpl implements FcltM
     public List<FcltMngVo> selectFcltMngSpceList(FcltMngVo fcltMngVo) throws Exception{
         return fcltMngDao.selectFcltMngSpceList(fcltMngVo);
     }
+    /**
+     * 공간 일괄 삭제
+     *
+     * @Title : deleteSpceByFclid
+     * @Description : 공간 일괄 삭제
+     * @param fcltMngVo 시설 객체
+     * @throws Exception 예외
+     * @return int
+     */
+     public int deleteSpceByFclid(FcltMngVo fcltMngVo) throws Exception{
+         return fcltMngDao.deleteSpceByFclid(fcltMngVo);
+     }
+     /**
+      * 공간 예약 내역 여부 일괄 확인
+      *
+      * @Title : deleteSpceByFclid
+      * @Description : 공간 일괄 삭제
+      * @param fcltMngVo 시설 객체
+      * @throws Exception 예외
+      * @return int
+      */
+     public String isThereSpceRsvtByFclids(FcltMngVo fcltMngVo) throws Exception{
+         return fcltMngDao.isThereSpceRsvtByFclids(fcltMngVo);
+     }
+     /**
+      * 시설 후기 내역 호출
+      *
+      * @Title : selectFcltMngReviewList
+      * @Description : 시설 후기 내역 호출
+      * @param fcltMngVo 시설 객체
+      * @throws Exception 예외
+      * @return List<ResveReqstVo> 객체
+      */
+     public List<ResveReqstVo> selectFcltMngReviewList(FcltMngVo fcltMngVo) throws Exception{
+         return fcltMngDao.selectFcltMngReviewList(fcltMngVo);
+     }
 }

@@ -1,0 +1,134 @@
+<!-- [230322] 후기내역 추가 -->
+<div class="tab-pane active" id="review" role="tabpanel">
+    <div class="card-header p-t-0 p-b-0">
+        <h3 class="sub-title"><strong>후기이력</strong></h3>
+    </div>
+    <div class="card-block-small p-t-0">
+        <div class="col-12 table-border-style">
+            <div id="fclgMngReviewGrid" class="table-responsive"></div>
+            <div id="fcltMngReviewListPager" class="text-center"></div>
+        </div>
+    </div>
+</div>
+<!-- //[230322] 후기내역 추가 -->
+
+<div class="modal fade" id="reviewPopup" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content type_2">
+            <div class="modal-header">
+                <h4 class="modal-title">후기</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card m-b-10">
+                    <div class="card-block-small">
+                        <div class="mb-0 form-group row">
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="reviewContent"><strong>내용</strong></label>
+                            <div class="col-12">
+                                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="Default textarea" id="reviewContent" name="reviewContent" readonly=""></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary waves-effect waves-light"data-bs-dismiss="modal" aria-label="Close">닫기</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- 담당자정보 회원검색 팝업 end  -->
+
+<script th:inline="javascript">
+
+    var selectedItems = [];
+    var gridHelper1;
+    $(function(){
+        writeSpceReviewGridData();
+    });
+
+    function writeSpceReviewGridData(){
+        $("#fclgMngReviewGrid").jsGrid({
+            height: "auto",
+            width: "100%",
+            autoload: true,
+            sorting: true,
+            paging: true,
+            pagerContainer: "#fcltMngReviewListPager",
+            pagerFormat: "{first} {prev} {pages} {next} {last}",
+            pagePrevText: "이전",
+            pageNextText: "다음",
+            pageFirstText: " < 처음 ㅣ",
+            pageLastText: " | 마지막 >",
+            pageSize: 10,
+            pageButtonCount: 10,
+            pageLoading: true,
+            pageIndex: 1,
+            noDataContent: "데이터가 없습니다.",
+            
+            controller: {
+                loadData: function (filter) {
+                    var data = $.Deferred();
+                    var params = [
+                            {name: "pageNumber", value: filter.pageIndex},
+                            {name: "rowPerPage", value: filter.pageSize},
+                            {name: "fcltid", value: fcltid[0]},
+                    ]
+                    
+                    if(filter.sortField != undefined){
+                        params.push({name: "orderField", value: filter.sortField});
+                        params.push({name: "orderDirection", value: filter.sortOrder});
+                    }else{
+                        params.push({name: "orderField", value: 'rvw_dt'});
+                    }
+                    
+                    $.ajax({
+                      type: "GET",
+                      contentType: "application/json; charset=utf-8",
+                      url: "/mng/fcltMng/selectFcltReviewList.do", 
+                      dataType: "json",
+                      data: params,
+                    }).done(function(response){
+                        var da = {
+                                data : escapeGridData(response.list)
+                                ,itemsCount : response.totalCount
+                            };
+                      data.resolve(da);
+                    });
+                    return data.promise();
+                },
+            },
+            fields: [
+                 { name: 'rowNumber',css:'hide'}
+                ,{ title: '번호'   ,name: 'rowNumber'       ,type: "number", width : "80", align:"center",  sorting :false }
+                ,{ title: '아이디'   ,name: 'acnt'              ,type: "text" , width: "150" ,align:"center"}
+                ,{ title: '이용공간'  ,name: 'spceNm'            ,type: "text" , width: "300"  ,align:"center"}
+                ,{ title: '만족도'  ,name: 'rvwScr'            ,type: "text" , width: "200"  ,align:"center"
+                	,itemTemplate: function(value, item){ 
+                         return (item.rvwScr == "1")? "1점 (매우불만족)":(item.rvwScr == "2")?"2점 (불만족)":(item.rvwScr == "3")?"3점 (보통)":(item.rvwScr == "4")?"4점 (만족)":"5점 (매우만족)";
+                     }
+                 }
+                ,{ title: '내용'   ,name: 'rvwCn', type: "text" , width: "200" ,align:"center"
+                , itemTemplate: function(value, item){
+                    return '<button type="button" class="btn mini-btn  btn-primary waves-effect waves-light" onclick="openCnModal('+item.aplyid+')">보기</button>';
+                    }
+                }
+                ,{ title: '등록일'  ,name: 'rvwDt' ,type: "text" , width: "120", align:"center"
+                	,itemTemplate: function(value, item){return value.substring(0,10);}
+            	}
+            ]
+        });
+    }
+    function openCnModal(aplyid){
+        var items = $("#fclgMngReviewGrid").jsGrid("option", "data");
+        for(var i = 0; i < items.length; i++) {
+            if(items[i].aplyid == aplyid){
+		    	$("#reviewContent").val(items[i].rvwCn);
+		    	$("#reviewPopup").modal("show");
+            }    
+        }
+    }
+</script>
