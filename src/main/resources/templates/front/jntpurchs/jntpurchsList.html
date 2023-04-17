@@ -11,13 +11,14 @@
                 <div class="form-row">
                     <div class="form-header"><strong class="label">공동구매명</strong></div>
                     <div class="form-body">
-                        <input type="search" id="searchJntpurchsNm" name="searchJntpurchsNm" title="공동구매명" placeholder="공동구매명을 입력해 주세요." th:value="${searchInfo.searchJntpurchsNm}">
+                        <input type="search" id="searchJntpurchsNm" name="searchJntpurchsNm" title="공동구매명" placeholder="공동구매명을 입력해 주세요.">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-header"><strong class="label">모집상태</strong></div>
                     <div class="form-body">
-                        <span kattr:select_code="searchSttsCd" th:attr="grpcd=172, selectedCd=${searchInfo.searchSttsCd}" title="모집상태" firstOptTxt="전체">
+                        <span kattr:select_code="searchSttsCd" grpcd="172" title="모집상태" firstOptTxt="전체">
+                        <!--<span kattr:select_code="searchSttsCd" th:attr="grpcd=172, selectedCd=${searchInfo.searchSttsCd}" title="모집상태" firstOptTxt="전체">-->
                     </div>
                 </div>
             </div>
@@ -25,7 +26,7 @@
                 <button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="jntpurchs.initSearch();">초기화</button>
                 <button type="submit" class="btn-medium btn-green btn-before-search" onclick="jntpurchs.onSearch();">검색</button>
             </div>
-            <input type="hidden" id="pageNumber" name="pageNumber" th:value="${searchInfo.pageNumber}">
+            <input type="hidden" id="pageNumber" name="pageNumber" value="1">
             <input type="hidden" id="rowPerPage" name="rowPerPage" value="12">
             <input type="hidden" id="orderDirection" name="orderDirection" value="desc">
             <input type="hidden" id="orderField" name="orderField" value="REG_DT">
@@ -64,6 +65,12 @@
                 
                 , onLoadData: function() {
                     if(displayWorkProgress(true)) {
+                        if(document.URL.indexOf('#') > -1) { // 검색유지
+                            var historyData = document.URL.substring(document.URL.indexOf("#") + 1).split("&");
+                            $("#pageNumber").val(historyData[0].split("=")[1]);
+                            $("#searchJntpurchsNm").val(decodeURI(historyData[1].split("=")[1]));
+                            $("#searchSttsCd").val(historyData[2].split("=")[1]);
+                        }
                         var param = $('#searchForm').serializeArray();
                         $.ajax({
                             url: jntpurchs.listUrl
@@ -132,19 +139,37 @@
                 
                 , onSearch: function() {
                     $("#pageNumber").val("1");
+                    this.setPage();
                     this.onLoadData();
                 }
                 
                 , onDetail: function(jntpurchsid) {
-                    var form = document.forms.searchForm;
-                    form.jntpurchsid.value = jntpurchsid;
-                    form.action = this.detailUrl;
-                    form.submit();
+                    if($("#pageNumber").val() != 1 || $("#searchJntpurchsNm").val() || $("#searchSttsCd").val()) {
+                        this.setPage();                        
+                    }
+                    location.href = this.detailUrl + "?jntpurchsid=" + jntpurchsid;
+                }
+                
+                , setPage: function() {
+                    var hashUrl = "";
+                    if(document.URL.indexOf("#") > -1) {
+                        var url = document.URL.substring(0, document.URL.indexOf("#"));
+                        hashUrl = url + "#pageNumber=" + $("#pageNumber").val();
+                        hashUrl += "&searchJntpurchsNm=" + encodeURI($("#searchJntpurchsNm").val());
+                        hashUrl += "&searchSttsCd=" + $("#searchSttsCd").val();
+                    } else {
+                        hashUrl = document.URL + "#pageNumber=" + $("#pageNumber").val();
+                        hashUrl += "&searchJntpurchsNm=" + encodeURI($("#searchJntpurchsNm").val());
+                        hashUrl += "&searchSttsCd=" + $("#searchSttsCd").val();
+                    }
+                    
+                    location.replace(hashUrl);
                 }
             };
             
             function goPage(pageNumber) {
                 $("#pageNumber").val(pageNumber);
+                jntpurchs.setPage();
                 jntpurchs.onLoadData();
             }
             
