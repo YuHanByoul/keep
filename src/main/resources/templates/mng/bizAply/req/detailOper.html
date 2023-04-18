@@ -13,7 +13,7 @@
 	                    <div class="mb-0 form-group">
 	                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>동아리명</strong></label>
 	                        <div class="col-sm-12">
-	                            <input type="text" class="form-control form-control-sm" id="clubNm" name="clubNm" placeholder="" th:value="${detail.clubNm}">
+	                            <input type="text" class="form-control form-control-sm" id="clubNm" name="clubNm" placeholder="" th:value="${detail.clubNm}" maxlength="100">
 	                        </div>
 	                    </div>
 	                </div>
@@ -21,7 +21,7 @@
 	                    <div class="mb-0 form-group">
 	                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>교육인원</strong></label>
 	                        <div class="col-sm-12">
-	                            <input type="text" class="form-control form-control-sm" id="eduNope" name="eduNope" placeholder="" th:value="${detail.eduNope}">
+	                            <input type="number" class="form-control form-control-sm" id="eduNope" name="eduNope" placeholder="" th:value="${detail.eduNope}" maxlength="10">
 	                        </div>
 	                    </div>
 	                </div>
@@ -233,7 +233,7 @@
        	$(eduList).each(function(i){
             setTimeout(function(){
                 $('#eduSbjctCd_'+(i+1)).val(eduList[i].eduSbjctCd).prop("selected", true);              
-            }, 500);
+            }, 600);
         });
         
         $(".subjectCode").each(function(idx){
@@ -255,13 +255,13 @@
        	$(normalList).each(function(i){
             setTimeout(function(){
                 $("#normalTable").find('#eduSbjctCdArr_'+(i+1)).val(normalList[i].eduSbjctCd).prop("selected", true);              
-            }, 500);
+            }, 600);
         });
        	
        	$(envList).each(function(i){
             setTimeout(function(){
                 $("#envTable").find('#eduSbjctCdArr_'+(i+normalListSize+1)).val(envList[i].eduSbjctCd).prop("selected", true);              
-            }, 500);
+            }, 600);
         });
         
         $("#normalTable").find("tr").each(function(idx){
@@ -273,6 +273,17 @@
         	$(this).eq(idx).find("select[name=eduSbjctCdArr1]").on('change', function(){
         		setNextDepth('155',$(this).val(),'eduSbjctCdArr_'+(idx+normalListSize+1));
         	});
+        });
+        
+        var validator = $("#insertForm").validate({
+            rules: {
+            	clubNm : { maxlength: 100 } 
+                , eduNope : { number: true, maxlength: 10 } 
+            },
+            messages: {
+            	clubNm    :   { maxlength: "동아리명은 100자를 넘을수 없습니다." }  
+                , eduNope    :   { maxlength: "교육인원은 10자를 넘을수 없습니다." }  
+            }
         });
     });
 

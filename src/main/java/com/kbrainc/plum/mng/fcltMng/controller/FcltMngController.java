@@ -306,10 +306,6 @@ public class FcltMngController {
         
         fcltMngVo.setUser(user);
         
-        // 기관회원일 경우
-        if( user.getInstid() != null ) {
-            fcltMngVo.setInstid(user.getInstid());
-        }
         result =  fcltMngService.selectFcltMngList(fcltMngVo);
         
         if (result.size() > 0) {
