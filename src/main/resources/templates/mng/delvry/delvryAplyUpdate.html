@@ -607,11 +607,28 @@
         }
         
         , setValid: function() {
-            var validator = $('#delvryAplyUpdateForm').validate();
+            var validator = $('#delvryAplyUpdateForm').validate({
+                rules: {
+                    bacntno: {maxlength: 30}
+                    , dpstrNm: {maxlength: 10}
+                }
+                , messages: {
+                    bacntno: {maxlength: "계좌번호는 30자 이하여야 합니다."}
+                    , dpstrNm: {maxlength: "예금주명은 10자 이하여야 합니다."}
+                }
+            });
+            jQuery.validator.addClassRules({
+                amt: {digits: true}
+            });
+            jQuery.validator.addClassRules({
+                cn: {maxlength: 100}
+            });
         }
         
         , onUpdateDelvryAply: function() {
-            if(!($("#delvryAplyUpdateForm").valid())) return;
+            if(!$("#delvryAplyUpdateForm").valid()) return;
+            if(!($(".amt").valid())) return;
+            if(!($(".cn").valid())) return;
             var param = $("#delvryAplyUpdateForm").serialize();
             var count = 0;
             $("[data-expitm-cd]").each(function(index, item) {
@@ -729,6 +746,9 @@
         }
         
         , onUpdateDelvryStts: function(sttsCd) {
+            if(!($("#delvryAplyUpdateForm").valid())) return;
+            
+            return false;
             var param = {updateDelvryAplyids: $("input[name='delvryAplyid']").val(), delvrySttsCd: sttsCd};
             if(displayWorkProgress()) {
                 $.ajax({
