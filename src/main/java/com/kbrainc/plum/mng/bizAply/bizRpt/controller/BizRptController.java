@@ -512,7 +512,7 @@ public class BizRptController {
 	@RequestMapping(value = "/mng/bizAply/bizRpt/selectRsltRptMngListExcel.do")
 	public void selectRsltRptMngListExcel(HttpServletRequest request, HttpServletResponse response, BizRptVo bizRptVo)
 			throws Exception {
-//		bizRptService.selectRsltRptMngListExcel(bizRptVo, response, request);
+		bizRptService.selectRsltRptMngListExcel(bizRptVo, response, request);
 	}
 
 	/**
@@ -575,7 +575,8 @@ public class BizRptController {
 	@RequestMapping(value = "/mng/bizAply/bizRpt/selectRsltRptSbmsnListExcel.do")
 	public void selectRsltRptSbmsnListExcel(HttpServletRequest request, HttpServletResponse response, BizRptVo bizRptVo)
 			throws Exception {
-		// bizRptService.selectRsltRptSbmsnListExcel(bizRptVo, response, request);
+		 bizRptService.selectRsltRptSbmsnListExcel(bizRptVo, response, request);
+
 	}
 
 	/**
