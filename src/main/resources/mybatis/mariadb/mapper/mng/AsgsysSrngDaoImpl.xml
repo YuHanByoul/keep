@@ -1675,15 +1675,15 @@
         WHERE 1=1
         <!-- 키워드.전체 -->
         <if test="searchKeyword != null and searchKeyword != '' and searchType == ''">
-            AND (B.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%') OR B.INST_NM LIKE CONCAT('%',#{searchKeyword},'%'))
+            AND (A.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%') OR A.INST_NM LIKE CONCAT('%',#{searchKeyword},'%'))
         </if>
         <!-- 키워드.프로그램명 -->
         <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchPrgrmNm'">
-            AND B.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%')
+            AND A.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%')
         </if>
         <!-- 키워드.기관명 -->
         <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchInstNm'">
-            AND B.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+            AND A.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
         </if>
         <!-- 심사진행상태  -->
         <if test="searchSrngSttsCd != null and searchSrngSttsCd != ''">
@@ -2968,40 +2968,99 @@
     <select id="selectjdgsPicList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
         <include refid="PaginationMapper.header"/>
         SELECT
-            GRP_ID
-          , GRP_NM
-          , USE_YN
-          , REG_DT
-          , REG_EXPRT_CNT
-          , USERID_GRP
-          , USER_ACNT_GRP
-          , USER_NM_GRP
-          , USER_EML_GRP
-          , USER_MOBLPHON_GRP
+            AA.GRP_ID
+          , AA.GRP_NM
+          , AA.USE_YN
+          , AA.BLCKLST_YN
+          , AA.DEL_YN
+          , AA.REG_DT
+          , AA.REG_EXPRT_CNT
+          , AA.USERID_GRP
+          , AA.USER_ACNT_GRP
+          , AA.USER_NM_GRP
+          , AA.USER_EML_GRP
+          , AA.USER_MOBLPHON_GRP
+          , AA.USERID
+<!--
+          , C.RGN_CD_NM
+          , C.RGN_CD
+          , D.SBJCT_CD_NM
+          , E.CRTFCT_NM
+ -->
         FROM (
-             SELECT
-                 A.GRP_ID
-               , A.GRP_NM
-               , A.USE_YN
-               , A.REG_DT
-               , COUNT(B.USERID)                     AS REG_EXPRT_CNT
-               , GROUP_CONCAT(NULLIF(B.USERID  ,'')) AS USERID_GRP
-               , GROUP_CONCAT(NULLIF(C.ACNT    ,'')) AS USER_ACNT_GRP
-               , GROUP_CONCAT(NULLIF(C.NM      ,'')) AS USER_NM_GRP
-               , GROUP_CONCAT(NULLIF(C.EML     ,'')) AS USER_EML_GRP
-               , GROUP_CONCAT(IFNULL(C.MOBLPHON,'')) AS USER_MOBLPHON_GRP
-            FROM
-                TB_ASS_EXPRT_GRP A
-            LEFT OUTER JOIN
-                TB_ASS_EXPRT_GRP_MAPNG B ON A.GRP_ID = B.GRP_ID
-            LEFT OUTER JOIN
-                TB_CMM_USER C ON B.USERID = C.USERID
-            GROUP BY A.GRP_ID
+                 SELECT
+                     A.GRP_ID
+                   , A.GRP_NM
+                   , A.USE_YN
+                   , C.DEL_YN
+                   , C.BLCKLST_YN
+                   , A.REG_DT
+                   , C.USERID
+                   , COUNT(B.USERID)                     AS REG_EXPRT_CNT
+                   , GROUP_CONCAT(NULLIF(B.USERID  ,'')) AS USERID_GRP
+                   , GROUP_CONCAT(NULLIF(C.ACNT    ,'')) AS USER_ACNT_GRP
+                   , GROUP_CONCAT(NULLIF(C.NM      ,'')) AS USER_NM_GRP
+                   , GROUP_CONCAT(NULLIF(C.EML     ,'')) AS USER_EML_GRP
+                   , GROUP_CONCAT(IFNULL(C.MOBLPHON,'')) AS USER_MOBLPHON_GRP
+                FROM
+                    TB_ASS_EXPRT_GRP A
+                LEFT OUTER JOIN
+                    TB_ASS_EXPRT_GRP_MAPNG B ON A.GRP_ID = B.GRP_ID
+                LEFT OUTER JOIN
+                    TB_CMM_USER C ON B.USERID = C.USERID
+                GROUP BY A.GRP_ID
             ) AA
-        WHERE 1=1
+<!--
+            LEFT OUTER JOIN
+            (
+                SELECT
+                    A.USERID    AS USERID
+                  , GROUP_CONCAT(B.CTPRVN_NM SEPARATOR ', ')    AS RGN_CD_NM
+                  , GROUP_CONCAT(B.CTPRVN_CD SEPARATOR ', ')    AS RGN_CD
+                FROM TB_ASS_EXPRT_ACTVT_RGN A
+                INNER JOIN TB_CMM_ADDR_CTPRVN B
+                ON A.RGN_CD = B.CTPRVN_CD
+                GROUP BY A.USERID
+            ) C ON AA.USERID = C.USERID
+            LEFT OUTER JOIN
+            (
+                SELECT
+                    A.USERID
+                  , GROUP_CONCAT(CD.CD_NM SEPARATOR ', ')    AS SBJCT_CD_NM
+                  , GROUP_CONCAT(CD.CD SEPARATOR ', ')    AS SBJCT_CD
+                FROM TB_ASS_EXPRT_SBJCT A
+                INNER JOIN TB_CMM_CD CD
+                ON A.SBJCT_CD = CD.CD
+                GROUP BY A.USERID
+            ) D ON AA.USERID= D.USERID
+            LEFT OUTER JOIN
+            (
+                SELECT
+                     A.USERID
+                   , GROUP_CONCAT(A.CRTFCT_NM SEPARATOR ', ')   AS CRTFCT_NM
+                FROM TB_ASS_EXPRT_CRTFCT A
+                GROUP BY A.USERID
+            ) E ON AA.USERID = E.USERID
+            WHERE 1=1
+            AND AA.DEL_YN     = 'N'
+            AND AA.BLCKLST_YN = 'N'
+-->
         <!-- 키워드.그룹명-->
         <if test="searchKeyword != null and searchKeyword != ''">
-            AND A.GRP_NM LIKE CONCAT('%',#{searchKeyword},'%')
+            AND AA.GRP_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+
+        <!-- 키워드.자격증명 -->
+        <if test="searchCrtfctNm != null and searchCrtfctNm != ''">
+<!--             AND E.CRTFCT_NM LIKE CONCAT('%',#{searchCrtfctNm},'%') -->
+        </if>
+        <!-- 전문분야(환경주제)  -->
+        <if test="searchSbjctCd != null and searchSbjctCd != ''">
+<!--             AND D.SBJCT_CD LIKE CONCAT('%',#{searchSbjctCd},'%') -->
+        </if>
+        <!-- 활동가능지역 -->
+        <if test="searchRgnCd != null and searchRgnCd != ''">
+<!--             AND C.RGN_CD LIKE CONCAT('%',#{searchRgnCd},'%') -->
         </if>
 
         <include refid="PaginationMapper.footer"/>
