@@ -239,6 +239,19 @@ $.validator.addMethod("isRightBizNo", function(value, element) {
 	
 });
 
+//required 수정
+$.validator.addMethod("required", function(value, element) {
+    
+    if(value==null ||value=='undefined'){
+        return false;
+    }else if(value.trim() == null || value.trim() == ""){
+        return false;
+    }else{
+        return true;
+    }
+    
+});
+
 //ckrequired
 //ckeditor 필수입력 유효성 체크
 /*$.validator.addMethod('ckrequired', function (value, element) { 
