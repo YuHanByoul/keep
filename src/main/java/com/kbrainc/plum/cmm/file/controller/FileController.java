@@ -123,7 +123,7 @@ public class FileController {
                 Integer height = image.getHeight();
                 StringBuffer sb = new StringBuffer().append(width).append("X").append(height);
                 if (!imageSizeMap.containsValue(sb.toString())) {
-                    throw new FileStorageException("허용되지않는 이미지사이즈입니다.");
+                    throw new FileStorageException("허용 되지 않는 이미지 사이즈 입니다.");
                 }
             }
             
