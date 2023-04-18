@@ -32,6 +32,18 @@ public interface EduInstService {
 	public EduInstVo selectAplyInfoForm(EduInstVo eduInstVo) throws Exception;
 
 	/**
+	* 환경교육기관상세 조회
+	*
+	* @Title : selectEnvEduInst
+	* @Description : 환경교육기관상세 조회
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return EduInstVo
+	*/
+	public EduInstVo selectEnvEduInst(EduInstVo eduInstVo) throws Exception;
+
+	/**
 	* 신청정보 등록
 	*
 	* @Title : insertAplyInfo

@@ -46,7 +46,7 @@
                     <div class="btn-wrap">
                         <div class="center">
                             <button type="button" class="btn-large btn-gray" onclick="doSave()">중간저장</button>
-                            <button type="button" class="btn-large btn-green" onclick="goNext()">다음</button>
+                            <button type="button" class="btn-large btn-green" onclick="doSave('next')">다음</button>
                         </div>
                     </div>
                 </div>
@@ -82,18 +82,10 @@
 
             <form name="aplyForm" id="aplyForm" class="table-row table-row-mo">
                 <input type="hidden"  id="aplyid" name="aplyid" th:value="${aplyInfo.aplyid}" />
-                <input type="hidden"  id="rcptno" name="rcptno" th:value="${aplyInfo.rcptno}" />
                 <input type="hidden"  id="instid" name="instid" th:value="${aplyInfo.instid}" />
                 <input type="hidden"  id="aplcntid" name="aplcntid" th:value="${aplyInfo.aplcntid}" />
-                <input type="hidden"  id="aplcntNm" name="aplcntNm" th:value="${aplyInfo.aplcntNm}" />
-                <input type="hidden"  id="aplcntEml" name="aplcntEml" th:value="${aplyInfo.aplcntEml}" />
-                <input type="hidden"  id="aplcntMoblphon" name="aplcntMoblphon" th:value="${aplyInfo.aplcntMoblphon}" />
                 <input type="hidden"  id="instNm" name="instNm" th:value="${aplyInfo.instNm}" />
-                <input type="hidden"  id="instEml" name="instEml" th:value="${aplyInfo.instEml}" />
                 <input type="hidden"  id="instCntct" name="instCntct" th:value="${aplyInfo.instCntct}" />
-                <input type="hidden"  id="ctprvnCd" name="ctprvnCd" th:value="${aplyInfo.ctprvnCd}" />
-                <input type="hidden"  id="rprsvBrdt" name="rprsvBrdt" th:value="${aplyInfo.rprsvBrdt}" />
-                <input type="hidden"  id="atchFilegrpid" name="atchFilegrpid" th:value="${aplyInfo.atchFilegrpid}" />
                 <input type="hidden"  id="dsgnno" name="dsgnno" th:value="${aplyInfo.dsgnno}" />
                 <input type="hidden"  id="dsgnDe" name="dsgnDe" th:value="${aplyInfo.dsgnDe}" />
                 <input type="hidden"  id="autzrid" name="autzrid" th:value="${aplyInfo.autzrid}" />
@@ -113,15 +105,16 @@
                         <tr>
                             <th scope="row">시도</th>
                             <td>
-                                <select id="searchRgnCd" name="searchRgnCd" title="지역">
+                                <select id="ctprvnCd" name="ctprvnCd" title="지역">
                                     <option value="">- 전체 -</option>
                                     <th:block th:each="code : ${sidoList}">
                                     <option th:value="${code.CTPRVN_CD}" th:selected="${code.CTPRVN_CD==aplyInfo.ctprvnCd ? 'selected':''}">[[${code.CTPRVN_NM}]]</option>
-                                </th:block>
-                        </select>
+                                    </th:block>
+                                </select>
+                                <p class="feedback"></p>
                             </td>
                             <th scope="row">접수번호</th>
-                            <td>자동생성 </td>
+                            <td>[[${aplyInfo.rcptno==null || aplyInfo.rcptno=='' ? '자동생성':aplyInfo.rcptno}]]</td>
                         </tr>
                         <tr>
                             <th scope="row">기관명</th>
@@ -140,19 +133,27 @@
                             <th scope="row">기관 연락처</th>
                             <td>[[${aplyInfo.instCntct}]]</td>
                             <th scope="row">기관 이메일</th>
-                            <td><input type="email" title="기관 이메일" placeholder="기관 이메일을 입력해 주세요." id="instEml" name="instEml" th:value="${aplyInfo.instEml}"></td>
+                            <td><input type="email" placeholder="기관 이메일을 입력해 주세요." id="instEml" name="instEml" th:value="${aplyInfo.instEml}">
+                                <p class="feedback"></p>
+                            </td>
                         </tr>
                         <tr>
                             <th scope="row">사업자등록번호</th>
                             <td>[[${aplyInfo.brno}]]</td>
                             <th scope="row">신청자명</th>
-                            <td><input type="text" title="신청자명" id="aplcntNm" name="aplcntNm" th:value="${aplyInfo.aplcntNm}"></td>
+                            <td><input type="text" title="신청자명" id="aplcntNm" name="aplcntNm" th:value="${aplyInfo.aplcntNm}">
+                                <p class="feedback"></p>
+                            </td>
                         </tr>
                         <tr>
                             <th scope="row">신청자 연락처</th>
-                            <td><input type="text" title="신청자명" id="aplcntMoblphon" name="aplcntMoblphon" th:value="${aplyInfo.aplcntMoblphon}"></td>
+                            <td><input type="text" title="신청자 연락처" id="aplcntMoblphon" name="aplcntMoblphon" th:value="${aplyInfo.aplcntMoblphon}" maxlength="40">
+                                <p class="feedback"></p>
+                            </td>
                             <th scope="row">신청자 이메일</th>
-                            <td><input type="text" title="신청자명" id="aplcntEml" name="aplcntEml" th:value="${aplyInfo.aplcntEml}"></td>
+                            <td><input type="email" id="aplcntEml" name="aplcntEml" th:value="${aplyInfo.aplcntEml}">
+                                <p class="feedback"></p>
+                            </td>
                         </tr>
                         <tr>
                             <th scope="row">기관주소</th>
@@ -163,21 +164,36 @@
 
                         <tr>
                             <th scope="row">증빙서류<i class="ast" title="필수입력">*</i></th>
-                            <td colspan="3">
+                            <td id="fileTd" colspan="3" >
                                 <div class="form-input-file">
                                     <label class="form-input">
-                                        <span class="btn-medium btn-gray">파일선택
-                                        <input id="multiFileInput" type="file" name="files" multiple accept="image/jpeg,image/gif,image/png,application/pdf" style="display: none;"></span>
-                                    </label>
-                                    <label class="form-input">
-                                        <input type="file" class="blind" multiple="multiple" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부" maxcount="10">
+                                        <input type="file" id="multiFileInput" name="files" class="blind" multiple="multiple" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부" maxcount="10">
                                         <span class="btn-medium btn-gray">파일선택</span>
                                     </label>
-                                    <ul></ul>
+                                    <div class="upload-response">
+                                        <div id="multipleFileUploadError"></div>
+                                        <div id="multipleFileUploadSuccess">
+                                        <th:block th:if="${fileList != null}">
+                                            <div th:each="item : ${fileList}" th:id="${item.fileid}" class="col-auto">
+                                                <ul th:if="${item.orginlFileNm != null}">
+                                                    <li th:fileid='${item.fileid}'
+                                                        th:fileIdntfcKey="${item.fileIdntfcKey}"
+                                                        th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))"
+                                                        class='label label-inverse'
+                                                        th:data_ext="${#strings.replace(item.fileExtsn, '.', '')}">
+                                                        <th:block th:text="${item.orginlFileNm}" />&nbsp;&nbsp;
+                                                        <a th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="fn_deleteFileList(this.name, this.dataset.idntfcKey)" class='text-white'>
+                                                        <th:block th:text="X"></th:block></a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </th:block>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="atchFilegrpid" name="atchFilegrpid" th:value="${(aplyInfo.atchFilegrpid == '' or aplyInfo.atchFilegrpid == null) ? 0 : aplyInfo.atchFilegrpid}"/>
                                 </div>
                             </td>
                         </tr>
-
                     </tbody>
                 </table>
             </form>
@@ -191,7 +207,7 @@
                 <div class="btn-wrap">
                     <div class="center">
                         <button type="button" class="btn-medium btn-gray"  onclick="goPrev()">이전</button>
-                        <button type="button" class="btn-medium btn-green" onclick="goNext()">다음</button>
+                        <button type="button" class="btn-medium btn-green" onclick="doSave('next')">다음</button>
                     </div>
                 </div>
             </div>
@@ -202,18 +218,52 @@
 
 
     <script th:inline="javascript">
+        var reUrl="/front/eduInst/aplyInfoForm.html";
         var nextUrl="/front/eduInst/operPlanOutlForm.html";
         var insertUrl="/front/eduInst/insertAplyInfo.do";
         var updateUrl="/front/eduInst/updateAplyInfo.do";
+        var uploadFileCnt=0;
 
-        function doSave(){
 
+        function doSave(call){
+            var param = {};
         	var aplyid = $("#aplyid").val();
         	var url ="";
         	if(aplyid == null || aplyid == 0 || aplyid == ''){
         		url = insertUrl;
+        		$("#sttsCd").val("248101");    //작성중
+
+        		var now = new Date(); // 현재 날짜 및 시간
+        		var year = now.getFullYear()
+        		var ctprvnCd  = $("#ctprvnCd").val();
+        		var rcptno = year+"-"+ctprvnCd+"-"+"0001";
+
         	}else{
         		url = updateUrl
+        	}
+
+        	$("#rcptno").val(rcptno);
+        	param = $("#aplyForm").serializeArray();
+
+
+        	if("next"==call){
+            	if(!$("#aplyForm").valid()) return;
+
+            	//첨부파일
+                var fileCnt = $("[fileid],[id^=fileid]").length;
+                if(fileCnt==0){
+                    //$("[fileid]").length
+                    var msg="첨부파일을 입력해 주십시오";
+                    if (!$("#fileTd").find(".feedback.invalid").length) {
+                        $("#fileTd").append(`<p class="feedback invalid">${msg}</p>`);
+                    }
+                    var offset = $("#fileTd").offset();
+                    $('html, body').animate({scrollTop : offset.top - 300}, 300);
+                    $("#fileTd").focus();
+                    return false;
+                } else {
+                    $("#fileTd").find(".feedback.invalid").remove();
+                }
         	}
 
         	if(!confirm("저장하시겠습니까?")) return;
@@ -225,15 +275,17 @@
                 dataType: 'json',
                 data: param,
                 success : function (data){
-                    if(data.result=="success"){
+                	let insertData = escapeData(data);
+
+                    if(insertData.result=="success"){
+                    	alert(insertData.msg);
 
                         if(call == "next") {
-                            location.href = nextUrl+"?prgrmid=" + $("#prgrmid").val()+"&opner="+$("#opner").val();
+                            location.href = nextUrl+"?aplyid=" + insertData.aplyid;
                         }else{
-                            alert(data.msg);
-                            location.href = reUrl+"?prgrmid=" + $("#prgrmid").val()+"&opner="+$("#opner").val();
+                        	var id = insertData?.aplyid?? $("#aplyid").val();
+                            location.href = reUrl+"?aplyid=" + id;
                         }
-
                     }else{
                         alert(data.msg);
                     }
@@ -244,14 +296,107 @@
 
         }
 
-        function goNext(){
-            if(!$("#aplyForm").valid()) return false;
-            location.href = nextUrl;
-        }
-
         $(function(){
+            var validator= $("#aplyForm").validate({
+                rules: {
+                	 ctprvnCd       : { required: true }
+                    ,instEml        : { isBlank : true, maxlength: 50 }
+                    ,aplcntNm       : { isBlank : true ,maxlength: 50 }
+                    ,aplcntMoblphon : { isBlank : true}
+                    ,aplcntEml      : { isBlank : true, maxlength: 50 }
+                },
+                messages: {
+                	ctprvnCd        : { required: "시도를 선택해 주십시오."}
+                    ,instEml        : { isBlank : "입력값에 공백이 있습니다.", maxlength: "이메일은 50자 이하여야 합니다." }
+                    ,aplcntNm       : { isBlank : "입력값에 공백이 있습니다.", maxlength: "신청자명은 20자 이하여야 합니다." }
+                    ,aplcntMoblphon : { isBlank : "입력값에 공백이 있습니다." }
+                    ,aplcntEml      : { isBlank : "입력값에 공백이 있습니다.", maxlength: "이메일은 50자 이하여야 합니다." }
+                }
+            })
+
+            //첨부파일
+            $('#multiFileInput').on("change", function(event) {
+                var objFile = document.querySelector('#multiFileInput');
+                var formData = new FormData();
+                var content = "";
+
+                for( i = 0 ; i < objFile.files.length ; i++) {
+                    formData.append("files", objFile.files[i]);
+                    uploadFileCnt++;
+                }
+
+                formData.append("filegrpid", $("#atchFilegrpid").val());
+                formData.append("filegrpNm", "eduInst_file");
+
+                if(uploadFileCnt >0 ){
+                    $.ajax({
+                        url : '/uploadMultipleFiles.do',
+                        processData : false,
+                        contentType : false,
+                        data : formData,
+                        type : 'POST',
+                        success : function(response) {
+
+                            if(response.result == 'fail'){
+                                alert(response.msg);
+                            }else{
+                                if($("#atchFilegrpid").val()=='0' || $("#atchFilegrpid").val()==''  || $("#atchFilegrpid").val()==null){
+                                    $("#atchFilegrpid").val( response[0].filegrpid );
+                                }
+
+                                for(i = 0 ;i < response.length; i++ ){
+                                    content = '<ul>';
+                                    content +=  '<li class="file-block" data_ext="'+response[i].fileExtsn.replace(".", '')+'" id="fileid'+response[i].fileid+'"><span class="name">'+response[i].orginlFileNm
+                                    content += '&nbsp;&nbsp;<a href="javascript:void(0)" onclick=uploadFileCnt--;fn_deleteFileList("'+response[i].fileid+'","'+response[i].fileIdntfcKey+'")>X</a></span></li>'
+                                    content += '</ul>';
+                                    $('#multipleFileUploadSuccess').append(content);
+                                }
+                            }
+                        }
+                    });
+                   if (detectBrowser() == "other") {
+                       $("#multiFileInput").val("");
+                   } else {
+                      $("#multiFileInput").replaceWith( $("#multiFileInput").clone(true))
+                   }
+                }
+            });
 
         });
+
+
+
+        function fn_deleteFileList(fileid, fileIdntfcKey){
+
+            if(!confirm("파일을 삭제하시겠습니까?")){return;}
+            fn_deleteFile(fileid, fileIdntfcKey);
+            $("#fileid"+fileid).remove();
+        }
+
+        function fn_deleteFile(fileid, fileIdntfcKey){
+
+            var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey;
+
+            $.ajax({
+               url : deleteFileUrl,
+               type: 'GET',
+               cache : false,
+               dataType: 'json',
+               success : function (data){
+                   if(data.result=="success"){
+                       $("#"+fileid).remove();
+                       if(uploadFileCnt > 0){
+                           uploadFileCnt = uploadFileCnt-1;
+                       }
+                       alert("파일삭제가 완료 되었습니다.");
+                   }else{
+                       alert("파일삭제중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+                   }
+               },
+               error : function (error){
+               }
+            })
+        };
 
     </script>
 </div>

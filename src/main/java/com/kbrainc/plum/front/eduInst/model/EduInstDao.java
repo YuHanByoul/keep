@@ -33,6 +33,18 @@ public interface EduInstDao {
 	public EduInstVo selectAplyInfoForm(EduInstVo eduInstVo) throws Exception;
 
 	/**
+	* 환경교육기관상세 조회
+	*
+	* @Title : selectEnvEduInst
+	* @Description : 환경교육기관상세 조회
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return EduInstVo
+	*/
+	public EduInstVo selectEnvEduInst(EduInstVo eduInstVo) throws Exception;
+
+	/**
 	* SEE_환경_교육_기관 등록
 	*
 	* @Title : insertEnvEduInst

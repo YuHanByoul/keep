@@ -1,18 +1,30 @@
 package com.kbrainc.plum.front.eduInst.controller;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.annotation.Resource;
+import javax.validation.Valid;
 
 import org.apache.ibatis.type.Alias;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.front.eduInst.model.EduInstVo;
 import com.kbrainc.plum.front.eduInst.service.EduInstService;
+import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.util.StringUtil;
 
 /**
 * 사회환경교육기관지정 Controller
@@ -38,6 +50,9 @@ public class EduInstController {
 
 	@Autowired
     private CommonService commonService;
+
+	@Autowired
+    private FileService fileService;
 
 
 	/**
@@ -87,11 +102,114 @@ public class EduInstController {
 	*/
 	@RequestMapping(value="/front/eduInst/aplyInfoForm.html")
 	public String aplyInfoForm(EduInstVo eduInstVo, Model model, @UserInfo UserVo user) throws Exception {
+		EduInstVo aplyInfo = null;
+
+
 		eduInstVo.setAplcntid(user.getUserid());
-		model.addAttribute("aplyInfo", eduInstService.selectAplyInfoForm(eduInstVo));
+
+		if(null != eduInstVo.getAplyid() && 0 != eduInstVo.getAplyid()) {
+			aplyInfo = eduInstService.selectEnvEduInst(eduInstVo);
+
+			//첨부파일
+			if (!StringUtil.nvl(aplyInfo.getAtchFilegrpid()).equals("") && !StringUtil.nvl(aplyInfo.getAtchFilegrpid()).equals(0)) {
+	            FileVo fileVo = new FileVo();
+	            fileVo.setFilegrpid(aplyInfo.getAtchFilegrpid());
+	            model.addAttribute("fileList", fileService.getFileList(fileVo));
+			} else {
+	            model.addAttribute("fileList", Collections.emptyList());
+	        }
+
+		}else {
+			aplyInfo  = eduInstService.selectAplyInfoForm(eduInstVo);
+			model.addAttribute("fileList", Collections.emptyList());
+		}
+
 		model.addAttribute("sidoList", commonService.selectCtprvnList());
+		model.addAttribute("aplyInfo", aplyInfo);
+
 		return "front/eduInst/aplyInfoForm";
 	}
+
+    /**
+    * 신청정보 등록
+    *
+    * @Title : insertChklstQitem
+    * @Description : 신청정보 등록
+    * @param eduInstVo
+    * @param bindingResult
+    * @param user
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/front/eduInst/insertAplyInfo.do")
+    @ResponseBody
+    public Map<String, Object> insertChklstQitem(@Valid EduInstVo eduInstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+
+        if(bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if(fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+
+        int retVal = 0;
+        eduInstVo.setUser(user);
+        retVal = eduInstService.insertAplyInfo(eduInstVo);
+
+        if(retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("aplyid", eduInstVo.getAplyid());
+            resultMap.put("msg", "등록에 성공하였습니다");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "등록에 실패하였습니다");
+        }
+
+        return resultMap;
+    }
+
+    /**
+     * 신청정보 수정
+     *
+     * @Title : insertChklstQitem
+     * @Description : 신청정보 수정
+     * @param eduInstVo
+     * @param bindingResult
+     * @param user
+     * @return
+     * @throws Exception
+     * @return Map<String,Object>
+     */
+    @RequestMapping(value = "/front/eduInst/updateAplyInfo.do")
+    @ResponseBody
+    public Map<String, Object> updateChklstQitem(@Valid EduInstVo eduInstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+    	if(bindingResult.hasErrors()) {
+    		FieldError fieldError = bindingResult.getFieldError();
+    		if(fieldError != null) {
+    			resultMap.put("msg", fieldError.getDefaultMessage());
+    		}
+    		return resultMap;
+    	}
+
+    	int retVal = 0;
+    	eduInstVo.setUser(user);
+    	retVal = eduInstService.updateAplyInfo(eduInstVo);
+
+    	if(retVal > 0) {
+    		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+    		resultMap.put("msg", "수정에 성공하였습니다");
+    	} else {
+    		resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+    		resultMap.put("msg", "수정에 실패하였습니다");
+    	}
+
+    	return resultMap;
+    }
 
 	/**
 	* 운영계획 개요 화면 이동
