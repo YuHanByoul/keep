@@ -6,13 +6,7 @@
 
 <body>
 <div layout:fragment="content">
-	<style>
-		.hide
-		{
-			display:none;
-		}
-	</style>
-
+	<style>	.hide{display:none;	}</style>
 	<div class="page-body">
 		<div class="row">
 
@@ -71,6 +65,14 @@
 							<strong>입금 전 검색결과</strong>
 						</h5>
 					</div>
+                    <div class="col-12 col-md-6 text-right">
+                        <th:block sec:authorize-url="/mng/spce/spceDetail.html">
+                            <button type="button" class="btn btn-disabled m-r-5" onclick="confirmDeposit();" >입금확인</button>
+                        </th:block>
+                        <th:block sec:authorize-url="/mng/spce/spceDetail.html">
+                            <button type="button" class="btn btn-primary waves-effect waves-light" onclick="cancelAply();" >신청취소</button>
+                        </th:block>
+                    </div>
 				</div>
 				<div class="card-block">
 					<table id="jsGrid" class="table-responsive"></table>
@@ -179,7 +181,22 @@
 					},
 				},
 				fields: [
-					{ name: 'aplyid', css: 'hide' }
+	                 {
+	                     headerTemplate: function() {
+	                         return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
+	                     },
+	                     itemTemplate: function(_, item) {
+	                         return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox")
+	                         .prop("checked", $.inArray(item, selectedItems) > -1)
+	                         .on("change", function () {
+	                         $(this).is(":checked") ? selectItem($(this).parent().next().text()) : unselectItem($(this).parent().next().text());
+	                         });
+	                     },
+	                     align: "center",
+	                     width: "30",
+	                     sorting: false
+	                 } 
+					,{ name: 'aplyid', css: 'hide' }
 					,{ title: 'No.' ,name: 'rowNumber',    type: "number", width : "80", align:"center",  sorting :false }
 					,{ title: '신청자ID'    ,name: 'acnt',    type: "text", width: "auto"}
 					,{ title: '신청자명'    ,name: 'aplcntNm', type: "text", width: "150", align:"center" }
@@ -265,6 +282,59 @@
 			});
 		}
 
+
+
+		function cancelAply(){
+		}
+
+
+
+
+		
+
+	    //입금확인
+	    confirmDeposit =()=>{
+	        if(selectedItems.length <=0 ){
+	              alert("취소 대상을 선택해주십시오.");
+	              return;
+	        }
+	        
+	        var spceids = selectedItems.join(",")
+	        var params ={
+	            spceids : spceids
+	            ,useYn : "N"
+	        }
+	        
+	        if(displayWorkProgress()){
+	            $.ajax({
+	                url : "/mng/spce/deleteSpce.do",
+	                type: 'POST',
+	                cache : false,
+	                dataType: 'json',
+	                data : params,
+	                success : function (data){
+	                    
+	                    if(data.result == 'fail'){
+	                       alert(data.msg);
+	                       $('.singleCheckbox').each(function() { 
+	                           this.checked = false;   
+	                       });
+	                       $('#selectAllCheckbox').prop("checked",false);
+	                       selectedItems = [];
+	                    }else{
+	                       alert(data.msg);
+	                       selectedItems = [];
+	                       gridHelper1.resetListContent();
+	                    }
+	                    closeWorkProgress();
+	                }
+	            });
+	        }
+	    }
+
+
+		
+
 		function date2str(x, y) {
 			var z = {
 				m: x.getMonth() + 1,
@@ -309,7 +379,12 @@
 			return _dateObj;
 		}
 
-	</script>
+
+
+
+		
+
+   </script>
 </div>
 </body>
 </html>

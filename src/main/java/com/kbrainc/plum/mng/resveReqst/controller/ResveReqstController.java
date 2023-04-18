@@ -168,6 +168,7 @@ public class ResveReqstController {
         Map<String, Object> resultMap = new HashMap<>();
         List<ResveReqstVo> result = null;
 
+        resveReqstVo.setUser(user);
         result =  resveReqstService.selectResveReqstList(resveReqstVo);
         
         if (result.size() > 0) {
