@@ -249,15 +249,14 @@ $.validator.addMethod("required", function(value, element) {
     }else{
         return true;
     }
-    
 });
 
-//ckrequired
-//ckeditor 필수입력 유효성 체크
-/*$.validator.addMethod('ckrequired', function (value, element) { 
-    
-	var idname = $(element).attr('id'); 
-    var messageLength =  $.trim ( CKEDITOR.instances[idname].getData() ); 
-    return messageLength.length !== 0; 
-}, "필수 입력 항목입니다."); */
+// ckRequired
+// ckeditor 필수입력 유효성 체크
+$.validator.addMethod('ckRequired', function (value, element) {
+	var content = value.replaceAll("&nbsp;", "").trim();
+
+	if (content == '' || content.length == 0) return false;
+	else return true;
+});
 

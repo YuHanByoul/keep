@@ -71,7 +71,7 @@ $.extend( $.validator.messages,
         	, isRightBizNo : "올바르지 않는 사업자 번호입니다."
             , emailDomain : "올바른 이메일을 입력해주십시오."
             , hangulOrAlpha : "한글과 알파벳만 사용가능합니다."
-        		
+		    , ckRequired: '내용을 입력해 주십시오.'
 	        }
 
 );
