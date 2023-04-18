@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.wbzn.carbon.opnn.model.CarbonOpnnDao;
 import com.kbrainc.plum.mng.wbzn.carbon.opnn.model.CarbonOpnnVo;
@@ -39,6 +40,7 @@ public class CarbonOpnnServiceImpl extends PlumAbstractServiceImpl implements Ca
     * @throws Exception 예외
     * @return List<EnveduVo>
     */
+    @Override
     public List<CarbonOpnnVo> selectOpnnList(CarbonOpnnVo opnnVo) throws Exception {
         return prgrmgdDao.selectOpnnList(opnnVo);
     }

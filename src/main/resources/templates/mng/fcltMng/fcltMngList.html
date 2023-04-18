@@ -87,7 +87,12 @@
 						</h5>
 					</div>
 					<div class="col-12 col-md-6 text-right">
+					    <th:block sec:authorize-url="/mng/fcltMng/deleteFcltMng.do">
+						<button type="button" class="btn btn-disabled m-r-5" onclick="deleteFclList();">삭제</button>
+						</th:block>
+						<th:block sec:authorize-url="/mng/fcltMng/fcltMngForm.html">
 						<button type="button" class="btn btn-primary waves-effect waves-light" onclick="fn_goInsertForm();">등록</button>
+						</th:block>
 					</div>
 				</div>
 				<div class="card-block">
@@ -126,7 +131,6 @@
 			$("#searchSeCd").val('');
 			$("#searchRgnCd").val('');
 			$("#searchUseYn").val('');
-			gridHelper2.resetListContent();
 		}
 
 		function writeJsGridData(){
@@ -184,7 +188,22 @@
 					},
 				},
 				fields: [
-					{ name: 'fcltid', css: 'hide' }
+	                 {
+	                     headerTemplate: function() {
+	                         return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
+	                     },
+	                     itemTemplate: function(_, item) {
+	                         return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox")
+	                         .prop("checked", $.inArray(item, selectedItems) > -1)
+	                         .on("change", function () {
+	                         $(this).is(":checked") ? selectItem($(this).parent().next().text()) : unselectItem($(this).parent().next().text());
+	                         });
+	                     },
+	                     align: "center",
+	                     width: "30",
+	                     sorting: false
+	                 } 
+					,{ name: 'fcltid', css: 'hide' }
 					,{ title: 'No.' ,name: 'rowNumber',    type: "number", width : "80", align:"center",  sorting :false }
 					,{ title: '운영기관'    ,name: 'instNm',    type: "text", width: "200"}
 					,{ title: '시설'    ,name: 'fcltNm', type: "text", width: "250", align:"center" }
@@ -246,9 +265,37 @@
 				}
 			});
 		}
-	</script>
 
-	<script src="/js/ckeditor/ckeditor.js"></script>
+	    deleteFclList =()=>{
+
+		      if(selectedItems.length <=0 ){
+		            alert("삭제 대상을 선택해주십시오.");
+		            return;
+		      }
+		      
+		      var fcltids = selectedItems.join(",")
+		      
+		      if(displayWorkProgress()){
+		          $.ajax({
+		              url : "/mng/fcltMng/deleteFcltMng.do",
+		              type: 'POST',
+		              cache : false,
+		              dataType: 'json',
+		              data : {"fcltids":fcltids},
+		              success : function (data){
+
+		                  alert(data.msg);
+			              if(data.result=='success'){
+			                  gridHelper2.resetListContent();
+		                      selectedItems = [];
+				          }
+		                  closeWorkProgress();
+		              }
+		          });
+		      }
+		}
+		
+	</script>
 </div>
 </body>
 </html>

@@ -26,7 +26,7 @@ public interface MyInfoService {
     * @throws Exception
     * @return int
     */
-    public int updateMyInfo(MemberVo memberVo, String itrstfldCdEpty, String envfldCdEpty) throws Exception;
+    public int updateMyInfo(MemberVo memberVo) throws Exception;
 
     /**
     * 비밀번호 변경

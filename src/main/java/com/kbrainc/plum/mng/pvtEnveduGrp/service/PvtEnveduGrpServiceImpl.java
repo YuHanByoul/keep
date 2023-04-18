@@ -17,6 +17,7 @@ import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.pvtEnveduGrp.model.PvtEnvEduGrpVo;
 import com.kbrainc.plum.mng.pvtEnveduGrp.model.PvtEnveduGrpDao;
@@ -54,6 +55,7 @@ public class PvtEnveduGrpServiceImpl extends PlumAbstractServiceImpl implements 
     * @throws Exception 예외
     * @return List<PvtEnvEduGrpVo>
     */
+    @Override
     public List<PvtEnvEduGrpVo> selectPvtEnveduGrpList(PvtEnvEduGrpVo pvtEnvEduGrpVo) throws Exception {
         return pvtEnveduGrpDao.selectPvtEnveduGrpList(pvtEnvEduGrpVo);
     }
@@ -67,6 +69,7 @@ public class PvtEnveduGrpServiceImpl extends PlumAbstractServiceImpl implements 
     * @throws Exception 예외
     * @return List<PvtEnvEduGrpVo>
     */
+    @Override
     public List<PvtEnvEduGrpVo> selectAddrCtpvnList(PvtEnvEduGrpVo pvtEnvEduGrpVo) throws Exception {    
         return pvtEnveduGrpDao.selectAddrCtpvnList(pvtEnvEduGrpVo);
     }

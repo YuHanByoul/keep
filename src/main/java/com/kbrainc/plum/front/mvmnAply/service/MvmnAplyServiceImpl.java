@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 
 import org.apache.ibatis.type.Alias;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.front.mvmnAply.model.MvmnAplyDao;
 import com.kbrainc.plum.front.mvmnAply.model.MvmnAplyVo;
@@ -150,6 +151,8 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
     * @throws Exception 예회
     * @return int
     */
+    @Override
+    @Transactional    
     public int insertMvmnAply(MvmnAplyVo mvmnAplyVo) throws Exception{
         int retVal = 0;
         retVal += mvmnAplyDao.insertMvmnAply(mvmnAplyVo);
@@ -186,6 +189,7 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
      * @throws Exception
      * @return List<MvmnAplyVo>
      */
+    @Override
     public List<MvmnAplyVo> selectMvmnAplySignguList(MvmnAplyVo mvmnAplyVo) throws Exception{
         return mvmnAplyDao.selectMvmnAplySignguList(mvmnAplyVo);        
     }

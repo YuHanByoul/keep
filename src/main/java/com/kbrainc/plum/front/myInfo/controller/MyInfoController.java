@@ -80,13 +80,6 @@ public class MyInfoController {
         model.addAttribute("memberInfo", resultVo);
         model.addAttribute("returnUrl", memberVo.getReturnUrl());
         
-        if(resultVo.getItrstfldCd() == null || resultVo.getItrstfldCd() == "") {
-            model.addAttribute("itrstfldCd", "Empty");
-        }
-        if(resultVo.getEnvfldCd() == null || resultVo.getEnvfldCd() == "") {
-            model.addAttribute("envfldCd", "Empty");
-        }
-        
         return "front/myInfo/myInfoUpdate";
     }
     
@@ -138,7 +131,7 @@ public class MyInfoController {
         memberVo.setUser(user);
         
         int retVal = 0 ;
-        retVal = myInfoService.updateMyInfo(memberVo, itrstfldCdEpty, envfldCdEpty);
+        retVal = myInfoService.updateMyInfo(memberVo);
         
         if(retVal > 0) {
             resultMap.put("msg", "회원 정보 변경이 완료되었습니다");

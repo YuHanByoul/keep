@@ -9,6 +9,7 @@ import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 import org.apache.ibatis.type.Alias;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -130,6 +131,7 @@ public class CntstServiceImpl extends PlumAbstractServiceImpl implements CntstSe
     * @return int
     */
     @Override
+    @Transactional
     public int insertCntstAply(CntstAplyVo cntstAplyVo) throws Exception {
         return cntstDao.insertCntstAply(cntstAplyVo);
     }
@@ -144,6 +146,7 @@ public class CntstServiceImpl extends PlumAbstractServiceImpl implements CntstSe
     * @return int
     */
     @Override
+    @Transactional
     public int insertCntstAplySchl(List<CntstAplySchlVo> cntstAplySchlVo) throws Exception {
         return cntstDao.insertCntstAplySchl(cntstAplySchlVo);
     }

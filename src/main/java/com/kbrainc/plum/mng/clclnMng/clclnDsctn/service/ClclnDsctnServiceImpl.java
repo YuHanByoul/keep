@@ -59,6 +59,7 @@ public class ClclnDsctnServiceImpl extends PlumAbstractServiceImpl implements Cl
     * @throws Exception 예외
     * @return List<ClclnDsctnVo>
     */
+    @Override
     public List<ClclnDsctnVo> selectClclnDsctnList(ClclnDsctnVo clclnDsctnVo) throws Exception {
         return clclnDsctnDao.selectClclnDsctnList(clclnDsctnVo);
     }
@@ -72,6 +73,7 @@ public class ClclnDsctnServiceImpl extends PlumAbstractServiceImpl implements Cl
     * @throws Exception 예외
     * @return List<ClclnDsctnVo>
     */
+    @Override
     public List<ClclnDsctnVo> selectClclnDsctnDetailList(ClclnDsctnVo clclnDsctnVo) throws Exception {
         return clclnDsctnDao.selectClclnDsctnDetailList(clclnDsctnVo);
     }
@@ -85,6 +87,7 @@ public class ClclnDsctnServiceImpl extends PlumAbstractServiceImpl implements Cl
      * @throws Exception 예외
      * @return ClclnDsctnVo
      */
+    @Override
     public ClclnDsctnVo selectClclnDsctnDetailInfo(ClclnDsctnVo clclnDsctnVo) throws Exception {
         return clclnDsctnDao.selectClclnDsctnDetailInfo(clclnDsctnVo);
     }
@@ -98,6 +101,7 @@ public class ClclnDsctnServiceImpl extends PlumAbstractServiceImpl implements Cl
      * @throws Exception 예외
      * @return List<ClclnDsctnVo>
      */
+    @Override
     public List<ClclnDsctnVo> selectClclnDsctnDetailOutlList(ClclnDsctnVo clclnDsctnVo) throws Exception {
         return clclnDsctnDao.selectClclnDsctnDetailOutlList(clclnDsctnVo);
     }
@@ -111,6 +115,7 @@ public class ClclnDsctnServiceImpl extends PlumAbstractServiceImpl implements Cl
      * @throws Exception 예외
      * @return List<ClclnDsctnVo>
      */
+    @Override
     public List<ClclnDsctnVo> selectClclnDsctnDetailOutlDtlList(ClclnDsctnVo clclnDsctnVo) throws Exception {
         return clclnDsctnDao.selectClclnDsctnDetailOutlDtlList(clclnDsctnVo);
     }
@@ -535,6 +540,7 @@ public class ClclnDsctnServiceImpl extends PlumAbstractServiceImpl implements Cl
     }
 
     @Override
+    @Transactional
     public int insertExcclcSplmnt(SupplementVo excclcSplmntVo) throws Exception {
         // TODO Auto-generated method stub
         return clclnDsctnDao.insertExcclcSplmnt(excclcSplmntVo);
@@ -542,6 +548,7 @@ public class ClclnDsctnServiceImpl extends PlumAbstractServiceImpl implements Cl
 
 
     @Override
+    @Transactional
     public int updateExcclcSplmnt(SupplementVo excclcSplmntVo) throws Exception {
         // TODO Auto-generated method stub
         return clclnDsctnDao.updateExcclcSplmnt(excclcSplmntVo);

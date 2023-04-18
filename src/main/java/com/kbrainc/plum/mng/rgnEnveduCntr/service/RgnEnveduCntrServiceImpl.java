@@ -17,6 +17,7 @@ import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.rgnEnveduCntr.model.RgnEnveduCntrDao;
 import com.kbrainc.plum.mng.rgnEnveduCntr.model.RgnEnveduCntrVo;
@@ -54,6 +55,7 @@ public class RgnEnveduCntrServiceImpl extends PlumAbstractServiceImpl implements
     * @throws Exception 예외
     * @return Map<String,Object>
     */
+    @Override
     public List<RgnEnveduCntrVo> selectRgnEnveduCntrList(RgnEnveduCntrVo rgnEnveduCntrVo) throws Exception {    
         return rgnEnveduCntrDao.selectRgnEnveduCntrList(rgnEnveduCntrVo);
     }
@@ -67,6 +69,7 @@ public class RgnEnveduCntrServiceImpl extends PlumAbstractServiceImpl implements
     * @throws Exception 예외
     * @return List<EnveduCntrVo>
     */
+    @Override
     public List<RgnEnveduCntrVo> selectCmmCdList(RgnEnveduCntrVo rgnEnveduCntrVo) throws Exception {    
         return rgnEnveduCntrDao.selectCmmCdList(rgnEnveduCntrVo);
     }
@@ -80,6 +83,7 @@ public class RgnEnveduCntrServiceImpl extends PlumAbstractServiceImpl implements
     * @throws Exception 예외
     * @return List<EnveduCntrVo>
     */
+    @Override
     public List<RgnEnveduCntrVo> selectAddrCtpvnList(RgnEnveduCntrVo rgnEnveduCntrVo) throws Exception {    
         return rgnEnveduCntrDao.selectAddrCtpvnList(rgnEnveduCntrVo);
     }
@@ -239,6 +243,8 @@ public class RgnEnveduCntrServiceImpl extends PlumAbstractServiceImpl implements
     * @throws Exception 에외
     * @return int
     */
+    @Override
+    @Transactional
     public int insertRgnEnveduCntr(RgnEnveduCntrVo rgnEnveduCntrVo) throws Exception {
         return rgnEnveduCntrDao.insertRgnEnveduCntr(rgnEnveduCntrVo);
     }
@@ -252,6 +258,7 @@ public class RgnEnveduCntrServiceImpl extends PlumAbstractServiceImpl implements
     * @throws Exception 예외
     * @return EnveduCntrVo
     */
+    @Override
     public RgnEnveduCntrVo selectRgnEnveduCntrInfo(RgnEnveduCntrVo rgnEnveduCntrVo) throws Exception {
         return rgnEnveduCntrDao.selectRgnEnveduCntrInfo(rgnEnveduCntrVo);
     }
@@ -265,6 +272,8 @@ public class RgnEnveduCntrServiceImpl extends PlumAbstractServiceImpl implements
     * @throws Exception 예외
     * @return int
     */
+    @Override
+    @Transactional
     public int deleteRgnEnveduCntr(RgnEnveduCntrVo rgnEnveduCntrVo) throws Exception {
         return rgnEnveduCntrDao.deleteRgnEnveduCntr(rgnEnveduCntrVo);
     }
@@ -278,6 +287,8 @@ public class RgnEnveduCntrServiceImpl extends PlumAbstractServiceImpl implements
     * @throws Exception 예외
     * @return int
     */
+    @Override
+    @Transactional
     public int updateRgnEnveduCntr(RgnEnveduCntrVo rgnEnveduCntrVo) throws Exception {
         return rgnEnveduCntrDao.updateRgnEnveduCntr(rgnEnveduCntrVo);
     }

@@ -69,6 +69,7 @@ public class TchaidRvwServiceImpl extends PlumAbstractServiceImpl implements Tch
     * @return int
     */
     @Override
+    @Transactional
     public int updateTchaidRvw(TchaidRvwVo tchaidRvwVo) throws Exception {
         return tchaidRvwDao.updateTchaidRvw(tchaidRvwVo);
     }
@@ -99,6 +100,8 @@ public class TchaidRvwServiceImpl extends PlumAbstractServiceImpl implements Tch
      * @throws Exception 예외
      * @return int
      */
+    @Override
+    @Transactional
     public int deleteLendAplyRvw(TchaidRvwVo tchaidRvwVo) throws Exception{
         return tchaidRvwDao.deleteLendAplyRvw(tchaidRvwVo);
     }

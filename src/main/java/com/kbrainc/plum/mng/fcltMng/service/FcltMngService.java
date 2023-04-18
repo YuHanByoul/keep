@@ -3,6 +3,7 @@ package com.kbrainc.plum.mng.fcltMng.service;
 import java.util.List;
 
 import com.kbrainc.plum.mng.fcltMng.model.FcltMngVo;
+import com.kbrainc.plum.mng.resveReqst.model.ResveReqstVo;
 
 /**
 * 시설 서비스 인터페이스
@@ -119,4 +120,36 @@ public interface FcltMngService {
      * @return List<FcltMngVo>
      */
      public List<FcltMngVo> selectFcltMngSpceList(FcltMngVo fcltMngVo) throws Exception;
+     /**
+      * 공간 일괄 삭제
+      *
+      * @Title : deleteSpceByFclid
+      * @Description : 공간 일괄 삭제
+      * @param fcltMngVo 시설 객체
+      * @throws Exception 예외
+      * @return int
+      */
+      public int deleteSpceByFclid(FcltMngVo fcltMngVo) throws Exception;
+      /**
+       * 공간 예약 내역 여부 일괄 확인
+       *
+       * @Title : deleteSpceByFclid
+       * @Description : 공간 일괄 삭제
+       * @param fcltMngVo 시설 객체
+       * @throws Exception 예외
+       * @return int
+       */
+      public String isThereSpceRsvtByFclids(FcltMngVo fcltMngVo) throws Exception;
+      /**
+       * 시설 후기 내역 호출
+       *
+       * @Title : selectFcltMngReviewList
+       * @Description : 시설 후기 내역 호출
+       * @param fcltMngVo 시설 객체
+       * @throws Exception 예외
+       * @return List<ResveReqstVo> 객체
+       */
+      public List<ResveReqstVo> selectFcltMngReviewList(FcltMngVo fcltMngVo) throws Exception;
+     
+     
 }

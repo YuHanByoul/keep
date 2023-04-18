@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	  layout:decorator="layout/mng/mainLayout">
+
+<body>
+	<div layout:fragment="content">
+		<!-- [팝업] 검색필터 -->
+		<form id="searchForm">
+			<div class="modal fade" id="topSearchPopup" data-bs-backdrop="static" style="z-index:1090;">
+				<div class="modal-dialog modal-md" role="document">
+					<div class="modal-content type_2">
+						<div class="modal-header">
+							<h4 class="modal-title">검색필터</h4>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true"></span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="card m-b-10">
+								<div class="card-block-small">
+									<div class="row">
+										<div class="col-12 col-sm-6 mb-3">
+											<div class="mb-0 form-group row">
+												<div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>배정년도</strong></div>
+												<div class="col-12">
+													<select class="form-select form-select-sm" name="searchYear">
+														<option value="">-전체-</option>
+														<option th:each="i : ${#numbers.sequence(2023, #dates.year(#dates.createNow()))}" th:value="${i}" th:text="${i}">   </option>
+													</select>
+												</div>
+											</div>
+										</div>
+										<div class="col-12 col-sm-6 mb-0">
+											<div class="mb-0 form-group row">
+												<div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>심사상태</strong></div>
+												<div class="col-12">
+													<span id="searchSrngSttsCd" name="searchSrngSttsCd" kattr:select_code="searchSrngSttsCd" grpCd="114" firstOptTxt="- 전체 -" addClass="form-select form-select-sm" isAdmin="true">
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-disabled waves-effect waves-light" data-bs-dismiss="modal">닫기</button>
+							<button type="button" class="btn btn-primary waves-effect waves-light">검색</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<input type="hidden" id="pageNumber" name="pageNumber" value="1">
+			<input type="hidden" id="rowPerPage" name="rowPerPage" value="12">
+			<input type="hidden" id="orderField" name="orderField" value="REG_DT">
+			<input type="hidden" id="searchRegStartDt" name="searchRegStartDt" value="" />
+			<input type="hidden" id="searchRegEndDt"   name="searchRegEndDt"   value="" />
+<!--			<input type="hidden" id="searchDlvySttsCd" name="searchDlvySttsCd" value="230101">-->
+<!--			<input type="hidden" id="searchSttsCd" name="searchSttsCd" value="231102">-->
+		</form>
+
+		<div class="page-wrapper">
+			<!-- Page-header start -->
+			<div class="page-header">
+				<div class="row align-items-end justify-content-between">
+					<div class="col-lg">
+						<div class="page-header-title">
+							<div class="d-inline">
+								<h4>지원단 심사 관리</h4>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- Page-header end -->
+			<!-- Page-body start -->
+			<div class="page-body" id="list-area">
+			</div>
+			<div class="text-center mt-3" id="pagination">
+			</div>
+			<!-- Page-body end -->
+		</div>
+
+		<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+		<script type="text/javascript" src="/js/common/jsgrid-master/dist/jsgrid.min.js"></script>
+		<script th:inline="javascript">
+			var listUrl = "/mng/mobileAsgsysSrng/selectAsgsysSrngList.do";
+			var viewUrl = '/mng/mobileAsgsysSrng/asgsysSrngUpdate.html';
+			var formUrl = '/front/envReqst/envReqstForm.html';
+			var loginUserid = /*[[${loginUserid}]]*/null;
+
+			$(function () {
+				$("#mobile-btn-search").html('<a class="btn-search" href="javascript:openSearchPop()"><i class="feather icon-search"></i></a>');
+
+				selectMassList();
+			});
+
+			function openSearchPop(){
+				$("#topSearchPopup").modal("show");
+			}
+
+			function search() {
+				selectMassList();
+			}
+
+			function selectMassList() {
+
+				if (displayWorkProgress(true)) {
+					$.ajax({
+						url: listUrl,
+						cache: false,
+						dataType: 'json',
+						data: formData = $('#searchForm').serializeArray(),
+						type: 'GET',
+						success: function (data) {
+							$("#list-area").html(makeListHtml(data.list));
+							$("#pagination").html(data.pagination);
+							$("#total-count").html(data.totalCount);
+							closeWorkProgress();
+						}
+					});
+				}
+			}
+
+			function makeListHtml(list) {
+				var html = "";
+				if (list == null || list.length <= 0) {
+					html += `<div class="nodata"><p><span class="icon icon-notice bg-black9"></span>데이터가 없습니다.</p></div>`;
+				} else {
+					list.forEach(function (item) {
+						let badge = 'badge badge-primary lh-sm';
+						let srngDt = item.srngDt;
+						if( item.srgnSttsCd == '114102' ){
+							// 심사전
+							badge = 'badge badge-primary lh-sm';
+							srngDt = '-';
+						}else if( item.srgnSttsCd == '114103' ){
+							// 심사중
+							badge = 'badge badge-primary lh-sm';
+						}else if( item.srgnSttsCd == '114104' ){
+							// 심사완료
+							badge = 'badge badge-default lh-sm';
+						}
+						html += '<div class="card position-relative">'+
+									'<div class="card-header pb-2 row">'+
+										'<div class="col text-truncate">'+
+											'<strong><a href="/mng/mobileAsgsysSrng/asgsysSrngUpdate.html?prgrmid='+item.prgrmid+'&sprtgrpid='+item.sprtgrpid+'" class="stretched-link f-16 text-dark">'+item.prgrmNm+'</a></strong>'+
+										'</div>'+
+										'<div class="col-auto ps-0">'+
+											'<div class="'+badge+'">'+item.srgnSttsCdNm+'</div>'+
+										'</div>'+
+									'</div>'+
+									'<div class="card-block">'+
+										'<ul class="lh-lg">'+
+											'<li>기관명 : '+item.instNm+'</li>'+
+											'<li>현장점검 지정일 : '+srngDt+'</li>'+
+											'<li>배정일 : '+item.regDt+'</li>'+
+										'</ul>'+
+									'</div>'+
+								'</div>';
+					})
+				}
+				return html;
+			}
+
+			function goPage(page) {
+				$("#searchForm #pageNumber").val(page);
+				selectMassList();
+			}
+			function enterkey() {
+				if (window.event.keyCode == 13) {
+					selectMassList();
+				}
+			}
+		</script>
+
+		<script src="/js/ckeditor/ckeditor.js"></script>
+	</div>
+</body>
+</html>

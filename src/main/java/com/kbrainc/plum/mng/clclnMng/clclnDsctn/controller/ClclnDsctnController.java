@@ -1,15 +1,27 @@
 package com.kbrainc.plum.mng.clclnMng.clclnDsctn.controller;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,12 +30,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.mng.bizAply.req.model.SupplementVo;
 import com.kbrainc.plum.mng.clclnMng.clclnDsctn.model.ClclnDsctnVo;
 import com.kbrainc.plum.mng.clclnMng.clclnDsctn.service.ClclnDsctnService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.util.StringUtil;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 
 /**
@@ -46,6 +61,12 @@ public class ClclnDsctnController {
     
     @Autowired
     private ClclnDsctnService clclnDsctnService;
+    
+    @Autowired
+    private FileService fileService;
+    
+    @Value("${file.upload-dir}")
+    private String uploadZipPath;
     
     /**
     * 정산내역관리 리스트화면으로 이동
@@ -120,6 +141,7 @@ public class ClclnDsctnController {
 
         ClclnDsctnVo result = new ClclnDsctnVo();
         ClclnDsctnVo calResult = new ClclnDsctnVo();
+        List<FileVo> bnkbFileRsltList = null;
         
         List<ClclnDsctnVo> resultList = null;
         List<ClclnDsctnVo> resultDtlList = null;
@@ -168,9 +190,26 @@ public class ClclnDsctnController {
             StringBuffer atchFileBtn = new StringBuffer();
             atchFileBtn.append("<div class ='label label-inverse text-white' id='" + result.getAtchFileid() + "'>");
             atchFileBtn.append("<a href=javascript:downloadFileByFileid('" + result.getAtchFileid() + "','" + result.getAtchFileIdntfcKey() + "') class='text-white'>" + result.getAtchOrginlFileNm() + "&nbsp;&nbsp;</a>");
-            atchFileBtn.append("<a href=javascript:fn_deleteFileList('" + result.getAtchFileid() + "','" + result.getAtchFileIdntfcKey() + "') class='text-white'>X</a></div>");
+            atchFileBtn.append("<a href=javascript:fn_deleteAtchFileList('" + result.getAtchFileid() + "','" + result.getAtchFileIdntfcKey() + "') class='text-white'>X</a></div>");
             model.addAttribute("atchFileBtn", atchFileBtn);
         }
+        if (!StringUtil.nvl(result.getBnkbFileid()).equals("") && !StringUtil.nvl(result.getBnkbFileid()).equals(0)) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(result.getBnkbFileid());
+            
+            bnkbFileRsltList = fileService.getFileList(fileVo);
+            
+            if(bnkbFileRsltList.get(0).getFileIdntfcKey() != null) {
+                StringBuffer bnkbFileBtn = new StringBuffer();
+                bnkbFileBtn.append("<div class ='label label-inverse text-white' id='" + bnkbFileRsltList.get(0).getFileid() + "'>");
+                bnkbFileBtn.append("<a href=javascript:downloadFileByFileid('" + bnkbFileRsltList.get(0).getFileid() + "','" + bnkbFileRsltList.get(0).getFileIdntfcKey() + "') class='text-white'>" + bnkbFileRsltList.get(0).getOrginlFileNm() + "&nbsp;&nbsp;</a>");
+                bnkbFileBtn.append("<a href=javascript:fn_deleteBnkbFileList('" + bnkbFileRsltList.get(0).getFileid() + "','" + bnkbFileRsltList.get(0).getFileIdntfcKey() + "') class='text-white'>X</a></div>");
+                model.addAttribute("bnkbFileBtn", bnkbFileBtn);
+            }
+            model.addAttribute("bankFile", fileService.getFileList(fileVo).get(0));
+        } else {
+            model.addAttribute("bankFile", null);
+        }        
 
         model.addAttribute("clclnDsctn", result);
         model.addAttribute("calculateInfo", calResult);
@@ -387,5 +426,90 @@ public class ClclnDsctnController {
         }
         
         return resultMap;
+    }  
+    
+    /**
+    * 증빙자료 압축파일 다운로드. 
+    *
+    * @Title : fileCompressZIP
+    * @Description : TODO
+    * @param clclnDsctnVo
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+     */
+    @RequestMapping(value="/mng/clclnMng/clclnDsctn/fileCompressZIP.do")
+    @ResponseBody    
+    public void fileCompressZIP(ClclnDsctnVo clclnDsctnVo, HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        
+        List<ClclnDsctnVo> resultDtlList = null;
+        resultDtlList = clclnDsctnService.selectClclnDsctnDetailOutlDtlList(clclnDsctnVo);
+        
+        ZipOutputStream zout = null;
+        String zipName = "증빙자료 다운로드.zip";     //ZIP 압축 파일명
+        String tempPath = "";
+
+        if (resultDtlList.size() > 0) {
+              try{
+                 tempPath = "/temp/";       //ZIP 압축 파일 저장경로
+                 //ZIP파일 압축 START
+                 zout = new ZipOutputStream(new FileOutputStream(new File(uploadZipPath+"/"+zipName)));
+                 byte[] buffer = new byte[1024];
+                 InputStream in = null;
+                 
+                 for ( int k=0; k<resultDtlList.size(); k++){
+                     FileVo fileVo = new FileVo();
+                     fileVo.setFileid(resultDtlList.get(k).getAtchFileid());
+                     fileVo.setFileIdntfcKey(resultDtlList.get(k).getAtchFileIdntfcKey());
+                     String fileName ="";
+                     fileVo = fileService.selectFile(fileVo);   
+                     fileName = fileVo.getSaveFileNm();
+                     String filePath = fileVo.getFilePath();
+                     //filePath = filePath.replaceAll("/", "");
+                     
+                     ClassPathResource resource = new ClassPathResource(filePath + "/" + fileName);
+//                   File file = new File(lmsdataPath+filePath+"/"+sFileName);
+                     File file = resource.getFile();
+                     
+                    in = new FileInputStream(file);      //압축 대상 파일
+                    zout.putNextEntry(new ZipEntry(fileName));  //압축파일에 저장될 파일명
+                    int len;
+                    while((len = in.read(buffer)) > 0){
+                       zout.write(buffer, 0, len);          //읽은 파일을 ZipOutputStream에 Write
+                    }
+                    zout.closeEntry();
+                    in.close();
+                 }
+                 zout.close();
+                 //ZIP파일 압축 END
+                 
+                 //파일다운로드 START
+                 response.setContentType("application/zip");
+                 response.addHeader("Content-Disposition", "attachment;filename=" + zipName);
+                 
+                 FileInputStream fis = new FileInputStream(tempPath + zipName);
+                 BufferedInputStream bis = new BufferedInputStream(fis);
+                 ServletOutputStream so = response.getOutputStream();
+                 BufferedOutputStream bos = new BufferedOutputStream(so);
+                 
+                 int n = 0;
+                 while((n = bis.read(buffer)) > 0){
+                    bos.write(buffer, 0, n);
+                    bos.flush();
+                 }
+                 if(bos != null) bos.close();
+                 if(bis != null) bis.close();
+                 if(so != null) so.close();
+                 if(fis != null) fis.close();
+                 
+                 //파일다운로드 END
+              }catch(IOException e){
+                 //Exception
+              }finally{
+                 if (zout != null){
+                    zout = null;
+                 }
+              }
+        }
     }    
 }

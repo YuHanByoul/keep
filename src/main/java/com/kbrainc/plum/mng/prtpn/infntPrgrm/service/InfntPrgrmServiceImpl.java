@@ -56,6 +56,7 @@ public class InfntPrgrmServiceImpl extends PlumAbstractServiceImpl implements In
     * @throws Exception 예외
     * @return List<InfntPrgrmVo>
     */
+    @Override
     public List<InfntPrgrmVo> selectInfntPrgrmList(InfntPrgrmVo infntPrgrmVo) throws Exception {
         return infntPrgrmDao.selectInfntPrgrmList(infntPrgrmVo);
     }
@@ -69,6 +70,8 @@ public class InfntPrgrmServiceImpl extends PlumAbstractServiceImpl implements In
     * @throws Exception 예회
     * @return int
     */
+    @Override
+    @Transactional    
     public int insertInfntPrgrm(InfntPrgrmVo infntPrgrmVo) throws Exception{
         int retVal = 0;
         retVal += infntPrgrmDao.insertInfntPrgrm(infntPrgrmVo);
@@ -130,6 +133,7 @@ public class InfntPrgrmServiceImpl extends PlumAbstractServiceImpl implements In
     * @throws Exception 예외
     * @return InfntPrgrmVo
     */
+    @Override
     public InfntPrgrmVo selectInfntPrgrmInfo(InfntPrgrmVo infntPrgrmVo) throws Exception{
         return infntPrgrmDao.selectInfntPrgrmInfo(infntPrgrmVo);
     }
@@ -143,6 +147,8 @@ public class InfntPrgrmServiceImpl extends PlumAbstractServiceImpl implements In
     * @throws Exception 예외
     * @return int
     */
+    @Override
+    @Transactional    
     public int updateInfntPrgrm(InfntPrgrmVo infntPrgrmVo) throws Exception{
         int retVal = 0;
         retVal += infntPrgrmDao.updateInfntPrgrm(infntPrgrmVo);
@@ -170,6 +176,8 @@ public class InfntPrgrmServiceImpl extends PlumAbstractServiceImpl implements In
     * @throws Exception 예회
     * @return int
     */
+    @Override
+    @Transactional    
     public int insertInfntPrgrmTme(InfntPrgrmVo infntPrgrmVo) throws Exception{
         int retVal = 0;
         InfntPrgrmVo delInfntPrgrmVo =  new InfntPrgrmVo();
@@ -201,6 +209,8 @@ public class InfntPrgrmServiceImpl extends PlumAbstractServiceImpl implements In
     * @throws Exception 예외
     * @return int
     */
+    @Override
+    @Transactional    
     public int updateInfntPrgrmTme(InfntPrgrmVo infntPrgrmVo) throws Exception{
         return infntPrgrmDao.updateInfntPrgrmTme(infntPrgrmVo);
     }    
@@ -214,6 +224,7 @@ public class InfntPrgrmServiceImpl extends PlumAbstractServiceImpl implements In
     * @throws Exception 예외
     * @return List<InfntPrgrmVo>
     */
+    @Override
     public List<InfntPrgrmVo> selectInfntPrgrmTmeList(InfntPrgrmVo infntPrgrmVo) throws Exception {
         return infntPrgrmDao.selectInfntPrgrmTmeList(infntPrgrmVo);
     }    
@@ -227,6 +238,7 @@ public class InfntPrgrmServiceImpl extends PlumAbstractServiceImpl implements In
     * @throws Exception 예외
     * @return List<InfntPrgrmVo>
     */
+    @Override
     public List<InfntPrgrmVo> selectPrgrmSettingList(String rcptMthdCd) throws Exception {
         return infntPrgrmDao.selectPrgrmSettingList(rcptMthdCd);
     }    
@@ -268,6 +280,7 @@ public class InfntPrgrmServiceImpl extends PlumAbstractServiceImpl implements In
      * @throws Exception 예외
      * @return List<SrvyVo>
      */
+    @Override
     public List<SrvyVo> selectAplcntDgstfnSrvyList() throws Exception {
         return infntPrgrmDao.selectAplcntDgstfnSrvyList();
     }
@@ -281,6 +294,7 @@ public class InfntPrgrmServiceImpl extends PlumAbstractServiceImpl implements In
      * @throws Exception 예외
      * @return List<SrvyVo>
      */
+    @Override
     public List<SrvyVo> selectStdntDgstfnSrvyList() throws Exception {
         return infntPrgrmDao.selectStdntDgstfnSrvyList();
     }    

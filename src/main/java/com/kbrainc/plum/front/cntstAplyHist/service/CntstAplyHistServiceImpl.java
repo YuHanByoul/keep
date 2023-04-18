@@ -15,6 +15,7 @@ import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import org.apache.ibatis.type.Alias;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,6 +109,7 @@ public class CntstAplyHistServiceImpl extends PlumAbstractServiceImpl implements
     * @return int
     */
     @Override
+    @Transactional
     public int updateCntstAplyHist(CntstAplyHistVo cntstAplyHistVo) throws Exception {
         return cntstAplyHistDao.updateCntstAplyHist(cntstAplyHistVo);
     }
@@ -146,6 +148,7 @@ public class CntstAplyHistServiceImpl extends PlumAbstractServiceImpl implements
     * @return int
     */
     @Override
+    @Transactional
     public int updateCntstAplySchlHist(CntstAplyHistVo cntstAplyHistVo) throws Exception {
         return cntstAplyHistDao.updateCntstAplySchlHist(cntstAplyHistVo);
     }

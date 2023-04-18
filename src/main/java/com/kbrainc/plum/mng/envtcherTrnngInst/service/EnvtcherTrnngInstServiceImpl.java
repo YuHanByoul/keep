@@ -17,6 +17,7 @@ import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.envtcherTrnngInst.model.EnvtcherTrnngInstDao;
 import com.kbrainc.plum.mng.envtcherTrnngInst.model.EnvtcherTrnngInstVo;
@@ -54,6 +55,8 @@ public class EnvtcherTrnngInstServiceImpl extends PlumAbstractServiceImpl implem
     * @throws Exception 예외
     * @return int
     */
+    @Override
+    @Transactional
     public int insertEnvtcherTrnngInst(EnvtcherTrnngInstVo envtcherTrnngInstVo) throws Exception {
         return envtcherTrnngInstDao.insertEnvtcherTrnngInst(envtcherTrnngInstVo);
     }
@@ -67,6 +70,8 @@ public class EnvtcherTrnngInstServiceImpl extends PlumAbstractServiceImpl implem
     * @throws Exception 예외
     * @return int
     */
+    @Override
+    @Transactional
     public int updateEnvtcherTrnngInst(EnvtcherTrnngInstVo envtcherTrnngInstVo) throws Exception {
         return envtcherTrnngInstDao.updateEnvtcherTrnngInst(envtcherTrnngInstVo);
     }
@@ -80,6 +85,7 @@ public class EnvtcherTrnngInstServiceImpl extends PlumAbstractServiceImpl implem
     * @throws Exception 예외
     * @return List<EnvtcherTrnngInstVo>
     */
+    @Override
     public List<EnvtcherTrnngInstVo> selectEnvtcherTrnngInstList(EnvtcherTrnngInstVo envtcherTrnngInstVo) throws Exception {
         return envtcherTrnngInstDao.selectEnvtcherTrnngInstList(envtcherTrnngInstVo);
     }
@@ -93,6 +99,7 @@ public class EnvtcherTrnngInstServiceImpl extends PlumAbstractServiceImpl implem
     * @throws Exception 예외
     * @return EnvtcherTrnngInstVo
     */
+    @Override
     public EnvtcherTrnngInstVo selectEnvtcherTrnngInstInfo(EnvtcherTrnngInstVo envtcherTrnngInstVo) throws Exception {
         return envtcherTrnngInstDao.selectEnvtcherTrnngInstInfo(envtcherTrnngInstVo);
     }
@@ -259,6 +266,7 @@ public class EnvtcherTrnngInstServiceImpl extends PlumAbstractServiceImpl implem
     * @throws Exception 예외
     * @return List<EnvtcherTrnngInstVo>
     */
+    @Override
     public List<EnvtcherTrnngInstVo> selectAddrCtpvnList(EnvtcherTrnngInstVo envtcherTrnngInstVo) throws Exception {
         return envtcherTrnngInstDao.selectAddrCtpvnList(envtcherTrnngInstVo);
     };

@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import org.apache.ibatis.type.Alias;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.front.book.model.BookDao;
 import com.kbrainc.plum.front.book.model.BookVo;
@@ -43,6 +44,7 @@ public class BookServiceImpl extends PlumAbstractServiceImpl implements BookServ
     * @throws Exception 예외
     * @return List<BookVo>
     */
+    @Override
     public List<BookVo> selectBookList(BookVo bookVo) throws Exception {
         return bookDao.selectBookList(bookVo);
     };
@@ -56,14 +58,18 @@ public class BookServiceImpl extends PlumAbstractServiceImpl implements BookServ
     * @throws Exception 예외
     * @return BookVo
     */
+    @Override
     public BookVo selectBookInfo(BookVo bookVo) throws Exception {
         return bookDao.selectBookInfo(bookVo);
     }
     
+    @Override
+    @Transactional
     public int updateBookHits(BookVo bookVo) throws Exception {
         return bookDao.updateBookHits(bookVo);
     };
     
+    @Override
     public List<BookVo> selectBookFileList(BookVo bookVo) throws Exception {
         return bookDao.selectBookFileList(bookVo);
     };

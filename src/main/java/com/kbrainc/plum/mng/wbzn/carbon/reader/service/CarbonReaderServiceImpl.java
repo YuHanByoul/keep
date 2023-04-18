@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.wbzn.carbon.reader.model.CarbonReaderDao;
 import com.kbrainc.plum.mng.wbzn.carbon.reader.model.CarbonReaderVo;
@@ -41,6 +42,7 @@ public class CarbonReaderServiceImpl extends PlumAbstractServiceImpl implements 
     * @throws Exception 예외
     * @return List<EnveduVo>
     */
+    @Override
     public List<CarbonReaderVo> selectReaderList(CarbonReaderVo readerVo) throws Exception {
         return readerDao.selectReaderList(readerVo);
     }

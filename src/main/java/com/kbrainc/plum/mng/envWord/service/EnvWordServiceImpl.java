@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.envWord.model.EnvWordDao;
 import com.kbrainc.plum.mng.envWord.model.EnvWordVo;
@@ -54,6 +55,7 @@ public class EnvWordServiceImpl extends PlumAbstractServiceImpl implements EnvWo
     * @return int
     */
     @Override
+    @Transactional
     public int insertEnvWord(EnvWordVo envWordVo) throws Exception {
         return envWordDao.insertEnvWord(envWordVo);
     }
@@ -82,6 +84,7 @@ public class EnvWordServiceImpl extends PlumAbstractServiceImpl implements EnvWo
     * @return int
     */
     @Override
+    @Transactional
     public int updateEnvWord(EnvWordVo envWordVo) throws Exception {
         return envWordDao.updateEnvWord(envWordVo);
     }
@@ -96,6 +99,7 @@ public class EnvWordServiceImpl extends PlumAbstractServiceImpl implements EnvWo
     * @return int
     */
     @Override
+    @Transactional
     public int deleteEnvWord(String[] nscvrgids) throws Exception {
         return envWordDao.deleteEnvWord(nscvrgids);
     }

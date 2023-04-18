@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 import org.apache.ibatis.type.Alias;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.cmm.file.model.FileDao;
 import com.kbrainc.plum.cmm.file.model.FileVo;
@@ -130,6 +131,7 @@ public class InstInfoServiceImpl extends PlumAbstractServiceImpl implements Inst
     * @return int
     */
     @Override
+    @Transactional
     public int updateRegInstPic(InstPicVo instPicVo) throws Exception {
         return instInfoDao.updateRegInstPic(instPicVo);
     }
@@ -144,6 +146,7 @@ public class InstInfoServiceImpl extends PlumAbstractServiceImpl implements Inst
     * @return int
     */
     @Override
+    @Transactional
     public int updateCancelInstPic(InstPicVo instPicVo) throws Exception {
         return instInfoDao.updateCancelInstPic(instPicVo);
     }

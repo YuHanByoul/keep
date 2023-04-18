@@ -56,6 +56,7 @@ public class MvmnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Mvm
     * @throws Exception 예외
     * @return List<MvmnPrgrmVo>
     */
+    @Override
     public List<MvmnPrgrmVo> selectMvmnPrgrmList(MvmnPrgrmVo mvmnPrgrmVo) throws Exception {
         return mvmnPrgrmDao.selectMvmnPrgrmList(mvmnPrgrmVo);
     }
@@ -69,6 +70,8 @@ public class MvmnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Mvm
     * @throws Exception 예회
     * @return int
     */
+    @Override
+    @Transactional    
     public int insertMvmnPrgrm(MvmnPrgrmVo mvmnPrgrmVo) throws Exception{
         int retVal = 0;
         retVal += mvmnPrgrmDao.insertMvmnPrgrm(mvmnPrgrmVo);
@@ -130,6 +133,7 @@ public class MvmnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Mvm
     * @throws Exception 예외
     * @return MvmnPrgrmVo
     */
+    @Override
     public MvmnPrgrmVo selectMvmnPrgrmInfo(MvmnPrgrmVo mvmnPrgrmVo) throws Exception{
         return mvmnPrgrmDao.selectMvmnPrgrmInfo(mvmnPrgrmVo);
     }
@@ -143,6 +147,8 @@ public class MvmnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Mvm
     * @throws Exception 예외
     * @return int
     */
+    @Override
+    @Transactional    
     public int updateMvmnPrgrm(MvmnPrgrmVo mvmnPrgrmVo) throws Exception{
         int retVal = 0;
         retVal += mvmnPrgrmDao.updateMvmnPrgrm(mvmnPrgrmVo);
@@ -170,6 +176,8 @@ public class MvmnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Mvm
     * @throws Exception 예회
     * @return int
     */
+    @Override
+    @Transactional    
     public int insertMvmnPrgrmTme(MvmnPrgrmVo mvmnPrgrmVo) throws Exception{
         int retVal = 0;
         MvmnPrgrmVo delMvmnPrgrmVo =  new MvmnPrgrmVo();
@@ -201,6 +209,8 @@ public class MvmnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Mvm
     * @throws Exception 예외
     * @return int
     */
+    @Override
+    @Transactional    
     public int updateMvmnPrgrmTme(MvmnPrgrmVo mvmnPrgrmVo) throws Exception{
         return mvmnPrgrmDao.updateMvmnPrgrmTme(mvmnPrgrmVo);
     }    
@@ -214,6 +224,7 @@ public class MvmnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Mvm
     * @throws Exception 예외
     * @return List<MvmnPrgrmVo>
     */
+    @Override
     public List<MvmnPrgrmVo> selectMvmnPrgrmTmeList(MvmnPrgrmVo mvmnPrgrmVo) throws Exception {
         return mvmnPrgrmDao.selectMvmnPrgrmTmeList(mvmnPrgrmVo);
     }    
@@ -227,6 +238,7 @@ public class MvmnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Mvm
     * @throws Exception 예외
     * @return List<MvmnPrgrmVo>
     */
+    @Override
     public List<MvmnPrgrmVo> selectPrgrmSettingList(String operFomCd) throws Exception {
         return mvmnPrgrmDao.selectPrgrmSettingList(operFomCd);
     }    
@@ -268,6 +280,7 @@ public class MvmnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Mvm
      * @throws Exception 예외
      * @return List<SrvyVo>
      */
+    @Override
     public List<SrvyVo> selectAplcntDgstfnSrvyList() throws Exception {
         return mvmnPrgrmDao.selectAplcntDgstfnSrvyList();
     }
@@ -281,6 +294,7 @@ public class MvmnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Mvm
      * @throws Exception 예외
      * @return List<SrvyVo>
      */
+    @Override
     public List<SrvyVo> selectStdntDgstfnSrvyList() throws Exception {
         return mvmnPrgrmDao.selectStdntDgstfnSrvyList();
     }        

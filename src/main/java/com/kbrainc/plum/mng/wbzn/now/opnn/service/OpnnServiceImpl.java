@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.wbzn.now.opnn.model.OpnnDao;
 import com.kbrainc.plum.mng.wbzn.now.opnn.model.OpnnVo;
@@ -39,6 +40,7 @@ public class OpnnServiceImpl extends PlumAbstractServiceImpl implements OpnnServ
     * @throws Exception 예외
     * @return List<EnveduVo>
     */
+    @Override
     public List<OpnnVo> selectOpnnList(OpnnVo opnnVo) throws Exception {
         return prgrmgdDao.selectOpnnList(opnnVo);
     }

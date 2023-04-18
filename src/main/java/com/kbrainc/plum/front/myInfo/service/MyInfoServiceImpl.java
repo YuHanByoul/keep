@@ -4,6 +4,7 @@ import javax.annotation.Resource;
 
 import org.apache.ibatis.type.Alias;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.front.member.model.MemberVo;
 import com.kbrainc.plum.front.myInfo.model.MyInfoDao;
@@ -58,26 +59,24 @@ public class MyInfoServiceImpl extends PlumAbstractServiceImpl implements MyInfo
     * @return int
     */
     @Override
-    public int updateMyInfo(MemberVo memberVo, String itrstfldCdEpty, String envfldCdEpty) throws Exception {
+    @Transactional
+    public int updateMyInfo(MemberVo memberVo) throws Exception {
         int retVal = 0;
         
         retVal += myInfoDao.updateMyInfo(memberVo);
         
         // 맞춤환경정보 입력
-        if (itrstfldCdEpty.equals("Empty")) {
-            retVal += myInfoDao.insertEnvfld(memberVo);
-        }else {
-            retVal += myInfoDao.deleteEnvfld(memberVo);
+        retVal += myInfoDao.deleteEnvfld(memberVo);
+        if(memberVo.getEnvfldCds()!=null && memberVo.getEnvfldCds().length > 0) {
             retVal += myInfoDao.insertEnvfld(memberVo);
         }
         
         // 관심분야 입력
-        if (envfldCdEpty.equals("Empty")) {
-            retVal += myInfoDao.insertItrstfld(memberVo);
-        }else {
-            retVal += myInfoDao.deleteItrstfld(memberVo);
+        retVal += myInfoDao.deleteItrstfld(memberVo);
+        if(memberVo.getItrstfldCds()!=null && memberVo.getItrstfldCds().length > 0) {
             retVal += myInfoDao.insertItrstfld(memberVo);
         }
+        
         return retVal;
     }
 
@@ -92,6 +91,7 @@ public class MyInfoServiceImpl extends PlumAbstractServiceImpl implements MyInfo
     * @return int
     */
     @Override
+    @Transactional
     public int updatePswd(MemberVo memberVo) throws Exception {
         return myInfoDao.updatePswd(memberVo);
     }

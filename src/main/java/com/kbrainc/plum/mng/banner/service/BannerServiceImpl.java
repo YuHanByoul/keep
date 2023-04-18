@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.banner.model.BannerDao;
 import com.kbrainc.plum.mng.banner.model.BannerVo;
@@ -40,6 +41,7 @@ public class BannerServiceImpl extends PlumAbstractServiceImpl implements Banner
     * @throws Exception 예외
     * @return List<SiteVo>
     */
+    @Override
     public List<SiteVo> selectSiteList(SiteVo siteVo) throws Exception {
         return bannerDao.selectSiteList(siteVo);
     }
@@ -53,6 +55,7 @@ public class BannerServiceImpl extends PlumAbstractServiceImpl implements Banner
     * @throws Exception 예외
     * @return List<BannerVo>
     */
+    @Override
     public List<BannerVo> selectBannerList(BannerVo bannerVo) throws Exception {
         return bannerDao.selectBannerList(bannerVo);
     }
@@ -66,6 +69,7 @@ public class BannerServiceImpl extends PlumAbstractServiceImpl implements Banner
     * @throws Exception
     * @return List<BannerVo>
     */
+    @Override
     public List<BannerVo> selectExpsrBannerList(BannerVo bannerVo) throws Exception {
         return bannerDao.selectExpsrBannerList(bannerVo);
     }
@@ -79,6 +83,8 @@ public class BannerServiceImpl extends PlumAbstractServiceImpl implements Banner
     * @throws Exception 예외
     * @return int
     */
+    @Override
+    @Transactional
     public int updateExpsrBanner(BannerVo bannerVo) throws Exception {
         return bannerDao.updateExpsrBanner(bannerVo);
     }
@@ -92,6 +98,7 @@ public class BannerServiceImpl extends PlumAbstractServiceImpl implements Banner
     * @throws Exception 예외
     * @return int
     */
+    @Override
     public int updateExpsrBannerSort(BannerVo bannerVo) throws Exception {
         return bannerDao.updateExpsrBannerSort(bannerVo);
     }
@@ -106,6 +113,8 @@ public class BannerServiceImpl extends PlumAbstractServiceImpl implements Banner
     * @throws Exception
     * @return int
     */
+    @Override
+    @Transactional
     public int insertBanner(BannerVo bannerVo) throws Exception {
         return bannerDao.insertBanner(bannerVo);
     }
@@ -119,6 +128,7 @@ public class BannerServiceImpl extends PlumAbstractServiceImpl implements Banner
     * @throws Exception 예외
     * @return BannerVo
     */
+    @Override
     public BannerVo selectBannerInfo(BannerVo bannerVo) throws Exception {
         return bannerDao.selectBannerInfo(bannerVo);
     }
@@ -132,6 +142,8 @@ public class BannerServiceImpl extends PlumAbstractServiceImpl implements Banner
     * @throws Exception
     * @return int
     */
+    @Override
+    @Transactional
     public int updateBanner(BannerVo bannerVo) throws Exception {
         return bannerDao.updateBanner(bannerVo);
     }
@@ -145,6 +157,8 @@ public class BannerServiceImpl extends PlumAbstractServiceImpl implements Banner
     * @throws Exception 에외
     * @return int
     */
+    @Override
+    @Transactional
     public int deleteBanner(BannerVo bannerVo) throws Exception {
         return bannerDao.deleteBanner(bannerVo);
     }

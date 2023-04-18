@@ -105,13 +105,27 @@
 	            </div>
 	            <div class="form-group mb-3">
 	                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>통장사본</strong></div>
-	                <div class="border rounded p-t-10 p-b-10 px-4">
-	                    <div class="col-auto">
-	                        <span class="label label-inverse">
-	                            통장사본.png <a href="javascript:void(0)" class="text-white">X</a>
-	                        </span>
-	                    </div>
-	                </div>
+                    <div class="border rounded p-t-10 p-b-10 px-4">
+                        <th:block th:if="${bankFile != null}">
+                        <div class="col-auto">
+	                        <input type="hidden" name="bnkbFilegrpid" id="bnkbFilegrpid" th:value="${bankFile.filegrpid}">
+	                        <input type="hidden" name="bnkbFileid" id="bnkbFileid" th:value="${bankFile.fileid}">
+                            <th:block th:if="${bnkbFileBtn}">
+                            <div id="bnkbFileUploadSuccess" th:utext="${bnkbFileBtn}">
+                            </div>
+                            </th:block>
+                            <th:block th:unless="${bnkbFileBtn}">
+                            <div id="bnkbFileUploadSuccess">
+                            </div>
+                            </th:block>
+                        </div>                            
+                        </th:block>  
+                        <th:block th:unless="${bankFile != null}">
+                        <div class="mb-2 col-12">
+                            <span>선택된 파일 없음.</span>
+                        </div>
+                        </th:block>
+                    </div>	 
 	            </div>
 	            <div class="form-group mb-3">
 	                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>첨부파일</strong></div>
@@ -133,7 +147,7 @@
 	                         </th:block>
 	                     </div>
 	                 </div>
- -->	                <div class="border rounded p-t-10 p-b-10 px-4">
+-->	                <div class="border rounded p-t-10 p-b-10 px-4">
 	                    <div class="col-auto">
                         <input type="hidden" name="atchFilegrpid" id="atchFilegrpid" th:value="${clclnDsctn.atchFilegrpid}">
                         <input type="hidden" name="atchFileid" id="atchFileid" th:value="${clclnDsctn.atchFileid}">                         
@@ -220,7 +234,7 @@
 	                        <strong>세부 집행내역서</strong>
 	                    </div>
 	                    <div class="col-auto btn-group-sm">
-	                        <button type="button" class="btn btn-primary">증빙자료 다운로드</button>
+	                        <button type="button" class="btn btn-primary" onclick="fn_fileCompressZIPDownload();">증빙자료 다운로드</button>
 	                        <button type="button" class="btn btn-primary" onclick="fn_excelOutlDtlListDownload();">엑셀다운로드</button>
 	                    </div>
 	                </div>
@@ -259,7 +273,7 @@
 	                                    </th:block>
 			                        </td>
 			                        <td class="text-center v-middle">
-			                            <button type="button" class="btn btn-primary btn-sm">다운로드</button>
+			                            <button type="button" class="btn btn-primary btn-sm" th:onclick="downloadFileByFileid([[${item.atchFileid}]],[[${item.atchFileIdntfcKey}]])">다운로드</button>
 			                        </td>
 			                    </tr>
                             </th:block>
@@ -432,12 +446,17 @@ function fn_excelOutlDtlListDownload(){
     f.action ="/mng/clclnMng/clclnDsctn/clclnDsctnOutlDtlListExcelDownList.do";
     f.submit();
 }
+function fn_fileCompressZIPDownload(){
+    var f = document.clclnDsctnDetailInfoForm;
+    f.action ="/mng/clclnMng/clclnDsctn/fileCompressZIP.do";
+    f.submit();
+}
   
 function fn_deleteAtchFileList(fileid, fileIdntfcKey){
     if(!confirm("파일을 삭제하시겠습니까?")){return;}
     fn_deleteAtchFile(fileid, fileIdntfcKey);
     $("#"+fileid).remove();
-    $('#AtchFile').val('');
+
 } 
 
 function fn_deleteAtchFile(fileid, fileIdntfcKey){
@@ -451,9 +470,39 @@ function fn_deleteAtchFile(fileid, fileIdntfcKey){
         success : function (data){
             if(data.result=="success"){
                 $("#"+fileid).remove();
-                $('#AtchFileid').val(0);
-                $('#AtchFilegrpid').val(0);
-                $('#AtchFileFile').val('');
+                $('#atchFileid').val(0);
+                $('#atchFilegrpid').val(0);
+                $('#atchFileFile').val('');
+                alert("파일삭제가 완료 되었습니다.");
+            }else{
+                alert("파일삭제중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+            }
+        },
+        error : function (error){
+        } 
+     })
+};    
+
+function fn_deleteBnkbFileList(fileid, fileIdntfcKey){
+    if(!confirm("파일을 삭제하시겠습니까?")){return;}
+    fn_deleteBnkbFile(fileid, fileIdntfcKey);
+    $("#"+fileid).remove();
+} 
+
+function fn_deleteBnkbFile(fileid, fileIdntfcKey){
+               
+    var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey; 
+      $.ajax({
+        url : deleteFileUrl,
+        type: 'GET',
+        cache : false,
+        dataType: 'json',
+        success : function (data){
+            if(data.result=="success"){
+                $("#"+fileid).remove();
+                $('#bnkbFileid').val(0);
+                $('#bnkbFilegrpid').val(0);
+                $('#bnkbFileFile').val('');
                 alert("파일삭제가 완료 되었습니다.");
             }else{
                 alert("파일삭제중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
