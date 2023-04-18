@@ -277,10 +277,9 @@
         <h3 class="sub-title"><strong>교육사진</strong></h3>
     </div>
     <div class="card-block-small p-t-0">
-
+        <p>사진 크기(가로 200x X 세로 140px)</p>
         <!-- [230125] 교육사진 항목에 수정 시 - 이미지 등록, 삭제 버튼 추가 -->
         <div class="col-12 row mb-3" >
-
 
             <div id="delFileDiv1" class="col-12 col-lg-4 mb-3 mb-lg-0" >
                 <div class="ratio ratio-4x3">
@@ -341,7 +340,6 @@
                     </label>
                 </div>
             </div>
-
         </div>
         <!-- //[230125] 교육사진 항목에 수정 시 - 이미지 등록, 삭제 버튼 추가 -->
     </div>
@@ -515,14 +513,6 @@ var eduSbjctCdLst = /*[[${eduSbjctCdLst}]]*/null;
 var getCodeListUrl = "/mng/customAttr/grpCodeList.do"
 
 
-function eduSbjctAdd(idx){
-
-};
-
-function eduSbjctBtnDel(idx){
-
-};
-
 function readImage() {
 	for(var i=0; i < veduPhotoFileList.length; i++){
 		if(veduPhotoFileList[i].fileid==0){
@@ -567,12 +557,15 @@ $('[id^=eduPhotoFileInpu]').on('change', function(event) {
             success : function(response) {
 
                 if(response.result == 'fail'){
-                    alert(response.msg);
+
+                	if(response.msg.includes("사이즈")){
+                        alert(response.msg);
+                	}
+
                 }else{
                     if($("#eduPhotoFilegrpid").val()=='0' || $("#eduPhotoFilegrpid").val()==''  || $("#eduPhotoFilegrpid").val()==null){
                     	$("#eduPhotoFilegrpid").val(response[0].filegrpid );
-
-
+                    	bEduFilegrpid= true;
                     }else{
                     	loadJdsgTabContent("/mng/asgsysSrng/prgrmDstnctn.html?prgrmid=" + $("#prgrmid").val());    //재조회
                     }
@@ -582,6 +575,7 @@ $('[id^=eduPhotoFileInpu]').on('change', function(event) {
         });
 
     }
+
     if(bEduFilegrpid)fn_eduImgFileUpdate();
 
 });

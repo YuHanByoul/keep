@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL File Name : EduInstDaoImpl.xml
+    Description : 사회환경교육기관 지정
+-->
+<mapper namespace="com.kbrainc.plum.front.eduInst.model.EduInstDao">
+
+    <!-- 신청정보 조회 -->
+    <select id="selectAplyInfoForm" parameterType="front.EduInstVo" resultType="front.EduInstVo">
+        /* EduInstDao.selectAplyInfoForm*/
+        SELECT
+            A.USERID    AS APLYID
+          , A.NM        AS APLCNT_NM
+          , A.TELNO     AS APLY_TELNO
+          , A.EML       AS APLCNT_EML
+          , A.MOBLPHON  AS APLCNT_MOBLPHON
+          , A.INSTID
+          , B.RGN_CD
+          , SUBSTR(B.RGN_CD,1,2)    AS CTPRVN_CD
+          , B.INST_NM
+          , B.INST_TYPE_CD
+          , TYPE_CD.CD_NM
+          , B.RPRSV_NM
+          , B.TELNO      AS INST_CNTCT
+          , B.BRNO
+          , B.ADDR
+          , B.ADDR_DTL
+          , A.REG_DT
+        FROM TB_CMM_USER A
+        LEFT OUTER JOIN TB_CMM_INST B ON A.INSTID =B.INSTID
+        LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN ADDR ON B.RGN_CD = ADDR.CTPRVN_CD
+        LEFT OUTER JOIN TB_CMM_CD TYPE_CD ON B.INST_TYPE_CD = TYPE_CD.CD
+        WHERE A.USERID = #{aplcntid}
+    </select>
+
+    <insert id="insertEnvEduInst" parameterType="front.EduInstVo">
+    /* EduInstDao.insertEnvEduInst*/
+    INSERT INTO TB_SEE_ENV_EDU_INST
+        (
+            RCPTNO
+          , INSTID
+          , APLCNTID
+          , APLCNT_NM
+          , APLCNT_EML
+          , APLCNT_MOBLPHON
+          , INST_NM
+          , INST_EML
+          , INST_CNTCT
+          , CTPRVN_CD
+          , RPRSV_BRDT
+          , ATCH_FILEGRPID
+          , DSGNNO
+          , DSGN_DE
+          , AUTZRID
+          , ISSU_DE
+          , ISGN_DE
+          , STTS_CD
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        ) VALUES(
+            #{rcptno        }
+          , #{instid        }
+          , #{aplcntid      }
+          , #{aplcntNm      }
+          , #{aplcntEml     }
+          , #{aplcntMoblphon}
+          , #{instNm        }
+          , #{instEml       }
+          , #{instCntct     }
+          , #{ctprvnCd      }
+          , #{rprsvBrdt     }
+          , #{atchFilegrpid }
+          , #{dsgnno        }
+          , #{dsgnDe        }
+          , #{autzrid       }
+          , #{issuDe        }
+          , #{isgnDe        }
+          , #{sttsCd        }
+          , NOW()
+          , #{user.userid}
+          , NOW()
+          , #{user.userid}
+    )
+    </insert>
+
+    <update id="updateEnvEduInst" parameterType="front.EduInstVo">
+    /* EduInstDao.updateEnvEduInst*/
+    UPDATE TB_SEE_ENV_EDU_INST SET
+        RCPTNO           =#{rcptno        }
+      , CTPRVN_CD        =#{ctprvnCd      }
+      , RPRSV_BRDT       =#{rprsvBrdt     }
+      , ATCH_FILEGRPID   =#{atchFilegrpid }
+      , DSGNNO           =#{dsgnno        }
+      , DSGN_DE          =#{dsgnDe        }
+      , AUTZRID          =#{autzrid       }
+      , ISSU_DE          =#{issuDe        }
+      , ISGN_DE          =#{isgnDe        }
+      , STTS_CD          =#{sttsCd        }
+      , MDFCN_DT         =NOW()
+      , MDFRID           =#{user.userid}
+    WHERE APLYID = #{aplyid}
+    </update>
+
+</mapper>
