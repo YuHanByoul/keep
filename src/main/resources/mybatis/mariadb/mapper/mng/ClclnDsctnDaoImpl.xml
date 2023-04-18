@@ -31,7 +31,8 @@
         , C.PCNTST_NM
         , CASE WHEN NOW() BETWEEN C.EXCCLC_REPORT_BGNG_DT AND C.EXCCLC_REPORT_END_DT THEN '제출중' 
                WHEN NOW() <![CDATA[<]]> C.EXCCLC_REPORT_BGNG_DT THEN '제출전'
-               ELSE '마감' END EXCCLC_STTS_DESC
+               WHEN NOW() <![CDATA[>]]> C.EXCCLC_REPORT_END_DT THEN '마감'
+               ELSE '' END EXCCLC_STTS_DESC
         , CONCAT(C.EXCCLC_REPORT_BGNG_DT, ' ~ ', C.EXCCLC_REPORT_END_DT) EXCCLC_REPORT_DATE_DESC
         , t2.APLY_CNT SLCTN_CNT
         , CONCAT(t1.APLY_CNT,'/',t2.APLY_CNT) EXCCLC_CNT_DESC
@@ -51,7 +52,7 @@
         AND C.FLD_CD = #{searchFldCd}
         </if>
         <if test="searchPcntstNm != null and searchPcntstNm != ''">
-        AND C.PCNTST_NM = #{searchPcntstNm}
+        AND C.PCNTST_NM LIKE CONCAT('%',#{searchPcntstNm},'%')
         </if>
         <if test="searchStartExcclcReportDt != null and searchStartExcclcReportDt != ''">
         AND #{searchStartExcclcReportDt} BETWEEN C.EXCCLC_REPORT_BGNG_DT AND C.EXCCLC_REPORT_END_DT
@@ -64,6 +65,9 @@
         </if>
         <if test="searchSttsCd != null and searchSttsCd != '' and searchSttsCd == '200102'">
         AND NOW() BETWEEN C.EXCCLC_REPORT_BGNG_DT AND C.EXCCLC_REPORT_END_DT
+        </if>
+        <if test="searchSttsCd != null and searchSttsCd != '' and searchSttsCd == '200103'">
+        AND NOW() <![CDATA[>]]> C.EXCCLC_REPORT_END_DT  
         </if>
         GROUP BY C.PCNTSTID            
         <include refid="PaginationMapper.footer"/>        
@@ -86,6 +90,7 @@
             B.PCNTSTID
           , E.RCPTNO  
           , IFNULL(B.EXCCLC_STTS_CD,'203101') SBMSN_STTS_CD
+          , F.CD_NM SBMSN_STTS_NM
           , B.INST_NM          
           , B.APLCNT_NM
           , B.PRGRM_NM
@@ -108,9 +113,10 @@
         LEFT OUTER JOIN t2 ON t2.APLYID = A.APLYID
         LEFT OUTER JOIN t3 ON t3.APLYID = A.APLYID
         LEFT OUTER JOIN t4 ON t4.APLYID = A.APLYID
+        LEFT OUTER JOIN TB_CMM_CD F ON F.CD = IFNULL(B.EXCCLC_STTS_CD,'203101')
         WHERE B.PCNTSTID = #{pcntstid}
             <if test="searchSbmsnSttsCd != null and searchSbmsnSttsCd != ''">
-            AND B.EXCCLC_STTS_CD = #{searchSbmsnSttsCd}
+            AND IFNULL(B.EXCCLC_STTS_CD,'203101') = #{searchSbmsnSttsCd}
             </if>
             <!-- 키워드.전체 -->
             <if test="searchKeyword != null and searchKeyword != '' and searchType == ''">
@@ -129,14 +135,12 @@
                 AND B.APLCNT_NM LIKE CONCAT('%',#{searchKeyword},'%')
             </if>
             <if test="searchAttchYn != null and searchAttchYn != ''">
-                <choose>
-                    <when test="searchAttchYn == 'Y'">
-                        AND A.ATCH_FILEGRPID IS NOT NULL
-                    </when>
-                    <otherwise>
-                        AND A.ATCH_FILEGRPID IS NULL
-                    </otherwise>
-                </choose>
+                <if test="searchAttchYn == 'Y'.toString()">
+                    AND A.ATCH_FILEGRPID IS NOT NULL
+                </if>
+                <if test="searchAttchYn == 'N'.toString()">
+                    AND A.ATCH_FILEGRPID IS NULL
+                </if>
             </if>
             -- GROUP BY E.RCPTNO
         <include refid="PaginationMapper.footer"/>        
