@@ -96,7 +96,7 @@ public class EduSareaServiceImpl extends PlumAbstractServiceImpl implements EduS
         int retVal = 0;
         retVal += eduSareaDao.updateEduSarea(eduSareaVo);
         
-        eduSareaDao.deleteCtprvnCd(eduSareaVo);
+        //eduSareaDao.deleteCtprvnCd(eduSareaVo);
         
         if(eduSareaVo.getCtprvnCds()!=null & eduSareaVo.getCtprvnCds().length > 0) {
             retVal += eduSareaDao.insertCtprvnCd(eduSareaVo);
