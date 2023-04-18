@@ -102,18 +102,22 @@ public class MvmnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Mvm
           MvmnPrgrmVo mvmnCopyPrgrmFileVo = mvmnPrgrmDao.selectMvmnCopyPrgrmFileInfo(mvmnPrgrmVo);
           
           FileGrpVo eduIntrcnFileGrpVo = new FileGrpVo();
-          eduIntrcnFileGrpVo.setFilegrpid(Integer.parseInt(mvmnCopyPrgrmFileVo.getEduIntrcnFilegrpid()));
-          FileVo eduIntrcnFileInfo = fileDao.selectFileInfo(eduIntrcnFileGrpVo);
-          copyFile(userVo, eduIntrcnFileInfo, "eduIntrcn_file");
-
-          mvmnPrgrmVo.setEduIntrcnFileid(eduIntrcnFileInfo.getFilegrpid());
+          if(mvmnCopyPrgrmFileVo.getEduIntrcnFilegrpid() != null) {
+              eduIntrcnFileGrpVo.setFilegrpid(Integer.parseInt(mvmnCopyPrgrmFileVo.getEduIntrcnFilegrpid()));
+              FileVo eduIntrcnFileInfo = fileDao.selectFileInfo(eduIntrcnFileGrpVo);
+              copyFile(userVo, eduIntrcnFileInfo, "eduIntrcn_file");
+    
+              mvmnPrgrmVo.setEduIntrcnFileid(eduIntrcnFileInfo.getFilegrpid());
+          }
           
           FileGrpVo eduPhotoFileGrpVo = new FileGrpVo();
-          eduPhotoFileGrpVo.setFilegrpid(Integer.parseInt(mvmnCopyPrgrmFileVo.getEduPhotoFilegrpid()));
-          FileVo eduPhotoFileInfo = fileDao.selectFileInfo(eduPhotoFileGrpVo);
-          copyFile(userVo, eduPhotoFileInfo, "eduPhotoFile_file");
-          
-          mvmnPrgrmVo.setEduPhotoFileid(eduPhotoFileInfo.getFilegrpid());
+          if(mvmnCopyPrgrmFileVo.getEduPhotoFilegrpid() != null) {          
+              eduPhotoFileGrpVo.setFilegrpid(Integer.parseInt(mvmnCopyPrgrmFileVo.getEduPhotoFilegrpid()));
+              FileVo eduPhotoFileInfo = fileDao.selectFileInfo(eduPhotoFileGrpVo);
+              copyFile(userVo, eduPhotoFileInfo, "eduPhotoFile_file");
+              
+              mvmnPrgrmVo.setEduPhotoFileid(eduPhotoFileInfo.getFilegrpid());
+          }
           
           retVal += mvmnPrgrmDao.insertMvmnPrgrmCopy(mvmnPrgrmVo);
           retVal += mvmnPrgrmDao.insertMvmnPrgrmClsfMapngCopy(mvmnPrgrmVo);

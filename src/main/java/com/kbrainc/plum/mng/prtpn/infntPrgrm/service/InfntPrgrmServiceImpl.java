@@ -102,19 +102,21 @@ public class InfntPrgrmServiceImpl extends PlumAbstractServiceImpl implements In
           InfntPrgrmVo infntCopyPrgrmFileVo = infntPrgrmDao.selectInfntCopyPrgrmFileInfo(infntPrgrmVo);
           
           FileGrpVo eduIntrcnFileGrpVo = new FileGrpVo();
-          eduIntrcnFileGrpVo.setFilegrpid(Integer.parseInt(infntCopyPrgrmFileVo.getEduIntrcnFilegrpid()));
-          FileVo eduIntrcnFileInfo = fileDao.selectFileInfo(eduIntrcnFileGrpVo);
-          copyFile(userVo, eduIntrcnFileInfo, "eduIntrcn_file");
-
-          infntPrgrmVo.setEduIntrcnFileid(eduIntrcnFileInfo.getFilegrpid());
-          
+          if(infntCopyPrgrmFileVo.getEduIntrcnFilegrpid() != null) {
+              eduIntrcnFileGrpVo.setFilegrpid(Integer.parseInt(infntCopyPrgrmFileVo.getEduIntrcnFilegrpid()));
+              FileVo eduIntrcnFileInfo = fileDao.selectFileInfo(eduIntrcnFileGrpVo);
+              copyFile(userVo, eduIntrcnFileInfo, "eduIntrcn_file");
+    
+              infntPrgrmVo.setEduIntrcnFileid(eduIntrcnFileInfo.getFilegrpid());
+          }
           FileGrpVo eduPhotoFileGrpVo = new FileGrpVo();
-          eduPhotoFileGrpVo.setFilegrpid(Integer.parseInt(infntCopyPrgrmFileVo.getEduPhotoFilegrpid()));
-          FileVo eduPhotoFileInfo = fileDao.selectFileInfo(eduPhotoFileGrpVo);
-          copyFile(userVo, eduPhotoFileInfo, "eduPhotoFile_file");
-          
-          infntPrgrmVo.setEduPhotoFileid(eduPhotoFileInfo.getFilegrpid());
-      
+          if(infntCopyPrgrmFileVo.getEduPhotoFilegrpid() != null) {          
+              eduPhotoFileGrpVo.setFilegrpid(Integer.parseInt(infntCopyPrgrmFileVo.getEduPhotoFilegrpid()));
+              FileVo eduPhotoFileInfo = fileDao.selectFileInfo(eduPhotoFileGrpVo);
+              copyFile(userVo, eduPhotoFileInfo, "eduPhotoFile_file");
+              
+              infntPrgrmVo.setEduPhotoFileid(eduPhotoFileInfo.getFilegrpid());
+          }
           retVal += infntPrgrmDao.insertInfntPrgrmCopy(infntPrgrmVo);
           retVal += infntPrgrmDao.insertInfntPrgrmClsfMapngCopy(infntPrgrmVo);
           retVal += infntPrgrmDao.insertInfntPrgrmTrgtMapngCopy(infntPrgrmVo);
