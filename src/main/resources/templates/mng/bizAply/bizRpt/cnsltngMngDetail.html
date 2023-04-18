@@ -138,19 +138,19 @@
         <div class="form-group mb-3">
             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="rslt"><strong>종합의견</strong></label>
             <div class="col-sm-12">
-                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="Default textarea" id="rslt" name="rslt" ><th:block th:text="${cnsltngDtlInfo.rslt}" /></textarea>
+                <textarea rows="5" cols="5" class="form-control form-control-sm" maxlength="500" placeholder="종합의견 입력 (500자 이내)" id="rslt" name="rslt" ><th:block th:text="${cnsltngDtlInfo.rslt}" /></textarea>
             </div>
         </div>
         <div class="form-group mb-3">
             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cnBfr"><strong>컨설팅 내용(사전)</strong></label>
             <div class="col-sm-12">
-                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="Default textarea" id="cnBfr" name="cnBfr" ><th:block th:text="${cnsltngDtlInfo.cnBfr}" /></textarea>
+                <textarea rows="5" cols="5" class="form-control form-control-sm" maxlength="500" placeholder="컨설팅 내용(사전) 입력 (500자 이내)" id="cnBfr" name="cnBfr" ><th:block th:text="${cnsltngDtlInfo.cnBfr}" /></textarea>
             </div>
         </div>
         <div class="form-group mb-3">
             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cnAftr"><strong>컨설팅 내용(사후)</strong></label>
             <div class="col-sm-12">
-                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="Default textarea" id="cnAftr" name="cnAftr" ><th:block th:text="${cnsltngDtlInfo.cnAftr}" /></textarea>
+                <textarea rows="5" cols="5" class="form-control form-control-sm" maxlength="500" placeholder="컨설팅 내용(사후) 입력 (500자 이내)" id="cnAftr" name="cnAftr" ><th:block th:text="${cnsltngDtlInfo.cnAftr}" /></textarea>
             </div>
         </div>
         <div class="form-group mb-3">
@@ -190,7 +190,11 @@
 
     	insertUrl: "/mng/bizAply/bizRpt/insertCnsltngMng.do",
     	printFrm: function(){
-    		alert("인쇄");
+    		var id = $("#aplyid").val();
+    	    var popUrl = "/cmm/reporting/cnsltngResult_online.html?id="+id;
+
+    	    var popupOption="scrollbars=yes,top=300, left=900,width=1000, height=600";
+    	    vPrint = window.open(popUrl, "_blank", popupOption);
     	},
     	saveFrm : function(){
 
@@ -246,6 +250,21 @@
             })
         }
     }
+
+
+    var validator= $("#cnsltngMngDetailFrm").validate({
+        rules: {
+
+            rslt   : { maxlength:500 }
+          , cnBfr  : { maxlength:500 }
+          , cnAftr : { maxlength:500 }
+        },
+        messages: {
+            rslt   : { maxlength:"종합의견은 500자 이하여야 합니다."}
+          , cnBfr  : { maxlength:"컨설팅 내용(사전)은 500자 이하여야 합니다."}
+          , cnAftr : { maxlength:"컨설팅 내용(사후)은 500자 이하여야 합니다."}
+        }
+    });
 
     $(function() {
 
