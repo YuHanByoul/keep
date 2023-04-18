@@ -19,6 +19,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.prtpn.mvmnAply.model.MvmnAplyDao;
 import com.kbrainc.plum.mng.prtpn.mvmnAply.model.MvmnAplyVo;
@@ -56,6 +57,7 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
     * @throws Exception 예외
     * @return List<MvmnAplyVo>
     */
+    @Override
     public List<MvmnAplyVo> selectMvmnAplyList(MvmnAplyVo mvmnAplyVo) throws Exception {
         return mvmnAplyDao.selectMvmnAplyList(mvmnAplyVo);
     }
@@ -69,6 +71,7 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
      * @throws Exception 예외
      * @return List<MvmnAplyVo>
      */
+    @Override
     public List<MvmnAplyVo> selectMvmnAplyDetailList(MvmnAplyVo mvmnAplyVo) throws Exception {
         return mvmnAplyDao.selectMvmnAplyDetailList(mvmnAplyVo);
     }
@@ -82,6 +85,7 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
      * @throws Exception 예외
      * @return List<MvmnAplyVo>
      */
+    @Override
     public List<MvmnAplyVo> selectMvmnAplyCloseList(MvmnAplyVo mvmnAplyVo) throws Exception {
         return mvmnAplyDao.selectMvmnAplyCloseList(mvmnAplyVo);
     }
@@ -95,6 +99,8 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
     * @throws Exception 예회
     * @return int
     */
+    @Override
+    @Transactional    
     public int insertMvmnAply(MvmnAplyVo mvmnAplyVo) throws Exception{
         int retVal = 0;
         retVal += mvmnAplyDao.insertMvmnAply(mvmnAplyVo);
@@ -117,6 +123,7 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
     * @throws Exception 예외
     * @return MvmnAplyVo
     */
+    @Override
     public MvmnAplyVo selectMvmnAplyInfo(MvmnAplyVo mvmnAplyVo) throws Exception{
         return mvmnAplyDao.selectMvmnAplyInfo(mvmnAplyVo);
     }
@@ -130,6 +137,8 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
     * @throws Exception 예외
     * @return int
     */
+    @Override
+    @Transactional    
     public int updateMvmnAply(MvmnAplyVo mvmnAplyVo) throws Exception{
         int retVal = 0;
         retVal += mvmnAplyDao.updateMvmnAply(mvmnAplyVo);
@@ -152,6 +161,8 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
      * @throws Exception 예외
      * @return int
      */
+    @Override
+    @Transactional    
     public int updateSttsCdMvmnAply(MvmnAplyVo mvmnAplyVo) throws Exception{
         return mvmnAplyDao.updateSttsCdMvmnAply(mvmnAplyVo);
     }
@@ -165,6 +176,8 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
      * @throws Exception 예외
      * @return int
      */
+    @Override
+    @Transactional    
     public int updateMvmnAplyClose(MvmnAplyVo mvmnAplyVo) throws Exception{
         return mvmnAplyDao.updateMvmnAplyClose(mvmnAplyVo);
     }
@@ -178,6 +191,8 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
     * @throws Exception 예회
     * @return int
     */
+    @Override
+    @Transactional    
     public int insertMvmnAplyTme(MvmnAplyVo mvmnAplyVo) throws Exception{
         return mvmnAplyDao.insertMvmnAplyTme(mvmnAplyVo);
     }
@@ -191,6 +206,8 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
     * @throws Exception 예외
     * @return int
     */
+    @Override
+    @Transactional    
     public int updateMvmnAplyTme(MvmnAplyVo mvmnAplyVo) throws Exception{
         return mvmnAplyDao.updateMvmnAplyTme(mvmnAplyVo);
     }    
@@ -204,6 +221,7 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
     * @throws Exception 예외
     * @return List<MvmnAplyVo>
     */
+    @Override
     public List<MvmnAplyVo> selectMvmnAplyTmeList(MvmnAplyVo mvmnAplyVo) throws Exception {
         return mvmnAplyDao.selectMvmnAplyTmeList(mvmnAplyVo);
     }    
@@ -217,6 +235,7 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
      * @throws Exception 예외
      * @return List<MvmnAplyVo>
      */
+    @Override
     public List<MvmnAplyVo> selectTmeSchdlList(MvmnAplyVo mvmnAplyVo) throws Exception {
         return mvmnAplyDao.selectTmeSchdlList(mvmnAplyVo);
     }
@@ -230,6 +249,7 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
      * @return List<MemberVo> 기관정보 목록
      * @throws Exception 예외
      */
+    @Override
     public List<MvmnAplyVo> selectMemberList(MvmnAplyVo mvmnAply) throws Exception{
         return mvmnAplyDao.selectMemberList(mvmnAply);
     }

@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 
 import org.apache.ibatis.type.Alias;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.front.mypage.ntcnHist.model.NtcnHistDao;
 import com.kbrainc.plum.front.mypage.ntcnHist.model.NtcnHistVo;
@@ -46,6 +47,7 @@ public class NtcnHistServiceImpl extends PlumAbstractServiceImpl implements Ntcn
      * @throws Exception
      * @return List<NtcnHistVo>
      */
+    @Override
     public List<NtcnHistVo> selectNtcnHistList(NtcnHistVo ntcnHistVo) throws Exception{
         return ntcnHistDao.selectNtcnHistList(ntcnHistVo);
     }        
@@ -60,6 +62,8 @@ public class NtcnHistServiceImpl extends PlumAbstractServiceImpl implements Ntcn
     * @throws Exception
     * @return int
     */
+    @Override
+    @Transactional    
     public int updateDeleteNtcn(NtcnHistVo ntcnHistVo) throws Exception{
         int retVal = 0;
         retVal += ntcnHistDao.updateDeleteNtcn(ntcnHistVo);
@@ -76,6 +80,8 @@ public class NtcnHistServiceImpl extends PlumAbstractServiceImpl implements Ntcn
      * @throws Exception
      * @return int
      */
+    @Override
+    @Transactional    
     public int updateInqMsg(NtcnHistVo ntcnHistVo) throws Exception{
         int retVal = 0;
         retVal += ntcnHistDao.updateInqMsg(ntcnHistVo);

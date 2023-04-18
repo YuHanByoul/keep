@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 
 import org.apache.ibatis.type.Alias;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.front.mypage.mymsg.model.MymsgDao;
 import com.kbrainc.plum.front.mypage.mymsg.model.MymsgVo;
@@ -46,6 +47,7 @@ public class MymsgServiceImpl extends PlumAbstractServiceImpl implements MymsgSe
      * @throws Exception
      * @return List<MymsgVo>
      */
+    @Override
     public List<MymsgVo> selectRecvMsgList(MymsgVo mymsgVo) throws Exception{
         return mymsgDao.selectRecvMsgList(mymsgVo);
     }        
@@ -59,6 +61,7 @@ public class MymsgServiceImpl extends PlumAbstractServiceImpl implements MymsgSe
      * @throws Exception
      * @return MymsgVo
      */
+    @Override
     public MymsgVo selectRecvMsgInfo(MymsgVo mymsgVo) throws Exception{
         return mymsgDao.selectRecvMsgInfo(mymsgVo);
     }
@@ -73,6 +76,8 @@ public class MymsgServiceImpl extends PlumAbstractServiceImpl implements MymsgSe
     * @throws Exception
     * @return int
     */
+    @Override
+    @Transactional    
     public int insertSendMsg(MymsgVo mymsgVo) throws Exception{
         int retVal = 0;
         retVal += mymsgDao.insertSendMsg(mymsgVo);
@@ -89,6 +94,8 @@ public class MymsgServiceImpl extends PlumAbstractServiceImpl implements MymsgSe
      * @throws Exception
      * @return int
      */
+    @Override
+    @Transactional    
     public int updateUserDelMsg(MymsgVo mymsgVo) throws Exception{
         int retVal = 0;
         retVal += mymsgDao.updateUserDelMsg(mymsgVo);
@@ -105,6 +112,7 @@ public class MymsgServiceImpl extends PlumAbstractServiceImpl implements MymsgSe
      * @throws Exception
      * @return List<MymsgVo>
      */
+    @Override
     public List<MymsgVo> selectSendMsgList(MymsgVo mymsgVo) throws Exception{
         return mymsgDao.selectSendMsgList(mymsgVo);
     }        
@@ -118,6 +126,7 @@ public class MymsgServiceImpl extends PlumAbstractServiceImpl implements MymsgSe
      * @throws Exception
      * @return MymsgVo
      */
+    @Override
     public MymsgVo selectSendMsgInfo(MymsgVo mymsgVo) throws Exception{
         return mymsgDao.selectSendMsgInfo(mymsgVo);
     }
@@ -132,6 +141,8 @@ public class MymsgServiceImpl extends PlumAbstractServiceImpl implements MymsgSe
      * @throws Exception
      * @return int
      */
+    @Override
+    @Transactional    
     public int updateTrgtDelMsg(MymsgVo mymsgVo) throws Exception{
         int retVal = 0;
         retVal += mymsgDao.updateTrgtDelMsg(mymsgVo);
@@ -148,6 +159,8 @@ public class MymsgServiceImpl extends PlumAbstractServiceImpl implements MymsgSe
      * @throws Exception
      * @return int
      */
+    @Override
+    @Transactional    
     public int updateInqMsg(MymsgVo mymsgVo) throws Exception{
         int retVal = 0;
         retVal += mymsgDao.updateInqMsg(mymsgVo);
