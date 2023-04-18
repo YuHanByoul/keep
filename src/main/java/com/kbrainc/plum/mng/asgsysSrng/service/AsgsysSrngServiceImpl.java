@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.cmm.error.controller.CustomErrorController;
 import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.mng.asgsysSrng.controller.AsgsysSrngController;
 import com.kbrainc.plum.mng.asgsysSrng.model.AcbgVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngDao;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
@@ -45,6 +46,8 @@ import com.kbrainc.plum.rte.util.CommonUtil;
 import com.kbrainc.plum.rte.util.StringUtil;
 import com.kbrainc.plum.rte.util.excel.ExcelUtils;
 
+import lombok.extern.slf4j.Slf4j;
+
 
 /**
 * 지정제사업관리 서비스 구현 클래스.
@@ -61,7 +64,9 @@ import com.kbrainc.plum.rte.util.excel.ExcelUtils;
 * @Version :
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
+
 @Service
+@Slf4j
 public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements AsgsysSrngService{
 
 
@@ -1585,12 +1590,25 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	List<PrgrmSchdlVo> schdLst = asgsysSrngVo.getPrgrmSchdlLst();
 
     	//지정프로그램 수정
-    	chklstid = asgsysSrngDao.getCheckListId(asgsysSrngVo);
 
+
+    	log.info("@@@@@@@@@@@@ : ");
+    	log.info("@@@@@@@@@@@@ : ");
+    	log.info("@@@@@@@@@@@@ : " + asgsysSrngVo.getChkOperFrmCd());
+    	log.info("@@@@@@@@@@@@ : ");
+    	log.info("@@@@@@@@@@@@ : ");
+
+
+    	assPrgrmVo = asgsysSrngDao.selectPrgrm(asgsysSrngVo);
+    	
+    	//숙박여부,운영형태코드로 체크리스트 가 정해진경우
+    	if(null != asgsysSrngVo.getChkOperFrmCd() && "".equals(asgsysSrngVo.getChkOperFrmCd())){
+    		chklstid = asgsysSrngDao.getCheckListId(asgsysSrngVo);
+    	}
     	if(null != chklstid ) {
-    		assPrgrmVo = asgsysSrngDao.selectPrgrm(asgsysSrngVo);
     		assPrgrmVo.setChklstid(chklstid);
     	}
+
     	assPrgrmVo.setPrgrmNm(asgsysSrngVo.getPrgrmNm());
     	assPrgrmVo.setCnsltngPrgrsYn(asgsysSrngVo.getCnsltngPrgrsYn());
     	assPrgrmVo.setCnsltngKndCd(asgsysSrngVo.getCnsltngKndCd());
