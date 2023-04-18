@@ -86,11 +86,11 @@ public class InstController {
     */
     @RequestMapping(value = "/mng/inst/selectInstList.do")
     @ResponseBody
-    public Map<String, Object> selectInstList(InstVo instVo) throws Exception {
+    public Map<String, Object> selectInstList(InstVo instVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         
         List<InstVo> result = null;
-        
+        instVo.setUser(user);
         result = instService.selectInstList(instVo);
         
         if (result.size() > 0) {
