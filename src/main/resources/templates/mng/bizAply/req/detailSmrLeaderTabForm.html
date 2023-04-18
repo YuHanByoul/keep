@@ -1,6 +1,3 @@
-<!-- Date-range picker css  -->
-<link rel="stylesheet" type="text/css"
-    href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
 <form id="insertForm">
     <input type="hidden" name="aplyid" id="aplyid" th:value="${detail.aplyid}" />
     <!-- [탭] 전문강사 확보 -->
@@ -67,7 +64,7 @@
                         <div class="mb-0 form-group">
                             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>지도자 관리방안</strong></label>
                             <div class="col-sm-12">
-                                <input type="text" class="form-control form-control-sm" id="ldrMngMthd" name="ldrMngMthd" placeholder="Text Input Validation" th:value="${detail.ldrMngMthd}">
+                                <input type="text" class="form-control form-control-sm" id="ldrMngMthd" name="ldrMngMthd" placeholder="" th:value="${detail.ldrMngMthd}">
                             </div>
                         </div>
                     </div>
@@ -83,7 +80,7 @@
                         <div class="mb-0 form-group">
                             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>성명</strong></label>
                             <div class="col-sm-12">
-                                <input type="text" class="form-control form-control-sm" id="nm" name="nm" placeholder="Text Input Validation" th:value="${detail.nm}">
+                                <input type="text" class="form-control form-control-sm" id="nm" name="nm" placeholder="" th:value="${detail.nm}">
                             </div>
                         </div>
                     </div>
@@ -91,7 +88,7 @@
                         <div class="mb-0 form-group">
                             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>생년월일</strong></label>
                             <div class="col-sm-12">
-                                <input type="text" class="form-control form-control-sm" id="brdt" name="brdt" placeholder="Text Input Validation" th:value="${detail.brdt}">
+                                <input type="text" class="form-control form-control-sm" id="brdt" name="brdt" placeholder="" th:value="${detail.brdt}">
                             </div>
                         </div>
                     </div>
@@ -128,7 +125,7 @@
                                 <input type="text" class="form-control form-control-sm" name="dgr" id="dgr" th:value="${list.dgr}">
                             </td>
                             <td class="v-middle">
-                                <button onclick="addRow(this);" type="button" class="btn btn-primary btn-sm" th:if="${i.last}">추가</button>
+                                <button onclick="addRow(this);" type="button" id="table_2" class="btn btn-primary btn-sm" th:if="${i.last}">추가</button>
                                 <button onclick="removeRow(this);" type="button" class="btn btn-inverse btn-sm">삭제</button>
                             </td>
                         </tr>
@@ -146,7 +143,7 @@
                                 <input type="text" class="form-control form-control-sm" name="dgr" id="dgr">
                             </td>
                             <td class="v-middle">
-                                <button onclick="addRow(this);" type="button" class="btn btn-primary btn-sm">추가</button>
+                                <button onclick="addRow(this);" type="button" id="table_2" class="btn btn-primary btn-sm">추가</button>
                                 <button onclick="removeRow(this);" type="button" class="btn btn-inverse btn-sm">삭제</button>
                             </td>
                         </tr>
@@ -271,6 +268,9 @@
     </div>
 </form>
 
+<!-- Date-range picker css  -->
+<link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
+
 <!-- Date-range picker js -->
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
@@ -304,7 +304,8 @@
 
     // 테이블 로우 추가
     function addRow(obj) {
-        var html = '<button onclick="addRow(this);" type="button" class="btn btn-primary btn-sm">추가</button>';
+        var tableId = $(obj).prop("id");
+        var html = '<button id="'+tableId+'" onclick="addRow(this);" type="button" class="btn btn-primary btn-sm">추가</button>';
         html += '<button onclick="removeRow(this);" type="button" class="btn btn-inverse btn-sm">삭제</button>';
         var clickedRow = $(obj).parent().parent();
         $(obj).remove();
@@ -312,6 +313,17 @@
         newrow.find("td > input").val("");
         newrow.find("td:last").html(html);
         newrow.insertAfter(clickedRow.parent().parent().find("tr:last"));
+        if (tableId == "table_2") {         
+            $(document).find("input[name=eduDe]").removeClass('hasDaterangepicker').daterangepicker({
+                autoUpdateInput: false,
+                locale: {
+                    format: "YYYY-MM-DD",
+                },
+            });
+            $(document).find("input[name=eduDe]").on('apply.daterangepicker', function(ev, picker) {
+                $(this).val(picker.startDate.format('YYYY-MM-DD') + ' ~ ' + picker.endDate.format('YYYY-MM-DD'));
+            });
+        }
     }
 
     // 테이블 로우 삭제
