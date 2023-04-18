@@ -66,6 +66,7 @@ public class BatchJobServiceImpl implements BatchJobService {
 	* @throws Exception 예외
 	*/
 	@SchedulingHistory
+	@Transactional
 	public void userDrmncyProcess(@Triggerid int triggerid) throws Exception {
 	    //휴면처리 대상자 리스트
 	    List<Map<String, Object>> emailSendUserList = batchJobDao.selectDrmncyUserList();
@@ -271,6 +272,7 @@ public class BatchJobServiceImpl implements BatchJobService {
     * @throws Exception 예외
     */
      @SchedulingHistory
+     @Transactional
      public void deleteOldNtcMsg(@Triggerid int triggerid) throws Exception {
          batchJobDao.deleteOldNtcMsg();
      }
@@ -486,6 +488,7 @@ public class BatchJobServiceImpl implements BatchJobService {
       * @throws Exception 예외
       */
       @SchedulingHistory
+      @Transactional
       public void flctRsvCancle(@Triggerid int triggerid) throws Exception {
           //휴면처리 대상자 리스트
           List<Map<String, Object>> flctRsvCancleUserList = batchJobDao.selectFlctRsvCancleUserList();
