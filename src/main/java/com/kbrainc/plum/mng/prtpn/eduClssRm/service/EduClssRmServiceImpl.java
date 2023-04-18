@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.prtpn.eduClssRm.model.EduClssRmVo;
 import com.kbrainc.plum.mng.prtpn.eduClssRm.model.EduClssRmDao;
@@ -39,6 +40,7 @@ public class EduClssRmServiceImpl extends PlumAbstractServiceImpl implements Edu
     * @throws Exception 예외
     * @return List<EduClssRmVo>
     */
+    @Override
     public List<EduClssRmVo> selectEduClssRmList(EduClssRmVo eduClssRmVo) throws Exception {
         return eduClssRmDao.selectEduClssRmList(eduClssRmVo);
     }
@@ -52,6 +54,8 @@ public class EduClssRmServiceImpl extends PlumAbstractServiceImpl implements Edu
     * @throws Exception 예회
     * @return int
     */
+    @Override
+    @Transactional    
     public int insertEduClssRm(EduClssRmVo eduClssRmVo) throws Exception{
         return eduClssRmDao.insertEduClssRm(eduClssRmVo);
     }
@@ -65,6 +69,7 @@ public class EduClssRmServiceImpl extends PlumAbstractServiceImpl implements Edu
     * @throws Exception 예외
     * @return EduClssRmVo
     */
+    @Override
     public EduClssRmVo selectEduClssRmInfo(EduClssRmVo eduClssRmVo) throws Exception{
         return eduClssRmDao.selectEduClssRmInfo(eduClssRmVo);
     }
@@ -78,6 +83,8 @@ public class EduClssRmServiceImpl extends PlumAbstractServiceImpl implements Edu
     * @throws Exception 예외
     * @return int
     */
+    @Override
+    @Transactional    
     public int updateEduClssRm(EduClssRmVo eduClssRmVo) throws Exception{
         return eduClssRmDao.updateEduClssRm(eduClssRmVo);
     }
@@ -91,6 +98,7 @@ public class EduClssRmServiceImpl extends PlumAbstractServiceImpl implements Edu
     * @throws Exception 예외
     * @return int
     */
+    @Override
     public EduClssRmVo selectClssrmEduTypeCd(String clssrmId) throws Exception{
         return eduClssRmDao.selectClssrmEduTypeCd(clssrmId);        
     }

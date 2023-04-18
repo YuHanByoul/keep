@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 
 import org.apache.ibatis.type.Alias;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.front.infntAply.model.InfntAplyDao;
 import com.kbrainc.plum.front.infntAply.model.InfntAplyVo;
@@ -150,6 +151,8 @@ public class InfntAplyServiceImpl extends PlumAbstractServiceImpl implements Inf
     * @throws Exception 예회
     * @return int
     */
+    @Override
+    @Transactional    
     public int insertInfntAply(InfntAplyVo infntAplyVo) throws Exception{
         int retVal = 0;
         retVal += infntAplyDao.insertInfntAply(infntAplyVo);
@@ -170,6 +173,7 @@ public class InfntAplyServiceImpl extends PlumAbstractServiceImpl implements Inf
      * @throws Exception
      * @return List<InfntAplyVo>
      */
+    @Override
     public List<InfntAplyVo> selectInfntAplyHistList(InfntAplyVo infntAplyVo) throws Exception{
         return infntAplyDao.selectInfntAplyHistList(infntAplyVo);
     }        

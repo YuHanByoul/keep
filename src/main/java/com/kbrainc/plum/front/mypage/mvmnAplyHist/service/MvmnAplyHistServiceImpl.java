@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 
 import org.apache.ibatis.type.Alias;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.front.mypage.mvmnAplyHist.model.MvmnAplyHistDao;
 import com.kbrainc.plum.front.mypage.mvmnAplyHist.model.MvmnAplyHistVo;
@@ -47,6 +48,7 @@ public class MvmnAplyHistServiceImpl extends PlumAbstractServiceImpl implements 
      * @throws Exception
      * @return List<MvmnAplyHistVo>
      */
+    @Override
     public List<MvmnAplyHistVo> selectMvmnAplyHistList(MvmnAplyHistVo mvmnAplyHistVo) throws Exception{
         return mvmnAplyHistDao.selectMvmnAplyHistList(mvmnAplyHistVo);
     }        
@@ -60,6 +62,7 @@ public class MvmnAplyHistServiceImpl extends PlumAbstractServiceImpl implements 
      * @throws Exception
      * @return MvmnAplyHistVo
      */
+    @Override
     public MvmnAplyHistVo selectMvmnAplyHistInfo(MvmnAplyHistVo mvmnAplyHistVo) throws Exception{
         return mvmnAplyHistDao.selectMvmnAplyHistInfo(mvmnAplyHistVo);
     }
@@ -74,6 +77,7 @@ public class MvmnAplyHistServiceImpl extends PlumAbstractServiceImpl implements 
      * @throws Exception
      * @return MvmnAplyHistVo
      */
+    @Override
     public MvmnAplyHistVo selectMvmnAplyHistDetail(MvmnAplyHistVo mvmnAplyHistVo) throws Exception{
         return mvmnAplyHistDao.selectMvmnAplyHistDetail(mvmnAplyHistVo);
     }    
@@ -88,6 +92,8 @@ public class MvmnAplyHistServiceImpl extends PlumAbstractServiceImpl implements 
     * @throws Exception
     * @return int
     */
+    @Override
+    @Transactional    
     public int updateSttsMvmnAply(MvmnAplyHistVo mvmnAplyHistVo) throws Exception{
         int retVal = 0;
         if("C".equals(mvmnAplyHistVo.getUpdCd())) {
@@ -109,6 +115,7 @@ public class MvmnAplyHistServiceImpl extends PlumAbstractServiceImpl implements 
      * @throws Exception
      * @return SrvyVo
      */
+    @Override
     public SrvyVo selectMvmnSrvyInfo(SrvyVo srvyVo) throws Exception{
         return mvmnAplyHistDao.selectMvmnSrvyInfo(srvyVo);        
     }
@@ -123,6 +130,7 @@ public class MvmnAplyHistServiceImpl extends PlumAbstractServiceImpl implements 
      * @throws Exception
      * @return List<SrvyVo>
      */
+    @Override
     public List<SrvyVo> selectMvmnSrvySendList(SrvyVo srvyVo) throws Exception{
         return mvmnAplyHistDao.selectMvmnSrvySendList(srvyVo);
     }  
@@ -137,6 +145,8 @@ public class MvmnAplyHistServiceImpl extends PlumAbstractServiceImpl implements 
     * @throws Exception
     * @return int
     */
+    @Override
+    @Transactional    
     public int updateMvmnAply(MvmnAplyHistVo mvmnAplyHistVo) throws Exception{
         int retVal = 0;
         retVal += mvmnAplyHistDao.updateMvmnAply(mvmnAplyHistVo);

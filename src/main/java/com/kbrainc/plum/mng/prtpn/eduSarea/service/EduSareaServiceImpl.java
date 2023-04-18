@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.prtpn.eduSarea.model.EduSareaVo;
 import com.kbrainc.plum.mng.code.model.CodeVo;
@@ -40,6 +41,7 @@ public class EduSareaServiceImpl extends PlumAbstractServiceImpl implements EduS
     * @throws Exception 예외
     * @return List<EduSareaVo>
     */
+    @Override
     public List<EduSareaVo> selectEduSareaList(EduSareaVo eduSareaVo) throws Exception {
         return eduSareaDao.selectEduSareaList(eduSareaVo);
     }
@@ -53,6 +55,8 @@ public class EduSareaServiceImpl extends PlumAbstractServiceImpl implements EduS
     * @throws Exception 예회
     * @return int
     */
+    @Override
+    @Transactional    
     public int insertEduSarea(EduSareaVo eduSareaVo) throws Exception{
         int retVal = 0;
         retVal += eduSareaDao.insertEduSarea(eduSareaVo);
@@ -72,6 +76,7 @@ public class EduSareaServiceImpl extends PlumAbstractServiceImpl implements EduS
     * @throws Exception 예외
     * @return EduSareaVo
     */
+    @Override
     public EduSareaVo selectEduSareaInfo(EduSareaVo eduSareaVo) throws Exception{
         return eduSareaDao.selectEduSareaInfo(eduSareaVo);
     }
@@ -85,6 +90,8 @@ public class EduSareaServiceImpl extends PlumAbstractServiceImpl implements EduS
     * @throws Exception 예외
     * @return int
     */
+    @Override
+    @Transactional    
     public int updateEduSarea(EduSareaVo eduSareaVo) throws Exception{
         int retVal = 0;
         retVal += eduSareaDao.updateEduSarea(eduSareaVo);
@@ -107,6 +114,8 @@ public class EduSareaServiceImpl extends PlumAbstractServiceImpl implements EduS
      * @throws Exception 예외
      * @return int
      */
+    @Override
+    @Transactional    
     public int updateEduSareaSignguSetting(EduSareaVo eduSareaVo) throws Exception{
         int retVal = 0;
         
@@ -126,6 +135,7 @@ public class EduSareaServiceImpl extends PlumAbstractServiceImpl implements EduS
     * @throws Exception 예외
     * @return int
     */
+    @Override
     public EduSareaVo selectClssrmEduTypeCd(String clssrmId) throws Exception{
         return eduSareaDao.selectClssrmEduTypeCd(clssrmId);        
     }
@@ -140,6 +150,7 @@ public class EduSareaServiceImpl extends PlumAbstractServiceImpl implements EduS
     * @throws Exception
     * @return List<EduSareaVo>
     */
+    @Override
     public List<EduSareaVo> selectSignguCodeList(EduSareaVo eduSareaVo) throws Exception{
         return eduSareaDao.selectSignguCodeList(eduSareaVo);        
     }
@@ -154,6 +165,7 @@ public class EduSareaServiceImpl extends PlumAbstractServiceImpl implements EduS
      * @throws Exception
      * @return List<EduSareaVo>
      */
+    @Override
     public List<EduSareaVo> selectCtprvnCdList(int sareaid) throws Exception{
         return eduSareaDao.selectCtprvnCdList(sareaid);
     }
@@ -168,6 +180,7 @@ public class EduSareaServiceImpl extends PlumAbstractServiceImpl implements EduS
     * @throws Exception
     * @return List<EduSareaVo>
     */
+    @Override
     public List<EduSareaVo> selectAddrCtprvnList() throws Exception{
         return eduSareaDao.selectAddrCtprvnList();
     }
@@ -182,6 +195,7 @@ public class EduSareaServiceImpl extends PlumAbstractServiceImpl implements EduS
      * @throws Exception
      * @return List<EduSareaVo>
      */
+    @Override
     public List<EduSareaVo> selectAddrSignguList(EduSareaVo eduSareaVo) throws Exception{
         return eduSareaDao.selectAddrSignguList(eduSareaVo);        
     }        

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.prtpn.mvmnSchdl.model.MvmnSchdlVo;
 import com.kbrainc.plum.mng.prtpn.mvmnSchdl.model.MvmnSchdlDao;
@@ -39,6 +40,7 @@ public class MvmnSchdlServiceImpl extends PlumAbstractServiceImpl implements Mvm
     * @throws Exception 예외
     * @return List<MvmnSchdlVo>
     */
+    @Override
     public List<MvmnSchdlVo> selectMvmnSchdlList(MvmnSchdlVo mvmnSchdlVo) throws Exception {
         return mvmnSchdlDao.selectMvmnSchdlList(mvmnSchdlVo);
     }
@@ -52,6 +54,8 @@ public class MvmnSchdlServiceImpl extends PlumAbstractServiceImpl implements Mvm
     * @throws Exception 예회
     * @return int
     */
+    @Override
+    @Transactional    
     public int insertMvmnSchdl(MvmnSchdlVo mvmnSchdlVo) throws Exception{
         int retVal = 0;
         retVal += mvmnSchdlDao.insertMvmnSchdl(mvmnSchdlVo);
@@ -80,6 +84,7 @@ public class MvmnSchdlServiceImpl extends PlumAbstractServiceImpl implements Mvm
     * @throws Exception 예외
     * @return MvmnSchdlVo
     */
+    @Override
     public MvmnSchdlVo selectMvmnSchdlInfo(MvmnSchdlVo mvmnSchdlVo) throws Exception{
         return mvmnSchdlDao.selectMvmnSchdlInfo(mvmnSchdlVo);
     }
@@ -93,6 +98,8 @@ public class MvmnSchdlServiceImpl extends PlumAbstractServiceImpl implements Mvm
     * @throws Exception 예외
     * @return int
     */
+    @Override
+    @Transactional    
     public int updateMvmnSchdl(MvmnSchdlVo mvmnSchdlVo) throws Exception{
         int retVal = 0;
         retVal += mvmnSchdlDao.updateMvmnSchdl(mvmnSchdlVo);
@@ -122,6 +129,8 @@ public class MvmnSchdlServiceImpl extends PlumAbstractServiceImpl implements Mvm
      * @throws Exception 예외
      * @return int
      */
+    @Override
+    @Transactional    
     public int deleteMvmnSchdl(MvmnSchdlVo mvmnSchdlVo) throws Exception{
         int retVal = 0;
 
@@ -142,6 +151,7 @@ public class MvmnSchdlServiceImpl extends PlumAbstractServiceImpl implements Mvm
      * @throws Exception 예외
      * @return int
      */
+    @Override
     public List<MvmnSchdlVo> selectMvmnSchdlIdList(String sareaId) throws Exception{
         return mvmnSchdlDao.selectMvmnSchdlIdList(sareaId);   
     }
@@ -154,6 +164,7 @@ public class MvmnSchdlServiceImpl extends PlumAbstractServiceImpl implements Mvm
      * @throws Exception 예외
      * @return int
      */
+    @Override
     public int selectMvmnAplyCnt(MvmnSchdlVo mvmnSchdlVo) throws Exception{
         return mvmnSchdlDao.selectMvmnAplyCnt(mvmnSchdlVo);        
     }

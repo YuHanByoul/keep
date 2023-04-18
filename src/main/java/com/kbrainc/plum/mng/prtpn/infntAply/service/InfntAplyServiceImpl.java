@@ -60,6 +60,7 @@ public class InfntAplyServiceImpl extends PlumAbstractServiceImpl implements Inf
     * @throws Exception 예외
     * @return List<InfntAplyVo>
     */
+    @Override
     public List<InfntAplyVo> selectInfntAplyList(InfntAplyVo infntAplyVo) throws Exception {
         return infntAplyDao.selectInfntAplyList(infntAplyVo);
     }
@@ -73,6 +74,7 @@ public class InfntAplyServiceImpl extends PlumAbstractServiceImpl implements Inf
      * @throws Exception 예외
      * @return List<InfntAplyVo>
      */
+    @Override
     public List<InfntAplyVo> selectInfntAplyDetailList(InfntAplyVo infntAplyVo) throws Exception {
         return infntAplyDao.selectInfntAplyDetailList(infntAplyVo);
     }
@@ -86,6 +88,8 @@ public class InfntAplyServiceImpl extends PlumAbstractServiceImpl implements Inf
     * @throws Exception 예회
     * @return int
     */
+    @Override
+    @Transactional    
     public int insertInfntAply(InfntAplyVo infntAplyVo) throws Exception{
         int retVal = 0;
         retVal += infntAplyDao.insertInfntAply(infntAplyVo);
@@ -108,6 +112,7 @@ public class InfntAplyServiceImpl extends PlumAbstractServiceImpl implements Inf
     * @throws Exception 예외
     * @return InfntAplyVo
     */
+    @Override
     public InfntAplyVo selectInfntAplyInfo(InfntAplyVo infntAplyVo) throws Exception{
         return infntAplyDao.selectInfntAplyInfo(infntAplyVo);
     }
@@ -121,6 +126,8 @@ public class InfntAplyServiceImpl extends PlumAbstractServiceImpl implements Inf
     * @throws Exception 예외
     * @return int
     */
+    @Override
+    @Transactional    
     public int updateInfntAply(InfntAplyVo infntAplyVo) throws Exception{
         int retVal = 0;
         retVal += infntAplyDao.updateInfntAply(infntAplyVo);
@@ -143,6 +150,8 @@ public class InfntAplyServiceImpl extends PlumAbstractServiceImpl implements Inf
      * @throws Exception 예외
      * @return int
      */
+    @Override
+    @Transactional    
     public int updateSttsCdInfntAply(InfntAplyVo infntAplyVo) throws Exception{
         return infntAplyDao.updateSttsCdInfntAply(infntAplyVo);
     }
@@ -156,6 +165,8 @@ public class InfntAplyServiceImpl extends PlumAbstractServiceImpl implements Inf
     * @throws Exception 예회
     * @return int
     */
+    @Override
+    @Transactional    
     public int insertInfntAplyTme(InfntAplyVo infntAplyVo) throws Exception{
         return infntAplyDao.insertInfntAplyTme(infntAplyVo);
     }
@@ -169,6 +180,8 @@ public class InfntAplyServiceImpl extends PlumAbstractServiceImpl implements Inf
     * @throws Exception 예외
     * @return int
     */
+    @Override
+    @Transactional    
     public int updateInfntAplyTme(InfntAplyVo infntAplyVo) throws Exception{
         return infntAplyDao.updateInfntAplyTme(infntAplyVo);
     }    
@@ -182,6 +195,7 @@ public class InfntAplyServiceImpl extends PlumAbstractServiceImpl implements Inf
     * @throws Exception 예외
     * @return List<InfntAplyVo>
     */
+    @Override
     public List<InfntAplyVo> selectInfntAplyTmeList(InfntAplyVo infntAplyVo) throws Exception {
         return infntAplyDao.selectInfntAplyTmeList(infntAplyVo);
     }    
@@ -195,6 +209,7 @@ public class InfntAplyServiceImpl extends PlumAbstractServiceImpl implements Inf
      * @throws Exception 예외
      * @return List<InfntAplyVo>
      */
+    @Override
     public List<InfntAplyVo> selectTmeSchdlList(InfntAplyVo infntAplyVo) throws Exception {
         return infntAplyDao.selectTmeSchdlList(infntAplyVo);
     }
@@ -208,6 +223,7 @@ public class InfntAplyServiceImpl extends PlumAbstractServiceImpl implements Inf
      * @return List<MemberVo> 기관정보 목록
      * @throws Exception 예외
      */
+    @Override
     public List<InfntAplyVo> selectMemberList(InfntAplyVo infntAply) throws Exception{
         return infntAplyDao.selectMemberList(infntAply);
     }

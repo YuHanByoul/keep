@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.prtpn.infntSchdl.model.InfntSchdlDao;
 import com.kbrainc.plum.mng.prtpn.infntSchdl.model.InfntSchdlVo;
@@ -39,6 +40,7 @@ public class InfntSchdlServiceImpl extends PlumAbstractServiceImpl implements In
     * @throws Exception 예외
     * @return List<InfntSchdlVo>
     */
+    @Override
     public List<InfntSchdlVo> selectInfntSchdlList(InfntSchdlVo infntSchdlVo) throws Exception {
         return infntSchdlDao.selectInfntSchdlList(infntSchdlVo);
     }
@@ -52,6 +54,8 @@ public class InfntSchdlServiceImpl extends PlumAbstractServiceImpl implements In
     * @throws Exception 예회
     * @return int
     */
+    @Override
+    @Transactional    
     public int insertInfntSchdl(InfntSchdlVo infntSchdlVo) throws Exception{
         int retVal = 0;
         retVal += infntSchdlDao.insertInfntSchdl(infntSchdlVo);
@@ -80,6 +84,7 @@ public class InfntSchdlServiceImpl extends PlumAbstractServiceImpl implements In
     * @throws Exception 예외
     * @return InfntSchdlVo
     */
+    @Override
     public InfntSchdlVo selectInfntSchdlInfo(InfntSchdlVo infntSchdlVo) throws Exception{
         return infntSchdlDao.selectInfntSchdlInfo(infntSchdlVo);
     }
@@ -93,6 +98,8 @@ public class InfntSchdlServiceImpl extends PlumAbstractServiceImpl implements In
     * @throws Exception 예외
     * @return int
     */
+    @Override
+    @Transactional    
     public int updateInfntSchdl(InfntSchdlVo infntSchdlVo) throws Exception{
         int retVal = 0;
         retVal += infntSchdlDao.updateInfntSchdl(infntSchdlVo);
@@ -122,6 +129,8 @@ public class InfntSchdlServiceImpl extends PlumAbstractServiceImpl implements In
      * @throws Exception 예외
      * @return int
      */
+    @Override
+    @Transactional    
     public int deleteInfntSchdl(InfntSchdlVo infntSchdlVo) throws Exception{
         int retVal = 0;
 
@@ -142,6 +151,7 @@ public class InfntSchdlServiceImpl extends PlumAbstractServiceImpl implements In
      * @throws Exception 예외
      * @return List<InfntSchdlVo>
      */
+    @Override
     public List<InfntSchdlVo> selectInfntSchdlIdList(String clssrmId) throws Exception{
         return infntSchdlDao.selectInfntSchdlIdList(clssrmId);   
     }
@@ -154,6 +164,7 @@ public class InfntSchdlServiceImpl extends PlumAbstractServiceImpl implements In
      * @throws Exception 예외
      * @return int
      */
+    @Override
     public int selectInfntAplyCnt(InfntSchdlVo infntSchdlVo) throws Exception{
         return infntSchdlDao.selectInfntAplyCnt(infntSchdlVo);        
     }        

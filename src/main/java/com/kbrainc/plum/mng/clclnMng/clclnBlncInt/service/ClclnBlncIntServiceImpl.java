@@ -19,6 +19,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.clclnMng.clclnBlncInt.model.ClclnBlncIntDao;
 import com.kbrainc.plum.mng.clclnMng.clclnBlncInt.model.ClclnBlncIntVo;
@@ -56,6 +57,7 @@ public class ClclnBlncIntServiceImpl extends PlumAbstractServiceImpl implements 
     * @throws Exception 예외
     * @return List<ClclnBlncIntVo>
     */
+    @Override
     public List<ClclnBlncIntVo> selectClclnBlncIntList(ClclnBlncIntVo clclnBlncIntVo) throws Exception {
         return clclnBlncIntDao.selectClclnBlncIntList(clclnBlncIntVo);
     }
@@ -69,6 +71,7 @@ public class ClclnBlncIntServiceImpl extends PlumAbstractServiceImpl implements 
     * @throws Exception 예외
     * @return List<ClclnBlncIntVo>
     */
+    @Override
     public List<ClclnBlncIntVo> selectClclnBlncIntDetailList(ClclnBlncIntVo clclnBlncIntVo) throws Exception {
         return clclnBlncIntDao.selectClclnBlncIntDetailList(clclnBlncIntVo);
     }
@@ -82,6 +85,7 @@ public class ClclnBlncIntServiceImpl extends PlumAbstractServiceImpl implements 
      * @throws Exception 예외
      * @return ClclnBlncIntVo
      */
+    @Override
     public ClclnBlncIntVo selectClclnBlncIntDetailInfo(ClclnBlncIntVo clclnBlncIntVo) throws Exception {
         return clclnBlncIntDao.selectClclnBlncIntDetailInfo(clclnBlncIntVo);
     }
@@ -95,6 +99,7 @@ public class ClclnBlncIntServiceImpl extends PlumAbstractServiceImpl implements 
      * @throws Exception 예외
      * @return List<ClclnBlncIntVo>
      */
+    @Override
     public List<ClclnBlncIntVo> selectClclnBlncIntDetailOutlList(ClclnBlncIntVo clclnBlncIntVo) throws Exception {
         return clclnBlncIntDao.selectClclnBlncIntDetailOutlList(clclnBlncIntVo);
     }
@@ -108,6 +113,7 @@ public class ClclnBlncIntServiceImpl extends PlumAbstractServiceImpl implements 
      * @throws Exception 예외
      * @return List<ClclnBlncIntVo>
      */
+    @Override
     public List<ClclnBlncIntVo> selectClclnBlncIntDetailOutlDtlList(ClclnBlncIntVo clclnBlncIntVo) throws Exception {
         return clclnBlncIntDao.selectClclnBlncIntDetailOutlDtlList(clclnBlncIntVo);
     }
@@ -121,6 +127,8 @@ public class ClclnBlncIntServiceImpl extends PlumAbstractServiceImpl implements 
      * @throws Exception 예외
      * @return int
      */
+    @Override
+    @Transactional    
     public int updateClclnBlncIntRturnYn(ClclnBlncIntVo clclnBlncIntVo) throws Exception {
         return clclnBlncIntDao.updateClclnBlncIntRturnYn(clclnBlncIntVo);
     }
