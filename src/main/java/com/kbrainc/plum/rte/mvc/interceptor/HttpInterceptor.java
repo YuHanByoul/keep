@@ -117,7 +117,7 @@ public class HttpInterceptor extends HandlerInterceptorAdapter {
         ////////////////////////////////////////////////////////////////////////////////////
         // SSO토큰 검사
         ////////////////////////////////////////////////////////////////////////////////////
-        if (ssoIsUse) {
+        if (ssoIsUse && !targetURI.equals("/onepass/acs.html")) {
             String sToken = CookieUtil.getCookie(request, "ssotoken"); // 쿠키에 저장된 토큰을 받아 저장
             
             if (!"".equals(StringUtil.nvl(sToken))) { // 토큰이 있으면
