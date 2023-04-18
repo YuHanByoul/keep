@@ -340,8 +340,7 @@ public class BizRptController {
  	*/
  	@RequestMapping(value = "/mng/bizAply/bizRpt/cnsltngTrgtPopup.html")
     public String cnsltngTrgtPopup(BizRptVo bizRptVo, Model model, @UserInfo UserVo user) throws Exception {
-        model.addAttribute("aplyid",bizRptVo.getAplyid());
-        model.addAttribute("cnsltngTrgtCn",bizRptVo.getCnsltngTrgtCn());
+        model.addAttribute("aplyInfo", bizRptService.selectCnsltngTrgtCn(bizRptVo));
         model.addAttribute("cnstntList", bizRptService.selectCnstntList(bizRptVo));
         return "mng/bizAply/bizRpt/cnsltngTrgtPopup";
     }

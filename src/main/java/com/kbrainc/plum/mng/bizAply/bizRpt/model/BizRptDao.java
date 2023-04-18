@@ -393,6 +393,19 @@ public interface BizRptDao {
 	*/
 	public int updateTrgtCn(BizRptVo bizRptVo) throws Exception;
 
+
+	/**
+	* 컨설팅 대상 내용 조회
+	*
+	* @Title : selectCnsltngTrgtCn
+	* @Description : 컨설팅 대상 내용 조회
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return BizRptVo
+	*/
+	public BizRptVo selectCnsltngTrgtCn(BizRptVo bizRptVo) throws Exception;
+
 	/**
 	* 컨설턴트 목록 조회
 	*
@@ -405,6 +418,15 @@ public interface BizRptDao {
 	*/
 	public List<BizRptVo> selectCnstntList(BizRptVo bizRptVo) throws Exception;
 
+	/**
+	* 컨설팅관리 삭제.
+	*
+	* @Title : deleteCnsltngMng
+	* @Description : 컨설팅관리 삭제
+	* @param bizRptVo
+	* @throws Exception
+	* @return void
+	*/
 	public void deleteCnsltngMng(BizRptVo bizRptVo) throws Exception;
 
 }

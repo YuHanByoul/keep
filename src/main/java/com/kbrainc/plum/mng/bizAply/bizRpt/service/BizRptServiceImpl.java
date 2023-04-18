@@ -315,7 +315,7 @@ public class BizRptServiceImpl extends PlumAbstractServiceImpl implements BizRpt
 				cell.setCellStyle(style);
 				/*제출일시*/
 				cell = row.createCell(cellnum++);
-				cell.setCellValue(StringUtil.nvl(dateFormat.format(modelVo.getRegDt()), ""));
+				cell.setCellValue(StringUtil.nvl(modelVo.getSbmsnDt(), ""));
 				cell.setCellStyle(style);
 				/*증빙서류 여부*/
 				cell = row.createCell(cellnum++);
@@ -323,7 +323,7 @@ public class BizRptServiceImpl extends PlumAbstractServiceImpl implements BizRpt
 				cell.setCellStyle(style);
 				/*컨설팅 대상 여부*/
 				cell = row.createCell(cellnum++);
-				cell.setCellValue(StringUtil.nvl(modelVo.getCnsltngUseCnt(), ""));
+				cell.setCellValue(StringUtil.nvl(modelVo.getCnsltngTrgtYn(), ""));
 				cell.setCellStyle(style);
 			}
 
@@ -1065,6 +1065,20 @@ public class BizRptServiceImpl extends PlumAbstractServiceImpl implements BizRpt
 		ret += bizRptDao.updateTrgtCn(bizRptVo);
 
 		return ret;
+	}
+
+	/**
+	* 컨설팅 대상 내용 조회
+	*
+	* @Title : selectCnsltngTrgtCn
+	* @Description : 컨설팅 대상 내용 조회
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return BizRptVo
+	*/
+	public BizRptVo selectCnsltngTrgtCn(BizRptVo bizRptVo) throws Exception{
+		return bizRptDao.selectCnsltngTrgtCn(bizRptVo);
 	}
 
 	/**

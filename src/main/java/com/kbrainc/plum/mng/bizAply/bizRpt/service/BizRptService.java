@@ -289,6 +289,18 @@ public interface BizRptService {
 	public int insertCnsltngTrgt(BizRptVo bizRptVo) throws Exception;
 
 	/**
+	* 컨설팅 대상 내용 조회
+	*
+	* @Title : selectCnsltngTrgtCn
+	* @Description : 컨설팅 대상 내용 조회
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return BizRptVo
+	*/
+	public BizRptVo selectCnsltngTrgtCn(BizRptVo bizRptVo) throws Exception;
+
+	/**
 	* 컨설턴트 목록 조회
 	*
 	* @Title : selectCnstntList
