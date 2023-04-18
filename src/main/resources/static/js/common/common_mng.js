@@ -424,4 +424,24 @@ function initDateRangePicker(pickerid,startDtId,endDtId){
         });
 }
 
+/*
+* popupId : 팝업 html을 로드할 태그의 id 값
+* formId : 엑셀 다운로드시 사용할 form의 id 값
+* excelDownUrl : 엑셀 다운로드시 사용되는 경로
+* filegrpid : 일반 파일 다운로드시 파일의 filegrpid
+* fileid : 일반 파일 다운로드시 파일의 fileid
+* */
+function showFileDownPopup(popupId, formId, excelDownUrl, filegrpid, fileid, fileIdntfcKey){
+    // filegrpid = !!filegrpid ? filegrpid : 0;
+    // fileid = !!fileid ? fileid : 0;
+
+    const popupUrl = `/mng/dwnldDsctn/dwnldDsctnPopup.html?popupId=${popupId}&formId=${formId}&url=${excelDownUrl}&filegrpid=${filegrpid}&fileid=${fileid}&fileIdntfcKey=${fileIdntfcKey}`;
+    const $popup = $('#' + popupId);
+
+    $popup.load(popupUrl, function (response, status, xhr) {
+        if (status == "success") {
+            $popup.modal('show');
+        }
+    });
+}
 

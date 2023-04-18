@@ -1,0 +1,90 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<!-- [팝업] 다운로드 사유 입력 -->
+<div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content type_2">
+        <div class="modal-header">
+            <h4 class="modal-title">다운로드 사유 입력</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"></span>
+            </button>
+        </div>
+        <form id="dwnldDsctnPopupForm" name="dwnldDsctnPopupForm">
+            <input type="hidden" name="formId" id="formId" th:value="${dwnldDsctnVo.formId}"/>
+            <input type="hidden" name="url" id="url" th:value="${dwnldDsctnVo.url}"/>
+            <input type="hidden" name="popupId" id="popupId" th:value="${dwnldDsctnVo.popupId}"/>
+            <input type="hidden" name="filegrpid" id="filegrpid" th:value="${dwnldDsctnVo.filegrpid}"/>
+            <input type="hidden" name="fileid" id="fileid" th:value="${dwnldDsctnVo.fileid}"/>
+
+            <div class="modal-body">
+                <div class="card m-b-10">
+                    <div class="card-block-small">
+                        <div class="col-12">
+                            <p>다운로드 사유를 작성해주세요. (10자 이상 30자 미만 ex. ㅇㅇ교육신청 실적보고를 위한 다운로드)</p>
+                            <p>※ 개인정보의 안정성 확보저치 기준 제8조에 따라, 개인정보를 다운로드 할 경우, 그 사유를 반드시 확인해야 하며, 추후 증빙자료 제출을 위해 명확한 다운로드 사유 기재 요청</p>
+                        </div>
+                        <div class="mb-0 form-group row">
+                            <div class="col-12">
+                                <input type="text" class="form-control form-control-sm" name="rsn" id="rsn" placeholder="다운로드 사유를 작성해주세요.">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary waves-effect waves-light" onclick="dwnldDsctnPopup.insertDwnldDsctn()">확인</button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- //[팝업] 다운로드 사유 입력 -->
+<script th:inline="javascript">
+    const dwnldDsctnPopup = {
+        insertUrl: '/mng/dwnldDsctn/insertDwnldDsctn.do',
+        init() {
+            this.validateForm();
+        },
+
+        validateForm() {
+            $('#dwnldDsctnPopupForm').validate({
+                rules: {
+                    rsn: {required: true, maxlength: 29, minlength: 10}
+                },
+                messages: {
+                    rsn: {required: '사유를 적지 않으면 다운로드 할 수 없습니다.', maxlength: '다운로드 사유를 10자 이상, 30자 미만으로 작성해 주십시오.', minlength: '다운로드 사유를 10자 이상, 30자 미만으로 작성해 주십시오.'}
+                }
+            })
+        },
+
+        insertDwnldDsctn() {
+            if ($('#dwnldDsctnPopupForm').valid()) {
+                new Promise((resolve, reject) => {
+                    $.ajax({
+                        url: dwnldDsctnPopup.insertUrl,
+                        dataType: 'json',
+                        method: 'post',
+                        data: $('#dwnldDsctnPopupForm').serializeArray(),
+                        success: function (result) {
+                            resolve(result);
+                        }
+                    })
+                }).then((result) => {
+                    if(!!result.url) {
+                        // 엑셀 파일 다운로드
+                        excelDownload($('#' + result.formId), result.url);
+                    } else {
+                        // 일반 파일 다운로드
+
+                    }
+
+                    $('#'+result.popupId).modal('hide');
+                });
+            }
+        }
+    };
+
+    $(function () {
+        dwnldDsctnPopup.init();
+    })
+</script>
+</html>
