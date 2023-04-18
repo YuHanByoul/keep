@@ -50,7 +50,7 @@ public class CapabilityResultVo {
     private Integer eduNope;
     
     /** 사업_예산 */
-    private String bsnsBgt;
+    private Integer bsnsBgt;
     
     /** 운영_내용 */
     private String operCn;

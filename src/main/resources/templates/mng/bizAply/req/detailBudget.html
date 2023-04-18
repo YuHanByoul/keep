@@ -25,10 +25,10 @@
                                 <input type="hidden" name="codeArr" id="codeArr" th:value="${list.code}"/><!-- th:block th:text="${list.code}"/> /--> 
                                 <th:block th:text="${list.expitmNm}"/></td>
                             <td class="v-middle text-center">
-                                <input type="text" class="form-control form-control-sm" name="amtArr" id="amtArr" th:value="${list.amt}">
+                                <input type="text" class="form-control form-control-sm" name="amtArr" id="amtArr" maxlength="15" th:value="${#numbers.formatInteger(list.amt, 0, 'COMMA')}">
                             </td>
                             <td class="v-middle text-center">
-                                <textarea rows="4" cols="5" class="form-control form-control-sm" placeholder="" name="dsctnArr" id="dsctnArr"><th:block th:text="${list.dsctn}"/></textarea>
+                                <textarea rows="4" cols="5" class="form-control form-control-sm" placeholder="" maxlength="1000" name="dsctnArr" id="dsctnArr"><th:block th:text="${list.dsctn}"/></textarea>
                             </td>
                         </tr>
                         <tr th:unless="${#lists.size(list) == 1}" th:each="list, i: ${list}">
@@ -37,17 +37,17 @@
                                 <input type="hidden" name="codeArr" id="codeArr" th:value="${list.code}"/><!-- th:block th:text="${list.code}"/> /--> 
                                 <th:block th:text="${list.expitmNm}"/></td>
                             <td class="v-middle text-center">
-                                <input type="text" class="form-control form-control-sm" name="amtArr" id="amtArr" th:value="${list.amt}">
+                                <input type="text" class="form-control form-control-sm" name="amtArr" id="amtArr" maxlength="15" th:value="${#numbers.formatInteger(list.amt, 0, 'COMMA')}">
                             </td>
                             <td class="v-middle text-center">
-                                <textarea rows="4" cols="5" class="form-control form-control-sm" placeholder="" name="dsctnArr" id="dsctnArr"><th:block th:text="${list.dsctn}"/></textarea>
+                                <textarea rows="4" cols="5" class="form-control form-control-sm" placeholder="" maxlength="1000" name="dsctnArr" id="dsctnArr"><th:block th:text="${list.dsctn}"/></textarea>
                             </td>
                         </tr>
                         </tbody>
                         <tfoot>
                             <tr>
                                 <td class="v-middle text-center table-active"><strong>총계</strong></td>
-                                <td class="v-middle text-center table-active" colspan="2"><strong><th:block th:text="${totalAmt}"/> 원</strong></td>
+                                <td class="v-middle text-center table-active" colspan="2"><strong id="totalSum"><th:block th:text="${#numbers.formatInteger(totalAmt, 0, 'COMMA')}"/> 원</strong></td>
                             </tr>
                         </tfoot>
                     </table>
@@ -79,14 +79,29 @@
             $("input, select, textarea").prop("disabled", true);
             $("button").hide();
         }
+    	
+    	$("input[name='amtArr']").on("keyup", function(){
+            $(this).val($(this).val().replace(/[^0-9]/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,'));
+            totalSum();
+        });
     });
+    
+    function totalSum() {
+        var total = 0;
+        $("input[name='amtArr']").each(function(){
+            total += Number(removeComma($(this).val()));
+        });
+        $("#totalSum").text(String(total).replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,') + " 원");
+    }
     
     // 저장
     function fn_save(){
         if(!($("#insertForm").valid())) return;
         
         if(!confirm("저장하시겠습니까?")) return;
-        
+        $("input[name='amtArr']").each(function(){
+            $(this).val(removeComma($(this).val()));
+        });
         var data =  $("#insertForm").serialize();        
         
         if(displayWorkProgress()){
@@ -108,5 +123,13 @@
             });
         }
     }
-
+    
+    //콤마 제거
+    function removeComma(value){
+        if (value == "" || value == null) {
+            return 0;               
+        }
+        value = value.replace(/[^\d]+/g, "");
+        return value; 
+    }
 </script>

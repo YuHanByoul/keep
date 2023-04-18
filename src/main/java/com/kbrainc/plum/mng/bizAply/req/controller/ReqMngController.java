@@ -876,6 +876,7 @@ public class ReqMngController {
         model.addAttribute("detail", detail);
         model.addAttribute("detail2", detail2);
         model.addAttribute("popupYn", safetyMngVo.getPopupYn());
+        model.addAttribute("aplyid", safetyMngVo.getAplyid());
         return "mng/bizAply/req/detailSafetyMngTabForm";
     }
     
