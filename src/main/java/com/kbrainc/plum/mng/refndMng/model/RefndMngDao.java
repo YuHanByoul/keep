@@ -1,9 +1,8 @@
 package com.kbrainc.plum.mng.refndMng.model;
 
-import com.kbrainc.plum.mng.refndMng.model.RefndMngVo;
-import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
-
 import java.util.List;
+
+import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 /**
 * 시설 Dao 클래스

@@ -45,7 +45,7 @@ public class PackageindvdTchaidCmpstnDsctnVo extends ParentRequestVo {
     private Integer tchaidid;
     
     /** 수량 */
-    private Integer QNTY;
+    private Integer qnty;
     
     /** 등록일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")

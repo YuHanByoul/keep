@@ -100,10 +100,10 @@ public class LendHealthController {
      * @throws Exception 예외
      */
     @RequestMapping(value = "/mng/health/healthChckDetail.html")
-    public String healthChckDetail(LendAplyVo lendAplyVo,PackageindvdVo PackageindvdVo ,Model model) throws Exception {
+    public String healthChckDetail(LendAplyVo lendAplyVo,PackageindvdVo packageindvdVo ,Model model) throws Exception {
         
-        model.addAttribute("packageindvdInfo", lendService.selectPackageindvdListForHealthChck(PackageindvdVo).get(0));
-        List<PackageindvdTchaidCmpstnVo> tchaidlist = packageService.selectPackageindvdTchaidList(PackageindvdVo);
+        model.addAttribute("packageindvdInfo", lendService.selectPackageindvdListForHealthChck(packageindvdVo).get(0));
+        List<PackageindvdTchaidCmpstnVo> tchaidlist = packageService.selectPackageindvdTchaidList(packageindvdVo);
         model.addAttribute("tchaidlist", tchaidlist);
         
         Map<String, Object> paramMap = new HashMap();

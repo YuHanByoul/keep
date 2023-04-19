@@ -1,7 +1,5 @@
 package com.kbrainc.plum.front.book.controller;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.kbrainc.plum.front.book.model.BookVo;
 import com.kbrainc.plum.front.book.service.BookService;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
-import com.kbrainc.plum.front.book.model.BookVo;
 
 /**
 * 우수환경도서 관리 컨트롤러 클래스

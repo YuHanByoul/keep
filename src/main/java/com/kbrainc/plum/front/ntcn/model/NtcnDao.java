@@ -30,7 +30,7 @@ public interface NtcnDao {
      * @throws Exception
      * @return List<NtcnVo> 객체
      */
-    public List<NtcnVo> selectMainNtcnList(NtcnVo NtcnVo) throws Exception;
+    public List<NtcnVo> selectMainNtcnList(NtcnVo ntcnVo) throws Exception;
     
 
 }

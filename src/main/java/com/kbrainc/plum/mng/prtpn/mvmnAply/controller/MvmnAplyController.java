@@ -337,13 +337,13 @@ public class MvmnAplyController {
     @ResponseBody
     public Map<String, Object> updateSttsCdMvmnAply(@Valid MvmnAplyVo mvmnAplyVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
-        if (bindingResult.hasErrors()) {
+        /*if (bindingResult.hasErrors()) {
             FieldError fieldError = bindingResult.getFieldError();
             if (fieldError != null) {
                 resultMap.put("msg", fieldError.getDefaultMessage());
             }
             return resultMap;
-        }
+        }*/
         mvmnAplyVo.setUser(user);
         int retVal = 0;
         retVal = mvmnAplyService.updateSttsCdMvmnAply(mvmnAplyVo);

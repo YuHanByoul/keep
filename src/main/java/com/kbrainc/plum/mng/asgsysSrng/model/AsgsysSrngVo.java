@@ -353,7 +353,7 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	private String dsgncrtrCd;
 
     /** 신청_일시 */
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd 00:00")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
 	private Date  aplyDt;
 
     /** 수정_일시 */

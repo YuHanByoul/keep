@@ -86,7 +86,8 @@ public class FaqCategoryListTagProcessor extends AbstractAttributeTagProcessor {
             param.setClid(value.equals("") ? 0 : Integer.valueOf(value));
 
             List<FaqClVo> list = faqClDao.getAllList(param);
-                strOpt.append("<select  class ='").append(applyClass+" ").append(addClass).append("' style='").append(addStyle).append("'  id='").append(attributeValue).append("'  name='").append(attributeValue).append("' ");
+                strOpt.append("<select  class ='").append(applyClass).append(" ")
+                   .append(addClass).append("' style='").append(addStyle).append("'  id='").append(attributeValue).append("'  name='").append(attributeValue).append("' ");
                 if (tag.hasAttribute("onchange") && !tag.getAttribute("onchange").getValue().equals("")) {
                     String changeFunction = tag.getAttribute("onchange").getValue();
                     strOpt.append("    onchange ='").append(changeFunction).append("()' ");

@@ -185,11 +185,14 @@
 	    <div class="card-block-small">
 	        <button type="button" class="btn btn-disabled m-r-5" id="cancelInsertRgnEnveduCntr" onclick="gridHelper1.toggleContent()">취소</button>
 	        <th:block sec:authorize-url="/mng/cntnts/insertCntnts.do">
-	        	<button type="button" class="btn btn-primary" id="fn_insertCntnts" onclick="fn_insertCntntsForm()">저장</button>
+	        	<button type="button" class="btn btn-primary" onclick="openCheckListPopup();">저장</button>
 	        </th:block>
 	    </div>
 		<!-- Tab Container End -->
 </form>
+
+<div class="modal fade" id="checkListPopup" aria-hidden="true">
+</div>
 
 <script type="text/javascript" src="/files/bower_components/handlebars/handlebars.min.js" charset="utf-8" ></script>
 <script  id="subjectFrm" type="text/x-handlebars-template">
@@ -221,6 +224,9 @@
     
     var subjectLength = 0; 
     var subjectNum = [1];
+    
+	var checkListPopupUrl = "/mng/qlityChk/openCheckListPopup.html?type=insert&trgtCd=246001";
+	var checkListAddModal;
 	
 	$(function () {
 	    editor = CKEDITOR.replace('cn');
@@ -233,10 +239,11 @@
 	
 	var validator= $("#cntntsInsertForm").validate({
 	    rules: {
-	    	mainTypeCd 	 :  { required: true }  
+	    	mainTypeCd 	 :  { required: true }
 	     	,typeCd   	 	 : 	{ required: true }
 	     	,eduTrgt	   	 : 	{ required: true }
 	     	,origin		   	 : 	{ required: true }
+	     	,cpyrhtCd		 :	{ required: true }
 	     	,mnfctYy   		 : 	{ number: true, maxlength: 4 }
 	     	,plyHour 	  	 : 	{ number: true }
 	     	,plyMinute   	 : 	{ number: true, maxlength: 2 }
@@ -249,7 +256,8 @@
 	    	mainTypeCd		 :  { required: "콘텐츠 유형(대분류)를 선택해주십시오." }
 		    ,typeCd   	 	 :  { required: "콘텐츠 유형(중분류)를 선택해주십시오." }
 		    ,eduTrgt	   	 :  { required: "교육대상을 선택해주십시오." }
-		    ,origin		   	 :  { required: "출처를 입력해주십시오." }			
+		    ,origin		   	 :  { required: "출처를 입력해주십시오." }
+	     	,cpyrhtCd		 :	{ required: "저작권을 선택해주십시오." }		    
 		    ,mnfctYy   		 : 	{ number: "제작년도는 숫자만 입력해주십시오.", maxlength: "제작년도는 4자리까지 입력가능합니다." }
 		    ,plyHour   		 : 	{ number: "재생시간(시간)은 숫자만 입력해주십시오." }
 		    ,plyMinute   	 : 	{ number: "재생시간(분)은 숫자만 입력해주십시오.", maxlength: "재생시간(분)는 2자리까지 입력가능합니다." }
@@ -375,38 +383,26 @@
 	     })
 	};
 	
- 	function fn_insertCntntsForm(){
- 	 	if(!($("#cntntsInsertForm").valid())) return;
-		
-  	 	if(subjectNum.length<=0){
-  	  	 	alert("교육 주제를 선택해주십시오.")
-  	  	 	return;
-  	  	}
- 	 	
-  	 	if(!confirm("저장하시겠습니까?")) return;
+ 	function openCheckListPopup(){
+/*  		var eduSbjctCheck = document.getElementsByName("eduSbjctCds");
+ 		for(var i=0; i < eduSbjctCheck.length; i++) {
+ 			if(eduSbjctCheck[i].value == ""){
+ 	  	  	 	alert("교육 주제를 선택해주십시오.")
+ 	  	  	 	return;
+ 	  	  	}	
+ 		}
+  	 	
+  	 	if(!($("#cntntsInsertForm").valid())) return;
   	 	
   	 	var editorData = editor.getData();
-        $("#cn").val(editorData);
-  	 	
-	    var data =  $("#cntntsInsertForm").serialize();
-	    if(displayWorkProgress()){
-			$.ajax({
-				url : "/mng/cntnts/insertCntnts.do",
-				type: 'POST',
-				cache : false,
-				dataType: 'json',
-				data : data,
-				success : function (data){
-					if(data.result=="success"){
-						alert(data.msg);
-						gridHelper1.resetListContent();
-					}else{
-						alert(data.msg);
-					}
-					closeWorkProgress();
-				}
-			});
-		}
+        $("#cn").val(editorData); */
+        
+		$("#checkListPopup").load(checkListPopupUrl, function(response, status, xhr) {
+			if (status == "success") {
+				checkListAddModal = new bootstrap.Modal($('#checkListPopup'));
+				checkListAddModal.show();
+			}
+		});
 	}
  	
     duplCheck=(frmNum)=>{
