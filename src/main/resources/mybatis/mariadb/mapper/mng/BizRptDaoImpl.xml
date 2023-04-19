@@ -293,7 +293,7 @@
           , ''    AS CNSLTNG_USE    /*컨설팅 여부*/
           , C.REPORT_SE_CD    /*보고서 구분 코드*/
           , C.REG_DT
-          , IF(A.CNSLTNG_TRGT_CN IS NOT NULL,'Y','N')    AS CNSLTNG_TRGT_YN
+          , IF(IFNULL(A.CNSLTNG_TRGT_CN,'' ) = '','N','Y')    AS CNSLTNG_TRGT_YN
         FROM
             TB_SPB_APLY A
         LEFT OUTER JOIN TB_SPB_DELVRY_APLY B  ON A.APLYID = B.APLYID
@@ -383,12 +383,15 @@
           , A.ETC_CN
           , A.ATCH_FILEGRPID
           , B.CNSLTNG_TRGT_CN   /*컨설팅 대상 내용*/
+          , E.CNSLTNGID
+          , E.RSLT
         FROM
             TB_SPB_REPORT A
         INNER JOIN TB_SPB_APLY B ON A.APLYID = B.APLYID
-        INNER JOIN TB_CMM_USER USR ON B.USERID = USR.USERID
-        INNER JOIN TB_SPB_DELVRY_APLY C ON B.APLYID = C.APLYID
+        LEFT OUTER JOIN TB_CMM_USER USR ON B.USERID = USR.USERID
+        LEFT OUTER JOIN TB_SPB_DELVRY_APLY C ON B.APLYID = C.APLYID
         LEFT OUTER JOIN TB_SPB_PRGRM D ON B.APLYID = D.APLYID
+        LEFT OUTER JOIN TB_SPB_APLY_CNSLTNG E ON A.APLYID = E.CNSLTNGID
         WHERE 1=1
         AND A.REPORTID = #{reportid}
     </select>
@@ -857,7 +860,9 @@
         LEFT OUTER JOIN TB_CMM_USER USR ON A.CNSTNTID = USR.USERID
         LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN CTPRVN ON B.RGN_CD = CTPRVN.CTPRVN_CD
         WHERE 1=1
-        AND B.APLYID = #{aplyid}
+        AND A.CNSLTNGID = #{cnsltngid}
+<!--         AND B.APLYID = #{aplyid} -->
+
     </select>
 
     <!-- 컨설팅관리 등록-->

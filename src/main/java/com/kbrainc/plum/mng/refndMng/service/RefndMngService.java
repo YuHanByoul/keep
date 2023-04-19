@@ -1,9 +1,8 @@
 package com.kbrainc.plum.mng.refndMng.service;
 
-import com.kbrainc.plum.mng.refndMng.model.RefndMngVo;
-import com.kbrainc.plum.mng.refndMng.model.RefndMngVo;
-
 import java.util.List;
+
+import com.kbrainc.plum.mng.refndMng.model.RefndMngVo;
 
 /**
 * 시설 서비스 인터페이스

@@ -210,17 +210,14 @@ public class SelectInstAttr extends AbstractAttributeTagProcessor {
         StringBuffer objStr = new StringBuffer();
         StringBuffer finalText = new StringBuffer();
         finalText.append(text);
-        
-        if ("".equals(id)) {
-            id = " "; // id값은 공백일수 없음
-        }
+        String newId =("".equals(id))?" ":id;
         
         if (text2 != null) {
             finalText.append("(").append(text2).append(")");
         }
         
         objStr.append("{");
-        objStr.append("id: '").append(id).append("', ");
+        objStr.append("id: '").append(newId).append("', ");
         objStr.append("text: '").append(finalText.toString()).append("', ");
         objStr.append("value: '").append(value).append("' ");
         objStr.append("},\n");

@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +85,7 @@ public class BookController {
     @RequestMapping(value = "/mng/book/bookInsertForm.html")
     public String bookInsertForm(Model model, @UserInfo UserVo user) throws Exception {
         Date date = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyy-MM-dd");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyy-MM-dd",Locale.getDefault());
         model.addAttribute("regDate", formatter.format(date));
         
         model.addAttribute("userid", user.getUserid());
@@ -135,10 +135,25 @@ public class BookController {
         
         if(bookVo.getRprsImgFileid() != 0 && result.getFileIdntfcKey() != null) {
             StringBuffer fileBtn = new StringBuffer();
-            fileBtn.append("<div class ='label label-inverse text-white' id='" + bookVo.getRprsImgFileid() + "'>");
-            fileBtn.append("<a href=javascript:downloadFileByFileid('" + bookVo.getRprsImgFileid() + "','" + result.getFileIdntfcKey() + "') class='text-white'>" + result.getOrginlFileNm() + "&nbsp;&nbsp;</a>");
-            fileBtn.append("<a href=javascript:fn_deleteFileList('" + bookVo.getRprsImgFileid() + "','" + result.getFileIdntfcKey() + "') class='text-white'>X</a></div>");
-            model.addAttribute("fileBtn", fileBtn);
+            fileBtn.append("<div class ='label label-inverse text-white' id='");
+            fileBtn.append(bookVo.getRprsImgFileid());
+            fileBtn.append("'>");
+            
+            fileBtn.append("<a href=javascript:downloadFileByFileid('");
+            fileBtn.append(bookVo.getRprsImgFileid());
+            fileBtn.append("','");
+            fileBtn.append(result.getFileIdntfcKey());
+            fileBtn.append("') class='text-white'>");
+            fileBtn.append(result.getOrginlFileNm());
+            fileBtn.append("&nbsp;&nbsp;</a>");
+            
+            fileBtn.append("<a href=javascript:fn_deleteFileList('");
+            fileBtn.append(bookVo.getRprsImgFileid());
+            fileBtn.append("','");
+            fileBtn.append(result.getFileIdntfcKey());
+            fileBtn.append("') class='text-white'>X</a></div>");
+            
+            model.addAttribute("fileBtn", fileBtn.toString());
         }
         
         model.addAttribute("bookSbjctList", bookService.selectBookSbjctList(bookVo));

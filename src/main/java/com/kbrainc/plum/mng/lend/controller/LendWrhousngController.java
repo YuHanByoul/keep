@@ -104,12 +104,12 @@ public class LendWrhousngController {
      * @throws Exception 예외
      */
     @RequestMapping(value = "/mng/wrhousng/wrhousngDetail.html")
-    public String dlvyDetailForm(LendAplyVo lendAplyVo,PackageindvdVo PackageindvdVo ,Model model) throws Exception {
+    public String dlvyDetailForm(LendAplyVo lendAplyVo,PackageindvdVo packageindvdVo ,Model model) throws Exception {
         List<LendAplyVo> result = null;
         result = lendService.selectLendPackageindvdList(lendAplyVo);
         model.addAttribute("packList", result);
         
-        List<PackageindvdTchaidCmpstnVo> tchaidlist = packageService.selectPackageindvdTchaidList(PackageindvdVo);
+        List<PackageindvdTchaidCmpstnVo> tchaidlist = packageService.selectPackageindvdTchaidList(packageindvdVo);
         model.addAttribute("tchaidlist", tchaidlist);
         
         Map<String, Object> paramMap = new HashMap();

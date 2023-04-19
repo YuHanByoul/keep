@@ -1,9 +1,5 @@
 package com.kbrainc.plum.mng.lend.model;
 
-import com.kbrainc.plum.mng.pack.model.PackageVo;
-import com.kbrainc.plum.mng.pack.model.PackageindvdVo;
-import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
-
 import java.util.List;
 import java.util.Map;
 
@@ -194,7 +190,7 @@ public interface LendDao {
      * @return List<LendAplyVo>  목록
      * @throws Exception 예외
      */
-    public List<LendAplyVo> selectLendAplyList(LendAplyVo LendAplyVo) throws Exception;
+    public List<LendAplyVo> selectLendAplyList(LendAplyVo lendAplyVo) throws Exception;
     /**
      * 대여 모집 목록 호출 
      *
@@ -214,7 +210,7 @@ public interface LendDao {
      * @return Map<String,String>
      * @throws Exception 예외
      */
-    public Map<String,String> checkRndStockOver(LendAplyVo LendAplyVo) throws Exception;
+    public Map<String,String> checkRndStockOver(LendAplyVo lendAplyVo) throws Exception;
     /**
      * 대여 신청 일괄 상태 변경
      *
@@ -224,7 +220,7 @@ public interface LendDao {
      * @return int
      * @throws Exception 예외
      */
-    public int updateLendAplyStts(LendAplyVo LendAplyVo) throws Exception;
+    public int updateLendAplyStts(LendAplyVo lendAplyVo) throws Exception;
     /**
      * 대여 신청 상세 호출
      *
@@ -234,7 +230,7 @@ public interface LendDao {
      * @return int
      * @throws Exception 예외
      */
-    public LendAplyVo selectLendAplyInfo(LendAplyVo LendAplyVo) throws Exception;
+    public LendAplyVo selectLendAplyInfo(LendAplyVo lendAplyVo) throws Exception;
     /**
      * 대여 출고 목록 호출
      *
@@ -244,7 +240,7 @@ public interface LendDao {
      * @return List<LendAplyDlivyVo> 객체
      * @throws Exception 예외
      */
-    public List<LendAplyDlivyVo> selectLendAplyDlvyList(LendAplyVo LendAplyVo) throws Exception;
+    public List<LendAplyDlivyVo> selectLendAplyDlvyList(LendAplyVo lendAplyVo) throws Exception;
     /**
      * 대여 신청 수정
      *
@@ -366,7 +362,7 @@ public interface LendDao {
      * @return int  목록
      * @throws Exception 예외
      */
-    public int updateLendAplyWrhousng(LendPackageindvdChckVo LendPackageindvdChckVo) throws Exception;
+    public int updateLendAplyWrhousng(LendPackageindvdChckVo lendPackageindvdChckVo) throws Exception;
     /**
      * 대여차시 별 이미 승인 된 꾸러미 개체 여부 확인
      *

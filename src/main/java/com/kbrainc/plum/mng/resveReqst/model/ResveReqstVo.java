@@ -82,6 +82,12 @@ public class ResveReqstVo extends ParentRequestVo {
     /** 결제 방법 코드 */
     private String stlmMthdCd;
     
+    /** 입금 계좌 코드*/
+    private String dpstBankCd;
+    
+    /** 입금 계좌 코드명*/
+    private String dpstBankCdNm;
+    
     /** 입금 계좌 */
     private String dpstBacnt;
 
@@ -333,10 +339,8 @@ public class ResveReqstVo extends ParentRequestVo {
                 CodeInfoVo code = resCodeService.getCodeInfo(this.cnclRsnCd);
                 this.cnclRsnCdNm = code.getCdNm();
             }catch(NoClassDefFoundError e) {
-                //e.printStackTrace();
                 return ;
              }catch(Exception e) {
-                //e.printStackTrace();
                 return ;
              }
         }
@@ -351,10 +355,8 @@ public class ResveReqstVo extends ParentRequestVo {
                 CodeInfoVo code = resCodeService.getCodeInfo(this.rfndRejectRsnCd);
                 this.rfndRejectRsnCdNm = code.getCdNm();
             }catch(NoClassDefFoundError e) {
-                //e.printStackTrace();
                 return ;
             }catch(Exception e) {
-                //e.printStackTrace();
                 return ;
             }
         }
@@ -370,10 +372,8 @@ public class ResveReqstVo extends ParentRequestVo {
                 CodeInfoVo code = resCodeService.getCodeInfo(this.rfndBankCd);
                 this.rfndBankCdNm = code.getCdNm();
             }catch(NoClassDefFoundError e) {
-                //e.printStackTrace();
                 return ;
             }catch(Exception e) {
-                //e.printStackTrace();
                 return ;
             }
         }
@@ -389,10 +389,8 @@ public class ResveReqstVo extends ParentRequestVo {
                 CodeInfoVo code = resCodeService.getCodeInfo(this.aplySttsCd);
                 this.aplySttsCdNm = code.getCdNm();
             }catch(NoClassDefFoundError e) {
-                //e.printStackTrace();
                 return ;
             }catch(Exception e) {
-                //e.printStackTrace();
                 return ;
             }
         }
@@ -408,10 +406,8 @@ public class ResveReqstVo extends ParentRequestVo {
                 CodeInfoVo code = resCodeService.getCodeInfo(this.stlmSttsCd);
                 this.stlmSttsCdNm = code.getCdNm();
             }catch(NoClassDefFoundError e) {
-                //e.printStackTrace();
                 return ;
             }catch(Exception e) {
-                //e.printStackTrace();
                 return ;
             }
         }
@@ -426,10 +422,8 @@ public class ResveReqstVo extends ParentRequestVo {
                 CodeInfoVo code = resCodeService.getCodeInfo(this.instTypeCd);
                 this.instTypeCdNm = code.getCdNm();
             }catch(NoClassDefFoundError e) {
-                //e.printStackTrace();
                 return ;
             }catch(Exception e) {
-                //e.printStackTrace();
                 return ;
             }
         }
@@ -444,10 +438,24 @@ public class ResveReqstVo extends ParentRequestVo {
                 CodeInfoVo code = resCodeService.getCodeInfo(this.stlmMthdCd);
                 this.stlmMthdCdNm = code.getCdNm();
             }catch(NoClassDefFoundError e) {
-                //e.printStackTrace();
                 return ;
             }catch(Exception e) {
-                //e.printStackTrace();
+                return ;
+            }
+        }
+    }
+    public void setDpstBankCd(String dpstBankCd) throws Exception{
+        this.dpstBankCd = dpstBankCd;
+        
+        //이미 코드이름이 있다면, 무시.
+        if(CommonUtil.isEmpty(this.dpstBankCdNm)) { 
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.dpstBankCd);
+                this.dpstBankCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                return ;
+            }catch(Exception e) {
                 return ;
             }
         }

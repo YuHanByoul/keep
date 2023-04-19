@@ -41,7 +41,7 @@ public class NtcnServiceImpl extends PlumAbstractServiceImpl implements NtcnServ
      * @throws Exception
      * @return List<NtcnVo> 객체
      */
-    public List<NtcnVo> selectMainNtcnList(NtcnVo NtcnVo) throws Exception{
-        return ntcnDao.selectMainNtcnList(NtcnVo);
+    public List<NtcnVo> selectMainNtcnList(NtcnVo ntcnVo) throws Exception{
+        return ntcnDao.selectMainNtcnList(ntcnVo);
     }
 }

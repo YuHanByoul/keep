@@ -179,16 +179,14 @@ public class SelectRgnAttr extends AbstractAttributeTagProcessor {
         StringBuffer finalText = new StringBuffer();
         finalText.append(text);
         
-        if ("".equals(cd)) {
-            cd = " "; // id값은 공백일수 없음
-        }
+        String newCd =("".equals(cd))?" ":cd;
         
         if (text2 != null) {
             finalText.append(" ").append(text2);
         }
         
         objStr.append("{");
-        objStr.append("id: '").append(cd).append("', ");
+        objStr.append("id: '").append(newCd).append("', ");
         objStr.append("text: '").append(finalText.toString()).append("', ");
         objStr.append("value: '").append(value).append("' ");
         objStr.append("},\n");

@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -261,14 +262,14 @@ public class SpceController {
         spceVo.setUser(user);
         
         if(!StringUtil.isNull(spceVo.getChkinHr())) {
-            SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.getDefault());
             spceVo.setChkinHour(dtFormat.parse("1970-01-01 "+spceVo.getChkinHr()));
         }else {
             spceVo.setChkinHour(null);
         }
         
         if(!StringUtil.isNull(spceVo.getChcktHr())) {
-            SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.getDefault());
             spceVo.setChcktHour(dtFormat.parse("1970-01-01 "+spceVo.getChcktHr()));
         }else {
             spceVo.setChcktHour(null);
@@ -315,14 +316,14 @@ public class SpceController {
         spceVo.setUser(user);
         
         if(!StringUtil.isNull(spceVo.getChkinHr())) {
-            SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.getDefault());
             spceVo.setChkinHour(dtFormat.parse("1970-01-01 "+spceVo.getChkinHr()));
         }else {
             spceVo.setChkinHour(null);
         }
         
         if(!StringUtil.isNull(spceVo.getChcktHr())) {
-            SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.getDefault());
             spceVo.setChcktHour(dtFormat.parse("1970-01-01 "+spceVo.getChcktHr()));
         }else {
             spceVo.setChcktHour(null);
@@ -490,7 +491,7 @@ public class SpceController {
         //기존 예약일자 여부 확인  
         if(result.size() > 0) {
             String deStr= "";
-            List<String> deStrList= new ArrayList();;
+            List<String> deStrList= new ArrayList();
             for(SpceRsvtdeVo vo :result) {
                 deStrList.add(vo.getDe());
             }
@@ -568,7 +569,7 @@ public class SpceController {
         //예약 신청 여부 확인  
         if(result.size() > 0) {
             String deStr= "";
-            List<String> deStrList= new ArrayList();;
+            List<String> deStrList= new ArrayList();
             for(Map<String, Object> vo :result) {
                 deStrList.add(vo.get("DE").toString());
             }
@@ -613,7 +614,7 @@ public class SpceController {
         //예약 신청 여부 확인  
         if(result.size() > 0) {
             String deStr= "";
-            List<String> deStrList= new ArrayList();;
+            List<String> deStrList= new ArrayList();
             for(Map<String, Object> vo :result) {
                 deStrList.add(vo.get("DE").toString());
             }
@@ -686,9 +687,9 @@ public class SpceController {
 
         ModelAndView modelandview = new ModelAndView();
 
-        String tmtbl_prd_atndnc_id = StringUtil.nvl(commandMap.get("p_tmtbl_prd_atndnc_id"));
-        if(StringUtil.isNotNull(tmtbl_prd_atndnc_id)){
-            // modelandview.setViewName("qrcodeview");
+        String tmtblPrdAtndncId = StringUtil.nvl(commandMap.get("p_tmtbl_prd_atndnc_id"));
+        if(StringUtil.isNotNull(tmtblPrdAtndncId)){
+            modelandview.setViewName("qrcodeview");
         }
         
         modelandview.setViewName("QRCodeView");

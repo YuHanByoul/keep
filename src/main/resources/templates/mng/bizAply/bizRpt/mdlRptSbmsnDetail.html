@@ -3,6 +3,7 @@
 <input type="hidden" id="aplyid" name="aplyid" th:value="${mdlRptSbmsnInfo.aplyid}">
 <input type="hidden" id="atchFilegrpid" name="atchFilegrpid" th:value="${mdlRptSbmsnInfo.atchFilegrpid}">
 <input type="hidden" id="cnsltngTrgtCn" name="cnsltngTrgtCn" th:value="${mdlRptSbmsnInfo.cnsltngTrgtCn}">
+<input type="hidden" id="rslt" name="rslt" th:value="${mdlRptSbmsnInfo.rslt}">
     <div class="card">
         <div class="card-header p-b-0">
             <h3 class="sub-title"><strong>신청정보</strong></h3>
@@ -175,8 +176,9 @@
 
 
         <div class="card-block-small">
-            <button type="button" class="btn btn-disabled m-r-5" onclick="mdlRptSbmsnGridHelper1.toggleContent();">목록</button>
-            <button type="button" class="btn btn-inverse m-r-5" onclick="mdlRptSbmsnDtl.openPopupCnsltngTrgt();" >컨설팅 대상</button>
+            <button type="button" class="btn btn-disabled m-r-5" onclick="rptSbmsnGridHelper1.toggleContent();">목록</button>
+            <button type="button" class="btn btn-inverse m-r-5" onclick="mdlRptSbmsnDtl.openPopupCnsltngTrgt();" id="openCnsltngPopup">컨설팅 대상</button>
+            <button type="button" class="btn btn-inverse m-r-5" onclick="mdlRptSbmsnDtl.cancleCnsltngTrgt();" id="cancleCnsltng">컨설팅 대상 취소</button>
             <button type="button" class="btn btn-primary" onclick="mdlRptSbmsnDtl.doCmptn();">완료</button>
         </div>
 
@@ -205,12 +207,20 @@
 <script th:inline="javascript">
    var splmntDmndGridHelper;
 
-    var mdlRptSbmsnDtl= {
+   var mdlRptSbmsnDtl= {
         listUrl  : "/mng/bizAply/bizRpt/selectSplmntDmndList.do",
         doCmptnUrl : "/mng/bizAply/bizRpt/updateRptSttsCd.do",
         init : function(){
         	splmntDmndGridHelper = new GridHelper('splmntDmndGrid','splmntDmndGridPanel');
     		mdlRptSbmsnDtl.setGrid();
+
+    		var cn = $("#cnsltngTrgtCn").val();
+
+    		if(cn != null && cn !=''){
+    			$("#openCnsltngPopup").hide();
+    		}else{
+    			$("#cancleCnsltng").hide();
+    		}
         },
         setGrid : function() {
 
@@ -312,7 +322,7 @@
                     success : function (data){
                         if(data.result=="success"){
                             alert(data.msg);
-                            mdlRptSbmsnGridHelper1.resetPageContent();
+                            rptSbmsnGridHelper1.resetPageContent();
                         }else{
                             alert(data.msg);
                         }
@@ -327,6 +337,39 @@
         	var cn =$("#cnsltngTrgtCn").val();
         	debugger;
         	fn_opencnsltngTrgtModal(keyid, cn);
+        }
+        ,cancleCnsltngTrgt : function(){
+
+        	var rslt = $("#rslt").val();
+        	if(rslt != null && rslt != '' ){
+        		alert("컨설팅결과가 등록되어 컨설팅 대상 취소가 불가합니다.");
+        		return ;
+        	}
+
+        	var param={};
+        	$("#cnsltngTrgtCn").val("");
+        	param=$("#mdlRptSbmsnFrm").serialize();
+
+            if(displayWorkProgress()){
+                $.ajax({
+                    url : "/mng/bizAply/bizRpt/deleteCnsltngTrgt.do",
+                    type: 'POST',
+                    cache : false,
+                    traditional : true,
+                    dataType: 'json',
+                    data: param,
+                    success : function (data){
+                        if(data.result=="success"){
+                            alert(data.msg);
+                            rptSbmsnGridHelper1.resetPageContent();
+                        }else{
+                            alert(data.msg);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+
         }
     };
 

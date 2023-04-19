@@ -312,5 +312,16 @@ public interface BizRptService {
 	*/
 	public List<BizRptVo> selectCnstntList(BizRptVo bizRptVo) throws Exception;
 
+	/**
+	* 컨설팅 대상 삭제(취소)
+	*
+	* @Title : deleteCnsltngTrgt
+	* @Description : 컨설팅 대상 삭제(취소)
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int deleteCnsltngTrgt(BizRptVo bizRptVo) throws Exception;
 
 }
