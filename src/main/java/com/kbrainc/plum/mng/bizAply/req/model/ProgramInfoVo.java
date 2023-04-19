@@ -171,4 +171,7 @@ public class ProgramInfoVo extends ParentRequestVo {
     private Integer rgtrid;
     
     private String popupYn;
+    
+    /** 총 교육차시 */
+    private String totalEduCnt;
 }

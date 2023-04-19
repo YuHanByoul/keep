@@ -253,7 +253,16 @@
                 , IFNULL(TSAS.CD_NM, TCCA.CD_NM) AS APLY_STTS_NM
                 , TSA.INST_NM 
                 , CONCAT(U.NM, '(', U.ACNT, ')') AS USER_NM 
-                , TSA.APLCNT_NM 
+                , TCCE.CD_NM AS INST_TYPE_NM
+                , REG_NO
+                , RPRSV_NM
+                , INST_ZIP
+                , INST_ADDR
+                , INST_ADDR_DTL
+                , APLY_INST_TELNO
+                , APLCNT_NM
+                , APLCNT_TELNO
+                , APLCNT_EML
                 , TSA.PRGRM_NM 
                 , TSA.REG_DE 
                 , CASE WHEN NOW() > SRNG_END_DT OR (IF(TSP.ONLN_SRNG_TYPE_CD = '177101', FRST.SRNG_CNT = 1 AND SRNG_END_YN = 'Y', IF(TSA.SCND_SRNG_TRGT_YN = 'Y', FRST.SRNG_CNT = 1 AND SCND.SRNG_CNT = 1 AND SCND_SRNG_END_YN = 'Y', FRST.SRNG_CNT = 1 AND SRNG_END_YN = 'Y')))
@@ -284,6 +293,9 @@
                 , NOPE_LMT
                 , (SELECT IF(COUNT(1) > 0, 'Y', 'N') FROM TB_SPB_JDGS A WHERE TSP.PCNTSTID = A.PCNTSTID AND A.JDGSID = #{user.userid} AND CYCL = 1) AS FRST_SRNG_YN
                 , (SELECT IF(COUNT(1) > 0, 'Y', 'N') FROM TB_SPB_JDGS A WHERE TSP.PCNTSTID = A.PCNTSTID AND A.JDGSID = #{user.userid} AND CYCL = 2) AS SCND_SRNG_YN 
+                , TCCC.CD_NM AS INST_SAREA_NM
+                , TCCD.CTPRVN_NM AS RGN_NM
+                , TCCF.CD_NM AS RELGN_NM
             FROM 
                 TB_SPB_PCNTST TSP 
                 INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID 
@@ -302,6 +314,10 @@
                 LEFT OUTER JOIN TB_CMM_CD TCCB ON TSA.SLCTN_STTS_CD = TCCB.CD
                 LEFT OUTER JOIN CNT_FIRST FRST ON FRST.PCNTSTID = TSP.PCNTSTID AND FRST.APLYID = TSA.APLYID 
                 LEFT OUTER JOIN CNT_SECOND SCND ON SCND.PCNTSTID = TSP.PCNTSTID AND SCND.APLYID = TSA.APLYID 
+                LEFT OUTER JOIN TB_CMM_CD TCCC ON TSA.INST_SAREA_CD = TCCC.CD
+                LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN TCCD ON TSA.RGN_CD = TCCD.CTPRVN_CD
+                LEFT OUTER JOIN TB_CMM_CD TCCE ON TSA.INST_TYPE_CD = TCCE.CD
+                LEFT OUTER JOIN TB_CMM_CD TCCF ON TSA.RELGN_CD = TCCF.CD
             WHERE 1 = 1
             ]]>
             AND TSA.PCNTSTID = #{pcntstid}
@@ -916,6 +932,7 @@
             , OCT_CNT
             , NOV_CNT
             , DCM_CNT
+            , (SELECT SUM(S.EDU_RND) FROM TB_SPB_PRGRM_SUMRY S WHERE S.APLYID = A.APLYID) AS TOTAL_EDU_CNT
             , A.MDFCN_DT
             , A.MDFRID
             , A.REG_DT
