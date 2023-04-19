@@ -156,11 +156,13 @@
             </if>
             <if test="sbmsnid != 0 and ((infntPrgrmAplyid != null and infntPrgrmAplyid != 0) or (mvmnPrgrmAplyid != null or mvmnPrgrmAplyid != 0))">
             , DATE_FORMAT(MAX(D.SBMSN_DT), '%Y-%m-%d') AS APLY_SBMSN_DT
-            , D.PRTPNT_NM            
-            </if>            
+            , D.PRTPNT_NM
+            , C.QESTNR_KND_CD
+            </if>
         FROM
             TB_CMM_SRVY A
-        <if test="user != null">    
+        <if test="user != null">  
+        LEFT OUTER JOIN TB_CMM_QESTNR C ON A.QESTNRID = C.QESTNRID
         LEFT OUTER JOIN
             TB_CMM_SRVY_SBMSN B ON (B.SRVYID = A.SRVYID AND B.USERID = #{user.userid})
         </if>
@@ -213,7 +215,9 @@
         WHERE
             A.USE_YN = 'Y'
             AND A.QESTNRID = #{qestnrid}
+            <if test="(infntPrgrmAplyid == null or infntPrgrmAplyid == 0) and (mvmnPrgrmAplyid == null or mvmnPrgrmAplyid == 0)">
             AND B.USERID = #{user.userid}
+            </if>
             AND B.SBMSNID = #{sbmsnid}
         ORDER BY
             A.ORDR
