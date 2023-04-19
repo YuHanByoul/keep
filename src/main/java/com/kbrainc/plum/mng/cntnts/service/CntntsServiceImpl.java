@@ -3,8 +3,6 @@ package com.kbrainc.plum.mng.cntnts.service;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,12 +13,6 @@ import com.kbrainc.plum.mng.cntnts.model.CntntsEduTrgtVo;
 import com.kbrainc.plum.mng.cntnts.model.CntntsQlityChkArtclVo;
 import com.kbrainc.plum.mng.cntnts.model.CntntsQlityChkVo;
 import com.kbrainc.plum.mng.cntnts.model.CntntsVo;
-import com.kbrainc.plum.mng.envtcherTrnngInst.model.EnvtcherTrnngInstVo;
-import com.kbrainc.plum.mng.qlityChk.model.QlityChkArtclVo;
-import com.kbrainc.plum.mng.qlityChk.model.QlityChkVo;
-import com.kbrainc.plum.mng.qlityChk.model.QlityChklstVo;
-import com.kbrainc.plum.rte.model.UserVo;
-import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
@@ -182,7 +174,7 @@ public class CntntsServiceImpl extends PlumAbstractServiceImpl implements Cntnts
     * @return List<QlityChklstVo>
     */
     @Override
-    public List<QlityChklstVo> selectQlityChkList() throws Exception {
+    public List<CntntsQlityChkVo> selectQlityChkList() throws Exception {
         return cntntsDao.selectQlityChkList();
     }
 
@@ -197,7 +189,7 @@ public class CntntsServiceImpl extends PlumAbstractServiceImpl implements Cntnts
     * @return List<QlityChkArtclVo>
     */
     @Override
-    public List<QlityChkArtclVo> selectQlityChkArtclList(String cntntsid) throws Exception {
+    public List<CntntsQlityChkArtclVo> selectQlityChkArtclList(String cntntsid) throws Exception {
         return cntntsDao.selectQlityChkArtclList(cntntsid);
     }
 

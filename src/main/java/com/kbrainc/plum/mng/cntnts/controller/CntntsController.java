@@ -27,12 +27,6 @@ import com.kbrainc.plum.mng.cntnts.model.CntntsQlityChkArtclVo;
 import com.kbrainc.plum.mng.cntnts.model.CntntsQlityChkVo;
 import com.kbrainc.plum.mng.cntnts.model.CntntsVo;
 import com.kbrainc.plum.mng.cntnts.service.CntntsService;
-import com.kbrainc.plum.mng.envtcherTrnngInst.model.EnvtcherTrnngInstVo;
-import com.kbrainc.plum.mng.pack.model.PackageEduTrgtVo;
-import com.kbrainc.plum.mng.qlityChk.model.QlityChkArtclVo;
-import com.kbrainc.plum.mng.qlityChk.model.QlityChkVo;
-import com.kbrainc.plum.mng.qlityChk.model.QlityChklstVo;
-import com.kbrainc.plum.mng.rgnEnveduCntr.model.RgnEnveduCntrVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
@@ -346,10 +340,10 @@ public class CntntsController {
     @RequestMapping(value = "/mng/cntnts/openCntntsChkLstPopup.html")
     public String openCntntsChkLstPopup(String type, String trgtCd, String cntntsid, Model model, HttpServletRequest request) throws Exception {
         if(type.equals("insert")) {
-            List<QlityChklstVo> chkList =  cntntsService.selectQlityChkList();
+            List<CntntsQlityChkVo> chkList =  cntntsService.selectQlityChkList();
             model.addAttribute("chkList", chkList);
         }else {
-            List<QlityChkArtclVo> chkArtclList =  cntntsService.selectQlityChkArtclList(cntntsid);
+            List<CntntsQlityChkArtclVo> chkArtclList =  cntntsService.selectQlityChkArtclList(cntntsid);
             model.addAttribute("chkList", chkArtclList);
         }
         model.addAttribute("type", type);

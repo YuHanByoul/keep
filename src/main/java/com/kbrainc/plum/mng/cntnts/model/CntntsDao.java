@@ -3,15 +3,8 @@ package com.kbrainc.plum.mng.cntnts.model;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.Valid;
-
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-
-import com.kbrainc.plum.mng.envtcherTrnngInst.model.EnvtcherTrnngInstVo;
-import com.kbrainc.plum.mng.qlityChk.model.QlityChkArtclVo;
-import com.kbrainc.plum.mng.qlityChk.model.QlityChkVo;
-import com.kbrainc.plum.mng.qlityChk.model.QlityChklstVo;
 import com.kbrainc.plum.rte.model.UserVo;
 
 /**
@@ -184,7 +177,7 @@ public interface CntntsDao {
     * @throws Exception
     * @return List<QlityChklstVo>
     */
-    public List<QlityChklstVo> selectQlityChkList() throws Exception;
+    public List<CntntsQlityChkVo> selectQlityChkList() throws Exception;
 
     /**
     * 등록한 체크리스트 목록
@@ -196,7 +189,7 @@ public interface CntntsDao {
     * @throws Exception
     * @return List<QlityChkArtclVo>
     */
-    public List<QlityChkArtclVo> selectQlityChkArtclList(String cntntsid) throws Exception;
+    public List<CntntsQlityChkArtclVo> selectQlityChkArtclList(String cntntsid) throws Exception;
     
     /**
     * 체크리스트(TB_CMM_CNTNTS_QLITY_CECK) 등록

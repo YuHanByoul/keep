@@ -3,19 +3,11 @@ package com.kbrainc.plum.mng.cntnts.service;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.Valid;
-
 import com.kbrainc.plum.mng.cntnts.model.CntntsEduSbjctVo;
 import com.kbrainc.plum.mng.cntnts.model.CntntsEduTrgtVo;
 import com.kbrainc.plum.mng.cntnts.model.CntntsQlityChkArtclVo;
 import com.kbrainc.plum.mng.cntnts.model.CntntsQlityChkVo;
 import com.kbrainc.plum.mng.cntnts.model.CntntsVo;
-import com.kbrainc.plum.mng.envtcherTrnngInst.model.EnvtcherTrnngInstVo;
-import com.kbrainc.plum.mng.pack.model.PackageEduSbjctVo;
-import com.kbrainc.plum.mng.pack.model.PackageEduTrgtVo;
-import com.kbrainc.plum.mng.qlityChk.model.QlityChkArtclVo;
-import com.kbrainc.plum.mng.qlityChk.model.QlityChkVo;
-import com.kbrainc.plum.mng.qlityChk.model.QlityChklstVo;
 
 /**
 * 컨텐츠 관리 서비스 클래스
@@ -138,7 +130,7 @@ public interface CntntsService {
     * @throws Exception
     * @return List<QlityChklstVo>
     */
-    List<QlityChklstVo> selectQlityChkList() throws Exception;
+    List<CntntsQlityChkVo> selectQlityChkList() throws Exception;
 
     /**
     * 등록한 체크리스트 목록
@@ -150,7 +142,7 @@ public interface CntntsService {
     * @throws Exception
     * @return List<QlityChkArtclVo>
     */
-    List<QlityChkArtclVo> selectQlityChkArtclList(String cntntsid) throws Exception;
+    List<CntntsQlityChkArtclVo> selectQlityChkArtclList(String cntntsid) throws Exception;
 
     /**
     * 체크리스트 등록
