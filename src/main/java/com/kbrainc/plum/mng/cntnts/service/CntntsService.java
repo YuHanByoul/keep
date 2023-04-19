@@ -5,8 +5,6 @@ import java.util.Map;
 
 import com.kbrainc.plum.mng.cntnts.model.CntntsEduSbjctVo;
 import com.kbrainc.plum.mng.cntnts.model.CntntsEduTrgtVo;
-import com.kbrainc.plum.mng.cntnts.model.CntntsQlityChkArtclVo;
-import com.kbrainc.plum.mng.cntnts.model.CntntsQlityChkVo;
 import com.kbrainc.plum.mng.cntnts.model.CntntsVo;
 
 /**
@@ -120,41 +118,4 @@ public interface CntntsService {
     * @return List<CntntsEduTrgtVo>
     */
     public List<CntntsEduTrgtVo> selectCntntsEduTrgtList(CntntsVo cntntsVo) throws Exception;
-    
-    /**
-    * 체크리스트 목록 
-    *
-    * @Title : selectQlityChkList
-    * @Description : 체크리스트 목록
-    * @return
-    * @throws Exception
-    * @return List<QlityChklstVo>
-    */
-    List<CntntsQlityChkVo> selectQlityChkList() throws Exception;
-
-    /**
-    * 등록한 체크리스트 목록
-    *
-    * @Title : selectQlityChkArtclList
-    * @Description : 등록한 체크리스트 목록
-    * @param cntntsid
-    * @return
-    * @throws Exception
-    * @return List<QlityChkArtclVo>
-    */
-    List<CntntsQlityChkArtclVo> selectQlityChkArtclList(String cntntsid) throws Exception;
-
-    /**
-    * 체크리스트 등록
-     * @param type 
-    *
-    * @Title : insertQlityChkList
-    * @Description : 체크리스트 등록
-    * @param cntntsQlityChkVo
-    * @param cntntsQlityChkArtclVo
-    * @return
-    * @throws Exception
-    * @return int
-    */
-    int insertQlityChkList(String type, CntntsQlityChkVo cntntsQlityChkVo, CntntsQlityChkArtclVo cntntsQlityChkArtclVo) throws Exception;
 }
