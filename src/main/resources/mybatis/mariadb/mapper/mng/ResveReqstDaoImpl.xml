@@ -18,6 +18,7 @@
         ,A.APLCNTID
         ,A.APLCNT_NM
         ,A.AMT
+        ,A.DPST_BANK_CD
         ,A.DPST_AMT
         ,A.RFND_DMND_AMT
         ,A.RFND_AMT
@@ -99,6 +100,7 @@
              ,A.CNCL_DT
              ,A.RFND_DMND_DT
              ,A.PYR_NM
+             ,A.DPST_BANK_CD
              ,A.DPST_AMT
              ,A.DPST_DE
              ,A.RFND_BANK_CD
@@ -115,9 +117,10 @@
              ,A.RFND_REJECT_RSN_CD 
              ,C.INSTID
              ,C.INST_NM
-             ,B.ALLDAY_YN
-             ,B.BGNG_DT
-             ,B.END_DT
+             -- ,B.ALLDAY_YN
+             -- ,B.BGNG_DT
+             -- ,B.END_DT
+             ,B.RESVE_DT
              ,E.SPCE_NM
              ,F.FCLT_NM
              ,F.BACNT_NO
@@ -138,13 +141,18 @@
         FROM
             TB_FCL_SPCE_APLY A
             INNER JOIN (
-                  SELECT B.APLYID, D.SPCEID, MIN(D.BGNG_DT) AS BGNG_DT, B.ALLDAY_YN,
-                                   CASE
-                                       WHEN B.ALLDAY_YN = 'N' THEN MAX(D.END_DT)
-                                       ELSE MAX(D.BGNG_DT) END AS END_DT
-                            FROM TB_FCL_APLY_RSVTDE B
-                                     LEFT JOIN TB_FCL_SPCE_RSVTDE D ON B.RSVTDEID = D.RSVTDEID
-                  GROUP BY APLYID
+                   SELECT 
+                       A.APLYID
+                       ,B.SPCEID
+                       ,GROUP_CONCAT(
+                         CONCAT(B.DE,' ',(CASE WHEN B.ALLDAY_YN ='N' THEN CONCAT (DATE_FORMAT(B.BGNG_DT,'%H시%i분'),' ~ ',DATE_FORMAT(B.END_DT,'%H시%i분')) ELSE '숙박'END),' (',FORMAT(B.AMT,0),'원)')
+                       SEPARATOR  '/' ) AS RESVE_DT  
+                     FROM 
+                       TB_FCL_APLY_RSVTDE A
+                       LEFT JOIN TB_FCL_SPCE_RSVTDE B 
+                       ON A.RSVTDEID = B.RSVTDEID
+                    WHERE A.APLYID = #{aplyid}
+                    GROUP BY APLYID
             ) B ON A.APLYID = B.APLYID
             INNER JOIN TB_FCL_SPCE E
             ON B.SPCEID = E.SPCEID
@@ -222,6 +230,7 @@
         , A.DPST_BACNT
         , A.PYR_NM
         , A.APLY_DT
+        , A.DPST_BANK_CD
         , A.DPST_DE
         , A.DPST_IDNTY_DT
         , A.CNCL_DT
@@ -234,7 +243,6 @@
         , A.APLY_STTS_CD
         , A.STLM_STTS_CD
         , A.CNCL_RSN_CD
-        , A.RSVT_REJECT_RSN
         , A.RSVT_CNCL_RSN
         , A.RFND_REJECT_RSN
         , A.RFND_REJECT_RSN_CD
@@ -342,13 +350,13 @@
                                           ,APLY_STTS_CD
                                           ,STLM_STTS_CD
                                           ,CNCL_RSN_CD
-                                          ,RSVT_REJECT_RSN
                                           ,RSVT_CNCL_RSN
                                           ,RFND_REJECT_RSN
                                           ,MDFCN_DT
                                           ,MDFRID
                                           ,REG_DT
                                           ,RGTRID
+                                          ,DPST_BANK_CD 
         )
         SELECT APLYID
              ,RCPT_NO
@@ -381,13 +389,13 @@
              ,APLY_STTS_CD
              ,STLM_STTS_CD
              ,CNCL_RSN_CD
-             ,RSVT_REJECT_RSN
              ,RSVT_CNCL_RSN
              ,RFND_REJECT_RSN
              ,MDFCN_DT
              ,MDFRID
              ,NOW()
              ,#{user.userid}
+             ,DPST_BANK_CD
         FROM TB_FCL_SPCE_APLY WHERE APLYID = #{aplyid}
     </insert>
 </mapper>

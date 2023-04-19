@@ -236,7 +236,7 @@ public class CommonController {
     * @return String 이동화면경로
     */
     @GetMapping("/main.html")
-    public String mainPage(Model model, PstVo pstVo, @UserInfo UserVo user, @SiteInfo SiteInfoVo site, HttpSession session) {
+    public String mainPage(Model model, @UserInfo UserVo user, @SiteInfo SiteInfoVo site, HttpSession session) {
         String sysSeCd = site.getSysSeCd();
         
         if ("A".equals(sysSeCd)) { // 관리자 사이트
@@ -248,7 +248,7 @@ public class CommonController {
                 return "mng/main";
             }
         } else { // 사용자 사이트
-            pstVo = new PstVo();
+            PstVo pstVo = new PstVo();
             pstVo.setUser(user);
             pstVo.setSite(site);
             pstVo.setRowPerPage(6);

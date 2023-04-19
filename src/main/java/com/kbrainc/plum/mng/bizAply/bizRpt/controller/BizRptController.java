@@ -396,7 +396,7 @@ public class BizRptController {
 
  		int ret=0;
  		bizRptVo.setUser(user);
- 		//ret = bizRptService.deleteCnsltngTrgt(bizRptVo);
+ 		ret = bizRptService.deleteCnsltngTrgt(bizRptVo);
 
  		if (ret > 0) {
  			resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);

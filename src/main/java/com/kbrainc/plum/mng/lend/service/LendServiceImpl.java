@@ -265,8 +265,8 @@ public class LendServiceImpl extends PlumAbstractServiceImpl implements LendServ
      * @return List<LendAplyVo>  목록
      * @throws Exception 예외
      */
-    public List<LendAplyVo> selectLendAplyList(LendAplyVo LendAplyVo) throws Exception{
-        return lendDao.selectLendAplyList(LendAplyVo);
+    public List<LendAplyVo> selectLendAplyList(LendAplyVo lendAplyVo) throws Exception{
+        return lendDao.selectLendAplyList(lendAplyVo);
     }
     /**
      * 대여 모집 목록 호출 

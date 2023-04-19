@@ -701,7 +701,7 @@ public class MemberController {
         
         resMap = memberService.updateMemberBlcklstYn(blcklstDsctnVo);
         
-        if((boolean)resMap.get("isUnmatchedgUser") == true) {
+        if((boolean)resMap.get("isUnmatchedgUser")) {
             resultMap.put("msg"
                     , (blcklstDsctnVo.getBlcklstYn().equals("Y"))? 
                        "이미 블랙리스트로 지정된 사용자를 제외하고 처리되었습니다."

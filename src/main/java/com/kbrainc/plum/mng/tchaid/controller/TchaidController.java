@@ -73,13 +73,13 @@ public class TchaidController {
      */
     @RequestMapping(value = "/mng/tchaid/selectTchaidList.do")
     @ResponseBody
-    public Map<String, Object> selectTchaidList( TchaidVo TchaidVo,@UserInfo UserVo user) throws Exception {
+    public Map<String, Object> selectTchaidList( TchaidVo tchaidVo,@UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         
         List<TchaidVo> result = null;
-        TchaidVo.setUser(user);
+        tchaidVo.setUser(user);
         
-        result = tchaidService.selectTchaidList(TchaidVo);
+        result = tchaidService.selectTchaidList(tchaidVo);
 
         if (result.size() > 0) {
             resultMap.put("totalCount", (result.get(0).getTotalCount()));
@@ -157,7 +157,7 @@ public class TchaidController {
      */
     @RequestMapping(value = "/mng/tchaid/insertTchaid.do")
     @ResponseBody
-    public Map<String, Object> insertTchaid(@Valid @RequestBody TchaidVo TchaidVo, BindingResult bindingResult1,@UserInfo UserVo user) throws Exception {
+    public Map<String, Object> insertTchaid(@Valid @RequestBody TchaidVo tchaidVo , BindingResult bindingResult1,@UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         int retVal = 0;
 
@@ -168,9 +168,9 @@ public class TchaidController {
             }
             return resultMap;
         }
-        TchaidVo.setUser(user);
+        tchaidVo.setUser(user);
         
-        retVal = tchaidService.insertTchaid(TchaidVo);
+        retVal = tchaidService.insertTchaid(tchaidVo);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -196,7 +196,7 @@ public class TchaidController {
      */
     @RequestMapping(value = "/mng/tchaid/updateTchaid.do")
     @ResponseBody
-    public Map<String, Object> updateTchaid(@Valid @RequestBody TchaidVo TchaidVo, BindingResult bindingResult1,@UserInfo UserVo user) throws Exception {
+    public Map<String, Object> updateTchaid(@Valid @RequestBody TchaidVo tchaidVo, BindingResult bindingResult1,@UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         int retVal = 0;
         
@@ -207,13 +207,13 @@ public class TchaidController {
             }
             return resultMap;
         }
-        TchaidVo.setUser(user);
+        tchaidVo.setUser(user);
         
-        if(StringUtil.isNotNull(TchaidVo.getMode()) && TchaidVo.getMode().equals("use")) {
+        if(StringUtil.isNotNull(tchaidVo.getMode()) && tchaidVo.getMode().equals("use")) {
             //use_yn 정보만 변경
-            retVal = tchaidService.updateTchaidUseYn(TchaidVo);
+            retVal = tchaidService.updateTchaidUseYn(tchaidVo);
         }else {
-            retVal = tchaidService.updateTchaid(TchaidVo);
+            retVal = tchaidService.updateTchaid(tchaidVo);
         }
         
         
@@ -240,7 +240,7 @@ public class TchaidController {
      */
     @RequestMapping(value = "/mng/tchaid/deleteTchaid.do")
     @ResponseBody
-    public Map<String, Object> deleteTchaid(@Valid TchaidVo TchaidVo, BindingResult bindingResult1,@UserInfo UserVo user) throws Exception {
+    public Map<String, Object> deleteTchaid(@Valid TchaidVo tchaidVo, BindingResult bindingResult1,@UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         int retVal = 0;
         
@@ -251,9 +251,9 @@ public class TchaidController {
             }
             return resultMap;
         }
-        TchaidVo.setUser(user);
+        tchaidVo.setUser(user);
         
-        int packageCnt = tchaidService.selectTchaidCntForPackage(TchaidVo);
+        int packageCnt = tchaidService.selectTchaidCntForPackage(tchaidVo);
         
         if(packageCnt > 0 ) {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
@@ -261,7 +261,7 @@ public class TchaidController {
             return resultMap;
         }
         
-        retVal = tchaidService.deleteTchaid(TchaidVo);
+        retVal = tchaidService.deleteTchaid(tchaidVo);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -301,7 +301,7 @@ public class TchaidController {
      */
     @RequestMapping(value = "/mng/tchaid/modifyCmpntCmpstn.do")
     @ResponseBody
-    public Map<String, Object> modifyCmpntCmpstn(@Valid TchaidVo TchaidVo, BindingResult bindingResult1,@UserInfo UserVo user) throws Exception {
+    public Map<String, Object> modifyCmpntCmpstn(@Valid TchaidVo tchaidVo, BindingResult bindingResult1,@UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         int retVal = 0;
         
@@ -312,9 +312,9 @@ public class TchaidController {
             }
             return resultMap;
         }
-        TchaidVo.setUser(user);
+        tchaidVo.setUser(user);
         
-        retVal = tchaidService.createTchaidFromCmpnt(TchaidVo);
+        retVal = tchaidService.createTchaidFromCmpnt(tchaidVo);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -353,13 +353,13 @@ public class TchaidController {
      */
     @RequestMapping(value = "/mng/tchaid/selectTchaidWrhousngList.do")
     @ResponseBody
-    public Map<String, Object> selectTchaidWrhousngList( TchaidVo TchaidVo,@UserInfo UserVo user) throws Exception {
+    public Map<String, Object> selectTchaidWrhousngList( TchaidVo tchaidVo,@UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         
         List<TchaidWrhousngVo> result = null;
-        TchaidVo.setUser(user);
+        tchaidVo.setUser(user);
         
-        result = tchaidService.selectTchaidWrhousngList(TchaidVo);
+        result = tchaidService.selectTchaidWrhousngList(tchaidVo);
 
         if (result.size() > 0) {
             resultMap.put("totalCount", (result.get(0).getTotalCount()));
@@ -398,7 +398,7 @@ public class TchaidController {
      */
     @RequestMapping(value = "/mng/tchaid/modifyTchaidWrhousng.do")
     @ResponseBody
-    public Map<String, Object> modifyTchaidWrhousng(@Valid TchaidVo TchaidVo,TchaidWrhousngVo tchaidWrhousngVo, BindingResult bindingResult1,@UserInfo UserVo user) throws Exception {
+    public Map<String, Object> modifyTchaidWrhousng(@Valid TchaidVo tchaidVo,TchaidWrhousngVo tchaidWrhousngVo, BindingResult bindingResult1,@UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         int retVal = 0;
         
@@ -409,7 +409,7 @@ public class TchaidController {
             }
             return resultMap;
         }
-        TchaidVo.setUser(user);
+        tchaidVo.setUser(user);
         tchaidWrhousngVo.setUser(user);
         
         retVal = tchaidService.insertTchaidWrhousng(tchaidWrhousngVo);

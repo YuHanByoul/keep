@@ -91,7 +91,7 @@ function fnExpendable($wrapper, option) {
                 $item.removeClass('expendable-item-old').addClass('expendable-item')
                 $fixed.addClass("expendable-item-fixed")
                 $child.addClass("expendable-item-child")
-                if ($fixed && $fixed.children('.expendable-toggle-btn').length === 0) {
+                if($fixed && $fixed.children().find(".expendable-toggle-btn").length === 0) {
                     $fixed.find(".card-text").prepend($("<button/>").attr({type : 'button'}).addClass("expendable-toggle-btn"))
                 }
             }
@@ -425,18 +425,29 @@ function initDateRangePicker(pickerid,startDtId,endDtId){
 }
 
 /*
-* popupId : 팝업 html을 로드할 태그의 id 값
-* formId : 엑셀 다운로드시 사용할 form의 id 값
+* popupId : 팝업을 로드할 태그 id 값
+* formId : 엑셀 다운로드시 사용할 form id 값
 * excelDownUrl : 엑셀 다운로드시 사용되는 경로
-* filegrpid : 일반 파일 다운로드시 파일의 filegrpid
-* fileid : 일반 파일 다운로드시 파일의 fileid
 * */
-function showFileDownPopup(popupId, formId, excelDownUrl, filegrpid, fileid, fileIdntfcKey){
-    // filegrpid = !!filegrpid ? filegrpid : 0;
-    // fileid = !!fileid ? fileid : 0;
+function openExcelDownRsnPopup(popupId, formId, excelDownUrl){
+    const queryString = `?popupId=${popupId}&formId=${formId}&excelDownUrl=${excelDownUrl}`;
+    openPopup(popupId, queryString);
 
-    const popupUrl = `/mng/dwnldDsctn/dwnldDsctnPopup.html?popupId=${popupId}&formId=${formId}&url=${excelDownUrl}&filegrpid=${filegrpid}&fileid=${fileid}&fileIdntfcKey=${fileIdntfcKey}`;
+}
+
+/*
+* filegrpid : 파일 그룹 아이디
+* fileid : 파일 아이디
+* fileIdntfcKey : 파일 식별 키
+*/
+function openFileDownRsnPopup(popupId, filegrpid, fileid, fileIdntfcKey) {
+    const queryString = `?filegrpid=${filegrpid}&fileid=${fileid}&fileIdntfcKey=${fileIdntfcKey}`;
+    openPopup(popupId, queryString)
+}
+
+function openPopup(popupId, queryString) {
     const $popup = $('#' + popupId);
+    const popupUrl = '/mng/dwnldDsctn/dwnldDsctnPopup.html' + queryString;
 
     $popup.load(popupUrl, function (response, status, xhr) {
         if (status == "success") {

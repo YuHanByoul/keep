@@ -96,14 +96,14 @@ public class SwitchYnAttr extends AbstractAttributeTagProcessor {
                 
                 if (tag.hasAttribute("onchange") && !tag.getAttribute("onchange").getValue().equals("")) {
                     String changeFunction = tag.getAttribute("onchange").getValue();
-                    result.append(" onchange ='"+changeFunction+"()'");
+                    result.append(" onchange ='");
+                    result.append(changeFunction);
+                    result.append("()'");
                 }
                 result.append(" />");
                 result.append("&nbsp;<label for='"+attributeValue+"' class='v-middle' >" + label+"</label>");
                 
                 //result.append("</div>");
-                
-            }else {//사용자 적용시
                 
             }
             

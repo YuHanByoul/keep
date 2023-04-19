@@ -1643,6 +1643,28 @@ public class AsgsysSrngController {
     	//신청자와 심사위원의 체크리스 제출 ID 조회
     	AsgsysSrngVo asgsysSrngInfo = asgsysSrngService.selectSprtgrpSrng(asgsysSrngVo);
 
+    	//신청 첨부파일
+    	if (!StringUtil.nvl(asgsysSrngInfo.getAplyFilegrpid()).equals("") && !StringUtil.nvl(asgsysSrngInfo.getAplyFilegrpid()).equals(0)) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(asgsysSrngInfo.getAplyFilegrpid());
+
+            model.addAttribute("aplyFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
+
+        } else {
+            model.addAttribute("aplyFileList", Collections.emptyList());
+        }
+
+    	//사전인증 첨부파일
+    	if (!StringUtil.nvl(asgsysSrngInfo.getBfrCertFilegrpid()).equals("") && !StringUtil.nvl(asgsysSrngInfo.getBfrCertFilegrpid()).equals(0)) {
+    		FileVo fileVo = new FileVo();
+    		fileVo.setFilegrpid(asgsysSrngInfo.getBfrCertFilegrpid());
+
+    		model.addAttribute("bfrCertFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
+
+    	} else {
+    		model.addAttribute("bfrCertFileList", Collections.emptyList());
+    	}
+
     	model.addAttribute("sprtgrpSrngInfo", asgsysSrngInfo);
     	model.addAttribute("sprtgrpCheckList", asgsysSrngService.selectCheckList(asgsysSrngInfo));
 

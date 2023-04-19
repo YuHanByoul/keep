@@ -168,7 +168,7 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	/** 방문분 */
 	private String vstMnt;
 
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd 00:00")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
 	/** 방문일시 */
 	private String vstDt;
 
@@ -353,19 +353,27 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	private String dsgncrtrCd;
 
     /** 신청_일시 */
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
 	private Date  aplyDt;
 
     /** 수정_일시 */
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd 00:00")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
 	private Date  mdfcnDt;
 
     /** 수정자아이디 */
 	private Integer mdfrid;
 
     /** 등록_일시 */
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd 00:00")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
 	private Date  regDt;
+
+	/** 배정일 */
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+	private Date  altmntDe;
+
+	/** 심사일 */
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+	private Date  srngDe;
 
     /** 등록자아이디 */
 	private Integer rgtrid;
@@ -385,6 +393,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
 
 	/**숙박_여부 */
 	private String styYn;
+
+	/**숙박_여부 */
+	private String styYnStr;
 
     /**숙박_밤 */
 	private Integer styNight;
@@ -570,7 +581,7 @@ public class AsgsysSrngVo extends ParentRequestVo {
     private String etcCn;
 
     /**심사_일시 */
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd 00:00")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date srngDt;
 
     /**심사위원_ID */
@@ -754,7 +765,7 @@ public class AsgsysSrngVo extends ParentRequestVo {
     private Integer chkLstScr;
 
     /** 제출 일시 */
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd 00:00")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date sbmsnDt;
 
     private Integer colCnt;

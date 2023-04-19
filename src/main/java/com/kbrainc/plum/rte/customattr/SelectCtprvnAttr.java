@@ -175,14 +175,11 @@ public class SelectCtprvnAttr extends AbstractAttributeTagProcessor {
     }
 
     private String makeObj(String cd, String text, String value) {
+        
         StringBuffer objStr = new StringBuffer();
-        
-        if ("".equals(cd)) {
-            cd = " "; // id값은 공백일수 없음
-        }
-        
+        String newCd =("".equals(cd))?" ":cd;
         objStr.append("{");
-        objStr.append("id: '").append(cd).append("', ");
+        objStr.append("id: '").append(newCd).append("', ");
         objStr.append("text: '").append(text).append("', ");
         objStr.append("value: '").append(value).append("' ");
         objStr.append("},\n");
