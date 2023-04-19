@@ -84,14 +84,11 @@ public class DwnldDsctnController {
         if (retVal > 0 ) {
             result.put("result", Constant.REST_API_RESULT_SUCCESS);
             result.put("msg", "등록 되었습니다.");
-            result.put("formId" , dwnldDsctnVo.getFormId());
-            result.put("url", dwnldDsctnVo.getUrl());
-            result.put("popupId", dwnldDsctnVo.getPopupId());
+            result.put("dwnldDsctnVo", dwnldDsctnVo);
         } else {
             result.put("result", Constant.REST_API_RESULT_FAIL);
             result.put("msg", "등록이 실패하였습니다.");
         }
-
 
         return result;
     }

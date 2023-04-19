@@ -11,10 +11,11 @@
         </div>
         <form id="dwnldDsctnPopupForm" name="dwnldDsctnPopupForm">
             <input type="hidden" name="formId" id="formId" th:value="${dwnldDsctnVo.formId}"/>
-            <input type="hidden" name="url" id="url" th:value="${dwnldDsctnVo.url}"/>
+            <input type="hidden" name="excelDownUrl" id="excelDownUrl" th:value="${dwnldDsctnVo.excelDownUrl}"/>
             <input type="hidden" name="popupId" id="popupId" th:value="${dwnldDsctnVo.popupId}"/>
             <input type="hidden" name="filegrpid" id="filegrpid" th:value="${dwnldDsctnVo.filegrpid}"/>
             <input type="hidden" name="fileid" id="fileid" th:value="${dwnldDsctnVo.fileid}"/>
+            <input type="hidden" name="fileIdntfcKey" id="fileIdntfcKey" th:value="${dwnldDsctnVo.fileIdntfcKey}"/>
 
             <div class="modal-body">
                 <div class="card m-b-10">
@@ -39,7 +40,7 @@
 </div>
 <!-- //[팝업] 다운로드 사유 입력 -->
 <script th:inline="javascript">
-    const dwnldDsctnPopup = {
+    var dwnldDsctnPopup = {
         insertUrl: '/mng/dwnldDsctn/insertDwnldDsctn.do',
         init() {
             this.validateForm();
@@ -65,19 +66,26 @@
                         method: 'post',
                         data: $('#dwnldDsctnPopupForm').serializeArray(),
                         success: function (result) {
-                            resolve(result);
+                            if(result.success === "success")
+                                resolve(result);
+                            else
+                                reject(result);
                         }
                     })
                 }).then((result) => {
-                    if(!!result.url) {
+                    const dwnldDsctnVo = result.dwnldDsctnVo;
+
+                    if (!!dwnldDsctnVo.excelDownUrl) {
                         // 엑셀 파일 다운로드
-                        excelDownload($('#' + result.formId), result.url);
+                        excelDownload($('#' + dwnldDsctnVo.formId), dwnldDsctnVo.excelDownUrl);
                     } else {
                         // 일반 파일 다운로드
-
+                        downloadFileByFileid(dwnldDsctnVo.fileid, dwnldDsctnVo.fileIdntfcKey);
                     }
 
-                    $('#'+result.popupId).modal('hide');
+                    $('#' + dwnldDsctnVo.popupId).modal('hide');
+                }).catch((error) => {
+                    alert(error.msg);
                 });
             }
         }
