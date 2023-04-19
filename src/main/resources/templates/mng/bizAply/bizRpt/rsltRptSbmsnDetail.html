@@ -1,4 +1,4 @@
-<form id="mdlRptSbmsnFrm">
+<form id="rsltRptSbmsnFrm">
 <input type="hidden" id="reportid" name="reportid" th:value="${rsltRptSbmsnInfo.reportid}">
 <input type="hidden" id="atchFilegrpid" name="atchFilegrpid" th:value="${rsltRptSbmsnInfo.atchFilegrpid}">
     <div class="card">
@@ -159,7 +159,7 @@
                                     <th:block th:each="item:${fileList}" th:if = "${item.fileid} > 0">
                                         <span class ='label label-inverse ' th:id="'file_'+${item.fileid}">
                                             <th:block th:text="${item.orginlFileNm}"></th:block>&nbsp;&nbsp;
-                                            <a  class = 'text-white' href = "javascript:void(0)" th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="mdlRptSbmsnDtl.fn_deleteFile(this.name, this.dataset.idntfcKey)">X</a>
+                                            <a  class = 'text-white' href = "javascript:void(0)" th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="rsltRptSbmsnDtl.fn_deleteFile(this.name, this.dataset.idntfcKey)">X</a>
                                         </span>
                                     </th:block>
                                 </th:block>
@@ -172,9 +172,9 @@
 
 
         <div class="card-block-small">
-            <button type="button" class="btn btn-disabled m-r-5" onclick="mdlRptSbmsnGridHelper1.toggleContent();">목록</button>
-<!--             <button type="button" class="btn btn-inverse m-r-5" onclick="mdlRptSbmsnDtl.openPopupCnsltngTrgt();" >컨설팅 대상</button> -->
-            <button type="button" class="btn btn-primary" onclick="mdlRptSbmsnDtl.doCmptn();">완료</button>
+            <button type="button" class="btn btn-disabled m-r-5" onclick="rptSbmsnGridHelper1.toggleContent();">목록</button>
+<!--             <button type="button" class="btn btn-inverse m-r-5" onclick="rsltRptSbmsnDtl.openPopupCnsltngTrgt();" >컨설팅 대상</button> -->
+            <button type="button" class="btn btn-primary" onclick="rsltRptSbmsnDtl.doCmptn();">완료</button>
         </div>
 
 
@@ -200,14 +200,15 @@
 <!-- <div class="modal fade" id="cnsltngTrgtPopup" aria-hidden="true" data-bs-backdrop="static"/> -->
 
 <script th:inline="javascript">
+    var splmntDmndGridHelper;
 
-
-    var mdlRptSbmsnDtl= {
+    var rsltRptSbmsnDtl= {
         listUrl  : "/mng/bizAply/bizRpt/selectSplmntDmndList.do",
         doCmptnUrl : "/mng/bizAply/bizRpt/updateRptSttsCd.do",
         init : function(){
 
-    		mdlRptSbmsnDtl.setGrid();
+        	splmntDmndGridHelper = new GridHelper('splmntDmndGrid','splmntDmndGridPanel');
+    		rsltRptSbmsnDtl.setGrid();
         },
         setGrid : function() {
 
@@ -242,7 +243,7 @@
                           $.ajax({
                             type: "GET"
                           , contentType: "application/json; charset=utf-8"
-                          , url      : mdlRptSbmsnDtl.listUrl
+                          , url      : rsltRptSbmsnDtl.listUrl
                           , data     : formData
                           , dataType : "json"
                           }).done(function(response) {
@@ -300,7 +301,7 @@
 
             if(displayWorkProgress()){
                 $.ajax({
-                    url : mdlRptSbmsnDtl.doCmptnUrl,
+                    url : rsltRptSbmsnDtl.doCmptnUrl,
                     type: 'POST',
                     cache : false,
                     traditional : true,
@@ -309,7 +310,7 @@
                     success : function (data){
                         if(data.result=="success"){
                             alert(data.msg);
-                            mdlRptSbmsnGridHelper1.resetPageContent();
+                            rptSbmsnGridHelper1.resetPageContent();
                         }else{
                             alert(data.msg);
                         }
@@ -389,7 +390,7 @@
 
                         for(i = 0 ;i < response.length; i++ ){
                             content = "<span class ='label label-inverse mb-2' id='file_"+response[i].fileid+"'>"+response[i].orginlFileNm ;
-                            content +="&nbsp;&nbsp;  <a  class = 'text-white' href = javascript:mdlRptSbmsnDtl.fn_deleteFile('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"')>X</a></span>&nbsp;&nbsp;";
+                            content +="&nbsp;&nbsp;  <a  class = 'text-white' href = javascript:rsltRptSbmsnDtl.fn_deleteFile('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"')>X</a></span>&nbsp;&nbsp;";
                             $('#multipleFileUploadSuccess').append(content);
                         }
                     }
@@ -404,7 +405,7 @@
 
 
         });
-    	mdlRptSbmsnDtl.init();
+    	rsltRptSbmsnDtl.init();
     });
 
 </script>
