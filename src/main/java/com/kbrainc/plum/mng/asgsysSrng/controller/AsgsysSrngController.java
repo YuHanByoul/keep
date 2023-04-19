@@ -1631,6 +1631,22 @@ public class AsgsysSrngController {
 
         return resultMap;
     }
+    
+    /**
+    * 지원단심사 목록 엑셀 다운
+    *
+    * @Title : selectSprtgrpSrngListExcelDown
+    * @Description : 지원단심사 목록 엑셀 다운
+    * @param request
+    * @param response
+    * @param asgsysSrngVo
+    * @throws Exception
+    * @return void
+    */
+    @RequestMapping(value = "/mng/asgsysSrng/selectSprtgrpSrngListExcelDown.do")
+    public void selectSprtgrpSrngListExcelDown(HttpServletRequest request, HttpServletResponse response, AsgsysSrngVo asgsysSrngVo) throws Exception {
+    	asgsysSrngService.selectSprtgrpSrngListExcelDown(asgsysSrngVo, response, request);
+    }
 
     /**
     * 지원단심사 등록 화면 이동

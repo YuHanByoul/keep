@@ -25,8 +25,7 @@
            ) AS EDU_TARGET
           , B.WHOL_AGE
           , CASE WHEN B.ETRFEE > 0 THEN FORMAT(B.ETRFEE, '0') ELSE '무료' END ETRFEE
-          , IFNULL(C.EDU_SBJCT_CD_LST, '')    AS EDU_SBJCT_CD_LST
-          , IFNULL(C.EDU_SBJCT_NM_LST, '')    AS EDU_SBJCT_NM_LST    /*교육 주제*/
+          , GROUP_CONCAT(CD1.CD_NM) AS EDU_SBJCT_NM_LST    /*교육 주제*/
           , NVL(OPERFRMCD.CD_NM, '') AS CD_NM
           , A.MDFCN_DT
           , A.REG_DT
@@ -36,18 +35,9 @@
             TB_ASS_PRGRM A
         LEFT OUTER JOIN
             TB_ASS_PRGRM_DSTNCTN B ON A.PRGRMID =B.PRGRMID
-        LEFT OUTER JOIN
-        (
-            SELECT
-                EDU.PRGRMID
-              , GROUP_CONCAT(EDU.EDU_SBJCT_CD)    EDU_SBJCT_CD_LST
-              , GROUP_CONCAT(CD.CD_NM)            EDU_SBJCT_NM_LST
-            FROM
-                TB_ASS_PRGRM_EDU_SBJCT EDU
-            LEFT OUTER JOIN
-                TB_CMM_CD CD ON EDU.EDU_SBJCT_CD = CD.CD
-            GROUP BY EDU.PRGRMID
-        ) C ON A.PRGRMID =C.PRGRMID
+        LEFT OUTER JOIN (SELECT PRGRMID, EDU_SBJCT_CD FROM TB_ASS_PRGRM_EDU_SBJCT) C ON A.PRGRMID = C.PRGRMID
+        LEFT OUTER JOIN TB_CMM_CD CD1 ON C.EDU_SBJCT_CD = CD1.CD
+        LEFT OUTER JOIN TB_CMM_CD CD2 ON CD1.UPPR_CD = CD2.CD
         LEFT OUTER JOIN (
             SELECT
                 FILEID
@@ -61,6 +51,7 @@
         LEFT OUTER JOIN
             TB_CMM_ADDR_CTPRVN ADDR ON A.INST_RGN_CD = ADDR.CTPRVN_CD
         LEFT OUTER JOIN TB_CMM_CD OPERFRMCD ON B.OPER_FRM_CD = OPERFRMCD.CD
+
         WHERE A.STTS_CD = 111111    <!-- 지정승인 -->
             <!-- 프로그램 명 -->
         <if test="searchPrgrmNm!= null and searchPrgrmNm != '' ">
@@ -74,9 +65,13 @@
         <if test="searchRgnCd!= null and searchRgnCd != '' ">
             AND A.INST_RGN_CD = #{searchRgnCd}
         </if>
-            <!-- 교육주제 코드-->
-        <if test="searchSbjctCd!= null and searchSbjctCd != '' ">
-            AND C.EDU_SBJCT_CD LIKE CONCAT('%',#{searchSbjctCd},'%')
+
+        <!-- 교육주제 -->
+        <if test="searchManinEduSbjctCd != null and searchManinEduSbjctCd != ''">
+        AND CD2.CD = #{searchManinEduSbjctCd}
+        </if>
+        <if test="searchMdleEduSbjctCd != null and searchMdleEduSbjctCd != ''">
+        AND CD1.CD = #{searchMdleEduSbjctCd}
         </if>
             <!-- 교육대상 코드-->
         <if test="searchEduTarget!= null and searchEduTarget != '' ">

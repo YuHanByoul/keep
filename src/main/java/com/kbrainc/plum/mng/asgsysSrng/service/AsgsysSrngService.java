@@ -508,6 +508,19 @@ public interface AsgsysSrngService {
 	public List<AsgsysSrngVo> selectSprtgrpSrngList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
+	* 지원단심사 목록 엑셀 다운
+	*
+	* @Title : selectSprtgrpSrngListExcelDown
+	* @Description : 지원단심사 목록 엑셀 다운
+	* @param asgsysSrngVo
+	* @param response
+	* @param request
+	* @throws Exception
+	* @return void
+	*/
+	public void selectSprtgrpSrngListExcelDown(AsgsysSrngVo asgsysSrngVo, HttpServletResponse response, HttpServletRequest request) throws Exception;
+
+	/**
 	* 지원단심사 상세 조회
 	*
 	* @Title : selectSprtgrpSrng
@@ -754,6 +767,8 @@ public interface AsgsysSrngService {
 	* @return List<DsgnPrgrmVo>
 	*/
 	public List<DsgnPrgrmVo> selectCsltngList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+
 
 
 

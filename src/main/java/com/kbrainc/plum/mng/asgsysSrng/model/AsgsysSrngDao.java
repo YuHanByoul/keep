@@ -529,6 +529,18 @@ public interface AsgsysSrngDao {
 	public List<AsgsysSrngVo> selectJdgsSrngList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
+	* 심사위원심사 목록 엑셀다운
+	*
+	* @Title : selectJdgsSrngListExcelDown
+	* @Description : 심사위원심사 목록 엑셀다운
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<AsgsysSrngVo>
+	*/
+	public List<AsgsysSrngVo> selectJdgsSrngListExcelDown(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
 	* 심사위원심사 상세 조회
 	*
 	* @Title : getSelectDsgnAplyInfo
@@ -615,17 +627,6 @@ public interface AsgsysSrngDao {
 	 * @throws Exception 예외
 	 */
 	public int insertSftyMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
-
-	/**
-	* 심사위원심사 목록 엑셀 다운
-	*
-	* @Title : jdgsSrngListExcelDown
-	* @Description : 심사위원심사 목록 엑셀 다운
-	* @param asgsysSrngVo
-	* @return List<AsgsysSrngVo>
-	* @throws Exception
-	*/
-	public List<AsgsysSrngVo> jdgsSrngListExcelDown(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
 	* 심사양식 목록 조회
@@ -750,6 +751,18 @@ public interface AsgsysSrngDao {
 	* @throws Exception
 	*/
 	public List<AsgsysSrngVo> selectSprtgrpSrngList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 지원단심사 목록 엑셀 다운
+	*
+	* @Title : selectSprtgrpSrngListExcelDown
+	* @Description : 지원단심사 목록 엑셀 다운
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<AsgsysSrngVo>
+	*/
+	public List<AsgsysSrngVo> selectSprtgrpSrngListExcelDown(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
 	* 지원단심사 상세 조회
@@ -1209,6 +1222,10 @@ public interface AsgsysSrngDao {
 	* @throws Exception
 	* @return List<DsgnPrgrmVo>
 	*/
-	public List<DsgnPrgrmVo> selectCsltngList(AsgsysSrngVo asgsysSrngVo)throws Exception;
+	public List<DsgnPrgrmVo> selectCsltngList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+
+
+
 
 }

@@ -57,6 +57,7 @@
           , A.INST_NM
           , A.STTS_CD
           , A.APLY_DT
+          , DATE_FORMAT(A.APLY_DT, "%Y-%m-%d")  AS APLY_DE
           , A.REG_DT
           , IFNULL( B.SRNG_STTS_CD,'114101')    AS SRNG_STTS_CD
           , IFNULL( C.SRGN_STTS_CD,'114101')    AS SRGN_STTS_CD
@@ -96,32 +97,32 @@
           , A.INST_NM
           , A.STTS_CD
           , A.APLY_DT
+          , DATE_FORMAT(A.APLY_DT, "%Y-%m-%d")  AS APLY_DE
           , A.REG_DT
-          , B.SRNG_STTS_CD
-          , C.SRGN_STTS_CD
+          , IFNULL( B.SRNG_STTS_CD,'114101')    AS SRNG_STTS_CD
+          , IFNULL( C.SRGN_STTS_CD,'114101')    AS SRGN_STTS_CD
           , C.VST_DE
           , C.VST_HR
           , C.VST_MNT
+          , CONCAT(C.VST_DE , " " , C.VST_HR , ":" , C.VST_MNT) AS VST_DT
+          , C.SPLMNT_DMND_OPNN
+          , C.SRNG_OPNN
           , A.MDFCN_DT
         FROM
             TB_ASS_PRGRM A
-        LEFT OUTER JOIN
-        (   SELECT
+        LEFT OUTER JOIN    /* 심사위원 */
+        (
+            SELECT
                 PRGRMID
               , SRNG_STTS_CD
-            FROM
-                TB_ASS_PRGRM_JDGS LIMIT 0,1 ) B ON A.PRGRMID  = B.PRGRMID
+              , MAX(JDGSID)
+            FROM TB_ASS_PRGRM_JDGS
+            GROUP BY PRGRMID
+        ) B ON A.PRGRMID  = B.PRGRMID
+        LEFT OUTER JOIN    /* 지원단 */
+            TB_ASS_SPRTGRP_SRNG C ON A.PRGRMID  = C.PRGRMID
         LEFT OUTER JOIN
-        (   SELECT
-                PRGRMID
-              , SRGN_STTS_CD
-              , VST_DE
-              , VST_HR
-              , VST_MNT
-            FROM
-                TB_ASS_SPRTGRP_SRNG LIMIT 0,1 ) C ON A.PRGRMID  = C.PRGRMID
-        LEFT OUTER JOIN
-        TB_CMM_INST D ON A.INSTID  = D.INSTID
+            TB_CMM_INST D ON A.INSTID  = D.INSTID
         WHERE 1=1
         <include refid="searchCondition1"/>
     </select>
@@ -1591,12 +1592,12 @@
                , B.PRGRM_NM
                , B.INST_NM
                , A.SRNG_STTS_CD
-               , A.REG_DT     AS ALTMNT_DE     /* 배정일*/
+               , DATE_FORMAT(A.REG_DT, "%Y-%m-%d")  AS ALTMNT_DE   /* 배정일 */
                , A.REG_DT
                , C.STY_YN          /* 숙박여부*/
                , CASE WHEN C.STY_YN ='Y' THEN '숙박' WHEN C.STY_YN ='N' THEN '비숙박' ELSE '' END STY_YN_STR
-               , D.SBMSN_DT   AS SRNG_DE     /* 심사일 */
-               , D.SBMSN_DT        /* 심사일 */
+               , DATE_FORMAT(D.SBMSN_DT, "%Y-%m-%d")  AS SRNG_DE   /* 심사일 */
+               , D.SBMSN_DT
                , A.MDFCN_DT
                , A.MDFRID
                , A.RGTRID
@@ -1644,50 +1645,49 @@
         <include refid="PaginationMapper.footer"/>
     </select>
 
-    <select id="jdgsSrngListExcelDown" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
-        /* AsgsysSrngDao.jdgsSrngListExcelDown */
+    <!-- 심사위원심사 목록 엑셀 다운-->
+    <select id="selectJdgsSrngListExcelDown" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        /* AsgsysSrngDao.selectJdgsSrngListExcelDown*/
             SELECT
-            A.PRGRM_NM
-          , A.PRGRMID
-          , A.INST_NM
-          , A.STTS_CD
-          , A.APLY_DT
-          , A.REG_DT
-          , B.SRNG_STTS_CD
-          , C.SRGN_STTS_CD
-          , C.VST_DE
-          , C.VST_HR
-          , C.VST_MNT
-          , CONCAT(C.VST_DE , " " , C.VST_HR , ":" , C.VST_MNT) AS VST_DT
-          , C.SPLMNT_DMND_OPNN
-          , C.SRNG_OPNN
-        FROM
-            TB_ASS_PRGRM A
-        LEFT OUTER JOIN    /* 심사위원 */
-        (
-            SELECT
-                PRGRMID
-              , SRNG_STTS_CD
-              , JDGSID
-              , COUNT(1) AS CNT
-            FROM TB_ASS_PRGRM_JDGS
-        ) B ON A.PRGRMID  = B.PRGRMID
-        LEFT OUTER JOIN    /* 지원단 */
-            TB_ASS_SPRTGRP_SRNG C ON A.PRGRMID  = C.PRGRMID
-        LEFT OUTER JOIN
-            TB_CMM_INST D ON A.INSTID  = D.INSTID
-        WHERE 1=1
+                 A.PRGRMID
+               , A.JDGSID
+               , (SELECT NM FROM TB_CMM_USER WHERE USERID = A.JDGSID) AS JDGS_NM
+               , B.PRGRM_NM
+               , B.INST_NM
+               , A.SRNG_STTS_CD
+               , DATE_FORMAT(A.REG_DT, "%Y-%m-%d")  AS ALTMNT_DE   /* 배정일 */
+               , A.REG_DT
+               , C.STY_YN          /* 숙박여부*/
+               , CASE WHEN C.STY_YN ='Y' THEN '숙박' WHEN C.STY_YN ='N' THEN '비숙박' ELSE '' END STY_YN_STR
+               , DATE_FORMAT(D.SBMSN_DT, "%Y-%m-%d")  AS SRNG_DE   /* 심사일 */
+               , D.SBMSN_DT
+               , A.MDFCN_DT
+               , A.MDFRID
+               , A.RGTRID
+            FROM
+                TB_ASS_PRGRM_JDGS A
+            INNER JOIN
+                TB_ASS_PRGRM B ON A.PRGRMID = B.PRGRMID
+            LEFT OUTER JOIN
+                TB_ASS_PRGRM_DSTNCTN C ON A.PRGRMID = C.PRGRMID
+            LEFT OUTER JOIN
+                TB_ASS_SRNG_SBMSN D ON A.PRGRMID = D.PRGRMID AND A.JDGSID = D.USERID
+            WHERE 1=1
+        <!-- 키워드.심사위원 아이디 -->
+        <if test="searchUserid != null and searchUserid != '' ">
+            AND A.JDGSID = #{searchUserid}
+        </if>
         <!-- 키워드.전체 -->
         <if test="searchKeyword != null and searchKeyword != '' and searchType == ''">
-            AND (A.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%') OR A.INST_NM LIKE CONCAT('%',#{searchKeyword},'%'))
+            AND (B.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%') OR B.INST_NM LIKE CONCAT('%',#{searchKeyword},'%'))
         </if>
         <!-- 키워드.프로그램명 -->
         <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchPrgrmNm'">
-            AND A.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%')
+            AND B.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%')
         </if>
         <!-- 키워드.기관명 -->
         <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchInstNm'">
-            AND A.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+            AND B.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
         </if>
         <!-- 심사진행상태  -->
         <if test="searchSrngSttsCd != null and searchSrngSttsCd != ''">
@@ -1706,6 +1706,7 @@
             AND C.STY_YN = #{searchStyYn}
         </if>
     </select>
+
 
     <!-- 지원단 캘린더 목록 조회 -->
     <select id="selectSprtgrpClndrList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
@@ -1815,6 +1816,7 @@
                , E.BFR_CERT_FILEGRPID
                , A.SRNG_STTS_CD
                , A.REG_DT       /*배정일*/
+               , A.REG_DT    AS ALTMNT_DE    /* 배정일 */
                , F.SRNG_OPNN    /*심사의견*/
                , C.OPER_FRM_CD    AS OPER_FRM_CD
                , CASE WHEN C.OPER_FRM_CD = 120104 THEN 145103
@@ -2286,7 +2288,8 @@
               , B.STTS_CD
               , B.INST_NM         /* 기관명 */
               , A.SRGN_STTS_CD    /* (지원단)심사 진행상태 */
-              , A.REG_DT          /* 배정일 */
+              , A.REG_DT
+              , A.REG_DT    AS ALTMNT_DE    /* 배정일 */
               , A.VST_DE          /* (현장점검) 방문일 */
               , A.VST_HR          /* (현장점검) 방문시 */
               , A.VST_MNT         /* (현장점검) 방문분 */
@@ -2314,12 +2317,12 @@
             AND B.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
         </if>
         <!-- (지원단)진행상태  -->
-        <if test="searchSttsCd != null and searchSttsCd != ''">
+        <if test="searchSrgnSttsCd != null and searchSrgnSttsCd != ''">
             AND A.SRGN_STTS_CD = #{searchSrgnSttsCd}
         </if>
         <!-- 배정일 검색시작일  -->
         <if test="searchRegStartDt != null and searchRegStartDt != ''">
-            AND A.REG_DT >= #{searchRegStartDt}
+            AND A.REG_DT = #{searchAltmntDe}
         </if>
         <!-- 배정일 검색종료일  -->
         <if test="searchRegEndDt != null and searchRegEndDt != ''">
@@ -2340,6 +2343,77 @@
         <include refid="PaginationMapper.footer"/>
     </select>
 
+    <!-- 지원단심사 목록 엑셀 다운 -->
+    <select id="selectSprtgrpSrngListExcelDown" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        /* AsgsysSrngDao.selectSprtgrpSrngList*/
+            SELECT
+                A.PRGRMID
+              , A.SPRTGRPID
+              , B.PRGRM_NM        /* 프로그램명 */
+              , B.APLY_DT
+              , DATE_FORMAT(A.APLY_DT, "%Y-%m-%d")  AS APLY_DE
+              , B.STTS_CD
+              , B.INST_NM         /* 기관명 */
+              , A.SRGN_STTS_CD    /* (지원단)심사 진행상태 */
+              , A.REG_DT          /* 배정일 */
+              , DATE_FORMAT(A.REG_DT, "%Y-%m-%d")  AS ALTMNT_DE   /* 배정일 */
+              , A.VST_DE          /* (현장점검) 방문일 */
+              , A.VST_HR          /* (현장점검) 방문시 */
+              , A.VST_MNT         /* (현장점검) 방문분 */
+              , CONCAT(A.VST_DE , " " , A.VST_HR , ":" , A.VST_MNT) AS VST_DT
+              , C.STY_YN          /* 숙박여부 */
+              , A.SPLMNT_DMND_OPNN
+              , A.SRNG_OPNN
+              , D.CHKLST_RSLT_CN
+              , A.MDFCN_DT
+              , A.MDFRID
+              , A.RGTRID
+        FROM
+            TB_ASS_SPRTGRP_SRNG A
+        INNER JOIN
+            TB_ASS_PRGRM B ON A.PRGRMID = B.PRGRMID
+        LEFT OUTER JOIN
+            TB_ASS_PRGRM_DSTNCTN C ON A.PRGRMID = C.PRGRMID
+        LEFT OUTER JOIN TB_ASS_CHKLST_SBMSN D ON B.PRGRMID = D.PRGRMID AND A.SPRTGRPID = D.USERID AND D.SBMSN_SE_CD ='242102'
+        WHERE 1=1
+        <!-- 키워드.사용자아이디 -->
+        <if test="userid != null and userid != ''" >
+        AND A.SPRTGRPID = #{userid}
+        </if>
+        <!-- 키워드.프로그램명 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchPrgrmNm'">
+            AND B.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <!-- 키워드.기관명 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchInstNm'">
+            AND B.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <!-- (지원단)진행상태  -->
+        <if test="searchSrgnSttsCd != null and searchSrgnSttsCd != ''">
+            AND A.SRGN_STTS_CD = #{searchSrgnSttsCd}
+        </if>
+        <!-- 배정일 검색시작일  -->
+        <if test="searchRegStartDt != null and searchRegStartDt != ''">
+            AND A.REG_DT = #{searchAltmntDe}
+        </if>
+        <!-- 배정일 검색종료일  -->
+        <if test="searchRegEndDt != null and searchRegEndDt != ''">
+            AND A.REG_DT  <![CDATA[<]]> CAST(CONCAT(#{searchRegEndDt},' 23:59:59') AS DATETIME)
+        </if>
+        <!-- 현장점검지정일 시작일-->
+        <if test="searchChckDsgnStartDt != null and searchChckDsgnStartDt != ''">
+            AND A.VST_DE >= #{searchChckDsgnStartDt}
+        </if>
+        <!-- 현장점검지정일 종료일-->
+        <if test="searchChckDsgnEndDt != null and searchChckDsgnEndDt != ''">
+            AND A.VST_DE <![CDATA[<]]> CAST(CONCAT(#{searchChckDsgnEndDt},' 23:59:59') AS DATETIME)
+        </if>
+        <!-- 숙박여부-->
+        <if test="searchStyYn!= null and searchStyYn != ''">
+            AND C.STY_YN = #{searchStyYn}
+        </if>
+    </select>
+
     <!-- 지원단심사 상세 조회 -->
     <select id="selectSprtgrpSrng" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
         /* AsgsysSrngDao.selectSprtgrpSrng*/
@@ -2349,7 +2423,8 @@
               , B.PRGRM_NM        /* 프로그램명 */
               , B.INST_NM         /* 기관명 */
               , A.SRGN_STTS_CD    /* (지원단)심사 진행상태 */
-              , A.REG_DT          /* 배정일 */
+              , A.REG_DT
+              , DATE_FORMAT(A.REG_DT, "%Y-%m-%d")  AS ALTMNT_DE   /* 배정일 */
               , C.STY_YN          /* 숙박여부 */
               , A.SPLMNT_DMND_OPNN
               , A.SRNG_OPNN
