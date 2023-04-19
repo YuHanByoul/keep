@@ -12,34 +12,36 @@
                 <div class="card">
                     <div class="card-block-small">
                         <!-- 키워드 filter -->
-                        <div class="row">
-                            <div class="col-lg-3 mb-2 mb-lg-0">
-                                <div class="mb-0 form-group row">
-                                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
-                                    <div class="input-group input-group-sm input-group-dropdown mb-0">
-                                        <select name="searchType" id="searchType" class="form-select form-control">
-                                            <option value="">전체</option>
-                                            <option value="idntyMttrStr">내용</option>
-                                        </select>
-                                        <input type="text" name="searchKeyword" id="searchKeyword" class="form-control form-control-sm" aria-label="Text input with dropdown button">
+                        <form name="searchFrm" id="searchFrm" action="" onsubmit="return false;">
+                            <div class="row">
+                                <div class="col-lg-3 mb-2 mb-lg-0">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
+                                        <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                            <select name="searchType" id="searchType" class="form-select form-control">
+                                                <option value="">전체</option>
+                                                <option value="idntyMttrStr">확인사항</option>
+                                            </select>
+                                            <input type="text" name="searchKeyword" id="searchKeyword" class="form-control form-control-sm" aria-label="Text input with dropdown button">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>지정기준</strong></div>
+                                        <div class="col-12">
+                                            <span kattr:select_code="searchDsgncrtrCd" grpCd="149" firstOptTxt="- 전체 -"  addClass="form-select form-select-sm form-control-sm" ></span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-3">
-                                <div class="mb-0 form-group row">
-                                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>지정기준</strong></div>
-                                    <div class="col-12">
-                                        <span kattr:select_code="searchDsgncrtrCd" grpCd="149" firstOptTxt="- 전체 -"  addClass="form-select form-select-sm form-control-sm" ></span>
-                                    </div>
-                                </div>
+                            <!-- //키워드 filter -->
+                            <!-- 키워드 filter-btn -->
+                            <div class="mt-1 p-t-20 text-center border-top">
+                                <button type="button" class="btn btn-disabled m-r-5" onclick="srngQitem.initSearch();">초기화</button>
+                                <button type="submit" class="btn btn-primary" onclick="srngQitem.onSearch();">검색</button>
                             </div>
-                        </div>
-                        <!-- //키워드 filter -->
-                        <!-- 키워드 filter-btn -->
-                        <div class="mt-1 p-t-20 text-center border-top">
-                            <button type="button" class="btn btn-disabled m-r-5" onclick="srngQitem.initSearch();">초기화</button>
-                            <button type="submit" class="btn btn-primary" onclick="srngQitem.onSearch();">검색</button>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -93,6 +95,17 @@
             },
 
             onSearch: function() {
+                var searchType = $("#searchType").val();
+                var searchKeyword = $("#searchKeyword").val();
+                if(searchType != '' && searchKeyword == "") {
+                    alert("검색어를 입력해 주세요.");
+                    return false;
+                }
+                if(searchType == '' && searchKeyword != "") {
+                    alert("키워드를 선택해 주세요.");
+                    return false;
+                }
+                
                 srngQitemJsGrid.resetListContent();
             },
 
