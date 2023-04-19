@@ -3,7 +3,7 @@
 
 <!--
 	SQL File Name : RcpmnyBfeDaoImpl.xml
-	Description : 시설
+	Description : 시설예약 입금전 관리
 -->
 <mapper namespace="com.kbrainc.plum.mng.rcpmnyBfe.model.RcpmnyBfeDao">
 
@@ -12,63 +12,45 @@
         /* RcpmnyBfeDao.selectRcpmnyBfeList */
         <include refid="PaginationMapper.header"/>
         SELECT
-        A.APLYID
-        ,A.STLM_STTS_CD
-        ,A.APLY_STTS_CD
-        ,A.APLCNTID
-        ,A.APLCNT_NM
-        ,A.AMT
-        ,A.DPST_AMT
-        ,A.RFND_DMND_AMT
-        ,A.RFND_AMT
-        ,A.MDFCN_DT
-        ,A.REG_DT
-        ,A1.CD_NM AS APLY_STTS_CD_NM
-        ,A2.CD_NM AS STLM_STTS_CD_NM
-        ,C.INSTID
-        ,C.INST_NM
-        ,B.ALLDAY_YN
-        ,B.BGNG_DT
-        ,B.END_DT
-        ,E.SPCE_NM
-        ,F.FCLT_NM
-        ,G.ACNT
-        ,G.NM
+          A.APLYID
+          ,A.APLY_DT
+          ,A.STLM_STTS_CD
+          ,A.APLY_STTS_CD
+          ,A.APLCNTID
+          ,A.APLCNT_NM
+          ,A.AMT
+          ,A.DPST_BANK_CD
+          ,A.DPST_AMT
+          ,A.RFND_DMND_AMT
+          ,A.RFND_AMT
+          ,A.RFND_REJECT_RSN_CD 
+          ,A.MDFCN_DT
+          ,C.INSTID
+          ,C.INST_NM
+          ,B.BGNG_DT
+          ,B.END_DT
+          ,B.ALLDAY_YN
+          ,E.SPCE_NM
+          ,F.FCLT_NM
+          ,G.ACNT
+          ,G.NM
         FROM
-        TB_FCL_SPCE_APLY A
-        INNER JOIN (
-        SELECT
-        CD
-        , CD_NM
-        FROM
-        TB_CMM_CD
-        WHERE
-        CDGRPID = 160
-        ) A1 ON (A.APLY_STTS_CD = A1.CD)
-        INNER JOIN (
-        SELECT
-        CD
-        , CD_NM
-        FROM
-        TB_CMM_CD
-        WHERE
-        CDGRPID = 161
-        ) A2 ON (A.STLM_STTS_CD = A2.CD)
-        INNER JOIN (SELECT B.APLYID, D.SPCEID, MIN(D.BGNG_DT) AS BGNG_DT, B.ALLDAY_YN,
-        CASE
-        WHEN B.ALLDAY_YN = 'N' THEN MAX(D.END_DT)
-        ELSE MAX(D.BGNG_DT) END AS END_DT
-        FROM TB_FCL_APLY_RSVTDE B
-        LEFT JOIN TB_FCL_SPCE_RSVTDE D ON B.RSVTDEID = D.RSVTDEID
-        GROUP BY APLYID) B
-        ON A.APLYID = B.APLYID
-        INNER JOIN TB_FCL_SPCE E
-        ON B.SPCEID = E.SPCEID
-        INNER JOIN TB_FCL_FCLT F
-        ON E.FCLTID = F.FCLTID
-        INNER JOIN TB_CMM_INST C
-        ON F.INSTID = C.INSTID
-        LEFT OUTER JOIN TB_CMM_USER G ON A.APLCNTID = G.USERID
+          TB_FCL_SPCE_APLY A
+          INNER JOIN (SELECT B.APLYID, D.SPCEID, MIN(D.BGNG_DT) AS BGNG_DT, B.ALLDAY_YN,
+          CASE
+          WHEN B.ALLDAY_YN = 'N' THEN MAX(D.END_DT)
+          ELSE MAX(D.BGNG_DT) END AS END_DT
+          FROM TB_FCL_APLY_RSVTDE B
+          LEFT JOIN TB_FCL_SPCE_RSVTDE D ON B.RSVTDEID = D.RSVTDEID
+          GROUP BY APLYID) B
+          ON A.APLYID = B.APLYID
+          INNER JOIN TB_FCL_SPCE E
+          ON B.SPCEID = E.SPCEID
+          INNER JOIN TB_FCL_FCLT F
+          ON E.FCLTID = F.FCLTID
+          INNER JOIN TB_CMM_INST C
+          ON F.INSTID = C.INSTID
+          LEFT OUTER JOIN TB_CMM_USER G ON A.APLCNTID = G.USERID
         WHERE 1=1
           AND APLY_STTS_CD IN ('160101' ,'160103')
           AND STLM_STTS_CD = '161101' 
@@ -116,37 +98,45 @@
         /* RcpmnyBfeDao.selectRcpmnyBfeInfo */
         SELECT
             A.APLYID
+             ,A.APLY_DT
              ,A.STLM_STTS_CD
              ,A.APLY_STTS_CD
              ,A.APLCNTID
              ,A.APLCNT_NM
              ,A.APLCNT_MOBLPHON
              ,A.APLCNT_EML
-             ,A.AMT
-             ,A.APLY_DT
              ,A.CNCL_DT
              ,A.RFND_DMND_DT
-             ,A.DPST_DE
+             ,A.PYR_NM
+             ,A.DPST_BANK_CD
              ,A.DPST_AMT
+             ,A.DPST_DE
+             ,A.CNCL_RSN_CD
+             ,A.RFND_BANK_CD
+             ,A.RFND_BACNT
+             ,A.RFND_PYR_NM
+             ,A.RFND_AMT
+             ,A.RFND_DE
              ,A.NOPE_ADULT
              ,A.NOPE_CHIL
              ,A.NOPE_INFNT
              ,A.UTZTN_PRPS
-             ,A.PYR_NM
+             ,A.AMT
              ,A.RSVT_CNCL_RSN
-             ,A1.CD_NM AS APLY_STTS_CD_NM
-             ,A2.CD_NM AS STLM_STTS_CD_NM
+             ,A.RFND_REJECT_RSN_CD 
              ,C.INSTID
              ,C.INST_NM
-             ,B.ALLDAY_YN
-             ,B.BGNG_DT
-             ,B.END_DT
+             -- ,B.ALLDAY_YN
+             -- ,B.BGNG_DT
+             -- ,B.END_DT
+             ,B.RESVE_DT
              ,E.SPCE_NM
              ,F.FCLT_NM
-             ,F1.CD_NM AS BANK_CD_NM
              ,F.BACNT_NO
              ,F.DPSTR_NM
              ,G.CD_NM AS INST_TYPE_CD_NM
+             ,'예약신청' AS PAY_STTUS
+             ,'입금대기' AS REQST_STTUS
              ,CASE WHEN IFNULL(I.ROLECD,'U') = 'U' AND H.INSTID IS NOT NULL THEN '기업회원'
                    WHEN IFNULL(I.ROLECD,'U') = 'U' AND H.INSTID IS NULL THEN '개인회원'
                    ELSE '관리자'
@@ -156,53 +146,32 @@
              ,H.EML
              ,H.ACNT
              ,IFNULL(J.INST_NM, '-') AS USER_INST_NM
-             ,K.CD_NM AS STLM_MTHD_CD_NM
+             ,STLM_MTHD_CD
         FROM
             TB_FCL_SPCE_APLY A
-                INNER JOIN (
-                SELECT
-                    CD
-                     , CD_NM
-                FROM
-                    TB_CMM_CD
-                WHERE
-                    CDGRPID = 160
-            ) A1 ON (A.APLY_STTS_CD = A1.CD)
-                INNER JOIN (
-                SELECT
-                    CD
-                     , CD_NM
-                FROM
-                    TB_CMM_CD
-                WHERE
-                    CDGRPID = 161
-            ) A2 ON (A.STLM_STTS_CD = A2.CD)
-                INNER JOIN (SELECT B.APLYID, D.SPCEID, MIN(D.BGNG_DT) AS BGNG_DT, B.ALLDAY_YN,
-                                   CASE
-                                       WHEN B.ALLDAY_YN = 'N' THEN MAX(D.END_DT)
-                                       ELSE MAX(D.BGNG_DT) END AS END_DT
-                            FROM TB_FCL_APLY_RSVTDE B
-                                     LEFT JOIN TB_FCL_SPCE_RSVTDE D ON B.RSVTDEID = D.RSVTDEID
-                            GROUP BY APLYID) B
-                           ON A.APLYID = B.APLYID
-                INNER JOIN TB_FCL_SPCE E
-                           ON B.SPCEID = E.SPCEID
-                INNER JOIN TB_FCL_FCLT F
-                           ON E.FCLTID = F.FCLTID
-                INNER JOIN TB_CMM_INST C
-                           ON F.INSTID = C.INSTID
-                LEFT OUTER JOIN (
-                SELECT
-                    CD
-                     , CD_NM
-                FROM
-                    TB_CMM_CD
-                WHERE
-                    CDGRPID = 154
-            ) F1 ON (F.BANK_CD = F1.CD)
-                LEFT OUTER JOIN TB_CMM_CD G ON C.INST_TYPE_CD = G.CD
-                LEFT OUTER JOIN TB_CMM_USER H ON A.APLCNTID = H.USERID
-                LEFT OUTER JOIN (
+            INNER JOIN (
+                   SELECT 
+                       A.APLYID
+                       ,B.SPCEID
+                       ,GROUP_CONCAT(
+                         CONCAT(B.DE,' ',(CASE WHEN B.ALLDAY_YN ='N' THEN CONCAT (DATE_FORMAT(B.BGNG_DT,'%H시%i분'),' ~ ',DATE_FORMAT(B.END_DT,'%H시%i분')) ELSE '숙박'END),' (',FORMAT(B.AMT,0),'원)')
+                       SEPARATOR  '/' ) AS RESVE_DT  
+                     FROM 
+                       TB_FCL_APLY_RSVTDE A
+                       LEFT JOIN TB_FCL_SPCE_RSVTDE B 
+                       ON A.RSVTDEID = B.RSVTDEID
+                    WHERE A.APLYID = #{aplyid}
+                    GROUP BY APLYID
+            ) B ON A.APLYID = B.APLYID
+            INNER JOIN TB_FCL_SPCE E
+            ON B.SPCEID = E.SPCEID
+            INNER JOIN TB_FCL_FCLT F
+            ON E.FCLTID = F.FCLTID
+            INNER JOIN TB_CMM_INST C
+            ON F.INSTID = C.INSTID
+            LEFT OUTER JOIN TB_CMM_CD G ON C.INST_TYPE_CD = G.CD
+            LEFT OUTER JOIN TB_CMM_USER H ON A.APLCNTID = H.USERID
+            LEFT OUTER JOIN (
                 SELECT
                     A.USERID
                      ,CASE WHEN INSTR(GROUP_CONCAT(A.ROLEID),'1') > 0 OR INSTR(GROUP_CONCAT(A.ROLEID),'5') > 0 THEN 'A'
@@ -215,19 +184,9 @@
                   AND A.ROLEID = B.ROLEID
                 GROUP BY USERID
             ) I
-                                ON(H.USERID = I.USERID)
-                LEFT OUTER JOIN TB_CMM_INST J ON H.INSTID = J.INSTID
-                INNER JOIN (
-                SELECT
-                    CD
-                     , CD_NM
-                FROM
-                    TB_CMM_CD
-                WHERE
-                    CDGRPID = 190
-            ) K ON (A.STLM_MTHD_CD = K.CD)
-        WHERE
-            1=1
+            ON(H.USERID = I.USERID)
+            LEFT OUTER JOIN TB_CMM_INST J ON H.INSTID = J.INSTID
+        WHERE 1=1
           AND A.APLYID = #{aplyid}
     </select>
 

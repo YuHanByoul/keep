@@ -184,9 +184,11 @@ public class ResveReqstVo extends ParentRequestVo {
     private String de;
 
     /** 시작 일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date bgngDt;
 
     /** 종료 일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date endDt;
 
     /** 공간 이름 */
@@ -255,6 +257,9 @@ public class ResveReqstVo extends ParentRequestVo {
 
     /** 우편번호 */
     private String zip;
+
+    /** 주소 상세 */
+    private String addrDtl;
 
     /** 지역 코드 */
     private String rgnCd;

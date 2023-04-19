@@ -6,6 +6,8 @@ import javax.validation.Valid;
 
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
+import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
+
 /**
  *
  * 지정프로그램 DAO 클래스
@@ -68,6 +70,18 @@ public interface DsgnPrgrmDao {
 	 * @throws Exception
 	 */
 	public List<DsgnPrgrmVo> selectDsgnPrgrmList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 지정프로그램 목록 엑셀 다운
+	*
+	* @Title : selectDsgnPrgrmExcelDownList
+	* @Description : 지정프로그램 목록 엑셀 다운
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return List<AsgsysSrngVo>
+	*/
+	public List<DsgnPrgrmVo> selectDsgnPrgrmExcelDownList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 	/**
 	* 지정내역 목록 조회
@@ -438,6 +452,8 @@ public interface DsgnPrgrmDao {
 	* @return List<DsgnPrgrmVo>
 	*/
 	public List<DsgnPrgrmVo> selectSprtgrpClndrList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+
 
 
 

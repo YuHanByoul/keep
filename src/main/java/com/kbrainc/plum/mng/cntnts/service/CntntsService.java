@@ -3,14 +3,11 @@ package com.kbrainc.plum.mng.cntnts.service;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.Valid;
-
 import com.kbrainc.plum.mng.cntnts.model.CntntsEduSbjctVo;
 import com.kbrainc.plum.mng.cntnts.model.CntntsEduTrgtVo;
+import com.kbrainc.plum.mng.cntnts.model.CntntsQlityChkArtclVo;
+import com.kbrainc.plum.mng.cntnts.model.CntntsQlityChkVo;
 import com.kbrainc.plum.mng.cntnts.model.CntntsVo;
-import com.kbrainc.plum.mng.envtcherTrnngInst.model.EnvtcherTrnngInstVo;
-import com.kbrainc.plum.mng.pack.model.PackageEduSbjctVo;
-import com.kbrainc.plum.mng.pack.model.PackageEduTrgtVo;
 
 /**
 * 컨텐츠 관리 서비스 클래스
@@ -59,10 +56,11 @@ public interface CntntsService {
     * @param cntntsVo 객체
      * @param eduTrgt 
      * @param eduSbjctCds 
+     * @param ceckid 
     * @throws Exception 예외
     * @return int
     */
-    public int insertCntnts(CntntsVo cntntsVo, String[] eduSbjctCds, String[] eduTrgt) throws Exception;
+    public int insertCntnts(CntntsVo cntntsVo, String[] eduSbjctCds, String[] eduTrgt, String ceckid) throws Exception;
     
     /**
     * 컨텐츠 관리 게시글 수정
@@ -87,9 +85,76 @@ public interface CntntsService {
     */
     public int deleteCntnts(CntntsVo cntntsVo, String[] cntntsids) throws Exception;
 
+    /**
+    * 교육주제 코드 리스트 조회
+    *
+    * @Title : selectCntntsCdList
+    * @Description : 교육주제 코드 리스트 조회
+    * @param map
+    * @return
+    * @throws Exception
+    * @return List<Map<String,String>>
+    */
     public List<Map<String,String>> selectCntntsCdList(Map<String,String> map) throws Exception;
 
+    /**
+    * 콘텐츠 교육 주제 코드 맵핑 리스트 호출 
+    *
+    * @Title : selectCntntsEduSbjctList
+    * @Description : selectCntntsCdList
+    * @param cntntsEduSbjctVo
+    * @return
+    * @throws Exception
+    * @return List<CntntsEduSbjctVo>
+    */
     public List<CntntsEduSbjctVo> selectCntntsEduSbjctList(CntntsEduSbjctVo cntntsEduSbjctVo) throws Exception;
 
+    /**
+    * 콘텐츠 교육 대상 코드 리스트 호출
+    *
+    * @Title : selectCntntsEduTrgtList
+    * @Description : 콘텐츠 교육 대상 코드 리스트 호출
+    * @param cntntsVo
+    * @return
+    * @throws Exception
+    * @return List<CntntsEduTrgtVo>
+    */
     public List<CntntsEduTrgtVo> selectCntntsEduTrgtList(CntntsVo cntntsVo) throws Exception;
+    
+    /**
+    * 체크리스트 목록 
+    *
+    * @Title : selectQlityChkList
+    * @Description : 체크리스트 목록
+    * @return
+    * @throws Exception
+    * @return List<QlityChklstVo>
+    */
+    List<CntntsQlityChkVo> selectQlityChkList() throws Exception;
+
+    /**
+    * 등록한 체크리스트 목록
+    *
+    * @Title : selectQlityChkArtclList
+    * @Description : 등록한 체크리스트 목록
+    * @param cntntsid
+    * @return
+    * @throws Exception
+    * @return List<QlityChkArtclVo>
+    */
+    List<CntntsQlityChkArtclVo> selectQlityChkArtclList(String cntntsid) throws Exception;
+
+    /**
+    * 체크리스트 등록
+     * @param type 
+    *
+    * @Title : insertQlityChkList
+    * @Description : 체크리스트 등록
+    * @param cntntsQlityChkVo
+    * @param cntntsQlityChkArtclVo
+    * @return
+    * @throws Exception
+    * @return int
+    */
+    int insertQlityChkList(String type, CntntsQlityChkVo cntntsQlityChkVo, CntntsQlityChkArtclVo cntntsQlityChkArtclVo) throws Exception;
 }

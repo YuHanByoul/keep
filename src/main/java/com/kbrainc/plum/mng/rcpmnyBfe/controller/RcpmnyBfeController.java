@@ -96,7 +96,7 @@ public class RcpmnyBfeController {
     public Map<String, Object> selectRcpmnyBfeList(RcpmnyBfeVo rcpmnyBfeVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         List<RcpmnyBfeVo> result = null;
-
+        rcpmnyBfeVo.setUser(user);
         result =  rcpmnyBfeService.selectRcpmnyBfeList(rcpmnyBfeVo);
 
         if (result.size() > 0) {

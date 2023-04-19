@@ -18,6 +18,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -239,16 +240,44 @@ public class ReqMngServiceImpl extends PlumAbstractServiceImpl implements ReqMng
         //Font 설정.
         HSSFFont font = workbook.createFont();
         font.setFontName(HSSFFont.FONT_ARIAL);
-        //제목의 스타일 지정
+        //제목의 스타일 지정 (접수 정보)
+        HSSFCellStyle titlestyle2 = workbook.createCellStyle();
+        titlestyle2.setFillForegroundColor(HSSFColor.BRIGHT_GREEN.index);
+        titlestyle2.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+        titlestyle2.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+//        titlestyle.setWrapText(true);
+        titlestyle2.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+        titlestyle2.setBorderRight(HSSFCellStyle.BORDER_THIN);    //얇은 테두리 설정
+        titlestyle2.setBorderLeft(HSSFCellStyle.BORDER_THIN);    //얇은 테두리 설정
+        titlestyle2.setBorderTop(HSSFCellStyle.BORDER_THIN);    //얇은 테두리 설정
+        titlestyle2.setBorderBottom(HSSFCellStyle.BORDER_THIN);//얇은 테두리 설정
+        titlestyle2.setFont(font);
+        
+        //제목의 스타일 지정 (프로그램 정보)
         HSSFCellStyle titlestyle = workbook.createCellStyle();
-        titlestyle.setFillForegroundColor(HSSFColor.SKY_BLUE.index);
+        titlestyle.setFillForegroundColor(HSSFColor.YELLOW.index);
         titlestyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+        titlestyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+//        titlestyle.setWrapText(true);
         titlestyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
         titlestyle.setBorderRight(HSSFCellStyle.BORDER_THIN);    //얇은 테두리 설정
         titlestyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);    //얇은 테두리 설정
         titlestyle.setBorderTop(HSSFCellStyle.BORDER_THIN);    //얇은 테두리 설정
         titlestyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);//얇은 테두리 설정
         titlestyle.setFont(font);
+        
+        //제목의 스타일 지정 (기관 정보)
+        HSSFCellStyle titlestyle3 = workbook.createCellStyle();
+        titlestyle3.setFillForegroundColor(HSSFColor.SKY_BLUE.index);
+        titlestyle3.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+        titlestyle3.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+//        titlestyle.setWrapText(true);
+        titlestyle3.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+        titlestyle3.setBorderRight(HSSFCellStyle.BORDER_THIN);    //얇은 테두리 설정
+        titlestyle3.setBorderLeft(HSSFCellStyle.BORDER_THIN);    //얇은 테두리 설정
+        titlestyle3.setBorderTop(HSSFCellStyle.BORDER_THIN);    //얇은 테두리 설정
+        titlestyle3.setBorderBottom(HSSFCellStyle.BORDER_THIN);//얇은 테두리 설정
+        titlestyle3.setFont(font);
         
         //내용 스타일 지정
         HSSFCellStyle style = workbook.createCellStyle();
@@ -264,38 +293,220 @@ public class ReqMngServiceImpl extends PlumAbstractServiceImpl implements ReqMng
         HSSFSheet sheet = null;
         
         sheet = workbook.createSheet("sheet1");
-
+        
+        ArrayList<String> titleList = new ArrayList<String>();
+        
+        // 생애주기 : 173101
+        // 학습공동체 : 173103
         String [] titleArr = {
-                "접수번호"
-                ,"신청상태"
-                ,"신청기관명"
-                ,"신청자"
-                ,"프로그램명"
-                ,"접수일시"
-                ,"심사상태"
-                ,"점수"
-                ,"심사등급"
-                ,"심사순위"
-                ,"선정결과"
-        };      
-
+                "연번","기관·단체명","프로그램 명","권역","지역"
+                ,"신청예산","교육대상","대면/비대면","실내/실외","강의형/체험형","일회성/다회성","필수주제\n교육차시\n1회기별(탄소중립)","선택주제","선택주제\n교육차시","운영회기","회기별\n교육차시","총\n교육차시","차시별\n교육인원","총\n교육인원"
+                ,"설립년도","기관유형","사업자 등록번호","대표자명","기관·단체 주소","전화번호","성명","핸드폰번호","이메일"
+        };
+        
+        // 종교인 : 173102
+        String [] titleArr2 = {
+                "연번","기관·단체명","프로그램 명","종단","권역","지역"
+                ,"신청예산","교육대상","대면/비대면","실내/실외","강의형/체험형","일회성/다회성","필수주제\n교육차시\n1회기별(탄소중립)","선택주제","선택주제\n교육차시","운영회기","회기별\n교육차시","총\n교육차시","차시별\n교육인원","총\n교육인원"
+                ,"설립년도","기관유형","사업자 등록번호","대표자명","기관·단체 주소","전화번호","성명","핸드폰번호","이메일"
+        };
+        
+        // 교사학습공동체 : 173105, 환경동아리 : 173104, 환경교육 우수학교 : 173107
+        String [] titleArr3 = {
+                "연번","기관·단체명","프로그램 명","권역","지역"
+                ,"설립년도","기관유형","사업자 등록번호","대표자명","기관·단체 주소","전화번호","성명","핸드폰번호","이메일"
+        };
+        
+        // 그린캠퍼스 : 173106
+        String [] titleArr4 = {
+                "연번","동아리명","권역","지역"
+                ,"주소","성명","핸드폰번호","이메일"
+        };
+        
         //Row 생성
         HSSFRow row = sheet.createRow(0);
-        //Cell 생성   
+        HSSFRow row2 = null;
         HSSFCell cell = null;
 
-        ArrayList<String> titleList = new ArrayList<String>();
-        for(int i=0;i<titleArr.length;i++){
-            titleList.add(titleArr[i]);
+        if ("173101".equals(reqUserVo.getFldCd()) || "173103".equals(reqUserVo.getFldCd())) {
+            // 생애주기. 학습공동체
+            cell = row.createCell(0);
+            cell.setCellValue("접수정보");
+            cell.setCellStyle(titlestyle2);
+            
+            cell = row.createCell(5);
+            cell.setCellValue("프로그램 정보");
+            cell.setCellStyle(titlestyle);
+            
+            cell = row.createCell(19);
+            cell.setCellValue("기관 정보");
+            cell.setCellStyle(titlestyle3);
+            
+            cell = row.createCell(27);
+            cell.setCellStyle(titlestyle3);
+            
+            sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 0, 4));
+            sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 5, 18));
+            sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 19, 27));
+            
+            for(int i=0;i<titleArr.length;i++){
+                titleList.add(titleArr[i]);
+            }
+            
+            row = sheet.createRow(1);
+            row2 = sheet.createRow(2);
+            int titleCnt = 0;
+            for(String title : titleList){
+                if (titleCnt >= 19 && titleCnt <= 21) {
+                    cell = row.createCell(titleCnt);
+                    cell.setCellValue("기관·단체현황");
+                    cell.setCellStyle(titlestyle3);
+                    sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 19, 21));
+                } else if (titleCnt >= 25) {
+                    cell = row.createCell(titleCnt);
+                    cell.setCellValue("담당자");
+                    cell.setCellStyle(titlestyle3);
+                    sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 25, 27));
+                } else {
+                    cell = row.createCell(titleCnt);
+                    cell.setCellValue(title);
+                    cell.setCellStyle(titleCnt < 5 ? titlestyle2 : (titleCnt > 18 ? titlestyle3 : titlestyle));
+                    sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum()+1, titleCnt, titleCnt));
+                }
+                cell = row2.createCell(titleCnt);
+                cell.setCellValue(title);
+                cell.setCellStyle(titleCnt < 5 ? titlestyle2 : (titleCnt > 18 ? titlestyle3 : titlestyle));
+                
+                titleCnt++;
+            }
+        } else if ("173102".equals(reqUserVo.getFldCd())) { 
+            // 종교인
+            cell = row.createCell(0);
+            cell.setCellValue("접수정보");
+            cell.setCellStyle(titlestyle2);
+            
+            cell = row.createCell(6);
+            cell.setCellValue("프로그램 정보");
+            cell.setCellStyle(titlestyle);
+            
+            cell = row.createCell(20);
+            cell.setCellValue("기관 정보");
+            cell.setCellStyle(titlestyle3);
+            
+            cell = row.createCell(28);
+            cell.setCellStyle(titlestyle3);
+            
+            sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 0, 5));
+            sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 6, 19));
+            sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 20, 28));
+            
+            for(int i=0;i<titleArr2.length;i++){
+                titleList.add(titleArr2[i]);
+            }
+            
+            row = sheet.createRow(1);
+            row2 = sheet.createRow(2);
+            int titleCnt = 0;
+            for(String title : titleList){
+                if (titleCnt >= 20 && titleCnt <= 22) {
+                    cell = row.createCell(titleCnt);
+                    cell.setCellValue("기관·단체현황");
+                    cell.setCellStyle(titlestyle3);
+                    sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 20, 22));
+                } else if (titleCnt >= 26) {
+                    cell = row.createCell(titleCnt);
+                    cell.setCellValue("담당자");
+                    cell.setCellStyle(titlestyle3);
+                    sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 26, 28));
+                } else {
+                    cell = row.createCell(titleCnt);
+                    cell.setCellValue(title);
+                    cell.setCellStyle(titleCnt < 6 ? titlestyle2 : (titleCnt > 19 ? titlestyle3 : titlestyle));
+                    sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum()+1, titleCnt, titleCnt));
+                }
+                cell = row2.createCell(titleCnt);
+                cell.setCellValue(title);
+                cell.setCellStyle(titleCnt < 6 ? titlestyle2 : (titleCnt > 19 ? titlestyle3 : titlestyle));
+                
+                titleCnt++;
+            }
+        } else if ("173104".equals(reqUserVo.getFldCd()) || "173105".equals(reqUserVo.getFldCd()) || "173107".equals(reqUserVo.getFldCd())) {
+            // 교사학습공동체, 환경동아리, 환경교육 우수학교
+            cell = row.createCell(0);
+            cell.setCellValue("접수정보");
+            cell.setCellStyle(titlestyle2);
+            
+            cell = row.createCell(5);
+            cell.setCellValue("기관 정보");
+            cell.setCellStyle(titlestyle3);
+            
+            cell = row.createCell(13);
+            cell.setCellStyle(titlestyle3);
+            
+            sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 0, 4));
+            sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 5, 13));
+            
+            for(int i=0;i<titleArr3.length;i++){
+                titleList.add(titleArr3[i]);
+            }
+            
+            row = sheet.createRow(1);
+            row2 = sheet.createRow(2);
+            int titleCnt = 0;
+            for(String title : titleList){
+                if (titleCnt >= 5 && titleCnt <= 7) {
+                    cell = row.createCell(titleCnt);
+                    cell.setCellValue("기관·단체현황");
+                    cell.setCellStyle(titlestyle3);
+                    sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 5, 7));
+                } else if (titleCnt >= 11) {
+                    cell = row.createCell(titleCnt);
+                    cell.setCellValue("담당자");
+                    cell.setCellStyle(titlestyle3);
+                    sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 11, 13));
+                } else {
+                    cell = row.createCell(titleCnt);
+                    cell.setCellValue(title);
+                    cell.setCellStyle(titleCnt < 5 ? titlestyle2 : titlestyle3);
+                    sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum()+1, titleCnt, titleCnt));
+                }
+                cell = row2.createCell(titleCnt);
+                cell.setCellValue(title);
+                cell.setCellStyle(titleCnt < 5 ? titlestyle2 : titlestyle3);
+                
+                titleCnt++;
+            }
+        } else {
+            // 그린캠퍼스
+            cell = row.createCell(0);
+            cell.setCellValue("접수정보");
+            cell.setCellStyle(titlestyle2);
+            
+            cell = row.createCell(4);
+            cell.setCellValue("신청자 정보");
+            cell.setCellStyle(titlestyle3);
+            
+            cell = row.createCell(7);
+            cell.setCellStyle(titlestyle3);
+            
+            sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 0, 3));
+            sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 4, 7));
+            
+            for(int i=0;i<titleArr4.length;i++){
+                titleList.add(titleArr4[i]);
+            }
+            
+            row = sheet.createRow(1);
+            int titleCnt = 0;
+            for(String title : titleList){
+                cell = row.createCell(titleCnt);
+                cell.setCellValue(title);
+                cell.setCellStyle(titleCnt < 4 ? titlestyle2 : titlestyle3);
+                
+                titleCnt++;
+            }
         }
 
-        int titleCnt = 0;
-        for(String title : titleList){
-            cell = row.createCell(titleCnt++);
-            cell.setCellValue(title);
-            cell.setCellStyle(titlestyle);
-        }
-        
         reqUserVo.setExcelYn("Y");
         list = reqMngDao.selectReqUserList(reqUserVo);
         
@@ -304,59 +515,156 @@ public class ReqMngServiceImpl extends PlumAbstractServiceImpl implements ReqMng
             for (int i=0; i<list.size();i++){
                 modelVo = list.get(i);
                 
-                //타이틀이 1개 row에 write 되어있음 따라서 i+1 
-                row = sheet.createRow((i+1));
+                if (!"173106".equals(reqUserVo.getFldCd())) { // 그린캠퍼스가 아니면...
+                    //타이틀이 3개 row에 write 되어있음 따라서 i+1 
+                    row = sheet.createRow((i+3));
+                } else {
+                    row = sheet.createRow((i+2));
+                }
                 cellnum = 0;
                 
-                /*접수번호*/
+                /** 접수정보 **/
+                /*연번*/
                 cell = row.createCell(cellnum++);
-                cell.setCellValue(StringUtil.nvl(modelVo.getAplyno(), ""));
+                cell.setCellValue(String.valueOf(i+1));
                 cell.setCellStyle(style);
-                /*신청상태*/
-                cell = row.createCell(cellnum++);
-                cell.setCellValue(StringUtil.nvl(modelVo.getAplySttsCd(), ""));
-                cell.setCellStyle(style);   
-                /*신청기관명*/
-                cell = row.createCell(cellnum++);
-                cell.setCellValue(StringUtil.nvl(modelVo.getInstNm(), ""));
-                cell.setCellStyle(style);
-                /*신청자*/
-                cell = row.createCell(cellnum++);
-                cell.setCellValue(StringUtil.nvl(modelVo.getUserNm(), ""));
-                cell.setCellStyle(style);
+                if (!"173106".equals(reqUserVo.getFldCd())) { // 그린캠퍼스가 아니면...
+                    /*기관/단체명*/
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(StringUtil.nvl(modelVo.getInstNm(), ""));
+                    cell.setCellStyle(style);
+                }
                 /*프로그램명*/
                 cell = row.createCell(cellnum++);
                 cell.setCellValue(StringUtil.nvl(modelVo.getPrgrmNm(),""));
                 cell.setCellStyle(style);
-                /*접수일시*/
+                if ("173102".equals(reqUserVo.getFldCd())) { // 종교인
+                    /*종단*/
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(StringUtil.nvl(modelVo.getRelgnNm(),""));
+                    cell.setCellStyle(style);
+                }
+                /*권역*/
                 cell = row.createCell(cellnum++);
-                cell.setCellValue(StringUtil.nvl(modelVo.getRegDe(),""));
+                cell.setCellValue(StringUtil.nvl(modelVo.getInstSareaNm(),""));
                 cell.setCellStyle(style);
-                /*심사상태*/
+                /*지역*/
                 cell = row.createCell(cellnum++);
-                cell.setCellValue(StringUtil.nvl(modelVo.getSrngSttsNm() ,""));
+                cell.setCellValue(StringUtil.nvl(modelVo.getRgnNm(),""));
                 cell.setCellStyle(style);
-                /*점수*/
+
+                if ("173101".equals(reqUserVo.getFldCd()) || "173102".equals(reqUserVo.getFldCd()) || "173103".equals(reqUserVo.getFldCd())) { // 생애주기, 종교인, 학습공동체
+                    /** 프로그램 정보 **/
+                    ProcPlanVo procPlanVo = new ProcPlanVo();
+                    procPlanVo.setAplyid(modelVo.getAplyid());
+                    procPlanVo = reqMngDao.detailPlan(procPlanVo);
+                    ProgramInfoVo programInfoVo = new ProgramInfoVo();
+                    programInfoVo.setAplyid(modelVo.getAplyid());
+                    programInfoVo = reqMngDao.detailPrgrmInfo(programInfoVo);
+                    /*신청예싼*/
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(procPlanVo == null ? "" : StringUtil.nvl(procPlanVo.getTotalSum(),""));
+                    cell.setCellStyle(style);
+                    /*교육대상*/
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(programInfoVo == null ? "" : StringUtil.nvl(programInfoVo.getEduTrgt(),""));
+                    cell.setCellStyle(style);
+                    /*대면/비대면*/
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(programInfoVo == null ? "" : StringUtil.nvl(programInfoVo.getEduMthdNm(),""));
+                    cell.setCellStyle(style);
+                    /*실내/실외*/
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(programInfoVo == null ? "" : StringUtil.nvl(programInfoVo.getLctrPlcSeNm(),""));
+                    cell.setCellStyle(style);
+                    /*강의형/체험형*/
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(programInfoVo == null ? "" : StringUtil.nvl(programInfoVo.getLctrFrmNm(),""));
+                    cell.setCellStyle(style);
+                    /*일회성/다회성*/
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(programInfoVo == null ? "" : StringUtil.nvl(programInfoVo.getLctrTmeMthdNm(),""));
+                    cell.setCellStyle(style);
+                    /*필수주제 교육차시*/
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(programInfoVo == null ? "" : StringUtil.nvl(programInfoVo.getEssntlSbjctRnd(),""));
+                    cell.setCellStyle(style);
+                    /*선택주제*/
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(programInfoVo == null ? "" : StringUtil.nvl(programInfoVo.getChoiseSbjctNm(),""));
+                    cell.setCellStyle(style);
+                    /*선택주제 교육차시*/
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(programInfoVo == null ? "" : StringUtil.nvl(programInfoVo.getChoiseSbjctRnd(),""));
+                    cell.setCellStyle(style);
+                    /*운영회기*/
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(programInfoVo == null ? "" : StringUtil.nvl(programInfoVo.getOperSesn(),""));
+                    cell.setCellStyle(style);
+                    /*회기별 교육차시*/
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(programInfoVo == null ? "" : StringUtil.nvl(programInfoVo.getSesnEduRnd(),""));
+                    cell.setCellStyle(style);
+                    /*총 교육차시*/
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(programInfoVo == null ? "" : StringUtil.nvl(programInfoVo.getTotalEduCnt(),""));
+                    cell.setCellStyle(style);
+                    /*차시별 교육인원*/
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(programInfoVo == null ? "" : StringUtil.nvl(programInfoVo.getRndEduNope(),""));
+                    cell.setCellStyle(style);
+                    /*총 교육인원*/
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(programInfoVo == null ? "" : StringUtil.nvl(programInfoVo.getWholEduNope(),""));
+                    cell.setCellStyle(style);
+                }
+                
+                if (!"173106".equals(reqUserVo.getFldCd())) { // 그린캠퍼스가 아니면...
+                    /** 기관 정보 **/
+                    /*설립연도*/
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue("".equals(StringUtil.nvl(modelVo.getRegDe(), "")) ? "" : modelVo.getRegDe().substring(0, 4));
+                    cell.setCellStyle(style);
+                    /*기관유형*/
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(StringUtil.nvl(modelVo.getInstTypeNm(), ""));
+                    cell.setCellStyle(style);
+                    /*등록번호*/
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(StringUtil.nvl(modelVo.getRegNo(), ""));
+                    cell.setCellStyle(style);
+                    /*대표자명*/
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(StringUtil.nvl(modelVo.getRprsvNm(), ""));
+                    cell.setCellStyle(style);
+                }
+                /*주소*/
                 cell = row.createCell(cellnum++);
-                cell.setCellValue(StringUtil.nvl(modelVo.getFrstScr(),""));
-                cell.setCellStyle(style); 
-                /*심사등급*/
+                cell.setCellValue(StringUtil.nvl(modelVo.getInstAddr(), "") + " " + StringUtil.nvl(modelVo.getInstAddrDtl(), ""));
+                cell.setCellStyle(style);
+                if (!"173106".equals(reqUserVo.getFldCd())) { // 그린캠퍼스가 아니면...
+                    /*전화번호*/
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(StringUtil.nvl(modelVo.getAplyInstTelno(), ""));
+                    cell.setCellStyle(style);
+                }
+                /*성명*/
                 cell = row.createCell(cellnum++);
-                cell.setCellValue(StringUtil.nvl(modelVo.getFirstGrd(),""));
-                cell.setCellStyle(style); 
-                /*심사순위*/
+                cell.setCellValue(StringUtil.nvl(modelVo.getAplcntNm(), ""));
+                cell.setCellStyle(style);
+                /*핸드폰번호*/
                 cell = row.createCell(cellnum++);
-                cell.setCellValue(StringUtil.nvl(modelVo.getFirstRkng(), ""));
-                cell.setCellStyle(style);  
-                /*선정결과*/
+                cell.setCellValue(StringUtil.nvl(modelVo.getAplcntTelno(), ""));
+                cell.setCellStyle(style);
+                /*이메일*/
                 cell = row.createCell(cellnum++);
-                cell.setCellValue(StringUtil.nvl(modelVo.getSlctnSttsNm(), ""));
-                cell.setCellStyle(style);  
+                cell.setCellValue(StringUtil.nvl(modelVo.getAplcntEml(), ""));
+                cell.setCellStyle(style);
             }
 
             for(int i=0;i<titleList.size();i++){
                 sheet.autoSizeColumn((short)i);
-                sheet.setColumnWidth(i, sheet.getColumnWidth(i)+512);
+                sheet.setColumnWidth(i, sheet.getColumnWidth(i)+1024);
             }
         }   
         

@@ -84,11 +84,15 @@ public class FileController {
      */
     @PostMapping(value = {"/uploadFile.do", "/registFile.do"})
     public FileVo uploadFile(HttpServletRequest request, @RequestParam("file") MultipartFile file, FileGrpVo fileGrpVo, @UserInfo UserVo user, boolean isMulti) throws Exception {
+
+        UserVo parmaUser = new UserVo();
         
-        UserVo paramUser = null;
+        parmaUser = user;
         
         if ("/registFile.do".equals(request.getRequestURI()) && ("biz_file".equals(fileGrpVo.getFilegrpNm()) || "biz_logo".equals(fileGrpVo.getFilegrpNm()))) {
-            paramUser = (user == null)? new UserVo() :user;
+            if (user == null) {
+                parmaUser = new UserVo();
+            }
         }
         
         if (this.filegrpName.containsKey(fileGrpVo.getFilegrpNm())) {
@@ -127,7 +131,7 @@ public class FileController {
                 }
             }
             
-            return fileService.uploadFile(file, fileGrpVo, paramUser, isMulti);
+            return fileService.uploadFile(file, fileGrpVo, parmaUser, isMulti);
         }
         return new FileVo();
     }

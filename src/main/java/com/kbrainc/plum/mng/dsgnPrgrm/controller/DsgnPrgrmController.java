@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -22,7 +24,6 @@ import com.kbrainc.plum.cmm.error.controller.CustomErrorController;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.asgsysSrng.service.AsgsysSrngServiceImpl;
-import com.kbrainc.plum.mng.code.service.CodeServiceImpl;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmObjcVo;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.mng.dsgnPrgrm.service.DsgnPrgrmServiceImpl;
@@ -130,6 +131,23 @@ public class DsgnPrgrmController {
         resultMap.put("list", result);
 
         return resultMap;
+    }
+
+
+    /**
+    * 지정프로그램 목록 엑셀 다운
+    *
+    * @Title : selectDsgnPrgrmExcelDownList
+    * @Description : 지정프로그램 목록 엑셀 다운
+    * @param dsgnPrgrmVo
+    * @param request
+    * @param response
+    * @throws Exception
+    * @return void
+    */
+    @RequestMapping(value = "/mng/dsgnPrgrm/selectDsgnPrgrmExcelDownList.do")
+    public void selectDsgnPrgrmExcelDownList(DsgnPrgrmVo dsgnPrgrmVo, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    	dsgnPrgrmServiceImpl.selectDsgnPrgrmExcelDownList(dsgnPrgrmVo, response, request);
     }
 
     /**

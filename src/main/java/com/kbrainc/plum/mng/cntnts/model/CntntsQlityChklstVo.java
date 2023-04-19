@@ -1,4 +1,4 @@
-package com.kbrainc.plum.mng.qlityChk.model;
+package com.kbrainc.plum.mng.cntnts.model;
 
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -6,35 +6,33 @@ import com.kbrainc.plum.rte.model.UserVo;
 import lombok.Data;
 
 /**
-* 콘텐츠 품질 체크 Vo 클래스
+* 콘텐츠 품질 체크리스트 Vo 클래스
 *
 * <pre>
 * com.kbrainc.plum.mng.qlityChk.model
-* - QlityChkVo.java
+* - QlityChklstVo.java
 * </pre>
 *
-* @ClassName : QlityChkVo
-* @Description : 콘텐츠 품질 체크 Vo 클래스
+* @ClassName : QlityChklstVo
+* @Description : 콘텐츠 품질 체크리스트 Vo 클래스
 * @author : JD
 * @date : 2023. 4. 18.
 * @Version :
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
 @Data
-public class QlityChkVo  extends ParentRequestVo{
+public class CntntsQlityChklstVo  extends ParentRequestVo{
     
     private UserVo user;
     
-    /** 체크아이디 */
-    private Integer ceckid;
-    /** 사용자아이디 */
-    private String userid;
-    /** 대상_코드 */
-    private String trgtCd;
-    /** 이벤트_코드 */
-    private String evntCd;
-    /** 콘텐츠아이디 */
-    private String cntntsid;
+    /** 체크리스트아이디 */
+    private String chklstid;
+    /** 분야코드 */
+    private String fldCd;
+    /** 순서 */
+    private String ordr;
+    /** 내용 */
+    private String cn;
     /** 수정_일시 */
     private String mdfcnDt;
     /** 수정자아이디 */
@@ -43,5 +41,8 @@ public class QlityChkVo  extends ParentRequestVo{
     private String regDt;
     /** 등록자아이디 */
     private String rgtrid;
+    
+    private Integer count;
+    private String fldCdNm;
     
 }

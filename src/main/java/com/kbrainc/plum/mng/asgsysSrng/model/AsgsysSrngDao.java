@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.front.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.mng.member.model.MemberVo;
 import com.kbrainc.plum.rte.model.UserVo;
 
@@ -1197,5 +1198,17 @@ public interface AsgsysSrngDao {
 	* @return int
 	*/
 	public int deleteChklstAns(ChklstAnsVo chklstAnsVo) throws Exception;
+
+	/**
+	* 컨설팅 목록 조회
+	*
+	* @Title : selectCsltngList
+	* @Description : 컨설팅 목록 조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnPrgrmVo>
+	*/
+	public List<DsgnPrgrmVo> selectCsltngList(AsgsysSrngVo asgsysSrngVo)throws Exception;
 
 }

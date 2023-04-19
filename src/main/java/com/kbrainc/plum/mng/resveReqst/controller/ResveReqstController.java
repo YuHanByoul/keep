@@ -205,11 +205,8 @@ public class ResveReqstController {
             }
             return resultMap;
         }
-        
         resveReqstVo.setUser(user);
-
         int retVal = 0;
-                
         retVal = resveReqstService.updateResveReqst(resveReqstVo);
         
         if (retVal > 0) {

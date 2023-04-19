@@ -10,7 +10,6 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -27,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.cmm.error.controller.CustomErrorController;
 import com.kbrainc.plum.cmm.file.model.FileVo;
-import com.kbrainc.plum.mng.asgsysSrng.controller.AsgsysSrngController;
+import com.kbrainc.plum.front.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AcbgVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngDao;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
@@ -1501,15 +1500,19 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	ret += asgsysSrngDao.insertPrgrmDstnctn(asgsysSrngVo);
 
     	//지정프로그램 수정
-    	chklstid = asgsysSrngDao.getCheckListId(asgsysSrngVo);
 
+    	assPrgrmVo = asgsysSrngDao.selectPrgrm(asgsysSrngVo);
+
+    	//숙박여부,운영형태코드로 체크리스트 가 정해진경우
+    	if(null != asgsysSrngVo.getChkOperFrmCd() && "".equals(asgsysSrngVo.getChkOperFrmCd())){
+    		chklstid = asgsysSrngDao.getCheckListId(asgsysSrngVo);
+    	}
     	if(null != chklstid ) {
-    		assPrgrmVo = asgsysSrngDao.selectPrgrm(asgsysSrngVo);
     		assPrgrmVo.setChklstid(chklstid);
     	}
+
     	assPrgrmVo.setPrgrmNm(asgsysSrngVo.getPrgrmNm());
     	assPrgrmVo.setCnsltngPrgrsYn(asgsysSrngVo.getCnsltngPrgrsYn());
-    	assPrgrmVo.setCnsltngKndCd(asgsysSrngVo.getCnsltngKndCd());
     	assPrgrmVo.setCnsltngid(asgsysSrngVo.getCnsltngid());
     	ret += asgsysSrngDao.updatePrgrm(assPrgrmVo);
 
@@ -1551,8 +1554,6 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     		ret += asgsysSrngDao.insertEduSbjct(asgsysSrngVo, eduSbjctCdArr, asgsysSrngVo.getUser());
     	}
 
-
-
 		return ret;
 	}
 
@@ -1590,14 +1591,6 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	List<PrgrmSchdlVo> schdLst = asgsysSrngVo.getPrgrmSchdlLst();
 
     	//지정프로그램 수정
-
-
-    	log.info("@@@@@@@@@@@@ : ");
-    	log.info("@@@@@@@@@@@@ : ");
-    	log.info("@@@@@@@@@@@@ : " + asgsysSrngVo.getChkOperFrmCd());
-    	log.info("@@@@@@@@@@@@ : ");
-    	log.info("@@@@@@@@@@@@ : ");
-
 
     	assPrgrmVo = asgsysSrngDao.selectPrgrm(asgsysSrngVo);
 
@@ -1821,6 +1814,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 	* @throws Exception
 	* @return List<AsgsysSrngVo>
 	*/
+    @Override
 	public List<AsgsysSrngVo> selectjdgsList(AsgsysSrngVo asgsysSrngVo) throws Exception{
 		return asgsysSrngDao.selectjdgsList(asgsysSrngVo);
 	}
@@ -1835,10 +1829,25 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 	* @throws Exception
 	* @return List<AsgsysSrngVo>
 	*/
+    @Override
 	public List<AsgsysSrngVo> selectSrngQitemList(AsgsysSrngVo asgsysSrngVo) throws Exception{
 		return asgsysSrngDao.selectSrngQitemList(asgsysSrngVo);
 	}
 
+    /**
+    * 컨설팅 목록조회
+    *
+    * @Title : selectCsltngList
+    * @Description : 컨설팅 목록조회
+    * @param asgsysSrngVo
+    * @return
+    * @throws Exception
+    * @return List<DsgnPrgrmVo>
+    */
+    @Override
+	public List<DsgnPrgrmVo> selectCsltngList(AsgsysSrngVo asgsysSrngVo) throws Exception{
+		return asgsysSrngDao.selectCsltngList(asgsysSrngVo);
+	}
 
 
 }
