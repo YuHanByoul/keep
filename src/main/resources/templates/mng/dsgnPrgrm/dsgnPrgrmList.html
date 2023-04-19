@@ -67,8 +67,8 @@
                     <!-- //키워드 filter -->
                     <!-- 키워드 filter-btn -->
                     <div class="mt-1 p-t-20 text-center border-top">
-                        <button class="btn btn-disabled m-r-5" onclick="fn_init()" >초기화</button>
-                        <button class="btn btn-primary" onclick="fn_searchForm()">검색</button>
+                        <button type="button" class="btn btn-disabled m-r-5" onclick="fn_init()" >초기화</button>
+                        <button type="submit" class="btn btn-primary" onclick="fn_searchForm()" >검색</button>
                     </div>
                 </div>
             </form>
@@ -85,7 +85,7 @@
                             <button type="button" class="btn btn-primary waves-effect waves-light m-r-5"  onclick='openSrngCalenderModal()'>심사일정 캘린더</button>
                         </th:block>
                         <th:block sec:authorize-url="/mng/dsgnPrgrm/selectDsgnPrgrmList.do">
-                            <button type="button" class="btn btn-primary waves-effect waves-light m-r-5" onclick='clearBlackList()' >엑셀다운로드</button>
+                            <button type="button" class="btn btn-primary waves-effect waves-light m-r-5" onclick='excelDown()' >엑셀다운로드</button>
                         </th:block>
                     </div>
                 </div>
@@ -228,15 +228,9 @@
                 if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
 
                 var detailUrl = "/mng/dsgnPrgrm/dsgnPrgrmDetailForm.html?prgrmid=" + args.item.prgrmid+"&hstryid="+args.item.hstryid;
-                //프로그램명 클릭 - 상세전환
-                if(args.event.target.cellIndex==5){
-                  detailUrl+="&tabIndex=1";
-                  gridHelper1.loadContent(detailUrl);
-                  gridHelper1.rowClick(args);
-                }
 
                 //지정상태 클릭 - 지정정보 변경 모달 팝업
-                else if(args.event.target.cellIndex==7){
+                if(args.event.target.cellIndex==7){
 
                   openDsgnInfoChgModal(args);
                 }
@@ -262,6 +256,12 @@
                 else if(args.event.target.cellIndex==11){
                   detailUrl+="&tabIndex=5";
                   gridHelper1.loadContent(detailUrl);
+                    gridHelper1.rowClick(args);
+                }else{
+
+                    //프로그램명 클릭 - 상세전환
+                    detailUrl+="&tabIndex=1";
+                    gridHelper1.loadContent(detailUrl);
                     gridHelper1.rowClick(args);
                 }
 
@@ -340,6 +340,14 @@
                 dsgnInfoChgListModal.show();
             }
         });
+    }
+
+    /* 목록 엑셀 다운로드 */
+    function excelDown(){
+        var f = document.searchFrm;
+
+        f.action ="/mng/dsgnPrgrm/selectDsgnPrgrmExcelDownList.do";
+        f.submit();
     }
 
 </script>
