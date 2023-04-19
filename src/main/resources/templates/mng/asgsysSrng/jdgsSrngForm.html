@@ -101,7 +101,7 @@
                             <div class="col-auto" id="sftyFileListDiv">
                                 <th:block th:unless="${#lists.isEmpty(bfrCertFileList)}" th:each="item, i : ${bfrCertFileList}" th:if = "${item.fileid} > 0">
                                 <span class ='label label-inverse ' th:id="'bfrCertFile_'+${item.fileid}">
-                                    <th:block th:text="${item.orginlFileNm}"></th:block>&nbsp;&nbsp;
+                                    <span class='text-white' href="javascript:void(0)" th:name="${item.fileid}" th:onclick="downloadFileByFileid([[${item.fileid}]],[[${item.fileIdntfcKey}]])"><th:block th:text="${item.orginlFileNm}"></th:block>&nbsp;&nbsp;</a></span>
                                 </span>
                             </div>
                         </div>
@@ -117,13 +117,12 @@
 						</div>
                         <div class="mb-2 col-12">
                             <span th:unless="${!#lists.isEmpty(aplyFileList) && aplyFileList[0].fileid!=0 && aplyFileList[0].fileid!=null}">선택된 파일 없음.</span>
-<!--                             <input type="file" multiple id="evdncDcmntFile2" name="evdncDcmntFile2" class="form-control form-control-sm" th:if="${#lists.isEmpty(aplyFileList)}" disabled/> -->
                         </div>
 						<div class="row">
                             <div class="col-auto" id="aplyFileListDiv">
                                 <th:block th:unless="${#lists.isEmpty(aplyFileList)}" th:each="item, i : ${aplyFileList}" th:if = "${item.fileid} > 0">
                                 <span class ='label label-inverse ' th:id="'aplyFile_'+${item.fileid}">
-                                    <th:block th:text="${item.orginlFileNm}"></th:block>&nbsp;&nbsp;
+                                    <span class='text-white' href="javascript:void(0)" th:name="${item.fileid}" th:onclick="downloadFileByFileid([[${item.fileid}]],[[${item.fileIdntfcKey}]])"><th:block th:text="${item.orginlFileNm}"></th:block>&nbsp;&nbsp;</a></span>
                                 </span>
                             </div>
                         </div>
@@ -173,8 +172,8 @@
                                         <td class="text-center v-middle">[[${item.idntyMttr}]]</td>
                                         <td class="text-center v-middle">[[${item.altm}]]</td>
                                         <td class="text-center v-middle">
-                                        <input th:if     ="${item.chklstSeCd != ''}" type="text" class="text-center v-middle form-control form-control-sm" th:name="${'scr'+ i.count}" th:id="${'scr'+ i.count}" placeholder="0" th:value="${item.chkLstScr}" disabled/>
-                                        <input th:unless ="${item.chklstSeCd != ''}" type="text" class="text-center v-middle form-control form-control-sm" th:name="${'scr'+ i.count}" th:id="${'scr'+ i.count}" placeholder="0" th:value="${item.scr}" />
+                                        <input th:if     ="${item.chklstSeCd != ''}" type="number" class="text-center v-middle form-control form-control-sm" th:max="${item.altm}" th:name="${'scr'+ i.count}" th:id="${'scr'+ i.count}" placeholder="0" th:value="${item.chkLstScr}" disabled/>
+                                        <input th:unless ="${item.chklstSeCd != ''}" type="number" class="text-center v-middle form-control form-control-sm" th:max="${item.altm}"th:name="${'scr'+ i.count}" th:id="${'scr'+ i.count}" placeholder="0" th:value="${item.scr}" />
                                         <input type="hidden" th:id="${'srngData' + i.count}"
                                                              th:data-formid     = "${item.formid    }"
                                                              th:data-qitemid    = "${item.qitemid   }"
@@ -199,9 +198,9 @@
                 </div>
             </div>
             <div class="mb-3 form-group row">
-                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="judgeJudgingJudgeComment1"><strong>심사의견</strong></label>
+                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="srngOpnn"><strong>심사의견</strong></label>
 				<div class="col-12">
-					<textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="" id="srngOpnn" name="srngOpnn"><th:block th:text="${jdgsSrngInfo.srngOpnn}"></th:block></textarea>
+					<textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="심사의견 입력(1000자 이내)" id="srngOpnn" name="srngOpnn"><th:block th:text="${jdgsSrngInfo.srngOpnn}"></th:block></textarea>
 				</div>
             </div>
     	</div>
@@ -219,7 +218,7 @@ $("[id^=scr]").focusout("change",function(){
 
 	$("[id^=scr]").each(function(idx,item) {
 
-		var altm = Number($("#altm"+(idx+1)).prop("innerText"));
+		var altm = Number($("#srngData"+(idx+1)).attr("data-altm"));
 
 		if(item.value > altm){
 
@@ -234,6 +233,9 @@ $("[id^=scr]").focusout("change",function(){
 
 function fn_insertJdgsSrngInfo() {
 
+
+
+	if(!$("#jdgsSrngInfoFrm").valid())return;
 	if(!confirm("저장하시겠습니까?")) return;
 
 	var param={};
@@ -301,7 +303,7 @@ function fn_jdgsSrngInfoFrmInit(){
 		$("#saveBtn").prop("disabled",true);
 	}
 
-    $("#jdgsSrngInfoFrm [id^=operFrmCd]").prop("disabled", true);
+	$("#jdgsSrngInfoFrm [id^=operFrmCd]").prop("disabled", true);
     $("#jdgsSrngInfoFrm [id^=styYn]").prop("disabled", true);
     $("#jdgsSrngInfoFrm [id^=sftyMngYn]").prop("disabled", true);
 
@@ -320,7 +322,16 @@ function fn_jdgsSrngInfoFrmInit(){
 
 
 $(function(){
-	//fn_jdgsSrngInfoFrmInit();
+	fn_jdgsSrngInfoFrmInit();
+
+    var validator = $("#jdgsSrngInfoFrm").validate({
+        rules: {
+            srngOpnn : { maxlength: 1000 }
+        },
+        messages: {
+            srngOpnn : { maxlength: "심사의견 1000자를 넘을 수 없습니다." }
+        }
+    });
 });
 
 </script>
