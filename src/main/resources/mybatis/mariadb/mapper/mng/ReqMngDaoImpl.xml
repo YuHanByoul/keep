@@ -17,14 +17,14 @@
         </if>
         <if test="searchAplyBgngDe != null and searchAplyBgngDe != ''">
         <![CDATA[
-        AND (DATE_FORMAT(APLY_BGNG_DT, '%Y-%m-%d') BETWEEN #{searchAplyBgngDe} AND #{searchAplyEndDe}
-        OR DATE_FORMAT(APLY_END_DT, '%Y-%m-%d') BETWEEN #{searchAplyBgngDe} AND #{searchAplyEndDe})
+        AND (#{searchAplyBgngDe} BETWEEN DATE_FORMAT(APLY_BGNG_DT, '%Y-%m-%d') BETWEEN DATE_FORMAT(APLY_END_DT, '%Y-%m-%d') 
+        OR #{searchAplyEndDe} BETWEEN DATE_FORMAT(APLY_BGNG_DT, '%Y-%m-%d') BETWEEN DATE_FORMAT(APLY_END_DT, '%Y-%m-%d'))
         ]]>
         </if>
         <if test="searchSrngBgngDe != null and searchSrngBgngDe != ''">
         <![CDATA[
-        AND (DATE_FORMAT(SRNG_BGNG_DT, '%Y-%m-%d') BETWEEN #{searchSrngBgngDe} AND #{searchSrngEndDe}
-        OR DATE_FORMAT(SRNG_END_DT, '%Y-%m-%d') BETWEEN #{searchSrngBgngDe} AND #{searchSrngEndDe})
+        AND (#{searchSrngBgngDe} BETWEEN SRNG_BGNG_DT AND SRNG_END_DT
+        OR #{searchSrngEndDe} BETWEEN SRNG_BGNG_DT AND SRNG_END_DT)
         ]]>
         </if>
         <if test="searchAplyStts != null and searchAplyStts != ''">
@@ -165,6 +165,8 @@
                 , TSP.MDFCN_DT
                 , APLY_BGNG_DT
                 , APLY_END_DT
+                , DATE_FORMAT(SRNG_BGNG_DT, '%Y-%m-%d') AS SRNG_BGNG_DT
+                , DATE_FORMAT(SRNG_END_DT, '%Y-%m-%d') AS SRNG_END_DT
             FROM
                 TB_SPB_PCNTST TSP 
                 INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID
