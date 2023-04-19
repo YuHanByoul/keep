@@ -125,7 +125,7 @@ public class LendController {
      */
     @RequestMapping(value = "/mng/lend/insertLend.do")
     @ResponseBody
-    public Map<String, Object> insertLend(@Valid @RequestBody LendVo LendVo, BindingResult bindingResult1,@UserInfo UserVo user) throws Exception {
+    public Map<String, Object> insertLend(@Valid @RequestBody LendVo lendVo, BindingResult bindingResult1,@UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         int retVal = 0;
 
@@ -137,15 +137,15 @@ public class LendController {
             return resultMap;
         }
         
-        LendVo.setUser(user);
+        lendVo.setUser(user);
         
-        if(lendService.checkPackageDuplicationYn(LendVo).equals("Y")) {
+        if(lendService.checkPackageDuplicationYn(lendVo).equals("Y")) {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
             resultMap.put("msg", "같은 기간에 꾸러미가 중복된 대여 모집이 있습니다.");
             return resultMap;
         }
         
-        retVal = lendService.insertLend(LendVo);
+        retVal = lendService.insertLend(lendVo);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -222,8 +222,8 @@ public class LendController {
         
         List<LendRndVo> lendRndList = lendService.selectLendRndList(resVo);
         for(LendRndVo vo :lendRndList) {
-            List<LendRndPackageindvdVo> LendRndPackageindvdList = lendService.selectLendRndPackageindvdList(vo);
-            vo.setLendRndPackageindvdVoList(LendRndPackageindvdList);
+            List<LendRndPackageindvdVo> lendRndPackageindvdList = lendService.selectLendRndPackageindvdList(vo);
+            vo.setLendRndPackageindvdVoList(lendRndPackageindvdList);
         }
         model.addAttribute("lendRndList", lendRndList);
         
@@ -242,7 +242,7 @@ public class LendController {
      */
     @RequestMapping(value = "/mng/lend/updateLend.do")
     @ResponseBody
-    public Map<String, Object> updateLend(@Valid @RequestBody LendVo LendVo, BindingResult bindingResult1,@UserInfo UserVo user) throws Exception {
+    public Map<String, Object> updateLend(@Valid @RequestBody LendVo lendVo, BindingResult bindingResult1,@UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         int retVal = 0;
         
@@ -253,15 +253,15 @@ public class LendController {
             }
             return resultMap;
         }
-        LendVo.setUser(user);
+        lendVo.setUser(user);
         
-        if(lendService.checkPackageDuplicationYn(LendVo).equals("Y")) {
+        if(lendService.checkPackageDuplicationYn(lendVo).equals("Y")) {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
             resultMap.put("msg", "같은 기간에 꾸러미가 중복된 대여 모집이 있습니다.");
             return resultMap;
         }
         
-        retVal = lendService.udateLend(LendVo);
+        retVal = lendService.udateLend(lendVo);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);

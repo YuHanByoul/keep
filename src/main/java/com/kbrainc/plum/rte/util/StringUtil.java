@@ -801,6 +801,9 @@ public class StringUtil {
             case 4:
                 retName = String.format("%s**%s", name.substring(0, 1), name.substring(3, 4));
                 break;
+            default : 
+                retName = String.format("%s*%s", name.substring(0, 1), name.substring(2, 3));
+                break;
         }   
         
         if (name.length() > 4) {
@@ -863,11 +866,12 @@ public class StringUtil {
     * @return String 태그가 제외된 문자열
     */
     public static String removeHTMLTag(String changeStr){
+        String returnStr = "" ;
         if(changeStr != null && !changeStr.equals("")){
-            changeStr = changeStr.replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", "").replaceAll("<", "").replaceAll("&nbsp;", "");            
+            returnStr = changeStr.replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", "").replaceAll("<", "").replaceAll("&nbsp;", "");            
         }else{
-            changeStr = "";
+            returnStr = "";
         }
-        return changeStr;
+        return returnStr;
     }
 }

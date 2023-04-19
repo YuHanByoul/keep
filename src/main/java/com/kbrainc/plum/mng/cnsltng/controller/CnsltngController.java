@@ -2,9 +2,9 @@ package com.kbrainc.plum.mng.cnsltng.controller;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -351,7 +351,7 @@ public class CnsltngController {
         cnsltngResultVo.setUser(user);
         
         if(!CommonUtil.isEmpty(cnsltngResultVo.getVstBgngDt()) &&!CommonUtil.isEmpty(cnsltngResultVo.getVstEndDt())) {
-            SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.getDefault());
             cnsltngResultVo.setVstBgngDate(dtFormat.parse("1970-01-01 "+cnsltngResultVo.getVstBgngDt()));
             cnsltngResultVo.setVstEndDate(dtFormat.parse("1970-01-01 "+cnsltngResultVo.getVstEndDt()));
         }

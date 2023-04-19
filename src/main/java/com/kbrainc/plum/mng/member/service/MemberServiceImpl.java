@@ -264,7 +264,8 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
                 StringBuilder contents = new StringBuilder();
                 contents.append("<tr><td align=\"center\" style=\"font-family:'맑은 고딕','Malgun Gothic','돋움',dotum,sans-serif;font-size:16px;font-weight:400;font-stretch:normal;font-style:normal;line-height:1.5;letter-spacing:-1px;color:#333333;padding:0 10px;\">");
                 contents.append("임시 비밀번호를 보내드립니다.<br /><br />로그인 후 비밀번호를 변경해주세요.<br /><br />");
-                contents.append("임시 비밀번호  :  "+ password);
+                contents.append("임시 비밀번호  :  ");
+                contents.append(password);
                 contents.append("&nbsp;</td></tr><tr><td style=\"height:30px;font-size:0px;mso-line-height-rule:exactly;line-height:0px;\">&nbsp;</td></tr>");
                 
                 Context context = new Context();
