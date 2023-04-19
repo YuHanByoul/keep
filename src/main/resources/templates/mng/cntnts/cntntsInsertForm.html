@@ -7,19 +7,19 @@
 		<!-- Tab Container Start -->
         <div class="card-block-small p-t-0">
             <div class="row">
-	            <div class="col-md-6 mb-3">
+	            <div class="col-lg-6 mb-3">
 	                <div class="mb-0 form-group required">
 	                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-0"><strong>교육주제</strong></div>
                        <div id="sbjctArea" >
                        
-                       <div class="row mb-3 mb-md-2 subject-form" id="subject1">
-                           <div class="col-md-10 mt-1 mt-md-0">
+                       <div class="row mt-1 subject-form" id="subject1">
+                           <div class="col">
                                <select id="subjectSelect1" name="eduSbjctCds" class="form-select form-select-sm" onchange="duplCheck('1')">
                                    <option value="" >-선택-</option>
                                    <option th:each="item : ${sbjctCdLsit}"   th:value="${item.CD}"> <th:block th:text="${item.CD_NM}" /> </option>
                                </select>
                            </div>
-                           <div class="col-md-auto">
+                           <div class="mt-sm-0" style="width:100px;">
                                <button type="button" class="input-group-text btn btn-primary btn-sm"  onclick="plusSubjectForm()" >+</button>
                                <button type="button" class="input-group-text btn btn-primary btn-sm"  onclick="removeSubjectForm('1')"disabled>-</button>
                            </div>
@@ -196,8 +196,8 @@
 
 <script type="text/javascript" src="/files/bower_components/handlebars/handlebars.min.js" charset="utf-8" ></script>
 <script  id="subjectFrm" type="text/x-handlebars-template">
-    <div class="row mb-3 mb-md-2 subject-form" id="subject{{frmNum}}">
-         <div class="col-md-10 mt-1 mt-md-0">
+    <div class="row mt-1 subject-form" id="subject{{frmNum}}" name="{{frmNum}}"  > 
+         <div class="col">
              <select id="subjectSelect{{frmNum}}" name="eduSbjctCds" class="form-select form-select-sm" onchange="duplCheck('{{frmNum}}')">
                  <option value="" >-선택-</option>
                  {{#each list}}
@@ -205,9 +205,9 @@
                  {{/each}}
              </select>
          </div>
-         <div class="col-md-auto">
-         	<button type="button" class="input-group-text btn btn-primary btn-sm"  onclick="plusSubjectForm()" >+</button>
-         	<button type="button" class="input-group-text btn btn-primary btn-sm"  onclick="removeSubjectForm('{{frmNum}}')">-</button>
+         <div class="mt-sm-0" style="width:100px;">
+            <button type="button" class="input-group-text btn btn-primary btn-sm"  onclick="plusSubjectForm()" >+</button>
+            <button type="button" class="input-group-text btn btn-primary btn-sm"  onclick="removeSubjectForm('{{frmNum}}')"  {{#if firstKey}}disabled {{/if}}>-</button>
          </div>
      </div>
 </script>
@@ -225,7 +225,7 @@
     var subjectLength = 0; 
     var subjectNum = [1];
     
-	var checkListPopupUrl = "/mng/qlityChk/openCheckListPopup.html?type=insert&trgtCd=246001";
+	var checkListPopupUrl = "/mng/cntnts/openCntntsChkLstPopup.html?type=insert&trgtCd=246001";
 	var checkListAddModal;
 	
 	$(function () {
@@ -384,7 +384,7 @@
 	};
 	
  	function openCheckListPopup(){
-/*  		var eduSbjctCheck = document.getElementsByName("eduSbjctCds");
+  		var eduSbjctCheck = document.getElementsByName("eduSbjctCds");
  		for(var i=0; i < eduSbjctCheck.length; i++) {
  			if(eduSbjctCheck[i].value == ""){
  	  	  	 	alert("교육 주제를 선택해주십시오.")
@@ -395,7 +395,7 @@
   	 	if(!($("#cntntsInsertForm").valid())) return;
   	 	
   	 	var editorData = editor.getData();
-        $("#cn").val(editorData); */
+        $("#cn").val(editorData);
         
 		$("#checkListPopup").load(checkListPopupUrl, function(response, status, xhr) {
 			if (status == "success") {
@@ -403,6 +403,30 @@
 				checkListAddModal.show();
 			}
 		});
+	}
+ 	
+ 	function insertForm(ceckid){
+ 		console.log(ceckid)
+	    var data =  $("#cntntsInsertForm").serialize();
+	    data += "&ceckid=" + ceckid;
+	    if(displayWorkProgress(true)){
+			$.ajax({
+				url : "/mng/cntnts/insertCntnts.do",
+				type: 'POST',
+				cache : false,
+				dataType: 'json',
+				data : data,
+				success : function (data){
+					if(data.result=="success"){
+						alert(data.msg);
+						gridHelper1.resetListContent();
+					}else{
+						alert(data.msg);
+					}
+					closeWorkProgress();
+				}
+			});
+	    }
 	}
  	
     duplCheck=(frmNum)=>{

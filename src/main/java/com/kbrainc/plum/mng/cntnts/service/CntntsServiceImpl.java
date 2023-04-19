@@ -12,8 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kbrainc.plum.mng.cntnts.model.CntntsDao;
 import com.kbrainc.plum.mng.cntnts.model.CntntsEduSbjctVo;
 import com.kbrainc.plum.mng.cntnts.model.CntntsEduTrgtVo;
+import com.kbrainc.plum.mng.cntnts.model.CntntsQlityChkArtclVo;
+import com.kbrainc.plum.mng.cntnts.model.CntntsQlityChkVo;
 import com.kbrainc.plum.mng.cntnts.model.CntntsVo;
 import com.kbrainc.plum.mng.envtcherTrnngInst.model.EnvtcherTrnngInstVo;
+import com.kbrainc.plum.mng.qlityChk.model.QlityChkArtclVo;
+import com.kbrainc.plum.mng.qlityChk.model.QlityChkVo;
+import com.kbrainc.plum.mng.qlityChk.model.QlityChklstVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
@@ -78,11 +83,12 @@ public class CntntsServiceImpl extends PlumAbstractServiceImpl implements Cntnts
     */
     @Override
     @Transactional
-    public int insertCntnts(CntntsVo cntntsVo, String[] eduSbjctCds, String[] eduTrgt) throws Exception {
+    public int insertCntnts(CntntsVo cntntsVo, String[] eduSbjctCds, String[] eduTrgt, String ceckid) throws Exception {
         int retVal = 0;
         retVal += cntntsDao.insertCntnts(cntntsVo);
         retVal += cntntsDao.insertEduSbjct(cntntsVo.getCntntsid(), eduSbjctCds, cntntsVo.getUser());
         retVal += cntntsDao.insertEduTrgt(cntntsVo.getCntntsid(), eduTrgt, cntntsVo.getUser());
+        retVal += cntntsDao.updateQlityChk(ceckid, cntntsVo.getCntntsid());
         return retVal;
     }
     
@@ -121,19 +127,107 @@ public class CntntsServiceImpl extends PlumAbstractServiceImpl implements Cntnts
         return cntntsDao.deleteCntnts(cntntsVo.getUser(), cntntsids);
     }
     
+    /**
+    * 교육주제 코드 리스트 조회
+    *
+    * @Title : selectCntntsCdList
+    * @Description : 교육주제 코드 리스트 조회
+    * @param map
+    * @return
+    * @throws Exception
+    * @return List<Map<String,String>>
+    */
     @Override
     public List<Map<String,String>> selectCntntsCdList(Map<String,String> map) throws Exception {
         return cntntsDao.selectCntntsCdList(map);
     }
 
+    /**
+    * 콘텐츠 교육 주제 코드 맵핑 리스트 호출 
+    *
+    * @Title : selectCntntsEduSbjctList
+    * @Description : selectCntntsCdList
+    * @param cntntsEduSbjctVo
+    * @return
+    * @throws Exception
+    * @return List<CntntsEduSbjctVo>
+    */
     @Override
     public List<CntntsEduSbjctVo> selectCntntsEduSbjctList(CntntsEduSbjctVo cntntsVo) throws Exception {
         return cntntsDao.selectCntntsEduSbjctList(cntntsVo);
     }
 
+    /**
+    * 콘텐츠 교육 대상 코드 리스트 호출
+    *
+    * @Title : selectCntntsEduTrgtList
+    * @Description : 콘텐츠 교육 대상 코드 리스트 호출
+    * @param cntntsVo
+    * @return
+    * @throws Exception
+    * @return List<CntntsEduTrgtVo>
+    */
     @Override
     public List<CntntsEduTrgtVo> selectCntntsEduTrgtList(CntntsVo cntntsVo) throws Exception {
         return cntntsDao.selectCntntsEduTrgtList(cntntsVo);
+    }
+    
+    /**
+    * 체크리스트 목록 
+    *
+    * @Title : selectQlityChkList
+    * @Description : 체크리스트 목록
+    * @return
+    * @throws Exception
+    * @return List<QlityChklstVo>
+    */
+    @Override
+    public List<QlityChklstVo> selectQlityChkList() throws Exception {
+        return cntntsDao.selectQlityChkList();
+    }
+
+    /**
+    * 등록한 체크리스트 목록
+    *
+    * @Title : selectQlityChkArtclList
+    * @Description : 등록한 체크리스트 목록
+    * @param cntntsid
+    * @return
+    * @throws Exception
+    * @return List<QlityChkArtclVo>
+    */
+    @Override
+    public List<QlityChkArtclVo> selectQlityChkArtclList(String cntntsid) throws Exception {
+        return cntntsDao.selectQlityChkArtclList(cntntsid);
+    }
+
+    /**
+    * 체크리스트 등록
+    *
+    * @Title : insertQlityChkList
+    * @Description : 체크리스트 등록
+    * @param cntntsQlityChkVo
+    * @param cntntsQlityChkArtclVo
+    * @return
+    * @throws Exception
+    * @return int
+    */
+    @Override
+    @Transactional
+    public int insertQlityChkList(String type, CntntsQlityChkVo cntntsQlityChkVo, CntntsQlityChkArtclVo cntntsQlityChkArtclVo) throws Exception {
+        int retVal = 0;
+        if(type.equals("insert")) {
+            retVal += cntntsDao.insertQlityChkList(cntntsQlityChkVo);
+            cntntsQlityChkArtclVo.setCeckid(cntntsQlityChkVo.getCeckid());
+            retVal += cntntsDao.insertQlityChkArtclList(cntntsQlityChkArtclVo);            
+        }else {
+            retVal += cntntsDao.insertQlityChkList(cntntsQlityChkVo);
+            cntntsQlityChkArtclVo.setCeckid(cntntsQlityChkVo.getCeckid());
+            retVal += cntntsDao.deleteQlityChkArtclList(cntntsQlityChkArtclVo);
+            retVal += cntntsDao.insertQlityChkArtclList(cntntsQlityChkArtclVo);            
+        }
+        
+        return retVal;
     }
 
 }

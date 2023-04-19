@@ -155,9 +155,8 @@
         </div>
     </div>
     
-    <input type="hidden" name="type" th:value="${type}">
+    <input type="hidden" name="type" id="type" th:value="${type}">
 	<input type="hidden" name="trgtCd" th:value="${trgtCd}">
-	
     </form>
     
 	<script th:inline="javascript">
@@ -225,20 +224,25 @@
 		
  		if(!confirm("검수사항 준수여부를 모두 확인하였으며, 향후 조치사항 발생 시 대응할 것에 동의합니다.")) return;
  		
- 		var data = $("#QlityChkForm").serialize();
+ 		var chklstData = $("#QlityChkForm").serialize();
  		
-  	    if(displayWorkProgress()){
+ 		console.log(1);
+  	    if(displayWorkProgress(true)){
 			$.ajax({
-				url : "/mng/qlityChk/insertQlityChkList.do",
+				url : "/mng/cntnts/insertQlityChkList.do",
 				type: 'POST',
 				cache : false,
 				dataType: 'json',
-				data : data,
+				data : chklstData,
 				success : function (data){
 					if(data.result=="success"){
-						alert(data.msg);
-						gridHelper1.resetListContent();
 						checkListAddModal.hide();
+						if($("#type").val() == "insert"){
+							insertForm(data.ceckid);	
+						}else {
+							updateForm();
+						}
+						
 					}else{
 						alert(data.msg);
 					}
