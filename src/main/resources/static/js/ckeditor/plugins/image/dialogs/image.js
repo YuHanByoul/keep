@@ -603,7 +603,7 @@
 						commit: function( type, element ) {
 							if ( type == IMAGE ) {
 								if ( this.getValue() || this.isChanged() )
-									element.setAttribute( 'alt', this.getValue() );
+									element.setAttribute( 'alt', !!this.getValue()? this.getValue : '' );
 							} else if ( type == PREVIEW )
 								element.setAttribute( 'alt', this.getValue() );
 							else if ( type == CLEANUP ) {
