@@ -36,6 +36,9 @@ public class DwnldDsctnVo {
     /** 파일 아이디 */
     private Integer fileid;
 
+    /** 파일 식별 키 */
+    private String fileIdntfcKey;
+
     /** 사용자 아이디 */
     private Integer userid;
 
@@ -50,7 +53,7 @@ public class DwnldDsctnVo {
 
     private String formId;
 
-    private String url;
+    private String excelDownUrl;
 
     private String popupId;
 
