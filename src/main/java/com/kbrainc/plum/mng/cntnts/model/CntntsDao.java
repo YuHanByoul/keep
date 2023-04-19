@@ -9,6 +9,9 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.kbrainc.plum.mng.envtcherTrnngInst.model.EnvtcherTrnngInstVo;
+import com.kbrainc.plum.mng.qlityChk.model.QlityChkArtclVo;
+import com.kbrainc.plum.mng.qlityChk.model.QlityChkVo;
+import com.kbrainc.plum.mng.qlityChk.model.QlityChklstVo;
 import com.kbrainc.plum.rte.model.UserVo;
 
 /**
@@ -84,18 +87,157 @@ public interface CntntsDao {
     */
     public int deleteCntnts(@Param("user") UserVo user, @Param("cntntsids") String[] cntntsids) throws Exception;
 
+    /**
+    * 교육주제 코드 리스트 조회
+    *
+    * @Title : selectCntntsCdList
+    * @Description : 교육주제 코드 리스트 조회
+    * @param map
+    * @return
+    * @throws Exception
+    * @return List<Map<String,String>>
+    */
     public List<Map<String, String>> selectCntntsCdList(Map<String, String> map) throws Exception;
 
+    /**
+    * 교육주제 등록
+    *
+    * @Title : insertEduSbjct
+    * @Description : 교육주제 등록
+    * @param cntntsid
+    * @param eduSbjctCds
+    * @param user
+    * @return
+    * @throws Exception
+    * @return int
+    */
     public int insertEduSbjct(@Param("cntntsid") int cntntsid, @Param("eduSbjctCds") String[] eduSbjctCds, @Param("user") UserVo user) throws Exception;
     
+    /**
+    * 교육대상 등록
+    *
+    * @Title : insertEduTrgt
+    * @Description : 교육대상 등록
+    * @param cntntsid
+    * @param eduTrgt
+    * @param user
+    * @return
+    * @throws Exception
+    * @return int
+    */
     public int insertEduTrgt(@Param("cntntsid") int cntntsid, @Param("eduTrgt") String[] eduTrgt, @Param("user") UserVo user) throws Exception;
 
+    /**
+    * 콘텐츠 교육 주제 코드 맵핑 리스트 호출 
+    *
+    * @Title : selectCntntsEduSbjctList
+    * @Description : selectCntntsCdList
+    * @param cntntsEduSbjctVo
+    * @return
+    * @throws Exception
+    * @return List<CntntsEduSbjctVo>
+    */
     public List<CntntsEduSbjctVo> selectCntntsEduSbjctList(CntntsEduSbjctVo cntntsVo) throws Exception;
 
+    /**
+    * 콘텐츠 교육 대상 코드 리스트 호출
+    *
+    * @Title : selectCntntsEduTrgtList
+    * @Description : 콘텐츠 교육 대상 코드 리스트 호출
+    * @param cntntsVo
+    * @return
+    * @throws Exception
+    * @return List<CntntsEduTrgtVo>
+    */
     public List<CntntsEduTrgtVo> selectCntntsEduTrgtList(CntntsVo cntntsVo) throws Exception;
-
+    
+    /**
+    * 교육주제 삭제
+    *
+    * @Title : deleteEduSbjct
+    * @Description : 교육주제 삭제
+    * @param cntntsVo
+    * @return
+    * @throws Exception
+    * @return int
+    */
     public int deleteEduSbjct(CntntsVo cntntsVo) throws Exception;
 
+    /**
+    * 교육대상 삭제
+    *
+    * @Title : deleteEduTrgt
+    * @Description : 교육대상 삭제
+    * @param cntntsVo
+    * @return
+    * @throws Exception
+    * @return int
+    */
     public int deleteEduTrgt(CntntsVo cntntsVo) throws Exception;
+    
+    /**
+    * 체크리스트 목록 
+    *
+    * @Title : selectQlityChkList
+    * @Description : 체크리스트 목록
+    * @return
+    * @throws Exception
+    * @return List<QlityChklstVo>
+    */
+    public List<QlityChklstVo> selectQlityChkList() throws Exception;
+
+    /**
+    * 등록한 체크리스트 목록
+    *
+    * @Title : selectQlityChkArtclList
+    * @Description : 등록한 체크리스트 목록
+    * @param cntntsid
+    * @return
+    * @throws Exception
+    * @return List<QlityChkArtclVo>
+    */
+    public List<QlityChkArtclVo> selectQlityChkArtclList(String cntntsid) throws Exception;
+    
+    /**
+    * 체크리스트(TB_CMM_CNTNTS_QLITY_CECK) 등록
+    *
+    * @Title : insertQlityChkList
+    * @Description : 체크리스트(TB_CMM_CNTNTS_QLITY_CECK) 등록
+    * @param cntntsQlityChkVo
+    * @param cntntsQlityChkArtclVo
+    * @return
+    * @throws Exception
+    * @return int
+    */
+    public int insertQlityChkList(CntntsQlityChkVo cntntsQlityChkVo) throws Exception;
+
+    /**
+    * 체크리스트(TB_CMM_CNTNTS_QLITY_CECK_ARTCL) 항목 등록
+    *
+    * @Title : insertQlityChkArtclList
+    * @Description : 체크리스트(TB_CMM_CNTNTS_QLITY_CECK_ARTCL) 항목 등록
+    * @param cntntsQlityChkArtclVo
+    * @return
+    * @throws Exception
+    * @return int
+    */
+    public int insertQlityChkArtclList(CntntsQlityChkArtclVo cntntsQlityChkArtclVo) throws Exception;
+
+    /**
+    * 체크리스트(TB_CMM_CNTNTS_QLITY_CECK) 콘텐츠 아이디 수정
+    *
+    * @Title : updateQlityChk
+    * @Description : 체크리스트(TB_CMM_CNTNTS_QLITY_CECK) 콘텐츠 아이디 수정
+    * @param ceckid
+    * @param cntntsid
+    * @return
+    * @throws Exception
+    * @return int
+    */
+    public int updateQlityChk(@Param("ceckid") String ceckid, @Param("cntntsid") int cntntsid) throws Exception;
+
+    public int deleteQlityChkArtclList(CntntsQlityChkArtclVo cntntsQlityChkArtclVo) throws Exception;
+
+    
 
 }

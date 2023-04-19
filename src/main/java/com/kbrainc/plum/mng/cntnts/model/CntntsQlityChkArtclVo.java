@@ -1,4 +1,4 @@
-package com.kbrainc.plum.mng.qlityChk.model;
+package com.kbrainc.plum.mng.cntnts.model;
 
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -21,7 +21,7 @@ import lombok.Data;
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
 @Data
-public class QlityChkArtclVo  extends ParentRequestVo{
+public class CntntsQlityChkArtclVo  extends ParentRequestVo{
     
     private UserVo user;
     
@@ -40,4 +40,6 @@ public class QlityChkArtclVo  extends ParentRequestVo{
     /** 등록자아이디 */
     private String rgtrid;
     
+    private Integer count;
+    private String fldCdNm;
 }
