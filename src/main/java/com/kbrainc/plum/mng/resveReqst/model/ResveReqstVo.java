@@ -235,7 +235,6 @@ public class ResveReqstVo extends ParentRequestVo {
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private Date rvwDt;
 
-
     /** MODE */
     private String mode;
     
@@ -319,6 +318,9 @@ public class ResveReqstVo extends ParentRequestVo {
     
     /** 중복 시설명 수 */
     public static Integer dupCnt;
+    
+    /** 사용일자 */        
+    public static String resveDt;
     
     /** 검색 관련*/
     private String searchSeCd;

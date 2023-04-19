@@ -173,15 +173,15 @@ public class BizRptServiceImpl extends PlumAbstractServiceImpl implements BizRpt
 				cell.setCellStyle(style);
 				/*선정사업*/
 				cell = row.createCell(cellnum++);
-				cell.setCellValue(StringUtil.nvl(modelVo.getMdlReportPrd(), ""));
+				cell.setCellValue(StringUtil.nvl(modelVo.getSlctnBizCnt(), ""));
 				cell.setCellStyle(style);
 				/*제출*/
 				cell = row.createCell(cellnum++);
-				cell.setCellValue(StringUtil.nvl(modelVo.getMdlReportPrd(), ""));
+				cell.setCellValue(StringUtil.nvl(modelVo.getSbmsnCnt(), ""));
 				cell.setCellStyle(style);
 				/*컨설팅 대상*/
 				cell = row.createCell(cellnum++);
-				cell.setCellValue(StringUtil.nvl(modelVo.getMdlReportPrd(), ""));
+				cell.setCellValue(StringUtil.nvl(modelVo.getCnsltngUseCnt(), ""));
 				cell.setCellStyle(style);
 
 
@@ -594,16 +594,16 @@ public class BizRptServiceImpl extends PlumAbstractServiceImpl implements BizRpt
 				cell.setCellStyle(style);
 				/*선정사업*/
 				cell = row.createCell(cellnum++);
-				cell.setCellValue(StringUtil.nvl(modelVo.getRsltReportPrd(), ""));
+				cell.setCellValue(StringUtil.nvl(modelVo.getSlctnBizCnt(), ""));
 				cell.setCellStyle(style);
 				/*제출*/
 				cell = row.createCell(cellnum++);
-				cell.setCellValue(StringUtil.nvl(modelVo.getRsltReportPrd(), ""));
+				cell.setCellValue(StringUtil.nvl(modelVo.getSbmsnCnt(), ""));
 				cell.setCellStyle(style);
 				/*컨설팅 대상*/
-				cell = row.createCell(cellnum++);
-				cell.setCellValue(StringUtil.nvl(modelVo.getRsltReportPrd(), ""));
-				cell.setCellStyle(style);
+//				cell = row.createCell(cellnum++);
+//				cell.setCellValue(StringUtil.nvl(modelVo.getRsltReportPrd(), ""));
+//				cell.setCellStyle(style);
 			}
 
 			for(int i=0;i<titleList.size();i++){
@@ -1224,5 +1224,26 @@ public class BizRptServiceImpl extends PlumAbstractServiceImpl implements BizRpt
 		fileOutput.close();
 
 
+	}
+
+	/**
+	* 컨설팅 대상 삭제(취소)
+	*
+	* @Title : deleteCnsltngTrgt
+	* @Description : 컨설팅 대상 삭제(취소)
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	@Override
+	@Transactional
+	public int deleteCnsltngTrgt(BizRptVo bizRptVo) throws Exception{
+		int ret = 0;
+
+		bizRptVo.setCnsltngTrgtCn("");
+		//컨설팅 대상내용 수정
+		ret += bizRptDao.updateTrgtCn(bizRptVo);
+		return ret;
 	}
 }

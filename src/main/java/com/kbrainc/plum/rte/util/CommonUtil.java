@@ -260,6 +260,45 @@ public class CommonUtil {
 
         return ip;
     }
+    
+    /**
+     * @Title : getClientIpTest
+     * @Description : 실제 클라이언트 IP 가져오기.
+     * @param request 요청객체
+     * @return String 클라이언트의ip
+     */
+    public static String getClientIpTest(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        String header = "X-Forwarded-For";
+
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+            header = "Proxy-Client-IP";
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+            header = "WL-Proxy-Client-IP";
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_CLIENT_IP");
+            header = "HTTP_CLIENT_IP";
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+            header = "HTTP_X_FORWARDED_FOR";
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+            header = "REMOTE_ADDR";
+        }
+
+        ip = StringUtil.nvl(ip).trim();
+        if (ip.indexOf(",") != -1) {
+            ip = ip.substring(0, ip.indexOf(","));
+        }
+
+        return header + " : " + ip;
+    }
 
     /**
      * 객체의 null 및 공백에 대해 체크한다. 주로 mybatis에서 사용할 예정.

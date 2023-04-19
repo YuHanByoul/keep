@@ -91,7 +91,7 @@ function fnExpendable($wrapper, option) {
                 $item.removeClass('expendable-item-old').addClass('expendable-item')
                 $fixed.addClass("expendable-item-fixed")
                 $child.addClass("expendable-item-child")
-                if ($fixed && $fixed.children('.expendable-toggle-btn').length === 0) {
+                if($fixed && $fixed.children().find(".expendable-toggle-btn").length === 0) {
                     $fixed.find(".card-text").prepend($("<button/>").attr({type : 'button'}).addClass("expendable-toggle-btn"))
                 }
             }

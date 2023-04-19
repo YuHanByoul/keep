@@ -856,7 +856,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 			    cell.setCellStyle(style);
 			    /*심사위원명*/
 			    cell = row.createCell(cellnum++);
-			    cell.setCellValue(StringUtil.nvl(modelVo.getJdgsid(), ""));    /*todo 심사원명으로 수정*/
+			    cell.setCellValue(StringUtil.nvl(modelVo.getJdgsNm(), ""));    /*todo 심사원명으로 수정*/
 			    cell.setCellStyle(style);
 				/*기관명*/
 			    cell = row.createCell(cellnum++);
@@ -864,19 +864,19 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 			    cell.setCellStyle(style);
 				/*심사진행상태*/
 			    cell = row.createCell(cellnum++);
-			    cell.setCellValue(StringUtil.nvl(modelVo.getSrgnSttsCd(), ""));
+			    cell.setCellValue(StringUtil.nvl(modelVo.getSrngSttsCdNm(), ""));
 			    cell.setCellStyle(style);
 				/*배정일*/
 			    cell = row.createCell(cellnum++);
-			    cell.setCellValue(StringUtil.nvl(dateFormat.format(modelVo.getRegDt()), ""));
+			    cell.setCellValue(StringUtil.nvl(dateFormat.format(modelVo.getAltmntDe()), ""));
 			    cell.setCellStyle(style);
 				/*숙박여부*/
 			    cell = row.createCell(cellnum++);
-			    cell.setCellValue(StringUtil.nvl(modelVo.getStyYn(), ""));
+			    cell.setCellValue(StringUtil.nvl(modelVo.getStyYnStr(), ""));
 			    cell.setCellStyle(style);
 				/*심사일*/
 			    cell = row.createCell(cellnum++);
-			    cell.setCellValue(StringUtil.nvl(modelVo.getSrngDt(), ""));
+			    cell.setCellValue(StringUtil.nvl(modelVo.getSrngDe(), ""));
 			    cell.setCellStyle(style);
 			}
 

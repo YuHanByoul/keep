@@ -28,6 +28,16 @@
                             <!-- //[case] 설문확인 -->
                         </div>
                     </div>
+                    <th:block th:if="${(srvyInfo.qestnrKndCd == '110104' || srvyInfo.qestnrKndCd == '110106')}">
+                        <div class="table-caption d-flex">
+                            <div class="left d-flex a-center">
+                                <div class="mr10">참여자 이름<i class="ast" title="필수입력">*</i></div>
+                                <div class="form-input">
+                                    <input name="prtpntNm" type="text" title="참여자 이름" placeholder="실명을 입력해 주세요.">
+                                </div>
+                            </div>
+                        </div>
+                    </th:block>
                     <div class="survay-list">
                         <dl>
                             <div class="list" th:each="item : ${qitemList}" th:data-qitemid="${item.qitemid}" th:data-qitemType="${item.qitemTypeCd}">
@@ -101,7 +111,15 @@
         
         <form id="srvySbmsnForm">
             <input type="hidden" name="srvyid" th:value="${srvyInfo.srvyid}" />
+            <input type="hidden" name="infntPrgrmAplyid" th:value="${infntPrgrmAplyid}" />
+            <input type="hidden" name="mvmnPrgrmAplyid" th:value="${mvmnPrgrmAplyid}" />
+            <input type="hidden" id="qestnrKndCd" th:value="${srvyInfo.qestnrKndCd}" />
         </form>
+        <div class="layer-popup layer-window-alert" data-layer-id="srvySbmsnCmplPopup">
+            <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+            <div class="layer-wrap pb0" id="srvySbmsnCmplPopup">
+            </div>
+        </div>
         
 
         <!-- //content -->
@@ -181,8 +199,22 @@
                         ansList.push(ansData);
                     });
                     
+                    // 국가환경교육관 로직 추가 2023-03-29 start
+                    var prtpntNm = $("input[name='prtpntNm']").val() ;
+                    if(prtpntNm == undefined || prtpntNm == ''){
+                        if($("#qestnrKndCd").val() == '110104' || $("#qestnrKndCd").val() == '110106'){ 
+                            isValid = false;
+                            return false;
+                        }
+                    }
+                    // 국가환경교육관 로직 추가 2023-03-29 end
                     var params = {
                         srvyid: $("input[name='srvyid']").val()
+                        // 국가환경교육관 로직 추가 2023-03-28 start
+                        , infntPrgrmAplyid: $("input[name='infntPrgrmAplyid']").val()
+                        , mvmnPrgrmAplyid: $("input[name='mvmnPrgrmAplyid']").val()
+                        , prtpntNm: prtpntNm
+                        // 국가환경교육관 로직 추가 2023-03-28 end
                         , ansList: JSON.stringify(ansList)
                     };
                     
@@ -202,10 +234,34 @@
                                 , success: function(response) {
                                     if(response.result == "success") {
                                         alert(response.msg);
-                                        if(opener.srvy) {
-                                            opener.srvy.onLoadData();                                            
+                                        if(opener != null){
+                                            if(opener.srvy) {
+                                                opener.srvy.onLoadData();                                            
+                                            }
+                                            if(opener.infntAplyHist){
+                                                opener.infntAplyHist.selectInfntAplyHistList();                                            	
+                                            }
+                                            if(opener.mvmnAplyHist){
+                                                opener.mvmnAplyHist.selectMvmnAplyHistList();                                            	
+                                            }
                                         }
-                                        window.close();
+                                        // 국가환경교육관 로직 추가 2023-03-29 start
+                                        var aplyType = "";
+                                        
+                                        if($("input[name='infntPrgrmAplyid']").val() > 0) aplyType = "I";
+                                        if($("input[name='mvmnPrgrmAplyid']").val()  > 0) aplyType = "M";
+                                        if(aplyType != ""){
+                                            /*$("#srvySbmsnCmplPopup").load("/front/srvy/srvySbmsnCmplPopup.html?aplyType=" + aplyType, function(response, status, xhr) {
+                                                if (status == "success") {
+                                                    layerPopup.open({target:'srvySbmsnCmplPopup'});
+                                                }
+                                            });*/
+                                            popupCenter({url: '/front/srvy/srvySbmsnCmplPopup.html?aplyType=' + aplyType, title: '설문조사완료', w: 442, h: 389, l: 0, t: 0});
+                                        }else{
+                                            window.close();
+                                        }
+                                        // 국가환경교육관 로직 추가 2023-03-29 end
+                                        //window.close();
                                     } else {
                                         alert(response.msg);
                                     }
@@ -226,6 +282,12 @@
             $(function() {
                 srvySbmsnInsert.init();
             });
+            
+            function closeWin(){   //국가환경교육관 설문완료 팝업시, 부모창 닫기 2023-03-30
+                top.window.opener = top;
+                top.window.open('','_parent','');
+                top.window.close();
+            }            
         </script>
     </div>
 </body>
