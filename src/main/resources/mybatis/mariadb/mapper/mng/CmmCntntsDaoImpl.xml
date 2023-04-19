@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : CmmCntntsDaoImpl.xml
+	Description : 콘텐츠 품질관리 체크리스트
+-->
+<mapper namespace="com.kbrainc.plum.mng.cmmCntnts.model.CmmCntntsDao">
+    
+    <!-- 교육프로그램 관리 게시글 목록 조회 -->
+    <select id="selectCmmCntntsQlityChklstList" parameterType="CmmCntntsVo" resultType="CmmCntntsVo">
+        /* CmmCntntsDao.selectCmmCntntsQlityChklstList */
+        SELECT 
+            A.CHKLSTID
+            , A.FLD_CD
+            , B.CD_NM FLD_NM
+            , A.ORDR
+            , A.CN
+            , (SELECT COUNT(X.FLD_CD) FROM TB_CMM_CNTNTS_QLITY_CHKLST X WHERE X.FLD_CD = A.FLD_CD) COLSPAN
+            , A.MDFCN_DT
+            , A.MDFRID
+            , A.REG_DT
+            , A.RGTRID
+        FROM TB_CMM_CNTNTS_QLITY_CHKLST A
+        LEFT OUTER JOIN TB_CMM_CD B ON B.CD = A.FLD_CD
+        WHERE
+        1=1
+        ORDER BY A.FLD_CD, A.ORDR
+    </select>
+        
+    <!-- 콘텐츠 품질관리 체크리스트 게시글 등록 --> 
+    <insert id="insertCmmCntntsQlityCeck" parameterType="CmmCntntsVo"  useGeneratedKeys="true" keyProperty="checkid">
+        /* CmmCntntsDao.insertCmmCntntsQlityCeck */
+        INSERT INTO TB_CMM_CNTNTS_QLITY_CECK (
+            USERID
+            , TRGT_CD
+            , EVNT_CD
+            , CNTNTSID
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            ,#{trgtCd}
+            ,#{evntCd}
+            ,#{cntntsid}
+            ,NOW()
+            ,#{user.userid}
+            ,NOW()
+            ,#{user.userid}
+        )
+    </insert>
+
+    <!-- 콘텐츠_품질_체크_항목 등록 --> 
+    <insert id="insertCmmCntntsQlityCeckArtcl" parameterType="CmmCntntsVo">
+        /* CmmCntntsDao.insertCmmCntntsQlityCeckArtcl */
+        INSERT INTO TB_CMM_CNTNTS_QLITY_CECK_ARTCL (
+            CECKID
+            , CHKLSTID
+            , FLD_CD
+            , ORDR
+            , CN
+            , REG_DT
+            , RGTRID
+        ) SELECT 
+            #{checkid}
+            , A.CHKLSTID
+            , A.FLD_CD
+            , A.ORDR
+            , A.CN
+            , NOW()
+            , #{user.userid}
+          FROM TB_CMM_CNTNTS_QLITY_CHKLST A
+    </insert>
+</mapper>
