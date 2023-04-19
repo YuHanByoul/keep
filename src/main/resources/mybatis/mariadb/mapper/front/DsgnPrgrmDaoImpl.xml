@@ -16,17 +16,18 @@
           , A.PRGRM_NM
           , ADDR.CTPRVN_NM
           , A.INST_RGN_CD
-          , CASE WHEN B.WHOL_AGE ='Y' THEN '전연령'
-                 ELSE  CONCAT_WS(','
-                            , IF(B.INFNT   = 'Y', '유아'    , NULL)
-                            , IF(B.SCHBOY  = 'Y', '초등학생', NULL)
-                            , IF(B.MSKLSD  = 'Y', '중학생'  , NULL)
-                            , IF(B.HGSCHST = 'Y', '고등학생', NULL)
-                            , IF(B.ADULT   = 'Y', '성인'    , NULL)
-          ) END    AS EDU_TARGET
-          , CASE WHEN B.ETRFEE > 0 THEN CONCAT(FORMAT(B.ETRFEE, '0'), '원') ELSE '무료' END ETRFEE_STR
+          , CONCAT_WS(',',
+             CASE WHEN B.INFNT = 'Y' THEN '유아' END
+           , CASE WHEN B.SCHBOY = 'Y' THEN '초등' END
+           , CASE WHEN B.MSKLSD = 'Y' THEN '중등' END
+           , CASE WHEN B.HGSCHST = 'Y' THEN '고등' END
+           , CASE WHEN B.ADULT = 'Y' THEN '성인' END
+           ) AS EDU_TARGET
+          , B.WHOL_AGE
+          , CASE WHEN B.ETRFEE > 0 THEN FORMAT(B.ETRFEE, '0') ELSE '무료' END ETRFEE
           , IFNULL(C.EDU_SBJCT_CD_LST, '')    AS EDU_SBJCT_CD_LST
           , IFNULL(C.EDU_SBJCT_NM_LST, '')    AS EDU_SBJCT_NM_LST    /*교육 주제*/
+          , NVL(OPERFRMCD.CD_NM, '') AS CD_NM
           , A.MDFCN_DT
           , A.REG_DT
           , D.FILEID
@@ -59,6 +60,7 @@
         ) D ON B.EDU_PHOTO_FILEGRPID = D.FILEGRPID
         LEFT OUTER JOIN
             TB_CMM_ADDR_CTPRVN ADDR ON A.INST_RGN_CD = ADDR.CTPRVN_CD
+        LEFT OUTER JOIN TB_CMM_CD OPERFRMCD ON B.OPER_FRM_CD = OPERFRMCD.CD
         WHERE A.STTS_CD = 111111    <!-- 지정승인 -->
             <!-- 프로그램 명 -->
         <if test="searchPrgrmNm!= null and searchPrgrmNm != '' ">

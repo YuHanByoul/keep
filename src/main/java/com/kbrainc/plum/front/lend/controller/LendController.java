@@ -233,7 +233,9 @@ public class LendController {
             CodeInfoVo code = resCodeService.getCodeInfo(instMap.get("INST_TYPE_CD").toString());
             instMap.put("INST_TYPE_CD_NM", code.getCdNm());
         }catch(NoClassDefFoundError e) {
+            return "front/lend/lendAply";
         }catch(Exception e) {
+            return "front/lend/lendAply";
         }
         model.addAttribute("instInfo",instMap);
         return "front/lend/lendAply";
@@ -274,23 +276,23 @@ public class LendController {
         
         Map<String, Object> compareMap = lendService.checkLimitOverYn(lendAplyVo);
         
-        //재고확인 처리 할 것 
+        //차시 제한 확인 
         if(compareMap.get("isOverRndCntYn").toString().equals("Y")) {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
             resultMap.put("msg", compareMap.get("rnd_limit")+"개 차시만 신청 할 수 있습니다.\n 이미 신청한 차시를 확인 해주십시오");
             return resultMap;
         }
-        //재고확인 처리 할 것
+        //차시당 신청 제한 확인
         if(compareMap.get("isOverPakcageCntYn").toString().equals("Y")) {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
             resultMap.put("msg", "한 차시에"+compareMap.get("packageindvd_limit")+" 개까지만 신청 할 수 있습니다.\n 이미 신청한 차시의 수량을 확인 해주십시오");
             return resultMap;
         }
         
-        LendRndVo RndVo = lendService.selectRequestLendRndList(lendAplyVo);
+        LendRndVo rndVo = lendService.selectRequestLendRndList(lendAplyVo);
         
-        lendAplyVo.setLendBgngDe(RndVo.getBgngDe());
-        lendAplyVo.setLendEndDe(RndVo.getEndDe());
+        lendAplyVo.setLendBgngDe(rndVo.getBgngDe());
+        lendAplyVo.setLendEndDe(rndVo.getEndDe());
         retVal = lendService.insertLendAply(lendAplyVo);
         
         if(retVal > 0) {

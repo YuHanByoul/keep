@@ -183,7 +183,7 @@ public interface LendService {
      * @return List<LendAplyVo>  목록
      * @throws Exception 예외
      */
-    public List<LendAplyVo> selectLendAplyList(LendAplyVo LendAplyVo) throws Exception;
+    public List<LendAplyVo> selectLendAplyList(LendAplyVo lendAplyVo) throws Exception;
     /**
      * 대여 모집 목록 호출 
      *
@@ -213,7 +213,7 @@ public interface LendService {
      * @return int
      * @throws Exception 예외
      */
-    public int updateLendAplyStts(LendAplyVo LendAplyVo) throws Exception;
+    public int updateLendAplyStts(LendAplyVo lendAplyVo) throws Exception;
     /**
      * 대여 신청 상세 호출
      *
@@ -223,7 +223,7 @@ public interface LendService {
      * @return int
      * @throws Exception 예외
      */
-    public LendAplyVo selectLendAplyInfo(LendAplyVo LendAplyVo) throws Exception;
+    public LendAplyVo selectLendAplyInfo(LendAplyVo lendAplyVo) throws Exception;
     /**
      * 대여 출고 목록 호출
      *
@@ -253,7 +253,7 @@ public interface LendService {
      * @return List<LendVo>  목록
      * @throws Exception 예외
      */
-    public List<LendVo> selectLendRcritRndList(LendVo LendVo) throws Exception;
+    public List<LendVo> selectLendRcritRndList(LendVo lendVo) throws Exception;
     /**
      * 출고 꾸러미 개체 목록 호출
      *

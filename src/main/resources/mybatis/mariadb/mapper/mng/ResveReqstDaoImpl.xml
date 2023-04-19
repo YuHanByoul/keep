@@ -18,12 +18,12 @@
         ,A.APLCNTID
         ,A.APLCNT_NM
         ,A.AMT
+        ,A.DPST_BANK_CD
         ,A.DPST_AMT
         ,A.RFND_DMND_AMT
         ,A.RFND_AMT
+        ,A.RFND_REJECT_RSN_CD 
         ,A.MDFCN_DT
-        ,A1.CD_NM AS APLY_STTS_CD_NM
-        ,A2.CD_NM AS STLM_STTS_CD_NM
         ,C.INSTID
         ,C.INST_NM
         ,B.BGNG_DT
@@ -35,24 +35,6 @@
         ,G.NM
         FROM
         TB_FCL_SPCE_APLY A
-        INNER JOIN (
-        SELECT
-        CD
-        , CD_NM
-        FROM
-        TB_CMM_CD
-        WHERE
-        CDGRPID = 160
-        ) A1 ON (A.APLY_STTS_CD = A1.CD)
-        INNER JOIN (
-        SELECT
-        CD
-        , CD_NM
-        FROM
-        TB_CMM_CD
-        WHERE
-        CDGRPID = 161
-        ) A2 ON (A.STLM_STTS_CD = A2.CD)
         INNER JOIN (SELECT B.APLYID, D.SPCEID, MIN(D.BGNG_DT) AS BGNG_DT, B.ALLDAY_YN,
         CASE
         WHEN B.ALLDAY_YN = 'N' THEN MAX(D.END_DT)
@@ -118,6 +100,7 @@
              ,A.CNCL_DT
              ,A.RFND_DMND_DT
              ,A.PYR_NM
+             ,A.DPST_BANK_CD
              ,A.DPST_AMT
              ,A.DPST_DE
              ,A.RFND_BANK_CD
@@ -131,8 +114,7 @@
              ,A.UTZTN_PRPS
              ,A.AMT
              ,A.RSVT_CNCL_RSN
-             ,A1.CD_NM AS APLY_STTS_CD_NM
-             ,A2.CD_NM AS STLM_STTS_CD_NM
+             ,A.RFND_REJECT_RSN_CD 
              ,C.INSTID
              ,C.INST_NM
              ,B.ALLDAY_YN
@@ -140,7 +122,6 @@
              ,B.END_DT
              ,E.SPCE_NM
              ,F.FCLT_NM
-             ,F1.CD_NM AS BANK_CD_NM
              ,F.BACNT_NO
              ,F.DPSTR_NM
              ,G.CD_NM AS INST_TYPE_CD_NM
@@ -155,53 +136,27 @@
              ,H.EML
              ,H.ACNT
              ,IFNULL(J.INST_NM, '-') AS USER_INST_NM
-             ,K.CD_NM AS STLM_MTHD_CD_NM
+             ,STLM_MTHD_CD
         FROM
             TB_FCL_SPCE_APLY A
-                INNER JOIN (
-                SELECT
-                    CD
-                     , CD_NM
-                FROM
-                    TB_CMM_CD
-                WHERE
-                    CDGRPID = 160
-            ) A1 ON (A.APLY_STTS_CD = A1.CD)
-                INNER JOIN (
-                SELECT
-                    CD
-                     , CD_NM
-                FROM
-                    TB_CMM_CD
-                WHERE
-                    CDGRPID = 161
-            ) A2 ON (A.STLM_STTS_CD = A2.CD)
-                INNER JOIN (SELECT B.APLYID, D.SPCEID, MIN(D.BGNG_DT) AS BGNG_DT, B.ALLDAY_YN,
+            INNER JOIN (
+                  SELECT B.APLYID, D.SPCEID, MIN(D.BGNG_DT) AS BGNG_DT, B.ALLDAY_YN,
                                    CASE
                                        WHEN B.ALLDAY_YN = 'N' THEN MAX(D.END_DT)
                                        ELSE MAX(D.BGNG_DT) END AS END_DT
                             FROM TB_FCL_APLY_RSVTDE B
                                      LEFT JOIN TB_FCL_SPCE_RSVTDE D ON B.RSVTDEID = D.RSVTDEID
-                            GROUP BY APLYID) B
-                           ON A.APLYID = B.APLYID
-                INNER JOIN TB_FCL_SPCE E
-                           ON B.SPCEID = E.SPCEID
-                INNER JOIN TB_FCL_FCLT F
-                           ON E.FCLTID = F.FCLTID
-                INNER JOIN TB_CMM_INST C
-                           ON F.INSTID = C.INSTID
-                LEFT OUTER JOIN (
-                SELECT
-                    CD
-                     , CD_NM
-                FROM
-                    TB_CMM_CD
-                WHERE
-                    CDGRPID = 154
-            ) F1 ON (F.BANK_CD = F1.CD)
-                LEFT OUTER JOIN TB_CMM_CD G ON C.INST_TYPE_CD = G.CD
-                LEFT OUTER JOIN TB_CMM_USER H ON A.APLCNTID = H.USERID
-                LEFT OUTER JOIN (
+                  GROUP BY APLYID
+            ) B ON A.APLYID = B.APLYID
+            INNER JOIN TB_FCL_SPCE E
+            ON B.SPCEID = E.SPCEID
+            INNER JOIN TB_FCL_FCLT F
+            ON E.FCLTID = F.FCLTID
+            INNER JOIN TB_CMM_INST C
+            ON F.INSTID = C.INSTID
+            LEFT OUTER JOIN TB_CMM_CD G ON C.INST_TYPE_CD = G.CD
+            LEFT OUTER JOIN TB_CMM_USER H ON A.APLCNTID = H.USERID
+            LEFT OUTER JOIN (
                 SELECT
                     A.USERID
                      ,CASE WHEN INSTR(GROUP_CONCAT(A.ROLEID),'1') > 0 OR INSTR(GROUP_CONCAT(A.ROLEID),'5') > 0 THEN 'A'
@@ -214,19 +169,9 @@
                   AND A.ROLEID = B.ROLEID
                 GROUP BY USERID
             ) I
-                                ON(H.USERID = I.USERID)
-                LEFT OUTER JOIN TB_CMM_INST J ON H.INSTID = J.INSTID
-                INNER JOIN (
-                SELECT
-                    CD
-                     , CD_NM
-                FROM
-                    TB_CMM_CD
-                WHERE
-                    CDGRPID = 190
-            ) K ON (A.STLM_MTHD_CD = K.CD)
-        WHERE
-            1=1
+            ON(H.USERID = I.USERID)
+            LEFT OUTER JOIN TB_CMM_INST J ON H.INSTID = J.INSTID
+        WHERE 1=1
           AND A.APLYID = #{aplyid}
     </select>
 
@@ -279,6 +224,7 @@
         , A.DPST_BACNT
         , A.PYR_NM
         , A.APLY_DT
+        , A.DPST_BANK_CD
         , A.DPST_DE
         , A.DPST_IDNTY_DT
         , A.CNCL_DT
@@ -294,6 +240,7 @@
         , A.RSVT_REJECT_RSN
         , A.RSVT_CNCL_RSN
         , A.RFND_REJECT_RSN
+        , A.RFND_REJECT_RSN_CD
         , A.MDFCN_DT
         , A.MDFRID
         , A.REG_DT

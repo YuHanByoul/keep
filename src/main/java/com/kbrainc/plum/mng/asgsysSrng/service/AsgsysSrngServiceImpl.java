@@ -212,6 +212,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 		String [] titleArr = {
 				"프로그램명"
 				,"기관명"
+				,"진행상태"
 				,"신청일"
 				,"심사위원심사상태"
 				,"지원단심사상태"
@@ -346,7 +347,6 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 		String [] titleArr = {
 				"프로그램명"
 				,"기관명"
-				,"진행상태"
 				,"신청일"
 				,"현장점검결과"
 				,"최종심사평"
@@ -371,7 +371,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 
 		list = asgsysSrngDao.jdgsSrngListExcelDown(asgsysSrngVo);
 
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd  hh:mm:ss", Locale.getDefault());
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
 		if(list != null && list.size() > 0){
 			int cellnum = 0;
@@ -1600,7 +1600,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 
 
     	assPrgrmVo = asgsysSrngDao.selectPrgrm(asgsysSrngVo);
-    	
+
     	//숙박여부,운영형태코드로 체크리스트 가 정해진경우
     	if(null != asgsysSrngVo.getChkOperFrmCd() && "".equals(asgsysSrngVo.getChkOperFrmCd())){
     		chklstid = asgsysSrngDao.getCheckListId(asgsysSrngVo);

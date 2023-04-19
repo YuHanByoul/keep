@@ -1,8 +1,12 @@
 package com.kbrainc.plum.mng.resveReqst.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.service.ResCodeService;
+import com.kbrainc.plum.rte.util.CommonUtil;
+
 import lombok.Data;
 
 import javax.validation.constraints.Pattern;
@@ -77,7 +81,13 @@ public class ResveReqstVo extends ParentRequestVo {
 
     /** 결제 방법 코드 */
     private String stlmMthdCd;
-
+    
+    /** 입금 계좌 코드*/
+    private String dpstBankCd;
+    
+    /** 입금 계좌 코드명*/
+    private String dpstBankCdNm;
+    
     /** 입금 계좌 */
     private String dpstBacnt;
 
@@ -110,6 +120,9 @@ public class ResveReqstVo extends ParentRequestVo {
 
     /** 환불 은행 코드 */
     private String rfndBankCd;
+    
+    /** 환불 은행 코드 명*/
+    private String rfndBankCdNm;
 
     /** 환불 계좌 */
     private String rfndBacnt;
@@ -123,7 +136,6 @@ public class ResveReqstVo extends ParentRequestVo {
     /** 신청 상태 코드명 */
     private String aplySttsCdNm;
 
-
     /** 결제 상태 코드 */
     private String stlmSttsCd;
 
@@ -132,6 +144,9 @@ public class ResveReqstVo extends ParentRequestVo {
 
     /** 취소 사유 코드 */
     private String cnclRsnCd;
+    
+    /** 취소 사유 코드명*/
+    private String cnclRsnCdNm;
 
     /** 예약 거절 사유 */
     private String rsvtRejectRsn;
@@ -139,8 +154,14 @@ public class ResveReqstVo extends ParentRequestVo {
     /** 예약 취소 사유 */
     private String rsvtCnclRsn;
 
+    /** 환불 거절 사유 코드*/
+    private String rfndRejectRsnCd;
+    
     /** 환불 거절 사유 */
     private String rfndRejectRsn;
+    
+    /** 환불 거절 사유 코드명*/ 
+    private String rfndRejectRsnCdNm;
 
     /** 수정 일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
@@ -175,6 +196,9 @@ public class ResveReqstVo extends ParentRequestVo {
     private String rolecdnm;
 
     /** 기관 유형 */
+    private String instTypeCd;
+    
+    /** 기관 유형 코드명 */
     private String instTypeCdNm;
 
     /** 신청 상태 */
@@ -198,8 +222,8 @@ public class ResveReqstVo extends ParentRequestVo {
     /** 상태변경 사유 */
     private String chgRsn;
 
-    /** 입금정보 결제방법 */
-    private int hstryid;
+    /** 히스토리 아이디 */
+    private Integer hstryid;
 
     /** 후기 내용 */
     private String rvwCn;
@@ -227,7 +251,7 @@ public class ResveReqstVo extends ParentRequestVo {
     /** 시설번호 */
     public String fcltNo;
 
-    /** 기관아이디 */
+    /** 기관명 */
     private String instNm;
 
     /** 우편번호 */
@@ -288,8 +312,11 @@ public class ResveReqstVo extends ParentRequestVo {
     /** 아이디 */
     private String acnt;
     
+    /** 예약 목록 명  */
+    private String resveList;
+    
     private String alldayYn;
-
+    
     /** 중복 시설명 수 */
     public static Integer dupCnt;
     
@@ -301,5 +328,137 @@ public class ResveReqstVo extends ParentRequestVo {
     private String searchBgngDt;
     private String searchEndDt;
     private String searchStlmSttsCd;
+    
+    public void setCnclRsnCd(String cnclRsnCd) throws Exception{
+        this.cnclRsnCd = cnclRsnCd;
+        
+        //이미 코드이름이 있다면, 무시.
+        if(CommonUtil.isEmpty(this.cnclRsnCdNm)) { 
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.cnclRsnCd);
+                this.cnclRsnCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                return ;
+             }catch(Exception e) {
+                return ;
+             }
+        }
+    }
+    public void setRfndRejectRsnCd(String rfndRejectRsnCd) throws Exception{
+        this.rfndRejectRsnCd = rfndRejectRsnCd;
+        
+        //이미 코드이름이 있다면, 무시.
+        if(CommonUtil.isEmpty(this.rfndRejectRsnCdNm)) { 
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.rfndRejectRsnCd);
+                this.rfndRejectRsnCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                return ;
+            }catch(Exception e) {
+                return ;
+            }
+        }
+    }
+    
+    public void setRfndBankCd(String rfndBankCd) throws Exception{
+        this.rfndBankCd = rfndBankCd;
+        
+        //이미 코드이름이 있다면, 무시.
+        if(CommonUtil.isEmpty(this.rfndBankCdNm)) { 
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.rfndBankCd);
+                this.rfndBankCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                return ;
+            }catch(Exception e) {
+                return ;
+            }
+        }
+    }
+    
+    public void setAplySttsCd(String aplySttsCd) throws Exception{
+        this.aplySttsCd = aplySttsCd;
+        
+        //이미 코드이름이 있다면, 무시.
+        if(CommonUtil.isEmpty(this.aplySttsCdNm)) { 
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.aplySttsCd);
+                this.aplySttsCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                return ;
+            }catch(Exception e) {
+                return ;
+            }
+        }
+    }
+    
+    public void setStlmSttsCd(String stlmSttsCd) throws Exception{
+        this.stlmSttsCd = stlmSttsCd;
+        
+        //이미 코드이름이 있다면, 무시.
+        if(CommonUtil.isEmpty(this.stlmSttsCdNm)) { 
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.stlmSttsCd);
+                this.stlmSttsCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                return ;
+            }catch(Exception e) {
+                return ;
+            }
+        }
+    }
+    public void setInstTypeCd(String instTypeCd) throws Exception{
+        this.instTypeCd = instTypeCd;
+        
+        //이미 코드이름이 있다면, 무시.
+        if(CommonUtil.isEmpty(this.instTypeCdNm)) { 
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.instTypeCd);
+                this.instTypeCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                return ;
+            }catch(Exception e) {
+                return ;
+            }
+        }
+    }
+    public void setStlmMthdCd(String stlmMthdCd) throws Exception{
+        this.stlmMthdCd = stlmMthdCd;
+        
+        //이미 코드이름이 있다면, 무시.
+        if(CommonUtil.isEmpty(this.stlmMthdCdNm)) { 
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.stlmMthdCd);
+                this.stlmMthdCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                return ;
+            }catch(Exception e) {
+                return ;
+            }
+        }
+    }
+    public void setDpstBankCd(String dpstBankCd) throws Exception{
+        this.dpstBankCd = dpstBankCd;
+        
+        //이미 코드이름이 있다면, 무시.
+        if(CommonUtil.isEmpty(this.dpstBankCdNm)) { 
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.dpstBankCd);
+                this.dpstBankCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                return ;
+            }catch(Exception e) {
+                return ;
+            }
+        }
+    }
 
 }

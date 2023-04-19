@@ -39,7 +39,7 @@
         AND C.FLD_CD = #{searchFldCd}
         </if>
         <if test="searchPcntstNm != null and searchPcntstNm != ''">
-        AND C.PCNTST_NM = #{searchPcntstNm}
+        AND C.PCNTST_NM LIKE CONCAT('%',#{searchPcntstNm},'%')
         </if>
         GROUP BY C.PCNTSTID
         <include refid="PaginationMapper.footer"/>        
@@ -59,7 +59,7 @@
         SELECT 
             B.PCNTSTID
           , E.RCPTNO  
-          , B.RTURN_YN
+          , CASE WHEN B.RTURN_YN = 'Y' THEN '반납' ELSE '미반납' END RTURN_YN
           , B.INST_NM          
           , B.APLCNT_NM
           , B.PRGRM_NM
@@ -82,7 +82,7 @@
         WHERE B.PCNTSTID = #{pcntstid}
             <!-- 키워드.전체 -->
             <if test="searchKeyword != null and searchKeyword != '' and searchType == ''">
-                AND (B.INST_NM LIKE CONCAT('%',#{searchKeyword},'%') OR B.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%') OR B.USERID LIKE CONCAT('%',#{searchKeyword},'%') OR B.APLCNT_NM LIKE CONCAT('%',#{searchKeyword},'%')
+                AND (B.INST_NM LIKE CONCAT('%',#{searchKeyword},'%') OR B.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%') OR B.USERID LIKE CONCAT('%',#{searchKeyword},'%') OR B.APLCNT_NM LIKE CONCAT('%',#{searchKeyword},'%'))
             </if>
             <!-- 키워드.기관명 -->
             <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchInstNm'">
@@ -94,7 +94,10 @@
             </if>        
             <!-- 키워드.신청자ID -->
             <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchUserId'">
-                AND B.USERID LIKE CONCAT('%',#{searchKeyword},'%') OR B.APLCNT_NM LIKE CONCAT('%',#{searchKeyword},'%')
+                AND B.USERID LIKE CONCAT('%',#{searchKeyword},'%') OR B.APLCNT_NM LIKE CONCAT('%',#{searchKeyword},'%'))
+            </if>        
+            <if test="searchRturnYn != null and searchRturnYn != ''">
+                AND B.RTURN_YN = #{searchRturnYn}
             </if>        
             GROUP BY E.RCPTNO
         <include refid="PaginationMapper.footer"/>        

@@ -62,7 +62,7 @@ public interface SpceDao {
      * @return List<Map<String,Object>> 기관정보 목록
      * @throws Exception 예외
      */
-    public List<Map<String,Object>> selectFcltList(SpceVo SpceVo) throws Exception;
+    public List<Map<String,Object>> selectFcltList(SpceVo spceVo) throws Exception;
     /**
     * 공간 상세정보 조회 
     *

@@ -139,7 +139,7 @@ public class ClclnBlncIntServiceImpl extends PlumAbstractServiceImpl implements 
         String realName = "";
         ClclnBlncIntVo modelVo = null;
 
-        realName = "정산내역제출.xls";
+        realName = "잔액 및 이자 반납관리 목록.xls";
         String outputFileName = new String(realName.getBytes("KSC5601"), "8859_1");
         HSSFWorkbook workbook = new HSSFWorkbook();
         //Font 설정.

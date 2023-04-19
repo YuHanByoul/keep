@@ -199,10 +199,12 @@ public class ApiServiceImpl extends PlumAbstractServiceImpl implements ApiServic
     @Override
     public Map<String, Object> getObsrSpotList(String doSeCode) throws Exception {
         StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/1390802/AgriWeather/getObsrSpotList");
-        urlBuilder.append("?serviceKey=" + dataEncServiceKey);
+        urlBuilder.append("?serviceKey=");
+        urlBuilder.append(dataEncServiceKey);
         urlBuilder.append("&Page_Size=100");
         urlBuilder.append("&Page_No=1");
-        urlBuilder.append("&Do_Se_Code=" + doSeCode);
+        urlBuilder.append("&Do_Se_Code=");
+        urlBuilder.append(doSeCode);
         URL url = new URL(urlBuilder.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
@@ -214,8 +216,8 @@ public class ApiServiceImpl extends PlumAbstractServiceImpl implements ApiServic
             rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
         }
         StringBuilder sb = new StringBuilder();
-        String line;
-        while((line = rd.readLine()) != null) {
+        String line = rd.readLine();
+        while(line != null) {
             sb.append(line);
         }
         rd.close();
@@ -240,11 +242,14 @@ public class ApiServiceImpl extends PlumAbstractServiceImpl implements ApiServic
     @Override
     public Map<String, Object> getWeatherTimeList(String dateTime, String obsrSpotCode) throws Exception {
         StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/1390802/AgriWeather/WeatherObsrInfo/GnrlWeather/getWeatherTimeList");
-        urlBuilder.append("?serviceKey=" + dataEncServiceKey);
+        urlBuilder.append("?serviceKey=");
+        urlBuilder.append(dataEncServiceKey);
         urlBuilder.append("&Page_Size=100");
         urlBuilder.append("&Page_No=1");
-        urlBuilder.append("&date_Time=" + dateTime);
-        urlBuilder.append("&obsr_Spot_Code=" + obsrSpotCode);
+        urlBuilder.append("&date_Time=");
+        urlBuilder.append(dateTime);
+        urlBuilder.append("&obsr_Spot_Code=");
+        urlBuilder.append(obsrSpotCode);
         URL url = new URL(urlBuilder.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
@@ -256,8 +261,8 @@ public class ApiServiceImpl extends PlumAbstractServiceImpl implements ApiServic
             rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
         }
         StringBuilder sb = new StringBuilder();
-        String line;
-        while((line = rd.readLine()) != null) {
+        String line = rd.readLine();
+        while(line != null) {
             sb.append(line);
         }
         rd.close();
@@ -283,12 +288,16 @@ public class ApiServiceImpl extends PlumAbstractServiceImpl implements ApiServic
     @Override
     public Map<String, Object> getWeatherMonDayList(String searchYear, String searchMonth, String obsrSpotCode) throws Exception {
         StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/1390802/AgriWeather/WeatherObsrInfo/GnrlWeather/getWeatherMonDayList");
-        urlBuilder.append("?serviceKey=" + dataEncServiceKey);
+        urlBuilder.append("?serviceKey=");
+        urlBuilder.append(dataEncServiceKey);
         urlBuilder.append("&Page_Size=100");
         urlBuilder.append("&Page_No=1");
-        urlBuilder.append("&search_Year=" + searchYear);
-        urlBuilder.append("&search_Month=" + searchMonth);
-        urlBuilder.append("&obsr_Spot_Code=" + obsrSpotCode);
+        urlBuilder.append("&search_Year=");
+        urlBuilder.append(searchYear);
+        urlBuilder.append("&search_Month=");
+        urlBuilder.append(searchMonth);
+        urlBuilder.append("&obsr_Spot_Code=");
+        urlBuilder.append(obsrSpotCode);
         URL url = new URL(urlBuilder.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
@@ -300,8 +309,8 @@ public class ApiServiceImpl extends PlumAbstractServiceImpl implements ApiServic
             rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
         }
         StringBuilder sb = new StringBuilder();
-        String line;
-        while((line = rd.readLine()) != null) {
+        String line = rd.readLine();
+        while(line != null) {
             sb.append(line);
         }
         rd.close();
