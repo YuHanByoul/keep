@@ -229,10 +229,11 @@
     <select id="selectPrgrmDstnctn" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
         SELECT
             A.PRGRMID                /* 프로그램아이디           */
-          , B.PRGRMID    AS PRGRM_KEY    /* 우수성 아이디            */
+          , B.PRGRMID    AS PRGRM_KEY    /* 우수성 아이디        */
           , A.PRGRM_NM               /* 프로그램이름             */
+          , A.APLCNTID               /* 신청자                   */
           , A.CNSLTNG_PRGRS_YN       /* 컨설팅 진행여부          */
-          , C.CNSLTNG_KND_CD         /* 컨설팅 종류코드          */
+          , C.CNSLTNGID              /* 컨설팅 아이디            */
           , B.STY_YN                 /* 숙박_여부                */
           , B.STY_NIGHT              /* 숙박_밤                  */
           , B.STY_DAYTM              /* 숙박_낮                  */
@@ -3081,10 +3082,9 @@
             TB_CMM_USER USR ON A.USERID = USR.USERID AND USR.DEL_YN ='N'
     </select>
 
-
     <!-- 체크리스트 정보 조회 -->
     <select id="selectChkListInfo" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
-        /* front.DsgnPrgrmDao.selectChkListInfo*/
+        /* front.AsgsSrngDao.selectChkListInfo*/
         SELECT
             A.PRGRMID
           , A.APLCNTID
@@ -3103,6 +3103,42 @@
                                              AND D.SBMSN_SE_CD = #{sbmsnSeCd}   /*신청자 자가진단*/
         WHERE A.PRGRMID = #{prgrmid}
     </select>
+
+    <!-- 체크리스트 정보 조회 -->
+    <select id="selectCsltngList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        /* AsgsSrngDao.selectCsltngList*/
+            SELECT
+            A.CNSLTNGID            /*컨설팅아이디*/
+          , A.INSTID               /*기관아이디*/
+          , A.USERID               /*사용자아이디*/
+          , A.USER_NM              /*사용자_이름*/
+          , A.PIC_TELNO            /*담당자_전화번호*/
+          , A.INST_TELNO           /*기관_전화번호*/
+          , A.PIC_EML              /*담당자_이메일*/
+          , A.ZIP                  /*우편번호*/
+          , A.ADDR                 /*주소*/
+          , A.ADDR_DTL             /*주소_상세*/
+          , A.PRGRM_NM             /*프로그램_이름*/
+          , A.CNSLTNG_KND_CD       /*컨설팅_종류_코드*/
+          , A.HOPE_DE1             /*희망_일자1*/
+          , A.HOPE_DE1_AM_PM_CD    /*희망_일자1_오전_오후_코드*/
+          , A.HOPE_DE2             /*희망_일자2*/
+          , A.HOPE_DE2_AM_PM_CD    /*희망_일자2_오전_오후_코드*/
+          , A.PRGRM                /*프로그램*/
+          , A.LDR                  /*지도자*/
+          , A.SFTYMNG              /*안전관리*/
+          , A.ETC                  /*기타*/
+          , A.FILEGRPID            /*파일그룹아이디*/
+          , A.STTS_CD              /*상태_코드*/
+          , A.SRVYID               /*설문아이디*/
+          , A.MDFCN_DT             /*수정_일시*/
+          , A.MDFRID               /*수정자아이디*/
+          , A.REG_DT               /*등록_일시*/
+          , A.RGTRID               /*등록자아이디*/
+        FROM TB_ASS_CNSLTNG A
+        WHERE A.USERID = #{aplcntid}
+    </select>
+
 
 
 
