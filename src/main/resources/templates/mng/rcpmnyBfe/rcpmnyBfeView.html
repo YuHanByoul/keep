@@ -38,16 +38,12 @@
                             <div class="mb-0 form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>이용일(시)</strong></label>
                                 <div class="col-12">
-                                    <th:block th:if ="${rcpmnyBfe.alldayYn} == 'N'">
-                                        <input type="text" class="form-control form-control-sm" readonly="" th:value="${#dates.format(rcpmnyBfe.bgngDt, 'yyyy-MM-dd HH:mm')}+' ~ '+${#dates.format(rcpmnyBfe.endDt, 'HH:mm')}">
-                                    </th:block>
-                                    <th:block th:if ="${rcpmnyBfe.alldayYn} == 'Y' and ${#dates.format(rcpmnyBfe.bgngDt, 'yyyy-MM-dd')} == ${#dates.format(rcpmnyBfe.endDt, 'yyyy-MM-dd')}">
-                                        <input type="text" class="form-control form-control-sm" readonly="" th:value="${#dates.format(rcpmnyBfe.bgngDt, 'yyyy-MM-dd')}">
-                                    </th:block>
-                                    <th:block th:if ="${rcpmnyBfe.alldayYn} == 'Y' and ${#dates.format(rcpmnyBfe.bgngDt, 'yyyy-MM-dd')} != ${#dates.format(rcpmnyBfe.endDt, 'yyyy-MM-dd')}">
-                                        <input type="text" class="form-control form-control-sm" readonly="" th:value="${#dates.format(rcpmnyBfe.bgngDt, 'yyyy-MM-dd')}+' ~ '+${#dates.format(rcpmnyBfe.endDt, 'yyyy-MM-dd')}">
-                                    </th:block>
-                                </div>
+                                <th:block th:with="exid= ${#strings.arraySplit(rcpmnyBfe.resveDt,'/')} ">
+	                                <th:block th:each="item:${exid}" >
+	                                    <input type="text" class="form-control form-control-sm mb-2" readonly="" th:value ="${item}"/>
+	                                </th:block>
+                                </th:block>
+                            </div>
                             </div>
                         </div>
                     </div>
@@ -102,7 +98,8 @@
                         <div class="row form-group mb-3">
                             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>예약취소사유</strong></label>
                             <div class="col-12">
-                                <textarea rows="5" cols="5" class="form-control form-control-sm" readonly=""><th:block th:text="${rcpmnyBfe.rsvtCnclRsn}"/></textarea>
+                                <textarea rows="5" cols="5" class="form-control form-control-sm" readonly=""><th:block th:text="${rcpmnyBfe.cnclRsnCdNm}"/><th:block th:if ="${rcpmnyBfe.rsvtCnclRsn != null and rcpmnyBfe.rsvtCnclRsn != ''}" th:text="'  :  '+${rcpmnyBfe.rsvtCnclRsn}"/>
+                                </textarea>
                             </div>
                         </div>
                     </th:block>
@@ -261,7 +258,7 @@
                             <div class="mb-0 form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>입금계좌</strong></label>
                                 <div class="col-12">
-                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${rcpmnyBfe.bankCdNm}+' '+${rcpmnyBfe.bacntNo}+' '+${rcpmnyBfe.dpstrNm}">
+                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${rcpmnyBfe.dpstBankCdNm+' '+rcpmnyBfe.dpstBacnt}">
                                 </div>
                             </div>
                         </div>
@@ -288,8 +285,6 @@
 <div class="modal fade" id="popCon1" tabindex="-1" role="dialog" aria-labelledby="popCon1Title" aria-hidden="true"></div>
 <!-- 임시비밀번호발급 End -->
 
-<script type="text/javascript" src="/files/assets/pages/advance-elements/swithces.js"></script>
-<script type="text/javascript" src="/files/assets/pages/advance-elements/select2-custom.js"></script>
 <div class="modal fade" data-bs-backdrop="static" id="dsptCheckPopup"></div>
 <div class="modal fade" data-bs-backdrop="static" id="resveCancelPopup"></div>
 
