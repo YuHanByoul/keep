@@ -23,8 +23,6 @@ import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.mng.cntnts.model.CntntsEduSbjctVo;
 import com.kbrainc.plum.mng.cntnts.model.CntntsEduTrgtVo;
-import com.kbrainc.plum.mng.cntnts.model.CntntsQlityChkArtclVo;
-import com.kbrainc.plum.mng.cntnts.model.CntntsQlityChkVo;
 import com.kbrainc.plum.mng.cntnts.model.CntntsVo;
 import com.kbrainc.plum.mng.cntnts.service.CntntsService;
 import com.kbrainc.plum.rte.constant.Constant;
@@ -321,77 +319,6 @@ public class CntntsController {
             resultMap.put("msg", "삭제에 실패했습니다.");
         }
 
-        return resultMap;
-    }
-    
-    /**
-    * 게시글 품질관리 체크리스트 팝업
-    *
-    * @Title : openCntntsChkLstPopup
-    * @Description : 게시글 품질관리 체크리스트 팝업
-    * @param type
-    * @param trgtCd
-    * @param cntntsid
-    * @param model
-    * @param request
-    * @throws Exception
-    * @return String
-    */
-    @RequestMapping(value = "/mng/cntnts/openCntntsChkLstPopup.html")
-    public String openCntntsChkLstPopup(String type, String trgtCd, String cntntsid, Model model, HttpServletRequest request) throws Exception {
-        if(type.equals("insert")) {
-            List<CntntsQlityChkVo> chkList =  cntntsService.selectQlityChkList();
-            model.addAttribute("chkList", chkList);
-        }else {
-            List<CntntsQlityChkArtclVo> chkArtclList =  cntntsService.selectQlityChkArtclList(cntntsid);
-            model.addAttribute("chkList", chkArtclList);
-        }
-        model.addAttribute("type", type);
-        model.addAttribute("trgtCd", trgtCd);
-        
-        return "/mng/cntnts/cntntsChkLstPopup";
-    }
-    
-    /**
-    * 게시글 품질관리 체크리스트 등록
-    *
-    * @Title : insertQlityChkList
-    * @Description : 게시글 품질관리 체크리스트 등록
-    * @param type
-    * @param trgtCd
-    * @param cntntsQlityChkVo
-    * @param cntntsQlityChkArtclVo
-    * @param userVo
-    * @throws Exception
-    * @return Map<String,Object>
-    */
-    @RequestMapping(value = "/mng/cntnts/insertQlityChkList.do", method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, Object> insertQlityChkList(String type, String trgtCd, CntntsQlityChkVo cntntsQlityChkVo, CntntsQlityChkArtclVo cntntsQlityChkArtclVo, @UserInfo UserVo userVo) throws Exception {
-        Map<String, Object> resultMap = new HashMap<String, Object>();
-        
-        cntntsQlityChkVo.setUser(userVo);
-        cntntsQlityChkVo.setTrgtCd(trgtCd);
-        if(type.equals("insert")) {
-            cntntsQlityChkVo.setEvntCd("247001");
-        }else {
-            cntntsQlityChkVo.setEvntCd("247002");
-        }
-        
-        cntntsQlityChkArtclVo.setUser(userVo);
-
-        int retVal = 0;
-        retVal = cntntsService.insertQlityChkList(type, cntntsQlityChkVo, cntntsQlityChkArtclVo);
-        
-        
-        
-        if (retVal > 0) {
-            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("ceckid", cntntsQlityChkVo.getCeckid());
-        } else {
-            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-            resultMap.put("msg", "체크리스트 등록에 실패했습니다.");
-        }
         return resultMap;
     }
 }

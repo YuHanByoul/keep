@@ -185,7 +185,7 @@
 	    <div class="card-block-small">
 	        <button type="button" class="btn btn-disabled m-r-5" id="cancelInsertRgnEnveduCntr" onclick="gridHelper1.toggleContent()">취소</button>
 	        <th:block sec:authorize-url="/mng/cntnts/insertCntnts.do">
-	        	<button type="button" class="btn btn-primary" onclick="openCheckListPopup();">저장</button>
+	        	<button type="button" class="btn btn-primary" id="fn_insertCntnts" onclick="fn_insertCntntsForm()">저장</button>
 	        </th:block>
 	    </div>
 		<!-- Tab Container End -->
@@ -224,9 +224,6 @@
     
     var subjectLength = 0; 
     var subjectNum = [1];
-    
-	var checkListPopupUrl = "/mng/cntnts/openCntntsChkLstPopup.html?type=insert&trgtCd=246001";
-	var checkListAddModal;
 	
 	$(function () {
 	    editor = CKEDITOR.replace('cn');
@@ -383,7 +380,7 @@
 	     })
 	};
 	
- 	function openCheckListPopup(){
+ 	function fn_insertCntntsForm(){
   		var eduSbjctCheck = document.getElementsByName("eduSbjctCds");
  		for(var i=0; i < eduSbjctCheck.length; i++) {
  			if(eduSbjctCheck[i].value == ""){
@@ -394,22 +391,13 @@
   	 	
   	 	if(!($("#cntntsInsertForm").valid())) return;
   	 	
+  	 	if(!confirm("저장하시겠습니까?")) return;
+  	 	
   	 	var editorData = editor.getData();
         $("#cn").val(editorData);
-        
-		$("#checkListPopup").load(checkListPopupUrl, function(response, status, xhr) {
-			if (status == "success") {
-				checkListAddModal = new bootstrap.Modal($('#checkListPopup'));
-				checkListAddModal.show();
-			}
-		});
-	}
- 	
- 	function insertForm(ceckid){
- 		console.log(ceckid)
+  	 	
 	    var data =  $("#cntntsInsertForm").serialize();
-	    data += "&ceckid=" + ceckid;
-	    if(displayWorkProgress(true)){
+	    if(displayWorkProgress()){
 			$.ajax({
 				url : "/mng/cntnts/insertCntnts.do",
 				type: 'POST',
@@ -426,7 +414,7 @@
 					closeWorkProgress();
 				}
 			});
-	    }
+		}
 	}
  	
     duplCheck=(frmNum)=>{

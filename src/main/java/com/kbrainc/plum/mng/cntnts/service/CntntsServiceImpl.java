@@ -10,8 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kbrainc.plum.mng.cntnts.model.CntntsDao;
 import com.kbrainc.plum.mng.cntnts.model.CntntsEduSbjctVo;
 import com.kbrainc.plum.mng.cntnts.model.CntntsEduTrgtVo;
-import com.kbrainc.plum.mng.cntnts.model.CntntsQlityChkArtclVo;
-import com.kbrainc.plum.mng.cntnts.model.CntntsQlityChkVo;
 import com.kbrainc.plum.mng.cntnts.model.CntntsVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
@@ -80,7 +78,6 @@ public class CntntsServiceImpl extends PlumAbstractServiceImpl implements Cntnts
         retVal += cntntsDao.insertCntnts(cntntsVo);
         retVal += cntntsDao.insertEduSbjct(cntntsVo.getCntntsid(), eduSbjctCds, cntntsVo.getUser());
         retVal += cntntsDao.insertEduTrgt(cntntsVo.getCntntsid(), eduTrgt, cntntsVo.getUser());
-        retVal += cntntsDao.updateQlityChk(ceckid, cntntsVo.getCntntsid());
         return retVal;
     }
     
@@ -163,63 +160,4 @@ public class CntntsServiceImpl extends PlumAbstractServiceImpl implements Cntnts
     public List<CntntsEduTrgtVo> selectCntntsEduTrgtList(CntntsVo cntntsVo) throws Exception {
         return cntntsDao.selectCntntsEduTrgtList(cntntsVo);
     }
-    
-    /**
-    * 체크리스트 목록 
-    *
-    * @Title : selectQlityChkList
-    * @Description : 체크리스트 목록
-    * @return
-    * @throws Exception
-    * @return List<QlityChklstVo>
-    */
-    @Override
-    public List<CntntsQlityChkVo> selectQlityChkList() throws Exception {
-        return cntntsDao.selectQlityChkList();
-    }
-
-    /**
-    * 등록한 체크리스트 목록
-    *
-    * @Title : selectQlityChkArtclList
-    * @Description : 등록한 체크리스트 목록
-    * @param cntntsid
-    * @return
-    * @throws Exception
-    * @return List<QlityChkArtclVo>
-    */
-    @Override
-    public List<CntntsQlityChkArtclVo> selectQlityChkArtclList(String cntntsid) throws Exception {
-        return cntntsDao.selectQlityChkArtclList(cntntsid);
-    }
-
-    /**
-    * 체크리스트 등록
-    *
-    * @Title : insertQlityChkList
-    * @Description : 체크리스트 등록
-    * @param cntntsQlityChkVo
-    * @param cntntsQlityChkArtclVo
-    * @return
-    * @throws Exception
-    * @return int
-    */
-    @Override
-    @Transactional
-    public int insertQlityChkList(String type, CntntsQlityChkVo cntntsQlityChkVo, CntntsQlityChkArtclVo cntntsQlityChkArtclVo) throws Exception {
-        int retVal = 0;
-        if(type.equals("insert")) {
-            retVal += cntntsDao.insertQlityChkList(cntntsQlityChkVo);
-            cntntsQlityChkArtclVo.setCeckid(cntntsQlityChkVo.getCeckid());
-            retVal += cntntsDao.insertQlityChkArtclList(cntntsQlityChkArtclVo);            
-        }else {
-            retVal += cntntsDao.insertQlityChkList(cntntsQlityChkVo);
-            cntntsQlityChkArtclVo.setCeckid(cntntsQlityChkVo.getCeckid());
-            retVal += cntntsDao.deleteQlityChkArtclList(cntntsQlityChkArtclVo);
-            retVal += cntntsDao.insertQlityChkArtclList(cntntsQlityChkArtclVo);            
-        }
-        
-        return retVal;
-    }
-
 }
