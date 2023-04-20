@@ -206,6 +206,36 @@ public class MypageEnvReqstController {
     }
 
     /**
+     * 후기작성 등록 팝업
+     * Title : insertRsnPopup
+     * Description : 후기작성 등록 팝업
+     *
+     * @return string
+     * @throws Exception
+     */
+    @RequestMapping(value = "/front/mypage/mypageEnvReqst/insertRvwPopup.html")
+    public String insertRvwPopup(MypageEnvReqstVo mypageEnvReqstVo, Model model) throws Exception {
+        model.addAttribute("aplyid",mypageEnvReqstVo.getAplyid());
+        return "front/mypage/mypageEnvReqst/insertRvwPopup";
+    }
+
+    /**
+     * 후기확인 팝업
+     * Title : insertRsnPopup
+     * Description : 후기확인 팝업
+     *
+     * @return string
+     * @throws Exception
+     */
+    @RequestMapping(value = "/front/mypage/mypageEnvReqst/selectRvwPopup.html")
+    public String selectRvwPopup(MypageEnvReqstVo mypageEnvReqstVo, Model model) throws Exception {
+        model.addAttribute("aplyid",mypageEnvReqstVo.getAplyid());
+        MypageEnvReqstVo data = mypageEnvReqstService.selectRwvInfo(mypageEnvReqstVo);
+        model.addAttribute("mypageEnvReqst",data);
+        return "front/mypage/mypageEnvReqst/selectRvwPopup";
+    }
+
+    /**
      * 예약 신청 취소 처리
      *
      * @Title : updateFcltMng
@@ -241,15 +271,94 @@ public class MypageEnvReqstController {
         // 상태변경이력 추가
         resveReqstService.insertHstry(resveReqstVo);
 
-        // 상태변경이력 추가
-//        mypageEnvReqstService.insertHstry(mypageEnvReqstVo);
-
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
             resultMap.put("msg", "예약신청 취소에 성공하였습니다.");
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
             resultMap.put("msg", "예약신청 취소에 실패했습니다.");
+        }
+
+        return resultMap;
+    }
+
+    /**
+     * 후기 작성 기능
+     *
+     * @Title : updateFcltMng
+     * @Description : 후기 작성 기능
+     * @param mypageEnvReqstVo 입금 전 객체
+     * @param bindingResult 입금 전 유효성 검증결과
+     * @param user 사용자 세션정보
+     * @throws Exception 예외
+     * @return Map<String,Object>
+     */
+    @RequestMapping(value = "/front/mypage/mypageEnvReqst/insertRvw.do")
+    @ResponseBody
+    public Map<String, Object> insertRvw(@Valid MypageEnvReqstVo mypageEnvReqstVo, BindingResult bindingResult, @UserInfo UserVo user, ResveReqstVo resveReqstVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+
+        mypageEnvReqstVo.setUser(user);
+
+        int retVal = 0;
+
+        retVal = mypageEnvReqstService.insertRvw(mypageEnvReqstVo);
+
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "후기 작성이 완료되었습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "후기 작성에 실패했습니다.");
+        }
+
+        return resultMap;
+    }
+
+    /**
+     * 후기 삭제 기능
+     *
+     * @Title : updateFcltMng
+     * @Description : 후기 삭제 기능
+     * @param mypageEnvReqstVo 입금 전 객체
+     * @param bindingResult 입금 전 유효성 검증결과
+     * @param user 사용자 세션정보
+     * @throws Exception 예외
+     * @return Map<String,Object>
+     */
+    @RequestMapping(value = "/front/mypage/mypageEnvReqst/deleteRvw.do")
+    @ResponseBody
+    public Map<String, Object> deleteRvw(@Valid MypageEnvReqstVo mypageEnvReqstVo, BindingResult bindingResult, @UserInfo UserVo user, ResveReqstVo resveReqstVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+
+        mypageEnvReqstVo.setUser(user);
+
+        int retVal = 0;
+
+        retVal = mypageEnvReqstService.deleteRvw(mypageEnvReqstVo);
+
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "후기가 삭제 되었습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "후기 삭제에 실패했습니다.");
         }
 
         return resultMap;

@@ -117,6 +117,8 @@ public class MypageEnvReqstVo extends ParentRequestVo {
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="HH:mm:ss", timezone = "Asia/Seoul")
     private Date chcktHr;
 
+    private Date rvwDt;
+
     private String aplcntNm;
 
     private String aplcntMoblphon;
@@ -226,6 +228,10 @@ public class MypageEnvReqstVo extends ParentRequestVo {
     private String rfndRejectRsn;
 
     private String alldayYn;
+
+    private String rvwCn;
+
+    private int rvwScr;
 
     /** 검색 관련*/
     private String searchSeCd;

@@ -276,6 +276,18 @@ public class CnsltngServiceImpl extends PlumAbstractServiceImpl implements Cnslt
     }
     
     /**
+     * 컨설턴트 엑셀 리스트 호출 
+     *
+     * @Title       : selectCnsltngExcelList 
+     * @Description : 컨설턴트 엑셀 리스트 호출 
+     * @param CnsltngVo consultVo 객체
+     * @return List<CnsltngVo>
+     * @throws Exception 예외
+     */
+    public List<CnsltngVo> selectCnsltngExcelList(CnsltngVo consultVo) throws Exception{
+        return cnsltngDao.selectCnsltngExcelList(consultVo);
+    }
+    /**
      * 컨설팅 엑셀 다운로드  
      *
      * @Title       : cnstlngExcelDownList 
@@ -290,7 +302,7 @@ public class CnsltngServiceImpl extends PlumAbstractServiceImpl implements Cnslt
         String realName = "";
         CnsltngVo modelVo = null;    
 
-        realName = "cnsltngExcelList.xls";
+        realName = "컨설팅 검색 결과.xls";
         HSSFWorkbook workbook = new HSSFWorkbook();
         //Font 설정.
         HSSFFont font = workbook.createFont();
@@ -322,15 +334,14 @@ public class CnsltngServiceImpl extends PlumAbstractServiceImpl implements Cnslt
         sheet = workbook.createSheet("sheet1");
 
         String [] titleArr = {
-                
-                "프로그램명"
+                "No."
+                ,"프로그램명"
                 ,"기관명"
                 ,"컨설팅 유형"
                 ,"전문가명"
                 ,"진행상태"
                 ,"신청일"
                 ,"방문기간"
-                
         };      
 
         //Row 생성
@@ -364,6 +375,10 @@ public class CnsltngServiceImpl extends PlumAbstractServiceImpl implements Cnslt
                 row = sheet.createRow((i+1));
                 cellnum = 0;
                 
+                /*번호*/
+                cell = row.createCell(cellnum++);
+                cell.setCellValue(StringUtil.nvl(modelVo.getRowNumber(), ""));
+                cell.setCellStyle(style);   
                 /*프로그램명*/
                 cell = row.createCell(cellnum++);
                 cell.setCellValue(StringUtil.nvl(modelVo.getPrgrm(), ""));
@@ -400,7 +415,7 @@ public class CnsltngServiceImpl extends PlumAbstractServiceImpl implements Cnslt
 
             for(int i=0;i<titleList.size();i++){
                 sheet.autoSizeColumn((short)i);
-                sheet.setColumnWidth(i, sheet.getColumnWidth(i)+512);
+                //sheet.setColumnWidth(i, sheet.getColumnWidth(i)+512);
             }
         }   
         

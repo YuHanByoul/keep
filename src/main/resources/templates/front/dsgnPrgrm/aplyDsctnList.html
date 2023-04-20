@@ -20,23 +20,24 @@
                 <div class="form-row">
                     <div class="form-header"><strong class="label">프로그램명</strong></div>
                     <div class="form-body">
-                        <input type="search" title="프로그램명" placeholder="키워드를 입력해 주세요.">
+                        <input type="search" title="프로그램명" placeholder="프로그램명을 입력해 주세요." name="searchPrgrmNm" id="searchPrgrmNm" onkeydown="if(event.keyCode == 13){aplyDsctnList.search(); return false;};">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-header"><strong class="label">진행상태</strong></div>
                     <div class="form-body">
-                        <select title="진행상태">
-                            <option value="전체">전체</option>
-                            <option value="제목+내용">제목+내용</option>
-                            <option value="제목+내용">제목+내용</option>
+<!--                         <span kattr:select_code="searchSttsCd" th:attr="grpCd=111" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" > -->
+                        <select title="진행상태" id="searchSttsCd" name="searchSttsCd" >
+                            <option value="">- 전체 -</option>
+                            <option value="111101">작성중</option>
+                            <option value="111102">신청완료</option>
                         </select>
                     </div>
                 </div>
             </div>
             <div class="search-filter-submit">
-                <button type="reset" class="btn-medium btn-gray btn-before-refresh">초기화</button>
-                <button type="button" class="btn-medium btn-green btn-before-search">검색</button>
+                <button type="reset" class="btn-medium btn-gray btn-before-refresh" onclick="aplyDsctnList.searchInit()">초기화</button>
+                <button type="button" class="btn-medium btn-green btn-before-search" onclick="aplyDsctnList.search()">검색</button>
             </div>
 
 
@@ -112,12 +113,32 @@
 
             moveToDetail(prgrmid,sttsCd) {
 
-                var f = document.forms.searchForm;
-                f.prgrmid.value = prgrmid;
-                f.sttsCd.value = sttsCd;
-                f.action = this.detailUrl;
-                f.submit();
+//                 var f = document.forms.searchForm;
+//                 f.prgrmid.value = prgrmid;
+//                 f.sttsCd.value = sttsCd;
+//                 f.action = this.detailUrl;
+//                 f.submit();
 
+                if($("#pageNumber").val() != 1 || $("#searchJntpurchsNm").val() || $("#searchSttsCd").val()) {
+                    this.setPage();
+                }
+
+                location.href = aplyDsctnList.detailUrl+ "?prgrmid="+prgrmid+"&sttsCd="+sttsCd;
+
+            },
+
+            setPage() {
+                var hashUrl = "";
+                if(document.URL.indexOf("#") > -1) {
+                    var url = document.URL.substring(0, document.URL.indexOf("#"));
+                    hashUrl = url + "#pageNumber="    + $("#pageNumber").val();
+                    hashUrl += "&searchPrgrmNm="      + encodeURI($("#searchPrgrmNm").val());
+                    hashUrl += "&searchSttsCd="       + encodeURI($("#searchSttsCd").val());
+                } else {
+                    hashUrl = document.URL + "#pageNumber=" + $("#pageNumber").val();
+                }
+
+                location.replace(hashUrl);
             },
 
             selectDsctnList() {
@@ -129,10 +150,11 @@
                         data: formData = $('#searchForm').serializeArray(),
                         type: 'GET',
                         success: function (response) {
-                            let data = escapeData(response);
-                            aplyDsctnList.makeListHtml(data.list);
+                            let data = response;
                             $("#pagination").html(data.pagination);
                             $("#total-count").html(data.totalCount);
+                            data = escapeData(response);
+                            aplyDsctnList.makeListHtml(data.list);
                             msgAddBtn();
                             closeWorkProgress();
                         }

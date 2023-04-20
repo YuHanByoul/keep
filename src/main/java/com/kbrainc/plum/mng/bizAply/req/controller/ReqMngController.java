@@ -265,6 +265,9 @@ public class ReqMngController {
 //                    detailReqUserVo = result.get(0);
 //                }
                 detailReqUserVo = this.reqMngService.detailReqUser(reqUserVo);
+            } else {
+                detailReqUserVo.setPcntstid(reqUserVo.getPcntstid());
+                detailReqUserVo.setAplyid(reqUserVo.getAplyid());
             }
             
             if (!StringUtil.nvl(detailReqUserVo.getFilegrpid1()).equals("") && !StringUtil.nvl(detailReqUserVo.getFilegrpid1()).equals(0)) {
@@ -294,6 +297,7 @@ public class ReqMngController {
             } else {
                 model.addAttribute("fileList3", Collections.emptyList());
             }
+            
             
             model.addAttribute("fldCd", reqUserVo.getFldCd());
         }
@@ -359,16 +363,22 @@ public class ReqMngController {
             return resultMap;
         }
         
+        int retVal = 0;
         reqUserVo.setUser(user);
         
-        int retVal = this.reqMngService.updateReqInfo(reqUserVo);
+        if (reqUserVo.getAplyid() == 0) {
+            reqUserVo.setAplySttsCd("192102");
+            retVal = this.reqMngService.insertReqInfo(reqUserVo);
+        } else {
+            retVal = this.reqMngService.updateReqInfo(reqUserVo);
+        }
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "수정에 성공하였습니다.");
+            resultMap.put("msg", "저장에 성공하였습니다.");
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-            resultMap.put("msg", "수정에 실패했습니다.");
+            resultMap.put("msg", "저장에 실패했습니다.");
         }
         
         return resultMap;
@@ -388,6 +398,8 @@ public class ReqMngController {
     @RequestMapping(value = "/mng/bizAply/req/userSrchPopup.html")
     public String userSrchPopup(ReqUserVo reqUserVo, Model model) throws Exception {
         model.addAttribute("instid", reqUserVo.getInstid());
+        model.addAttribute("fldCd", reqUserVo.getFldCd());
+        model.addAttribute("pcntstid", reqUserVo.getPcntstid());
 
         return "mng/bizAply/req/userSrchPopup";
     }
@@ -572,8 +584,10 @@ public class ReqMngController {
             }
         }
         
-        if (detail == null)
+        if (detail == null) {
             detail = new CapabilityVo();
+            detail.setAplyid(capabilityVo.getAplyid());            
+        }
         
         model.addAttribute("detail", detail);
         model.addAttribute("prgrmList", prgrmList);
@@ -646,8 +660,10 @@ public class ReqMngController {
             }
         }
         
-        if (detail == null)
+        if (detail == null) {
             detail = new ProcPlanVo();
+            detail.setAplyid(procPlanVo.getAplyid());
+        }
         
         model.addAttribute("detail", detail);
         model.addAttribute("popupYn", procPlanVo.getPopupYn());
@@ -721,8 +737,10 @@ public class ReqMngController {
             }
         }
         
-        if (detail == null)
+        if (detail == null) {
             detail = new ProgramInfoVo();
+            detail.setAplyid(programInfoVo.getAplyid());
+        }
         
         model.addAttribute("detail", detail);
         model.addAttribute("prgrmList", outlineList);
@@ -799,8 +817,10 @@ public class ReqMngController {
             }
         }
         
-        if (detail == null)
+        if (detail == null) {
             detail = new SmrLeaderVo();
+            detail.setAplyid(smrLeaderVo.getAplyid());
+        }
         
         model.addAttribute("detail", detail);
         model.addAttribute("jobList", jobList);
@@ -1173,8 +1193,10 @@ public class ReqMngController {
              }
          }
          
-         if (detail == null)
+         if (detail == null) {
              detail = new OperVo();
+             detail.setAplyid(operVo.getAplyid());
+         }
          
          model.addAttribute("detail", detail);
          model.addAttribute("eduList", eduList);

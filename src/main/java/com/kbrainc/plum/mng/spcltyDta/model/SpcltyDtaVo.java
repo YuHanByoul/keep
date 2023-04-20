@@ -49,7 +49,6 @@ public class SpcltyDtaVo extends ParentRequestVo {
     @Size(max = 100, message = "제목은 200자를 넘을 수 없습니다.")
     private String ttl;
 
-    @NotEmpty(message = "내용을 입력해 주십시오.")
     private String cn;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd")

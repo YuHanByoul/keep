@@ -23,7 +23,7 @@
         </if>
         <!-- 신청일 검색시작일  -->
         <if test="searchYear != null and searchYear != ''">
-            AND YEAR(A.APLY_DT) >= #{searchYear} AND #{searchYear} >= YEAR(A.APLY_DT)
+            AND YEAR(A.REG_DT) >= #{searchYear} AND #{searchYear} >= YEAR(A.REG_DT)
         </if>
         <!-- 심사위원 심사상태-->
         <if test="searchSrngSttsCd != null and searchSrngSttsCd != ''">
@@ -259,5 +259,1629 @@
                     B.CHKLSTID = #{chklstid}
             ) B ON (A.QITEMID = B.QITEMID)
         ORDER BY LV2KEY, TREE_ORD, B.ORDR
+    </select>
+
+    <!-- 지정제 프로그램 수정 -->
+    <update id="updatePrgrm" parameterType="MobileAsgsysSrngVo" >
+        /* AsgsysSrngDao.updatePrgrm */
+        UPDATE TB_ASS_PRGRM SET
+            INSTID              = #{instid        }    /* 기관아이디 */
+                              , APLCNTID            = #{aplcntid      }    /* 신청자아이디 */
+                              , APLCNT_NM           = #{aplcntNm      }    /* 신청자_이름 */
+                              , APLCNT_EML          = #{aplcntEml     }    /* 신청자_이메일 */
+                              , APLCNT_MOBLPHON     = #{aplcntMoblphon}    /* 신청자_휴대폰 */
+                              , INST_NM             = #{instNm        }    /* 기관_이름 */
+                              , INST_EML            = #{instEml       }    /* 기관_이메일 */
+                              , INST_CNTCT          = #{instCntct     }    /* 기관_연락처 */
+                              , INST_HMPG           = #{instHmpg      }    /* 기관_홈페이지 */
+                              , INST_TYPE_CD        = #{instTypeCd    }    /* 기관_유형_코드 */
+                              , INST_RGN_CD         = #{instRgnCd     }    /* 기관_지역_코드 */
+                              , INST_ZIP            = #{instZip       }    /* 기관_우편번호 */
+                              , INST_ADDR           = #{instAddr      }    /* 기관_주소 */
+                              , INST_DTLADDR        = #{instDtladdr   }    /* 기관_상세주소 */
+                              , PRGRM_NM            = #{prgrmNm       }    /* 프로그램_이름 */
+                              , FILEGRPID           = #{filegrpid     }    /* 파일그룹아이디 */
+                              , STTS_CD             = #{sttsCd        }    /* 상태_코드 */
+                              , DSGN_CYCL           = #{dsgnCycl      }    /* 지정_차수 */
+                              , DSGN_NO             = #{dsgnNo        }    /* 지정_번호 */
+                              , DSGN_DE             = #{dsgnDe        }    /* 지정_일자 */
+                              , DSGN_BGNG_DE        = #{dsgnBgngDe    }    /* 지정_시작_일자 */
+                              , DSGN_END_DE         = #{dsgnEndDe     }    /* 지정_종료_일자 */
+                              , AUTZRID             = #{autzrid       }    /* 승인자아이디 */
+                              , CHKLSTID            = #{chklstid      }    /* 체크리스트아이디 */
+                              , CNSLTNG_PRGRS_YN    = #{cnsltngPrgrsYn}    /* 컨설팅__진행_여부 */
+                              , CNSLTNGID           = #{cnsltngid     }    /* 컨설텅아이디 */
+                              , APLY_DT             = #{aplyDt        }    /* 신청_일시 */
+                              , MDFCN_DT            = NOW()                /* 수정_일시 */
+                              , MDFRID              = #{mdfrid        }    /* 수정자아이디 */
+                              , REG_DT              = NOW()                /* 등록_일시 */
+                              , RGTRID              = #{rgtrid        }    /* 등록자아이디 */
+        WHERE PRGRMID = #{prgrmid}
+    </update>
+
+    <!-- 지정신청 진행상태 조회 -->
+    <select id="selectPrgrmSttsCd" parameterType="MobileAsgsysSrngVo" resultType="String">
+        SELECT
+            STTS_CD
+        FROM
+            TB_ASS_PRGRM
+        WHERE
+            PRGRMID = #{prgrmid}
+    </select>
+
+
+    <!-- 지정신청 진행상태 수정 -->
+    <update id="updatePrgrSttsCd" parameterType="MobileAsgsysSrngVo" >
+        UPDATE TB_ASS_PRGRM SET
+            STTS_CD = #{sttsCd}    /* 상태_코드 */
+        WHERE PRGRMID = #{prgrmid}
+    </update>
+
+    <!-- 보완요청 목록조회 -->
+    <select id="selectSplmntDmndList" parameterType="MobileAsgsysSrngVo" resultType="MobileAsgsysSrngVo">
+        /* AsgsysSrngDao.selectSplmntDmndList*/
+        <include refid="PaginationMapper.header"/>
+        SELECT
+        SPLMNT_DMNDID    /* 보완_요청아이디 */
+        , PRGRMID          /* 프로그램아이디 */
+        , STTS_CD
+        , OPNN_CN          /* 의견_내용 */
+        , CMPTN_PRCS_DE    /* 완료_처리_일자 */
+        , MDFCN_DT         /* 수정_일시 */
+        , MDFRID           /* 수정자아이디 */
+        , REG_DT           /* 등록_일시 */
+        , RGTRID           /* 등록자아이디 */
+        FROM
+        TB_ASS_PRGRM_SPLMNT_DMND
+        WHERE 1=1
+        AND PRGRMID = #{prgrmid}
+        <if test="sttsCd != null and sttsCd != '' and sttsCd == ''">
+            AND STTS_CD = #{sttsCd}
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!-- 보완요청 조회 -->
+    <select id="selectSplmntDmnd" parameterType="MobileAsgsysSrngVo" resultType="MobileAsgsysSrngVo">
+        /* AsgsysSrngDao.selectSplmntDmnd */
+
+        SELECT
+            SPLMNT_DMNDID    /* 보완_요청아이디 */
+             , PRGRMID          /* 프로그램아이디 */
+             , STTS_CD          /* 상태_코드 */
+             , OPNN_CN          /* 의견_내용 */
+             , CMPTN_PRCS_DE    /* 완료_처리_일자 */
+             , MDFCN_DT         /* 수정_일시 */
+             , MDFRID           /* 수정자아이디 */
+             , REG_DT           /* 등록_일시 */
+             , RGTRID           /* 등록자아이디 */
+        FROM
+            TB_ASS_PRGRM_SPLMNT_DMND
+        WHERE 1=1
+          AND SPLMNT_DMNDID = #{splmntDmndid}
+
+    </select>
+
+    <!-- 보완요청 등록 -->
+    <insert id="insertSplmntDmnd" parameterType="MobileAsgsysSrngVo" >
+        /* AsgsysSrngDao.insertSplmntDmnd*/
+        INSERT INTO
+            TB_ASS_PRGRM_SPLMNT_DMND (
+                                       PRGRMID
+                                     , STTS_CD
+                                     , OPNN_CN
+                                     , CMPTN_PRCS_DE
+                                     , MDFCN_DT
+                                     , MDFRID
+                                     , REG_DT
+                                     , RGTRID
+        ) VALUES (
+                     #{prgrmid    }
+                 , #{sttsCd     }
+                 , #{opnnCn     }
+                 , #{cmptnPrcsDe}
+                 , NOW()
+                 , #{user.userid}
+                 , NOW()
+                 , #{user.userid}
+                 )
+    </insert>
+
+    <!-- 보완요청 수정 -->
+    <update id="updateSplmntDmnd" parameterType="MobileAsgsysSrngVo" >
+        /* AsgsysSrngDao.updateSplmntDmnd*/
+        UPDATE
+            TB_ASS_PRGRM_SPLMNT_DMND
+        SET
+            STTS_CD       = #{sttsCd}
+          , OPNN_CN       = #{opnnCn}
+          , CMPTN_PRCS_DE = #{cmptnPrcsDe}
+          , MDFCN_DT      = NOW()
+          , MDFRID        = #{user.userid}
+        WHERE
+            SPLMNT_DMNDID = #{splmntDmndid}
+
+    </update>
+
+    <!-- 보완요청 삭제 -->
+    <delete id="deleteSplmntDmnd" parameterType="MobileAsgsysSrngVo" >
+        /* AsgsysSrngDao.deleteSplmntDmnd*/
+        DELETE FROM
+            TB_ASS_PRGRM_SPLMNT_DMND
+        WHERE
+            SPLMNT_DMNDID = #{splmntDmndid}
+    </delete>
+
+    <!-- 신청정보탭 안전관리 상세 조회 -->
+    <select id="selectSftyMng" parameterType="MobileAsgsysSrngVo" resultType="MobileAsgsysSrngVo">
+        /* AsgsysSrngDao.selectSftyMng*/
+        SELECT
+            A.PRGRMID
+             , B.PRGRMID   AS SFTY_MNG_ID
+             , B.FILEGRPID
+             , B.LDR_EDU_SESS
+             , B.LDR_EDU_PIC
+             , B.LDR_EDU_CN
+             , B.PRTCPNT_EDU_SESS
+             , B.PRTCPNT_EDU_PIC
+             , B.PRTCPNT_EDU_CN
+             , B.BFR_CERT_YN
+             , B.BFR_CERT_FILEGRPID
+             , B.MDFCN_DT
+             , B.MDFRID
+             , B.REG_DT
+             , B.RGTRID
+        FROM
+            TB_ASS_PRGRM A
+                LEFT OUTER JOIN
+            TB_ASS_SFTY_MNG B ON A.PRGRMID = B.PRGRMID
+        WHERE
+            A.PRGRMID = #{prgrmid}
+    </select>
+
+    <!-- 신청정보탭 체크리스트 상세 조회 -->
+    <select id="selectAssChklstForm" parameterType="MobileAsgsysSrngVo" resultType="MobileAsgsysSrngVo">
+        /* AsgsysSrngDao.selectAssChklstForm*/
+        SELECT
+            A.PRGRMID
+             , B.SPRTGRPID
+             , C.SBMSNID
+             , A.CHKLSTID
+        FROM TB_ASS_PRGRM A
+                 LEFT OUTER JOIN TB_ASS_SPRTGRP_SRNG B ON A.PRGRMID = B.PRGRMID
+                 LEFT OUTER JOIN TB_ASS_CHKLST_SBMSN C ON B.PRGRMID = C.PRGRMID
+            AND B.SPRTGRPID = C.USERID
+            AND C.SBMSN_SE_CD ='242102'
+        WHERE A.PRGRMID = #{prgrmid}
+    </select>
+
+    <!-- 안전관리 등록 -->
+    <update id="insertSftyMng" parameterType="MobileAsgsysSrngVo" >
+        /* AsgsysSrngDao.insertSftyMng */
+        INSERT INTO
+            TB_ASS_SFTY_MNG(
+                             PRGRMID
+                           , FILEGRPID
+                           , LDR_EDU_SESS
+                           , LDR_EDU_PIC
+                           , LDR_EDU_CN
+                           , PRTCPNT_EDU_SESS
+                           , PRTCPNT_EDU_PIC
+                           , PRTCPNT_EDU_CN
+                           , BFR_CERT_YN
+                           , BFR_CERT_FILEGRPID
+                           , MDFCN_DT
+                           , MDFRID
+                           , REG_DT
+                           , RGTRID
+        ) VALUES (
+                     #{prgrmid}
+                 , #{filegrpid}
+                 , #{ldrEduSess}
+                 , #{ldrEduPic}
+                 , #{ldrEduCn}
+                 , #{prtcpntEduSess}
+                 , #{prtcpntEduPic}
+                 , #{prtcpntEduCn}
+                 , #{bfrCertYn}
+                 , #{bfrCertFilegrpid}
+                 , NOW()
+                 , #{user.userid}
+                 , NOW()
+                 , #{user.userid}
+                 )
+
+    </update>
+
+    <!-- 안전관리 수정 -->
+    <update id="updateSftyMng" parameterType="MobileAsgsysSrngVo" >
+        /* AsgsysSrngDao.updateSftyMng */
+        UPDATE
+            TB_ASS_SFTY_MNG
+        SET
+            FILEGRPID             = #{filegrpid}
+          , LDR_EDU_SESS          = #{ldrEduSess}
+          , LDR_EDU_PIC           = #{ldrEduPic}
+          , LDR_EDU_CN            = #{ldrEduCn}
+          , PRTCPNT_EDU_SESS      = #{prtcpntEduSess}
+          , PRTCPNT_EDU_PIC       = #{prtcpntEduPic}
+          , PRTCPNT_EDU_CN        = #{prtcpntEduCn}
+          , BFR_CERT_YN           = #{bfrCertYn}
+          , BFR_CERT_FILEGRPID    = #{bfrCertFilegrpid}
+          , MDFCN_DT              = NOW()
+          , MDFRID                = #{user.userid}
+        WHERE PRGRMID = #{prgrmid}
+
+    </update>
+
+    <!-- 심사위원심사 목록조회-->
+    <select id="selectJdgsSrngList" parameterType="MobileAsgsysSrngVo" resultType="MobileAsgsysSrngVo">
+        /* AsgsysSrngDao.selectJdgsSrngList*/
+        <include refid="PaginationMapper.header"/>
+        SELECT
+        A.PRGRMID
+        , A.JDGSID
+        , (SELECT NM FROM TB_CMM_USER WHERE USERID = A.JDGSID) AS JDGS_NM
+        , B.PRGRM_NM
+        , B.INST_NM
+        , A.SRNG_STTS_CD
+        , A.REG_DT          /* 배정일*/
+        , C.STY_YN          /* 숙박여부*/
+        , D.SBMSN_DT        /* 심사일 */
+        , A.MDFCN_DT
+        , A.MDFRID
+        , A.RGTRID
+        FROM
+        TB_ASS_PRGRM_JDGS A
+        INNER JOIN
+        TB_ASS_PRGRM B ON A.PRGRMID = B.PRGRMID
+        LEFT OUTER JOIN
+        TB_ASS_PRGRM_DSTNCTN C ON A.PRGRMID = C.PRGRMID
+        LEFT OUTER JOIN
+        TB_ASS_SRNG_SBMSN D ON A.PRGRMID = D.PRGRMID AND A.JDGSID = D.USERID
+        WHERE 1=1
+        <!-- 키워드.심사위원 아이디 -->
+        <if test="searchUserid != null and searchUserid != '' ">
+            AND A.JDGSID = #{searchUserid}
+        </if>
+        <!-- 키워드.전체 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == ''">
+            AND (B.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%') OR B.INST_NM LIKE CONCAT('%',#{searchKeyword},'%'))
+        </if>
+        <!-- 키워드.프로그램명 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchPrgrmNm'">
+            AND B.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <!-- 키워드.기관명 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchInstNm'">
+            AND B.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <!-- 심사진행상태  -->
+        <if test="searchSrngSttsCd != null and searchSrngSttsCd != ''">
+            AND A.SRNG_STTS_CD = #{searchSrngSttsCd}
+        </if>
+        <!-- 배정일 검색시작일  -->
+        <if test="searchRegStartDt != null and searchRegStartDt != ''">
+            AND A.REG_DT >= #{searchRegStartDt}
+        </if>
+        <!-- 배정일 검색종료일  -->
+        <if test="searchRegEndDt != null and searchRegEndDt != ''">
+            AND A.REG_DT  <![CDATA[<]]> CAST(CONCAT(#{searchRegEndDt},' 23:59:59') AS DATETIME)
+        </if>
+        <!-- 숙박여부-->
+        <if test="searchStyYn!= null and searchStyYn != ''">
+            AND C.STY_YN = #{searchStyYn}
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <select id="jdgsSrngListExcelDown" parameterType="MobileAsgsysSrngVo" resultType="MobileAsgsysSrngVo">
+        /* AsgsysSrngDao.jdgsSrngListExcelDown */
+        SELECT
+        A.PRGRM_NM
+        , A.PRGRMID
+        , A.INST_NM
+        , A.STTS_CD
+        , A.APLY_DT
+        , A.REG_DT
+        , B.SRNG_STTS_CD
+        , C.SRGN_STTS_CD
+        , C.VST_DE
+        , C.VST_HR
+        , C.VST_MNT
+        , CONCAT(C.VST_DE , " " , C.VST_HR , ":" , C.VST_MNT) AS VST_DT
+        , C.SPLMNT_DMND_OPNN
+        , C.SRNG_OPNN
+        FROM
+        TB_ASS_PRGRM A
+        LEFT OUTER JOIN    /* 심사위원 */
+        (
+        SELECT
+        PRGRMID
+        , SRNG_STTS_CD
+        , JDGSID
+        , COUNT(1) AS CNT
+        FROM TB_ASS_PRGRM_JDGS
+        ) B ON A.PRGRMID  = B.PRGRMID
+        LEFT OUTER JOIN    /* 지원단 */
+        TB_ASS_SPRTGRP_SRNG C ON A.PRGRMID  = C.PRGRMID
+        LEFT OUTER JOIN
+        TB_CMM_INST D ON A.INSTID  = D.INSTID
+        WHERE 1=1
+        <!-- 키워드.전체 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == ''">
+            AND (B.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%') OR B.INST_NM LIKE CONCAT('%',#{searchKeyword},'%'))
+        </if>
+        <!-- 키워드.프로그램명 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchPrgrmNm'">
+            AND B.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <!-- 키워드.기관명 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchInstNm'">
+            AND B.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <!-- 심사진행상태  -->
+        <if test="searchSrngSttsCd != null and searchSrngSttsCd != ''">
+            AND A.SRNG_STTS_CD = #{searchSrngSttsCd}
+        </if>
+        <!-- 배정일 검색시작일  -->
+        <if test="searchRegStartDt != null and searchRegStartDt != ''">
+            AND A.REG_DT >= #{searchRegStartDt}
+        </if>
+        <!-- 배정일 검색종료일  -->
+        <if test="searchRegEndDt != null and searchRegEndDt != ''">
+            AND A.REG_DT  <![CDATA[<]]> CAST(CONCAT(#{searchRegEndDt},' 23:59:59') AS DATETIME)
+        </if>
+        <!-- 숙박여부-->
+        <if test="searchStyYn!= null and searchStyYn != ''">
+            AND C.STY_YN = #{searchStyYn}
+        </if>
+    </select>
+
+    <!-- 지원단 캘린더 목록 조회 -->
+    <select id="selectSprtgrpClndrList" parameterType="MobileAsgsysSrngVo" resultType="MobileAsgsysSrngVo">
+        SELECT
+        A.PRGRMID
+        , A.PRGRM_NM
+        , A.INST_NM
+        , B.VST_DE
+        , B.VST_HR
+        , B.VST_MNT
+        , B.SPRTGRPID
+        , CONCAT(C.NM, '(', C.ACNT, ')')    AS SPRTGRP_NM_ACNT
+        , C.NM
+        , CONCAT(B.VST_DE , ' ', B.VST_HR  ,' : ',  B.VST_MNT)    AS VST_DE
+        FROM
+        TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+        TB_ASS_SPRTGRP_SRNG B ON A.PRGRMID = B.PRGRMID
+        LEFT OUTER JOIN
+        TB_CMM_USER C ON B.SPRTGRPID = C.USERID
+        WHERE 1=1
+        <if test="searchAplyStartDt != null and searchAplyStartDt != '' ">
+            AND B.VST_DE <![CDATA[>=]]> #{searchAplyStartDt}
+        </if>
+        <if test="searchAplyEndDt != null and searchAplyEndDt != '' ">
+            AND   B.VST_DE <![CDATA[<=]]> #{searchAplyEndDt}
+        </if>
+        ORDER BY VST_DE, VST_HR, VST_MNT
+    </select>
+
+    <!-- 신청정보 조회 -->
+    <select id="selectAplyInfo" parameterType="MobileAsgsysSrngVo" resultType="MobileAsgsysSrngVo">
+        SELECT
+            A.PRGRMID
+             , A.PRGRM_NM
+             , A.INSTID
+             , A.INST_NM
+             , A.CHKLSTID
+             , B.STY_YN
+             , B.STY_NIGHT
+             , B.STY_DAYTM
+             , B.OPER_FRM_CD
+             , C.BFR_CERT_YN
+             , C.BFR_CERT_FILEGRPID
+             , A.FILEGRPID  AS APLY_FILEGRPID
+             , A.STTS_CD
+             , D.SPRTGRPID
+             , D.VST_DT
+             , D.NM
+             , D.SPLMNT_DMND_OPNN
+             , D.SRNG_OPNN
+             , E.SBMSNID
+        FROM
+            TB_ASS_PRGRM A
+                LEFT OUTER JOIN
+            TB_ASS_PRGRM_DSTNCTN B ON A.PRGRMID = B.PRGRMID
+                LEFT OUTER JOIN
+            TB_ASS_SFTY_MNG C ON A.PRGRMID = C.PRGRMID
+                LEFT OUTER JOIN
+            (
+                SELECT
+                    AA.PRGRMID
+                     , AA.SPRTGRPID
+                     , CONCAT(BB.NM,"( ",BB.ACNT," )") AS NM
+                     , CONCAT(AA.VST_DE , " " , AA.VST_HR , ":" , AA.VST_MNT) AS VST_DT
+                     , AA.SPLMNT_DMND_OPNN
+                     , AA.SRNG_OPNN
+                FROM
+                    TB_ASS_SPRTGRP_SRNG AA
+                        INNER JOIN
+                    TB_CMM_USER BB ON AA.SPRTGRPID = BB.USERID
+            ) D ON A.PRGRMID = D.PRGRMID
+                LEFT OUTER JOIN
+            (
+                /*지원단 체크리스트*/
+                SELECT
+                    SRNG.PRGRMID
+                     , CHK.SBMSNID
+                     , CHK.SBMSN_SE_CD
+                FROM
+                    TB_ASS_SPRTGRP_SRNG SRNG
+                        LEFT OUTER JOIN
+                    TB_ASS_CHKLST_SBMSN CHK ON SRNG.PRGRMID = CHK.PRGRMID
+                        AND SRNG.SPRTGRPID = CHK.USERID
+                        AND CHK.SBMSN_SE_CD = '242102'
+            ) E ON A.PRGRMID = E.PRGRMID
+        WHERE 1=1
+          AND A.PRGRMID = #{prgrmid}
+    </select>
+
+    <!-- 심사위원 심사 상세 조회 -->
+    <select id="selectJdgsSrngDetail" parameterType="MobileAsgsysSrngVo" resultType="MobileAsgsysSrngVo">
+        /* AsgsysSrngDao.selectJdgsSrngDetail */
+        SELECT
+            A.PRGRMID
+             , B.STTS_CD
+             , A.JDGSID
+             , F.FORMID       /*양식ID*/
+             , F.SBMSNID
+             , B.PRGRM_NM
+             , B.INST_NM
+             , C.STY_YN       /*숙박여부*/
+             , C.STY_NIGHT
+             , C.STY_DAYTM
+             , NULLIF(E.PRGRMID,'N') AS SFTY_MNG_YN
+             , B.FILEGRPID  AS APLY_FILEGRPID
+             , E.BFR_CERT_FILEGRPID
+             , A.SRNG_STTS_CD
+             , A.REG_DT       /*배정일*/
+             , F.SRNG_OPNN    /*심사의견*/
+             , C.OPER_FRM_CD    AS OPER_FRM_CD
+             , CASE WHEN C.OPER_FRM_CD = 120104 THEN 145103
+                    ELSE CASE WHEN C.STY_YN ='Y' THEN 145102
+                              WHEN C.STY_YN ='N' THEN 145101
+                              ELSE ''
+                        END
+            END CHK_OPER_FRM_CD
+        FROM
+            TB_ASS_PRGRM_JDGS A
+                INNER JOIN
+            TB_ASS_PRGRM B ON A.PRGRMID = B.PRGRMID
+                LEFT OUTER JOIN
+            TB_ASS_PRGRM_DSTNCTN C ON A.PRGRMID = C.PRGRMID
+                LEFT OUTER JOIN
+            TB_ASS_SFTY_MNG E ON A.PRGRMID = E.PRGRMID
+                LEFT OUTER JOIN
+            TB_ASS_SRNG_SBMSN F ON A.PRGRMID = F.PRGRMID AND A.JDGSID =F.USERID
+        WHERE 1=1
+          AND A.JDGSID = #{jdgsid}
+          AND B.PRGRMID =  #{prgrmid}
+    </select>
+
+    <!-- 심사양식목록 조회 -->
+    <select id="selectDsgnSrgnFormList" parameterType="DsgnSrngFormVO" resultType="DsgnSrngFormVO">
+        SELECT
+            C.DSGNCRTR_CD
+             , B.IDNTY_MTTR
+             , C.ORDR             AS DSGNCRTR_ORDR
+             , A.QITEMID          AS QITEMID
+             , A.CHKLST_SE_CD     AS CHKLST_SE_CD
+             , B.ALTM
+             , E.SCR
+             , SUM(B.ALTM) OVER() AS ALLALTM
+                , SUM(E.SCR) OVER()  AS ALLSCR
+                , SBMSN.PRGRMID
+             , SBMSN.FORMID
+             , SBMSN.SBMSNID
+             , A.ORDR
+             , ROW_NUMBER() OVER(PARTITION BY C.DSGNCRTR_CD ORDER BY A.ORDR ASC) AS RNK
+                , COUNT(1) OVER (PARTITION  BY C.DSGNCRTR_CD ASC) AS ROWSPAN
+                , CHK.SCR    as CHK_LST_SCR
+        FROM TB_ASS_SRNG_SBMSN SBMSN
+                 LEFT OUTER JOIN
+             TB_ASS_SRNG_FORM_QITEM_MAPNG A    ON SBMSN.FORMID = A.FORMID
+                 LEFT OUTER JOIN
+             TB_ASS_SRNG_QITEM B    ON B.QITEMID = A.QITEMID
+                 LEFT OUTER JOIN
+             TB_ASS_SRNG_FORM_DSGNCRTR_ORDR C    ON C.FORMID = A.FORMID AND B.DSGNCRTR_CD = C.DSGNCRTR_CD
+                 LEFT OUTER JOIN
+             TB_ASS_PRGRM_JDGS D    ON SBMSN.PRGRMID = D.PRGRMID  AND SBMSN.USERID =D.JDGSID
+                 LEFT OUTER JOIN
+             TB_ASS_SRNG_ANS   E    ON SBMSN.SBMSNID = E.SBMSNID  AND A.QITEMID = E.QITEMID
+                 LEFT OUTER JOIN
+             TB_CMM_CD CD ON A.CHKLST_SE_CD = CD.CD
+                 LEFT OUTER JOIN
+             (
+                 SELECT
+                     A.QITEMID
+                      , A.SE_CD
+                      , SUM(A.SCR) SCR
+                      , SBMSNID
+                 FROM
+                     TB_ASS_CHKLST_ANS A
+                 WHERE A.SBMSNID = #{sbmsnid}
+                 GROUP BY A.SE_CD
+             ) CHK ON A.CHKLST_SE_CD = CHK.SE_CD
+        WHERE SBMSN.PRGRMID = #{prgrmid}
+          AND   D.JDGSID = #{jdgsid}
+          AND   SBMSN.SBMSNID = #{sbmsnid}
+        ORDER BY
+            C.DSGNCRTR_CD , C.ORDR ,A.ORDR
+    </select>
+
+    <!-- 심사양식 문항목록 조회 -->
+    <select id="selectSrngFormQitemList" parameterType="DsgnSrngFormVO" resultType="DsgnSrngFormVO">
+        /* SrngDao.selectSrngFormQitemList */
+        WITH RECURSIVE CODE_VIEW(DSGNCRTR_CD, IDNTY_MTTR, DSGNCRTR_ORDR, TREE_ORD, QITEMID, CHKLST_SE_CD)  AS (
+            SELECT
+                SFDO.DSGNCRTR_CD AS DSGNCRTR_CD
+                 , CONCAT(CD_NM) AS IDNTY_MTTR
+                 , SFDO.ORDR AS DSGNCRTR_ORDR
+                 , 1 AS TREE_ORD
+                 , 0 AS QITEMID
+                 , 0 AS CHKLST_SE_CD
+            FROM
+                TB_CMM_CD CCD
+                    LEFT OUTER JOIN TB_ASS_SRNG_FORM_DSGNCRTR_ORDR SFDO
+                                    ON SFDO.DSGNCRTR_CD = CCD.CD
+            WHERE
+                1 = 1
+              AND CCD.CDGRPID != 'G0001'
+            AND CCD.CDGRPID  = '149'
+            AND SFDO.FORMID = #{formid}
+        UNION ALL
+        SELECT
+            C.DSGNCRTR_CD
+             , B.IDNTY_MTTR
+             , C.ORDR AS DSGNCRTR_ORDR
+             , 2 AS TREE_ORD
+             , A.QITEMID AS QITEMID
+             , A.CHKLST_SE_CD AS CHKLST_SE_CD
+        FROM
+            TB_ASS_SRNG_FORM_QITEM_MAPNG A
+                LEFT OUTER JOIN TB_ASS_SRNG_QITEM B
+                                ON B.QITEMID = A.QITEMID
+                LEFT OUTER JOIN TB_ASS_SRNG_FORM_DSGNCRTR_ORDR C
+                                ON C.FORMID = A.FORMID AND B.DSGNCRTR_CD = C.DSGNCRTR_CD
+        WHERE
+            A.FORMID = #{formid}
+            )
+        SELECT
+            CV.DSGNCRTR_CD
+             , CV.IDNTY_MTTR
+             , CV.DSGNCRTR_ORDR
+             , CV.TREE_ORD
+             , CV.QITEMID
+             , CV.CHKLST_SE_CD
+             , BB.QITEM_ORDR
+             , BB.ALTM
+             , ROW_NUMBER() OVER(PARTITION BY CV.DSGNCRTR_CD ORDER BY BB.QITEM_ORDR ASC) AS RNK
+            , COUNT(1) OVER (PARTITION  BY CV.DSGNCRTR_CD ASC) AS ROWSPAN
+        FROM
+            CODE_VIEW CV
+                LEFT OUTER JOIN (
+                SELECT
+                    SFQM.FORMID
+                     , SQ.DSGNCRTR_CD
+                     , SFQM.QITEMID
+                     , SQ.IDNTY_MTTR
+                     , SFQM.ORDR QITEM_ORDR
+                     , SFDO.ORDR DSGNCRTR_ORDR
+                     , SFQM.CHKLST_SE_CD
+                     , SQ.ALTM
+                FROM
+                    TB_ASS_SRNG_FORM_QITEM_MAPNG SFQM
+                        LEFT OUTER JOIN TB_ASS_SRNG_QITEM SQ
+                                        ON SQ.QITEMID = SFQM.QITEMID
+                        LEFT OUTER JOIN TB_ASS_SRNG_FORM_DSGNCRTR_ORDR SFDO
+                                        ON SFDO.FORMID = SFQM.FORMID AND SQ.DSGNCRTR_CD = SFDO.DSGNCRTR_CD
+                WHERE
+                    SFQM.FORMID = #{formid}
+            ) BB ON BB.QITEMID = CV.QITEMID
+        ORDER BY CV.DSGNCRTR_ORDR, CV.TREE_ORD,BB.QITEM_ORDR
+    </select>
+
+    <!-- 심사양식 문항목록 조회 -->
+    <select id="selectChkScrList" parameterType="DsgnSrngFormVO" resultType="DsgnSrngFormVO">
+        SELECT
+            A.PRGRMID
+             , B.SBMSNID
+             , B.USERID
+             , C.SCR
+        FROM
+            TB_ASS_PRGRM A
+                LEFT OUTER JOIN
+            TB_ASS_CHKLST_SBMSN B ON A.PRGRMID = B.PRGRMID
+                LEFT OUTER JOIN
+            (
+                SELECT
+                    A.SBMSNID
+                     , SUM(A.SCR)   SCR
+                     , CD.UPPR_CD
+                FROM TB_ASS_CHKLST_ANS A
+                         INNER JOIN
+                     TB_CMM_CD CD ON A.SE_CD = CD.CD
+                WHERE 1=1
+                GROUP BY SBMSNID
+                ORDER BY SBMSNID
+            ) C ON B.SBMSNID =  C.SBMSNID
+        WHERE A.PRGRMID = #{prgrmid}
+    </select>
+
+    <!-- 심사항목 목록 조회 -->
+    <select id="selectSrngQitemList" parameterType="MobileAsgsysSrngVo" resultType="MobileAsgsysSrngVo">
+        SELECT
+            A.FORMID
+             , B.QITEMID
+             , CD.CD_NM
+             , B.CHKLST_SE_CD
+             , C.DSGNCRTR_CD
+             , C.IDNTY_MTTR
+             , C.ALTM
+             , ROW_NUMBER() OVER(PARTITION BY C.DSGNCRTR_CD ORDER BY D.ORDR ASC) AS RNK
+      , COUNT(1) OVER (PARTITION  BY C.DSGNCRTR_CD ASC) AS ROWSPAN
+      , B.ORDR
+             , 0    AS SCR
+        FROM TB_ASS_SRNG_FORM A
+                 INNER JOIN TB_ASS_SRNG_FORM_QITEM_MAPNG B ON A.FORMID = B.FORMID
+                 INNER JOIN TB_ASS_SRNG_QITEM C ON B.QITEMID = C.QITEMID
+                 INNER JOIN TB_ASS_SRNG_FORM_DSGNCRTR_ORDR D ON B.FORMID = D.FORMID AND C.DSGNCRTR_CD = D.DSGNCRTR_CD
+                 LEFT OUTER JOIN TB_CMM_CD CD ON C.DSGNCRTR_CD = CD.CD
+        WHERE A.OPER_FRM_CD = #{chkOperFrmCd}
+          AND A.USE_YN = 'Y'
+    </select>
+
+    <!-- 심사위원심사 등록 -->
+    <insert id="insertJdgsSrngDetail" parameterType="MobileAsgsysSrngVo" >
+        /* AsgsysSrngDao.insertJdgsSrngDetail */
+        INSERT INTO TB_ASS_SRNG_SBMSN (
+                                        PRGRMID
+                                      , FORMID
+                                      , USERID
+                                      , SBMSN_DT
+                                      , SBMSN_STTS_CD
+                                      , USER_IP
+                                      , SCR
+                                      , SRNG_OPNN
+                                      , MDFCN_DT
+                                      , MDFRID
+                                      , REG_DT
+                                      , RGTRID
+        )
+        VALUES (
+                   #{prgrmid    }
+               , #{formid     }
+               , #{user.userid}
+               , #{sbmsnDt    }
+               , #{sbmsnSttsCd}
+               , #{userIp     }
+               , #{scr        }
+               , #{srngOpnn   }
+               , NOW()
+               , #{user.userid}
+               , NOW()
+               , #{user.userid}
+               )
+    </insert>
+
+    <!-- 심사위원심사 상세 수정-->
+    <update id="updateJdgsSrngDetail" parameterType="MobileAsgsysSrngVo" >
+        /* AsgsysSrngDao.updateJdgsSrngDetail*/
+        UPDATE
+            TB_ASS_SRNG_SBMSN
+        SET
+            USERID        = #{userid}
+          , SBMSN_DT      = NOW()
+          , SBMSN_STTS_CD = #{sbmsnSttsCd}
+          , USER_IP       = #{userIp     }
+          , SCR           = #{scr        }
+          , SRNG_OPNN     = #{srngOpnn   }
+          , MDFCN_DT      = NOW()
+          , MDFRID        = #{user.userid}
+          , REG_DT        = NOW()
+          , RGTRID        = #{user.userid}
+        WHERE
+            SBMSNID       = #{sbmsnid    }
+    </update>
+
+    <!-- 심사위원심사 점수 헤더 조회 -->
+    <select id="selectSrngScrHeader" parameterType="MobileAsgsysSrngVo" resultType="MobileAsgsysSrngVo">
+        SELECT
+            MAX(CASE WHEN BB.DSGNCRTR_CD = '149101' THEN BB.DSGNCRTR_NM END) AS COL_VAL1
+             , MAX(CASE WHEN BB.DSGNCRTR_CD = '149102' THEN BB.DSGNCRTR_NM END) AS COL_VAL2
+             , MAX(CASE WHEN BB.DSGNCRTR_CD = '149103' THEN BB.DSGNCRTR_NM END) AS COL_VAL3
+             , MAX(CASE WHEN BB.DSGNCRTR_CD = '149104' THEN BB.DSGNCRTR_NM END) AS COL_VAL4
+             , MAX(CASE WHEN BB.DSGNCRTR_CD = '149105' THEN BB.DSGNCRTR_NM END) AS COL_VAL5
+             , MAX(CASE WHEN BB.DSGNCRTR_CD = '149106' THEN BB.DSGNCRTR_NM END) AS COL_VAL6
+             , MAX(CASE WHEN BB.DSGNCRTR_CD = '149107' THEN BB.DSGNCRTR_NM END) AS COL_VAL7
+             , MAX(CASE WHEN BB.DSGNCRTR_CD = '149108' THEN BB.DSGNCRTR_NM END) AS COL_VAL8
+             , MAX(CASE WHEN BB.DSGNCRTR_CD = '149109' THEN BB.DSGNCRTR_NM END) AS COL_VAL9
+             , MAX(CASE WHEN BB.DSGNCRTR_CD = '149110' THEN BB.DSGNCRTR_NM END) AS COL_VAL10
+        FROM
+            (
+                SELECT
+                    A.FORMID
+                     , B.DSGNCRTR_CD
+                     , (select CD_NM  from TB_CMM_CD where CD = B.DSGNCRTR_CD) as DSGNCRTR_NM
+                     , A.QITEMID
+                     , B.IDNTY_MTTR
+                     , A.ORDR QITEM_ORDR
+                     , C.ORDR DSGNCRTR_ORDR
+                     , A.CHKLST_SE_CD
+                FROM
+                    TB_ASS_SRNG_FORM_QITEM_MAPNG A
+                        LEFT OUTER JOIN TB_ASS_SRNG_QITEM B
+                                        ON B.QITEMID = A.QITEMID
+                        LEFT OUTER JOIN TB_ASS_SRNG_FORM_DSGNCRTR_ORDR C
+                                        ON C.FORMID = A.FORMID AND B.DSGNCRTR_CD = C.DSGNCRTR_CD
+                WHERE
+                    A.FORMID = #{formid}
+            ) BB
+
+    </select>
+
+    <select id="selectSrngFormList" parameterType="MobileAsgsysSrngVo" resultType="MobileAsgsysSrngVo">
+        SELECT
+            A.QITEMID
+             , A.DSGNCRTR_CD
+             , A.IDNTY_MTTR
+             , SUM(A.ALTM ) AS SUM_ALTM
+             , CD.CD_NM
+             , B.CHKLST_SE_CD
+        FROM
+            TB_ASS_SRNG_QITEM A
+                INNER JOIN
+            TB_ASS_SRNG_FORM_QITEM_MAPNG B ON A.QITEMID =B.QITEMID
+                LEFT OUTER JOIN
+            TB_CMM_CD CD ON A.DSGNCRTR_CD =CD.CD
+        WHERE B.FORMID = #{formid}
+        GROUP BY DSGNCRTR_CD
+
+    </select>
+
+
+    <select id="selectSrngScrList" parameterType="MobileAsgsysSrngVo" resultType="MobileAsgsysSrngVo">
+        SELECT
+            A.PRGRMID
+             , AA.JDGSID
+             , AA.SBMSNID
+             , AA.FORMID
+             , AA.USERID
+             , AA.JDGS_NM
+             , AA.SBMSN_DT
+             , AA.COL_VAL1
+             , AA.COL_VAL2
+             , AA.COL_VAL3
+             , AA.COL_VAL4
+             , AA.COL_VAL5
+             , AA.COL_VAL6
+             , AA.SUM_SCR
+             , AA.SUM_AVG
+             , AA.SRNG_OPNN
+        FROM TB_ASS_PRGRM A
+                 LEFT OUTER JOIN
+             (
+                 SELECT
+                     A.PRGRMID
+                      , A.JDGSID
+                      , B.SBMSNID
+                      , B.FORMID
+                      , B.USERID
+                      , (SELECT NM FROM TB_CMM_USER WHERE USERID = A.JDGSID ) AS JDGS_NM
+                      , B.SBMSN_DT
+                      , CASE WHEN 0 <![CDATA[<]]> SUM(COL_VAL1) OVER() THEN IFNULL(COL_VAL1,0) END AS COL_VAL1
+                      , CASE WHEN 0 <![CDATA[<]]> SUM(COL_VAL2) OVER() THEN IFNULL(COL_VAL2,0) END AS COL_VAL2
+                      , CASE WHEN 0 <![CDATA[<]]> SUM(COL_VAL3) OVER() THEN IFNULL(COL_VAL3,0) END AS COL_VAL3
+                      , CASE WHEN 0 <![CDATA[<]]> SUM(COL_VAL4) OVER() THEN IFNULL(COL_VAL4,0) END AS COL_VAL4
+                      , CASE WHEN 0 <![CDATA[<]]> SUM(COL_VAL5) OVER() THEN IFNULL(COL_VAL5,0) END AS COL_VAL5
+                      , CASE WHEN 0 <![CDATA[<]]> SUM(COL_VAL6) OVER() THEN IFNULL(COL_VAL6,0) END AS COL_VAL6
+                      , B.SCR    AS SUM_SCR
+                      , ROUND(SUM(SCR) / COUNT(A.JDGSID),2)          AS SUM_AVG
+                      , B.SRNG_OPNN
+                 FROM
+                     TB_ASS_PRGRM_JDGS A
+                         LEFT OUTER JOIN
+                     TB_ASS_SRNG_SBMSN B ON A.PRGRMID =B.PRGRMID AND A.JDGSID = B.USERID
+                         LEFT OUTER JOIN
+                     (
+                         SELECT
+                             AA.SBMSNID
+                              , SUM(CASE WHEN AA.DSGNCRTR_CD = '149101' THEN AA.SCR END) AS COL_VAL1
+                              , SUM(CASE WHEN AA.DSGNCRTR_CD = '149102' THEN AA.SCR END) AS COL_VAL2
+                              , SUM(CASE WHEN AA.DSGNCRTR_CD = '149103' THEN AA.SCR END) AS COL_VAL3
+                              , SUM(CASE WHEN AA.DSGNCRTR_CD = '149104' THEN AA.SCR END) AS COL_VAL4
+                              , SUM(CASE WHEN AA.DSGNCRTR_CD = '149105' THEN AA.SCR END) AS COL_VAL5
+                              , SUM(CASE WHEN AA.DSGNCRTR_CD = '149106' THEN AA.SCR END) AS COL_VAL6
+                              , SUM(CASE WHEN AA.DSGNCRTR_CD = '149107' THEN AA.SCR END) AS COL_VAL7
+                              , SUM(CASE WHEN AA.DSGNCRTR_CD = '149108' THEN AA.SCR END) AS COL_VAL8
+                              , SUM(CASE WHEN AA.DSGNCRTR_CD = '149109' THEN AA.SCR END) AS COL_VAL9
+                              , SUM(CASE WHEN AA.DSGNCRTR_CD = '149110' THEN AA.SCR END) AS COL_VAL10
+                         FROM
+                             (
+                                 SELECT
+                                     SBMSNID
+                                      , DSGNCRTR_CD
+                                      , SUM(SCR) SCR
+                                 FROM
+                                     TB_ASS_SRNG_ANS
+                                 GROUP BY SBMSNID, DSGNCRTR_CD
+                             ) AA
+                         GROUP BY SBMSNID
+                     ) C ON B.SBMSNID = C.SBMSNID
+                 WHERE
+                     A.PRGRMID = #{prgrmid}
+                 GROUP BY
+                     A.JDGSID
+             ) AA ON A.PRGRMID = AA.PRGRMID
+        WHERE A.PRGRMID = #{prgrmid}
+    </select>
+
+    <!-- 심사위원심사 답변 등록 -->
+    <insert id="insertJdgsSrngAns" parameterType="DsgnSrngFormVo" >
+        /* AsgsysSrngDao.insertJdgsSrngAns */
+        INSERT INTO
+            TB_ASS_SRNG_ANS(
+                             SBMSNID
+                           , QITEMID
+                           , DSGNCRTR_CD
+                           , IDNTY_MTTR
+                           , CHKLST_SE_CD
+                           , SCR
+                           , ORDR
+                           , MDFCN_DT
+                           , MDFRID
+                           , REG_DT
+                           , RGTRID
+        ) VALUES (
+                     #{sbmsnid}
+                 , #{qitemid}
+                 , #{dsgncrtrCd}
+                 , #{idntyMttr}
+                 , #{chklstSeCd}
+                 , #{scr}
+                 , #{ordr}
+                 , NOW()
+                 , #{user.userid}
+                 , NOW()
+                 , #{user.userid}
+                 )
+    </insert>
+
+    <!-- ASS_심사_양식_지정기준_순서_답변 등록 -->
+    <insert id="insertJdgsSrngOrdrAns" parameterType="DsgnSrngFormVo" >
+        /* AsgsysSrngDao.insertJdgsSrngOrdrAns */
+        INSERT INTO TB_ASS_SRNG_FORM_DSGNCRTR_ORDR_ANS
+        (
+            SBMSNID
+        , SE_CD
+        , ORDR
+        , MDFCN_DT
+        , MDFRID
+        , REG_DT
+        , RGTRID
+        ) VALUES (
+                     #{sbmsnid}
+                 , #{qitemid}
+                 , #{ordr   }
+                 , NOW()
+                 , #{user.userid}
+                 , NOW()
+                 , #{user.userid}
+                 )
+    </insert>
+
+    <delete id="deleteJdgsSrngOrdrAns" parameterType="DsgnSrngFormVo" >
+        DELETE FROM
+            TB_ASS_SRNG_FORM_DSGNCRTR_ORDR_ANS
+        WHERE SBMSNID = #{sbmsnid}
+    </delete>
+
+    <!-- 심사위원심사 답변 수정 -->
+    <update id="updateJdgsSrngAns" parameterType="DsgnSrngFormVo" >
+        UPDATE TB_ASS_SRNG_ANS SET
+            DSGNCRTR_CD  = #{dsgncrtrCd}
+                                 , IDNTY_MTTR   = #{idntyMttr}
+                                 , CHKLST_SE_CD = #{chklstSeCd}
+                                 , SCR          = #{scr}
+                                 , ORDR         = #{ordr}
+                                 , MDFCN_DT     = #{mdfcnDt}
+                                 , MDFRID       = #{mdfrid}
+        WHERE QITEMID    = #{qitemid}
+    </update>
+
+    <delete id="deleteJdgsSrngAns" parameterType="DsgnSrngFormVo" >
+        DELETE FROM
+            TB_ASS_SRNG_ANS
+        WHERE SBMSNID = #{sbmsnid}
+    </delete>
+
+    <!-- 지원단심사 목록 조회 -->
+    <select id="selectSprtgrpSrngList" parameterType="MobileAsgsysSrngVo" resultType="MobileAsgsysSrngVo">
+        /* AsgsysSrngDao.selectSprtgrpSrngList*/
+        <include refid="PaginationMapper.header"/>
+        SELECT
+        A.PRGRMID
+        , A.SPRTGRPID
+        , B.PRGRM_NM        /* 프로그램명 */
+        , B.STTS_CD
+        , B.INST_NM         /* 기관명 */
+        , A.SRGN_STTS_CD    /* (지원단)심사 진행상태 */
+        , A.REG_DT          /* 배정일 */
+        , A.VST_DE          /* (현장점검) 방문일 */
+        , A.VST_HR          /* (현장점검) 방문시 */
+        , A.VST_MNT         /* (현장점검) 방문분 */
+        , CONCAT(A.VST_DE , " " , A.VST_HR , ":" , A.VST_MNT) AS VST_DT
+        , C.STY_YN          /* 숙박여부 */
+        , A.SPLMNT_DMND_OPNN
+        , A.SRNG_OPNN
+        , A.MDFCN_DT
+        , A.MDFRID
+        , A.RGTRID
+        FROM
+        TB_ASS_SPRTGRP_SRNG A
+        INNER JOIN
+        TB_ASS_PRGRM B ON A.PRGRMID = B.PRGRMID
+        LEFT OUTER JOIN
+        TB_ASS_PRGRM_DSTNCTN C ON A.PRGRMID = C.PRGRMID
+        WHERE 1=1
+        AND A.SPRTGRPID = #{userid}
+        <!-- 키워드.프로그램명 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchPrgrmNm'">
+            AND B.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <!-- 키워드.기관명 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchInstNm'">
+            AND B.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <!-- (지원단)진행상태  -->
+        <if test="searchSttsCd != null and searchSttsCd != ''">
+            AND A.SRGN_STTS_CD = #{searchSrgnSttsCd}
+        </if>
+        <!-- 배정일 검색시작일  -->
+        <if test="searchRegStartDt != null and searchRegStartDt != ''">
+            AND A.REG_DT >= #{searchRegStartDt}
+        </if>
+        <!-- 배정일 검색종료일  -->
+        <if test="searchRegEndDt != null and searchRegEndDt != ''">
+            AND A.REG_DT  <![CDATA[<]]> CAST(CONCAT(#{searchRegEndDt},' 23:59:59') AS DATETIME)
+        </if>
+        <!-- 현장점검지정일 시작일-->
+        <if test="searchChckDsgnStartDt != null and searchChckDsgnStartDt != ''">
+            AND A.VST_DE >= #{searchChckDsgnStartDt}
+        </if>
+        <!-- 현장점검지정일 종료일-->
+        <if test="searchChckDsgnEndDt != null and searchChckDsgnEndDt != ''">
+            AND A.VST_DE <![CDATA[<]]> CAST(CONCAT(#{searchChckDsgnEndDt},' 23:59:59') AS DATETIME)
+        </if>
+        <!-- 숙박여부-->
+        <if test="searchStyYn!= null and searchStyYn != ''">
+            AND C.STY_YN = #{searchStyYn}
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!-- 지원단심사 상세 조회 -->
+    <select id="selectSprtgrpSrng" parameterType="MobileAsgsysSrngVo" resultType="MobileAsgsysSrngVo">
+        /* AsgsysSrngDao.selectSprtgrpSrng*/
+        SELECT
+            A.PRGRMID
+             , A.SPRTGRPID
+             , B.PRGRM_NM        /* 프로그램명 */
+             , B.INST_NM         /* 기관명 */
+             , A.SRGN_STTS_CD    /* (지원단)심사 진행상태 */
+             , A.REG_DT          /* 배정일 */
+             , C.STY_YN          /* 숙박여부 */
+             , A.SPLMNT_DMND_OPNN
+             , A.SRNG_OPNN
+             , A.MDFCN_DT
+             , A.MDFRID
+             , A.RGTRID
+             , C.STY_NIGHT
+             , C.STY_DAYTM
+             , C.OPER_FRM_CD
+             , IFNULL(E.PRGRMID,'N') AS SFTY_MNG_YN
+             , B.FILEGRPID  AS APLY_FILEGRPID
+             , E.BFR_CERT_FILEGRPID
+             , CONCAT(A.VST_DE , " " , A.VST_HR , ":" , A.VST_MNT) AS VST_DT
+             , B.CHKLSTID
+             , G.CHKLST_RSLT_CN
+             , G.SBMSNID
+             , G.SCR
+             , H.SBMSNID    AS APLCNT_SBMSNID
+        FROM
+            TB_ASS_SPRTGRP_SRNG A
+                LEFT OUTER JOIN
+            TB_ASS_PRGRM B ON A.PRGRMID = B.PRGRMID
+                LEFT OUTER JOIN
+            TB_ASS_PRGRM_DSTNCTN C ON A.PRGRMID = C.PRGRMID
+                LEFT OUTER JOIN
+            TB_ASS_SFTY_MNG E ON A.PRGRMID = E.PRGRMID
+                LEFT OUTER JOIN
+            TB_ASS_SPRTGRP_SRNG F ON A.PRGRMID = F.PRGRMID
+                LEFT OUTER JOIN
+            (
+                SELECT PRGRMID , SBMSNID ,CHKLSTID, CHKLST_RSLT_CN ,SCR
+                FROM TB_ASS_CHKLST_SBMSN
+                WHERE SBMSN_SE_CD ='242102'
+            ) G ON A.PRGRMID = G.PRGRMID
+                LEFT OUTER JOIN
+            (
+                SELECT PRGRMID , SBMSNID ,CHKLSTID, CHKLST_RSLT_CN ,SCR, USERID
+                FROM TB_ASS_CHKLST_SBMSN
+                WHERE SBMSN_SE_CD ='242101'
+            ) H ON A.PRGRMID = H.PRGRMID AND B.APLCNTID = H.USERID /*자가진단*/
+        WHERE 1=1
+          AND  A.PRGRMID = #{prgrmid}
+    </select>
+
+    <!-- 체크리스트 문항 목록 조회 -->
+    <select id="selectQitemList" parameterType="MobileAsgsysSrngVo" resultType="MobileAsgsysSrngVo">
+        WITH CHK_LST AS (
+            SELECT
+                A.CHKLSTID
+                 , B.ORDR   DP2ORDR
+                 , D.ORDR   DP1ORDR
+                 , CD1D.CD  DP1
+                 , CD2D.CD  DP2
+                 , ROW_NUMBER() OVER(PARTITION BY C.SE_CD ORDER BY B.ORDR ASC) AS QROW
+                 , C.SE_CD
+                 , CD1D.CD_NM DB1CN
+                 , CD2D.CD_NM DP2CN
+                 , B.QITEMID
+                 , C.CN
+                 , C.ALTM
+            FROM TB_ASS_CHKLST A
+                     LEFT OUTER JOIN TB_ASS_CHKLST_QITEM_MAPNG B ON A.CHKLSTID = B.CHKLSTID
+                     LEFT OUTER JOIN TB_ASS_CHKLST_QITEM C ON B.QITEMID = C.QITEMID
+                     LEFT OUTER JOIN TB_ASS_CHKLST_SE_ORDR D ON A.CHKLSTID = D.CHKLSTID AND C.SE_CD = D.SE_CD
+                     LEFT OUTER JOIN TB_CMM_CD CD2D ON C.SE_CD = CD2D.CD
+                     LEFT OUTER JOIN TB_CMM_CD CD1D ON CD2D.UPPR_CD = CD1D.CD
+            WHERE A.CHKLSTID = #{chklstid}
+            ORDER BY D.ORDR ,B.ORDR
+        )
+        SELECT DP1 , DP2 , CN , LV , ORDR , QITEMID , ALTM, QROW FROM
+            (
+                SELECT
+                    DP1
+                     , DP2
+                     , DB1CN     AS CN
+                     , '1'       AS LV
+                     , DENSE_RANK() OVER(PARTITION BY QROW ORDER BY DP1ORDR) ORDR
+              , 0         AS QITEMID
+                     , 0         AS ALTM
+                     , 0         AS QROW
+                FROM CHK_LST A
+                GROUP BY DP1
+                UNION ALL
+                SELECT
+                    DP1
+                     , DP2
+                     , DP2CN    AS CN
+                     , '2'      AS LV
+                     , DENSE_RANK() OVER(PARTITION BY QROW ORDER BY DP1ORDR) ORDR
+              , 0        AS QITEMID
+                     , 0        AS ALTM
+                     , 0        AS QROW
+                FROM CHK_LST A
+                GROUP BY DP2
+                UNION ALL
+                SELECT
+                    DP1
+                     , DP2
+                     , CN       AS  CN
+                     , '3'      AS  LV
+                     , DENSE_RANK() OVER(PARTITION BY QROW ORDER BY DP1ORDR) ORDR
+              , QITEMID
+                     , ALTM
+                     , QROW
+                FROM CHK_LST A
+                GROUP BY A.QITEMID
+                ORDER BY ORDR
+            ) AA
+        ORDER BY AA.DP1,AA.DP2, AA.ORDR, AA.LV, QROW
+    </select>
+
+    <select id="getCheckListId" parameterType="MobileAsgsysSrngVo" resultType="Integer">
+        SELECT CHKLSTID FROM TB_ASS_CHKLST
+        WHERE OPER_FRM_CD = #{chkOperFrmCd}
+          AND USE_YN = 'Y'
+    </select>
+
+    <!-- 체크리스트제출 등록 -->
+    <insert id="insertChklstSbmsn" parameterType="MobileAsgsysSrngVo" >
+        INSERT INTO
+            TB_ASS_CHKLST_SBMSN
+        (
+            CHKLSTID
+        , PRGRMID
+        , USERID
+        , SBMSN_DT
+        , SBMSN_STTS_CD
+        , USER_IP
+        , SCR
+        , CHKLST_RSLT_CN
+        , SBMSN_SE_CD
+        , MDFCN_DT
+        , MDFRID
+        , REG_DT
+        , RGTRID
+        ) VALUES(
+                    #{chklstid     }
+                , #{prgrmid      }
+                , #{sprtgrpid    }
+                , NOW()
+                , #{sbmsnSttsCd  }
+                , #{userIp       }
+                , #{scr          }
+                , #{chklstRsltCn }
+                , #{sbmsnSeCd    }
+                , NOW()
+                , #{user.userid}
+                , NOW()
+                , #{user.userid}
+                )
+    </insert>
+
+    <!-- 체크리스트제출 조회 -->
+    <select id="selectChkListSbmsn" parameterType="MobileAsgsysSrngVo" resultType="MobileAsgsysSrngVo">
+        /* AsgsysSrngDao.selectChkListSbmsn*/
+        SELECT
+            SBMSNID
+             , CHKLSTID
+             , PRGRMID
+             , USERID
+             , SBMSN_DT
+             , SBMSN_STTS_CD
+             , USER_IP
+             , SCR
+             , CHKLST_RSLT_CN
+             , SBMSN_SE_CD
+        FROM
+            TB_ASS_CHKLST_SBMSN
+        WHERE PRGRMID = #{prgrmid}
+          AND   SBMSN_SE_CD = #{sbmsnSeCd}
+
+    </select>
+
+    <!-- 체크리스트 제출 수정 -->
+    <update id="updateChklstSbmsn" parameterType="MobileAsgsysSrngVo" >
+
+        UPDATE
+            TB_ASS_CHKLST_SBMSN
+        SET
+            SCR             = #{scr}
+          , CHKLST_RSLT_CN  = #{chklstRsltCn}
+          , USER_IP         = #{userIp}
+          , SBMSN_STTS_CD   = #{sbmsnSttsCd}
+          , SBMSN_DT        = NOW()
+          , USERID          = #{sprtgrpid}
+          , MDFCN_DT        = NOW()
+          , MDFRID          = #{user.userid}
+        WHERE SBMSNID       = #{sbmsnid}
+
+    </update>
+
+    <!-- 체크리스트 순서 답변 등록 -->
+    <insert id="insertChklstSeOrdrAnsList" parameterType="ChklstAnsVo" >
+        INSERT INTO TB_ASS_CHKLST_SE_ORDR_ANS
+        (
+            SBMSNID
+        , SE_CD
+        , ORDR
+        , MDFCN_DT
+        , MDFRID
+        , REG_DT
+        , RGTRID
+        ) VALUES (
+                     #{sbmsnid}
+                 , #{seCd}
+                 , #{ordr}
+                 , NOW()
+                 , #{user.userid}
+                 , NOW()
+                 , #{user.userid}
+                 )
+    </insert>
+
+    <!-- 체크리스트 순서 답변 삭제 -->
+    <delete id="deleteChklstSeOrdrAnsList" parameterType="ChklstAnsVo" >
+        DELETE FROM
+            TB_ASS_CHKLST_SE_ORDR_ANS
+        WHERE SBMSNID = #{sbmsnid}
+    </delete>
+
+    <!-- 지원단심사 수정 -->
+    <update id="updateSprtgrpSrng" parameterType="MobileAsgsysSrngVo" >
+        /* AsgsysSrngDao.updateSprtgrpSrng */
+        UPDATE
+        TB_ASS_SPRTGRP_SRNG
+        SET
+        MDFCN_DT  = NOW()
+        , MDFRID    = #{user.userid}
+        <if test="srngOpnn!= null and srngOpnn != ''">
+            , SRNG_OPNN = #{srngOpnn}
+        </if>
+        <if test="SRGN_STTS_CD!= null and srngOpnn != ''">
+            , SRGN_STTS_CD = #{srgnSttsCd}
+        </if>
+        WHERE SPRTGRPID= #{sprtgrpid}
+
+    </update>
+
+    <select id="selectKeyCntChklstAns" parameterType="ChklstAnsVo" resultType="int">
+        SELECT
+            COUNT(QITEMID) AS KEY_CNT
+        FROM
+            TB_ASS_CHKLST_ANS
+        WHERE 1=1
+          AND SBMSNID = #{sbmsnid}
+          AND QITEMID = #{qitemid}
+
+    </select>
+    <update id="updateChklstAns" parameterType="ChklstAnsVo" >
+        UPDATE
+            TB_ASS_CHKLST_ANS
+        SET
+            SE_CD         = #{seCd      }
+          , CN            = #{cn        }
+          , IDNTY_MTTR    = #{idntyMttr }
+          , SCR           = #{scr       }
+          , ORDR          = #{ordr      }
+          , MDFCN_DT      = NOW()
+          , MDFRID        = #{user.userid}
+        WHERE
+            SBMSNID       = #{sbmsnid   }
+          AND QITEMID       = #{qitemid   }
+    </update>
+
+    <insert id="insertChklstAns" parameterType="ChklstAnsVo" >
+        INSERT INTO
+            TB_ASS_CHKLST_ANS (
+                                SBMSNID
+                              , QITEMID
+                              , SE_CD
+                              , CN
+                              , IDNTY_MTTR
+                              , SCR
+                              , ORDR
+                              , MDFCN_DT
+                              , MDFRID
+                              , REG_DT
+                              , RGTRID
+        ) VALUES(
+                    #{sbmsnid  }
+                , #{qitemid  }
+                , #{seCd     }
+                , #{cn       }
+                , #{idntyMttr}
+                , #{scr      }
+                , #{ordr     }
+                , NOW()
+                , #{user.userid}
+                , NOW()
+                , #{user.userid}
+                )
+    </insert>
+
+    <!-- 체크리스트 답변 삭제 -->
+    <delete id="deleteChklstAns" parameterType="ChklstAnsVo" >
+        DELETE FROM TB_ASS_CHKLST_ANS
+        WHERE SBMSNID = #{sbmsnid}
+    </delete>
+
+    <!-- 지원단심사의견 수정 -->
+    <update id="updateSprtgrpOpnn" parameterType="MobileAsgsysSrngVo" >
+        /* AsgsysSrngDao.updateSprtgrpOpnn */
+        UPDATE
+            TB_ASS_SPRTGRP_SRNG
+        SET
+            SRNG_OPNN = #{srngOpnn}
+          , SRGN_STTS_CD  = #{srgnSttsCd}
+          , MDFCN_DT  = NOW()
+          , MDFRID    = #{user.userid}
+        WHERE PRGRMID = #{prgrmid}
+          AND   SPRTGRPID= #{sprtgrpid}
+    </update>
+
+    <!-- 파일목록 조회 -->
+    <select id="selectEvdncDcmntFileList" resultType="FileVo">
+        SELECT
+            B.FILEID
+             , A.FILEGRPID
+             , B.FILE_IDNTFC_KEY
+             , B.FILE_PATH
+             , B.SAVE_FILE_NM
+             , B.ORGINL_FILE_NM
+             , B.FILE_EXTSN
+             , B.FILE_SIZE
+             , B.ORD
+        FROM
+            TB_CMM_FILEGRP A
+                LEFT OUTER JOIN
+            TB_CMM_FILE B ON A.FILEGRPID = B.FILEGRPID
+        WHERE 1=1
+          AND   A.FILEGRPID = #{filegrpid}
+    </select>
+
+    <!-- 회원목록 조회 -->
+    <select id="selectMbrList" resultType="MemberVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT
+        A.USERID
+        , A.INSTID
+        , A.ACNT
+        , A.NM
+        , A.MOBLPHON
+        , A.EML
+        , B.INST_NM
+        FROM
+        TB_CMM_USER A
+        LEFT OUTER JOIN
+        TB_CMM_INST B ON A.INSTID = B.INSTID
+        WHERE 1=1
+        <!-- 키워드.사용자 명 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchUserNm'">
+            AND A.NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <!-- 키워드.기관명 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchInstNm'">
+            AND A.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!-- 담당자 변경 -->
+    <update id="updateMbr" parameterType="MobileAsgsysSrngVo" >
+        /* AsgsysSrngDao.updateMbr*/
+        UPDATE
+            TB_ASS_PRGRM
+        SET
+            APLCNTID  = #{aplcntid}
+          , APLCNT_NM = #{aplcntNm}
+        WHERE
+            PRGRMID   = #{prgrmid}
+    </update>
+
+
+    <!-- 담당자 심사위원 등록 -->
+    <insert id="insertPicJdgs" parameterType="MobileAsgsysSrngVo" >
+        INSERT INTO
+            TB_ASS_PRGRM_JDGS(
+                               PRGRMID
+                             , JDGSID
+                             , SRNG_STTS_CD
+                             , MDFCN_DT
+                             , MDFRID
+                             , REG_DT
+                             , RGTRID
+        ) VALUES (
+                     #{prgrmid}
+                 , #{jdgsid}
+                 , #{srngSttsCd}
+                 , NOW()
+                 , #{user.userid}
+                 , NOW()
+                 , #{user.userid}
+                 )
+    </insert>
+
+    <!-- 담당자 지원단 등록 -->
+    <insert id="insertPicSprtgrp" parameterType="MobileAsgsysSrngVo" >
+        INSERT INTO
+            TB_ASS_SPRTGRP_SRNG(
+                                 PRGRMID
+                               , SPRTGRPID
+                               , VST_DE
+                               , VST_HR
+                               , VST_MNT
+                               , SPLMNT_DMND_OPNN
+                               , SRNG_OPNN
+                               , SRGN_STTS_CD
+                               , MDFCN_DT
+                               , MDFRID
+                               , REG_DT
+                               , RGTRID
+        ) VALUES (
+                     #{prgrmid}
+                 , #{sprtgrpid}
+                 , #{vstDe}
+                 , #{vstHr}
+                 , #{vstMnt}
+                 , #{splmntDmndOpnn}
+                 , #{srngOpnn}
+                 , #{srgnSttsCd}
+                 , NOW()
+                 , #{user.userid}
+                 , NOW()
+                 , #{user.userid}
+                 )
+    </insert>
+
+    <!-- 지원단 시간 등록 -->
+    <update id="updateSprtgrpTime" parameterType="MobileAsgsysSrngVo" >
+        UPDATE TB_ASS_SPRTGRP_SRNG SET
+            VST_DE         = #{vstDe}    /* 방문일자 */
+         , VST_HR             = #{vstHr}    /* 방문시간 */
+         , VST_MNT            = #{vstMnt}    /* 방문분 */
+         , MDFCN_DT            = NOW()                /* 수정_일시 */
+         , MDFRID              = #{mdfrid        }    /* 수정자아이디 */
+        WHERE PRGRMID = #{prgrmid}
+    </update>
+
+    <!-- 담당자 심사위원 삭제 -->
+    <delete id="deletePicJdgs" parameterType="MobileAsgsysSrngVo" >
+        DELETE FROM
+            TB_ASS_PRGRM_JDGS
+        WHERE PRGRMID = #{prgrmid}
+          AND   JDGSID = #{jdgsid}
+    </delete>
+
+    <!-- 담당자 지원단 삭제 -->
+    <delete id="deletePicSprtgrp" parameterType="MobileAsgsysSrngVo" >
+        DELETE FROM
+            TB_ASS_SPRTGRP_SRNG
+        WHERE PRGRMID = #{prgrmid}
+          AND   SPRTGRPID = #{sprtgrpid}
+    </delete>
+
+
+    <!-- 담당자(지원단)배정 목록 조회-->
+    <select id="selectSprtgrpPicList" parameterType="MobileAsgsysSrngVo" resultType="MobileAsgsysSrngVo">
+
+        <include refid="PaginationMapper.header"/>
+        SELECT
+        B.USERID
+        , B.ACNT
+        , B.NM
+        , CONCAT( B.ACNT," ",B.NM) AS SEARCH_STR
+        , B.EML
+        , B.MOBLPHON    AS TELNO
+        , B.REG_DT
+        , B.MDFCN_DT
+        , C.RGN_CD_NM
+        , D.SBJCT_CD_NM
+        , E.CRTFCT_NM
+        FROM TB_ASS_EXPRT A
+        INNER JOIN TB_CMM_USER B ON A.USERID = B.USERID
+        LEFT OUTER JOIN
+        (
+        SELECT
+        A.USERID    AS USERID
+        , GROUP_CONCAT(B.CTPRVN_NM SEPARATOR ', ')    AS RGN_CD_NM
+        , GROUP_CONCAT(B.CTPRVN_CD SEPARATOR ', ')    AS RGN_CD
+        FROM TB_ASS_EXPRT_ACTVT_RGN A
+        INNER JOIN TB_CMM_ADDR_CTPRVN B
+        ON A.RGN_CD = B.CTPRVN_CD
+        GROUP BY A.USERID
+        ) C ON A.USERID = C.USERID
+        LEFT OUTER JOIN
+        (
+        SELECT
+        A.USERID
+        , GROUP_CONCAT(CD.CD_NM SEPARATOR ', ')    AS SBJCT_CD_NM
+        , GROUP_CONCAT(CD.CD SEPARATOR ', ')    AS SBJCT_CD
+        FROM TB_ASS_EXPRT_SBJCT A
+        INNER JOIN TB_CMM_CD CD
+        ON A.SBJCT_CD = CD.CD
+        GROUP BY A.USERID
+        ) D ON A.USERID= D.USERID
+        LEFT OUTER JOIN
+        (
+        SELECT
+        A.USERID
+        , GROUP_CONCAT(A.CRTFCT_NM SEPARATOR ', ')   AS CRTFCT_NM
+        FROM TB_ASS_EXPRT_CRTFCT A
+        GROUP BY A.USERID
+        ) E ON A.USERID = E.USERID
+        WHERE 1=1
+        AND B.DEL_YN     = 'N'
+        AND B.BLCKLST_YN = 'N'
+        <!-- 키워드.계정 -->
+        <if test="searchKeyword != null and searchKeyword != ''">
+            AND CONCAT(B.ACNT,B.NM) LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <!-- 키워드.자격증명 -->
+        <if test="searchCrtfctNm != null and searchCrtfctNm != ''">
+            AND E.CRTFCT_NM LIKE CONCAT('%',#{searchCrtfctNm},'%')
+        </if>
+        <!-- 전문분야(환경주제)  -->
+        <if test="searchSbjctCd != null and searchSbjctCd != ''">
+            AND D.SBJCT_CD LIKE CONCAT('%',#{searchSbjctCd},'%')
+        </if>
+        <!-- 활동가능지역 -->
+        <if test="searchRgnCd != null and searchRgnCd != ''">
+            AND C.RGN_CD LIKE CONCAT('%',#{searchRgnCd},'%')
+        </if>
+
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!-- 담당자(심사위원) 목록 조회-->
+    <select id="selectjdgsPicList" parameterType="MobileAsgsysSrngVo" resultType="MobileAsgsysSrngVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT
+        GRP_ID
+        , GRP_NM
+        , USE_YN
+        , REG_DT
+        , REG_EXPRT_CNT
+        , USERID_GRP
+        , USER_ACNT_GRP
+        , USER_NM_GRP
+        , USER_EML_GRP
+        , USER_MOBLPHON_GRP
+        FROM (
+        SELECT
+        A.GRP_ID
+        , A.GRP_NM
+        , A.USE_YN
+        , A.REG_DT
+        , COUNT(B.USERID)                     AS REG_EXPRT_CNT
+        , GROUP_CONCAT(NULLIF(B.USERID  ,'')) AS USERID_GRP
+        , GROUP_CONCAT(NULLIF(C.ACNT    ,'')) AS USER_ACNT_GRP
+        , GROUP_CONCAT(NULLIF(C.NM      ,'')) AS USER_NM_GRP
+        , GROUP_CONCAT(NULLIF(C.EML     ,'')) AS USER_EML_GRP
+        , GROUP_CONCAT(IFNULL(C.MOBLPHON,'')) AS USER_MOBLPHON_GRP
+        FROM
+        TB_ASS_EXPRT_GRP A
+        LEFT OUTER JOIN
+        TB_ASS_EXPRT_GRP_MAPNG B ON A.GRP_ID = B.GRP_ID
+        LEFT OUTER JOIN
+        TB_CMM_USER C ON B.USERID = C.USERID
+        GROUP BY A.GRP_ID
+        ) AA
+        WHERE 1=1
+        <!-- 키워드.그룹명-->
+        <if test="searchKeyword != null and searchKeyword != ''">
+            AND A.GRP_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+
+        <include refid="PaginationMapper.footer"/>
+
+    </select>
+
+    <!-- 심사위원 목록 조회 -->
+    <select id="selectjdgsList" parameterType="MobileAsgsysSrngVo" resultType="MobileAsgsysSrngVo">
+        SELECT
+            A.USERID
+             , USR.ACNT
+             , USR.NM
+        FROM  TB_ASS_EXPRT A
+                  INNER JOIN
+              TB_CMM_USER USR ON A.USERID = USR.USERID AND USR.DEL_YN ='N'
+    </select>
+
+
+    <!-- 체크리스트 정보 조회 -->
+    <select id="selectChkListInfo" parameterType="MobileAsgsysSrngVo" resultType="MobileAsgsysSrngVo">
+        /* front.DsgnPrgrmDao.selectChkListInfo*/
+        SELECT
+            A.PRGRMID
+             , A.APLCNTID
+             , A.STTS_CD
+             , IFNULL(A.CHKLSTID ,C.CHKLSTID)    AS CHKLSTID
+             , B.OPER_FRM_CD
+             , CD.CD_NM
+             , D.SBMSNID
+        FROM TB_ASS_PRGRM A
+                 LEFT OUTER JOIN
+             TB_ASS_PRGRM_DSTNCTN B ON A.PRGRMID = B.PRGRMID
+                 LEFT OUTER JOIN TB_CMM_CD CD ON B.OPER_FRM_CD = CD.CD
+                 LEFT OUTER JOIN TB_ASS_CHKLST C ON B.OPER_FRM_CD = C.OPER_FRM_CD AND C.USE_YN ='Y'
+                 LEFT OUTER JOIN TB_ASS_CHKLST_SBMSN D ON A.PRGRMID = D.PRGRMID
+            AND A.CHKLSTID = D.CHKLSTID
+            AND D.SBMSN_SE_CD = #{sbmsnSeCd}   /*신청자 자가진단*/
+        WHERE A.PRGRMID = #{prgrmid}
     </select>
 </mapper>

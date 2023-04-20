@@ -14,6 +14,9 @@
                     <input type="hidden" name="trgtCd" th:value="${trgtCd}" />
                     <input type="hidden" name="evntCd" th:value="${evntCd}" />
                     <input type="hidden" name="cntntsid" th:value="${cntntsid}" />
+                    <th:block th:if="${cmmCntnts != null}">
+                        <input type="hidden" name="checkid" th:value="${cmmCntnts.checkid}" />
+                    </th:block>
 	                    <table class="table table-framed table-bordered td-wrap">
 	                        <thead>
 	                            <tr class="border-bottom-inverse">
@@ -58,41 +61,16 @@
 	    $('#chkAll').on('click', function(e) {
 	        if(e.target.checked) {
 	        	$(".border-checkbox").prop("checked", true);
-	        	
-	            /*$('#cntntsYn1').prop('checked', true);
-	            $('#cntntsYn2').prop('checked', true);
-	            $('#cntntsYn3').prop('checked', true);
-	            $('#cntntsYn4').prop('checked', true);
-	            $('#webAcsbtYn1').prop('checked', true);
-	            $('#webAcsbtYn2').prop('checked', true);
-	            $('#webAcsbtYn3').prop('checked', true);
-	            $('#cprghtYn1').prop('checked', true);
-	            $('#cprghtYn2').prop('checked', true);
-	            $('#cprghtYn3').prop('checked', true);
-	            $('#prvcYn').prop('checked', true);
-	            $('#rghtOfPrtrtYn').prop('checked', true);
-	            $('#etcYn').prop('checked', true);*/
 	        } else {
 	        	$(".border-checkbox").prop("checked", false);
-	            /*$('#cntntsYn1').prop('checked', false);
-	            $('#cntntsYn2').prop('checked', false);
-	            $('#cntntsYn3').prop('checked', false);
-	            $('#cntntsYn4').prop('checked', false);
-	            $('#webAcsbtYn1').prop('checked', false);
-	            $('#webAcsbtYn2').prop('checked', false);
-	            $('#webAcsbtYn3').prop('checked', false);
-	            $('#cprghtYn1').prop('checked', false);
-	            $('#cprghtYn2').prop('checked', false);
-	            $('#cprghtYn3').prop('checked', false);
-	            $('#prvcYn').prop('checked', false);
-	            $('#rghtOfPrtrtYn').prop('checked', false);
-	            $('#etcYn').prop('checked', false);*/
 	        }
 	    });
 	    validForm();
 	})
 	var cmmCntntsQlity = {
 		listUrl: '/mng/cmmCntnts/selectCmmCntntsQlityChklstList.do',			
+		insertUrl: '/mng/cmmCntnts/insertCmmCntntsQlity.do',			
+		updateUrl: '/mng/cmmCntnts/updateCmmCntntsQlity.do',			
 		selectCmmCntntsQlityChklstList() {
             if (displayWorkProgress(true)) {
                 var formData = $('#cmmCntntsQlityForm').serializeArray();
@@ -131,8 +109,12 @@
 		                                <div class="border-checkbox-group">
 		                                    <input class="border-checkbox" type="checkbox" id="chklstYn`;
 		                                    	listHtml += index;
-		                                    listHtml += `">
-		                                    <label class="form-label form-label-sm border-checkbox-label" for="chklstYn`;
+                    if(item.chkYn == 'Y'){
+                    	listHtml += `" checked>`;  	
+                    }else{
+                    	listHtml += `">`;  		                                    	
+                    }
+                    listHtml += `           <label class="form-label form-label-sm border-checkbox-label" for="chklstYn`;
                                                 listHtml += index;		                                    
                                                 listHtml += `">
 		                                        확인
@@ -157,11 +139,13 @@
 	            alert('검수사항 준수여부 미확인 항목이 있으니 다시 확인해주세요.');
 	            return ;
 	        } */
+	        var url = $("[name=evntCd]").val() == '247001' ? insertUrl : updateUrl;
+	        
 	        if(!confirm("검수사항 준수여부를 모두 확인하였으며, 향후 조치사항 발생 시 대응할 것에 동의합니다.")) return;
 	        var data =  $("#cmmCntntsQlityForm").serialize();
 	        if(displayWorkProgress()){
 	            $.ajax({
-	                url : "/mng/cmmCntnts/insertCmmCntntsQlity.do",
+	                url : url,
 	                type: 'POST',
 	                cache : false,
 	                dataType: 'json',

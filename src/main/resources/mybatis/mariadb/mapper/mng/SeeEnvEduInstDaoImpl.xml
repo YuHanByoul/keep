@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!--
+    SQL File Name : SeeEnvEduInstDaoImpl.xml
+    Description : 교육기관/시설관리 > 사회환경교육기관 현황
+-->
+<mapper namespace="com.kbrainc.plum.mng.seeEnvEduInst.model.SeeEnvEduInstDao">
+    <select id="selectSeeEnvEduInstList" resultType="com.kbrainc.plum.mng.seeEnvEduInst.model.SeeEnvEduInstVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.APLYID
+            , A.RCPTNO
+            , A.INSTID
+            , A.APLCNTID
+            , A.APLCNT_NM
+            , A.APLCNT_EML
+            , A.APLCNT_MOBLPHON
+            , A.INST_NM
+            , A.INST_EML
+            , A.INST_CNTCT
+            , A.CTPRVN_CD
+            , A.RPRSV_BRDT
+            , A.ATCH_FILEGRPID
+            , A.DSGNNO
+            , A.DSGN_DE
+            , A.AUTZRID
+            , A.ISSU_DE
+            , A.ISGN_DE
+            , A.STTS_CD
+            , A.MDFCN_DT
+            , A.MDFRID
+            , A.REG_DT
+            , A.RGTRID
+            , B.INST_TYPE_CD
+            , B.TELNO
+        FROM TB_SEE_ENV_EDU_INST A
+        INNER JOIN
+            TB_CMM_INST B
+        ON A.INSTID = B.INSTID
+        WHERE A.STTS_CD = '248104'
+        <if test="searchCtprvn != null and searchCtprvn != ''">
+            AND A.CTPRVN_CD = #{searchCtprvn}
+        </if>
+        <if test="searchInstNm != null and searchInstNm != ''">
+            AND A.INST_NM LIKE CONCAT('%', #{searchInstNm}, '%')
+        </if>
+        <if test="searchBgngDt != null and searchBgngDt != ''">
+            AND A.DSGN_DE <![CDATA[>=]]> #{searchBgngDt}
+        </if>
+        <if test="searchEndDt != null and searchEndDt != ''">
+            AND A.DSGN_DE <![CDATA[<=]]> #{searchEndDt}
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+</mapper>

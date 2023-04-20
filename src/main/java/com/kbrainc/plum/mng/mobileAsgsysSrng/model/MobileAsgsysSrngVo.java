@@ -1,6 +1,7 @@
 package com.kbrainc.plum.mng.mobileAsgsysSrng.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.mng.asgsysSrng.model.ChklstAnsVo;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.OperPrfmncVo;
 import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
@@ -47,6 +48,9 @@ public class MobileAsgsysSrngVo extends ParentRequestVo {
 
     /** rowSpan */
     private String rowSpan;
+
+    /** 검색 년도 */
+    private String searchYear;
 
     /** 검색 진행상태 */
     private String searchSttsCd;
@@ -912,5 +916,8 @@ public class MobileAsgsysSrngVo extends ParentRequestVo {
             }
         }
     }
+
+    /** 체크리스트 답변 목록 List*/
+    private List<ChklstAnsVo> ansLst;
 
 }

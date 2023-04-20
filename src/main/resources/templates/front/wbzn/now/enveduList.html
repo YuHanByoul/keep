@@ -84,8 +84,8 @@
 
 				<div class="btn-wrap">
 					<div class="center">
-						<button type="button" class="btn-medium btn-gray btn-before-prev" onclick="beforeList()">이전호</button>
-						<button type="button" class="btn-medium btn-blue btn-after-next" onclick="nextList()">다음호</button>
+						<button type="button" id="beforeBtn" class="btn-medium btn-gray btn-before-prev" onclick="beforeList()">이전호</button>
+						<button type="button" id="nextBtn" class="btn-medium btn-blue btn-after-next" onclick="nextList()">다음호</button>
 					</div>
 				</div>
 
@@ -136,8 +136,8 @@
 
 				<div class="btn-wrap">
 					<div class="center">
-						<button type="button" class="btn-medium btn-gray btn-before-prev" onclick="beforeList()">이전호</button>
-						<button type="button" class="btn-medium btn-blue btn-after-next" onclick="nextList()">다음호</button>
+						<button type="button" id="beforeBtn" class="btn-medium btn-gray btn-before-prev" onclick="beforeList()">이전호</button>
+						<button type="button" id="nextBtn" class="btn-medium btn-blue btn-after-next" onclick="nextList()">다음호</button>
 					</div>
 				</div>
 
@@ -203,6 +203,8 @@
 		<!-- //layerpopup -->
 		
 		<script th:inline="javascript">
+		var isData = null;
+		
 		var envedu = {
 			listUrl: '/front/wbzn/now/selectEnveduList.do',
 			detailUrl : '/front/wbzn/now/enveduDetailForm.html',
@@ -267,7 +269,7 @@
 				prgrmgd.init();
 			},
 			
-			selectEnveduList() {
+			selectEnveduList(type) {
 				if (displayWorkProgress(true)) {
 					let formData = $('#enveduSearchForm').serializeArray();
 					
@@ -282,6 +284,17 @@
 								$('#envedu-card-list').removeClass();
 								$('#envedu-card-list').addClass('card-section');
 							}
+							/* if(data.totalCount == 0 && type != "") {
+								if(type == "next") {
+									alert("등록된 다음호가 없습니다.")
+									beforeList();
+									$("#nextBtn").attr("disabled", true);
+								}else {
+									alert("등록된 이전호가 없습니다.")
+									nextList();
+									$("#beforeBtn").attr("disabled", true);
+								}
+							} */
 							envedu.makeListHtml(data);
 							closeWorkProgress();
 						}
@@ -347,6 +360,13 @@
 							break;
                         }
 						
+						datailTag = "";
+						if(item.url == null) {
+							datailTag = `<a href="/front/wbzn/now/enveduDetailForm.html?enveduid=${item.enveduid}" class="title ellipsis" data-ellipsis="2">${item.ttl}</a>`;
+						}else {
+							datailTag = `<a href="${item.url}" target="_blank" class="title ellipsis" data-ellipsis="2">${item.ttl}</a>`;
+						}
+						
 						enveduListHtml += `
 						<li>
 							<div class="thumb">
@@ -354,7 +374,7 @@
 								${enveduSeTag}
 							</div>
 							<div class="cont mt0">
-								<a href="/front/wbzn/now/enveduDetailForm.html?enveduid=${item.enveduid}" class="title ellipsis" data-ellipsis="2">${item.ttl}</a>
+								${datailTag}
 							</div>
 						</li>
 						`;
@@ -428,7 +448,7 @@
 				envedu.searchInit();
 			},
 			
-			selectPrgrmgdList() {
+			selectPrgrmgdList(type) {
 				if (displayWorkProgress(true)) {
 					let formData = $('#prgrmgdSearchForm').serializeArray();
 					
@@ -443,6 +463,19 @@
 								$('#prgrmgd-card-list').removeClass();
 								$('#prgrmgd-card-list').addClass('card-section');
 							}
+							
+/* 							if(data.totalCount == 0 && type != "") {
+								if(type == "next") {
+									alert("등록된 다음호가 없습니다.")
+									beforeList();
+									$("#nextBtn").attr("disabled", true);
+								}else {
+									alert("등록된 이전호가 없습니다.")
+									nextList();
+									$("#beforeBtn").attr("disabled", true);
+								}
+							} */
+							
 							prgrmgd.makeListHtml(data);
 							closeWorkProgress();
 						}
@@ -499,6 +532,13 @@
                             break;
 	                    }
 						
+						datailTag = "";
+						if(item.url == null) {
+							datailTag = `<a href="/front/wbzn/now/prgrmgdDetailForm.html?prgrmid=${item.prgrmid}" class="title ellipsis" data-ellipsis="2">${item.ttl}</a>`;
+						}else {
+							datailTag = `<a href="${item.url}" target="_blank" class="title ellipsis" data-ellipsis="2">${item.ttl}</a>`;
+						}
+						
 						prgrmgdListHtml += `
 						<li>
 							<div class="thumb">
@@ -506,7 +546,7 @@
 								${rgnCdTag}
 							</div>
 							<div class="cont mt0">
-								<a href="/front/wbzn/now/prgrmgdDetailForm.html?prgrmid=${item.prgrmid}" class="title ellipsis" data-ellipsis="2">${item.ttl}</a>
+								${datailTag}
 								<ul class="df">
 									<li class="d-flex">
 										<span class="tit">진행일정 : </span>
@@ -573,8 +613,9 @@
 			$("#compareDate").val(`${year}-${month}-${date}`);
 			$("#prgrmgd-compareDate").val(`${year}-${month}-${date}`);
 			
-			envedu.selectEnveduList();
-			prgrmgd.selectPrgrmgdList();
+			$("#nextBtn").attr("disabled", false);
+			envedu.selectEnveduList("before");
+			prgrmgd.selectPrgrmgdList("before");
 		}
 		
 		function nextList() {
@@ -590,11 +631,16 @@
 			$("#compareDate").val(`${year}-${month}-${date}`);
 			$("#prgrmgd-compareDate").val(`${year}-${month}-${date}`);
 			
-			envedu.selectEnveduList();
-			prgrmgd.selectPrgrmgdList();
+			$("#beforeBtn").attr("disabled", false);
+			envedu.selectEnveduList("next");
+			prgrmgd.selectPrgrmgdList("next");
 		}
 
 		$(function () {
+			$("#enveduSearchYr").val(year);
+			$("#enveduSearchMm").val(String(month).padStart(2, '0'));
+			$("#prgrmgdSearchYr").val(year);
+			$("#prgrmgdSearchMm").val(String(month).padStart(2, '0'));
 			$("#enveduNowDate").text(transformMonth()+"월호 환경교육")
 			$("#prgrmgdNowDate").text(transformMonth()+"월호 환경교육 프로그램")
 			envedu.init();

@@ -154,6 +154,16 @@ public interface CnsltngService {
      */
     public int updateCnsltng(CnsltngVo cnsltngVo) throws Exception;
     /**
+     * 컨설턴트 엑셀 리스트 호출 
+     *
+     * @Title       : selectCnsltngExcelList 
+     * @Description : 컨설턴트 엑셀 리스트 호출 
+     * @param CnsltngVo consultVo 객체
+     * @return List<CnsltngVo>
+     * @throws Exception 예외
+     */
+    public List<CnsltngVo> selectCnsltngExcelList(CnsltngVo consultVo) throws Exception;
+    /**
      * 컨설팅 리스트 엑셀 다운로드  
      *
      * @Title       : updateCnsltnt 

@@ -24,7 +24,7 @@
            , CASE WHEN B.ADULT = 'Y' THEN '성인' END
            ) AS EDU_TARGET
           , B.WHOL_AGE
-          , CASE WHEN B.ETRFEE > 0 THEN FORMAT(B.ETRFEE, '0') ELSE '무료' END ETRFEE
+          , CASE WHEN IFNULL(B.ETRFEE,0) > 0 THEN FORMAT(B.ETRFEE, '0') ELSE '무료' END ETRFEE
           , GROUP_CONCAT(CD1.CD_NM) AS EDU_SBJCT_NM_LST    /*교육 주제*/
           , NVL(OPERFRMCD.CD_NM, '') AS CD_NM
           , A.MDFCN_DT
@@ -85,7 +85,7 @@
         </if>
             <!-- 참가비.유료-->
         <if test="searchEtrfee != null and searchEtrfee == 'pchrg' "  >
-            AND B.ETRFEE > 0
+            AND IFNULL(B.ETRFEE,0) > 0
         </if>
             <!-- 참가비.무료-->
         <if test="searchEtrfee != null and searchEtrfee == 'free' "  >

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/mng/mainLayout">
+<body>
+<div layout:fragment="content">
+    <!-- Page-body start -->
+    <div class="page-body">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-block-small">
+                        <form id="searchForm" name="searchForm" >
+                            <div class="row">
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>시도</strong></div>
+                                        <div class="col-sm-12">
+                                            <th:block kattr:select_ctprvn="searchCtprvn" firstOptTxt="- 선택 -" firstOptVal=""></th:block>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchInstNm"><strong>기관명</strong></label>
+                                        <div class="col-12">
+                                            <input type="text" class="form-control form-control-sm" name="searchInstNm" id="searchInstNm"/>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchPeriod"><strong>지정일 기간</strong></label>
+                                        <div class="col-sm-12">
+                                            <input type="text" name="searchPeriod" class="form-control form-control-sm" value="" id="searchPeriod">
+                                            <input type="hidden" id="searchBgngDt"name="searchBgngDt" >
+                                            <input type="hidden" id="searchEndDt"name="searchEndDt" >
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-1 p-t-20 text-center border-top">
+                                    <button  type='button' class="btn btn-disabled m-r-5" onclick="searchInit()">초기화</button>
+                                    <button type='button' class="btn btn-primary">검색</button>
+                                </div>
+                            </div>
+                        </form>
+                </div>
+            </div>
+            <!--임시그리드-->
+            <div class="col-12">
+                <div class="card">
+                    <div class="row p-20 p-b-0">
+                        <div class="col-12 col-md-6">
+                            <h5><strong>사회환경교육기관 검색결과</strong></h5>
+                        </div>
+                        <div class="col-12 col-md-6 text-right">
+                            <th:block sec:authorize-url="/mng/seeEnvEduInst/selectSeeEnvEduInstExcelDown.do">
+                                <button type="button" class="btn btn-primary"
+                                        onclick="openExcelDownRsnPopup('dwnldDsctnPopup', 'searchForm', '/mng/seeEnvEduInst/selectSeeEnvEduInstExcelDown.do')">
+                                    엑셀다운로드
+                                </button>
+                            </th:block>
+                        </div>
+                    </div>
+                    <div class="card-block-small">
+                        <table class="table table-responsive" id="jsGrid"> </table>
+                        <div id="listPager" class="text-center"></div>
+                    </div>
+                </div>
+            </div>
+            <!--//임시그리드-->
+        </div>
+    </div>
+    <!-- Page-body end -->
+    </div>
+
+    <div class="modal fade" id="dwnldDsctnPopup" aria-hidden="true" data-bs-backdrop="static"></div>
+
+    <script type="text/javascript" src="/files/bower_components/moment/min/moment.min.js"></script>
+    <script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
+    <script th:inline="javascript">
+        let seeEnvEduInstGridHelper;
+
+        let searchInit = () => {
+            $('#searchCtprvn, #searchPeriod, #searchPeriod, #searchBgngDt, #searchEndDt, #searchInstNm').val('');
+        }
+        $(function() {
+            seeEnvEduInstGridHelper = new GridHelper('jsGrid');
+            initDateRangePicker('searchPeriod', 'searchBgngDt', 'searchEndDt');
+
+            $('#searchForm').on('submit', function(e){
+                e.preventDefault();
+                seeEnvEduInstGridHelper.resetListContent();
+            });
+
+            $("#jsGrid").jsGrid({
+                height: "auto",
+                width: "100%",
+                autoload: true,
+                sorting: true,
+                paging: true,
+                pagerContainer: "#listPager",
+                pagerFormat: "{first} {prev} {pages} {next} {last}",
+                pagePrevText: "이전",
+                pageNextText: "다음",
+                pageFirstText: " < 처음 ㅣ",
+                pageLastText: " | 마지막 >",
+                pageSize: 10,
+                pageButtonCount: 10,
+                pageLoading: true,
+                pageIndex: 1,
+                noDataContent: "데이터가 없습니다.",
+
+                controller: {
+                    loadData: function (filter) {
+                        var data = $.Deferred();
+
+                        var formData = $('#searchForm').serializeArray();
+                        var params = [
+                            {name: "pageNumber", value: filter.pageIndex},
+                            {name: "rowPerPage", value: filter.pageSize},
+                        ]
+
+                        if (filter.sortField != undefined) {
+                            params.push({name: "orderField", value: mapCamelCaseToUnderscore(filter.sortField)});
+                            params.push({name: "orderDirection", value: filter.sortOrder});
+                        } else {
+                            params.push({name: "orderField", value: 'dsgn_de'});
+
+                        }
+                        formData = formData.concat(params);
+
+                        $.ajax({
+                            type: "GET",
+                            contentType: "application/json; charset=utf-8",
+                            url: '/mng/seeEnvEduInst/selectSeeEnvEduInstList.do',
+                            dataType: "json",
+                            data: formData,
+                        }).done(function (response) {
+                            var da = {
+                                data: escapeGridData(response.list)
+                                , itemsCount: response.totalCount
+                            };
+                            data.resolve(da);
+                        });
+                        return data.promise();
+                    },
+                },
+                fields: [
+                    {title: 'No.', name: 'rowNumber', type: "number", width: "80", align: "center", sorting: false},
+                    {title: '시도', name: 'ctprvnCdNm', type: "text", width: "100", align: "center", sorting: false},
+                    {title: '기관명', name: 'instNm', type: "text", width: "200", align: "center"},
+                    {title: '기관유형', name: 'instTypeCdNm', type: "text", width: "200", align: "center", sorting: false},
+                    {title: '대표자명', name: 'rprsvNm', type: "text", width: "100", align: "center", sorting: false},
+                    {title: '전화번호', name: 'telno', type: "text", width: "150", align: "center", sorting: false},
+                    {title: '지정일', name: 'dsgnDe', type: "text", width: "100", align: "center"},
+                ],
+            });
+        })
+    </script>
+</div>
+</body>

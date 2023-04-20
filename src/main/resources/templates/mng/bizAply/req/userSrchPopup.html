@@ -1,6 +1,8 @@
 <form id="mbrSrchPopupFrm">
 <input type="hidden" id="aplyid" name="aplyid" th:value="${aplyid}">
 <input type="hidden" id="instid" name="instid" th:value="${instid}">
+<input type="hidden" id="pcntstid" name="pcntstid" th:value="${pcntstid}">
+<input type="hidden" id="fldCd" name="fldCd" th:value="${fldCd}">
 
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content type_2">
@@ -18,18 +20,18 @@
                                 <div class="mb-0 form-group">
                                     <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
                                     <div class="input-group input-group-sm input-group-dropdown mb-0">
-                                        <select name="popupFilterKeywordSelect" class="form-select form-control form-control-sm ">
-                                            <option value="opt1">이름</option>
-                                            <option value="opt2">기관명</option>
+                                        <select name="searchKeywordType" id="searchKeywordType" class="form-select form-control form-control-sm ">
+                                            <option value="userNm">이름</option>
+                                            <option value="instNm">기관명</option>
                                         </select>
-                                        <input type="text" class="form-control" aria-label="Text input with dropdown button" name="popupFilterKeywordInput" id="popupFilterKeywordInput"/>
+                                        <input type="text" class="form-control" aria-label="Text input with dropdown button" name="searchCondition" id="searchCondition"/>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="mt-1 p-t-20 text-center border-top">
-                            <button class="btn btn-disabled m-r-5" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary">Search</button>
+                            <button type="button" class="btn btn-disabled m-r-5" onclick="reset();">초기화</button>
+                            <button type="submit" class="btn btn-primary" onclick="searchUserList(); return false;">검색</button>
                         </div>
                     </div>
                 </div>
@@ -45,6 +47,7 @@
                 </div>
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn btn-disabled m-r-5" data-bs-dismiss="modal">취소</button>
                 <button type="button" class="btn btn-primary" onclick="selectMbrBtn()">선택</button>
             </div>
         </div>
@@ -60,16 +63,16 @@ var selectedItem;
 initMbrSrchPopup();
 
 function initMbrSrchPopup(){
-
 	writeMbrGridData();
+}
 
+searchUserList = () =>{
+    $("#mbrGrid").jsGrid("reset");
 }
 
 function writeMbrGridData(){
-
     $("#mbrGrid").jsGrid({
-//         height: "auto",
-        height: "220px",
+        height: "auto",
         width: "100%",
         autoload: true,
         sorting: true,
@@ -80,7 +83,7 @@ function writeMbrGridData(){
         pageNextText: "다음",
         pageFirstText: "< 처음ㅣ",
         pageLastText: "ㅣ 마지막 >",
-        pageSize: 5,
+        pageSize: 10,
         pageButtonCount: 10,
         pageLoading: true,
         pageIndex: 1,
@@ -95,7 +98,6 @@ function writeMbrGridData(){
                         {name: "pageNumber", value: filter.pageIndex},
                         {name: "rowPerPage", value: filter.pageSize},
                         {name: "instid", value: instid},
-
                 ]
 
                 if(filter.sortField != undefined){
@@ -124,59 +126,37 @@ function writeMbrGridData(){
             },
         },
         fields: [
-        	{
-
-        		headerTemplate: function() {
-                        //return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
-                },
+            {
+        		headerTemplate: function() {},
                 itemTemplate : function(_, item) {
-
-                                   return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox").attr("id","userid-"+item.userid)
-                                                       .on("change" , function () {
-                                                         $(this).is(":checked") ? selectItem(
-                                                      		                         $(this).parent().next().text()
-                                                      		                       , $(this).parent().next().next().text()
-                                                      		                       , $(this).parent().next().next().next().next().text()
-                                                      		                       , $(this).parent().next().next().next().next().next().text()
-                                                      		                       , $(this).parent().next().next().next().next().next().next().text())
-                                                                                 : unselectItem()
-                                       });
-                    },
-                    align: "center",
-                    width: "30",
-                    sorting: false
-                	/*
-                	*/
-
-             }
-           , { name: 'userid', css:'hide'}
-           , { name: 'acnt', css:'hide'}
-           , { title: 'No.'    ,name: 'rowNumber', type: "number", width : "80",  align:"center",  sorting :false }
-           , { title: '이름'   ,name: 'userNm'       , type: "text",   width : "50",  align:"center" }
-           , { title: '휴대폰' ,name: 'aplcntTelno' , type: "text",   width : "80",  align:"center" }
-           , { title: '이메일' ,name: 'aplcntEml'      , type: "text",   width : "100", align:"center" }
-           , { title: '기관명' ,name: 'instNm'   , type: "text",   width : "100", align:"center" }
-           , { name: 'instid', css:'hide'}
+                	return item.aplyCnt > 0 ? $("<input>").attr("type", "checkbox").attr("disabled", true) 
+                			: $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox").attr("id","userid-"+item.userid).on("change" , function () {
+		                		$(this).is(":checked") ? selectItem(item) : unselectItem()
+		                	});
+                },
+                align: "center",
+                width: "30",
+                sorting: false
+            }
+            , { title: 'No.'    ,name: 'rowNumber', type: "number", width : "80",  align:"center",  sorting :false }
+            , { title: '이름'   ,name: 'userNm'       , type: "text",   width : "50",  align:"center" }
+            , { title: '휴대폰' ,name: 'aplcntTelno' , type: "text",   width : "80",  align:"center" }
+            , { title: '이메일' ,name: 'aplcntEml'      , type: "text",   width : "100", align:"center" }
+            , { title: '기관명' ,name: 'instNm'   , type: "text",   width : "100", align:"center" }
         ],
-
         rowClick: function(args) {
             if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
         },
-
     });
-    var selectItem = function(id, acnt, name, hp, email) {
-    	selectedItem = {"userid" : id, "acnt" : acnt, "nm" : name, "aplcntTelno" : hp, "aplcntEml" : email};
-
+    var selectItem = function(item) {
+        selectedItem = item;
     	$(".singleCheckbox:checked").prop("checked",false);
-    	$("#userid-"+id).prop("checked",true);
-    	console.log("selectedItem ==> ", selectedItem);
+    	$("#userid-"+item.userid).prop("checked",true);
     };
 
     var unselectItem = function() {
-
         selectedItem = "";
         $('#selectAllCheckbox').attr('checked', false);
-
     };
 }
 
@@ -185,17 +165,34 @@ function selectMbrBtn(){
 		alert("담당자를 선택하십시요.");
 		return;
 	}
+	console.log(selectedItem);
     $("#userid").val(selectedItem.userid);
-    $("#userNm").val(selectedItem.nm + "(" + selectedItem.acnt + ")");
-    $("#aplcntNm").val(selectedItem.nm);
+    $("#userNm").val(selectedItem.userNm + "(" + selectedItem.acnt + ")");
+    $("#aplcntNm").val(selectedItem.userNm);
     $("#aplcntTelno").val(selectedItem.aplcntTelno);
     $("#aplcntEml").val(selectedItem.aplcntEml);
+    // 신청등록 0420 추가
+   	$("#tmpInstid").val(selectedItem.instid);
+   	$("#instNm").val(selectedItem.instNm);
+   	$("#rprsvNm").val(selectedItem.rprsvNm);
+   	$("#regNo").val(selectedItem.regNo);
+   	$("#instTypeCd").val(selectedItem.instTypeCd);
+   	$("#hmpg").val(selectedItem.hmpg);
+   	$("#aplyInstTelno").val(selectedItem.aplyInstTelno);
+   	$("#instZip").val(selectedItem.instZip);
+   	$("#instAddr").val(selectedItem.instAddr);
+   	$("#instAddrDtl").val(selectedItem.instAddrDtl);
+   	$("#rgnCd").val(selectedItem.rgnCd);
     
     selectedItem = "";
     chgAltmntModal.hide();
     closeWorkProgress();
 }
 
+function reset() {
+	$("#popupFilterKeywordSelect").val("opt1");
+	$("#popupFilterKeywordInput").val("");
+}
 
 </script>
 </body>

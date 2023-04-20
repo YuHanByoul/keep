@@ -2322,7 +2322,7 @@
         </if>
         <!-- 배정일 검색시작일  -->
         <if test="searchRegStartDt != null and searchRegStartDt != ''">
-            AND A.REG_DT = #{searchAltmntDe}
+            AND A.REG_DT >= #{searchRegStartDt}
         </if>
         <!-- 배정일 검색종료일  -->
         <if test="searchRegEndDt != null and searchRegEndDt != ''">
@@ -2345,13 +2345,13 @@
 
     <!-- 지원단심사 목록 엑셀 다운 -->
     <select id="selectSprtgrpSrngListExcelDown" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
-        /* AsgsysSrngDao.selectSprtgrpSrngList*/
+        /* AsgsysSrngDao.selectSprtgrpSrngListExcelDown*/
             SELECT
                 A.PRGRMID
               , A.SPRTGRPID
               , B.PRGRM_NM        /* 프로그램명 */
               , B.APLY_DT
-              , DATE_FORMAT(A.APLY_DT, "%Y-%m-%d")  AS APLY_DE
+              , DATE_FORMAT(B.APLY_DT, "%Y-%m-%d")  AS APLY_DE
               , B.STTS_CD
               , B.INST_NM         /* 기관명 */
               , A.SRGN_STTS_CD    /* (지원단)심사 진행상태 */
@@ -2362,6 +2362,7 @@
               , A.VST_MNT         /* (현장점검) 방문분 */
               , CONCAT(A.VST_DE , " " , A.VST_HR , ":" , A.VST_MNT) AS VST_DT
               , C.STY_YN          /* 숙박여부 */
+              , CASE WHEN C.STY_YN ='Y' THEN '숙박' WHEN C.STY_YN ='N' THEN '비숙박' ELSE '' END STY_YN_STR
               , A.SPLMNT_DMND_OPNN
               , A.SRNG_OPNN
               , D.CHKLST_RSLT_CN
@@ -2394,7 +2395,7 @@
         </if>
         <!-- 배정일 검색시작일  -->
         <if test="searchRegStartDt != null and searchRegStartDt != ''">
-            AND A.REG_DT = #{searchAltmntDe}
+            AND A.REG_DT >= #{searchRegStartDt}
         </if>
         <!-- 배정일 검색종료일  -->
         <if test="searchRegEndDt != null and searchRegEndDt != ''">
@@ -2835,6 +2836,7 @@
             TB_ASS_SPRTGRP_SRNG
         SET
             SRNG_OPNN = #{srngOpnn}
+          , SRGN_STTS_CD  = #{srgnSttsCd}
           , MDFCN_DT  = NOW()
           , MDFRID    = #{user.userid}
         WHERE PRGRMID = #{prgrmid}

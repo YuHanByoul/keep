@@ -335,6 +335,7 @@ public class ResveReqstVo extends ParentRequestVo {
     private String searchBgngDt;
     private String searchEndDt;
     private String searchStlmSttsCd;
+    private String selectedApplyid;
     
     public void setCnclRsnCd(String cnclRsnCd) throws Exception{
         this.cnclRsnCd = cnclRsnCd;
