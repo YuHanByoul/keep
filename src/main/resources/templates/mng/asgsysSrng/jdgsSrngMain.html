@@ -30,7 +30,7 @@
                             <div class="mb-0 form-group row">
                                 <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>심사위원</strong></div>
                                 <div class="col-12">
-                                    <select class="js-example-basic-single col-sm-12" name="searchUserid" id="searchUserid" >
+                                    <select class="js-example-basic-single col-sm-12" name="selectUser" id="selectUser" >
                                         <option value="">- 전체 -</option>
                                         <th:block th:if="${#lists.size(list) > 0}" th:each="list, i: ${list}">
                                             <option th:value="${list.userid}" th:selected="${list.userid == userid}"><th:block th:text="${list.nm}" /></option>
@@ -146,9 +146,10 @@
 	$(function(){
 
 		if($("#rolid").val()=='15'){
-			$("#searchUserid").prop("disabled","disabled")
+			$("#selectUser").prop("disabled","disabled")
 		}
 	    gridHelper1 = new GridHelper('jsGrid','contentPanel');
+
 	    debugger;
 	    writeJsGridData();
 
@@ -191,9 +192,9 @@
 	    $("#filterSearchSelectDate").val('');
 
 	    if($("#rolid").val()!=15){
-	        $("#searchUserid").val("")
-	        $("#select2-searchUserid-container").attr('title','- 선택 -');
-	        $("#select2-searchUserid-container").text('- 선택 -');
+	        $("#selectUser").val("")
+	        $("#select2-selectUser-container").attr('title','- 선택 -');
+	        $("#select2-selectUser-container").text('- 선택 -');
 	    }
 	}
 
@@ -235,6 +236,7 @@
 		                var data = $.Deferred();
 
 		                var formData = $('#searchFrm').serializeArray();
+		                if($("#selectUser").val() != '')    formData.push({name : "searchUserid" , value : $("#selectUser").val()});
 
 		                var params = [
 		                        {name: "pageNumber", value: filter.pageIndex},
