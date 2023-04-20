@@ -124,7 +124,7 @@
                     <div class="mb-0 form-group">
                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>첨부파일</strong></label>
                         <div class="col-sm-12">
-                            <input id="multiFileInput" type="file" name="files" multiple accept="image/jpeg,image/gif,image/png,application/pdf" class="form-control form-control-sm"/>
+                            <input id="multiFileInput" type="file" name="files" multiple accept="*/*" class="form-control form-control-sm"/>
                         </div>
                         <div class="mt-2 row">
                             <div class="col-auto">
@@ -200,6 +200,10 @@
         //editor = CKEDITOR.replace('cntnts');
         //에디터 엔터키 두줄 바꿈 제거 (shift + enter 처럼 바로 한줄 밑으로 떨어지게 함 )
         editor = CKEDITOR.replace('cntnts', {enterMode: CKEDITOR.ENTER_BR});
+
+        if($('#siteid').val() == null || $('#siteid').val().trim() ==''){
+            $('#siteid').val($('#searchSite').val());
+        }
     })
 
     var validate = $("#pstInsertForm").validate({
@@ -258,7 +262,7 @@
                         }
                         for (i = 0; i < response.length; i++) {
                             content = "<span class ='label label-inverse mb-2' id='pst_" + response[i].fileid + "'>" + response[i].orginlFileNm;
-                            content += "&nbsp;&nbsp;  <a  class = 'text-white' href = javascript:fn_deleteFile('" + response[i].fileid + "','" + response[i].fileIdntfcKey + "')>X</a></span>&nbsp;&nbsp;";
+                            content += "&nbsp;&nbsp;  <a  class = 'text-white' href=javascript:cmmBbs.deleteFile('" + response[i].fileid + "','" + response[i].fileIdntfcKey + "')>X</a></span>&nbsp;&nbsp;";
                             $('#multipleFileUploadSuccess').append(content);
                         }
                     }
