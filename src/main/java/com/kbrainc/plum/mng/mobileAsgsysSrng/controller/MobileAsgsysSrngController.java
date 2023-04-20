@@ -2,13 +2,16 @@ package com.kbrainc.plum.mng.mobileAsgsysSrng.controller;
 
 import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.cmm.service.CommonService;
+import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.inst.model.InstVo;
 import com.kbrainc.plum.mng.inst.service.InstService;
 import com.kbrainc.plum.mng.mobileAsgsysSrng.model.MobileAsgsysSrngVo;
 import com.kbrainc.plum.mng.mobileAsgsysSrng.service.MobileAsgsysSrngService;
 import com.kbrainc.plum.mng.spce.service.SpceService;
+import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.util.CommonUtil;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,6 +19,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -127,8 +132,50 @@ public class MobileAsgsysSrngController {
      */
     @RequestMapping(value = "/mng/mobileAsgsysSrng/asgsysSrngCheckList.html")
     public String asgsysSrngCheckList(MobileAsgsysSrngVo mobileAsgsysSrngVo, Model model) throws Exception {
+        //신청자와 심사위원의 체크리스 제출 ID 조회
+        MobileAsgsysSrngVo mobileAsgsysSrngInfo = mobileAsgsysSrngService.selectAsgsysSrngInfo(mobileAsgsysSrngVo);
+
+        model.addAttribute("mobileAsgsysSrngInfo", mobileAsgsysSrngInfo);
         model.addAttribute("checkList", mobileAsgsysSrngService.selectCheckList(mobileAsgsysSrngVo));
 
         return "mng/mobileAsgsysSrng/asgsysSrngCheckList";
+    }
+
+    /**
+     * 지원단심사 등록
+     *
+     * @Title : insertSprtgrpSrng
+     * @Description : 지원단심사 등록
+     * @param mobileAsgsysSrngVo
+     * @param user
+     * @throws Exception
+     * @return Map<String,Object>
+     */
+    @RequestMapping(value = "/mng/mobileAsgsysSrng/insertSprtgrpSrng.do")
+    @ResponseBody
+    public Map<String, Object> insertSprtgrpSrng(@Valid MobileAsgsysSrngVo mobileAsgsysSrngVo, @UserInfo UserVo user, HttpServletRequest request) throws Exception {
+
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+
+        mobileAsgsysSrngVo.setUser(user);
+        mobileAsgsysSrngVo.setUserIp(CommonUtil.getClientIp(request));
+
+        int retVal = 0;
+
+        if (null != mobileAsgsysSrngVo.getSbmsnid() && 0 != mobileAsgsysSrngVo.getSbmsnid()) {
+            retVal = mobileAsgsysSrngService.updateSprtgrpSrng(mobileAsgsysSrngVo);
+        } else {
+            retVal = mobileAsgsysSrngService.insertSprtgrpSrng(mobileAsgsysSrngVo);
+        }
+
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "심사가 완료되었습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "저장에 실패했습니다.");
+        }
+
+        return resultMap;
     }
 }

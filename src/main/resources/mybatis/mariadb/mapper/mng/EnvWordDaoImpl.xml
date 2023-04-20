@@ -15,6 +15,7 @@
 	        A.WORDID
           , A.WORD
           , A.WORD_ENGL AS WORDENGL
+          , A.DEL_YN AS DELYN
           , A.REG_DT REGDT
         FROM 
             TB_CMM_ENV_WORD A
@@ -107,13 +108,17 @@
     </update>
     
     <!-- 환경교육용어사전 게시글 삭제 -->
-    <delete id="deleteEnvWord" parameterType="java.util.ArrayList">
+    <update id="deleteEnvWord" parameterType="envWordVo">
         /* EnvWordDao.deleteEnvWord */
-		DELETE FROM TB_CMM_ENV_WORD 
+        UPDATE TB_CMM_ENV_WORD
+        SET
+            DEL_YN   = 'Y'
+          , MDFCN_DT = NOW()
+          , MDFRID   = #{user.userid}
         WHERE WORDID IN 
-        <foreach item="item" collection="array" index="wordid" open="(" close=")" separator=",">
+        <foreach item="item" collection="wordids" open="(" close=")" separator=",">
         #{item}
-        </foreach>
-    </delete>
+        </foreach>        
+    </update>
     
 </mapper>

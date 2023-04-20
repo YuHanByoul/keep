@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.mng.cmmCntnts.model.CmmCntntsVo;
 import com.kbrainc.plum.mng.cmmCntnts.service.CmmCntntsService;
+import com.kbrainc.plum.mng.etcDta.model.EtcDtaVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
@@ -74,12 +75,22 @@ public class CmmCntntsController {
     */
     @RequestMapping(value = "/mng/cmmCntnts/selectCmmCntntsQlityChklstList.do")
     @ResponseBody
-    public Map<String, Object> selectCmmCntntsQlityChklstList(CmmCntntsVo cmmCntntsVo) throws Exception {
+    public Map<String, Object> selectCmmCntntsQlityChklstList(CmmCntntsVo cmmCntntsVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         List<CmmCntntsVo> result = null;
+        Integer checkid =null;
+        cmmCntntsVo.setUser(user);
+        
+        checkid = cmmCntntsService.selectCmmCntntsQlityChkId(cmmCntntsVo);    
+        
+        if(null != checkid) {
+            cmmCntntsVo.setCheckid(checkid);
+        }
         result =  cmmCntntsService.selectCmmCntntsQlityChklstList(cmmCntntsVo);
-
+        
         resultMap.put("chklist", result);
+        //resultMap.put("cmmCntnts", cmmCntnts);
+        
         return resultMap;
     }
     

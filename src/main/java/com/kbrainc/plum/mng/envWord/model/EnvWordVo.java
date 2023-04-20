@@ -36,6 +36,7 @@ public class EnvWordVo extends ParentRequestVo {
     
     /** 용어아이디 */
     private int wordid;
+    private String[] wordids;
     /** 용어 */
     @NotEmpty(message = "용어를 입력해주십시오.")
     private String word;
@@ -60,6 +61,8 @@ public class EnvWordVo extends ParentRequestVo {
     private Date regDt;
     /** 등록자아이디 */
     private int rgtrid;
+    /** 삭제여부 */
+    private char delYn;
     
     private String rgtridNm;
     

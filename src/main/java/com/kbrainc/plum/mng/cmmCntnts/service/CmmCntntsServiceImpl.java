@@ -32,6 +32,35 @@ public class CmmCntntsServiceImpl extends PlumAbstractServiceImpl implements Cmm
     private CmmCntntsDao cmmCntntsDao;
     
     /**
+    * 콘텐츠 품질관리 체크리스트 체크ID 조회
+    *
+    * @Title : selectCmmCntntsQlityChkId
+    * @Description : 콘텐츠 품질관리 체크리스트 체크 조회
+    * @param cmmCntnts 콘텐츠 품질관리 체크리스트 객체
+    * @throws Exception 예외
+    * @return int
+    */
+    @Override
+    public int selectCmmCntntsQlityChkId(CmmCntntsVo cmmCntnts) throws Exception{
+        return cmmCntntsDao.selectCmmCntntsQlityChkId(cmmCntnts);
+    }
+    
+    /**
+     * 콘텐츠 품질관리 체크리스트 상세 조회
+     *
+     * @Title : selectCmmCntntsQlityChkInfo
+     * @Description : 콘텐츠 품질관리 체크리스트 상세 조회
+     * @param cmmCntnts 콘텐츠 품질관리 체크리스트 객체
+     * @throws Exception 예외
+     * @return CmmCntntsVo
+     */
+    @Override
+    public CmmCntntsVo selectCmmCntntsQlityChkInfo(CmmCntntsVo cmmCntnts) throws Exception{
+        return cmmCntntsDao.selectCmmCntntsQlityChkInfo(cmmCntnts);
+        
+    }
+    
+    /**
     * 콘텐츠 품질관리 체크리스트 목록 조회
     *
     * @Title : selectCmmCntntsList

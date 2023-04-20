@@ -7,25 +7,77 @@
 -->
 <mapper namespace="com.kbrainc.plum.mng.cmmCntnts.model.CmmCntntsDao">
     
+    <!-- 교육프로그램 관리 게시글 체크ID 조회 -->
+    <select id="selectCmmCntntsQlityChkId" parameterType="CmmCntntsVo" resultType="Integer">
+        /* CmmCntntsDao.selectCmmCntntsQlityChkId */
+        SELECT 
+            MAX(CECKID) CECKID
+        FROM TB_CMM_CNTNTS_QLITY_CECK
+        WHERE
+        1=1
+        AND TRGT_CD = #{trgtCd}
+        AND EVNT_CD = #{evntCd}
+        AND CNTNTSID = #{cntntsid}
+        GROUP BY CECKID
+    </select>
+    
+    <!-- 교육프로그램 관리 게시글 상세 조회 -->
+    <select id="selectCmmCntntsQlityChkInfo" parameterType="CmmCntntsVo" resultType="CmmCntntsVo">
+        /* CmmCntntsDao.selectCmmCntntsQlityChkInfo */
+        SELECT 
+            A.CECKID
+            , B.CHKLSTID
+            , B.FLD_CD
+            , B.ORDR
+            , B.CN
+        FROM TB_CMM_CNTNTS_QLITY_CECK A
+        LEFT OUTER JOIN TB_CMM_CNTNTS_QLITY_CECK_ARTCL B ON B.CECKID = A.CECKID
+        WHERE
+        1=1
+        AND A.CECKID = #{checkid}
+        ORDER BY B.FLD_CD, B.ORDR
+    </select>
+
     <!-- 교육프로그램 관리 게시글 목록 조회 -->
     <select id="selectCmmCntntsQlityChklstList" parameterType="CmmCntntsVo" resultType="CmmCntntsVo">
         /* CmmCntntsDao.selectCmmCntntsQlityChklstList */
-        SELECT 
-            A.CHKLSTID
-            , A.FLD_CD
-            , B.CD_NM FLD_NM
-            , A.ORDR
-            , A.CN
-            , (SELECT COUNT(X.FLD_CD) FROM TB_CMM_CNTNTS_QLITY_CHKLST X WHERE X.FLD_CD = A.FLD_CD) COLSPAN
-            , A.MDFCN_DT
-            , A.MDFRID
-            , A.REG_DT
-            , A.RGTRID
-        FROM TB_CMM_CNTNTS_QLITY_CHKLST A
-        LEFT OUTER JOIN TB_CMM_CD B ON B.CD = A.FLD_CD
-        WHERE
-        1=1
-        ORDER BY A.FLD_CD, A.ORDR
+        <choose>
+            <when test="checkid != null and checkid != '0'">
+                SELECT 
+                    A.CECKID
+                    , B.CHKLSTID
+                    , B.FLD_CD
+                    , C.CD_NM FLD_NM
+                    , B.ORDR
+                    , B.CN
+                    , (SELECT COUNT(X.FLD_CD) FROM TB_CMM_CNTNTS_QLITY_CHKLST X WHERE X.FLD_CD = B.FLD_CD) COLSPAN
+                    , 'Y' CHK_YN                    
+                FROM TB_CMM_CNTNTS_QLITY_CECK A
+                LEFT OUTER JOIN TB_CMM_CNTNTS_QLITY_CECK_ARTCL B ON B.CECKID = A.CECKID
+                LEFT OUTER JOIN TB_CMM_CD C ON C.CD = B.FLD_CD
+                WHERE
+                1=1
+                AND A.CECKID = #{checkid}
+                ORDER BY B.FLD_CD, B.ORDR            
+            </when>
+            <otherwise>
+                SELECT 
+                    0 CECKID
+                    , A.CHKLSTID
+                    , A.FLD_CD
+                    , B.CD_NM FLD_NM
+                    , A.ORDR
+                    , A.CN
+                    , (SELECT COUNT(X.FLD_CD) FROM TB_CMM_CNTNTS_QLITY_CHKLST X WHERE X.FLD_CD = A.FLD_CD) COLSPAN
+                    , 'N' CHK_YN
+                FROM TB_CMM_CNTNTS_QLITY_CHKLST A
+                LEFT OUTER JOIN TB_CMM_CD B ON B.CD = A.FLD_CD
+                WHERE
+                1=1
+                ORDER BY A.FLD_CD, A.ORDR
+            </otherwise>
+        </choose>
+        
     </select>
         
     <!-- 콘텐츠 품질관리 체크리스트 게시글 등록 --> 

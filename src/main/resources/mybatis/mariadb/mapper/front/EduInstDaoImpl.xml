@@ -77,6 +77,7 @@
         WHERE A.APLYID = #{aplyid}
     </select>
 
+    <!-- 환경교육기관 등록 -->
     <insert id="insertEnvEduInst" parameterType="front.EduInstVo" useGeneratedKeys="true" keyProperty="aplyid">
     /* EduInstDao.insertEnvEduInst*/
     INSERT INTO TB_SEE_ENV_EDU_INST
@@ -129,6 +130,7 @@
     )
     </insert>
 
+    <!-- 환경교육기관 수정 -->
     <update id="updateEnvEduInst" parameterType="front.EduInstVo" keyProperty="aplyid">
         /* EduInstDao.updateEnvEduInst*/
         UPDATE
@@ -156,28 +158,80 @@
           , MDFRID             = #{user.userid   }
         WHERE
             APLYID = #{aplyid}
+    </update>
 
+    <!-- 운영계획 개요 조회 -->
+    <select id="selectOperPlan" parameterType="front.EduInstVo" resultType="front.EduInstVo">
+        /* EduInstDao.selectOperPlan*/
+            SELECT
+                APLYID            /*신청아이디*/
+              , MAIN_BSNS         /*주요_사업*/
+              , OPER_MTHD         /*운영_방법*/
+              , OPER_PLAN         /*운영_계획*/
+              , MNG_PLAN          /*관리_계획*/
+              , BGT_PLAN          /*예산_계획*/
+              , EXPC_EFFECT       /*기대_효과*/
+              , ETC_DTA           /*기타_자료*/
+              , ATCH_FILEGRPID    /*첨부_파일그룹아이디*/
+              , MDFCN_DT          /*수정_일시*/
+              , MDFRID            /*수정자아이디*/
+              , REG_DT            /*등록_일시*/
+              , RGTRID            /*등록자아이디*/
+            FROM TB_SEE_OPER_PLAN
+            WHERE APLYID =#{aplyid}
+    </select>
 
+     <!-- 운영계획 등록 -->
+    <insert id="insertOperPlan" parameterType="front.EduInstVo" useGeneratedKeys="true" keyProperty="aplyid">
+        /* EduInstDao.insertOperPlan*/
+        INSERT INTO TB_SEE_OPER_PLAN
+        (
+            APLYID
+          , MAIN_BSNS
+          , OPER_MTHD
+          , OPER_PLAN
+          , MNG_PLAN
+          , BGT_PLAN
+          , EXPC_EFFECT
+          , ETC_DTA
+          , ATCH_FILEGRPID
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        ) VALUES
+        (
+            #{aplyid       }
+          , #{mainBsns     }
+          , #{operMthd     }
+          , #{operPlan     }
+          , #{mngPlan      }
+          , #{bgtPlan      }
+          , #{expcEffect   }
+          , #{etcDta       }
+          , #{atchFilegrpid}
+          , NOW()
+          , #{user.userid}
+          , NOW()
+          , #{user.userid}
+        (
+    </insert>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    <!-- 운영계획 수정 -->
+    <update id="updateOperPlan" parameterType="front.EduInstVo" useGeneratedKeys="true" keyProperty="aplyid">
+        /* EduInstDao.updateOperPlan*/
+        UPDATE TB_SEE_OPER_PLAN SET
+              MAIN_BSNS      = #{mainBsns}       /*주요사업*/
+            , OPER_MTHD      = #{operMthd}       /*운영방법*/
+            , OPER_PLAN      = #{operPlan}       /*운영계획*/
+            , MNG_PLAN       = #{mngPlan}        /*관리계획*/
+            , BGT_PLAN       = #{bgtPlan}        /*예산계획*/
+            , EXPC_EFFECT    = #{expcEffect}     /*기대효과*/
+            , ETC_DTA        = #{etcDta}         /*기타자료*/
+            , ATCH_FILEGRPID = #{atchFilegrpid}  /*첨부파일그룹아이디*/
+            , MDFCN_DT       = NOW()             /*수정일시*/
+            , MDFRID         = #{user.userid}    /*수정자아이디*/
+        WHERE APLYID = #{aplyid}    /*신청아이디*/
     </update>
 
 </mapper>
