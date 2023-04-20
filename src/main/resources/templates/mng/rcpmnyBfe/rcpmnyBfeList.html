@@ -99,22 +99,19 @@
 		var selectedItems = [];
 		var gridHelper2;
         var dsptCheckAddModal;
-		
+        
 		$(function(){
 			gridHelper2 = new GridHelper('jsGrid','contentPanel');
 			initDateRangePicker("filterSearchSelectDate","searchBgngDt","searchEndDt");
 			writeJsGridData();
 		});
-
 		function fn_goInsertForm(){
 			var insertUrl = "/mng/rcpmnyBfe/rcpmnyBfeForm.html?mode=f"
 			gridHelper2.loadContent(insertUrl);
 		}
-
 		function fn_searchForm(){
 			gridHelper2.resetListContent();
 		}
-
 		function fn_init() {
 			$("#searchType").val('spceNm');
 			$("#searchKeyword").val('');
@@ -124,7 +121,6 @@
 			$("#filterSearchSelectDate").val('');
 			gridHelper2.resetListContent();
 		}
-
 		function writeJsGridData(){
 			$("#jsGrid").jsGrid({
 				height: "auto",
@@ -143,7 +139,6 @@
 				pageLoading: true,
 				pageIndex: 1,
 				noDataContent: "데이터가 없습니다.",
-
 				controller: {
 					loadData: function (filter) {
 						var data = $.Deferred();
@@ -258,7 +253,36 @@
 		    	alert( alertStr+" 대상을 선택해주십시오.");
 		    	return;
 		    }
-	    	openDsptPop(openPopUrl);
+
+	        if(displayWorkProgress()){
+	            $.ajax({
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    url: "/mng/resveReqst/selectResveReqstList.do",
+                    dataType: "json",
+	                data : {selectedApplyid : checkedAplyid },
+	                success : function (response){
+		                
+                        if(response.totalCount == 0){
+                            closeWorkProgress();
+                            alert("신청건이 존재하지 않습니다. 새로 고침 후 확인해주십시오");
+                            return;
+                        }else if(response.totalCount >= 2){
+                            closeWorkProgress();
+                            alert("중복 신청건이 존재합니다. 새로 고침 후 확인해주십시오");
+                            return;
+                        }else{
+                            closeWorkProgress();
+                        	if(response.list[0].aplySttsCd == "160103"){
+	                            alert("신청 취소 건은 처리가 불가합니다.");
+	                            return false;
+                        	}else{
+                        		openDsptPop(openPopUrl);
+                        	}
+                        }
+	                }
+	            });
+	        }
 		}
 		
         openDsptPop=(popupUrl)=>{

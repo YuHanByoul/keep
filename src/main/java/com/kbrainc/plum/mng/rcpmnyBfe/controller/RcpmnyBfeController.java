@@ -119,10 +119,8 @@ public class RcpmnyBfeController {
     @RequestMapping(value = "/mng/rcpmnyBfe/dsptCheckPopup.html")
     public String dsptCheckPopup(RcpmnyBfeVo rcpmnyBfeVo, Model model) throws Exception {
         model.addAttribute("param", rcpmnyBfeVo);
-
-        RcpmnyBfeVo resultVo = rcpmnyBfeService.selectDsptCheckInfo(rcpmnyBfeVo);
-
-        model.addAttribute("rcpmnyBfe", resultVo);
+        RcpmnyBfeVo resultVo = rcpmnyBfeService.selectRcpmnyBfeInfo(rcpmnyBfeVo);
+        model.addAttribute("popupVo", resultVo);
         return "mng/rcpmnyBfe/dsptCheckPopup";
     }
 
@@ -136,10 +134,8 @@ public class RcpmnyBfeController {
     @RequestMapping(value = "/mng/rcpmnyBfe/resveCancelPopup.html")
     public String resveCancelPopup(RcpmnyBfeVo rcpmnyBfeVo, Model model) throws Exception {
         model.addAttribute("param", rcpmnyBfeVo);
-
-        RcpmnyBfeVo resultVo = rcpmnyBfeService.selectDsptCheckInfo(rcpmnyBfeVo);
-
-        model.addAttribute("rcpmnyBfe", resultVo);
+        RcpmnyBfeVo resultVo = rcpmnyBfeService.selectRcpmnyBfeInfo(rcpmnyBfeVo);
+        model.addAttribute("popupVo", resultVo);
         return "mng/rcpmnyBfe/resveCancelPopup";
     }
 
@@ -156,32 +152,35 @@ public class RcpmnyBfeController {
      */
     @RequestMapping(value = "/mng/rcpmnyBfe/updateDsptCheck.do")
     @ResponseBody
-    public Map<String, Object> updateDsptCheck(@Valid RcpmnyBfeVo rcpmnyBfeVo, BindingResult bindingResult, @UserInfo UserVo user, ResveReqstVo resveReqstVo) throws Exception {
+    public Map<String, Object> updateDsptCheck(RcpmnyBfeVo rcpmnyBfeVo, @UserInfo UserVo user, ResveReqstVo resveReqstVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
-        if (bindingResult.hasErrors()) {
-            FieldError fieldError = bindingResult.getFieldError();
-            if (fieldError != null) {
-                resultMap.put("msg", fieldError.getDefaultMessage());
-            }
-            return resultMap;
-        }
-
         rcpmnyBfeVo.setUser(user);
-
         int retVal = 0;
-
+        resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+        
+        RcpmnyBfeVo resultVo = rcpmnyBfeService.selectRcpmnyBfeInfo(rcpmnyBfeVo);
+        
+        if(resultVo==null) {
+            resultMap.put("msg", "해당 신청건이 존재하지 않습니다. 다시 확인 후 처리해주십시오.");
+            return resultMap; 
+        }
+        
+        if(resultVo.getAplySttsCd().equals("160103")) {
+            resultMap.put("msg", "해당 신청건은 취소된 상태입니다. 다시 한번 확인 해주십시오.");
+            return resultMap; 
+        }
+        
+        if(rcpmnyBfeService.isThereResveNow(rcpmnyBfeVo).equals("Y")) {
+            resultMap.put("msg", "해당 일정중 이미 예약(신청/승인) 건이 존재 하여 예약승인/입금확인 처리 할 수 없습니다.");
+            return resultMap; 
+        }
+        
         retVal = rcpmnyBfeService.updateDsptCheck(rcpmnyBfeVo);
-
-        // 상태변경 데이터 세팅
-        resveReqstVo.setAplyid(rcpmnyBfeVo.getAplyid());
-        resveReqstVo.setUser(user);
-        // 상태변경이력 추가
-        resveReqstService.insertHstry(resveReqstVo);
 
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "입금 확인처리에 성공하였습니다.");
+            resultMap.put("msg", "입금 확인(예약승인)처리 하였습니다.");
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
             resultMap.put("msg", "입금 확인처리에 실패했습니다.");
@@ -203,29 +202,13 @@ public class RcpmnyBfeController {
      */
     @RequestMapping(value = "/mng/rcpmnyBfe/updateResveCancel.do")
     @ResponseBody
-    public Map<String, Object> updateResveCancel(@Valid RcpmnyBfeVo rcpmnyBfeVo, BindingResult bindingResult, @UserInfo UserVo user, ResveReqstVo resveReqstVo) throws Exception {
+    public Map<String, Object> updateResveCancel(RcpmnyBfeVo rcpmnyBfeVo, @UserInfo UserVo user, ResveReqstVo resveReqstVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
-        if (bindingResult.hasErrors()) {
-            FieldError fieldError = bindingResult.getFieldError();
-            if (fieldError != null) {
-                resultMap.put("msg", fieldError.getDefaultMessage());
-            }
-            return resultMap;
-        }
-
         rcpmnyBfeVo.setUser(user);
-
         int retVal = 0;
-
         retVal = rcpmnyBfeService.updateResveCancel(rcpmnyBfeVo);
-
-        // 상태변경 데이터 세팅
-        resveReqstVo.setAplyid(rcpmnyBfeVo.getAplyid());
-        resveReqstVo.setUser(user);
-        // 상태변경이력 추가
-        resveReqstService.insertHstry(resveReqstVo);
-
+        
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
             resultMap.put("msg", "예약신청 취소에 성공하였습니다.");

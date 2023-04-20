@@ -75,4 +75,14 @@ public interface RcpmnyBfeService {
      * @return int
      */
     public int updateResveCancel(RcpmnyBfeVo rcpmnyBfeVo) throws Exception;
+    /**
+     * 현재 해당 신청건의 예약 일정중 진행중인 예약이 있는지 확인
+     *
+     * @Title : isThereResveNow
+     * @Description : 현재 해당 신청건의 예약 일정중 진행중인 예약이 있는지 확인
+     * @param rcpmnyBfeVo 입금 전 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    public String isThereResveNow(RcpmnyBfeVo rcpmnyBfeVo) throws Exception;
 }
