@@ -214,13 +214,15 @@ public class EnvWordController {
     */
     @RequestMapping(value = "/mng/envWord/deleteEnvWord.do")
     @ResponseBody
-    public Map<String, Object> deleteEnvWord(HttpServletRequest request) throws Exception {
+    public Map<String, Object> deleteEnvWord(EnvWordVo envWordVo, HttpServletRequest request, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         int retVal = 0;
         
-        String[] nscvrgids = request.getParameterValues("nscvrgids");
+        String[] ids = request.getParameterValues("nscvrgids");
+        envWordVo.setWordids(ids);
+        envWordVo.setUser(user);
         
-        retVal = envWordService.deleteEnvWord(nscvrgids);
+        retVal = envWordService.deleteEnvWord(envWordVo);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);

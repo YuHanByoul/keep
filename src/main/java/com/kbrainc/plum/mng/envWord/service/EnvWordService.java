@@ -70,9 +70,9 @@ public interface EnvWordService {
     *
     * @Title : deleteEnvWord
     * @Description : 환경교육용어사전 게시글 삭제
-    * @param nscvrgids 게시글 id값
+    * @param envWordVo 게시글 id값
     * @throws Exception 예외
     * @return int
     */
-    public int deleteEnvWord(String[] nscvrgids) throws Exception;   
+    public int deleteEnvWord(EnvWordVo envWordVo) throws Exception;   
 }
