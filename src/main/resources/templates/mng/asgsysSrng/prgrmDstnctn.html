@@ -536,7 +536,7 @@ function readImage() {
 }
 
 $('[id^=eduPhotoFileInpu]').on('change', function(event) {
-
+debugger;
 	var trgtId = event.currentTarget.id;
 	var trgtIdx = trgtId.substr(trgtId.length-1,1);
 
@@ -554,6 +554,8 @@ $('[id^=eduPhotoFileInpu]').on('change', function(event) {
     formData.append("filegrpid", $("#eduPhotoFilegrpid").val() == "" ? 0 : $("#eduPhotoFilegrpid").val());
     formData.append("filegrpNm", "dstnctnEduPhoto_file");
 
+    //file input 초기화
+    $("#"+trgtId).val("");
 
     if(displayWorkProgress()){
         $.ajax({
@@ -566,11 +568,10 @@ $('[id^=eduPhotoFileInpu]').on('change', function(event) {
             success : function(response) {
 
                 if(response.result == 'fail'){
+                    alert(response.msg);
 
-                	if(response.msg.includes("사이즈")){
-                        alert(response.msg);
-                	}
 
+                    debugger;
                 }else{
                     if($("#eduPhotoFilegrpid").val()=='0' || $("#eduPhotoFilegrpid").val()==''  || $("#eduPhotoFilegrpid").val()==null){
                     	$("#eduPhotoFilegrpid").val(response[0].filegrpid );
@@ -606,7 +607,7 @@ function fn_eduImgFileUpdate(){
             success : function(response) {
 
                 if(response.result == 'fail'){
-                    alert("교육사진파일그룹id를 저장중에 실패했습니다.");
+                    alert("교육사진파일 저장에 실패했습니다.");
                 }else{
                 	loadJdsgTabContent("/mng/asgsysSrng/prgrmDstnctn.html?prgrmid=" + $("#prgrmid").val());    //재조회
                 }

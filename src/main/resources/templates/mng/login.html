@@ -7,7 +7,7 @@
 	<body>
 		<div layout:fragment="content">
 			<script type="text/javascript" charset="utf-8" src="/js/common/jquery/jquery.cookie.js"></script>
-			<script type="text/javascript">
+			<script th:inline="javascript">
 			
 				jQuery(document).ready(function(){		
 					var f = document.login_form;
@@ -43,11 +43,11 @@
 			            },
 			            messages: { 
 			                p_userid: {
-			                    required: "아이디를 입력해주십시오"
+			                    required: "아이디를 입력해주십시오."
 			                   ,maxlength: "아이디는 40자를 넘을 수 없습니다."
 			                },
 			                p_pswd: {
-			                    required: "비밀번호를 입력해주십시오"
+			                    required: "비밀번호를 입력해주십시오."
 			                   ,maxlength: "비밀번호는 40자를 넘을 수 없습니다."
 			                }
 			            }
@@ -57,12 +57,30 @@
 				function login(){			    
 					var f = document.login_form;
 					if(!$('#login_form').valid()) return false;
+					
+					/*[# th:if="${!T(com.kbrainc.plum.rte.util.CommonUtil).allowedIp.contains(T(com.kbrainc.plum.rte.util.CommonUtil).getClientIp(#request))}"]*/
+					if($("#encodeData").val() == "") {
+                        alert("본인인증을 진행해주십시오.");
+                        return false;
+                    }
+                    /*[/]*/
+                    
 					if(f.p_userid.value){
 						jQuery.cookie('userid', f.p_userid.value, {expires:30});
 					}
 					return true;
 				}
 				
+				function fnAuthPopup(){
+                    window.open('', 'popupChk', 'width=500, height=550, top=100, left=100, fullscreen=no, menubar=no, status=no, toolbar=no, titlebar=yes, location=no, scrollbar=no');
+                    document.form_chk.target = "popupChk";
+                    document.form_chk.submit();
+                }
+                
+                function setEncodeData(encodeData) {
+                    document.login_form.encodeData.value = encodeData;
+                    $("#authButton").addClass("disabled");
+                }
 			</script>
 
         	<!-- Pre-loader start -->
@@ -112,6 +130,7 @@
                             <!-- Authentication card start -->
         
                             <form class="md-float-material form-material" name="login_form" id="login_form" th:action="@{/login}" method="post" onsubmit="return login();">
+                                <input type="hidden" name="encodeData" id="encodeData" />
                                 <div class="text-center">
                                     <img th:src="'/downloadFileByFileid.do?fileid='+${session.site.logoFileid}+'&file_idntfc_key='+${session.site.logoFileIdntfcKey}" width="150" height="30">
                                 </div>
@@ -131,6 +150,13 @@
                                             <input type="password" name="p_pswd" id="p_pswd" class="form-control" 
                                                 placeholder="Password" autocomplete="off">
                                             <span class="form-bar"></span>
+                                        </div>
+                                        <div class="row m-t-30" th:if="${!T(com.kbrainc.plum.rte.util.CommonUtil).allowedIp.contains(T(com.kbrainc.plum.rte.util.CommonUtil).getClientIp(#request))}">
+                                            <div class="col-md-12">
+                                                <div class="d-grid">
+                                                    <input type="button" class="btn btn-primary btn-md waves-effect waves-light text-center m-b-20" id="authButton" onclick="fnAuthPopup()" value="휴대폰 본인인증 하기" />
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="row m-t-30">
                                             <div class="col-md-12">
@@ -156,8 +182,11 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <span th:text="${T(com.kbrainc.plum.rte.util.CommonUtil).getClientIpTest(#request)}" style="color:white"></span>
+                                    <!--/* <span th:text="${T(com.kbrainc.plum.rte.util.CommonUtil).getClientIpTest(#request)}" style="color:white"></span> */-->
                                 </div>
+                            </form>
+                            <form name="form_chk" th:action="@{/CheckPlusSafeModel/checkplus.html}" method="post">
+                                <input type="hidden" name="kind" value="info" />
                             </form>
                             <!-- end of form -->
                         </div>

@@ -1,6 +1,7 @@
 package com.kbrainc.plum.mng.tchaidRvw.service;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -87,8 +88,12 @@ public class TchaidRvwServiceImpl extends PlumAbstractServiceImpl implements Tch
     @Transactional
     public int deleteTchaidRvw(TchaidRvwVo tchaidRvwVo) throws Exception {
         int reInt = 0 ;
-        reInt +=tchaidRvwDao.deleteTchaidRvw(tchaidRvwVo);
-        reInt +=tchaidRvwDao.deleteLendAplyRvw(tchaidRvwVo);
+        if(tchaidRvwVo.getOrderids().length > 0) {
+            reInt +=tchaidRvwDao.deleteTchaidRvw(tchaidRvwVo);            
+        }
+        if(tchaidRvwVo.getLendAplyids().length > 0) {
+            reInt +=tchaidRvwDao.deleteLendAplyRvw(tchaidRvwVo);
+        }
         return  reInt; 
     }
     /**
