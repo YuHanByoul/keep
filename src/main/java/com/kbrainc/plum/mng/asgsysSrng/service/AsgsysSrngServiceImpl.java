@@ -1345,7 +1345,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 			    cell.setCellStyle(style);
 				/*배정일*/
 			    cell = row.createCell(cellnum++);
-			    cell.setCellValue(StringUtil.nvl(dateFormat.format(modelVo.getAltmntDe()), ""));
+			    cell.setCellValue(StringUtil.nvl(modelVo.getAltmntDe(), ""));
 			    cell.setCellStyle(style);
 				/*숙박여부*/
 			    cell = row.createCell(cellnum++);
@@ -1353,7 +1353,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 			    cell.setCellStyle(style);
 				/*현장점검일시*/
 			    cell = row.createCell(cellnum++);
-			    cell.setCellValue(StringUtil.nvl(dateFormat.format(modelVo.getSrngDt()), ""));
+			    cell.setCellValue(StringUtil.nvl(modelVo.getVstDt(), ""));
 			    cell.setCellStyle(style);
 			}
 
