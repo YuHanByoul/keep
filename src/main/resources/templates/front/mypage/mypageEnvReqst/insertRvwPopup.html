@@ -1,0 +1,95 @@
+<div class="layer-header">
+    <strong class="tit">후기 작성</strong>
+    <button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close=""></button>
+</div>
+<div class="layer-content">
+
+    <p class="fs-16 fc-black6">환경교육시설의 <b class="fc-green">후기</b> 및 <b class="fc-green">만족도 평가</b>를 남겨주세요.</p>
+
+    <div class="form-group mt15">
+        <dl>
+            <dt class="fc-black3"><b>별점등록</b>(필수)</dt>
+            <dd>
+                <div class="rating-star-wrap">
+                    <div class="rating-star-inner">
+                        <div class="rating-star" id="ratingStar">
+                            <input type="radio" name="rating" value="5" id="rating5" class="blind"><label for="rating5"><span class="blind">매우 만족</span></label>
+                            <input type="radio" name="rating" value="4" id="rating4" class="blind"><label for="rating4"><span class="blind">만족</span></label>
+                            <input type="radio" name="rating" value="3" id="rating3" class="blind"><label for="rating3"><span class="blind">보통</span></label>
+                            <input type="radio" name="rating" value="2" id="rating2" class="blind"><label for="rating2"><span class="blind">불만족</span></label>
+                            <input type="radio" name="rating" value="1" id="rating1" class="blind"><label for="rating1"><span class="blind">매우 불만족</span></label>
+                        </div>
+                    </div>
+                    <div class="rating-feedback" id="ratingDescription"></div>
+                </div>
+            </dd>
+        </dl>
+        <dl>
+            <dt class="fc-black3"><b>기타의견</b>(필수)</dt>
+            <dd>
+                <textarea name="rvwCn" placeholder="내용을 입력해주세요."></textarea>
+                <div class="check-wrap j-end">
+                    <div class="size"><span>0</span> / 1,000자</div>
+                </div>
+            </dd>
+        </dl>
+    </div>
+
+    <div class="box-desc-list bg7 mt20 p20">
+        <p class="fs-14">작성하신 후기는 모든 사용자에게 공개됩니다.</p>
+    </div>
+
+</div>
+
+
+<div class="layer-footer">
+    <div class="btn-wrap">
+        <div class="center">
+            <button type="button" class="btn-medium btn-gray" data-layer-close="">취소</button>
+            <button type="button" class="btn-medium btn-green" onclick="fn_insertRvw();">등록</button>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    var ratingTxt = ['1점(매우 불만족)', '2점(불만족)', '3점(보통)', '4점(만족)', '5점(매우 만족)']
+    $(function(){
+        $('input[name=rating]').prop('checked', false);
+
+        $('input[name=rating]').on('change', function (e) {
+            let ratingNum = e.target.value;
+            $('#ratingDescription').text(ratingTxt[ratingNum-1]);
+        });
+    })
+
+    function fn_insertRvw(){
+        if (!$('input[name=rating]').is(':checked')) {
+            alert('필수항목을 입력해주세요.');
+            $("#ratingStar").attr("tabindex", -1).focus();
+            return;
+        }
+
+        if ($('#insertRsnPopup textarea[name="rvwCn"]').val() == '' ) {
+            alert('필수항목을 입력해주세요.');
+            return;
+        }
+
+        var param = {aplyid : /*[[${aplyid}]]*/null, rvwCn : $('#insertRvwPopup textarea[name="rvwCn"]').val(), rvwScr : $('input[name="rating"]:checked').val()};
+        if (displayWorkProgress(true)) {
+            $.ajax({
+                url: '/front/mypage/mypageEnvReqst/insertRvw.do',
+                cache: false,
+                dataType: 'json',
+                data: param,
+                type: 'POST',
+                success: function (data) {
+                    alert(data.msg);
+                    layerPopup.close({target:'insertRvwPopup'});
+                    selectEnvReqstList();
+                    closeWorkProgress();
+                }
+            });
+        }
+
+    }
+</script>
