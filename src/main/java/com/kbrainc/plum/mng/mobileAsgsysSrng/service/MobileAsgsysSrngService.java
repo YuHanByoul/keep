@@ -54,4 +54,26 @@ public interface MobileAsgsysSrngService {
      * @throws Exception
      */
     public List<MobileAsgsysSrngVo> selectCheckList(MobileAsgsysSrngVo mobileAsgsysSrngVo) throws Exception;
+
+    /**
+     * 지원단심사 등록
+     *
+     * @Title : insertSprtgrpSrng
+     * @Description : 지원단심사 등록
+     * @param mobileAsgsysSrngVo
+     * @return int
+     * @throws Exception
+     */
+    public int insertSprtgrpSrng(MobileAsgsysSrngVo mobileAsgsysSrngVo) throws Exception;
+
+    /**
+     * 지원단심사 수정
+     *
+     * @Title : updateSprtgrpSrng
+     * @Description : 지원단심사 등록
+     * @param mobileAsgsysSrngVo
+     * @return int
+     * @throws Exception
+     */
+    public int updateSprtgrpSrng(MobileAsgsysSrngVo mobileAsgsysSrngVo) throws Exception;
 }
