@@ -91,7 +91,7 @@
                     </div>
                     <div class="col-12 col-md-6 text-right">
 	                    <th:block sec:authorize-url="/mng/cnsltng/downloadCnsltngExcelList.do">
-	                        <button type="button" class="btn btn-primary waves-effect waves-light" onclick ="openExcelDownRsnPopup('dwnldDsctnPopup', 'searchFrm', '/mng/cnsltng/downloadCnsltngExcelList.do');" >엑셀다운로드</button>
+	                        <button type="button" class="btn btn-primary waves-effect waves-light" onclick ="cnsltngExcelDownload();" >엑셀다운로드</button>
 	                    </th:block>                        
                     </div>
                 </div>
@@ -113,7 +113,11 @@
           </div>
       </div>
   </div>
-
+  
+  <form id="additionalSearchFrm" name="additionalSearchFrm">
+     <input type="hidden" id="pageNumber" name="pageNumber" >
+  </form>
+  
   <div class="modal fade" id="dwnldDsctnPopup" aria-hidden="true" data-bs-backdrop="static"></div>
 
   <script type="text/javascript" src="/files/bower_components/handlebars/handlebars.min.js" charset="utf-8" ></script>
@@ -217,13 +221,11 @@
         $("#filterSearchSelectDate1").val('');
         $("#filterSearchSelectDate2").val('');
     }
-
     function enterkey() {
          if (window.event.keyCode == 13) {
              fn_searchForm();
          }
-     }
-     
+    }
     function fn_searchForm(){
 
         var SearchRegStrtDt  = $("#searchRegStrtDt").val();
@@ -240,9 +242,10 @@
     	gridHelper1.resetListContent();
     }
     cnsltngExcelDownload =()=>{
-	  var f = document.searchFrm;
-	  f.action ="/mng/cnsltng/downloadCnsltngExcelList.do";
-	  f.submit();
+	  let excelUrl = "/mng/cnsltng/downloadCnsltngExcelList.do";
+	  let curPage = $("#jsGrid").jsGrid("option", "pageIndex"); 
+	  $("#additionalSearchFrm  #pageNumber").val(curPage);
+      openExcelDownRsnPopup('dwnldDsctnPopup', 'searchFrm/additionalSearchFrm', excelUrl);
     }
 </script>
 </div>	

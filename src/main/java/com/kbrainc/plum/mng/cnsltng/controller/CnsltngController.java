@@ -1,5 +1,6 @@
 package com.kbrainc.plum.mng.cnsltng.controller;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,11 +32,15 @@ import com.kbrainc.plum.mng.cnsltng.model.CnsltngVo;
 import com.kbrainc.plum.mng.cnsltng.service.CnsltngService;
 import com.kbrainc.plum.mng.inst.model.InstVo;
 import com.kbrainc.plum.mng.inst.service.InstService;
+import com.kbrainc.plum.mng.jntpurchs.model.JntpurchsOrderVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyVo;
 import com.kbrainc.plum.rte.constant.Constant;
+import com.kbrainc.plum.rte.model.ParentRequestVo.ORDER_DIRECTION;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.CommonUtil;
+import com.kbrainc.plum.rte.util.StringUtil;
+import com.kbrainc.plum.rte.util.excel.ExcelDownloadUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -299,6 +304,25 @@ public class CnsltngController {
     @RequestMapping(value = "/mng/cnsltng/downloadCnsltngExcelList.do")
     public void downloadCnsltngExcelList(HttpServletRequest request, HttpServletResponse response, CnsltngVo cnsltngVo) throws Exception {
         cnsltngService.cnstlngExcelDownList(cnsltngVo, response, request);
+        /*
+         * DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd",
+         * Locale.getDefault()); cnsltngVo.setOrderField("REG_DT");
+         * cnsltngVo.setOrderDirection(ORDER_DIRECTION.desc); List<CnsltngVo> result =
+         * cnsltngService.selectCnsltngExcelList(cnsltngVo);
+         * ExcelDownloadUtil<CnsltngVo> excelDownloadUtil = new ExcelDownloadUtil<>( new
+         * String[] { "No." ,"프로그램명" ,"기관명" ,"컨설팅 유형" ,"전문가명" ,"진행상태" ,"신청일" ,"방문기간"} ,
+         * result, (data, mapper, idx) -> { mapper .putData(0, data.getRowNumber(),
+         * ExcelDownloadUtil.CELL_ALIGN.CENTER) .putData(1,
+         * StringUtil.nvl(data.getPrgrm(), "")) .putData(2,
+         * StringUtil.nvl(data.getInstNm(), "")) .putData(3,
+         * StringUtil.nvl(data.getCnsltngKndCdNm(), "")) .putData(4,
+         * StringUtil.nvl(data.getCnstntNm(), "")) .putData(5,
+         * StringUtil.nvl(data.getSttsCdNm(), "")) .putData(6,
+         * StringUtil.nvl(dateFormat.format(data.getRegDt()), "")) .putData(7,
+         * (StringUtil.nvl(data.getVstDe(),"")=="")?
+         * "-":data.getVstDe()+" "+data.getVstBgngDt()+" ~ "+data.getVstEndDt()); return
+         * true; } ); excelDownloadUtil.excelDownload(response, "컨설팅 검색결과");
+         */
     }
     /**
      * @Title : cnsltngResultInfo

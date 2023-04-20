@@ -455,4 +455,11 @@ function openPopup(popupId, queryString) {
         }
     });
 }
-
+function excelDownloadByMultiForm(multiFormid, url) {
+    const formArr = multiFormid.split("/")
+    const paramArr = []; 
+    formArr.forEach(function(frm){
+        paramArr.push(...$("#"+frm).serializeArray())
+    })
+    $.fileDownload(url + "?" + $.param(paramArr));
+}
