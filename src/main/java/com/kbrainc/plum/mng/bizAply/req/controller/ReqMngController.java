@@ -45,6 +45,8 @@ import com.kbrainc.plum.mng.bizAply.req.model.SmrLeaderVo;
 import com.kbrainc.plum.mng.bizAply.req.model.SrngTabVo;
 import com.kbrainc.plum.mng.bizAply.req.model.SupplementVo;
 import com.kbrainc.plum.mng.bizAply.req.service.ReqMngService;
+import com.kbrainc.plum.mng.inst.model.InstVo;
+import com.kbrainc.plum.mng.inst.service.InstServiceImpl;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
@@ -77,6 +79,9 @@ public class ReqMngController {
     
     @Autowired
     private CommonService commonService;
+    
+    @Autowired
+    private InstServiceImpl instService;
     
     /**
     * 신청관리 화면으로 이동. 
@@ -226,7 +231,7 @@ public class ReqMngController {
         model.addAttribute("aplyid", reqUserVo.getAplyid());
         model.addAttribute("pcntstid", reqUserVo.getPcntstid());
         model.addAttribute("fldCd", reqUserVo.getFldCd());
-
+        
         return "mng/bizAply/req/reqUserTab";
     }
     
@@ -293,6 +298,8 @@ public class ReqMngController {
             model.addAttribute("fldCd", reqUserVo.getFldCd());
         }
         
+        InstVo instVo = new InstVo();
+        model.addAttribute("typeCdList", instService.selectInstTypeCdList(instVo));
         model.addAttribute("sidoList", commonService.selectAlowedCtprvnList());
         model.addAttribute("reqUserVo", detailReqUserVo);
         model.addAttribute("popupYn", reqUserVo.getPopupYn());

@@ -3,8 +3,6 @@ package com.kbrainc.plum.mng.cntnts.service;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,9 +11,6 @@ import com.kbrainc.plum.mng.cntnts.model.CntntsDao;
 import com.kbrainc.plum.mng.cntnts.model.CntntsEduSbjctVo;
 import com.kbrainc.plum.mng.cntnts.model.CntntsEduTrgtVo;
 import com.kbrainc.plum.mng.cntnts.model.CntntsVo;
-import com.kbrainc.plum.mng.envtcherTrnngInst.model.EnvtcherTrnngInstVo;
-import com.kbrainc.plum.rte.model.UserVo;
-import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
@@ -78,7 +73,7 @@ public class CntntsServiceImpl extends PlumAbstractServiceImpl implements Cntnts
     */
     @Override
     @Transactional
-    public int insertCntnts(CntntsVo cntntsVo, String[] eduSbjctCds, String[] eduTrgt) throws Exception {
+    public int insertCntnts(CntntsVo cntntsVo, String[] eduSbjctCds, String[] eduTrgt, String ceckid) throws Exception {
         int retVal = 0;
         retVal += cntntsDao.insertCntnts(cntntsVo);
         retVal += cntntsDao.insertEduSbjct(cntntsVo.getCntntsid(), eduSbjctCds, cntntsVo.getUser());
@@ -121,19 +116,48 @@ public class CntntsServiceImpl extends PlumAbstractServiceImpl implements Cntnts
         return cntntsDao.deleteCntnts(cntntsVo.getUser(), cntntsids);
     }
     
+    /**
+    * 교육주제 코드 리스트 조회
+    *
+    * @Title : selectCntntsCdList
+    * @Description : 교육주제 코드 리스트 조회
+    * @param map
+    * @return
+    * @throws Exception
+    * @return List<Map<String,String>>
+    */
     @Override
     public List<Map<String,String>> selectCntntsCdList(Map<String,String> map) throws Exception {
         return cntntsDao.selectCntntsCdList(map);
     }
 
+    /**
+    * 콘텐츠 교육 주제 코드 맵핑 리스트 호출 
+    *
+    * @Title : selectCntntsEduSbjctList
+    * @Description : selectCntntsCdList
+    * @param cntntsEduSbjctVo
+    * @return
+    * @throws Exception
+    * @return List<CntntsEduSbjctVo>
+    */
     @Override
     public List<CntntsEduSbjctVo> selectCntntsEduSbjctList(CntntsEduSbjctVo cntntsVo) throws Exception {
         return cntntsDao.selectCntntsEduSbjctList(cntntsVo);
     }
 
+    /**
+    * 콘텐츠 교육 대상 코드 리스트 호출
+    *
+    * @Title : selectCntntsEduTrgtList
+    * @Description : 콘텐츠 교육 대상 코드 리스트 호출
+    * @param cntntsVo
+    * @return
+    * @throws Exception
+    * @return List<CntntsEduTrgtVo>
+    */
     @Override
     public List<CntntsEduTrgtVo> selectCntntsEduTrgtList(CntntsVo cntntsVo) throws Exception {
         return cntntsDao.selectCntntsEduTrgtList(cntntsVo);
     }
-
 }

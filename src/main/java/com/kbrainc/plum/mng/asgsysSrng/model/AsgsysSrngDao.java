@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.front.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.mng.member.model.MemberVo;
 import com.kbrainc.plum.rte.model.UserVo;
 
@@ -528,6 +529,18 @@ public interface AsgsysSrngDao {
 	public List<AsgsysSrngVo> selectJdgsSrngList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
+	* 심사위원심사 목록 엑셀다운
+	*
+	* @Title : selectJdgsSrngListExcelDown
+	* @Description : 심사위원심사 목록 엑셀다운
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<AsgsysSrngVo>
+	*/
+	public List<AsgsysSrngVo> selectJdgsSrngListExcelDown(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
 	* 심사위원심사 상세 조회
 	*
 	* @Title : getSelectDsgnAplyInfo
@@ -614,17 +627,6 @@ public interface AsgsysSrngDao {
 	 * @throws Exception 예외
 	 */
 	public int insertSftyMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
-
-	/**
-	* 심사위원심사 목록 엑셀 다운
-	*
-	* @Title : jdgsSrngListExcelDown
-	* @Description : 심사위원심사 목록 엑셀 다운
-	* @param asgsysSrngVo
-	* @return List<AsgsysSrngVo>
-	* @throws Exception
-	*/
-	public List<AsgsysSrngVo> jdgsSrngListExcelDown(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
 	* 심사양식 목록 조회
@@ -749,6 +751,18 @@ public interface AsgsysSrngDao {
 	* @throws Exception
 	*/
 	public List<AsgsysSrngVo> selectSprtgrpSrngList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 지원단심사 목록 엑셀 다운
+	*
+	* @Title : selectSprtgrpSrngListExcelDown
+	* @Description : 지원단심사 목록 엑셀 다운
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<AsgsysSrngVo>
+	*/
+	public List<AsgsysSrngVo> selectSprtgrpSrngListExcelDown(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
 	* 지원단심사 상세 조회
@@ -1197,5 +1211,21 @@ public interface AsgsysSrngDao {
 	* @return int
 	*/
 	public int deleteChklstAns(ChklstAnsVo chklstAnsVo) throws Exception;
+
+	/**
+	* 컨설팅 목록 조회
+	*
+	* @Title : selectCsltngList
+	* @Description : 컨설팅 목록 조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnPrgrmVo>
+	*/
+	public List<DsgnPrgrmVo> selectCsltngList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+
+
+
 
 }

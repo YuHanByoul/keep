@@ -63,6 +63,12 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     /** 검색.교육주제 코드*/
     private String searchSbjctCd;
 
+    /** 검색.교육주제 코드 main*/
+    private String searchManinEduSbjctCd;
+
+    /** 검색.교육주제 코드 mdl*/
+    private String searchMdleEduSbjctCd;
+
     /** 검색.교육대상 코드*/
     private String searchEduTarget;
 

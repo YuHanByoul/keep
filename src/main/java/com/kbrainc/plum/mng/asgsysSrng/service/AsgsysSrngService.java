@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.front.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.DsgnSrngFormVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.EmrgcyActnPlanVo;
@@ -507,6 +508,19 @@ public interface AsgsysSrngService {
 	public List<AsgsysSrngVo> selectSprtgrpSrngList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
+	* 지원단심사 목록 엑셀 다운
+	*
+	* @Title : selectSprtgrpSrngListExcelDown
+	* @Description : 지원단심사 목록 엑셀 다운
+	* @param asgsysSrngVo
+	* @param response
+	* @param request
+	* @throws Exception
+	* @return void
+	*/
+	public void selectSprtgrpSrngListExcelDown(AsgsysSrngVo asgsysSrngVo, HttpServletResponse response, HttpServletRequest request) throws Exception;
+
+	/**
 	* 지원단심사 상세 조회
 	*
 	* @Title : selectSprtgrpSrng
@@ -741,6 +755,20 @@ public interface AsgsysSrngService {
 	* @return List<AsgsysSrngVo>
 	*/
 	public List<AsgsysSrngVo> selectSrngQitemList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 컨설팅 목록조회
+	*
+	* @Title : selectCsltngList
+	* @Description : 컨설팅 목록조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnPrgrmVo>
+	*/
+	public List<DsgnPrgrmVo> selectCsltngList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+
 
 
 

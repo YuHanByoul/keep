@@ -131,7 +131,7 @@
 	                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
 	                            <strong>진행상태</strong></div>
 	                        <div class="col-12">
-                                <span kattr:select_code="sttsCd" th:attr="grpCd=114,selectedCd=${sprtgrpSrngInfo.sttsCd}" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true">
+                                <span kattr:select_code="srgnSttsCd" th:attr="grpCd=114,selectedCd=${sprtgrpSrngInfo.srgnSttsCd}" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true">
 	                        </div>
 	                    </div>
 	                </div>
@@ -271,7 +271,7 @@
                 </div>
             </div>
 	        <div class="card-block-small">
-	            <button class="btn btn-inverse m-r-5">목록</button>
+	            <button type="button" class="btn btn-inverse m-r-5" onclick="gridHelper1.resetListContent()">목록</button>
 	            <button type="button" class="btn btn-primary" onclick="fn_insertSprtgrpSrng()" id="srngBtnSave" >저장</button>
 	        </div>
 	    </div>
@@ -287,7 +287,7 @@
     var splmntDmndGridHelper;
     var gridArgs;
 
-    initSprtgrpSrngFrm();
+
 
     function initSprtgrpSrngFrm() {
 
@@ -301,7 +301,7 @@
         $("#sprtgrpSrngFrm [id^=operFrmCd]").prop("disabled", true);
         $("#sprtgrpSrngFrm [id^=styYn]").prop("disabled", true);
         $("#sprtgrpSrngFrm [id^=sftyMngYn]").prop("disabled", true);
-        $("#sprtgrpSrngFrm [id^=sttsCd]").prop("disabled", true);
+        $("#sprtgrpSrngFrm [id^=srgnSttsCd]").prop("disabled", true);
     }
 
 
@@ -524,6 +524,12 @@
 
         param["srngOpnn"    ]= $("#srngOpnn").val();
         param["chklstRsltCn"]= $("#chklstRsltCn").val();
+        var rsltCn = $("#chklstRsltCn").val();
+        if(rsltCn != null && rsltCn != '') {
+        	param["srgnSttsCd"]= '114104'    //최종심사평 있는 경우 심사완료
+        }else{
+        	param["srgnSttsCd"]= '114103'    //최종심사평 없는 경우 심사중
+        }
 
         var vScr = 0;
         $("[id^=scrSum]").each(
@@ -532,7 +538,7 @@
             });
         param["scr"] = vScr;
 
-        debugger;
+
         if(!confirm("저장하시겠습니까?")) return;
 
         if(displayWorkProgress()){
@@ -557,5 +563,21 @@
             });
         }
     }
+
+
+    $(function(){
+        initSprtgrpSrngFrm();
+
+        var validator = $("#sprtgrpSrngFrm").validate({
+            rules: {
+                srngOpnn : { maxlength: 1000 ,isBlank: true}
+              , chklstRsltCn : { maxlength: 1000 ,isBlank: true}
+            },
+            messages: {
+                srngOpnn : { maxlength: "현장점검결과는 1000자를 넘을 수 없습니다." }
+              , chklstRsltCn : { maxlength: "최종심사평은 1000자를 넘을 수 없습니다." }
+            }
+        });
+    });
 
 </script>

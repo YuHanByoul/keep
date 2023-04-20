@@ -5,6 +5,8 @@ import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmVo;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 /**
@@ -58,6 +60,20 @@ public interface DsgnPrgrmService {
 	* @throws Exception
 	*/
 	public List<DsgnPrgrmVo> selectDsgnPrgrmList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 지정프로그램 목록 엑셀 다운
+	*
+	* @Title : selectDsgnPrgrmExcelDownList
+	* @Description : 지정프로그램 목록 엑셀 다운
+	* @param dsgnPrgrmVo
+	* @param response
+	* @param request
+	* @throws Exception
+	* @return void
+	*/
+	public void selectDsgnPrgrmExcelDownList(DsgnPrgrmVo dsgnPrgrmVo, HttpServletResponse response, HttpServletRequest request) throws Exception;
+
 
 	/**
 	* 지정내역 목록 조회
@@ -393,7 +409,6 @@ public interface DsgnPrgrmService {
 	* @return List<DsgnPrgrmVo>
 	*/
 	public List<DsgnPrgrmVo> selectSprtgrpClndrList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
-
 
 
 }

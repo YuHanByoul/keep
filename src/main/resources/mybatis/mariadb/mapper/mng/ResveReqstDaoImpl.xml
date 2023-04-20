@@ -3,7 +3,7 @@
 
 <!--
 	SQL File Name : ResveReqstDaoImpl.xml
-	Description : 시설
+	Description : 시설예약
 -->
 <mapper namespace="com.kbrainc.plum.mng.resveReqst.model.ResveReqstDao">
 
@@ -12,44 +12,45 @@
         /* ResveReqstDao.selectResveReqstList */
         <include refid="PaginationMapper.header"/>
         SELECT
-        A.APLYID
-        ,A.STLM_STTS_CD
-        ,A.APLY_STTS_CD
-        ,A.APLCNTID
-        ,A.APLCNT_NM
-        ,A.AMT
-        ,A.DPST_BANK_CD
-        ,A.DPST_AMT
-        ,A.RFND_DMND_AMT
-        ,A.RFND_AMT
-        ,A.RFND_REJECT_RSN_CD 
-        ,A.MDFCN_DT
-        ,C.INSTID
-        ,C.INST_NM
-        ,B.BGNG_DT
-        ,B.END_DT
-        ,B.ALLDAY_YN
-        ,E.SPCE_NM
-        ,F.FCLT_NM
-        ,G.ACNT
-        ,G.NM
+          A.APLYID
+          ,A.APLY_DT
+          ,A.STLM_STTS_CD
+          ,A.APLY_STTS_CD
+          ,A.APLCNTID
+          ,A.APLCNT_NM
+          ,A.AMT
+          ,A.DPST_BANK_CD
+          ,A.DPST_AMT
+          ,A.RFND_DMND_AMT
+          ,A.RFND_AMT
+          ,A.RFND_REJECT_RSN_CD 
+          ,A.MDFCN_DT
+          ,C.INSTID
+          ,C.INST_NM
+          ,B.BGNG_DT
+          ,B.END_DT
+          ,B.ALLDAY_YN
+          ,E.SPCE_NM
+          ,F.FCLT_NM
+          ,G.ACNT
+          ,G.NM
         FROM
-        TB_FCL_SPCE_APLY A
-        INNER JOIN (SELECT B.APLYID, D.SPCEID, MIN(D.BGNG_DT) AS BGNG_DT, B.ALLDAY_YN,
-        CASE
-        WHEN B.ALLDAY_YN = 'N' THEN MAX(D.END_DT)
-        ELSE MAX(D.BGNG_DT) END AS END_DT
-        FROM TB_FCL_APLY_RSVTDE B
-        LEFT JOIN TB_FCL_SPCE_RSVTDE D ON B.RSVTDEID = D.RSVTDEID
-        GROUP BY APLYID) B
-        ON A.APLYID = B.APLYID
-        INNER JOIN TB_FCL_SPCE E
-        ON B.SPCEID = E.SPCEID
-        INNER JOIN TB_FCL_FCLT F
-        ON E.FCLTID = F.FCLTID
-        INNER JOIN TB_CMM_INST C
-        ON F.INSTID = C.INSTID
-        LEFT OUTER JOIN TB_CMM_USER G ON A.APLCNTID = G.USERID
+          TB_FCL_SPCE_APLY A
+          INNER JOIN (SELECT B.APLYID, D.SPCEID, MIN(D.BGNG_DT) AS BGNG_DT, B.ALLDAY_YN,
+          CASE
+          WHEN B.ALLDAY_YN = 'N' THEN MAX(D.END_DT)
+          ELSE MAX(D.BGNG_DT) END AS END_DT
+          FROM TB_FCL_APLY_RSVTDE B
+          LEFT JOIN TB_FCL_SPCE_RSVTDE D ON B.RSVTDEID = D.RSVTDEID
+          GROUP BY APLYID) B
+          ON A.APLYID = B.APLYID
+          INNER JOIN TB_FCL_SPCE E
+          ON B.SPCEID = E.SPCEID
+          INNER JOIN TB_FCL_FCLT F
+          ON E.FCLTID = F.FCLTID
+          INNER JOIN TB_CMM_INST C
+          ON F.INSTID = C.INSTID
+          LEFT OUTER JOIN TB_CMM_USER G ON A.APLCNTID = G.USERID
         WHERE 1=1
         <if test="searchKeyword != null and searchKeyword != '' and searchType.equals('spceNm')">
             AND E.SPCE_NM LIKE CONCAT('%',#{searchKeyword},'%')
@@ -91,6 +92,7 @@
         /* ResveReqstDao.selectResveReqstInfo */
         SELECT
             A.APLYID
+             ,A.APLY_DT
              ,A.STLM_STTS_CD
              ,A.APLY_STTS_CD
              ,A.APLCNTID
@@ -233,6 +235,7 @@
         , A.DPST_BANK_CD
         , A.DPST_DE
         , A.DPST_IDNTY_DT
+        , A.CNCL_RSN_CD
         , A.CNCL_DT
         , A.RFND_DMND_DT
         , A.RFND_DE
@@ -242,7 +245,6 @@
         , A.RFND_PYR_NM
         , A.APLY_STTS_CD
         , A.STLM_STTS_CD
-        , A.CNCL_RSN_CD
         , A.RSVT_CNCL_RSN
         , A.RFND_REJECT_RSN
         , A.RFND_REJECT_RSN_CD

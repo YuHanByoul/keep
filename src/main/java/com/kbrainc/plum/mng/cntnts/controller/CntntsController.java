@@ -25,9 +25,6 @@ import com.kbrainc.plum.mng.cntnts.model.CntntsEduSbjctVo;
 import com.kbrainc.plum.mng.cntnts.model.CntntsEduTrgtVo;
 import com.kbrainc.plum.mng.cntnts.model.CntntsVo;
 import com.kbrainc.plum.mng.cntnts.service.CntntsService;
-import com.kbrainc.plum.mng.envtcherTrnngInst.model.EnvtcherTrnngInstVo;
-import com.kbrainc.plum.mng.pack.model.PackageEduTrgtVo;
-import com.kbrainc.plum.mng.rgnEnveduCntr.model.RgnEnveduCntrVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
@@ -205,7 +202,7 @@ public class CntntsController {
     */
     @RequestMapping(value = "/mng/cntnts/insertCntnts.do", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> insertCntnts(@Valid CntntsVo cntntsVo, BindingResult bindingResult, @UserInfo UserVo user, String[] eduSbjctCds, String[] eduTrgt) throws Exception {
+    public Map<String, Object> insertCntnts(@Valid CntntsVo cntntsVo, BindingResult bindingResult, @UserInfo UserVo user, String[] eduSbjctCds, String[] eduTrgt, String ceckid) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         
         if (bindingResult.hasErrors()) {
@@ -231,11 +228,11 @@ public class CntntsController {
         
         int retVal = 0;
                 
-        retVal = cntntsService.insertCntnts(cntntsVo, eduSbjctCds, eduTrgt);
+        retVal = cntntsService.insertCntnts(cntntsVo, eduSbjctCds, eduTrgt, ceckid);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "등록에 성공하였습니다.");
+            resultMap.put("msg", "등록에 성공했습니다.");
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
             resultMap.put("msg", "등록에 실패했습니다.");

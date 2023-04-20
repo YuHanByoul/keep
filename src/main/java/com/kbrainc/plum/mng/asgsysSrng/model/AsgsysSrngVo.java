@@ -356,6 +356,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
 	private Date  aplyDt;
 
+	/** 신청일 */
+	private String aplyDe;
+
     /** 수정_일시 */
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
 	private Date  mdfcnDt;
@@ -368,12 +371,10 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	private Date  regDt;
 
 	/** 배정일 */
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
-	private Date  altmntDe;
+	private String altmntDe;
 
 	/** 심사일 */
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
-	private Date  srngDe;
+	private String  srngDe;
 
     /** 등록자아이디 */
 	private Integer rgtrid;

@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.error.controller.CustomErrorController;
 import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.front.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.DsgnSrngFormVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.EmrgcyActnPlanVo;
@@ -601,6 +602,11 @@ public class AsgsysSrngController {
     	AsgsysSrngVo prgrmDstnctnInfo = asgsysSrngService.selectPrgrmDstnctn(asgsysSrngVo);
     	model.addAttribute("prgrmDstnctnInfo", prgrmDstnctnInfo);
 
+    	//컨설팅목록
+    	List<DsgnPrgrmVo> csltngList = asgsysSrngService.selectCsltngList(prgrmDstnctnInfo);
+    	model.addAttribute("csltngList", csltngList );
+
+    	//교육주제코드목록
     	List<String> eduSbjctCdLst = new ArrayList<>();
     	String cdLst = prgrmDstnctnInfo.getEduSbjctCdLst();
     	if (cdLst != null && !cdLst.isEmpty()) {
@@ -704,7 +710,6 @@ public class AsgsysSrngController {
     @ResponseBody
     public Map<String, Object> insertPrgrmDstnctn(@Valid AsgsysSrngVo asgsysSrngVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
-
 
         if (bindingResult1.hasErrors()) {
             FieldError fieldError = bindingResult1.getFieldError();
@@ -1626,6 +1631,22 @@ public class AsgsysSrngController {
 
         return resultMap;
     }
+    
+    /**
+    * 지원단심사 목록 엑셀 다운
+    *
+    * @Title : selectSprtgrpSrngListExcelDown
+    * @Description : 지원단심사 목록 엑셀 다운
+    * @param request
+    * @param response
+    * @param asgsysSrngVo
+    * @throws Exception
+    * @return void
+    */
+    @RequestMapping(value = "/mng/asgsysSrng/selectSprtgrpSrngListExcelDown.do")
+    public void selectSprtgrpSrngListExcelDown(HttpServletRequest request, HttpServletResponse response, AsgsysSrngVo asgsysSrngVo) throws Exception {
+    	asgsysSrngService.selectSprtgrpSrngListExcelDown(asgsysSrngVo, response, request);
+    }
 
     /**
     * 지원단심사 등록 화면 이동
@@ -1670,10 +1691,6 @@ public class AsgsysSrngController {
 
         return "mng/asgsysSrng/sprtgrpSrngInsertForm";
     }
-
-
-
-
 
 
 }

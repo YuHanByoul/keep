@@ -68,6 +68,9 @@
     .fc-event{
          font-size:0.75em;
     }
+    .m-pointer{
+        cursor:pointer;
+    }
     
   </style>
   
@@ -80,10 +83,10 @@
 	      <div class="card-block-small text-left ">
 		      <div class=" text-right">
 		         <th:block sec:authorize-url="/mng/spce/deleteRsvt.do">
-		             <button class="btn btn-disabled m-r-5" onclick="deleteRsvt()">선택일 삭제</button>
+		             <button class="btn btn-inverse m-r-5" onclick="deleteRsvt()">선택일 삭제</button>
 		         </th:block>
 		         <th:block sec:authorize-url="/mng/spce/detailPopup.html">
-		             <button class="btn btn-inverse m-r-5"  onclick="openRsvtModal()">선택일 등록</button>
+		             <button class="btn btn-primary m-r-5"  onclick="openRsvtModal()">선택일 등록</button>
 	                 <button class="btn btn-primary m-r-5"  onclick="openPackageRsvtModal()">일괄 등록</button>
 		         </th:block>
 		      </div>
@@ -101,8 +104,8 @@
       
       <div class="card-block-small">
           <th:block sec:authorize-url="/mng/spce/changeRsvtPsblty.do">
-	          <button type="button" class="btn btn-disabled m-r-5" id="stopBtn" onclick="modifyRsvtStts('N')">운영중지</button>
-	          <button type="button" class="btn btn-inverse m-r-5"  id="reopenBtn" onclick="modifyRsvtStts('Y')">운영재개</button>
+	          <button type="button" class="btn btn-inverse m-r-5" id="stopBtn" onclick="modifyRsvtStts('N')">운영중지</button>
+	          <button type="button" class="btn btn-primary m-r-5"  id="reopenBtn" onclick="modifyRsvtStts('Y')">운영재개</button>
           </th:block>
       </div>
       
@@ -231,7 +234,6 @@
             },
             
             dayClick: function(date, jsEvent, view) {
-                
                 if($(jsEvent.target).attr("for")){
                     //체크 박스 이벤트 중복 방지
                     return false;
@@ -242,13 +244,10 @@
                     }
                 }
             },
-            
             eventRender:function (event,element){
                 //console.log(event);
             },
-            
             eventClick: function(calEvent, jsEvent, view) {
-                console.log(calEvent);
                 var cellStts = $("#rsvt_stts"+calEvent.de).val();
                 if(cellStts=='R'){
                 	var modifyKind = (calEvent.utztnSeCd =='169101')? 'MS':'MR';
@@ -312,7 +311,6 @@
                 
                 checkDaysStts();
 		        $(".checkDay").bind("change",function(){checkDaysStts();})
-                
             }
         });
     }
@@ -366,20 +364,24 @@
                         	   title  +=  '숙박 | '+amt
                            }
                            
-                           let elementColor = '#0ac282';
+                           let elementColor = '#00ab72';
                            let backgroundColor = '#effcee !important';
+                           let pointerClass = 'm-pointer';
                            
                            //현재일자보다 이전 (운영종료)
                            if(today > (item.de).replaceAll("-","")){
-                        	   elementColor = '#D8D8D8';
+                        	   elementColor = '#b4b4b4';
                         	   backgroundColor = '#f5f5f5 !important;';
+                        	   pointerClass ="";
                            //운영 중지 상태 	   
                            }else if(item.rsvtPsbltyYn == 'N'){
                         	   $("#rsvt_stts"+item.de).val("S");
-                        	   elementColor = '#FA5882';
+                        	   elementColor = '#ff7584';
                                backgroundColor = '#fdf2f4 !important;';
+                        	   pointerClass ="";
                            }else{
                         	   $("#rsvt_stts"+item.de).val("R");
+                        	   pointerClass ="m-pointer";
                            }
                            
                            schdul_events.events.push({
@@ -393,6 +395,7 @@
                                ,rsvtdeid:item.rsvtdeid
                                ,rsvtPsbltyYn:item.rsvtPsbltyYn
                                ,utztnSeCd:item.utztnSeCd
+                               ,className:pointerClass
                            })
                            
                            $("[data-date='"+item.de+"']").css("background-color",backgroundColor);

@@ -1,22 +1,35 @@
 package com.kbrainc.plum.mng.dsgnPrgrm.service;
 
+import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-import javax.validation.Valid;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kbrainc.plum.front.dsgnMng.model.DsgnMngVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngDao;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
-import com.kbrainc.plum.mng.asgsysSrng.model.LdrVo;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmDao;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmObjcVo;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.OperPrfmncVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+import com.kbrainc.plum.rte.util.StringUtil;
+import com.kbrainc.plum.rte.util.excel.ExcelUtils;
 
 /**
  *
@@ -577,6 +590,152 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	@Override
 	public List<DsgnPrgrmVo> selectSprtgrpClndrList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
 		return dsgnPrgrmDao.selectSprtgrpClndrList(dsgnPrgrmVo);
+	}
+
+	public List<DsgnPrgrmVo> selectDsgnPrgrmExcelDownList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void selectDsgnPrgrmExcelDownList(DsgnPrgrmVo dsgnPrgrmVo, HttpServletResponse response, HttpServletRequest request) throws Exception {
+		List<DsgnPrgrmVo> list = null;
+		String realName = "";
+		DsgnPrgrmVo modelVo = null;
+
+		realName = "jdgsSrngList.xls";
+
+		HSSFWorkbook workbook = new HSSFWorkbook();
+		//Font 설정.
+		HSSFFont font = workbook.createFont();
+		font.setFontName(HSSFFont.FONT_ARIAL);
+		//제목의 스타일 지정
+		HSSFCellStyle titlestyle = workbook.createCellStyle();
+		titlestyle.setFillForegroundColor(HSSFColor.SKY_BLUE.index);
+		titlestyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+		titlestyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+		titlestyle.setBorderRight(HSSFCellStyle.BORDER_THIN);    //얇은 테두리 설정
+		titlestyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);    //얇은 테두리 설정
+		titlestyle.setBorderTop(HSSFCellStyle.BORDER_THIN);    //얇은 테두리 설정
+		titlestyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);//얇은 테두리 설정
+		titlestyle.setFont(font);
+
+		//내용 스타일 지정
+		HSSFCellStyle style = workbook.createCellStyle();
+		style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+		style.setFont(font);
+		HSSFCellStyle styleR = workbook.createCellStyle();
+		styleR.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
+		styleR.setFont(font);
+
+		HSSFCellStyle styleL = workbook.createCellStyle();
+		styleL.setAlignment(HSSFCellStyle.ALIGN_LEFT);
+		styleL.setFont(font);
+		HSSFSheet sheet = null;
+
+		sheet = workbook.createSheet("sheet1");
+
+		String [] titleArr = {
+				 "차수"
+				,"지정번호"
+				,"프로그램명"
+				,"기관명"
+				,"지정상태"
+				,"변경신청"
+				,"운영결과"
+				,"이행심사"
+				,"이의신청"
+				,"지정기간"
+		};
+
+		//Row 생성
+		HSSFRow row = sheet.createRow(0);
+		//Cell 생성
+		HSSFCell cell = null;
+
+		ArrayList<String> titleList = new ArrayList<String>();
+		for(int i=0;i<titleArr.length;i++){
+			titleList.add(titleArr[i]);
+		}
+
+		int titleCnt = 0;
+		for(String title : titleList){
+			cell = row.createCell(titleCnt++);
+			cell.setCellValue(title);
+			cell.setCellStyle(titlestyle);
+		}
+
+		list = dsgnPrgrmDao.selectDsgnPrgrmExcelDownList(dsgnPrgrmVo);
+
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd  hh:mm:ss", Locale.getDefault());
+
+		if(list != null && list.size() > 0){
+			int cellnum = 0;
+			for (int i=0; i<list.size();i++){
+				modelVo = list.get(i);
+
+				//타이틀이 1개 row에 write 되어있음 따라서 i+1
+				row = sheet.createRow((i+1));
+				cellnum = 0;
+
+
+				/*차수*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getDsgnCycl(), ""));
+				cell.setCellStyle(style);
+				/*지정번호*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getDsgnNo(), ""));
+				cell.setCellStyle(style);
+				/*프로그램명*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getPrgrmNm(), ""));
+				cell.setCellStyle(style);
+				/*기관명*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getInstNm(), ""));
+				cell.setCellStyle(style);
+				/*지정상태*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getSttsCdNm(), ""));
+				cell.setCellStyle(style);
+				/*변경신청*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getChgAplyCnt(), ""));
+				cell.setCellStyle(style);
+				/*운영결과*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getOperRsltCnt(), ""));
+				cell.setCellStyle(style);
+				/*이행심사*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getImplmntIdntyCnt(), ""));
+				cell.setCellStyle(style);
+				/*이의신청*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getObjcInfoCnt(), ""));
+				cell.setCellStyle(style);
+				/*지정기간*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getDsgnPrd(), ""));
+				cell.setCellStyle(style);
+
+			}
+
+			for(int i=0;i<titleList.size();i++){
+				sheet.autoSizeColumn((short)i);
+				sheet.setColumnWidth(i, sheet.getColumnWidth(i)+512);
+			}
+		}
+
+		ExcelUtils.excelInfoSet(response,realName);
+
+		//엑셀 파일을 만듬
+		OutputStream fileOutput = response.getOutputStream();
+
+		workbook.write(fileOutput);
+		fileOutput.flush();
+		fileOutput.close();
 	}
 
 }

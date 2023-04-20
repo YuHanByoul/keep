@@ -1,6 +1,7 @@
 <form id="prgrmDstnctnFrm">
 <input type="hidden" id="prgrmKey" name="prgrmKey" th:value="${prgrmDstnctnInfo.prgrmKey}"><!-- 우수성key -->
 <input type="hidden" id="prgrmid" name="prgrmid" th:value="${prgrmDstnctnInfo.prgrmid}"><!-- 프로그램id -->
+<input type="hidden" id="aplcntid" name="aplcntid" th:value="${prgrmDstnctnInfo.aplcntid}"><!-- 신청자 -->
 <!-- <input type="hidden" id="eduSbjctCdLst" name="eduSbjctCdLst" th:value="${prgrmDstnctnInfo.eduSbjctCdLst}">교육주제코드 -->
 <input type="hidden" id="eduPhotoFilegrpid" name="eduPhotoFilegrpid" th:value="${prgrmDstnctnInfo.eduPhotoFilegrpid}"> <!-- 교육사진파일그룹코드 -->
 
@@ -25,7 +26,15 @@
                     </div>
                 </div>
                 <div class="col-12 col-lg-auto">
-                    <span kattr:select_code="cnsltngKndCd" th:attr="grpCd=130,selectedCd=${prgrmDstnctnInfo.cnsltngKndCd}" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true">
+<!--                     <span kattr:select_code="cnsltngKndCd" th:attr="grpCd=130,selectedCd=${prgrmDstnctnInfo.cnsltngKndCd},disabled=${prgrmDstnctnInfo.cnsltngPrgrsYn != 'Y'?'disabled':''}" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true"> -->
+
+                    <select title="컨설팅 진행"  id="cnsltngid" name="cnsltngid" th:attr="disabled=${prgrmDstnctnInfo.cnsltngPrgrsYn != Y ? 'disabled':''}" class="form-select form-select-sm form-control-sm">
+                        <option value=""> - 선택 - </option>
+                        <th:block th:if="${#lists.size(csltngList) > 0}" th:each="list, i: ${csltngList}">
+                            <option th:value="${list.cnsltngid}" th:selected="${list.cnsltngid == prgrmDstnctnInfo.cnsltngid}"><th:block th:text="${list.prgrmNm}" /></option>
+                        </th:block>
+                    </select>
+
                 </div>
             </div>
         </div>
@@ -527,7 +536,7 @@ function readImage() {
 }
 
 $('[id^=eduPhotoFileInpu]').on('change', function(event) {
-
+debugger;
 	var trgtId = event.currentTarget.id;
 	var trgtIdx = trgtId.substr(trgtId.length-1,1);
 
@@ -545,6 +554,8 @@ $('[id^=eduPhotoFileInpu]').on('change', function(event) {
     formData.append("filegrpid", $("#eduPhotoFilegrpid").val() == "" ? 0 : $("#eduPhotoFilegrpid").val());
     formData.append("filegrpNm", "dstnctnEduPhoto_file");
 
+    //file input 초기화
+    $("#"+trgtId).val("");
 
     if(displayWorkProgress()){
         $.ajax({
@@ -557,11 +568,10 @@ $('[id^=eduPhotoFileInpu]').on('change', function(event) {
             success : function(response) {
 
                 if(response.result == 'fail'){
+                    alert(response.msg);
 
-                	if(response.msg.includes("사이즈")){
-                        alert(response.msg);
-                	}
 
+                    debugger;
                 }else{
                     if($("#eduPhotoFilegrpid").val()=='0' || $("#eduPhotoFilegrpid").val()==''  || $("#eduPhotoFilegrpid").val()==null){
                     	$("#eduPhotoFilegrpid").val(response[0].filegrpid );
@@ -597,7 +607,7 @@ function fn_eduImgFileUpdate(){
             success : function(response) {
 
                 if(response.result == 'fail'){
-                    alert("교육사진파일그룹id를 저장중에 실패했습니다.");
+                    alert("교육사진파일 저장에 실패했습니다.");
                 }else{
                 	loadJdsgTabContent("/mng/asgsysSrng/prgrmDstnctn.html?prgrmid=" + $("#prgrmid").val());    //재조회
                 }
@@ -758,6 +768,16 @@ function prgrmDstnctnSaveBtn() {
 
     if (!validEduCd()) return false;
 
+
+    //컨설팅 진행여부
+    if($("#cnsltngPrgrsYn1").prop("checked")){
+        param["cnsltngPrgrsYn"] = 'Y';
+        param["cnsltngid"] = $("#cnsltngid").val();
+    }else{
+    	param["cnsltngPrgrsYn"] = 'N';
+        param["cnsltngid"] = '';
+    }
+
     //교육주제
     $("select[id^=eduSbjctCd_").each(function(index, item) {
        if(index==0) param["eduSbjctCdLst"] = ""+item.value;
@@ -831,6 +851,7 @@ function prgrmDstnctnSaveBtn() {
         vUrl = "/mng/asgsysSrng/insertPrgrmDstnctn.do";
     }
 
+    debugger;
     if(!confirm("저장 하시겠습니까?")){return;}
 
     $.ajax({
@@ -978,13 +999,6 @@ function initPrgrmDstnctn(){
 
 	//교육사진 set
 	readImage();
-	//교육주제코드 목록 set
-    //fn_getNextDepthList(155 , 0, 'eduSbjctCd1');
-	//setEduCdList();
-
-	if(eduSbjctCdLst.length==0){
-		//fn_getNextDepthList(155 , 0, 'eduSbjctCd1');
-	}
 
 	$("select[name='eduSbjctCd1']").each(function(i){
 		var cd = $(this).val()
@@ -1011,57 +1025,6 @@ function initPrgrmDstnctn(){
 
 
     $('#jdsgTab1Link').addClass("active");
-//     $("select[id^=eduSbjctCd]").unwrap();
-//     $("select[id^=eduSbjctCd]").unwrap();
-//     $("select[id^=eduSbjctCd]").unwrap();
-//     $("select[id^=eduSbjctCd]").wrap("<div class='col-sm-3 mt-1 mt-sm-0'></dv>");
-
-/*
-
-    $("select[id^=eduSbjctCd]").each(function(idx,sbx){
-
-        var html = "<div class='row mt-2 subjectCode' id='eduSbjctCdDiv"+(idx+1)+"'>";
-        html +=   "<div class='col-sm-3 mt-1 mt-sm-0'>";
-        html +=       '<select name="eduSbjctCd" id="eduSbjctCd'+(idx+1)+'" class="form-select form-select-sm" onchange="setNextDepth(\'155\', this.value, \'sub_eduSbjctCd'+(idx+1)+'\');">';
-        html +=           $("#eduSbjctCd1").html();
-        html +=       "</select>";
-        html +=   "</div>";
-        html += "<div class='col-sm-3 mt-1 mt-sm-0'>";
-        html +=   "<select name='sub_eduSbjctCd' id='sub_eduSbjctCd"+(idx+1)+"' class='form-select form-select-sm'>";
-        html +=       "<option value='' selected>- 선택 -</option>";
-        html +=       "</select>";
-        html +=   "</div>";
-        html += "<div class='col-sm-3 mt-1 mt-sm-0 btnList'>";
-        html +=     "<button type='button' onclick='addCode();' class='input-group-text btn btn-primary btn-sm'>+</button>";
-        html +=     "<button type='button' onclick='removeCode("+(idx+1)+");' class='input-group-text btn btn-primary btn-sm'>-</button>";
-        html += "</div>";
-    $("#dynamicDiv").append(html);
-
-    	var no = (idx+1);
-//    	eduSbjctCdLst
-    	var html ="";
-    	this.id= 'eduSbjctCd'+no;
-    	html += "<div class='col-sm-3 mt-1 mt-sm-0'>";
-        html +=   "<select name='sub_eduSbjctCd' id='sub_eduSbjctCd"+(idx)+"' class='form-select form-select-sm'>";
-        html +=       "<option value='' selected>- 선택 -</option>";
-        html +=       "</select>";
-        html +=   "</div>";
-
-        $("#"+this.id).after(html)
-        debugger;
-        fn_getNextDepthList(155 , 0, 'sub_'+this.id);
-
-        $("#sub_"+this.id).val(eduSbjctCdLst[idx]);
-        */
-//     });
-
-
-//     $("#prgrmDstnctnFrm [id^=cnsltngPrgrsYn]").attr("disabled", true);
-//     $("#prgrmDstnctnFrm [id^=operFrmCd]").prop("disabled", true);
-//     $("#prgrmDstnctnFrm [id^=styYn]").prop("disabled", true);
-//     $("#prgrmDstnctnFrm [id^=sftyMngYn]").prop("disabled", true);
-//     $("#prgrmDstnctnFrm [id^=sttsCd]").prop("disabled", true);
-
 
     if( $("#styNight").val() == "" ) $("#styNight").val(0);
     if( $("#styDaytm").val() == "" ) $("#styDaytm").val(0);
@@ -1079,6 +1042,20 @@ function initPrgrmDstnctn(){
 
 $(function(){
     initPrgrmDstnctn();
+
+    //컨설팅 여부
+    $("input[id^=cnsltngPrgrsYn]").on("change", function(e) {
+        var id = e.originalEvent.target.id;
+
+            if($("#"+id).val() == "Y") {
+                $("#cnsltngid").prop("disabled", "")
+            }else if($("#"+id).val() == "N") {
+                $("#cnsltngid").val("");
+                $("#cnsltngid").prop("disabled", "disabled")
+            }
+    });
+
+
 });
 
 </script>

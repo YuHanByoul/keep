@@ -10,7 +10,6 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -27,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.cmm.error.controller.CustomErrorController;
 import com.kbrainc.plum.cmm.file.model.FileVo;
-import com.kbrainc.plum.mng.asgsysSrng.controller.AsgsysSrngController;
+import com.kbrainc.plum.front.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AcbgVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngDao;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
@@ -236,7 +235,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 			cell.setCellStyle(titlestyle);
 		}
 
-		list = asgsysSrngDao.jdgsSrngListExcelDown(asgsysSrngVo);
+		list = asgsysSrngDao.aplyExcelDownList(asgsysSrngVo);
 
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd  hh:mm:ss", Locale.getDefault());
 
@@ -263,7 +262,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 				cell.setCellStyle(style);
 				/*신청일*/
 				cell = row.createCell(cellnum++);
-				cell.setCellValue(StringUtil.nvl(dateFormat.format(modelVo.getAplyDt()), ""));
+				cell.setCellValue(StringUtil.nvl(modelVo.getAplyDe(), ""));
 				cell.setCellStyle(style);
 				/*심사위원심사상태*/
 				cell = row.createCell(cellnum++);
@@ -312,7 +311,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 		String realName = "";
 		AsgsysSrngVo modelVo = null;
 
-		realName = "jdgsSrngGnrlrvwList.xls";
+		realName = "srngGnrlrvwList.xls";
 
 		HSSFWorkbook workbook = new HSSFWorkbook();
 		//Font 설정.
@@ -369,9 +368,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 			cell.setCellStyle(titlestyle);
 		}
 
-		list = asgsysSrngDao.jdgsSrngListExcelDown(asgsysSrngVo);
-
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+		list = asgsysSrngDao.selectSprtgrpSrngListExcelDown(asgsysSrngVo);    //지원단심사 엑셀 다운 조회
 
 		if(list != null && list.size() > 0){
 			int cellnum = 0;
@@ -392,15 +389,15 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 				cell.setCellStyle(style);
 				/*신청일*/
 				cell = row.createCell(cellnum++);
-				cell.setCellValue(StringUtil.nvl(dateFormat.format(modelVo.getAplyDt()), ""));
+				cell.setCellValue(StringUtil.nvl(modelVo.getAplyDe(), ""));
 				cell.setCellStyle(style);
 				/*현장점검결과*/
 				cell = row.createCell(cellnum++);
-				cell.setCellValue(StringUtil.nvl(modelVo.getSplmntDmndOpnn(), ""));
+				cell.setCellValue(StringUtil.nvl(modelVo.getSrngOpnn(), ""));
 				cell.setCellStyle(style);
 				/*최종 심사평*/
 				cell = row.createCell(cellnum++);
-				cell.setCellValue(StringUtil.nvl(modelVo.getSrngOpnn(), ""));
+				cell.setCellValue(StringUtil.nvl(modelVo.getChklstRsltCn(), ""));
 				cell.setCellStyle(style);
 			}
 
@@ -837,9 +834,9 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 			cell.setCellStyle(titlestyle);
 		}
 
-		list = asgsysSrngDao.selectJdgsSrngList(asgsysSrngVo);
+		list = asgsysSrngDao.selectJdgsSrngListExcelDown(asgsysSrngVo);
 
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd  hh:mm:ss", Locale.getDefault());
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
 		if(list != null && list.size() > 0){
 			int cellnum = 0;
@@ -856,7 +853,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 			    cell.setCellStyle(style);
 			    /*심사위원명*/
 			    cell = row.createCell(cellnum++);
-			    cell.setCellValue(StringUtil.nvl(modelVo.getJdgsNm(), ""));    /*todo 심사원명으로 수정*/
+			    cell.setCellValue(StringUtil.nvl(modelVo.getJdgsNm(), ""));
 			    cell.setCellStyle(style);
 				/*기관명*/
 			    cell = row.createCell(cellnum++);
@@ -868,7 +865,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 			    cell.setCellStyle(style);
 				/*배정일*/
 			    cell = row.createCell(cellnum++);
-			    cell.setCellValue(StringUtil.nvl(dateFormat.format(modelVo.getAltmntDe()), ""));
+			    cell.setCellValue(StringUtil.nvl(modelVo.getAltmntDe(), ""));
 			    cell.setCellStyle(style);
 				/*숙박여부*/
 			    cell = row.createCell(cellnum++);
@@ -1258,6 +1255,126 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	return asgsysSrngDao.selectSprtgrpSrngList(asgsysSrngVo);
 	}
 
+    @Override
+	public void selectSprtgrpSrngListExcelDown(AsgsysSrngVo asgsysSrngVo, HttpServletResponse response, HttpServletRequest request) throws Exception{
+		List<AsgsysSrngVo> list = null;
+		String realName = "";
+		AsgsysSrngVo modelVo = null;
+
+		realName = "jdgsSrngMainList.xls";
+		HSSFWorkbook workbook = new HSSFWorkbook();
+		//Font 설정.
+		HSSFFont font = workbook.createFont();
+		font.setFontName(HSSFFont.FONT_ARIAL);
+		//제목의 스타일 지정
+		HSSFCellStyle titlestyle = workbook.createCellStyle();
+		titlestyle.setFillForegroundColor(HSSFColor.SKY_BLUE.index);
+		titlestyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+		titlestyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+		titlestyle.setBorderRight(HSSFCellStyle.BORDER_THIN);    //얇은 테두리 설정
+		titlestyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);    //얇은 테두리 설정
+		titlestyle.setBorderTop(HSSFCellStyle.BORDER_THIN);    //얇은 테두리 설정
+		titlestyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);//얇은 테두리 설정
+		titlestyle.setFont(font);
+
+		//내용 스타일 지정
+		HSSFCellStyle style = workbook.createCellStyle();
+		style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+		style.setFont(font);
+		HSSFCellStyle styleR = workbook.createCellStyle();
+		styleR.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
+		styleR.setFont(font);
+
+		HSSFCellStyle styleL = workbook.createCellStyle();
+		styleL.setAlignment(HSSFCellStyle.ALIGN_LEFT);
+		styleL.setFont(font);
+		HSSFSheet sheet = null;
+
+		sheet = workbook.createSheet("sheet1");
+
+		String [] titleArr = {
+				 "프로그램명"
+				,"기관명"
+				,"심사진행상태"
+				,"배정일"
+				,"숙박여부"
+				,"현장점검 지정 일시"
+		};
+
+		//Row 생성
+		HSSFRow row = sheet.createRow(0);
+		//Cell 생성
+		HSSFCell cell = null;
+
+		ArrayList<String> titleList = new ArrayList<String>();
+		for(int i=0;i<titleArr.length;i++){
+				titleList.add(titleArr[i]);
+		}
+
+		int titleCnt = 0;
+		for(String title : titleList){
+			cell = row.createCell(titleCnt++);
+			cell.setCellValue(title);
+			cell.setCellStyle(titlestyle);
+		}
+
+		list = asgsysSrngDao.selectSprtgrpSrngListExcelDown(asgsysSrngVo);
+
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd  hh:mm:ss", Locale.getDefault());
+
+		if(list != null && list.size() > 0){
+			int cellnum = 0;
+			for (int i=0; i<list.size();i++){
+				modelVo = list.get(i);
+
+				//타이틀이 1개 row에 write 되어있음 따라서 i+1
+			    row = sheet.createRow((i+1));
+			    cellnum = 0;
+
+			    /*프로그램명*/
+			    cell = row.createCell(cellnum++);
+			    cell.setCellValue(StringUtil.nvl(modelVo.getPrgrmNm(), ""));
+			    cell.setCellStyle(style);
+				/*기관명*/
+			    cell = row.createCell(cellnum++);
+			    cell.setCellValue(StringUtil.nvl(modelVo.getInstNm(), ""));
+			    cell.setCellStyle(style);
+				/*심사진행상태*/
+			    cell = row.createCell(cellnum++);
+			    cell.setCellValue(StringUtil.nvl(modelVo.getSrgnSttsCdNm(), ""));
+			    cell.setCellStyle(style);
+				/*배정일*/
+			    cell = row.createCell(cellnum++);
+			    cell.setCellValue(StringUtil.nvl(dateFormat.format(modelVo.getAltmntDe()), ""));
+			    cell.setCellStyle(style);
+				/*숙박여부*/
+			    cell = row.createCell(cellnum++);
+			    cell.setCellValue(StringUtil.nvl(modelVo.getStyYnStr(), ""));
+			    cell.setCellStyle(style);
+				/*현장점검일시*/
+			    cell = row.createCell(cellnum++);
+			    cell.setCellValue(StringUtil.nvl(dateFormat.format(modelVo.getSrngDt()), ""));
+			    cell.setCellStyle(style);
+			}
+
+			for(int i=0;i<titleList.size();i++){
+				sheet.autoSizeColumn((short)i);
+				sheet.setColumnWidth(i, sheet.getColumnWidth(i)+512);
+			}
+		}
+
+		ExcelUtils.excelInfoSet(response,realName);
+
+		//엑셀 파일을 만듬
+		OutputStream fileOutput = response.getOutputStream();
+
+		workbook.write(fileOutput);
+		fileOutput.flush();
+		fileOutput.close();
+
+	}
+
+
     /**
     * 지원단심사 상세 조회
     *
@@ -1501,15 +1618,19 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	ret += asgsysSrngDao.insertPrgrmDstnctn(asgsysSrngVo);
 
     	//지정프로그램 수정
-    	chklstid = asgsysSrngDao.getCheckListId(asgsysSrngVo);
 
+    	assPrgrmVo = asgsysSrngDao.selectPrgrm(asgsysSrngVo);
+
+    	//숙박여부,운영형태코드로 체크리스트 가 정해진경우
+    	if(null != asgsysSrngVo.getChkOperFrmCd() && "".equals(asgsysSrngVo.getChkOperFrmCd())){
+    		chklstid = asgsysSrngDao.getCheckListId(asgsysSrngVo);
+    	}
     	if(null != chklstid ) {
-    		assPrgrmVo = asgsysSrngDao.selectPrgrm(asgsysSrngVo);
     		assPrgrmVo.setChklstid(chklstid);
     	}
+
     	assPrgrmVo.setPrgrmNm(asgsysSrngVo.getPrgrmNm());
     	assPrgrmVo.setCnsltngPrgrsYn(asgsysSrngVo.getCnsltngPrgrsYn());
-    	assPrgrmVo.setCnsltngKndCd(asgsysSrngVo.getCnsltngKndCd());
     	assPrgrmVo.setCnsltngid(asgsysSrngVo.getCnsltngid());
     	ret += asgsysSrngDao.updatePrgrm(assPrgrmVo);
 
@@ -1551,8 +1672,6 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     		ret += asgsysSrngDao.insertEduSbjct(asgsysSrngVo, eduSbjctCdArr, asgsysSrngVo.getUser());
     	}
 
-
-
 		return ret;
 	}
 
@@ -1590,14 +1709,6 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	List<PrgrmSchdlVo> schdLst = asgsysSrngVo.getPrgrmSchdlLst();
 
     	//지정프로그램 수정
-
-
-    	log.info("@@@@@@@@@@@@ : ");
-    	log.info("@@@@@@@@@@@@ : ");
-    	log.info("@@@@@@@@@@@@ : " + asgsysSrngVo.getChkOperFrmCd());
-    	log.info("@@@@@@@@@@@@ : ");
-    	log.info("@@@@@@@@@@@@ : ");
-
 
     	assPrgrmVo = asgsysSrngDao.selectPrgrm(asgsysSrngVo);
 
@@ -1821,6 +1932,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 	* @throws Exception
 	* @return List<AsgsysSrngVo>
 	*/
+    @Override
 	public List<AsgsysSrngVo> selectjdgsList(AsgsysSrngVo asgsysSrngVo) throws Exception{
 		return asgsysSrngDao.selectjdgsList(asgsysSrngVo);
 	}
@@ -1835,10 +1947,24 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 	* @throws Exception
 	* @return List<AsgsysSrngVo>
 	*/
+    @Override
 	public List<AsgsysSrngVo> selectSrngQitemList(AsgsysSrngVo asgsysSrngVo) throws Exception{
 		return asgsysSrngDao.selectSrngQitemList(asgsysSrngVo);
 	}
 
-
+    /**
+    * 컨설팅 목록조회
+    *
+    * @Title : selectCsltngList
+    * @Description : 컨설팅 목록조회
+    * @param asgsysSrngVo
+    * @return
+    * @throws Exception
+    * @return List<DsgnPrgrmVo>
+    */
+    @Override
+	public List<DsgnPrgrmVo> selectCsltngList(AsgsysSrngVo asgsysSrngVo) throws Exception{
+		return asgsysSrngDao.selectCsltngList(asgsysSrngVo);
+	}
 
 }
