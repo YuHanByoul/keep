@@ -418,6 +418,7 @@ public class JntpurchsController {
     @RequestMapping(value = "/mng/jntpurchs/downloadJntpurchsOrderListExcel.do")
     @ResponseBody
     public void downloadJntpurchsOrderListExcel(JntpurchsOrderVo jntpurchsOrderVo, HttpServletResponse response) throws Exception {
+        jntpurchsOrderVo.setRowPerPage(0);
         jntpurchsOrderVo.setOrderField("REG_DT");
         jntpurchsOrderVo.setOrderDirection(ORDER_DIRECTION.desc);
         List<JntpurchsOrderVo> result = jntpurchsService.selectJntpurchsOrderList(jntpurchsOrderVo);
