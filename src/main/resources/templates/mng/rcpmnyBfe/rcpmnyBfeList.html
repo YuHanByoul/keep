@@ -67,10 +67,10 @@
 					</div>
                     <div class="col-12 col-md-6 text-right">
                         <th:block sec:authorize-url="/mng/spce/spceDetail.html">
-                            <button type="button" class="btn btn-disabled m-r-5" onclick="confirmDeposit();" >입금확인</button>
+                            <button type="button" class="btn btn-disabled waves-effect waves-light" onclick="processDspt('C');" >신청취소</button>
                         </th:block>
                         <th:block sec:authorize-url="/mng/spce/spceDetail.html">
-                            <button type="button" class="btn btn-primary waves-effect waves-light" onclick="cancelAply();" >신청취소</button>
+                            <button type="button" class="btn btn-primary m-r-5" onclick="processDspt('D');" >입금확인</button>
                         </th:block>
                     </div>
 				</div>
@@ -85,6 +85,8 @@
 		</div>
 	</div>
 
+
+    <div class="modal fade" data-bs-backdrop="static" id="dsptProcessPopup"></div>
 	<link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
@@ -96,6 +98,7 @@
         /*]]>*/
 		var selectedItems = [];
 		var gridHelper2;
+        var dsptCheckAddModal;
 		
 		$(function(){
 			gridHelper2 = new GridHelper('jsGrid','contentPanel');
@@ -181,23 +184,6 @@
 					},
 				},
 				fields: [
-					
- 	                 /*{
-	                     headerTemplate: function() {
-	                         return "선택"; //$("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
-	                     },
-	                     itemTemplate: function(_, item) {
-	                         return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox")
-	                         .prop("checked", $.inArray(item, selectedItems) > -1)
-	                         .on("change", function () {
-	                         $(this).is(":checked") ? selectItem($(this).parent().next().text()) : unselectItem($(this).parent().next().text());
-	                         });
-	                     },
-	                     align: "center",
-	                     width: "80",
-	                     sorting: false
-	                 }*/
-	                  
  	                 {
 	                     title : '선택' ,
 	                     itemTemplate: function(_, item) {
@@ -253,171 +239,37 @@
 					selectedItems = [];
 				}
 			});
-
-			var selectItem = function(item) {
-				selectedItems.push(item);
-				if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
-					$("#selectAllCheckbox").prop("checked", true);
-				} else {
-					$("#selectAllCheckbox").prop("checked", false);
-				}
-			};
-
-			var unselectItem = function(item) {
-				selectedItems = $.grep(selectedItems, function(i) {
-					return i !== item;
-				});
-				if(selectedItems.length == 0) {
-					$('#selectAllCheckbox').attr('checked', false);
-				}
-				if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
-					$("#selectAllCheckbox").prop("checked", true);
-				} else {
-					$("#selectAllCheckbox").prop("checked", false);
-				}
-			};
-
-			$("#selectAllCheckbox").click(function(item) {
-				selectedItems = [];
-				if(this.checked) { // check select status
-					$('.singleCheckbox').each(function() {
-						this.checked = true;
-						selectItem($(this).parent().next().text());
-					});
-				}else {
-					$('.singleCheckbox').each(function() {
-						this.checked = false;
-						unselectItem(item);
-					});
-					selectedItems = [];
-				}
-			});
 		}
-
-		function cancelAply(){
-			
-		}
-
-	    //입금확인
-	    confirmDeposit =()=>{
+		
+	    processDspt=(mode)=>{
 		    
-	    	console.log($("input[name=aplyChk]:checked").val());
-		    return;
-		    
-	        if(selectedItems.length <=0 ){
-	              alert("취소 대상을 선택해주십시오.");
-	              return;
-	        }
-	        
-	        var spceids = selectedItems.join(",")
-	        var params ={
-	            spceids : spceids
-	            ,useYn : "N"
-	        }
-	        
-	        if(displayWorkProgress()){
-	            $.ajax({
-	                url : "/mng/spce/deleteSpce.do",
-	                type: 'POST',
-	                cache : false,
-	                dataType: 'json',
-	                data : params,
-	                success : function (data){
-	                    
-	                    if(data.result == 'fail'){
-	                       alert(data.msg);
-	                       $('.singleCheckbox').each(function() { 
-	                           this.checked = false;   
-	                       });
-	                       $('#selectAllCheckbox').prop("checked",false);
-	                       selectedItems = [];
-	                    }else{
-	                       alert(data.msg);
-	                       selectedItems = [];
-	                       gridHelper1.resetListContent();
-	                    }
-	                    closeWorkProgress();
-	                }
-	            });
-	        }
-	    }
-	    
-		function date2str(x, y) {
-			var z = {
-				m: x.getMonth() + 1,
-				d: x.getDate(),
-				H: x.getHours(),
-				M: x.getMinutes(),
-				S: x.getSeconds()
-			};
-
-			y = y.replace(/(m+|d+|H+|M+|S+)/g, function(v) {
-				return ((v.length > 1 ? "0" : "") + z[v.slice(-1)]).slice(-2)
-			});
-
-			return y.replace(/(y+)/g, function(v) {
-				return x.getFullYear().toString().slice(-v.length)
-			});
-		}
-
-		function parseDate(strDate) {
-			var _strDate = strDate;
-			var _dateObj = new Date(_strDate);
-			if (_dateObj.toString() == 'Invalid Date') {
-				_strDate = _strDate.split('.').join('-');
-				_dateObj = new Date(_strDate);
+		    let openPopUrl = "";
+		    let alertStr = "";
+	    	let checkedAplyid = $("input[name=aplyChk]:checked").val();
+	    	
+		    if(mode=='C'){ //신청취소 
+		        openPopUrl = "/mng/rcpmnyBfe/resveCancelPopup.html?aplyid="+checkedAplyid;
+		        alertStr = "신청취소";
+			}else{//입금확인
+		        openPopUrl = "/mng/rcpmnyBfe/dsptCheckPopup.html?aplyid="+checkedAplyid;
+		        alertStr = "입금확인";
 			}
-			if (_dateObj.toString() == 'Invalid Date') {
-				var _parts = _strDate.split(' ');
-
-				var _dateParts = _parts[0];
-				_dateObj = new Date(_dateParts);
-
-				if (_parts.length > 1) {
-					var _timeParts = _parts[1].split(':');
-					_dateObj.setHours(_timeParts[0]);
-					_dateObj.setMinutes(_timeParts[1]);
-					if (_timeParts.length > 2) {
-						_dateObj.setSeconds(_timeParts[2]);
-					}
-				}
-			}
-
-			return _dateObj;
+	    	if(checkedAplyid==null || checkedAplyid =='undefined'){
+		    	alert( alertStr+" 대상을 선택해주십시오.");
+		    	return;
+		    }
+	    	openDsptPop(openPopUrl);
 		}
-
-	    // 입금확인 팝업
-	    /*<![CDATA[*/
-	    var dsptCheckPopupUrl = "/mng/rcpmnyBfe/dsptCheckPopup.html?"+"aplyid=";
-	    /*]]>*/
-	    var dsptCheckAddModal;
-	    var fn_openDsptCheckModal = () => {
-	        $("#dsptCheckPopup").load(dsptCheckPopupUrl, function(response, status, xhr) {
+		
+        openDsptPop=(popupUrl)=>{
+		    $("#dsptProcessPopup").load(popupUrl, function(response, status, xhr) {
 	            console.log(status);
 	            if (status == "success") {
-	                dsptCheckAddModal = new bootstrap.Modal($('#dsptCheckPopup'));
+	                dsptCheckAddModal = new bootstrap.Modal($('#dsptProcessPopup'));
 	                dsptCheckAddModal.show();
 	            }
 	        });
-	    }
-
-	    // 신청취소 팝업
-	    var resveCancelPopupUrl = "/mng/rcpmnyBfe/resveCancelPopup.html?"+"aplyid=";
-	    var resveCancelAddModal;
-
-	    var fn_openResveCancelModal = () => {
-	        $("#resveCancelPopup").load(resveCancelPopupUrl, function(response, status, xhr) {
-	            console.log(status);
-	            if (status == "success") {
-	                resveCancelAddModal = new bootstrap.Modal($('#resveCancelPopup'));
-	                resveCancelAddModal.show();
-	            }
-	        });
-	    }
-
-
-		
-
+        }
    </script>
 </div>
 </body>
