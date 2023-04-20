@@ -154,6 +154,9 @@ public class ReqUserVo extends ParentRequestVo {
     /** 기관 상세 주소 */
     private String instAddrDtl;
     
+    /** 기관 이메일 */
+    private String instEml;
+    
     /** 지역코드 */
     private String rgnCd;
     
@@ -291,6 +294,9 @@ public class ReqUserVo extends ParentRequestVo {
     
     /** 2차 심사위원 여부 */
     private String scndSrngYn;
+    
+    /** 공모 신청 수 */
+    private Integer aplyCnt;
     
     /** 온라인 심사유형 코드 */
     private String onlnSrngTypeCd;
