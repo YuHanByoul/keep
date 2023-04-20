@@ -100,8 +100,8 @@ public class EnvWordServiceImpl extends PlumAbstractServiceImpl implements EnvWo
     */
     @Override
     @Transactional
-    public int deleteEnvWord(String[] nscvrgids) throws Exception {
-        return envWordDao.deleteEnvWord(nscvrgids);
+    public int deleteEnvWord(EnvWordVo envWordVo) throws Exception {
+        return envWordDao.deleteEnvWord(envWordVo);
     }
 
 }

@@ -84,8 +84,8 @@
 
 				<div class="btn-wrap">
 					<div class="center">
-						<button type="button" class="btn-medium btn-gray btn-before-prev" onclick="beforeList()">이전호</button>
-						<button type="button" class="btn-medium btn-blue btn-after-next" onclick="nextList()">다음호</button>
+						<button type="button" id="beforeBtn" class="btn-medium btn-gray btn-before-prev" onclick="beforeList()">이전호</button>
+						<button type="button" id="nextBtn" class="btn-medium btn-blue btn-after-next" onclick="nextList()">다음호</button>
 					</div>
 				</div>
 
@@ -136,8 +136,8 @@
 
 				<div class="btn-wrap">
 					<div class="center">
-						<button type="button" class="btn-medium btn-gray btn-before-prev" onclick="beforeList()">이전호</button>
-						<button type="button" class="btn-medium btn-blue btn-after-next" onclick="nextList()">다음호</button>
+						<button type="button" id="beforeBtn" class="btn-medium btn-gray btn-before-prev" onclick="beforeList()">이전호</button>
+						<button type="button" id="nextBtn" class="btn-medium btn-blue btn-after-next" onclick="nextList()">다음호</button>
 					</div>
 				</div>
 
@@ -203,6 +203,8 @@
 		<!-- //layerpopup -->
 		
 		<script th:inline="javascript">
+		var isData = null;
+		
 		var envedu = {
 			listUrl: '/front/wbzn/now/selectEnveduList.do',
 			detailUrl : '/front/wbzn/now/enveduDetailForm.html',
@@ -267,7 +269,7 @@
 				prgrmgd.init();
 			},
 			
-			selectEnveduList() {
+			selectEnveduList(type) {
 				if (displayWorkProgress(true)) {
 					let formData = $('#enveduSearchForm').serializeArray();
 					
@@ -281,6 +283,17 @@
 							if(data.list.length != 0){
 								$('#envedu-card-list').removeClass();
 								$('#envedu-card-list').addClass('card-section');
+							}
+							if(data.totalCount == 0 && type != "") {
+								if(type == "next") {
+									alert("등록된 다음호가 없습니다.")
+									beforeList();
+									$("#nextBtn").attr("disabled", true);
+								}else {
+									alert("등록된 이전호가 없습니다.")
+									nextList();
+									$("#beforeBtn").attr("disabled", true);
+								}
 							}
 							envedu.makeListHtml(data);
 							closeWorkProgress();
@@ -435,7 +448,7 @@
 				envedu.searchInit();
 			},
 			
-			selectPrgrmgdList() {
+			selectPrgrmgdList(type) {
 				if (displayWorkProgress(true)) {
 					let formData = $('#prgrmgdSearchForm').serializeArray();
 					
@@ -450,6 +463,19 @@
 								$('#prgrmgd-card-list').removeClass();
 								$('#prgrmgd-card-list').addClass('card-section');
 							}
+							
+							if(data.totalCount == 0 && type != "") {
+								if(type == "next") {
+									alert("등록된 다음호가 없습니다.")
+									beforeList();
+									$("#nextBtn").attr("disabled", true);
+								}else {
+									alert("등록된 이전호가 없습니다.")
+									nextList();
+									$("#beforeBtn").attr("disabled", true);
+								}
+							}
+							
 							prgrmgd.makeListHtml(data);
 							closeWorkProgress();
 						}
@@ -587,8 +613,9 @@
 			$("#compareDate").val(`${year}-${month}-${date}`);
 			$("#prgrmgd-compareDate").val(`${year}-${month}-${date}`);
 			
-			envedu.selectEnveduList();
-			prgrmgd.selectPrgrmgdList();
+			$("#nextBtn").attr("disabled", false);
+			envedu.selectEnveduList("before");
+			prgrmgd.selectPrgrmgdList("before");
 		}
 		
 		function nextList() {
@@ -604,11 +631,17 @@
 			$("#compareDate").val(`${year}-${month}-${date}`);
 			$("#prgrmgd-compareDate").val(`${year}-${month}-${date}`);
 			
-			envedu.selectEnveduList();
-			prgrmgd.selectPrgrmgdList();
+			$("#beforeBtn").attr("disabled", false);
+			envedu.selectEnveduList("next");
+			prgrmgd.selectPrgrmgdList("next");
+			console.log(isData);
 		}
 
 		$(function () {
+			$("#enveduSearchYr").val(year);
+			$("#enveduSearchMm").val(String(month).padStart(2, '0'));
+			$("#prgrmgdSearchYr").val(year);
+			$("#prgrmgdSearchMm").val(String(month).padStart(2, '0'));
 			$("#enveduNowDate").text(transformMonth()+"월호 환경교육")
 			$("#prgrmgdNowDate").text(transformMonth()+"월호 환경교육 프로그램")
 			envedu.init();
