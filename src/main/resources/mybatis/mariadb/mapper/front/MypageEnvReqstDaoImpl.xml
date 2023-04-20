@@ -19,6 +19,9 @@
         , A.RFND_DMND_AMT
         , A.RFND_AMT
         , A.MDFCN_DT
+        , A.RVW_CN
+        , A.RVW_SCR
+        , A.RVW_DT
         , CASE
         WHEN A.STLM_STTS_CD = 161101 AND A.APLY_STTS_CD = 160101 THEN '' /* 입금대기 - 예약신청 */
         WHEN A.STLM_STTS_CD = 161101 AND A.APLY_STTS_CD = 160103 THEN A.RSVT_CNCL_RSN /* 입금대기 - 예약취소 - 예약취소사유 */
@@ -132,6 +135,9 @@
              ,A.RSVT_CNCL_RSN
              ,A.RFND_REJECT_RSN
              ,A.CNCL_RSN_CD
+             ,A.RVW_CN
+             ,A.RVW_SCR
+             ,A.RVW_DT
              ,SUBSTRING_INDEX(SUBSTRING_INDEX(A.APLCNT_EML, '@', 1), '@', -1) AS APLCNT_EML_ID
              ,SUBSTRING_INDEX(SUBSTRING_INDEX(A.APLCNT_EML, '@', 2), '@', -1) AS APLCNT_EML_DOMAIN
              ,A1.CD_NM AS APLY_STTS_CD_NM
@@ -498,6 +504,19 @@
           AND A.APLYID = #{aplyid}
     </select>
 
+    <!-- 후기확인 기능 -->
+    <select id="selectRwvInfo" resultType="com.kbrainc.plum.front.mypage.mypageEnvReqst.model.MypageEnvReqstVo">
+        /* MypageEnvReqstDao.selectRwvInfo */
+        SELECT
+            RVW_CN,
+            RVW_SCR,
+            RVW_DT
+        FROM TB_FCL_SPCE_APLY A
+        WHERE
+            1=1
+          AND A.APLYID = #{aplyid}
+    </select>
+
     <!-- 예약 등록(공간 예약) -->
     <update id="insertRsn" parameterType="com.kbrainc.plum.front.mypage.mypageEnvReqst.model.MypageEnvReqstVo" keyProperty="userid">
         /* MypageEnvReqstDao.insertRsn */
@@ -511,87 +530,27 @@
         WHERE APLYID = #{aplyid}
     </update>
 
-    <!-- 상태변경이력 추가 -->
-    <insert id="insertHstry" parameterType="ResveReqstVo" keyProperty="userid">
-        /* ResveReqstDao.insertHstry */
-        INSERT INTO TB_FCL_SPCE_APLY_HSTRY(
-                                           APLYID
-                                          ,RCPT_NO
-                                          ,APLCNTID
-                                          ,INSTID
-                                          ,APLCNT_NM
-                                          ,APLCNT_MOBLPHON
-                                          ,APLCNT_EML
-                                          ,NOPE_ADULT
-                                          ,NOPE_CHIL
-                                          ,NOPE_INFNT
-                                          ,UTZTN_PRPS
-                                          ,AMT
-                                          ,DPST_AMT
-                                          ,RFND_DMND_AMT
-                                          ,RFND_AMT
-                                          ,STLM_MTHD_CD
-                                          ,DPST_BACNT
-                                          ,PYR_NM
-                                          ,APLY_DT
-                                          ,DPST_DE
-                                          ,DPST_IDNTY_DT
-                                          ,CNCL_DT
-                                          ,RFND_DMND_DT
-                                          ,RFND_DE
-                                          ,RFND_CMPTN_DT
-                                          ,RFND_BANK_CD
-                                          ,RFND_BACNT
-                                          ,RFND_PYR_NM
-                                          ,APLY_STTS_CD
-                                          ,STLM_STTS_CD
-                                          ,CNCL_RSN_CD
-                                          ,RSVT_REJECT_RSN
-                                          ,RSVT_CNCL_RSN
-                                          ,RFND_REJECT_RSN
-                                          ,MDFCN_DT
-                                          ,MDFRID
-                                          ,REG_DT
-                                          ,RGTRID
-        )
-        SELECT APLYID
-             ,RCPT_NO
-             ,APLCNTID
-             ,INSTID
-             ,APLCNT_NM
-             ,APLCNT_MOBLPHON
-             ,APLCNT_EML
-             ,NOPE_ADULT
-             ,NOPE_CHIL
-             ,NOPE_INFNT
-             ,UTZTN_PRPS
-             ,AMT
-             ,DPST_AMT
-             ,RFND_DMND_AMT
-             ,RFND_AMT
-             ,STLM_MTHD_CD
-             ,DPST_BACNT
-             ,PYR_NM
-             ,APLY_DT
-             ,DPST_DE
-             ,DPST_IDNTY_DT
-             ,CNCL_DT
-             ,RFND_DMND_DT
-             ,RFND_DE
-             ,RFND_CMPTN_DT
-             ,RFND_BANK_CD
-             ,RFND_BACNT
-             ,RFND_PYR_NM
-             ,APLY_STTS_CD
-             ,STLM_STTS_CD
-             ,CNCL_RSN_CD
-             ,RSVT_REJECT_RSN
-             ,RSVT_CNCL_RSN
-             ,RFND_REJECT_RSN
-             ,MDFCN_DT
-             ,MDFRID
-             ,NOW()
-             ,#{user.userid}
-        FROM TB_FCL_SPCE_APLY WHERE APLYID = #{aplyid}
-    </insert>
+    <!-- 후기 작성 기능 -->
+    <update id="insertRvw" parameterType="com.kbrainc.plum.front.mypage.mypageEnvReqst.model.MypageEnvReqstVo" keyProperty="aplyid">
+        /* MypageEnvReqstDao.insertRvw */
+        UPDATE TB_FCL_SPCE_APLY SET
+            RVW_CN                    = #{rvwCn}
+          ,RVW_SCR                    = #{rvwScr}
+          ,RVW_DT                    = NOW()
+          ,MDFRID                 = #{user.userid}
+          ,MDFCN_DT                 = NOW()
+        WHERE APLYID = #{aplyid}
+    </update>
+
+    <!-- 후기 삭제 기능 -->
+    <update id="deleteRvw" parameterType="com.kbrainc.plum.front.mypage.mypageEnvReqst.model.MypageEnvReqstVo" keyProperty="aplyid">
+        /* MypageEnvReqstDao.deleteRvw */
+        UPDATE TB_FCL_SPCE_APLY SET
+            RVW_CN                    = null
+          ,RVW_SCR                    = 0
+          ,RVW_DT                    = null
+          ,MDFRID                 = #{user.userid}
+          ,MDFCN_DT                 = NOW()
+        WHERE APLYID = #{aplyid}
+    </update>
 </mapper>

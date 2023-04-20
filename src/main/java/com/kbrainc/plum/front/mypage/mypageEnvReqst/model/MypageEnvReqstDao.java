@@ -80,6 +80,17 @@ public interface MypageEnvReqstDao {
     public MypageEnvReqstVo selectDpstInfo(MypageEnvReqstVo mypageEnvReqstVo) throws Exception;
 
     /**
+     * 후기확인 기능
+     *
+     * @Title : selectRwvInfo
+     * @Description : 후기확인 기능
+     * @param mypageEnvReqstVo 환경교육시설 예약 객체
+     * @throws Exception 예외
+     * @return MypageEnvReqstVo
+     */
+    public MypageEnvReqstVo selectRwvInfo(MypageEnvReqstVo mypageEnvReqstVo) throws Exception;
+
+    /**
      * 환경교육시설 예약 등록(시설 예약)
      *
      * @Title : insertResveEnvFclSpceAply
@@ -144,6 +155,28 @@ public interface MypageEnvReqstDao {
      * @return int
      */
     public int insertRsn(MypageEnvReqstVo mypageEnvReqstVo) throws Exception;
+
+    /**
+     * 후기 작성 기능
+     *
+     * @Title : insertRvw
+     * @Description : 후기 작성 기능
+     * @param mypageEnvReqstVo 입금 전 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    public int insertRvw(MypageEnvReqstVo mypageEnvReqstVo) throws Exception;
+
+    /**
+     * 후기 삭제 기능
+     *
+     * @Title : deleteRvw
+     * @Description : 후기 삭제 기능
+     * @param mypageEnvReqstVo 입금 전 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    public int deleteRvw(MypageEnvReqstVo mypageEnvReqstVo) throws Exception;
 
     /**
      * 예약 신청 취소 처리

@@ -132,6 +132,18 @@ public interface ReqMngService {
     int updateSlctnSttsCd(String[] aplyids) throws Exception;
     
     /**
+    * 신청등록 
+    *
+    * @Title : insertReqInfo
+    * @Description : TODO
+    * @param reqUserVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int insertReqInfo(ReqUserVo reqUserVo) throws Exception;
+    
+    /**
     * 신청정보 수정. 
     *
     * @Title : updateReqInfo

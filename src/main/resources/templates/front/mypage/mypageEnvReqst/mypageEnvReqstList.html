@@ -50,21 +50,7 @@
         <div id="list-area" class="card-list card-list-n3">
         </div>
 
-        <div class="pagination" aria-label="pagination">
-            <button type="button" class="first" title="처음"></button>
-            <button type="button" class="prev" title="이전"></button>
-            <button type="button" class="active" title="현재 페이지">1</button>
-            <button type="button">2</button>
-            <button type="button">3</button>
-            <button type="button">4</button>
-            <button type="button">5</button>
-            <button type="button">6</button>
-            <button type="button">7</button>
-            <button type="button">8</button>
-            <button type="button">9</button>
-            <button type="button">10</button>
-            <button type="button" class="next" title="다음"></button>
-            <button type="button" class="last" title="마지막"></button>
+        <div class="pagination" aria-label="pagination" id="pagination">
         </div>
 
     </div>
@@ -74,7 +60,7 @@
         <input type="hidden" id="rsvtdeid" name="rsvtdeid" value="0">
         <input type="hidden" id="pageNumber" name="pageNumber" value="1">
         <input type="hidden" id="orderField" name="orderField" value="APLYID">
-        <input type="hidden" id="rowPerPage" name="rowPerPage" value="10"/>
+        <input type="hidden" id="rowPerPage" name="rowPerPage" value="9"/>
     </form>
 
     <!-- layerpopup -->
@@ -91,6 +77,20 @@
         </div>
     </div>
 
+    <!-- layerpopup -->
+    <div class="layer-popup layer-large" data-layer-id="insertRvwPopup">
+        <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+        <div class="layer-wrap" id="insertRvwPopup">
+        </div>
+    </div>
+
+    <!-- layerpopup -->
+    <div class="layer-popup layer-large" data-layer-id="selectRvwPopup">
+        <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+        <div class="layer-wrap" id="selectRvwPopup">
+        </div>
+    </div>
+
     <script th:inline="javascript">
         var listUrl = "/front/mypage/mypageEnvReqst/selectMypageEnvReqstList.do";
         var viewUrl = '/front/mypage/mypageEnvReqst/mypageResveEnvView.html';
@@ -100,6 +100,8 @@
         // 사유확인 팝업
         var rsnPopupUrl = "/front/mypage/mypageEnvReqst/rsnPopup.html";
         var dpstInfoPopupUrl = "/front/mypage/mypageEnvReqst/dpstInfoPopup.html";
+        var insertRvwPopupUrl = "/front/mypage/mypageEnvReqst/insertRvwPopup.html";
+        var selectRvwPopupUrl = "/front/mypage/mypageEnvReqst/selectRvwPopup.html";
 
         $(function () {
             selectEnvReqstList();
@@ -179,7 +181,6 @@
 
         function makeListHtml(list) {
             var html = "";
-            console.log(list);
             if (list == null || list.length <= 0) {
                 html += `<div class="nodata"><p><span class="icon icon-notice bg-black9"></span>등록된 환경교육시설이 없습니다.</p></div>`;
             } else {
@@ -217,7 +218,11 @@
                             if( item.aplySttsCd == '160102' ){
                                 sttsTxt = '입금완료';
                                 sttsBgColor = 'bg-blue';
-                                btnTxt = '후기작성';
+                                if( item.rvwCn != null && item.rvwCn != '' ){
+                                    btnTxt = '작성완료';
+                                }else{
+                                    btnTxt = '후기작성';
+                                }
                             }else{
                                 sttsTxt = '';
                                 sttsBgColor = 'bg-blue';
@@ -272,7 +277,7 @@
                             html += '<button type="button" class="btn-small btn-outline-blue" onclick="fn_openPopup('+item.aplyid+');">'+btnTxt+'</button>\n';
                         }else if( btnTxt == '후기작성' ){
                             html += '<button type="button" class="btn-small btn-outline-blue" onclick="fn_openInsertRvwPopup('+item.aplyid+');">'+btnTxt+'</button>\n';
-                        }else if( btnTxt == '후기확인' ){
+                        }else if( btnTxt == '작성완료' ){
                             html += '<button type="button" class="btn-small btn-outline-blue" onclick="fn_openSelectRvwPopup('+item.aplyid+');">'+btnTxt+'</button>\n';
                         }
 
@@ -305,11 +310,19 @@
             });
         }
         function fn_openInsertRvwPopup(aplyid){
-            alert('확인중입니다.');
+            $("#insertRvwPopup").load(insertRvwPopupUrl+"?aplyid="+aplyid, function(response, status, xhr) {
+                if (status == "success") {
+                    layerPopup.open({target:'insertRvwPopup'});
+                }
+            });
         }
 
         function fn_openSelectRvwPopup(aplyid){
-            alert('확인중입니다.');
+            $("#selectRvwPopup").load(selectRvwPopupUrl+"?aplyid="+aplyid, function(response, status, xhr) {
+                if (status == "success") {
+                    layerPopup.open({target:'selectRvwPopup'});
+                }
+            });
         }
 
         function moveToInsertForm() {
@@ -319,7 +332,6 @@
         }
 
         function moveToView(aplyid, rsvtdeid) {
-            console.log($(this));
             var f = document.forms.searchForm;
             f.aplyid.value = aplyid;
             f.rsvtdeid.value = rsvtdeid;

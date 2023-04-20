@@ -1,12 +1,16 @@
 package com.kbrainc.plum.mng.rcpmnyBfe.service;
 
-import com.kbrainc.plum.mng.rcpmnyBfe.model.RcpmnyBfeDao;
-import com.kbrainc.plum.mng.rcpmnyBfe.model.RcpmnyBfeVo;
-import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import com.kbrainc.plum.mng.rcpmnyBfe.model.RcpmnyBfeDao;
+import com.kbrainc.plum.mng.rcpmnyBfe.model.RcpmnyBfeVo;
+import com.kbrainc.plum.mng.resveReqst.model.ResveReqstDao;
+import com.kbrainc.plum.mng.resveReqst.model.ResveReqstVo;
+import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
 * 입금 전 서비스 구현 클래스
@@ -28,6 +32,9 @@ public class RcpmnyBfeServiceImpl extends PlumAbstractServiceImpl implements Rcp
     
     @Autowired
     private RcpmnyBfeDao rcpmnyBfeDao;
+    
+    @Autowired
+    private ResveReqstDao resveReqstDao;
     
     /**
     * 입금 전 목록 조회
@@ -81,8 +88,17 @@ public class RcpmnyBfeServiceImpl extends PlumAbstractServiceImpl implements Rcp
      * @return int
      */
     @Override
+    @Transactional
     public int updateDsptCheck(RcpmnyBfeVo rcpmnyBfeVo) throws Exception {
-        return rcpmnyBfeDao.updateDsptCheck(rcpmnyBfeVo);
+        
+        int resInt = 0 ;
+        resInt += rcpmnyBfeDao.updateDsptCheck(rcpmnyBfeVo);
+        ResveReqstVo resveReqstVo = new ResveReqstVo();
+        // 상태변경이력 추가
+        resveReqstVo.setAplyid(rcpmnyBfeVo.getAplyid());
+        resveReqstVo.setUser(rcpmnyBfeVo.getUser());
+        resInt += resveReqstDao.insertHstry(resveReqstVo);
+        return resInt; 
     }
 
     /**
@@ -95,7 +111,29 @@ public class RcpmnyBfeServiceImpl extends PlumAbstractServiceImpl implements Rcp
      * @return int
      */
     @Override
+    @Transactional
     public int updateResveCancel(RcpmnyBfeVo rcpmnyBfeVo) throws Exception {
-        return rcpmnyBfeDao.updateResveCancel(rcpmnyBfeVo);
+        
+        int resInt = 0 ;
+        resInt += rcpmnyBfeDao.updateResveCancel(rcpmnyBfeVo);
+        ResveReqstVo resveReqstVo = new ResveReqstVo();
+        // 상태변경이력 추가
+        resveReqstVo.setAplyid(rcpmnyBfeVo.getAplyid());
+        resveReqstVo.setUser(rcpmnyBfeVo.getUser());
+        resInt += resveReqstDao.insertHstry(resveReqstVo);
+        return resInt; 
+    }
+    /**
+     * 현재 해당 신청건의 예약 일정중 진행중인 예약이 있는지 확인
+     *
+     * @Title : isThereResveNow
+     * @Description : 현재 해당 신청건의 예약 일정중 진행중인 예약이 있는지 확인
+     * @param rcpmnyBfeVo 입금 전 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    @Override
+    public String isThereResveNow(RcpmnyBfeVo rcpmnyBfeVo) throws Exception{
+        return rcpmnyBfeDao.isThereResveNow(rcpmnyBfeVo);
     }
 }
