@@ -34,6 +34,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.kbrainc.plum.cmm.idntyVrfctn.model.IdntyVrfctnSuccessVo;
+import com.kbrainc.plum.cmm.idntyVrfctn.service.IdntyVrfctnService;
 import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.rte.model.DrmncyInfoVo;
 import com.kbrainc.plum.rte.model.RoleInfoVo;
@@ -66,6 +68,9 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     @Autowired
     private CommonService commonService;
     
+    @Autowired
+    private IdntyVrfctnService idntyVrfctnService;
+    
     @Value("${system.person.roleid}")
     private String sysPersonRoleid;
     
@@ -86,6 +91,8 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         
         ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpServletRequest request = attr.getRequest();
+        
+        
         
         if (authentication instanceof UsernamePasswordAuthenticationToken) {
             loginid = authentication.getName();
@@ -136,7 +143,37 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         if ("A".equals(sysSeCd)) { // 관리자 사이트
             try {
                 if ("G".equals(loginType)) { // 아이디 비밀번호 방식
+                    
+                    //String ci = null;
+                    String moblphon = null;
+                    boolean isAllowedIp = true;
+                    if (!CommonUtil.allowedIp.contains(CommonUtil.getClientIp(request))) { // 허가되지않은 IP에서 접속
+                        isAllowedIp = false;
+                        IdntyVrfctnSuccessVo result = null;
+                        try {
+                            result = idntyVrfctnService.decodeIdntyVrfctnSuccessData(null, request.getParameter("encodeData"));
+                        } catch (Exception e) {
+                            request.setAttribute("message", "본인인증 인코딩 실패. 고객센터에 문의 해주십시오.");
+                            throw new InternalAuthenticationServiceException("Login Error !!");
+                        }
+                                   
+                        if (!"".equals(result.getSMessage())) { // 본인인증모듈 인코딩 실패
+                            request.setAttribute("message", result.getSMessage());
+                            throw new InternalAuthenticationServiceException("Login Error !!");
+                        } else {                
+                            //ci = result.getSConnInfo();
+                            moblphon = result.getSMobileNo();
+                        }
+                    }
+                    
                     resultMap = securedObjectService.selectUserLoginInfo(loginid); // 사용자 로그인 정보 조회
+                    
+                    if (!isAllowedIp) { // 허가되지않은 IP에서 접속
+                        if (!moblphon.equals(resultMap.get("MOBLPHON"))) { // 휴대폰번호가 다르면(관리자에서 회원등록시 CI가 없으므로 휴대폰번호롤 비교)
+                            request.setAttribute("message", "로그인 계정과 본인인증 결과가 일치하지 않습니다.");
+                            throw new InternalAuthenticationServiceException("Login Error !!");
+                        }
+                    }
                 } else if ("S".equals(loginType)) { // SSO
                     resultMap = securedObjectService.selectUserLoginInfoForSSO(userid); // SSO 사용자 로그인 정보 조회
                     loginid = (String) resultMap.get("ACNT");

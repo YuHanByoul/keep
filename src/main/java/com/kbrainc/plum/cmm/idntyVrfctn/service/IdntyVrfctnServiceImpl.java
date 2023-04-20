@@ -60,7 +60,7 @@ public class IdntyVrfctnServiceImpl extends PlumAbstractServiceImpl implements I
         String prefix = "";
         String postfix = "";
         String type = request.getParameter("type"); // 회원가입유형(P:개인회원, C:어린이회원, I:기관회원)
-        String kind = request.getParameter("kind"); // 본인인증종류(auth:회원가입_본인인증, info:회원가입_회원정보입력)
+        String kind = request.getParameter("kind"); // 본인인증종류(auth:회원가입_본인인증, info:회원가입_회원정보입력 또는 관리자로그인본인인증)
         
         if (type != null) {
             prefix = type + "_";
