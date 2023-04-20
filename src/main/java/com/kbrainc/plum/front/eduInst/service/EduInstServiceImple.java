@@ -4,6 +4,7 @@ import javax.annotation.Resource;
 
 import org.apache.ibatis.type.Alias;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.front.eduInst.model.EduInstDao;
 import com.kbrainc.plum.front.eduInst.model.EduInstVo;
@@ -91,6 +92,57 @@ public class EduInstServiceImple extends PlumAbstractServiceImpl implements EduI
 	public int updateAplyInfo(EduInstVo eduInstVo) throws Exception {
 		int ret=0;
 		ret+=eduInstDao.updateEnvEduInst(eduInstVo);
+		return ret;
+	}
+
+	/**
+	* 운영계획 조회
+	*
+	* @Title : selectOperPlan
+	* @Description : 운영계획 조회
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return EduInstVo
+	*/
+	@Override
+	public EduInstVo selectOperPlan(EduInstVo eduInstVo) throws Exception {
+		return eduInstDao.selectOperPlan(eduInstVo);
+	}
+
+	/**
+	* 운영계획 등록
+	*
+	* @Title : insertOperPlan
+	* @Description : 운영계획 등록
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	@Override
+	@Transactional
+	public int insertOperPlan(EduInstVo eduInstVo) throws Exception{
+		int ret=0;
+		ret+=eduInstDao.insertOperPlan(eduInstVo);
+		return ret;
+	}
+
+	/**
+	* 운영계획 수정
+	*
+	* @Title : updateOperPlan
+	* @Description : 운영계획 수정
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	@Override
+	@Transactional
+	public int updateOperPlan(EduInstVo eduInstVo) throws Exception{
+		int ret=0;
+		ret+=eduInstDao.insertOperPlan(eduInstVo);
 		return ret;
 	}
 

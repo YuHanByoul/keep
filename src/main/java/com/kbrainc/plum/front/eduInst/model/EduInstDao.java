@@ -68,4 +68,40 @@ public interface EduInstDao {
 	*/
 	public int updateEnvEduInst(EduInstVo eduInstVo) throws Exception;
 
+	/**
+	* 운영계획 조회
+	*
+	* @Title : selectOperPlan
+	* @Description : 운영계획 조회
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return EduInstVo
+	*/
+	public EduInstVo selectOperPlan(EduInstVo eduInstVo) throws Exception;
+
+	/**
+	* 운영계획 등록
+	*
+	* @Title : insertOperPlan
+	* @Description : 운영계획 등록
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertOperPlan(EduInstVo eduInstVo) throws Exception;
+
+	/**
+	* 운영계획 수정
+	*
+	* @Title : updateOperPlan
+	* @Description : 운영계획 수정
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int updateOperPlan(EduInstVo eduInstVo) throws Exception;
+
 }
