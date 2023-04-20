@@ -189,6 +189,7 @@ public class DelvryController {
     @RequestMapping(value = "/mng/delvry/downloadPcntstListExcel.do")
     @ResponseBody
     public void downloadPcntstListExcel(PcntstVo pcntstVo, HttpServletResponse response) throws Exception {
+        pcntstVo.setRowPerPage(0);
         pcntstVo.setOrderField("PRGRS_STTS_ORDR");
         pcntstVo.setOrderDirection(ORDER_DIRECTION.asc);
         List<PcntstVo> result = delvryService.selectPcntstList(pcntstVo);
