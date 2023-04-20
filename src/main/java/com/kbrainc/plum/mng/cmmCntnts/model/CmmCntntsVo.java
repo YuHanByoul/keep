@@ -41,38 +41,11 @@ public class CmmCntntsVo extends ParentRequestVo {
     private String ordr;
     private String cn;
     private String colspan;
+    private String chkYn;
     
     private Integer cntntsid;
     private Integer checkid;
     private Integer chklstid;
-    
-    private String cntntsYn1;
-    private String cntntsYn2;
-    private String cntntsYn3;
-    private String cntntsYn4;
-    private String webAcsbtYn1;
-    private String webAcsbtYn2;
-    private String webAcsbtYn3;
-    private String cprghtYn1;
-    private String cprghtYn2;
-    private String cprghtYn3;
-    private String prvcYn;
-    private String rghtOfPrtrtYn;
-    private String etcYn;
-    
-    private String cntntsCn1;
-    private String cntntsCn2;
-    private String cntntsCn3;
-    private String cntntsCn4;
-    private String webAcsbtCn1;
-    private String webAcsbtCn2;
-    private String webAcsbtCn3;
-    private String cprghtCn1;
-    private String cprghtCn2;
-    private String cprghtCn3;
-    private String prvcCn;
-    private String rghtOfPrtrtCn;
-    private String etcCn;
 
     /** 수정_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
