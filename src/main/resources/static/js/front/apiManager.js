@@ -204,7 +204,6 @@ var apiManager = {
         new daum.Postcode({
             oncomplete: function(data) {
                 apiManager.getTMStdrCrdnt(data.bname).then(function(response) {
-                    console.log(response)
                     if(main.envfldCd != "104103") return false;
                     if(response.totalCount == 0) {
                         main.setWidgetStatus("error", null, "검색한 주소와 가까운 측정소가 없습니다.<br/>주소를 다시 검색해 주세요.");
@@ -227,7 +226,6 @@ var apiManager = {
     }
     
     , getTMStdrCrdnt: function(umdName) {
-        console.log("umdName: " + umdName)
         return new Promise(function(resolve, reject) {
             $.ajax({
                 url: "/front/api/getTMStdrCrdnt.do"
@@ -467,8 +465,6 @@ var apiManager = {
             , success: function(result) {
                 try {
                     if(main.envfldCd != "104105") return false;
-                    //console.log(result.response.body.Total_Count);
-                    //console.log(result);
                 } catch {
                     //console.log("서비스 제공상태가 원할하지 않습니다.");
                 }
