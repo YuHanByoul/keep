@@ -2,6 +2,11 @@
                 <div class="col-12">
 					<form name="searchDtlFrm" id="searchDtlFrm" action="@{/}" onsubmit="return false;" class="card">
 					<input type="hidden" id="prgrmSchdlid" name="prgrmSchdlid" th:value="${infntAplyVo.prgrmSchdlid}">
+                    <input type="hidden" id="searchStartDeDt" name="searchStartDeDt" value="" />
+                    <input type="hidden" id="searchEndDeDt" name="searchEndDeDt" value="" />
+                    <input type="hidden" id="searchStartRcptDt" name="searchStartRcptDt" value="" />
+                    <input type="hidden" id="searchEndRcptDt" name="searchEndRcptDt" value="" />
+					
 						<!-- 필터 부분 -->
 						<div class="card-block-small">
 							<!-- 키워드 filter -->
@@ -32,6 +37,23 @@
 								</div>
                                 <div class="col-lg-3 col-md-6 mb-3">
                                     <div class="mb-0 form-group row">
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterSearchSelectDate"><strong>교육일자</strong></label>
+                                        <div class="col-sm-12">
+                                            <input type="text" id="searchDeDt" name="searchDeDt" class="form-control form-control-sm" value="">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterSearchSelectDate"><strong>접수일자</strong></label>
+                                        <div class="col-sm-12">
+                                            <input type="text" id="searchRcptDt" name="searchRcptDt" class="form-control form-control-sm" value="">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+<!--                                 <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
                                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchDeStartDt"><strong>교육일자-검색시작일</strong></label>
                                         <div class="col-sm-12">
                                             <input class="form-control form-control-sm" type="date" name="searchDeStartDt" id="searchDeStartDt">
@@ -45,30 +67,30 @@
                                             <input class="form-control form-control-sm" name="searchDeEndDt" id="searchDeEndDt" type="date">
                                         </div>
                                     </div>
-                                </div>                                
+                                </div>       -->                          
 							</div>
-							<div class="row">
-                                <div class="col-lg-3 col-md-6 mb-3">
-                                    <div class="mb-0 form-group row">
-                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchRcptStartDt"><strong>접수일자-검색시작일</strong></label>
-                                        <div class="col-sm-12">
-                                            <input class="form-control form-control-sm" type="date" name="searchRcptStartDt" id="searchRcptStartDt">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 mb-3">
-                                    <div class="mb-0 form-group row">
-                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchRcptEndDt"><strong>접수일자 -검색종료일</strong></label>
-                                        <div class="col-sm-12">
-                                            <input class="form-control form-control-sm" name="searchRcptEndDt" id="searchRcptEndDt" type="date">
-                                        </div>
-                                    </div>
-                                </div>							
-                            </div>
+<!-- 							<div class="row"> -->
+<!--                                 <div class="col-lg-3 col-md-6 mb-3"> -->
+<!--                                     <div class="mb-0 form-group row"> -->
+<!--                                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchRcptStartDt"><strong>접수일자-검색시작일</strong></label> -->
+<!--                                         <div class="col-sm-12"> -->
+<!--                                             <input class="form-control form-control-sm" type="date" name="searchRcptStartDt" id="searchRcptStartDt"> -->
+<!--                                         </div> -->
+<!--                                     </div> -->
+<!--                                 </div> -->
+<!--                                 <div class="col-lg-3 col-md-6 mb-3"> -->
+<!--                                     <div class="mb-0 form-group row"> -->
+<!--                                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchRcptEndDt"><strong>접수일자 -검색종료일</strong></label> -->
+<!--                                         <div class="col-sm-12"> -->
+<!--                                             <input class="form-control form-control-sm" name="searchRcptEndDt" id="searchRcptEndDt" type="date"> -->
+<!--                                         </div> -->
+<!--                                     </div> -->
+<!--                                 </div>							 -->
+<!--                             </div> -->
 							<!-- //키워드 filter -->
 							<!-- 키워드 filter-btn -->
 							<div class="mt-1 p-t-20 text-center border-top">
-								<button class="btn btn-disabled m-r-5" onclick="fn_init()">초기화</button>
+								<button type="button" class="btn btn-disabled m-r-5" onclick="fn_init()">초기화</button>
 								<button type="submit" class="btn btn-primary" onclick="fn_searchDtlForm()">검색</button>
 							</div>
 						</div>
@@ -104,6 +126,7 @@
 <div class="modal fade" id="dwnldDsctnPopup" aria-hidden="true" data-bs-backdrop="static"></div>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script type="text/javascript" src="/js/common/jsgrid-master/dist/jsgrid.min.js"></script>
+
 <script th:inline="javascript">
 var cellEditMode = false;
 	/* 엑셀 다운로드 */
@@ -164,6 +187,36 @@ var cellEditMode = false;
 	$(function() {
 		gridHelper2 = new GridHelper('jsDetailGrid', 'contentDetailPanel');
 		writeJsDetailGridData();
+        $("#searchDeDt").daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                format: "YYYY-MM-DD",
+            },
+        });
+        $("#searchDeDt").on('apply.daterangepicker', function(ev, picker) {
+            $("#searchStartDeDt").val(picker.startDate.format('YYYY-MM-DD'));
+            $("#searchEndDeDt").val(picker.endDate.format('YYYY-MM-DD'));
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+        });
+
+        $("#searchDeDt").on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
+        });     		
+        $("#searchRcptDt").daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                format: "YYYY-MM-DD",
+            },
+        });
+        $("#searchRcptDt").on('apply.daterangepicker', function(ev, picker) {
+            $("#searchStartRcptDt").val(picker.startDate.format('YYYY-MM-DD'));
+            $("#searchEndRcptDt").val(picker.endDate.format('YYYY-MM-DD'));
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+        });
+
+        $("#searchRcptDt").on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
+        });     		
 	});
 
 	function fn_goInsertForm() {
@@ -179,10 +232,13 @@ var cellEditMode = false;
 		$("#searchDtlFrm #searchType").val('');
 		$("#searchDtlFrm #searchKeyword").val('');
 		$("#searchDtlFrm #searchSttsCd").val('');
-		$("#searchDtlFrm #searchDeStartDt").val('');
-		$("#searchDtlFrm #searchDeEndDt").val('');
-		$("#searchDtlFrm #searchRcptStartDt").val('');
-		$("#searchDtlFrm #searchRcptEndDt").val('');
+        $("#searchDeDt").val('');
+        $("#searchStartDeDt").val('');
+        $("#searchEndDeDt").val('');
+        $("#searchRcptDt").val('');
+        $("#searchStartRcptDt").val('');
+        $("#searchEndRcptDt").val('');
+        cellEditMode = false;
 		gridHelper2.resetListContent();
 	}
 
@@ -265,7 +321,7 @@ var cellEditMode = false;
                               data : data,
                               success : function (data){
                                   if(data.result=="success"){
-                                      gridHelper1.resetListContent();
+                                      gridHelper2.resetListContent();
                                   }else{
                                       alert(data.msg);
                                   }
