@@ -24,7 +24,8 @@
            , CASE WHEN B.ADULT = 'Y' THEN '성인' END
            ) AS EDU_TARGET
           , B.WHOL_AGE
-          , CASE WHEN IFNULL(B.ETRFEE,0) > 0 THEN FORMAT(B.ETRFEE, '0') ELSE '무료' END ETRFEE
+          , CASE WHEN IFNULL(B.ETRFEE,0) > 0 THEN FORMAT(B.ETRFEE, '0') ELSE '무료' END ETRFEE_STR
+          , IFNULL(B.ETRFEE,0)    AS ETRFEE
           , GROUP_CONCAT(CD1.CD_NM) AS EDU_SBJCT_NM_LST    /*교육 주제*/
           , NVL(OPERFRMCD.CD_NM, '') AS CD_NM
           , A.MDFCN_DT
@@ -233,22 +234,24 @@
     <select id="selectPrgrmSchdlList" parameterType="front.dsgnPrgrmVo" resultType="front.dsgnPrgrmVo">
         /* front.DsgnPrgrmDao.selectPrgrmSchdlList*/
         SELECT
-            PRGRMID
-          , SCHDLID
-          , RND
-          , BGNG_HR
-          , BGNG_MNT
-          , END_HR
-          , END_MNT
+            A.PRGRMID
+          , B.SCHDLID
+          , B.RND
+          , B.BGNG_HR
+          , B.BGNG_MNT
+          , B.END_HR
+          , B.END_MNT
           , CONCAT(BGNG_HR, "시 ",  BGNG_MNT,"분 ~ ", END_HR, "시 ",  END_MNT, "분") AS SCHDL
-          , PRGRM_NM
-          , CRS
-          , REG_DT
-          , RGTRID
-          , MDFRID
+          , B.PRGRM_NM
+          , B.CRS
+          , B.REG_DT
+          , B.RGTRID
+          , B.MDFRID
         FROM
-            TB_ASS_PRGRM_SCHDL    /*ASS_프로그램_일정*/
-        WHERE PRGRMID = #{prgrmid}
+            TB_ASS_PRGRM A
+            LEFT OUTER JOIN
+            TB_ASS_PRGRM_SCHDL B ON A.PRGRMID = B.PRGRMID  /*ASS_프로그램_일정*/
+        WHERE A.PRGRMID = #{prgrmid}
     </select>
 
     <!-- 프로그램 운영일정 등록 -->
@@ -294,14 +297,16 @@
     <select id="selectPlanList" parameterType="front.dsgnPrgrmVo" resultType="front.dsgnPrgrmVo">
         /* front.DsgnPrgrmDao.selectPlanList */
         SELECT
-            PLANID
-          , PRGRMID
-          , PRGRM_NM
-          , SBSTN_PRGRM_NM
+            A.PRGRMID
+          , B.PLANID
+          , B.PRGRM_NM
+          , B.SBSTN_PRGRM_NM
         FROM
-            TB_ASS_EMRGCY_ACTN_PLAN
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+            TB_ASS_EMRGCY_ACTN_PLAN B ON A.PRGRMID = B.PRGRMID
         WHERE 1=1
-        AND PRGRMID = #{prgrmid}
+        AND A.PRGRMID = #{prgrmid}
     </select>
 
     <!-- 기관정보 조회 -->
@@ -327,7 +332,7 @@
           , SIGNGU.SIGNGU_NM
           , B.BRNO
           , B.RPRSV_NM
-          , B.TELNO
+          , B.TELNO    AS INST_CNTCT
           , B.FXNO
           , B.ZIP
           , B.ZIP      AS INST_ZIP

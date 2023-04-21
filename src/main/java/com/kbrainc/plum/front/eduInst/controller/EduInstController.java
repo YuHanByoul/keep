@@ -223,7 +223,33 @@ public class EduInstController {
 	* @return String
 	*/
 	@RequestMapping(value="/front/eduInst/operPlanOutlForm.html")
-	public String operPlanOutl(Model model, @UserInfo UserVo user) throws Exception {
+	public String operPlanOutl(EduInstVo eduInstVo, Model model, @UserInfo UserVo user) throws Exception {
+
+		EduInstVo planOutlInfo = null;
+
+		model.addAttribute("loginUserid", user.getUserid());
+		if(null != eduInstVo.getAplyid() && 0 != eduInstVo.getAplyid()) {
+			planOutlInfo = eduInstService.selectOperPlan(eduInstVo);
+
+			//첨부파일
+			if (!StringUtil.nvl(planOutlInfo.getAtchFilegrpid()).equals("") && !StringUtil.nvl(planOutlInfo.getAtchFilegrpid()).equals(0)) {
+	            FileVo fileVo = new FileVo();
+	            fileVo.setFilegrpid(planOutlInfo.getAtchFilegrpid());
+	            model.addAttribute("fileList", fileService.getFileList(fileVo));
+			} else {
+	            model.addAttribute("fileList", Collections.emptyList());
+	        }
+
+		}else {
+			//planOutlInfo  = eduInstService.selectplanOutlInfoForm(eduInstVo);
+			model.addAttribute("fileList", Collections.emptyList());
+		}
+
+		model.addAttribute("sidoList", commonService.selectCtprvnList());
+		model.addAttribute("planOutlInfo", planOutlInfo);
+
+		model.addAttribute("planOutlInfo", eduInstService.selectOperPlan(eduInstVo));
+
 		return "front/eduInst/operPlanOutlForm";
 	}
 
