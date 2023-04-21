@@ -133,7 +133,7 @@ public class EduInstController {
     /**
     * 신청정보 등록
     *
-    * @Title : insertChklstQitem
+    * @Title : insertAplyInfo
     * @Description : 신청정보 등록
     * @param eduInstVo
     * @param bindingResult
@@ -144,7 +144,7 @@ public class EduInstController {
     */
     @RequestMapping(value = "/front/eduInst/insertAplyInfo.do")
     @ResponseBody
-    public Map<String, Object> insertChklstQitem(@Valid EduInstVo eduInstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> insertAplyInfo(@Valid EduInstVo eduInstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
         if(bindingResult.hasErrors()) {
@@ -174,7 +174,7 @@ public class EduInstController {
     /**
      * 신청정보 수정
      *
-     * @Title : insertChklstQitem
+     * @Title : updateAplyInfo
      * @Description : 신청정보 수정
      * @param eduInstVo
      * @param bindingResult
@@ -185,7 +185,7 @@ public class EduInstController {
      */
     @RequestMapping(value = "/front/eduInst/updateAplyInfo.do")
     @ResponseBody
-    public Map<String, Object> updateChklstQitem(@Valid EduInstVo eduInstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> updateAplyInfo(@Valid EduInstVo eduInstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
     	Map<String, Object> resultMap = new HashMap<String, Object>();
 
     	if(bindingResult.hasErrors()) {
@@ -231,7 +231,7 @@ public class EduInstController {
 		if(null != eduInstVo.getAplyid() && 0 != eduInstVo.getAplyid()) {
 			planOutlInfo = eduInstService.selectOperPlan(eduInstVo);
 
-			//첨부파일
+			// 운영계획 첨부파일
 			if (!StringUtil.nvl(planOutlInfo.getAtchFilegrpid()).equals("") && !StringUtil.nvl(planOutlInfo.getAtchFilegrpid()).equals(0)) {
 	            FileVo fileVo = new FileVo();
 	            fileVo.setFilegrpid(planOutlInfo.getAtchFilegrpid());
@@ -241,7 +241,6 @@ public class EduInstController {
 	        }
 
 		}else {
-			//planOutlInfo  = eduInstService.selectplanOutlInfoForm(eduInstVo);
 			model.addAttribute("fileList", Collections.emptyList());
 		}
 
@@ -251,6 +250,89 @@ public class EduInstController {
 		model.addAttribute("planOutlInfo", eduInstService.selectOperPlan(eduInstVo));
 
 		return "front/eduInst/operPlanOutlForm";
+	}
+
+
+	/**
+	* 운영계획 개요 등록
+	*
+	* @Title : insertOperPlan
+	* @Description : 운영계획 개요 등록
+	* @param eduInstVo
+	* @param bindingResult
+	* @param user
+	* @return
+	* @throws Exception
+	* @return Map<String,Object>
+	*/
+	@RequestMapping(value = "/front/eduInst/insertOperPlan.do")
+    @ResponseBody
+    public Map<String, Object> insertOperPlan(@Valid EduInstVo eduInstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+
+        if(bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if(fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+
+        int retVal = 0;
+        eduInstVo.setUser(user);
+        retVal = eduInstService.insertOperPlan(eduInstVo);
+
+        if(retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("aplyid", eduInstVo.getAplyid());
+            resultMap.put("msg", "등록에 성공하였습니다");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "등록에 실패하였습니다");
+        }
+
+        return resultMap;
+    }
+
+	/**
+	* 운영계획개요 수정
+	*
+	* @Title : updateOperPlan
+	* @Description : 운영계획개요 수정
+	* @param eduInstVo
+	* @param bindingResult
+	* @param user
+	* @return
+	* @throws Exception
+	* @return Map<String,Object>
+	*/
+	@RequestMapping(value = "/front/eduInst/updateOperPlan.do")
+	@ResponseBody
+	public Map<String, Object> updateOperPlan(@Valid EduInstVo eduInstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+
+		if(bindingResult.hasErrors()) {
+			FieldError fieldError = bindingResult.getFieldError();
+			if(fieldError != null) {
+				resultMap.put("msg", fieldError.getDefaultMessage());
+			}
+			return resultMap;
+		}
+
+		int retVal = 0;
+		eduInstVo.setUser(user);
+		retVal = eduInstService.updateOperPlan(eduInstVo);
+
+		if(retVal > 0) {
+			resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+			resultMap.put("aplyid", eduInstVo.getAplyid());
+			resultMap.put("msg", "수정에 성공하였습니다");
+		} else {
+			resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+			resultMap.put("msg", "수정에 실패하였습니다");
+		}
+
+		return resultMap;
 	}
 
 	/**

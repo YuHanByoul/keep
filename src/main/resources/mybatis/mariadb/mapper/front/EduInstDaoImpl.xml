@@ -75,6 +75,7 @@
         LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN ADDR ON B.RGN_CD = ADDR.CTPRVN_CD
         LEFT OUTER JOIN TB_CMM_CD TYPE_CD ON B.INST_TYPE_CD = TYPE_CD.CD
         WHERE A.APLYID = #{aplyid}
+        AND A.STTS_CD = '248101'    /*작성중*/
     </select>
 
     <!-- 환경교육기관 등록 -->
@@ -164,21 +165,25 @@
     <select id="selectOperPlan" parameterType="front.EduInstVo" resultType="front.EduInstVo">
         /* EduInstDao.selectOperPlan*/
             SELECT
-                APLYID            /*신청아이디*/
-              , MAIN_BSNS         /*주요_사업*/
-              , OPER_MTHD         /*운영_방법*/
-              , OPER_PLAN         /*운영_계획*/
-              , MNG_PLAN          /*관리_계획*/
-              , BGT_PLAN          /*예산_계획*/
-              , EXPC_EFFECT       /*기대_효과*/
-              , ETC_DTA           /*기타_자료*/
-              , ATCH_FILEGRPID    /*첨부_파일그룹아이디*/
-              , MDFCN_DT          /*수정_일시*/
-              , MDFRID            /*수정자아이디*/
-              , REG_DT            /*등록_일시*/
-              , RGTRID            /*등록자아이디*/
-            FROM TB_SEE_OPER_PLAN
-            WHERE APLYID =#{aplyid}
+                A.APLYID            /*신청아이디*/
+              , B.MAIN_BSNS         /*주요_사업*/
+              , B.OPER_MTHD         /*운영_방법*/
+              , B.OPER_PLAN         /*운영_계획*/
+              , B.MNG_PLAN          /*관리_계획*/
+              , B.BGT_PLAN          /*예산_계획*/
+              , B.EXPC_EFFECT       /*기대_효과*/
+              , B.ETC_DTA           /*기타_자료*/
+              , B.ATCH_FILEGRPID    /*첨부_파일그룹아이디*/
+              , B.MDFCN_DT          /*수정_일시*/
+              , B.MDFRID            /*수정자아이디*/
+              , B.REG_DT            /*등록_일시*/
+              , B.RGTRID            /*등록자아이디*/
+            FROM
+                TB_SEE_ENV_EDU_INST A
+            LEFT OUTER JOIN
+                TB_SEE_OPER_PLAN B ON A.APLYID = B.APLYID
+            WHERE A.APLYID =#{aplyid}
+            AND   A.STTS_CD = '248101'    /*작성중*/
     </select>
 
      <!-- 운영계획 등록 -->
@@ -214,7 +219,7 @@
           , #{user.userid}
           , NOW()
           , #{user.userid}
-        (
+        )
     </insert>
 
     <!-- 운영계획 수정 -->

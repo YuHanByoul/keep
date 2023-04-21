@@ -249,8 +249,26 @@
                                 <td id="fileTd">
                                     <div class="form-input-file">
                                         <label class="form-input">
-                                            <input id="multiFileInput" type="file" class="blind" multiple="multiple" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부" maxcount="3"> <span class="btn-medium btn-gray">파일선택</span>
+                                            <input id="multiFileInput" type="file" class="blind" multiple="multiple" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부" maxcount="3">
+                                            <span class="btn-medium btn-gray">파일선택</span>
                                         </label>
+                                        <ul id="multipleFileUploadSuccess">
+                                            <th:block th:if="${eduPhotoFileList ne null}" th:each="file : ${eduPhotoFileList}">
+                                                <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}" th:id="${file.fileid}">
+                                                <span class="name">
+                                                    <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                                       th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                        [[${file.orginlFileNm}]]
+                                                    </a>
+                                                </span>
+                                                    <button type="button" class="file-delete" title="삭제" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                                            th:onclick="|javascript:deleteFile(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                        <span class="icon icon-circle-close"></span>
+                                                    </button>
+                                                </li>
+                                            </th:block>
+                                        </ul>
+                                <!--
                                         <div class="upload-response">
                                             <div id="multipleFileUploadError"></div>
                                             <div id="multipleFileUploadSuccess">
@@ -271,6 +289,7 @@
                                             </th:block>
                                             </div>
                                         </div>
+                                         -->
 
                                         <input type="hidden"  id = "eduPhotoFilegrpid" name = "eduPhotoFilegrpid" th:value="${(aplyInfo.eduPhotoFilegrpid == '' or aplyInfo.eduPhotoFilegrpid == null) ? 0 : aplyInfo.eduPhotoFilegrpid}"/>
                                         <input type="text" id="chkFile" name="chkFile" value="" style="display: none;">
@@ -504,7 +523,7 @@
                     <div class="btn-wrap">
                         <div class="center">
                             <button type="button" class="btn-medium btn-gray"  onclick="goPrev()">이전</button>
-                            <button type="button" class="btn-medium btn-green" onclick="goNext()">다음</button>
+                            <button type="button" class="btn-medium btn-green" onclick="doSave('next')">다음</button>
                         </div>
                     </div>
                 </div>
@@ -662,6 +681,7 @@
             }
 
             function doSave(call){
+            	var sttsCd = $("#sttsCd").val();
 
                 var url = ($("#dstnctnid").val() == null || $("#dstnctnid").val() == "" || $("#dstnctnid").val() == 0) ? insertUrl : updateUrl;
                 var param = {};
@@ -790,10 +810,12 @@
 
                     bChk =  validLst("plan",  "대처계획") ? bChk:false;
                     if(!bChk) return;
+
+
+                }else{
+                	if(!confirm("저장하시겠습니까?")) return;
                 }
 
-                if(!confirm("저장하시겠습니까?")) return;
-                eduPlc
                 $.ajax({
                     url : url,
                     type: 'POST',
