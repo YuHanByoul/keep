@@ -93,9 +93,9 @@
                                             </div>
                                         
                                         </li>
-                                        <li class="breadcrumb-linkcopy"><button type="button" title="링크 복사하기" onclick="copyUrl(event)"></button></li>
+                                        <li class="breadcrumb-linkcopy"><button type="button" title="링크 복사하기" th:data-url="${#request.getRequestURL()}"></button></li>
                                     </ul>
-                                    <input type="text" id="currentPageUrl" style="position: absolute;width: 30px;height: 0px;bottom: 0;left: 0;opacity: 0;" th:value="${#request.getRequestURL()}">
+                                    <input type="hidden" id="currentPageUrl" th:value="${#request.getRequestURL()}">
                                     <input type="hidden" id="currentPageNavi" th:value="|${session.site.siteNm} / 회원가입|">
                                 </div>
                             </div>
@@ -127,7 +127,14 @@
     </div>
     <!-- //wrap -->
 
-
+    <script>
+        $(document).on("click", ".breadcrumb-linkcopy button", function () {
+            const dataUrl = this.dataset.url;
+            window.navigator.clipboard.writeText(dataUrl).then(() => {
+                alert("주소가 복사되었습니다.\n원하는 곳에 붙여넣기 해주세요.");
+            });
+        })
+    </script>
     
 </body>
 </html>

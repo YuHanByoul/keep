@@ -90,19 +90,6 @@ jQuery(function(){
     });
 });
 
-// url 복사하는 함수
-function copyUrl(e) {
-  if (!document.queryCommandSupported("copy")) {
-    return alert("복사 기능이 지원되지 않는 브라우저입니다.");
-  }
-
-  jQuery("#currentPageUrl").select();
-  document.execCommand('copy');
-  e.target.focus();
-
-  alert("주소가 복사되었습니다.\n원하는 곳에 붙여넣기 해주세요.");
-}
-
 function o(e) {
     if (null == e || "" == e)
         return "";
@@ -290,4 +277,14 @@ function msgAddBtn(){
                 .find('.open-msg-btn').data({'trgt-id':trgtId}).end()
         );
     });
+}
+
+/*
+게시글 수 변경
+rowPerPage : 게시글 수
+listFunc : 리스트 로드 함수
+*/
+function onChangePageSize(rowPerPage, listFunc) {
+    $("#rowPerPage").val(rowPerPage);
+    listFunc();
 }

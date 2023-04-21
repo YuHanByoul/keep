@@ -141,4 +141,13 @@ public interface EduSareaService {
      */
     public List<EduSareaVo> selectAddrSignguList(EduSareaVo eduSareaVo) throws Exception;        
     
+    /**
+    * 등록된 지역코드 목록 조회
+    *
+    * @Title : selectDplctCtprvnCdList
+    * @Description : 등록된 지역코드 목록 조회
+    * @throws Exception 예외
+    * @return List<String>
+    */
+    public List<String> selectDplctCtprvnCdList(EduSareaVo eduSareaVo) throws Exception;    
 }

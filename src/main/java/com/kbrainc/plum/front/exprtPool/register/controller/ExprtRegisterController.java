@@ -114,15 +114,25 @@ public class ExprtRegisterController {
             if (exprtStts != null) {
                 response.setContentType("text/html;charset=UTF-8");
                 PrintWriter writer = response.getWriter();
-                if (exprtStts.equals("134102")) {
-                    /* 상태코드 : 신청 */
-                    writer.print("<script>alert('전문가 심사가 진행중입니다.');location.href='/front/exprtPool/registerStep1.html';</script>");
-                } else if (exprtStts.equals("134101") || exprtStts.equals("134104")) {
-                    /* 상태코드 : 작성중 또는 반려 */
-                    writer.print("<script>alert('작성중인 데이터가 존재합니다.');location.href='/front/exprtPool/registerStep1.html';</script>");
-                } else {
-                    /* 상태코드 : 승인 */
-                    writer.print("<script>alert('이미 전문가로 등록되어 있습니다.');location.href='/front/exprtPool/registerStep1.html';</script>");
+                switch(exprtStts) {
+                    case "134101":
+                    case "134104":
+                        /* 상태코드 : 작성중 또는 반려 */
+                        writer.print("<script>alert('작성중인 데이터가 존재합니다.');location.href='/front/exprtPool/registerStep1.html';</script>");
+                        break;
+                    case "134102":
+                        /* 상태코드 : 신청 */
+                        writer.print("<script>alert('전문가 심사가 진행중입니다.');location.href='/front/exprtPool/registerStep1.html';</script>");
+                        break;
+                    case "134103":
+                        /* 상태코드 : 승인 */
+                        writer.print("<script>alert('이미 전문가로 등록되어 있습니다.');location.href='/front/exprtPool/registerStep1.html';</script>");
+                    case "134105":
+                        /* 상태코드 : 해지 */
+                        writer.print("<script>alert('해지된 전문가 회원입니다.\\r\\n해지 취소를 원하시면 1:1문의 게시판에서 전문가 해지 취소 문의 글을 남겨주십시오.');location.href='/front/exprtPool/registerStep1.html';</script>");
+                        break;
+                    default:
+                        break;
                 }
                 return null;
             }
@@ -162,6 +172,9 @@ public class ExprtRegisterController {
                     if (exprtStts.equals("134102")) {
                         /* 상태코드 : 신청 */
                         writer.print("<script>alert('전문가 심사가 진행중입니다.');location.href='/front/exprtPool/registerStep1.html';</script>");
+                    } else if (exprtStts.equals("134105")) {
+                        /* 상태코드 : 해지 */
+                        writer.print("<script>alert('해지된 전문가 회원입니다.\\r\\n해지 취소를 원하시면 1:1문의 게시판에서 전문가 해지 취소 문의 글을 남겨주십시오.');location.href='/front/exprtPool/registerStep1.html';</script>");
                     } else {
                         /* 상태코드 : 승인 */
                         writer.print("<script>alert('이미 전문가로 등록되어 있습니다.');location.href='/front/exprtPool/registerStep1.html';</script>");
