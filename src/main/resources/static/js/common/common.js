@@ -5288,7 +5288,7 @@ function escapeData(data){ // 데이터를 escape 처리함.
      * @returns {string}
      *
      */
-function unescapeHtml( text ) {
+    function unescapeHtml( text ) {
         var doc = new DOMParser().parseFromString(text, "text/html");
         return doc.documentElement.textContent;
     }
