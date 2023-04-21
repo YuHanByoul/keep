@@ -172,7 +172,7 @@ public class GnbMenuPrintImpl {
                             }
                         } else {
                             if ("N".equals(menuItem1.getPopupTrgtCd())) { // 새창
-                                menuTag.append("        <a href=\"").append(menuItem1.getUrl()).append("\" target=\"_blank\"").append(ariaCurrentL1Attr).append(">");
+                                menuTag.append("        <a href=\"").append(menuItem1.getUrl()).append("\" target=\"_blank\" title=\"새 창\"").append(ariaCurrentL1Attr).append(">");
                             } else { // 현재창
                                 menuTag.append("        <a href=\"javascript:goMenu('").append(menuItem1.getUrl()).append("','").append(mkey).append("','").append(menuItem1.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(ariaCurrentL1Attr).append(">");
                             }
@@ -240,7 +240,7 @@ public class GnbMenuPrintImpl {
                                         }
                                     } else {
                                         if ("N".equals(menuItem2.getPopupTrgtCd())) { // 새창
-                                            menuTag.append("<a href=\"").append(menuItem2.getUrl()).append("\" target=\"_blank\"").append(ariaCurrentL2Attr).append(">");
+                                            menuTag.append("<a href=\"").append(menuItem2.getUrl()).append("\" target=\"_blank\" title=\"새 창\"").append(ariaCurrentL2Attr).append(">");
                                         } else { // 현재창
                                             menuTag.append("<a href=\"javascript:goMenu('").append(menuItem2.getUrl()).append("','").append(mkey).append("','").append(menuItem2.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(ariaCurrentL2Attr).append(">");
                                         }
@@ -297,7 +297,7 @@ public class GnbMenuPrintImpl {
                                                     }
                                                 } else {
                                                     if ("N".equals(menuItem3.getPopupTrgtCd())) { // 새창
-                                                        menuTag.append("<a href=\"").append(menuItem3.getUrl()).append("\" target=\"_blank\"").append(ariaCurrentL3Attr).append(">");
+                                                        menuTag.append("<a href=\"").append(menuItem3.getUrl()).append("\" target=\"_blank\" title=\"새 창\"").append(ariaCurrentL3Attr).append(">");
                                                     } else { // 현재창
                                                         menuTag.append("<a href=\"javascript:goMenu('").append(menuItem3.getUrl()).append("','").append(mkey).append("','").append(menuItem3.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(ariaCurrentL3Attr).append(">");
                                                     }
@@ -401,7 +401,7 @@ public class GnbMenuPrintImpl {
                                     menuTag.append("                        </li>\n");
                                     break;
                             case 5: menuTag.append("                        <li>\n");
-                                    menuTag.append("                            <a href=\"https://환경교육주간.kr\" target=\"_blank\">\n");
+                                    menuTag.append("                            <a href=\"https://환경교육주간.kr\" target=\"_blank\" title=\"새 창\">\n");
                                     menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb07.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>");
