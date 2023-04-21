@@ -25,7 +25,7 @@
                      <div class="mb-0 form-group required">
                          <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>운영권역</strong></label>
                          <div class="col-sm-12">
-                             <select name="sareaId" id="sareaId" class="form-select form-select-sm form-control-sm" disabled>
+                             <select name="sareaId" id="sareaId" class="form-select form-select-sm form-control-sm" onchange="fn_changeSareaId(this);" disabled>
                                  <option value="">- 선택 -</option>
                                  <th:block th:each="item : ${sareaList}">
                                      <option th:value="${item.sareaId}" th:selected="${mvmnAply.sareaId} == ${item.sareaId}"><th:block th:text="${item.sareaNm}" /></option>
@@ -45,13 +45,23 @@
                          </div>
                      </div>
                  </div>
-                 <div class="col-lg-6 mb-3">                                                                    
-                     <div class="mb-0 form-group required" >
-                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="signguNm"><strong>신청지역</strong></label>
-                         <div class="col-sm-12">
-                             <input type="text" class="form-control form-control-sm" name="signguDesc" id="signguDesc" placeholder="" th:value="${mvmnAply.signguDesc}" disabled>
-                         </div>
-                     </div>
+                 <div class="col-lg-6">      
+                    <div class="row">                                                                               
+		                 <div class="col-sm-6 mb-3 form-group required">
+		                     <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="ctprvnCd_1"><strong>신청지역</strong></label>
+		<!--                              <th:block kattr:select_code="ctprvnCd_1" grpCd="143" upprCd="0" selectedCd="" onchange='setNextDepth(143,this.value,"ctprvnCd_2" )' firstOptTxt="- 선택 -" isAdmin="true"></th:block> -->
+		                     <select name="ctprvnCd_1" id="ctprvnCd_1" class="form-select form-select-sm form-control-sm"  onchange="fn_changeCtprvnCd(this);" disabled>
+		                         <option value="">- 선택 -</option>
+		                     </select>
+		                     
+		                 </div>
+		                 <div class="col-sm-6 mb-3 form-group">
+		                     <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="ctprvnCd_2"><strong>시군구</strong></label>
+		                     <select id="ctprvnCd_2" name="ctprvnCd_2" class="form-select form-select-sm form-control-sm" disabled>
+		                          <option value="">- 선택 -</option>
+		                     </select>
+		                 </div>
+	                 </div>
                  </div>
              </div>
              <div class="row">
@@ -214,6 +224,9 @@
     var sareaViewngMaxAplyNope = 0;
     var userSearchPopupUrl = "/mng/prtpn/mvmnAply/mvmnAplyUserSearchPopup.html";
     var userSearchAddModal;
+    /*<![CDATA[*/
+    var mvmnAply = /*[[${mvmnAply}]]*/null;
+    /*]]>*/
     init();
     fn_openUserSearchModal = () => {
         $("#userSearchPopup").load(userSearchPopupUrl, function(response, status, xhr) {
@@ -238,7 +251,10 @@
         $('#sareaId').val(sareaId).prop("selected", true);
         $('#prgrmId').val(prgrmId);
         $('#prgrmNm').val(prgrmNm);
-            
+        
+        fn_changeSareaId($('#sareaId'));
+        $("#ctprvnCd_1").attr("disabled",false);
+        $("#ctprvnCd_2").attr("disabled",true);
     }
     
     function fn_updateMvmnAply(){
@@ -278,6 +294,60 @@
             });
         }
     }
+    
+    function fn_changeSareaId(item){
+        var getCodeUrl = "/mng/prtpn/mvmnAply/selectMvmnAplyCtprvnCd.do";
+        var url = getCodeUrl + "?sareaId=" + $(item).val();
+        if (displayWorkProgress()) {
+            $.ajax({
+                url: url,
+                type: 'POST',
+                cache: false,
+                success: function (data) {
+                    var html = `<option value="">- 선택 -</option>`;
+                    data.ctprvnCdList.forEach(function (item) {
+                       html += ` <option value="${item.ctprvnCd}"`; 
+                       if(mvmnAply.ctprvnCd == item.ctprvnCd){
+                    	   html += ` selected`;
+                       }
+                       html += `>${item.ctprvnNm}</option>`;
+                    });
+                    $("#ctprvnCd_1").html(html);
+                    $("#ctprvnCd_1").attr("disabled",false);
+                    $("#ctprvnCd_2").attr("disabled",true);
+                    closeWorkProgress();
+                    
+                    fn_changeCtprvnCd($("#ctprvnCd_1"));
+                }
+            });
+        }
+    }
+    
+    function fn_changeCtprvnCd(item){
+    	debugger;
+        var getCodeUrl = "/mng/prtpn/mvmnAply/selectMvmnAplySignguCd.do";
+        var url = getCodeUrl + "?sareaId=" + $("#sareaId").val() +"&ctprvnCd=" + $(item).val() ;
+        if (displayWorkProgress()) {
+            $.ajax({
+                url: url,
+                type: 'POST',
+                cache: false,
+                success: function (data) {
+                    var html = `<option value="">- 선택 -</option>`;
+                    data.signguCdList.forEach(function (item) {
+                       html += ` <option value="${item.signguCd}"`; 
+                       if(mvmnAply.signguCd == item.signguCd){
+                           html += ` selected`;
+                       }
+                       html += `>${item.signguNm}</option>`;
+                    });
+                    $("#ctprvnCd_2").html(html);
+                    $("#ctprvnCd_2").attr("disabled",false);
+                    closeWorkProgress();                    
+                }
+            });
+        }
+    }  
     
     function fn_changeSelectDe(item){
         var tmeSchdlid = $(item).val();

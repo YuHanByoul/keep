@@ -15,6 +15,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.mng.code.model.CodeVo;
@@ -521,6 +522,50 @@ public class MvmnAplyController {
         return resultMap;
     }    
     
+    /**
+     * 교육신청관리 게시글 지역 리스트 조회
+     *
+     * @Title : selectMvmnAplyCtprvnCd
+     * @Description : 교육신청관리 게시글 지역 리스트 조회
+     * @param sareaid
+     * @throws Exception
+     * @return Map<String,Object>
+     */
+    @RequestMapping(value = "/mng/prtpn/mvmnAply/selectMvmnAplyCtprvnCd.do")
+    @ResponseBody
+    public Map<String, Object> selectMvmnAplyCtprvnCd(@RequestParam(value ="sareaId", required = true) String sareaId) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        List<EduSareaVo> ctprvnCdList = null;
+        ctprvnCdList = eduSareaService.selectCtprvnCdList(Integer.parseInt(sareaId));
+        resultMap.put("ctprvnCdList", ctprvnCdList);
+        
+        return resultMap;
+    }  
+    
+    /**
+     * 교육신청관리 게시글 시군구 리스트 조회
+     *
+     * @Title : selectMvmnAplySignguCd
+     * @Description : 교육신청관리 게시글 시군구 리스트 조회
+     * @param mvmnAplyVo 교육신청관리 객체
+     * @throws Exception
+     * @return Map<String,Object>
+     */
+    @RequestMapping(value = "/mng/prtpn/mvmnAply/selectMvmnAplySignguCd.do")
+    @ResponseBody
+    public Map<String, Object> selectMvmnAplySignguCd(@RequestParam(value ="sareaId", required = true) String sareaId, @RequestParam(value ="ctprvnCd", required = true) String ctprvnCd) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        List<EduSareaVo> signguCdList = null;
+        EduSareaVo eduSareaParamVo = new EduSareaVo();
+        eduSareaParamVo.setSareaId(Integer.parseInt(sareaId));
+        eduSareaParamVo.setCtprvnCd(ctprvnCd);
+        
+        signguCdList = eduSareaService.selectAddrSignguList(eduSareaParamVo);
+        
+        resultMap.put("signguCdList", signguCdList);
+        
+        return resultMap;
+    }    
     /**
     * 교육일정관리 교육신청자 검색결과 엑셀 다운로드
     **
