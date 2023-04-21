@@ -5,9 +5,6 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
-import com.kbrainc.plum.mng.code.model.CodeVo;
-import com.kbrainc.plum.mng.prtpn.infntPrgrm.model.InfntPrgrmVo;
-
 /**
 * 유아환경교육 -> 운영권역관리 Dao 클래스
 **
@@ -174,5 +171,15 @@ public interface EduSareaDao {
      * @throws Exception
      * @return List<EduSareaVo>
      */
-    public List<EduSareaVo> selectAddrSignguList(EduSareaVo eduSareaVo) throws Exception;        
+    public List<EduSareaVo> selectAddrSignguList(EduSareaVo eduSareaVo) throws Exception;
+    
+    /**
+    * 등록된 지역코드 목록 조회
+    *
+    * @Title : selectDplctCtprvnCdList
+    * @Description : 등록된 지역코드 목록 조회
+    * @throws Exception 예외
+    * @return List<String>
+    */
+    public List<String> selectDplctCtprvnCdList(EduSareaVo eduSareaVo) throws Exception;        
 }
