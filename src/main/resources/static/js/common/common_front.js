@@ -278,3 +278,13 @@ function msgAddBtn(){
         );
     });
 }
+
+/*
+게시글 수 변경
+rowPerPage : 게시글 수
+listFunc : 리스트 로드 함수
+*/
+function onChangePageSize(rowPerPage, listFunc) {
+    $("#rowPerPage").val(rowPerPage);
+    listFunc();
+}
