@@ -4,6 +4,7 @@
 package com.kbrainc.plum.mng.bizAply.req.model;
 
 import com.kbrainc.plum.rte.model.ParentRequestVo;
+import com.kbrainc.plum.rte.model.UserVo;
 
 import lombok.Data;
 
@@ -25,6 +26,8 @@ import lombok.Data;
 @Data
 public class ReqMngVo extends ParentRequestVo {
 
+    private UserVo user;
+    
     // 검색조건 start
     /** 분야_코드_검색 */
     private String searchFldCd;

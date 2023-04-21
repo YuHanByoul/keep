@@ -56,8 +56,6 @@ public class CommonUtil {
 
     private static String[] wasIpport = applicationConfig.getStringArray("admin.was.ipport");
     
-    public static final List<String> allowedIp = new ArrayList<>(Arrays.asList(applicationConfig.getStringArray("admin.allowed.ip")));
-    
     public static String portalUrl = applicationConfig.getString("system.portal.url");
     
     public static String kakaoJavascriptKey = applicationConfig.getString("kakao.javascript.key"); 

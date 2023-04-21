@@ -144,10 +144,10 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             try {
                 if ("G".equals(loginType)) { // 아이디 비밀번호 방식
                     
-                    //String ci = null;
+                    String ci = null;
                     String moblphon = null;
                     boolean isAllowedIp = true;
-                    if (!CommonUtil.allowedIp.contains(CommonUtil.getClientIp(request))) { // 허가되지않은 IP에서 접속
+                    if (!commonService.selectCertIpList().contains(CommonUtil.getClientIp(request))) { // 허가되지않은 IP에서 접속
                         isAllowedIp = false;
                         IdntyVrfctnSuccessVo result = null;
                         try {
@@ -161,7 +161,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                             request.setAttribute("message", result.getSMessage());
                             throw new InternalAuthenticationServiceException("Login Error !!");
                         } else {                
-                            //ci = result.getSConnInfo();
+                            ci = result.getSConnInfo();
                             moblphon = result.getSMobileNo();
                         }
                     }
@@ -169,9 +169,16 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                     resultMap = securedObjectService.selectUserLoginInfo(loginid); // 사용자 로그인 정보 조회
                     
                     if (!isAllowedIp) { // 허가되지않은 IP에서 접속
-                        if (!moblphon.equals(resultMap.get("MOBLPHON"))) { // 휴대폰번호가 다르면(관리자에서 회원등록시 CI가 없으므로 휴대폰번호롤 비교)
-                            request.setAttribute("message", "로그인 계정과 본인인증 결과가 일치하지 않습니다.");
-                            throw new InternalAuthenticationServiceException("Login Error !!");
+                        if (resultMap.get("CI") != null) {
+                            if (!ci.equals(resultMap.get("CI"))) { // CI가 다르면
+                                request.setAttribute("message", "로그인 계정과 본인인증 결과가 일치하지 않습니다.");
+                                throw new InternalAuthenticationServiceException("Login Error !!");
+                            }
+                        } else { // 관리자에서 회원등록시 CI가 없으므로 휴대폰번호롤 비교
+                            if (!moblphon.equals(resultMap.get("MOBLPHON"))) { // 휴대폰번호가 다르면
+                                request.setAttribute("message", "로그인 계정과 본인인증 결과가 일치하지 않습니다.");
+                                throw new InternalAuthenticationServiceException("Login Error !!");
+                            }
                         }
                     }
                 } else if ("S".equals(loginType)) { // SSO

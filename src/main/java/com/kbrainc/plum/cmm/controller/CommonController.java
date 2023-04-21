@@ -11,6 +11,9 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mobile.device.Device;
+import org.springframework.mobile.device.DeviceUtils;
+import org.springframework.mobile.device.LiteDeviceResolver;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -144,6 +147,8 @@ public class CommonController {
         String sysSeCd = site.getSysSeCd();
         
         if ("A".equals(sysSeCd)) { // 관리자 사이트
+            Device device = new LiteDeviceResolver().resolveDevice(request);
+            request.setAttribute(DeviceUtils.CURRENT_DEVICE_ATTRIBUTE,device);
             mav.setViewName("mng/login");
         } else { // 사용자 사이트
             if (timeout) {
