@@ -92,6 +92,8 @@ public class MvmnAplyVo extends ParentRequestVo {
     private String addr;
     /** 주소_상세 */
     private String addrDtl;
+    /** 지역_코드 */
+    private String ctprvnCd;
     /** 시도_코드 */
     private String signguCd;
     /** 시도_코드명 */
