@@ -153,6 +153,8 @@
         let panelv2key = {};
 
         $(function(){
+            $("#mobile-btn-back").html("<a class='btn-back' href='/mng/mobileAsgsysSrng/asgsysSrngList.html'><i class='fa fa-angle-left'></i></a>");
+
             $('#tabTitle > li:first-child').addClass('active');
             $('#tabTitle > li:first-child .nav-link').addClass('active');
 
@@ -399,10 +401,6 @@
                 return;
             }
 
-            var param = {};
-
-            // if(!($("#sprtgrpSrngFrm").valid())) return;
-
             $("[id^=cRdoY]").each(function(index, item) {
 
                 param["ansLst[" + index + "].sbmsnid"] = $("#sbmsnid").val();
@@ -419,16 +417,28 @@
 
             $("[id^=cnY]").each(function(index, item) {
                 param["ansLst[" + index + "].cn"] = item.innerText;
+                param["ansLst[" + index + "].idntyMttr"] = item.innerText;
             });
 
-            param["prgrmid"     ]= $('#prgrmid').val();
+            param["prgrmid"     ]= $("#prgrmid").val();
             param["sbmsnid"     ]= $("#sbmsnid").val();
             param["rsltid"      ]= $("#rsltid").val();
-            param["sbmsnSttsCd" ]= "128102";    //제출
             param["sprtgrpid"   ]= $("#sprtgrpid").val();
+            param["userid"]      = $("#sprtgrpid").val();
+            param["chklstid"]    = $("#chklstid").val();
+            param["sbmsnSttsCd" ]= "128102";    //제출
+            param["sbmsnSeCd"]   = "242102";    /*심사구분:심사위원(지원단)*/
+
             param["srngOpnn"    ]= $("#srngOpnn").val();
             param["chklstRsltCn"]= $("#chklstRsltCn").val();
-            param["scr"         ]= $("#scr").val();
+            param["srgnSttsCd"]= '114104'    //최종심사평 있는 경우 심사완료
+
+            var vScr = 0;
+            $("[id^=scrSum]").each(
+                function(index1, item1){
+                    vScr = vScr + Number(item1.innerText.replace("점",""));
+                });
+            param["scr"] = vScr;
 
             if(!confirm("저장하시겠습니까?")) return;
 

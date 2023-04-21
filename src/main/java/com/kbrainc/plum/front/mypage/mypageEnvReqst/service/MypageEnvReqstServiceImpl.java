@@ -102,6 +102,20 @@ public class MypageEnvReqstServiceImpl extends PlumAbstractServiceImpl implement
     }
 
     /**
+     * 후기확인 기능
+     *
+     * @Title : selectRwvInfo
+     * @Description : 후기확인 기능
+     * @param mypageEnvReqstVo 환경교육시설 예약 객체
+     * @throws Exception 예외
+     * @return MypageEnvReqstVo
+     */
+    @Override
+    public MypageEnvReqstVo selectRwvInfo(MypageEnvReqstVo mypageEnvReqstVo) throws Exception {
+        return mypageEnvReqstDao.selectRwvInfo(mypageEnvReqstVo);
+    }
+
+    /**
      * 환경교육시설 예약 등록(시설 예약)
      *
      * @Title : insertResveEnvFclSpceAply
@@ -183,6 +197,34 @@ public class MypageEnvReqstServiceImpl extends PlumAbstractServiceImpl implement
     @Override
     public int insertRsn(MypageEnvReqstVo mypageEnvReqstVo) throws Exception {
         return mypageEnvReqstDao.insertRsn(mypageEnvReqstVo);
+    }
+
+    /**
+     * 후기 작성
+     *
+     * @Title : insertRvw
+     * @Description : 후기 작성
+     * @param mypageEnvReqstVo 입금 전 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    @Override
+    public int insertRvw(MypageEnvReqstVo mypageEnvReqstVo) throws Exception {
+        return mypageEnvReqstDao.insertRvw(mypageEnvReqstVo);
+    }
+
+    /**
+     * 후기 삭제
+     *
+     * @Title : deleteRvw
+     * @Description : 후기 삭제
+     * @param mypageEnvReqstVo 입금 전 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    @Override
+    public int deleteRvw(MypageEnvReqstVo mypageEnvReqstVo) throws Exception {
+        return mypageEnvReqstDao.deleteRvw(mypageEnvReqstVo);
     }
 
     /**

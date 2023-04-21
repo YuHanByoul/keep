@@ -691,6 +691,12 @@ public class ReqMngServiceImpl extends PlumAbstractServiceImpl implements ReqMng
     }
 
     @Override
+    public int insertReqInfo(ReqUserVo reqUserVo) throws Exception {
+        // TODO Auto-generated method stub
+        return reqMngDao.insertReqInfo(reqUserVo);
+    }
+    
+    @Override
     public int updateReqInfo(ReqUserVo reqUserVo) throws Exception {
         // TODO Auto-generated method stub
         return reqMngDao.updateReqInfo(reqUserVo);

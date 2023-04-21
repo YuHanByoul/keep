@@ -1,0 +1,86 @@
+<div class="layer-header">
+    <strong class="tit">후기 작성</strong>
+    <button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close=""></button>
+</div>
+<div class="layer-content">
+
+    <p class="fs-16 fc-black6">환경교육시설의 <b class="fc-green">후기</b> 및 <b class="fc-green">만족도 평가</b>를 남겨주세요.</p>
+
+    <div class="form-group mt15">
+        <dl>
+            <dt class="fc-black3"><b>별점등록</b>(필수)</dt>
+            <dd>
+                <div class="rating-star-wrap">
+                    <div class="rating-star-inner">
+                        <div class="rating-star">
+                            <input type="radio" name="rating" value="5" id="rating5-1" disabled="" class="blind"><label for="rating5-1"><span class="blind">매우 만족</span></label>
+                            <input type="radio" name="rating" value="4" id="rating4-1" disabled="" class="blind"><label for="rating4-1"><span class="blind">만족</span></label>
+                            <input type="radio" name="rating" value="3" id="rating3-1" disabled="" class="blind"><label for="rating3-1"><span class="blind">보통</span></label>
+                            <input type="radio" name="rating" value="2" id="rating2-1" disabled="" class="blind"><label for="rating2-1"><span class="blind">불만족</span></label>
+                            <input type="radio" name="rating" value="1" id="rating1-1" disabled="" class="blind"><label for="rating1-1"><span class="blind">매우 불만족</span></label>
+                        </div>
+                    </div>
+                    <div class="rating-feedback" id="ratingDescription"</div>
+                </div>
+            </dd>
+        </dl>
+        <dl>
+            <dt class="fc-black3"><b>기타의견</b>(필수)</dt>
+            <dd>
+                <textarea placeholder="내용을 입력해주세요." name="rvwCn" readonly=""></th:block></textarea>
+                <div class="check-wrap j-end">
+                    <div class="size"><span>125</span> / 1,000자</div>
+                </div>
+            </dd>
+        </dl>
+    </div>
+
+    <div class="box-desc-list bg7 mt20 p20">
+        <p class="fs-14">작성하신 후기는 모든 사용자에게 공개됩니다.</p>
+    </div>
+
+</div>
+
+
+<div class="layer-footer">
+    <div class="btn-wrap">
+        <div class="center">
+            <button type="button" class="btn-medium btn-gray" onclick="fn_deleteRvw();">삭제</button>
+            <button type="button" class="btn-medium btn-gray" data-layer-close="">닫기</button>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    var ratingTxt = ['1점(매우 불만족)', '2점(불만족)', '3점(보통)', '4점(만족)', '5점(매우 만족)']
+
+    $(function(){
+        var selectedRating = /*[[${mypageEnvReqst.rvwScr}]]*/null;
+        $('#selectRvwPopup textarea[name="rvwCn"]').val(/*[[${mypageEnvReqst.rvwCn}]]*/null);
+        for( var i=0; i<$('#selectRvwPopup input[name="rating"]').length; i++ ){
+            if( $($('#selectRvwPopup input[name="rating"]')[i]).val() == selectedRating ){
+                $($('#selectRvwPopup input[name="rating"]')[i]).attr('checked', true);
+                $('#ratingDescription').text(ratingTxt[selectedRating-1]);
+            }
+        }
+    })
+    function fn_deleteRvw(){
+        var param = {aplyid : /*[[${aplyid}]]*/null};
+        if (displayWorkProgress(true)) {
+            $.ajax({
+                url: '/front/mypage/mypageEnvReqst/deleteRvw.do',
+                cache: false,
+                dataType: 'json',
+                data: param,
+                type: 'POST',
+                success: function (data) {
+                    alert(data.msg);
+                    layerPopup.close({target:'selectRvwPopup'});
+                    selectEnvReqstList();
+                    closeWorkProgress();
+                }
+            });
+        }
+
+    }
+</script>
