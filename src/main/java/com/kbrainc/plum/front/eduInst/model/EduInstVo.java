@@ -1,6 +1,7 @@
 package com.kbrainc.plum.front.eduInst.model;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.ibatis.type.Alias;
 
@@ -17,6 +18,7 @@ public class EduInstVo extends ParentRequestVo {
     private UserVo user;
 
     private Integer aplyid;           /** 신청아이디 */
+    private Integer planKey;          /** 운영계획KEY */
     private String rcptno;            /** 접수번호 */
     private Integer instid;           /** 기관아이디 */
     private String aplcntid;          /** 신청자아이디 */
@@ -53,8 +55,13 @@ public class EduInstVo extends ParentRequestVo {
     private String expcEffect;        /** 기대 계획 */
     private String etcDta;            /** 기타 자료 */
 
+    private Integer schdlid;	       /** 일정아이디 */
+
     private String cd;                /** 코드 */
     private String cdNm;              /** 코드명 */
+
+    private List<SchdlVo> schdlList;
+    private List<EduExprtVo> eduExprtList;
 
 
 

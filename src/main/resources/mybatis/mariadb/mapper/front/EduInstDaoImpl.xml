@@ -75,7 +75,7 @@
         LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN ADDR ON B.RGN_CD = ADDR.CTPRVN_CD
         LEFT OUTER JOIN TB_CMM_CD TYPE_CD ON B.INST_TYPE_CD = TYPE_CD.CD
         WHERE A.APLYID = #{aplyid}
-        AND A.STTS_CD = '248101'    /*작성중*/
+
     </select>
 
     <!-- 환경교육기관 등록 -->
@@ -164,26 +164,26 @@
     <!-- 운영계획 개요 조회 -->
     <select id="selectOperPlan" parameterType="front.EduInstVo" resultType="front.EduInstVo">
         /* EduInstDao.selectOperPlan*/
-            SELECT
-                A.APLYID            /*신청아이디*/
-              , B.MAIN_BSNS         /*주요_사업*/
-              , B.OPER_MTHD         /*운영_방법*/
-              , B.OPER_PLAN         /*운영_계획*/
-              , B.MNG_PLAN          /*관리_계획*/
-              , B.BGT_PLAN          /*예산_계획*/
-              , B.EXPC_EFFECT       /*기대_효과*/
-              , B.ETC_DTA           /*기타_자료*/
-              , B.ATCH_FILEGRPID    /*첨부_파일그룹아이디*/
-              , B.MDFCN_DT          /*수정_일시*/
-              , B.MDFRID            /*수정자아이디*/
-              , B.REG_DT            /*등록_일시*/
-              , B.RGTRID            /*등록자아이디*/
-            FROM
-                TB_SEE_ENV_EDU_INST A
-            LEFT OUTER JOIN
-                TB_SEE_OPER_PLAN B ON A.APLYID = B.APLYID
-            WHERE A.APLYID =#{aplyid}
-            AND   A.STTS_CD = '248101'    /*작성중*/
+        SELECT
+            A.APLYID            /*신청아이디*/
+          , B.APLYID    AS PLAN_KEY
+          , B.MAIN_BSNS         /*주요_사업*/
+          , B.OPER_MTHD         /*운영_방법*/
+          , B.OPER_PLAN         /*운영_계획*/
+          , B.MNG_PLAN          /*관리_계획*/
+          , B.BGT_PLAN          /*예산_계획*/
+          , B.EXPC_EFFECT       /*기대_효과*/
+          , B.ETC_DTA           /*기타_자료*/
+          , B.ATCH_FILEGRPID    /*첨부_파일그룹아이디*/
+          , B.MDFCN_DT          /*수정_일시*/
+          , B.MDFRID            /*수정자아이디*/
+          , B.REG_DT            /*등록_일시*/
+          , B.RGTRID            /*등록자아이디*/
+        FROM
+            TB_SEE_ENV_EDU_INST A
+        LEFT OUTER JOIN
+            TB_SEE_OPER_PLAN B ON A.APLYID = B.APLYID
+        WHERE A.APLYID =#{aplyid}
     </select>
 
      <!-- 운영계획 등록 -->
@@ -239,4 +239,134 @@
         WHERE APLYID = #{aplyid}    /*신청아이디*/
     </update>
 
+    <!-- 추진일정 목록 조회 -->
+    <select id="selectSchdlList" parameterType="front.EduInstVo" resultType="front.SchdlVo">
+        /* EduInstDao.selectSchdlList*/
+        SELECT
+            A.APLYID
+          , B.SCHDLID     /*일정아이디*/
+          , B.DE          /*일자*/
+          , B.HR          /*시간*/
+          , B.EDU_CRS     /*교육_과정*/
+          , B.DTL_CN      /*세부_내용*/
+          , B.EDU_TRGT    /*교육_대상*/
+          , B.MDFCN_DT    /*수정_일시*/
+          , B.MDFRID      /*수정자아이디*/
+          , B.REG_DT      /*등록_일시*/
+          , B.RGTRID      /*등록자아이디*/
+        FROM
+            TB_SEE_ENV_EDU_INST A
+        LEFT OUTER JOIN
+            TB_SEE_SCHDL B ON A.APLYID = B.APLYID
+        WHERE A.APLYID = #{aplyid}
+    </select>
+
+    <!-- 추진일정 등록 -->
+    <insert id="insertPropSchdl" parameterType="front.EduInstVo">
+        /* EduInstDao.insertPropSchdl*/
+        INSERT INTO TB_SEE_SCHDL
+        (
+            APLYID
+          , DE
+          , HR
+          , EDU_CRS
+          , DTL_CN
+          , EDU_TRGT
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        )VALUES(
+            #{aplyid }
+          , #{de     }
+          , #{hr     }
+          , #{eduCrs }
+          , #{dtlCn  }
+          , #{eduTrgt}
+          , NOW()
+          , #{user.userid}
+          , NOW()
+          , #{user.userid}
+        )
+    </insert>
+
+    <!-- 추진일정 목록 삭제 -->
+    <delete id="deletePropSchdl" parameterType="front.EduInstVo" >
+        /* EduInstDao.deletePropSchdl*/
+        DELETE FROM
+            TB_SEE_SCHDL
+        WHERE APLYID = #{aplyid}
+    </delete>
+
+    <!-- 추진일정 목록 조회 -->
+    <select id="selectEduExprtList" parameterType="front.EduInstVo" resultType="front.EduExprtVo">
+        /* EduInstDao.selectExprtList*/
+        SELECT
+            A.APLYID          /* 신청아이디 */
+          , B.EXPRTID         /* 전문가아이디 */
+          , B.SE_CD           /* 구분_코드 */
+          , B.NM              /* 이름 */
+          , B.BRDT            /* 생년월일 */
+          , B.CHRGTASK        /* 담당업무 */
+          , B.CRTFCT          /* 자격증 */
+          , B.HDOF_BGNG_DE    /* 재직_시작_일자 */
+          , B.HDOF_END_DE     /* 재직_종료_일자 */
+          , B.CAREER          /* 경력 */
+          , B.ATCH_FILEGRPID  /* 첨부_파일그룹아이디 */
+          , B.MDFCN_DT        /* 수정_일시 */
+          , B.MDFRID          /* 수정자아이디 */
+          , B.REG_DT          /* 등록_일시 */
+          , B.RGTRID          /* 등록자아이디 */
+        FROM
+            TB_SEE_ENV_EDU_INST A
+        LEFT OUTER JOIN
+            TB_SEE_EXPRT B ON A.APLYID  =B.APLYID
+        WHERE A.APLYID = #{aplyid}
+    </select>
+
+    <!-- 교육전문인력 등록 -->
+    <insert id="insertEduExprt" parameterType="front.EduExprtVo">
+        /* EduInstDao.insertEduExprt*/
+        INSERT INTO TB_SEE_EXPRT
+        (
+            APLYID
+          , SE_CD
+          , NM
+          , BRDT
+          , CHRGTASK
+          , CRTFCT
+          , HDOF_BGNG_DE
+          , HDOF_END_DE
+          , CAREER
+          , ATCH_FILEGRPID
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        ) VALUES
+        (
+            #{aplyid       }
+          , #{seCd         }
+          , #{nm           }
+          , #{brdt         }
+          , #{chrgtask     }
+          , #{crtfct       }
+          , #{hdofBgngDe   }
+          , #{hdofEndDe    }
+          , #{career       }
+          , #{atchFilegrpid}
+          , NOW()
+          , #{user.userid}
+          , NOW()
+          , #{user.userid}
+        )
+    </insert>
+
+     <!-- 추진일정 목록 삭제 -->
+    <delete id="deleteEduExprt" parameterType="front.EduInstVo" >
+        /* EduInstDao.deleteEduExprt*/
+        DELETE FROM
+            TB_SEE_EXPRT
+        WHERE APLYID = #{aplyid}
+    </delete>
 </mapper>
