@@ -1,6 +1,12 @@
 package com.kbrainc.plum.front.eduInst.service;
 
+import java.util.List;
+
+import javax.validation.Valid;
+
+import com.kbrainc.plum.front.eduInst.model.EduExprtVo;
 import com.kbrainc.plum.front.eduInst.model.EduInstVo;
+import com.kbrainc.plum.front.eduInst.model.SchdlVo;
 
 /**
 * 사회환경교육기관 Service
@@ -103,5 +109,52 @@ public interface EduInstService {
 	*/
 	public int updateOperPlan(EduInstVo eduInstVo) throws Exception;
 
+	/**
+	* 추진일정 목록 조회
+	*
+	* @Title : selectSchdlList
+	* @Description : 추진일정 목록 조회
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return List<SchdlVo>
+	*/
+	public List<SchdlVo> selectSchdlList(EduInstVo eduInstVo) throws Exception;
+
+	/**
+	* 추진일정 등록
+	*
+	* @Title : insertPropSchdl
+	* @Description : 추진일정 등록
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertPropSchdl(EduInstVo eduInstVo) throws Exception;
+
+	/**
+	* 교육전문인력 목록 조회
+	*
+	* @Title : selectEduExprtList
+	* @Description : 교육전문인력 목록 조회
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return List<EduExprtVo>
+	*/
+	public List<EduExprtVo> selectEduExprtList(EduInstVo eduInstVo) throws Exception;
+
+	/**
+	* 교육전문인력 등록
+	*
+	* @Title : insertEduExprt
+	* @Description : 교육전문인력 등록
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertEduExprt(@Valid EduInstVo eduInstVo) throws Exception;
 
 }

@@ -59,14 +59,19 @@
 					//if(!$('#login_form').valid()) return false;
 					if($("#p_userid").val() == '') {
                         alert("아이디를 입력해주십시오.");
+                        /*[# th:if="${T(org.springframework.mobile.device.DeviceUtils).getCurrentDevice(#request).isNormal()}"]*/
+                        $("#p_userid").focus();
+                        /*[/]*/
                         return false;
                     }
                     if($("#p_pswd").val() == '') {
                         alert("비밀번호를 입력해주십시오.");
+                        /*[# th:if="${T(org.springframework.mobile.device.DeviceUtils).getCurrentDevice(#request).isNormal()}"]*/
+                        $("#p_pswd").focus();
+                        /*[/]*/
                         return false;
                     }
-					
-					/*[# th:if="${!T(com.kbrainc.plum.rte.util.CommonUtil).allowedIp.contains(T(com.kbrainc.plum.rte.util.CommonUtil).getClientIp(#request))}"]*/
+					/*[# th:if="${!@commonServiceImpl.selectCertIpList().contains(T(com.kbrainc.plum.rte.util.CommonUtil).getClientIp(#request))}"]*/
 					if($("#encodeData").val() == "") {
                         alert("본인인증을 진행해주십시오.");
 
@@ -88,7 +93,7 @@
                 
                 function setEncodeData(encodeData) {
                     document.login_form.encodeData.value = encodeData;
-                    $("#authButton").addClass("disabled");
+                    $("#authButton").attr("disabled", true);
                 }
 			</script>
 
@@ -160,7 +165,7 @@
                                                 placeholder="Password" autocomplete="off">
                                             <span class="form-bar"></span>
                                         </div>
-                                        <div class="row m-t-30" th:if="${!T(com.kbrainc.plum.rte.util.CommonUtil).allowedIp.contains(T(com.kbrainc.plum.rte.util.CommonUtil).getClientIp(#request))}">
+                                        <div class="row m-t-30" th:if="${!@commonServiceImpl.selectCertIpList().contains(T(com.kbrainc.plum.rte.util.CommonUtil).getClientIp(#request))}">
                                             <div class="col-md-12">
                                                 <div class="d-grid">
                                                     <input type="button" class="btn btn-primary btn-md waves-effect waves-light text-center m-b-20" id="authButton" onclick="fnAuthPopup()" value="휴대폰 본인인증 하기" />

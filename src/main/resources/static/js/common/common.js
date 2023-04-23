@@ -5281,4 +5281,15 @@ function escapeData(data){ // 데이터를 escape 처리함.
         return result;
     }
 
+    /**
+     *
+     * @Description : escape 처리된 문자열을 unescape된 문자열로 변환
+     * @param text
+     * @returns {string}
+     *
+     */
+    function unescapeHtml( text ) {
+        var doc = new DOMParser().parseFromString(text, "text/html");
+        return doc.documentElement.textContent;
+    }
 	

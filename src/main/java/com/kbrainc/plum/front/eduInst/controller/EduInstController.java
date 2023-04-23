@@ -2,6 +2,7 @@ package com.kbrainc.plum.front.eduInst.controller;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -13,18 +14,23 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.cmm.service.CommonService;
+import com.kbrainc.plum.front.eduInst.model.EduExprtVo;
 import com.kbrainc.plum.front.eduInst.model.EduInstVo;
+import com.kbrainc.plum.front.eduInst.model.SchdlVo;
 import com.kbrainc.plum.front.eduInst.service.EduInstService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.StringUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
 * 사회환경교육기관지정 Controller
@@ -41,8 +47,9 @@ import com.kbrainc.plum.rte.util.StringUtil;
 * @Version :
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
+@Slf4j
 @Controller("front.eduInstController")
-@Alias("frontEduInstController")
+@Alias("front.EduInstController")
 public class EduInstController {
 
 	@Resource(name = "front.eduInstServiceImpl")
@@ -133,7 +140,7 @@ public class EduInstController {
     /**
     * 신청정보 등록
     *
-    * @Title : insertChklstQitem
+    * @Title : insertAplyInfo
     * @Description : 신청정보 등록
     * @param eduInstVo
     * @param bindingResult
@@ -144,7 +151,7 @@ public class EduInstController {
     */
     @RequestMapping(value = "/front/eduInst/insertAplyInfo.do")
     @ResponseBody
-    public Map<String, Object> insertChklstQitem(@Valid EduInstVo eduInstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> insertAplyInfo(@Valid EduInstVo eduInstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
         if(bindingResult.hasErrors()) {
@@ -174,7 +181,7 @@ public class EduInstController {
     /**
      * 신청정보 수정
      *
-     * @Title : insertChklstQitem
+     * @Title : updateAplyInfo
      * @Description : 신청정보 수정
      * @param eduInstVo
      * @param bindingResult
@@ -185,7 +192,7 @@ public class EduInstController {
      */
     @RequestMapping(value = "/front/eduInst/updateAplyInfo.do")
     @ResponseBody
-    public Map<String, Object> updateChklstQitem(@Valid EduInstVo eduInstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> updateAplyInfo(@Valid EduInstVo eduInstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
     	Map<String, Object> resultMap = new HashMap<String, Object>();
 
     	if(bindingResult.hasErrors()) {
@@ -231,7 +238,7 @@ public class EduInstController {
 		if(null != eduInstVo.getAplyid() && 0 != eduInstVo.getAplyid()) {
 			planOutlInfo = eduInstService.selectOperPlan(eduInstVo);
 
-			//첨부파일
+			// 운영계획 첨부파일
 			if (!StringUtil.nvl(planOutlInfo.getAtchFilegrpid()).equals("") && !StringUtil.nvl(planOutlInfo.getAtchFilegrpid()).equals(0)) {
 	            FileVo fileVo = new FileVo();
 	            fileVo.setFilegrpid(planOutlInfo.getAtchFilegrpid());
@@ -241,7 +248,6 @@ public class EduInstController {
 	        }
 
 		}else {
-			//planOutlInfo  = eduInstService.selectplanOutlInfoForm(eduInstVo);
 			model.addAttribute("fileList", Collections.emptyList());
 		}
 
@@ -251,6 +257,89 @@ public class EduInstController {
 		model.addAttribute("planOutlInfo", eduInstService.selectOperPlan(eduInstVo));
 
 		return "front/eduInst/operPlanOutlForm";
+	}
+
+
+	/**
+	* 운영계획 개요 등록
+	*
+	* @Title : insertOperPlan
+	* @Description : 운영계획 개요 등록
+	* @param eduInstVo
+	* @param bindingResult
+	* @param user
+	* @return
+	* @throws Exception
+	* @return Map<String,Object>
+	*/
+	@RequestMapping(value = "/front/eduInst/insertOperPlan.do")
+    @ResponseBody
+    public Map<String, Object> insertOperPlan(@Valid EduInstVo eduInstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+
+        if(bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if(fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+
+        int retVal = 0;
+        eduInstVo.setUser(user);
+        retVal = eduInstService.insertOperPlan(eduInstVo);
+
+        if(retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("aplyid", eduInstVo.getAplyid());
+            resultMap.put("msg", "등록에 성공하였습니다");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "등록에 실패하였습니다");
+        }
+
+        return resultMap;
+    }
+
+	/**
+	* 운영계획개요 수정
+	*
+	* @Title : updateOperPlan
+	* @Description : 운영계획개요 수정
+	* @param eduInstVo
+	* @param bindingResult
+	* @param user
+	* @return
+	* @throws Exception
+	* @return Map<String,Object>
+	*/
+	@RequestMapping(value = "/front/eduInst/updateOperPlan.do")
+	@ResponseBody
+	public Map<String, Object> updateOperPlan(@Valid EduInstVo eduInstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+
+		if(bindingResult.hasErrors()) {
+			FieldError fieldError = bindingResult.getFieldError();
+			if(fieldError != null) {
+				resultMap.put("msg", fieldError.getDefaultMessage());
+			}
+			return resultMap;
+		}
+
+		int retVal = 0;
+		eduInstVo.setUser(user);
+		retVal = eduInstService.updateOperPlan(eduInstVo);
+
+		if(retVal > 0) {
+			resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+			resultMap.put("aplyid", eduInstVo.getAplyid());
+			resultMap.put("msg", "수정에 성공하였습니다");
+		} else {
+			resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+			resultMap.put("msg", "수정에 실패하였습니다");
+		}
+
+		return resultMap;
 	}
 
 	/**
@@ -265,9 +354,47 @@ public class EduInstController {
 	* @return String
 	*/
 	@RequestMapping(value="/front/eduInst/propSchdlForm.html")
-	public String propSchdlForm(Model model, @UserInfo UserVo user) throws Exception {
+	public String propSchdlForm(EduInstVo eduInstVo, Model model, @UserInfo UserVo user) throws Exception {
+		List<SchdlVo> schdlList = null;
+		schdlList = eduInstService.selectSchdlList(eduInstVo);
+
+		model.addAttribute("eduInstVo", eduInstVo);
+		model.addAttribute("schdlList", schdlList);
 		return "front/eduInst/propSchdlForm";
 	}
+
+	/**
+	* 추진일정 등록
+	*
+	* @Title : insertPropSchdl
+	* @Description : 추진일정 등록
+	* @param eduInstVo
+	* @param bindingResult
+	* @param user
+	* @return
+	* @throws Exception
+	* @return Map<String,Object>
+	*/
+	@RequestMapping(value = "/front/eduInst/insertPropSchdl.do")
+    @ResponseBody
+    public Map<String, Object> insertPropSchdl(@RequestBody EduInstVo eduInstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+
+        int retVal = 0;
+        eduInstVo.setUser(user);
+        retVal = eduInstService.insertPropSchdl(eduInstVo);
+
+        if(retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+
+            resultMap.put("msg", "저장에 성공하였습니다");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "저장에 실패하였습니다");
+        }
+
+        return resultMap;
+    }
 
 	/**
 	* 교육전문인력현황 화면 이동
@@ -281,9 +408,67 @@ public class EduInstController {
 	* @return String
 	*/
 	@RequestMapping(value="/front/eduInst/mnPwrSttusForm.html")
-	public String mnPwrSttusForm(Model model, @UserInfo UserVo user) throws Exception {
+	public String mnPwrSttusForm(EduInstVo eduInstVo,Model model, @UserInfo UserVo user) throws Exception {
+		List<EduExprtVo> eduExprtList = null;
+		eduExprtList = eduInstService.selectEduExprtList(eduInstVo);
+
+		for (EduExprtVo eduExprt : eduExprtList) {
+		    if (!StringUtil.nvl(eduExprt.getAtchFilegrpid()).equals("") && !StringUtil.nvl(eduExprt.getAtchFilegrpid()).equals(0)) {
+		        FileVo fileVo = new FileVo();
+		        fileVo.setFilegrpid(eduExprt.getAtchFilegrpid());
+		        eduExprt.setFileList(fileService.getFileList(fileVo));
+		    } else {
+		        eduExprt.setFileList(Collections.emptyList());
+		    }
+		}
+
+		model.addAttribute("eduInstVo", eduInstVo);
+		model.addAttribute("eduExprtList", eduExprtList);
+
+
 		return "front/eduInst/mnPwrSttusForm";
 	}
+
+	/**
+	* 교육전문인력 등록
+	*
+	* @Title : insertMnPwrSttus
+	* @Description : 교육전문인력 등록
+	* @param eduInstVo
+	* @param bindingResult
+	* @param user
+	* @return
+	* @throws Exception
+	* @return Map<String,Object>
+	*/
+	@RequestMapping(value = "/front/eduInst/insertEduExprt.do")
+    @ResponseBody
+    public Map<String, Object> insertEduExprt(@RequestBody EduInstVo eduInstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+
+        if(bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if(fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+
+        int retVal = 0;
+        eduInstVo.setUser(user);
+        retVal = eduInstService.insertEduExprt(eduInstVo);
+
+        if(retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("aplyid", eduInstVo.getAplyid());
+            resultMap.put("msg", "저장에 성공하였습니다");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "저장에 실패하였습니다");
+        }
+
+        return resultMap;
+    }
 
 	/**
 	* 교육프로그램 보유현황 화면 이동
@@ -332,5 +517,7 @@ public class EduInstController {
 	public String aplyCmptnForm(Model model, @UserInfo UserVo user) throws Exception {
 		return "front/eduInst/aplyCmptnForm";
 	}
+
+
 
 }

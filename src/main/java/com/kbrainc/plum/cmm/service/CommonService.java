@@ -137,4 +137,14 @@ public interface CommonService {
     * @throws Exception 예외
     */
     public int clearDormancy(DrmncyInfoVo drmncyInfoVo) throws Exception;
+    
+    /**
+    * 관리자 접속 허가 IP목록을 조회한다.
+    *
+    * @Title : selectCertIpList
+    * @Description : 관리자 접속 허가 IP목록을 조회한다.
+    * @return List<String> 허가된 IP목록
+    * @throws Exception 예외
+    */
+    public List<String> selectCertIpList() throws Exception;
 }

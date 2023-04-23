@@ -1,5 +1,6 @@
 package com.kbrainc.plum.mng.prtpn.eduSarea.controller;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.service.CommonService;
-import com.kbrainc.plum.mng.code.model.CodeVo;
 import com.kbrainc.plum.mng.code.service.CodeService;
 import com.kbrainc.plum.mng.prtpn.eduSarea.model.EduSareaVo;
 import com.kbrainc.plum.mng.prtpn.eduSarea.service.EduSareaService;
@@ -111,7 +111,6 @@ public class EduSareaController {
     @RequestMapping(value = "/mng/prtpn/eduSarea/eduSareaInsertForm.html")
     public String eduSareaInsertForm(Model model) throws Exception {
         model.addAttribute("ctprvnCdList", eduSareaService.selectAddrCtprvnList());
-        
         return "mng/prtpn/eduSarea/eduSareaInsertForm";
     }
     
@@ -130,7 +129,6 @@ public class EduSareaController {
         EduSareaVo result = null;
         result = eduSareaService.selectEduSareaInfo(eduSareaVo);
         model.addAttribute("eduSarea", result);
-        
         model.addAttribute("ctprvnCdList", eduSareaService.selectAddrCtprvnList());
 
         return "mng/prtpn/eduSarea/eduSareaUpdate";
@@ -193,17 +191,31 @@ public class EduSareaController {
         }
         
         eduSareaVo.setUser(user);
-
-        int retVal = 0;
-                
-        retVal = eduSareaService.insertEduSarea(eduSareaVo);
+        List<String> dplctCtprvnCdList = null;
+        dplctCtprvnCdList = eduSareaService.selectDplctCtprvnCdList(eduSareaVo);
+        String[] dplctCtprvnCdArr = dplctCtprvnCdList.toArray(new String[dplctCtprvnCdList.size()]);
         
-        if (retVal > 0) {
-            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "등록에 성공하였습니다.");
-        } else {
+        int dplctCnt = 0;
+        int retVal = 0;
+        
+        for(String ctprvnCd: eduSareaVo.getCtprvnCds()){
+            if(Arrays.asList(dplctCtprvnCdArr).contains(ctprvnCd)) {
+                dplctCnt++;
+            }
+        }
+        if (dplctCnt > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-            resultMap.put("msg", "등록에 실패했습니다.");
+            resultMap.put("msg", "타 운영권역과 중복되는 지역이 있습니다.");
+        }else {
+            retVal = eduSareaService.insertEduSarea(eduSareaVo);
+            
+            if (retVal > 0) {
+                resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+                resultMap.put("msg", "등록에 성공하였습니다.");
+            } else {
+                resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+                resultMap.put("msg", "등록에 실패했습니다.");
+            }
         }
 
         return resultMap;
@@ -234,17 +246,31 @@ public class EduSareaController {
         }
         
         eduSareaVo.setUser(user);
+        List<String> dplctCtprvnCdList = null;
+        dplctCtprvnCdList = eduSareaService.selectDplctCtprvnCdList(eduSareaVo);
+        String[] dplctCtprvnCdArr = dplctCtprvnCdList.toArray(new String[dplctCtprvnCdList.size()]);
 
+        int dplctCnt = 0;
         int retVal = 0;
-                
-        retVal = eduSareaService.updateEduSarea(eduSareaVo);
         
-        if (retVal > 0) {
-            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "수정에 성공하였습니다.");
-        } else {
+        for(String ctprvnCd: eduSareaVo.getCtprvnCds()){
+            if(Arrays.asList(dplctCtprvnCdArr).contains(ctprvnCd)) {
+                dplctCnt++;
+            }
+        }
+        if (dplctCnt > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-            resultMap.put("msg", "수정에 실패했습니다.");
+            resultMap.put("msg", "타 운영권역과 중복되는 지역이 있습니다.");
+        }else {
+            retVal = eduSareaService.updateEduSarea(eduSareaVo);
+            
+            if (retVal > 0) {
+                resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+                resultMap.put("msg", "수정에 성공하였습니다.");
+            } else {
+                resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+                resultMap.put("msg", "수정에 실패했습니다.");
+            }
         }
 
         return resultMap;

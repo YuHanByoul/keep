@@ -141,9 +141,9 @@ public class CommonServiceImpl extends PlumAbstractServiceImpl implements Common
         Device device = new LiteDeviceResolver().resolveDevice(request);
         request.setAttribute(DeviceUtils.CURRENT_DEVICE_ATTRIBUTE,device);
         Device currentDevice  = DeviceUtils.getCurrentDevice(request);
-        if(currentDevice .isMobile()){
+        if(currentDevice.isMobile()){
             param.put("deviceCd", "PHONE");
-        }else if(currentDevice .isTablet()){
+        }else if(currentDevice.isTablet()){
             param.put("deviceCd", "PAD");
         }else{
             param.put("deviceCd", "PC");
@@ -234,5 +234,17 @@ public class CommonServiceImpl extends PlumAbstractServiceImpl implements Common
         }
                 
         return retVal;
+    }
+    
+    /**
+    * 관리자 접속 허가 IP목록을 조회한다.
+    *
+    * @Title : selectCertIpList
+    * @Description : 관리자 접속 허가 IP목록을 조회한다.
+    * @return List<String> 허가된 IP목록
+    * @throws Exception 예외
+    */
+    public List<String> selectCertIpList() throws Exception {
+        return commonDao.selectCertIpList();
     }
 }

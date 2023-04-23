@@ -1,6 +1,7 @@
 package com.kbrainc.plum.front.eduInst.model;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.ibatis.type.Alias;
 
@@ -17,6 +18,7 @@ public class EduInstVo extends ParentRequestVo {
     private UserVo user;
 
     private Integer aplyid;           /** 신청아이디 */
+    private Integer planKey;          /** 운영계획KEY */
     private String rcptno;            /** 접수번호 */
     private Integer instid;           /** 기관아이디 */
     private String aplcntid;          /** 신청자아이디 */
@@ -28,7 +30,7 @@ public class EduInstVo extends ParentRequestVo {
     private String instEml;           /** 기관 이메일 */
     private String instCntct;         /** 기관 연락처 */
     private String addr;              /** 기관 주소*/
-    private String addrDtl;          /** 기관 상세 주소*/
+    private String addrDtl;           /** 기관 상세 주소*/
     private String ctprvnCd;          /** 시도 코드 */
     private String rprsvBrdt;         /** 대표자 생년월일 */
     private String rprsvNm;           /** 대표자 명 */
@@ -45,7 +47,22 @@ public class EduInstVo extends ParentRequestVo {
     private Date regDt;               /** 등록 일시 */
     private Integer rgtrid;           /** 등록자아이디 */
 
+    private String mainBsns;          /** 주요 사업 */
+    private String operMthd;          /** 운영 방법 */
+    private String operPlan;          /** 운영 계획 */
+    private String mngPlan;           /** 관리 계획 */
+    private String bgtPlan;           /** 예산 계획 */
+    private String expcEffect;        /** 기대 계획 */
+    private String etcDta;            /** 기타 자료 */
+
+    private Integer schdlid;	       /** 일정아이디 */
+
     private String cd;                /** 코드 */
     private String cdNm;              /** 코드명 */
+
+    private List<SchdlVo> schdlList;
+    private List<EduExprtVo> eduExprtList;
+
+
 
 }

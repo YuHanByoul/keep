@@ -1271,8 +1271,9 @@ public class ReqMngController {
      */
     @RequestMapping(value="/mng/bizAply/req/selectScheduleList.do")
     @ResponseBody
-    public Map<String, Object> selectScheduleList(ReqMngVo reqMngVo) throws Exception {
+    public Map<String, Object> selectScheduleList(ReqMngVo reqMngVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
+        reqMngVo.setUser(user);
         resultMap.put("list", this.reqMngService.selectScheduleList(reqMngVo));
         
         return resultMap;

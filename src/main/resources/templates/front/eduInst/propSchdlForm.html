@@ -5,6 +5,14 @@
     layout:decorator="layout/front/nolnbSubLayout">
 <body>
 <div layout:fragment="content">
+<style>
+.feedback {
+  white-space: nowrap;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>
     <div class="steps">
         <ol>
             <li>
@@ -28,8 +36,9 @@
         </ol>
     </div>
 
+    <form id="propSchldForm" class="row row-section">
+        <input type="hidden"  id="aplyid" name="aplyid" th:value="${eduInstVo.aplyid}" />
 
-    <div class="row row-section">
         <div class="col col-small">
             <div class="sticky-navigation">
                 <strong class="tit">신청정보 항목</strong>
@@ -44,8 +53,8 @@
                     </ul>
                     <div class="btn-wrap">
                         <div class="center">
-                            <button type="button" class="btn-large btn-gray">중간저장</button>
-                            <button type="button" class="btn-large btn-green"onclick="goNext()">다음</button>
+                            <button type="button" class="btn-large btn-gray" onclick="doSave()">중간저장</button>
+                            <button type="button" class="btn-large btn-green"onclick="doSave('next')()">다음</button>
                         </div>
                     </div>
                 </div>
@@ -73,52 +82,32 @@
                             <th scope="col"><span class="blind">행 삭제</span></th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
+                    <tbody id="schldTbody">
+                        <tr th:id="'schldTr'+${i.count}" th:if="${#lists.size(schdlList) > 0}" th:each="schld, i: ${schdlList}">
                             <td>
-                                <input type="date" title="일시">
+                                <input type="date" title="일시" id="" name="de" th:value="${schld.de}">
                             </td>
                             <td>
-                                <input type="text" title="시간">
+                                <input type="text" title="시간" maxlength="10" id="hr" name="hr" th:value="${schld.hr}">
                             </td>
                             <td>
-                                <input type="text" title="교육과정">
+                                <input type="text" title="교육과정" maxlength="100" id="eduCrs" name="eduCrs" th:value="${schld.eduCrs}">
                             </td>
                             <td>
-                                <input type="text" title="세부내용">
+                                <input type="text" title="세부내용" maxlength="200" id="dtlCn" name="dtlCn" th:value="${schld.dtlCn}">
                             </td>
                             <td>
-                                <input type="text" title="교육대상 및 인원">
+                                <input type="text" title="교육대상 및 인원" maxlength="100" id="eduTrgt" name="eduTrgt" th:value="${schld.eduTrgt}">
                             </td>
-                            <td class="ac"></td>
-                        </tr>
-                        <tr>
-
-                            <td>
-                                <input type="date" title="일시">
-                            </td>
-                            <td>
-                                <input type="text" title="시간">
-                            </td>
-                            <td>
-                                <input type="text" title="교육과정">
-                            </td>
-                            <td>
-                                <input type="text" title="세부내용">
-                            </td>
-                            <td>
-                                <input type="text" title="교육대상 및 인원">
-                            </td>
-                            <td class="ac"><button type="button" class="btn-remove-table" title="행 삭제"><span class="icon icon-remove"></span></button></td>
+                            <td class="ac" th:unless="${i.count > 1}" ></td>
+                            <td class="ac" th:if="${i.count > 1}" ><button type="button" class="btn-remove-table" title="행 삭제" onclick="delRow()"><span class="icon icon-remove"></span></button></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            <button type="button" class="btn-row-add" title="행 추가">
+            <button type="button" class="btn-row-add" title="행 추가" onclick="addRow()">
                 <span class="icon icon-row-add"></span>
             </button>
-
-
 
             <div class="mo-only">
                 <div class="btn-wrap">
@@ -135,17 +124,120 @@
             </div>
 
         </div>
-    </div>
+    </form>
     <script th:inline="javascript">
         var nextUrl="/front/eduInst/mnPwrSttusForm.html";
+        var reUrl="/front/eduInst/propSchdlForm.html";
+        var insertUrl="/front/eduInst/insertPropSchdl.do";
+        var updateUrl="/front/eduInst/updateSchdl.do";
 
         function goNext(){
             //if(!valid()) return false;
             location.href = nextUrl;
         }
 
-        $(function(){
+        function delRow(){
+            var lastRow = $('#schldTbody tr:last');
+            if(lastRow.index() > 0) lastRow.remove();
+        }
 
+        function addRow() {
+            var lastRow = $('#schldTbody tr:last');
+
+        	if ($('#schldTbody tr').length >= 20) {
+        	    alert("최대 20행까지만 추가 가능합니다.");
+                return;
+            }
+
+        	var newRow = lastRow.clone().attr('id', 'schldTr' + (lastRow.index() + 2));
+
+        	newRow.find('input[type="text"], input[type="date"]').val('');
+        	lastRow.after(newRow);
+
+        	if ($('#schldTbody tr').length == 2) {
+        	    $('#schldTbody tr:last td:last').before('<td><button type="button" class="btn-remove-table disabled" title="행 삭제" onclick="delRow()" ><span class="icon icon-remove" ></span></button></td>');
+        	}
+        }
+
+        function validateTable() {
+    	  var valid = true;
+
+
+    	  $("#schldTbody input").each(function() {
+    	    var inputVal = $(this).val().trim();
+    	    var feedback = $(this).parent().find(".feedback");
+    	    if (!inputVal) {
+    	      valid = false;
+    	      if (!feedback.length) {
+    	        $(this).parent().append("<p class='feedback invalid'>공백은 입력할 수 없습니다.</p>");
+    	      }
+    	    } else {
+    	      feedback.remove();
+    	    }
+    	  });
+    	  return valid;
+    	}
+
+        function doSave(call){
+
+            var param = {};
+            var key = $("#planKey").val();
+
+            if(key == null || key == 0 || key == ''){
+                url = insertUrl;
+            }else{
+                url = updateUrl
+            }
+
+
+            if(!validateTable()) return;
+
+
+            if(call!="next")if(!confirm("저장하시겠습니까?")) return;
+
+            var schdlList = [];
+            $('#schldTbody tr').each(function(index, value){
+
+                var de      = $(this).find('input[name="de"]').val();
+                var hr      = $(this).find('input[name="hr"]').val();
+                var eduCrs  = $(this).find('input[name="eduCrs"]').val();
+                var dtlCn   = $(this).find('input[name="dtlCn"]').val();
+                var eduTrgt = $(this).find('input[name="eduTrgt"]').val();
+                schdlList.push({de:de, hr:hr, eduCrs:eduCrs, dtlCn:dtlCn, eduTrgt:eduTrgt});
+            });
+
+            param = {
+              aplyid: $("#aplyid").val(),
+              schdlList: schdlList
+            };
+
+            $.ajax({
+                url : insertUrl,
+                type: 'POST',
+                cache : false,
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(param),
+                success : function (data){
+
+                    if(data.result=="success"){
+                        alert(data.msg);
+                        var id = $("#aplyid").val();
+                        if(call == "next") {
+                            location.href = nextUrl+"?aplyid=" + id;
+                        }else{
+                            location.href = reUrl+"?aplyid=" + id;
+                        }
+                    }else{
+                        alert(data.msg);
+                    }
+                },
+                error : function (error){
+                }
+            });
+        }
+
+        $(function(){
 
         });
 
