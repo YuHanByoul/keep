@@ -78,11 +78,13 @@ public class MvmnAplyHistController {
         
         model.addAttribute("mvmnAplyHistInfoVo", mvmnAplyHistInfoVo);
         
-        if(!"".equals(mvmnAplyHistRegVo.getHopeEduBgngTm())){
+        if((mvmnAplyHistRegVo.getHopeEduBgngTm() != null) && (!"".equals(mvmnAplyHistRegVo.getHopeEduBgngTm()))){
             String[] splitHopeEduBgngTmStr = mvmnAplyHistRegVo.getHopeEduBgngTm().split(":");
             mvmnAplyHistRegVo.setHopeEduBgngTmHour(splitHopeEduBgngTmStr[0]);
             mvmnAplyHistRegVo.setHopeEduBgngTmMin(splitHopeEduBgngTmStr[1]);
-            
+        }
+        
+        if((mvmnAplyHistRegVo.getHopeEduEndTm() != null) && (!"".equals(mvmnAplyHistRegVo.getHopeEduEndTm()))){
             String[] splitHopeEduEndTmStr = mvmnAplyHistRegVo.getHopeEduEndTm().split(":");
             mvmnAplyHistRegVo.setHopeEduEndTmHour(splitHopeEduEndTmStr[0]);
             mvmnAplyHistRegVo.setHopeEduEndTmMin(splitHopeEduEndTmStr[1]);
