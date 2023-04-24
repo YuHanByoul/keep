@@ -1,5 +1,5 @@
 <form id="resveCancelFrm">
-    <input type="hidden" id="aplyid" name="aplyid" th:value="${popupVo.aplyid}">
+    <input type="hidden" id="aplyid" name="aplyid" th:value="${param.aplyid}">
 
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content type_2">
@@ -15,14 +15,14 @@
                         <div class="mb-3 form-group row">
                             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cnclRsnCd"><strong>사유</strong></label>
                             <div class="col-12">
-                                <span kattr:select_code="cnclRsnCd" th:value="${popupVo.cnclRsnCd}" id="cnclRsnCd" name="cnclRsnCd" onchange="changeCnclRsnCd" th:attr="grpCd=215,selectedCd=${popupVo.cnclRsnCd}" firstOptTxt="- 전체 -" addClass="form-select form-control" isAdmin="true">
+                                <span kattr:select_code="cnclRsnCd" id="cnclRsnCd" name="cnclRsnCd" onchange="changeCnclRsnCd" th:attr="grpCd=215,selectedCd=${popupVo?.cnclRsnCd}" firstOptTxt="- 전체 -" addClass="form-select form-control" isAdmin="true">
                             </div>
                         </div>
                         <!-- [case] 사유 기타 선택 시 -->
                         <div class="mb-0 form-group row required" id="rsvtCnclRsnCon" style="display:none;">
                             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="rsvtCnclRsn"><strong>기타 사유</strong></label>
                             <div class="col-12">
-                                <textarea rows="5" cols="5" class="form-control form-control-sm" id="rsvtCnclRsn" name="rsvtCnclRsn"><th:block th:text="${popupVo.rsvtCnclRsn}"/></textarea>
+                                <textarea rows="5" cols="5" class="form-control form-control-sm" id="rsvtCnclRsn" name="rsvtCnclRsn"><th:block th:text="${popupVo?.rsvtCnclRsn}"/></textarea>
                             </div>
                         </div>
                         <!-- // -->
@@ -39,6 +39,10 @@
 </form>
 
 <script th:inline="javascript">
+
+	/*<![CDATA[*/
+	var aplyids =/*[[${param.aplyids}]]*/null;
+	/*]]>*/
 
     var validator = $("#resveCancelFrm").validate({
         onsubmit: false,
@@ -69,32 +73,30 @@
         if(!confirm("신청취소처리 하시겠습니까?")){return;}
 
         var data = {
-            "aplyid"        : $("#resveCancelFrm #aplyid").val()
+            "aplyids"       : aplyids.join(",")
             , "cnclRsnCd"   : $("#resveCancelFrm #cnclRsnCd").val()
             , "rsvtCnclRsn" : $("#resveCancelFrm #rsvtCnclRsn").val()
         }
-        if(displayWorkProgress()){
-            
-	        $.ajax({
-	            url: "/mng/rcpmnyBfe/updateResveCancel.do",
-	            type: 'POST',
-	            cache : false,
-	            dataType: 'json',
-	            data : data,
-	            success : function (data){
-	                if(data.result=="success"){
-	                    alert(data.msg);
-	                    gridHelper2.resetPageContent();
-	                    dsptCheckAddModal.hide();
-	                }else{
-	                    alert(data.msg);
-	                }
-	                closeWorkProgress();
-	            },
-	            error : function (error){
-	            }
-	        });
+        if(displayWorkProgress() ){
+		    $.ajax({
+		        url: "/mng/rcpmnyBfe/updateResveCancel.do",
+		        type: 'POST',
+		        cache : false,
+		        dataType: 'json',
+		        data : data,
+		        success : function (data){
+		            if(data.result=="success"){
+		                alert(data.msg);
+		                gridHelper2.resetPageContent();
+		                dsptCheckAddModal.hide();
+		            }else{
+		                alert(data.msg);
+		            }
+		            closeWorkProgress();
+		        },
+		        error : function (error){
+		        }
+		    });
         }
     };
-
 </script>
