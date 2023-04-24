@@ -94,18 +94,30 @@ public class DelvryController {
     @RequestMapping(value = "/mng/delvry/delvryAplyUpdateForm.html")
     public String delvryAplyUpdateForm(DelvryAplyVo delvryAplyVo, Model model) throws Exception {
         DelvryAplyVo delvryInfo = delvryService.selectDelvryAplyInfo(delvryAplyVo);
-        // 파일 정보
-        FileVo fileVo = new FileVo();
-        if(delvryInfo.getAtchFilegrpid() != null && delvryInfo.getAtchFilegrpid() != 0) {
-            fileVo.setFilegrpid(delvryInfo.getAtchFilegrpid());
-            ArrayList<FileVo> fileList = fileService.getFileList(fileVo);
-            model.addAttribute("fileList", fileList);
+        if (null != delvryInfo) {
+            // 파일 정보
+            FileVo fileVo = new FileVo();
+            if(delvryInfo.getAtchFilegrpid() != null && delvryInfo.getAtchFilegrpid() != 0) {
+                fileVo.setFilegrpid(delvryInfo.getAtchFilegrpid());
+                ArrayList<FileVo> fileList = fileService.getFileList(fileVo);
+                model.addAttribute("fileList", fileList);
+            }
         }
+        
         model.addAttribute("delvryAplyInfo", delvryInfo);
         
         List<DelvryAplyComputVo> computList = delvryService.selectDelvryAplyComputList(delvryAplyVo);
         model.addAttribute("computList", computList);
-        
+
+        if (delvryAplyVo.getDelvryAplyid() == 0) {
+            delvryInfo = new DelvryAplyVo();
+            delvryInfo.setFldCd(delvryAplyVo.getFldCd());
+            
+            model.addAttribute("aplyList", delvryService.selectAplyList(delvryAplyVo));
+            model.addAttribute("delvryAplyInfo", delvryInfo);
+            
+            return "mng/delvry/delvryAplyInsert";
+        }
         return "mng/delvry/delvryAplyUpdate";
     }
     

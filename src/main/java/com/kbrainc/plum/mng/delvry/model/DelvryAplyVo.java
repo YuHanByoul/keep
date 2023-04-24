@@ -39,6 +39,9 @@ public class DelvryAplyVo extends ParentRequestVo {
     /** 교부 신청 아이디 */
     private int delvryAplyid;
     
+    /** 교부 아이디 */
+    private int delvryid;
+    
     /** 공모 아이디 */
     private int pcntstid;
     
@@ -54,8 +57,14 @@ public class DelvryAplyVo extends ParentRequestVo {
     /** 교부상태 코드명 */
     private String delvrySttsCdNm;
     
+    /** 기관아이디 */
+    private String instid;
+    
     /** 기관명 */
     private String instNm;
+    
+    /** 신청자아이디 */
+    private String userid;
     
     /** 신청자명 */
     private String aplcntNm;

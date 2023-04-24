@@ -133,24 +133,40 @@ public class DelvryServiceImpl extends PlumAbstractServiceImpl implements Delvry
     @Transactional
     public int updateDelvryAply(DelvryAplyVo delvryAplyVo) throws Exception {
         int retVal = 0;
-        // 1. 신청정보 업데이트
-        retVal += delvryDao.updateDelvryAply(delvryAplyVo);
-        
-        // 2. 산출내역 등록/업데이트/삭제
-        List<DelvryAplyComputVo> computList = delvryAplyVo.getComputList();
-        if(computList != null && computList.size() > 0) {
-            for(int i = 0; i < computList.size(); i++) {
-                DelvryAplyComputVo computVo = computList.get(i);
-                computVo.setUser(delvryAplyVo.getUser());
-                int computid = computVo.getComputid(); 
-                int amt = computVo.getAmt();
-                String cn = computVo.getCn();
-                if(computid == 0 && (amt != 0 || (cn != null && !cn.equals("")))) { // 등록
+        if (0 == delvryAplyVo.getDelvryAplyid()) {
+            // 1. 신청정보 등록
+            retVal += delvryDao.insertDelvryAply(delvryAplyVo);       
+            // 2. 산출내역 등록/업데이트/삭제
+            List<DelvryAplyComputVo> computList = delvryAplyVo.getComputList();
+            if(computList != null && computList.size() > 0) {
+                for(int i = 0; i < computList.size(); i++) {
+                    DelvryAplyComputVo computVo = computList.get(i);
+                    computVo.setUser(delvryAplyVo.getUser());
+                    computVo.setDelvryAplyid(delvryAplyVo.getDelvryAplyid());
                     retVal += delvryDao.insertDelvryAplyComput(computVo);
-                } else if(computid > 0 && amt == 0 && (cn == null || cn.equals(""))) { // 삭제
-                    retVal += delvryDao.deleteDelvryAplyComput(computVo);
-                } else { // 업데이트
-                    retVal += delvryDao.updateDelvryAplyComput(computVo);
+                }
+            }
+
+        } else {
+            // 1. 신청정보 업데이트
+            retVal += delvryDao.updateDelvryAply(delvryAplyVo);
+            
+            // 2. 산출내역 등록/업데이트/삭제
+            List<DelvryAplyComputVo> computList = delvryAplyVo.getComputList();
+            if(computList != null && computList.size() > 0) {
+                for(int i = 0; i < computList.size(); i++) {
+                    DelvryAplyComputVo computVo = computList.get(i);
+                    computVo.setUser(delvryAplyVo.getUser());
+                    int computid = computVo.getComputid(); 
+                    int amt = computVo.getAmt();
+                    String cn = computVo.getCn();
+                    if(computid == 0 && (amt != 0 || (cn != null && !cn.equals("")))) { // 등록
+                        retVal += delvryDao.insertDelvryAplyComput(computVo);
+                    } else if(computid > 0 && amt == 0 && (cn == null || cn.equals(""))) { // 삭제
+                        retVal += delvryDao.deleteDelvryAplyComput(computVo);
+                    } else { // 업데이트
+                        retVal += delvryDao.updateDelvryAplyComput(computVo);
+                    }
                 }
             }
         }
@@ -234,6 +250,21 @@ public class DelvryServiceImpl extends PlumAbstractServiceImpl implements Delvry
     @Override
     public List<FileVo> selectDelvryAplyFileList(DelvryAplyVo delvryAplyVo) throws Exception {
         return delvryDao.selectDelvryAplyFileList(delvryAplyVo);
+    }
+
+    /**
+    * 교부 신청하지않은 공모신청건 조회
+    *
+    * @Title : selectAplyList
+    * @Description : 교부 신청하지않은 공모신청건 조회
+    * @param delvryAplyVo DelvryAplyVo 객체
+    * @return List<DelvryAplyVo>
+    * @throws Exception 예외
+    */
+    @Override
+    public List<DelvryAplyVo> selectAplyList(DelvryAplyVo delvryAplyVo) throws Exception {
+        // TODO Auto-generated method stub
+        return delvryDao.selectAplyList(delvryAplyVo);
     }
     
 }
