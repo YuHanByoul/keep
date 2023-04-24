@@ -77,13 +77,33 @@
                                 <td colspan="3">
                                     <div class="form-input">
                                         <div class="form-check-list no-flex-wrap">
-                                            <label class="inp"><input type="radio" id="selfYn" name="selfYn" ><b>직접입력</b></label>
-                                            <label class="inp"><input type="radio" id="selfYn" name="selfYn" ><b>검색</b></label>
+                                            <label class="inp">
+                                                <input type="radio" th:id="'selfYn' + ${i.count}"
+                                                                    th:name="'selfYn' + ${i.count}"
+                                                                    th:checked="${prgrm.rfrncPrgrmid==null || prgrm.rfrncPrgrmid==0 ? true:false}"
+                                                                    value='self'><b>직접입력</b>
+                                            </label>
+                                            <label class="inp">
+                                                <input type="radio" th:id="'selfYn' + ${i.count}"
+                                                                    th:name="'selfYn' + ${i.count}"
+                                                                    th:checked="${prgrm.rfrncPrgrmid!=null && prgrm.rfrncPrgrmid!=0 ? true:false}"
+                                                                    value='search'><b>검색</b>
+                                            </label>
                                         </div>
-                                        <button type="button" class="btn-medium btn-green" onclick="openPopup()">검색</button>
+                                        <button type="button" class="btn-medium btn-green"
+                                                th:id="'srchBtn'+${i.count}"
+                                                name='srchBtn'
+                                                th:disabled="${prgrm.rfrncPrgrmid!=null && prgrm.rfrncPrgrmid!=0 ? '' : 'disabled'}"
+                                                th:onclick="'openPopup('+${i.count}+')'">검색</button>
+                                        <input type="hidden" title="참조프로그램아이디" placeholder="프로그램명을 입력해 주세요." th:id="'rfrncPrgrmid'+${i.count}" th:name="'rfrncPrgrmid'+${i.count}" th:value="${prgrm.rfrncPrgrmid}">
                                     </div>
                                     <div class="form-input mt10">
-                                        <input type="text" title="직접입력 프로그램명을 입력해 주세요." placeholder="프로그램명을 입력해 주세요." id="prgrmNm" name="prgrmNm" th:value="${prgrm.prgrmNm}">
+                                        <input type="text"
+                                        th:placeholder="${prgrm.rfrncPrgrmid==null || prgrm.rfrncPrgrmid==0 ? '프로그램명을 입력해 주세요.':'검색버튼을 눌러 프로그램을 선택해주세요.'}"
+                                        th:id="'prgrmNm'+${i.count}"
+                                        th:value="${prgrm.prgrmNm}"
+                                        th:readonly="${prgrm.rfrncPrgrmid!=null && prgrm.rfrncPrgrmid!=0 ? false: true}"
+                                        name="prgrmNm">
                                     </div>
                                 </td>
                             </tr>
@@ -149,17 +169,14 @@
     <script th:inline="javascript">
 
         var nextUrl="/front/eduInst/fcltSttsForm.html";
+        var reUrl="/front/eduInst/hldngSttsForm.html";
+        var insertUrl="/front/eduInst/insertHldngStts.do";
 
-        function goNext(){
-            //if(!valid()) return false;
-            location.href = nextUrl;
-        }
-
-        function openPopup(){
+        function openPopup(idx){
 
         	var aplyid= $('#aplyid').val();
 
-        	$("#eduPrgrmPop").load("/front/eduInst/eduPrgrmPopup.html?aplyid="+aplyid, function(response, status, xhr) {
+        	$("#eduPrgrmPop").load("/front/eduInst/eduPrgrmPopup.html?aplyid=" + aplyid +"&idx="+idx, function(response, status, xhr) {
                 if (status == "success") {
                     layerPopup.open({target:'eduPrgrmPop'});
                 }
@@ -177,11 +194,19 @@
 
             var newRow = lastRow.clone().attr('id', 'prgrmDiv' + idx);
 
-            newRow.find('input').val('');
+            newRow.find('input[name=prgrmNm]').attr('id','prgrmNm'+idx);
+
+            newRow.find('input[type="radio"]').each(function() {
+            	  $(this).attr('id', 'selfYn'+idx);
+            	  $(this).attr('name', 'selfYn'+idx);
+            });
+            newRow.find('[name=srchBtn]').attr('id','srchBtn'+idx)
+
+            newRow.find('input:not([type="radio"])').val('');
             newRow.find('select').val('');
 
             lastRow.after(newRow);
-debugger;
+
             if ($('div[id^="prgrmDiv"]').length == 2) {
                 $('div[id^="prgrmDiv"] div:last')
                     .append(`<button type="button" class="btn-remove-table mb0" title="테이블 삭제" onclick="delRow()"><span class="icon icon-remove"></span></button>`);
@@ -198,12 +223,87 @@ debugger;
         	if(call=='next'){
         		location.href = nextUrl;
         	}
+        	if(call!="next")if(!confirm("저장하시겠습니까?")) return;
+
+            var param = {};
+
+            var prgrmList = [];
+            $('div[id^="prgrmDiv"]').each(function(index, value){
+                var prgrmid      = $(this).find('input[name="prgrmid"]').val();
+                var prgrmNm      = $(this).find('input[name="prgrmNm"]').val();
+                var rfrncPrgrmid = $(this).find('input[name="rfrncPrgrmid"]').val();
+                var eduSbjct     = $(this).find('input[name="eduSbjct"]').val();
+                var eduTrgt      = $(this).find('input[name="eduTrgt"]').val();
+                var eduNope      = $(this).find('input[name="eduNope"]').val();
+                var eduMthd      = $(this).find('input[name="eduMthd"]').val();
+                var eduRnd       = $(this).find('input[name="eduRnd"]').val();
+                var eduPlc       = $(this).find('input[name="eduPlc"]').val();
+                var etrfee       = $(this).find('input[name="etrfee"]').val();
+                var prgrmSttsCd  = $(this).find('select[name="prgrmSttsCd"]').val();
+
+                prgrmList.push({
+                    prgrmid     :prgrmid
+                  , prgrmNm     :prgrmNm
+                  , rfrncPrgrmid:rfrncPrgrmid
+                  , eduSbjct    :eduSbjct
+                  , eduTrgt     :eduTrgt
+                  , eduNope     :eduNope
+                  , eduMthd     :eduMthd
+                  , eduRnd      :eduRnd
+                  , eduPlc      :eduPlc
+                  , etrfee      :etrfee
+                  , prgrmSttsCd :prgrmSttsCd
+                });
+            });
+
+            param = {
+                aplyid: $("#aplyid").val()
+              , seePrgrmList: prgrmList
+            };
+
+            $.ajax({
+                url : insertUrl,
+                type: 'POST',
+                cache : false,
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(param),
+                success : function (data){
+
+                    if(data.result=="success"){
+                        alert(data.msg);
+                        var id = $("#aplyid").val();
+                        if(call == "next") {
+                            location.href = nextUrl+"?aplyid=" + id;
+                        }else{
+                            location.href = reUrl+"?aplyid=" + id;
+                        }
+                    }else{
+                        alert(data.msg);
+                    }
+                },
+                error : function (error){
+                }
+            });
         };
 
-
         $(function(){
+            $(document).on('change', '[id^=selfYn]', function(idx, item) {
+        	    var no =this.id.replace("selfYn",'');
+        		if(this.value=='self'){
+        			$('#prgrmNm'+no).show();
+                    $('#rfrncPrgrmid'+no).val("");
+        			$('#srchBtn'+no).prop('disabled','disabled')
+        			$('#prgrmNm'+no).prop('readonly','')
+                    $('#prgrmNm'+no).prop('placeholder','프로그램명을 입력해 주세요.');
+        		}else{
+        			$('#rfrncPrgrmNm'+no).show();
+        			$('#prgrmNm'+no).prop('readonly','readonly')
+                    $('#srchBtn'+no).prop('disabled','')
+        			$('#prgrmNm'+no).prop('placeholder','검색버튼을 눌러 프로그램을 선택해주세요.');
 
-
+        		}
+        	})
         });
     </script>
 </div>

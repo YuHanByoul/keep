@@ -200,7 +200,7 @@ public interface EduInstDao {
 	* @throws Exception
 	* @return void
 	*/
-	public void insertSeePrgrm(EduInstVo eduInstVo) throws Exception;
+	public int insertSeePrgrm(SeePrgrmVo seePrgrmVo) throws Exception;
 
 	/**
 	* 교육프로그램 삭제
@@ -225,5 +225,16 @@ public interface EduInstDao {
 	*/
 	public List<SeePrgrmVo> selectDsgnPrgrmList(EduInstVo eduInstVo) throws Exception;
 
+	/**
+	* 시설 개요 조회
+	*
+	* @Title : selectSeeFclt
+	* @Description : 시설 개요 조회
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return EduInstVo
+	*/
+	public EduInstVo selectSeeFclt(EduInstVo eduInstVo) throws Exception;
 
 }

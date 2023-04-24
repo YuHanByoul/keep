@@ -182,4 +182,28 @@ public interface EduInstService {
 	*/
 	public List<SeePrgrmVo> selectDsgnPrgrmList(EduInstVo eduInstVo) throws Exception;
 
+	/**
+	* 교육프로그램보유현황 등록
+	*
+	* @Title : insertHldngStts
+	* @Description : 교육프로그램보유현황 등록
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertHldngStts(EduInstVo eduInstVo) throws Exception;
+
+	/**
+	* 시설 개요 조회
+	*
+	* @Title : selectSeeFclt
+	* @Description : 시설 개요 조회
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return EduInstVo
+	*/
+	public EduInstVo selectSeeFclt(EduInstVo eduInstVo) throws Exception;
+
 }

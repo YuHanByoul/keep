@@ -17,20 +17,20 @@ public class SeePrgrmVo extends ParentRequestVo {
 
     private Integer aplyid;	     /** 신청아이디 */
     private Integer prgrmid;        /** 프로그램아이디 */
-    private String prgrmNm;         /** 프로그램명 */
-    private String dsgnNo;          /** 지정번호 */
-    private String rfrncPrgrmid;    /** 참조 프로그램아이디 */
-    private String rfrncPrgrmNm;    /** 참조 프로그램명 */
-    private String eduSbjct;        /** 교육 주제 */
-    private String eduTrgt;         /** 교육 대상 */
+    private String  prgrmNm;        /** 프로그램명 */
+    private String  dsgnNo;         /** 지정번호 */
+    private String  rfrncPrgrmid;   /** 참조 프로그램아이디 */
+    private String  rfrncPrgrmNm;   /** 참조 프로그램명 */
+    private String  eduSbjct;       /** 교육 주제 */
+    private String  eduTrgt;        /** 교육 대상 */
     private Integer eduNope;        /** 교육 인원수 */
-    private String eduMthd;         /** 교육 방법 */
-    private String eduRnd;          /** 교육 차시 */
-    private String eduPlc;          /** 교육 장소 */
+    private String  eduMthd;        /** 교육 방법 */
+    private String  eduRnd;         /** 교육 차시 */
+    private String  eduPlc;         /** 교육 장소 */
     private Integer etrfee;         /** 참가비 */
-    private String prgrmSttsCd;     /** 프로그램 상태 코드 */
-    private Date mdfcnDt;           /** 수정 일시 */
+    private String  prgrmSttsCd;    /** 프로그램 상태 코드 */
+    private Date    mdfcnDt;        /** 수정 일시 */
     private Integer mdfrid;         /** 수정자아이디 */
-    private Date regDt;             /** 등록 일시 */
+    private Date    regDt;          /** 등록 일시 */
     private Integer rgtrid;         /** 등록자아이디 */
 }
