@@ -9,39 +9,39 @@
         <div id="content" class="content">
 
             <form class="search-filter" id="searchForm" name="searchForm">
-                <input type="hidden" id="pageNumber" name="pageNumber" value="1">
-	            <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
+                <input type="hidden" id="pageNumber" name="pageNumber" th:value="${reqMngVo.pageNumber == null ? 1 : reqMngVo.pageNumber}">
+	            <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${reqMngVo.rowPerPage == null ? 10 : reqMngVo.rowPerPage}">
 	            <input type="hidden" id="ORDER_DIRECTION" name="orderDirection" value="desc">
 	            <input type="hidden" id="orderField" name="orderField" value="REG_DT">
-	            <input type="hidden" id="pcntstid" name="pcntstid" >
+	            <input type="hidden" id="pcntstid" name="pcntstid" value="">
                 <div class="form-input-wrap">
                     <div class="form-row">
                         <div class="form-header"><strong class="label">진행상태</strong></div>
                         <div class="form-body">
                             <select title="상태" id="status" name="status">
                                 <option value="">- 전체 -</option>
-                                <option value="before">진행전</option>
-                                <option value="ing">진행중</option>
-                                <option value="end">마감</option>
+                                <option value="before" th:selected="${reqMngVo.status == 'before'}">진행전</option>
+                                <option value="ing" th:selected="${reqMngVo.status == 'ing'}">진행중</option>
+                                <option value="end" th:selected="${reqMngVo.status == 'end'}">마감</option>
                             </select>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-header"><strong class="label">사업분야</strong></div>
                         <div class="form-body">
-                            <span kattr:select_code="searchFldCd" grpCd="173" firstOptTxt="- 전체 -" addClass="input-sm">
+                            <span kattr:select_code="searchFldCd" th:attr="selectedCd=${reqMngVo.searchFldCd}" grpCd="173" firstOptTxt="- 전체 -" addClass="input-sm">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-header"><strong class="label">공모명</strong></div>
                         <div class="form-body">
-                            <input type="search" title="공모명" placeholder="공모명을 입력해주세요." name="searchPcntstNm" id="searchPcntstNm">
+                            <input type="search" title="공모명" placeholder="공모명을 입력해주세요." name="searchPcntstNm" id="searchPcntstNm" th:value="${reqMngVo.searchPcntstNm}">
                         </div>
                     </div>
                 </div>
                 <div class="search-filter-submit">
-                    <button type="reset" class="btn-medium btn-gray btn-before-refresh" onclick="listPage.searchInit();">초기화</button>
-                    <button type="button" class="btn-medium btn-green btn-before-search" onclick="listPage.search();">검색</button>
+                    <button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="listPage.searchInit();">초기화</button>
+                    <button type="submit" class="btn-medium btn-green btn-before-search" onclick="listPage.search(); return false;">검색</button>
                 </div>
             </form>
             
@@ -126,7 +126,9 @@
 	            $("#searchPcntstNm").val('');
 	            $("#searchFldCd").val('');
 	            $("#status").val('');
-	            this.selectList();
+	            $("#pcntstid").val('');
+	            $("#pageNumber").val('1');
+// 	            this.selectList();
 	        },
 	        selectList() {
 	            if (displayWorkProgress(true)) {

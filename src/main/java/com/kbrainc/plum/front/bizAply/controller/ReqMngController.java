@@ -88,7 +88,8 @@ public class ReqMngController {
     * @return String
      */
     @RequestMapping(value="/front/bizAply/reqMngListForm.html")
-    public String reqMngListForm() throws Exception {
+    public String reqMngListForm(Model model, ReqMngVo reqMngVo) throws Exception {
+        model.addAttribute("reqMngVo", reqMngVo);
         return "front/reqMng/reqMngList";
     }
     

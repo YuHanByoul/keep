@@ -96,10 +96,10 @@ public class ProgramInfoVo extends ParentRequestVo {
     private String wholOperRnd;
     
     /** 차시_교육_인원수 */
-    private Integer rndEduNope;
+    private String rndEduNope;
     
     /** 전체_교육_인원수 */
-    private Integer wholEduNope;
+    private String wholEduNope;
     
     /** 프로그램_배경 */
     private String prgrmBcrn;
@@ -117,40 +117,40 @@ public class ProgramInfoVo extends ParentRequestVo {
     private Integer fyerComplPrearngeNope;
     
     /** 1월_횟수 */
-    private Integer janCnt;
+    private String janCnt;
     
     /** 2월_횟수 */
-    private Integer febCnt;
+    private String febCnt;
     
     /** 3월_횟수 */
-    private Integer marCnt;
+    private String marCnt;
     
     /** 4월_횟수 */
-    private Integer aprCnt;
+    private String aprCnt;
     
     /** 5월_횟수 */
-    private Integer mayCnt;
+    private String mayCnt;
     
     /** 6월_횟수 */
-    private Integer juneCnt;
+    private String juneCnt;
     
     /** 7월_횟수 */
-    private Integer julyCnt;
+    private String julyCnt;
     
     /** 8월_횟수 */
-    private Integer augCnt;
+    private String augCnt;
     
     /** 9월_횟수 */
-    private Integer septCnt;
+    private String septCnt;
     
     /** 10월_횟수 */
-    private Integer octCnt;
+    private String octCnt;
     
     /** 11월_횟수 */
-    private Integer novCnt;
+    private String novCnt;
     
     /** 12월_횟수 */
-    private Integer dcmCnt;
+    private String dcmCnt;
     
     /** 프로그램_이름 */
     private String[] prgrmNm;

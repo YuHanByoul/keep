@@ -1,5 +1,9 @@
 package com.kbrainc.plum.front.eduInst.model;
 
+import java.util.List;
+
+import javax.validation.Valid;
+
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 /**
@@ -103,5 +107,77 @@ public interface EduInstDao {
 	* @return int
 	*/
 	public int updateOperPlan(EduInstVo eduInstVo) throws Exception;
+
+	/**
+	* 추진일정 목록 조회
+	*
+	* @Title : selectSchdlList
+	* @Description : 추진일정 목록 조회
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return List<SchdlVo>
+	*/
+	public List<SchdlVo> selectSchdlList(EduInstVo eduInstVo) throws Exception;
+
+	/**
+	* 추진일정 등록
+	*
+	* @Title : insertPropSchdl
+	* @Description : 추진일정 등록
+	* @param vo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertPropSchdl(SchdlVo schdlVo) throws Exception;
+
+	/**
+	* 추진일정 목록 삭제
+	*
+	* @Title : deletePropSchdl
+	* @Description : 추진일정 목록 삭제
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int deletePropSchdl(EduInstVo eduInstVo) throws Exception;
+
+	/**
+	* 교육전문인력 목록 조회
+	*
+	* @Title : selectEduExprtList
+	* @Description : 교육전문인력 목록 조회
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return List<EduExprtVo>
+	*/
+	public List<EduExprtVo> selectEduExprtList(EduInstVo eduInstVo) throws Exception;
+
+	/**
+	* 교육전문인력 등록
+	*
+	* @Title : insertEduExprt
+	* @Description : 교육전문인력 등록
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertEduExprt(EduExprtVo eduInstVo) throws Exception;
+
+	/**
+	* 교육전문인력 목록 삭제
+	*
+	* @Title : deleteEduExprtList
+	* @Description : 교육전문인력 목록 삭제
+	* @param eduInstVo
+	* @throws Exception
+	* @return void
+	*/
+	public void deleteEduExprt(EduInstVo eduInstVo) throws Exception;
+
 
 }

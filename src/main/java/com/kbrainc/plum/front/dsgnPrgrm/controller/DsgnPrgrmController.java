@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -230,7 +231,11 @@ public class DsgnPrgrmController {
             ArrayList<FileVo> fileList= fileService.getFileList(fileVo);
             model.addAttribute("fileList", fileList);
             model.addAttribute("fileListCnt", fileList.size());
+		} else {
+        	model.addAttribute("fileList", null);
+        	model.addAttribute("fileListCnt", 0);
         }
+
 
 		model.addAttribute("fileMap", null);
 		model.addAttribute("fileListCnt", 0);
