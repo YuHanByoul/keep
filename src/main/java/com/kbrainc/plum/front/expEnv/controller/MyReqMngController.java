@@ -89,7 +89,8 @@ public class MyReqMngController {
     * @return String
      */
     @RequestMapping(value="/front/expEnv/myAplyListForm.html")
-    public String myAplyListForm() throws Exception {
+    public String myAplyListForm(Model model, ReqUserVo reqUserVo) throws Exception {
+        model.addAttribute("reqMngVo", reqUserVo);
         return "front/expEnv/myAplyList";
     }
     

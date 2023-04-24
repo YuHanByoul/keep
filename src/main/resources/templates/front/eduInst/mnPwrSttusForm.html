@@ -71,10 +71,7 @@
                         <tbody>
                             <tr>
                                 <th scope="row">구분</th>
-                                <td><select title="구분">
-                                        <option value="선택">선택</option>
-                                        <option value="선택">선택</option>
-                                </select></td>
+                                <td><span kattr:select_code="seCd" th:attr='grpcd=249,selectedCd=${exprt.seCd}' firstOptTxt="- 선택 -" ></span></td>
                                 <th scope="row">성명</th>
                                 <td><input type="text" title="성명" placeholder="성명을 입력해 주세요." maxlength="60" id="nm" name="nm" th:value="${exprt.nm}"></td>
                             </tr>
@@ -86,11 +83,14 @@
                             </tr>
                             <tr>
                                 <th scope="row">소지자격증</th>
-                                <td><input type="text" title="소지자격증" placeholder="소지자격증을 입력해 주세요." maxlength="100" id="crtfct" name="crtfct" th:value="${exprt.crtfct}"></td>
+                                <td colspan="3"><input type="text" title="소지자격증" placeholder="소지자격증을 입력해 주세요." maxlength="100" id="crtfct" name="crtfct" th:value="${exprt.crtfct}"></td>
+                            </tr>
+                            <tr>
                                 <th scope="row">재직기간</th>
-                                <td>
-                                    <div class="form-insert">
+                                <td colspan="3">
+                                    <div class="form-input">
                                         <input type="date" title="재직기간(시작일)" placeholder="재직기간(시작일)을 입력해 주세요." maxlength="10" id="hdofBgngDe" name="hdofBgngDe" th:value="${exprt.hdofBgngDe}" style="width:130px;">
+                                        <div class="bul">~</div>
                                         <input type="date" title="재직기간(종료일)" placeholder="재직기간(종료일)을 입력해 주세요." maxlength="10" id="hdofEndDe" name="hdofEndDe" th:value="${exprt.hdofEndDe}" style="width:130px">
                                     </div>
                                 </td>
@@ -207,20 +207,18 @@
         function validateTable() {
             var valid = true;
 
-
             $('div[id^="exprtDiv"] input[type="text"]').each(function(index,item) {
               var inputVal = $(this).val().trim();
-              debugger;
-              var feedback = $(this).parent().find(".feedback");
-              var trgtid= $(this).attr('id');
 
-              if (!inputVal) {
-                valid = false;
-                if (!feedback.length) {
-                  $("#"+trgtid).after("<p class='feedback invalid'>공백은 입력할 수 없습니다.</p>");
-                }
+              var trgtid= $(this).attr('id');
+              if (!inputVal && $(this).val()!='') {
+                  valid = false;
+
+                  if($("#"+trgtid).next().attr('class') != "feedback invalid"){
+                      $("#"+trgtid).after("<p class='feedback invalid'>공백은 입력할 수 없습니다.</p>");
+                  }
               } else {
-                feedback.remove();
+            	  $("#"+trgtid).next().remove();
               }
             });
             return valid;
@@ -238,7 +236,9 @@
             }
 
 
+            //테이블
             if(!validateTable()) return;
+
 
 
             if(call!="next")if(!confirm("저장하시겠습니까?")) return;
@@ -247,7 +247,7 @@
             $('#exprtListDiv div[id^="exprtDiv"]').each(function(index, value){
 
                 var nm         = $(this).find('input[name="nm"]').val();
-                var seCd       = $(this).find('input[name="seCd"]').val();
+                var seCd       = $(this).find('select[name=seCd]').val();
                 var brdt       = $(this).find('input[name="brdt"]').val();
                 var chrgtask   = $(this).find('input[name="chrgtask"]').val();
                 var crtfct     = $(this).find('input[name="crtfct"]').val();

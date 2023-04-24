@@ -5,109 +5,118 @@
     layout:decorator="layout/front/popupLayout" >
 <body>
     <div layout:fragment="content">
+        <th:block th:if="${srvyInfo.sbmsnDt == null && srvyInfo.sttsNm.toString().equals('설문참여')}">
+        <script>
+            alert("설문참여가 불가능한 상태입니다.");
+            window.close();
+            location.href = "/";
+        </script>
+        </th:block>
         <!-- content -->
-        <div class="layer-popup layer-window-alert layer-alert active">
-            <div class="layer-wrap">
-                <div class="layer-header">
-                    <strong class="tit">설문조사</strong>
-                    <button type="button" class="btn-layer-close" title="레이어팝업 닫기" onclick="window.close()"></button>
-                </div>
-                <div class="layer-content">
-    
-                    <div class="table-caption j-center mt0">
-                        <h3 class="sub-title ac" th:text="${srvyInfo.srvyNm}"></h3>
+        <th:block th:unless="${srvyInfo.sbmsnDt == null && srvyInfo.sttsNm.toString().equals('설문참여')}">
+            <div class="layer-popup layer-window-alert layer-alert active">
+                <div class="layer-wrap">
+                    <div class="layer-header">
+                        <strong class="tit">설문조사</strong>
+                        <button type="button" class="btn-layer-close" title="레이어팝업 닫기" onclick="window.close()"></button>
                     </div>
-                    <hr style="display:block;border:0;border-top:1px solid var(--graye);margin:0 0 20px 0;">
-                    <p th:text="${srvyInfo.expln}"></p>
-                    <p class="desc-info mt15">문항에 대한 귀하의 의견(찬성정도)을 평가해주십시오.  </p>
-                    <hr style="display:block;border:0;border-top:1px solid var(--graye);margin:20px 0 -22px;">
-                    <div class="table-caption">
-                        <div class="right">
-                            <!-- [case] 설문확인 -->
-                            <!--<p class="desc ar">설문제출일 : YYYY-MM-DD</p>-->
-                            <!-- //[case] 설문확인 -->
+                    <div class="layer-content">
+        
+                        <div class="table-caption j-center mt0">
+                            <h3 class="sub-title ac" th:text="${srvyInfo.srvyNm}"></h3>
                         </div>
-                    </div>
-                    <th:block th:if="${(srvyInfo.qestnrKndCd == '110104' || srvyInfo.qestnrKndCd == '110106')}">
-                        <div class="table-caption d-flex">
-                            <div class="left d-flex a-center">
-                                <div class="mr10">참여자 이름<i class="ast" title="필수입력">*</i></div>
-                                <div class="form-input">
-                                    <input name="prtpntNm" type="text" title="참여자 이름" placeholder="실명을 입력해 주세요.">
+                        <hr style="display:block;border:0;border-top:1px solid var(--graye);margin:0 0 20px 0;">
+                        <p th:text="${srvyInfo.expln}"></p>
+                        <p class="desc-info mt15">문항에 대한 귀하의 의견(찬성정도)을 평가해주십시오.  </p>
+                        <hr style="display:block;border:0;border-top:1px solid var(--graye);margin:20px 0 -22px;">
+                        <div class="table-caption">
+                            <div class="right">
+                                <!-- [case] 설문확인 -->
+                                <!--<p class="desc ar">설문제출일 : YYYY-MM-DD</p>-->
+                                <!-- //[case] 설문확인 -->
+                            </div>
+                        </div>
+                        <th:block th:if="${(srvyInfo.qestnrKndCd == '110104' || srvyInfo.qestnrKndCd == '110106')}">
+                            <div class="table-caption d-flex">
+                                <div class="left d-flex a-center">
+                                    <div class="mr10">참여자 이름<i class="ast" title="필수입력">*</i></div>
+                                    <div class="form-input">
+                                        <input name="prtpntNm" type="text" title="참여자 이름" placeholder="실명을 입력해 주세요.">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </th:block>
-                    <div class="survay-list">
-                        <dl>
-                            <div class="list" th:each="item : ${qitemList}" th:data-qitemid="${item.qitemid}" th:data-qitemType="${item.qitemTypeCd}">
-                                <dt>
-                                    <div class="tit">
-                                        <strong th:text="${item.cn}"></strong>
-                                    </div>
-                                </dt>
-                                <dd>
-                                    <th:block th:switch="${item.qitemTypeCd}">
-                                        <div th:case="107100" class="form-check-list flex-row mo-flex-column">
-                                            <th:block th:each="example : ${item.exampleList}">
-                                                <label class="inp"><input type="radio" th:value="${example.exNo}" th:name="${'ans' + item.qitemid}"><b th:text="${example.cn}"></b></label>
-                                            </th:block>
+                        </th:block>
+                        <div class="survay-list">
+                            <dl>
+                                <div class="list" th:each="item : ${qitemList}" th:data-qitemid="${item.qitemid}" th:data-qitemType="${item.qitemTypeCd}">
+                                    <dt>
+                                        <div class="tit">
+                                            <strong th:text="${item.cn}"></strong>
                                         </div>
-                                        <div th:case="107101" class="form-check-list flex-row mo-flex-column">
-                                            <th:block th:each="example : ${item.exampleList}">
-                                                <label class="inp" th><input type="radio" th:value="${example.exNo}" th:name="${'ans' + item.qitemid}"><b th:text="${example.cn}"></b></label>
-                                            </th:block>                                                   
-                                        </div>
-                                        <div th:case="107102" class="form-check-list flex-row mo-flex-column">
-                                            <th:block th:each="example : ${item.exampleList}">
-                                                <label class="inp"><input type="checkbox" th:value="${example.exNo}" th:name="${'ans' + item.qitemid}"><b th:text="${example.cn}"></b></label>
-                                            </th:block>
-                                        </div>
-                                        <div th:case="107103" class="form-check-list flex-row mo-flex-column">
-                                            <th:block th:each="example : ${item.exampleList}">
-                                                <label class="inp"><input type="radio"  th:data-scr="${example.scr}" th:value="${example.exNo}" th:name="${'ans' + item.qitemid}"><b th:text="${example.cn + '(' + example.scr + '점)'}"></b></label>
-                                            </th:block>
-                                        </div>
-                                        <div th:case="107104" class="form-input">
-                                            <input type="text" th:title="${item.cn}" th:name="${'ans' + item.qitemid}" maxlength="50" onkeyup="srvySbmsnInsert.onChangeText(this);">
-                                            <div class="desc ar size fc-black9 mt5"><span class="textLen">0</span> / 50자</div>
-                                        </div>
-                                        <div th:case="107105" class="form-input mt10">
-                                            <textarea th:title="${item.cn}" th:name="${'ans' + item.qitemid}" maxlength="500" onkeyup="srvySbmsnInsert.onChangeText(this);"></textarea>
-                                            <div class="desc ar size fc-black9 mt5"><span class="textLen">0</span> / 500자</div>
-                                        </div>
-                                        <th:block th:case="107106">
-                                            <div class="form-check-list flex-row mo-flex-column">
+                                    </dt>
+                                    <dd>
+                                        <th:block th:switch="${item.qitemTypeCd}">
+                                            <div th:case="107100" class="form-check-list flex-row mo-flex-column">
                                                 <th:block th:each="example : ${item.exampleList}">
-                                                    <label class="inp">
-                                                        <input type="radio" th:data-etcYn="${example.etcYn}" th:value="${example.exNo}" th:name="${'ans' + item.qitemid}" th:qitemid="${item.qitemid}" onclick="srvySbmsnInsert.onChangeAnswer(this);">
-                                                        <b th:text="${example.cn}"></b>
-                                                    </label>
-                                                </th:block>    
+                                                    <label class="inp"><input type="radio" th:value="${example.exNo}" th:name="${'ans' + item.qitemid}"><b th:text="${example.cn}"></b></label>
+                                                </th:block>
                                             </div>
-                                            <div class="form-input mt10 d-none" th:id="${'etc' + item.qitemid}">
-                                                <textarea th:title="${item.cn}" th:name="${'etc' + item.qitemid}" maxlength="500" onkeyup="srvySbmsnInsert.onChangeText(this);"></textarea>
+                                            <div th:case="107101" class="form-check-list flex-row mo-flex-column">
+                                                <th:block th:each="example : ${item.exampleList}">
+                                                    <label class="inp" th><input type="radio" th:value="${example.exNo}" th:name="${'ans' + item.qitemid}"><b th:text="${example.cn}"></b></label>
+                                                </th:block>                                                   
+                                            </div>
+                                            <div th:case="107102" class="form-check-list flex-row mo-flex-column">
+                                                <th:block th:each="example : ${item.exampleList}">
+                                                    <label class="inp"><input type="checkbox" th:value="${example.exNo}" th:name="${'ans' + item.qitemid}"><b th:text="${example.cn}"></b></label>
+                                                </th:block>
+                                            </div>
+                                            <div th:case="107103" class="form-check-list flex-row mo-flex-column">
+                                                <th:block th:each="example : ${item.exampleList}">
+                                                    <label class="inp"><input type="radio"  th:data-scr="${example.scr}" th:value="${example.exNo}" th:name="${'ans' + item.qitemid}"><b th:text="${example.cn + '(' + example.scr + '점)'}"></b></label>
+                                                </th:block>
+                                            </div>
+                                            <div th:case="107104" class="form-input">
+                                                <input type="text" th:title="${item.cn}" th:name="${'ans' + item.qitemid}" maxlength="50" onkeyup="srvySbmsnInsert.onChangeText(this);">
+                                                <div class="desc ar size fc-black9 mt5"><span class="textLen">0</span> / 50자</div>
+                                            </div>
+                                            <div th:case="107105" class="form-input mt10">
+                                                <textarea th:title="${item.cn}" th:name="${'ans' + item.qitemid}" maxlength="500" onkeyup="srvySbmsnInsert.onChangeText(this);"></textarea>
                                                 <div class="desc ar size fc-black9 mt5"><span class="textLen">0</span> / 500자</div>
-                                            </div>    
+                                            </div>
+                                            <th:block th:case="107106">
+                                                <div class="form-check-list flex-row mo-flex-column">
+                                                    <th:block th:each="example : ${item.exampleList}">
+                                                        <label class="inp">
+                                                            <input type="radio" th:data-etcYn="${example.etcYn}" th:value="${example.exNo}" th:name="${'ans' + item.qitemid}" th:qitemid="${item.qitemid}" onclick="srvySbmsnInsert.onChangeAnswer(this);">
+                                                            <b th:text="${example.cn}"></b>
+                                                        </label>
+                                                    </th:block>    
+                                                </div>
+                                                <div class="form-input mt10 d-none" th:id="${'etc' + item.qitemid}">
+                                                    <textarea th:title="${item.cn}" th:name="${'etc' + item.qitemid}" maxlength="500" onkeyup="srvySbmsnInsert.onChangeText(this);"></textarea>
+                                                    <div class="desc ar size fc-black9 mt5"><span class="textLen">0</span> / 500자</div>
+                                                </div>    
+                                            </th:block>
                                         </th:block>
-                                    </th:block>
-                                </dd>
-                            </div>
-                        </dl>
+                                    </dd>
+                                </div>
+                            </dl>
+                        </div>
                     </div>
-                </div>
-                <div class="layer-footer">
-                    <div class="btn-wrap">
-                        <div class="center">
-                            <button type="button" class="btn-medium btn-gray" data-layer-close onclick="srvySbmsnInsert.offInsert();">닫기</button>
-                            <th:block sec:authorize-url="/front/srvy/insertSrvySbmsn.do">
-                                <button type="button" class="btn-medium btn-green" onclick="srvySbmsnInsert.onInsert();">제출하기</button>
-                            </th:block>
+                    <div class="layer-footer">
+                        <div class="btn-wrap">
+                            <div class="center">
+                                <button type="button" class="btn-medium btn-gray" data-layer-close onclick="srvySbmsnInsert.offInsert();">닫기</button>
+                                <th:block sec:authorize-url="/front/srvy/insertSrvySbmsn.do">
+                                    <button type="button" class="btn-medium btn-green" onclick="srvySbmsnInsert.onInsert();">제출하기</button>
+                                </th:block>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </th:block>
         
         <form id="srvySbmsnForm">
             <input type="hidden" name="srvyid" th:value="${srvyInfo.srvyid}" />
@@ -250,20 +259,22 @@
                                         
                                         if($("input[name='infntPrgrmAplyid']").val() > 0) aplyType = "I";
                                         if($("input[name='mvmnPrgrmAplyid']").val()  > 0) aplyType = "M";
-                                        if(aplyType != ""){
+                                        if(aplyType != "") {
                                             /*$("#srvySbmsnCmplPopup").load("/front/srvy/srvySbmsnCmplPopup.html?aplyType=" + aplyType, function(response, status, xhr) {
                                                 if (status == "success") {
                                                     layerPopup.open({target:'srvySbmsnCmplPopup'});
                                                 }
                                             });*/
                                             popupCenter({url: '/front/srvy/srvySbmsnCmplPopup.html?aplyType=' + aplyType, title: '설문조사완료', w: 442, h: 389, l: 0, t: 0});
-                                        }else{
+                                        } else {
                                             window.close();
                                         }
                                         // 국가환경교육관 로직 추가 2023-03-29 end
                                         //window.close();
                                     } else {
                                         alert(response.msg);
+                                        window.close();
+                                        location.href = "/";
                                     }
                                     closeWorkProgress();
                                 }
