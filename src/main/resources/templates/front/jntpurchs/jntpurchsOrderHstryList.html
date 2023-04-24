@@ -120,7 +120,8 @@
                         if(document.URL.indexOf('#') > -1) { // 검색유지
                             var historyData = document.URL.substring(document.URL.indexOf("#") + 1).split("&");
                             $("#pageNumber").val(historyData[0].split("=")[1]);
-                            $("#searchJntpurchsNm").val(decodeURI(historyData[1].split("=")[1]));
+                            $("#rowPerPage, #viewNumber").val(historyData[1].split("=")[1]);
+                            $("#searchJntpurchsNm").val(decodeURI(historyData[2].split("=")[1]));
                         }
                         var param = $('#searchForm').serializeArray();
                         $.ajax({
@@ -223,7 +224,17 @@
                 , onChangeRowPerPage: function() {
                     $("#pageNumber").val("1");
                     $("#rowPerPage").val($("#viewNumber").val());
+                    if(document.URL.indexOf("#") > -1) {
+                        jntpurchsOrderHstry.setPage();
+                    } else {
+                    }
                     this.onLoadData();
+                    //onChangePageSize($("#viewNumber").val(), this.onLoadData);
+                    /*
+                    $("#pageNumber").val("1");
+                    $("#rowPerPage").val($("#viewNumber").val());
+                    this.onLoadData();
+                    */
                 }
                 
                 , onRvwPopup: function(isWrite, orderid) {
@@ -240,7 +251,7 @@
                 }
                 
                 , onDetail: function(orderid) {
-                    if($("#pageNumber").val() != 1 || $("#searchJntpurchsNm").val()) {
+                    if($("#pageNumber").val() != 1 || $("#searchJntpurchsNm").val() || $("#rowPerPage").val() != 10) {
                         this.setPage();                        
                     }
                     location.href = this.detailUrl + "?orderid=" + orderid;
@@ -251,10 +262,10 @@
                     if(document.URL.indexOf("#") > -1) {
                         var url = document.URL.substring(0, document.URL.indexOf("#"));
                         hashUrl = url + "#pageNumber=" + $("#pageNumber").val();
-                        hashUrl += "&searchJntpurchsNm=" + encodeURI($("#searchJntpurchsNm").val());
+                        hashUrl += "&rowPerPage=" + $("#rowPerPage").val() + "&searchJntpurchsNm=" + encodeURI($("#searchJntpurchsNm").val());
                     } else {
                         hashUrl = document.URL + "#pageNumber=" + $("#pageNumber").val();
-                        hashUrl += "&searchJntpurchsNm=" + encodeURI($("#searchJntpurchsNm").val());
+                        hashUrl += "&rowPerPage=" + $("#rowPerPage").val() + "&searchJntpurchsNm=" + encodeURI($("#searchJntpurchsNm").val());
                     }
                     
                     location.replace(hashUrl);
