@@ -13,6 +13,12 @@
 				</h5>
 			</div>
 			<div class="col-12 col-md-6 text-right">
+                <th:block sec:authorize-url="/mng/rcpmnyBfe/resveCancelPopup.html">
+                    <button type="button" class="btn btn-disabled waves-effect waves-light" onclick="cancelRefund();" >환불 요청 취소</button>
+                </th:block>
+                <th:block sec:authorize-url="/mng/rcpmnyBfe/dsptCheckPopup.html">
+                    <button type="button" class="btn btn-primary m-r-5" onclick="completeRefund();" >환불 완료 </button>
+                </th:block>
 			</div>
 		</div>
 		<div class="card-block">
@@ -115,22 +121,38 @@
 				},
 			},
 			fields: [
-				{ name: 'aplyid', css: 'hide' }
+                {
+                    headerTemplate: function() {
+                        return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
+                    },
+                    itemTemplate: function(_, item) {
+                        return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox")
+                        //.prop("checked", $.inArray(String(item.userid), selectedItems) > -1)
+                        .prop("checked", $.inArray(item, selectedItems) > -1)
+                        .on("change", function () {
+                        $(this).is(":checked") ? selectItem($(this).parent().next().text()) : unselectItem($(this).parent().next().text());
+                        });
+                    },
+                    align: "center",
+                    width: "30",
+                    sorting: false
+                }
+				,{ name: 'aplyid', css: 'hide' }
 				,{ title: 'No.' ,name: 'rowNumber',    type: "number", width : "80", align:"center",  sorting :false }
 				,{ title: '신청자ID'    ,name: 'acnt',    type: "text", width: "100px"}
 				,{ title: '공간'   ,name: 'spceNm',   type: "text", width: "150", align:"center"  }
 				,{ title: '이용일(시)'   ,name: 'bgngDt',   type: "text", width: "250", align:"center"
-					, itemTemplate: function(value, item){
-						if( item.alldayYn == 'N' ){
-							return date2str(parseDate(item.bgngDt), 'yyyy-mm-dd HH:MM') +' ~ '+ date2str(parseDate(item.endDt), 'HH:MM');
-						}else{
-							if( new Date(item.bgngDt).valueOf() === new Date(item.endDt).valueOf() ){
-								return date2str(parseDate(item.bgngDt), 'yyyy-mm-dd');
-							}else{
-								return date2str(parseDate(item.bgngDt), 'yyyy-mm-dd') +' ~ '+ date2str(parseDate(item.endDt), 'yyyy-mm-dd');
-							}
-						}
-					}
+                    , itemTemplate: function(value, item){
+                        if( item.alldayYn == 'N' ){
+                            return item.bgngDt.substring(0,16) +' ~ '+item.endDt.substring(11,16);
+                        }else{
+                            if( item.bgngDt.substring(0,10) == item.endDt.substring(0,10)){
+                                return item.bgngDt.substring(0,10);
+                            }else{
+                                return item.bgngDt.substring(0,10) +' ~ '+ item.endDt.substring(0,10);
+                            }
+                        }
+                    }
 				}
 				,{ title: '결제금액' ,name: 'amt',  type: "text", width: "150", align:"center", itemTemplate: function(value) {
 					return value.toLocaleString()+'원';
@@ -143,10 +165,10 @@
 				}}
 				,{ title: '신청상태' ,name: 'aplySttsCdNm',  type: "text", width: "100", align:"center" }
 				,{ title: '결제상태' ,name: 'stlmSttsCdNm',  type: "text", width: "100", align:"center" }
-				,{ title: '환불요청일' ,name: 'mdfcnDt',  type: "text", width: "150", align:"center"
-					, itemTemplate: function(value, item){
-						return date2str(parseDate(item.mdfcnDt), 'yyyy-mm-dd');
-					}
+				,{ title: '환불요청일' ,name: 'rfndDmndDt',  type: "text", width: "150", align:"center"
+                    ,itemTemplate: function(value, item){
+                        return (value !=null && value.length > 10)?value.substring(0,10):item.regDt.substring(0,10);
+                    }
 				}
 			],
 			rowClick: function(args) {
@@ -165,51 +187,6 @@
 				selectedItems = [];
 			}
 		});
-
-		function date2str(x, y) {
-			var z = {
-				m: x.getMonth() + 1,
-				d: x.getDate(),
-				H: x.getHours(),
-				M: x.getMinutes(),
-				S: x.getSeconds()
-			};
-
-			y = y.replace(/(m+|d+|H+|M+|S+)/g, function(v) {
-				return ((v.length > 1 ? "0" : "") + z[v.slice(-1)]).slice(-2)
-			});
-
-			return y.replace(/(y+)/g, function(v) {
-				return x.getFullYear().toString().slice(-v.length)
-			});
-		}
-
-		function parseDate(strDate) {
-			var _strDate = strDate;
-			var _dateObj = new Date(_strDate);
-			if (_dateObj.toString() == 'Invalid Date') {
-				_strDate = _strDate.split('.').join('-');
-				_dateObj = new Date(_strDate);
-			}
-			if (_dateObj.toString() == 'Invalid Date') {
-				var _parts = _strDate.split(' ');
-
-				var _dateParts = _parts[0];
-				_dateObj = new Date(_dateParts);
-
-				if (_parts.length > 1) {
-					var _timeParts = _parts[1].split(':');
-					_dateObj.setHours(_timeParts[0]);
-					_dateObj.setMinutes(_timeParts[1]);
-					if (_timeParts.length > 2) {
-						_dateObj.setSeconds(_timeParts[2]);
-					}
-				}
-			}
-
-			return _dateObj;
-		}
-
 		var selectItem = function(item) {
 			selectedItems.push(item);
 			if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
@@ -218,7 +195,6 @@
 				$("#selectAllCheckbox").prop("checked", false);
 			}
 		};
-
 		var unselectItem = function(item) {
 			selectedItems = $.grep(selectedItems, function(i) {
 			return i !== item;
@@ -249,5 +225,105 @@
 			}
 		});
 	}
+
+
+    var cancelRefund = (aplyid) => {
+        
+        let aplyidForParam = 0;
+        
+        if(aplyid!=null && aplyid !='undefiend' && aplyid > 0){
+            aplyidForParam = aplyid;
+        }else{
+            if(selectedItems.length <=0 ){
+                alert("요청 취소 대상을 선택해주십시오.");
+                return;
+            }
+            aplyidForParam = selectedItems.join(",");
+        }
+        
+        if(!confirm('환불요청을 취소 하시겠습니까?\n다른 예약이 있는 요청건은 신청 취소 되며, 타 예약이 없는 요청건은 승인 및 입금완료 상태로 전환됩니다.') )return;
+        
+        var data = {"aplyids" : aplyidForParam }
+        if(displayWorkProgress()){
+              $.ajax({
+                  url: "/mng/refndMng/updateRefndCancel.do",
+                  type: 'POST',
+                  cache : false,
+                  dataType: 'json',
+                  data : data,
+                  success : function (data){
+                      closeWorkProgress();
+                      if(data.result=="success"){
+                          alert(data.msg);
+                          gridHelper2.resetPageContent();
+                      }else{
+                          alert(data.msg);
+                      }
+                  },
+                  error : function (error){
+                  }
+             });
+        }
+   }
+
+   var completeRefund = (aplyid) => {
+       
+        let aplyidForParam = 0;
+        
+        if(aplyid!=null && aplyid !='undefiend' && aplyid > 0){
+            aplyidForParam = aplyid;
+        }else{
+            if(selectedItems.length <=0 ){
+                alert("환불 완료 대상을 선택해주십시오.");
+                return;
+            }
+            
+            if(selectedItems.length > 1 ){
+                alert("두개 이상의 요청건은 처리 할 수 없습니다.");
+                return;
+            }
+            aplyidForParam = selectedItems.join(",");
+       }
+        
+       if(displayWorkProgress() ){
+           $.ajax({
+               type: "GET",
+               contentType: "application/json; charset=utf-8",
+               url: "/mng/refndMng/updateRefndComplete.do",
+               dataType: "json",
+               data : {selectedApplyid : aplyidForParam},
+               success : function (response){
+                   
+                   if(response.totalCount == 0){
+                       closeWorkProgress();
+                       alert("신청건이 존재하지 않습니다. 새로 고침 후 확인해주십시오");
+                       return;
+                   }else if(response.totalCount >= 2){
+                       closeWorkProgress();
+                       alert("중복 신청건이 존재합니다. 새로 고침 후 확인해주십시오");
+                       return;
+                   
+                   }
+                   closeWorkProgress();
+                   let refndPopupUrl = "/mng/rcpmnyAfter/refndPopup.html?aplyid="+aplyidForParam;
+                   fn_openResveCancelModal(refndPopupUrl);
+               }
+           });
+       }
+   }
+        
+  // 환불요청 팝업
+  var fn_openResveCancelModal = (refndPopupUrl) => {
+        $("#refndPopup").load(refndPopupUrl, function(response, status, xhr) {
+            if (status == "success") {
+                refndModal = new bootstrap.Modal($('#refndPopup'));
+                refndModal.show();
+            }
+        });
+    }
+
+
+
+	
 
 </script>

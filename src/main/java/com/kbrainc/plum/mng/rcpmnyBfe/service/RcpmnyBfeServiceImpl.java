@@ -46,8 +46,8 @@ public class RcpmnyBfeServiceImpl extends PlumAbstractServiceImpl implements Rcp
     * @return List<RcpmnyBfeVo>
     */
     @Override
-    public List<RcpmnyBfeVo> selectRcpmnyBfeList(RcpmnyBfeVo rcpmnyBfeVo) throws Exception{
-        return rcpmnyBfeDao.selectRcpmnyBfeList(rcpmnyBfeVo);
+    public List<ResveReqstVo> selectRcpmnyBfeList(ResveReqstVo resveReqstVo) throws Exception{
+        return rcpmnyBfeDao.selectRcpmnyBfeList(resveReqstVo);
     }
 
     /**
@@ -60,8 +60,8 @@ public class RcpmnyBfeServiceImpl extends PlumAbstractServiceImpl implements Rcp
     * @return RcpmnyBfeVo
     */
     @Override
-    public RcpmnyBfeVo selectRcpmnyBfeInfo(RcpmnyBfeVo rcpmnyBfeVo) throws Exception {
-        return rcpmnyBfeDao.selectRcpmnyBfeInfo(rcpmnyBfeVo);
+    public ResveReqstVo selectRcpmnyBfeInfo(ResveReqstVo resveReqstVo) throws Exception {
+        return rcpmnyBfeDao.selectRcpmnyBfeInfo(resveReqstVo);
     }
 
     /**
@@ -74,8 +74,8 @@ public class RcpmnyBfeServiceImpl extends PlumAbstractServiceImpl implements Rcp
     * @return RcpmnyBfeVo
     */
     @Override
-    public RcpmnyBfeVo selectDsptCheckInfo(RcpmnyBfeVo rcpmnyBfeVo) throws Exception {
-        return rcpmnyBfeDao.selectDsptCheckInfo(rcpmnyBfeVo);
+    public ResveReqstVo selectDsptCheckInfo(ResveReqstVo resveReqstVo) throws Exception {
+        return rcpmnyBfeDao.selectDsptCheckInfo(resveReqstVo);
     }
 
     /**
@@ -89,15 +89,15 @@ public class RcpmnyBfeServiceImpl extends PlumAbstractServiceImpl implements Rcp
      */
     @Override
     @Transactional
-    public int updateDsptCheck(RcpmnyBfeVo rcpmnyBfeVo) throws Exception {
+    public int updateDsptCheck(ResveReqstVo resveReqstVo) throws Exception {
         
         int resInt = 0 ;
-        resInt += rcpmnyBfeDao.updateDsptCheck(rcpmnyBfeVo);
-        ResveReqstVo resveReqstVo = new ResveReqstVo();
+        resInt += rcpmnyBfeDao.updateDsptCheck(resveReqstVo);
+        ResveReqstVo paramVo = new ResveReqstVo();
         // 상태변경이력 추가
-        resveReqstVo.setAplyid(rcpmnyBfeVo.getAplyid());
-        resveReqstVo.setUser(rcpmnyBfeVo.getUser());
-        resInt += resveReqstDao.insertHstry(resveReqstVo);
+        paramVo.setAplyid(resveReqstVo.getAplyid());
+        paramVo.setUser(resveReqstVo.getUser());
+        resInt += resveReqstDao.insertHstry(paramVo);
         return resInt; 
     }
 
@@ -112,15 +112,15 @@ public class RcpmnyBfeServiceImpl extends PlumAbstractServiceImpl implements Rcp
      */
     @Override
     @Transactional
-    public int updateResveCancel(RcpmnyBfeVo rcpmnyBfeVo) throws Exception {
+    public int updateResveCancel(ResveReqstVo resveReqstVo) throws Exception {
         
         int resInt = 0 ;
-        resInt += rcpmnyBfeDao.updateResveCancel(rcpmnyBfeVo);
-        ResveReqstVo resveReqstVo = new ResveReqstVo();
+        resInt += rcpmnyBfeDao.updateResveCancel(resveReqstVo);
+        ResveReqstVo paramVo = new ResveReqstVo();
         // 상태변경이력 추가
-        resveReqstVo.setAplyids(rcpmnyBfeVo.getAplyids());
-        resveReqstVo.setUser(rcpmnyBfeVo.getUser());
-        resInt += resveReqstDao.insertHstry(resveReqstVo);
+        paramVo.setAplyids(resveReqstVo.getAplyids());
+        paramVo.setUser(resveReqstVo.getUser());
+        resInt += resveReqstDao.insertHstry(paramVo);
         return resInt; 
     }
     /**
@@ -133,7 +133,7 @@ public class RcpmnyBfeServiceImpl extends PlumAbstractServiceImpl implements Rcp
      * @return int
      */
     @Override
-    public String isThereResveNow(RcpmnyBfeVo rcpmnyBfeVo) throws Exception{
-        return rcpmnyBfeDao.isThereResveNow(rcpmnyBfeVo);
+    public String isThereResveNow(ResveReqstVo resveReqstVo) throws Exception{
+        return rcpmnyBfeDao.isThereResveNow(resveReqstVo);
     }
 }

@@ -1,12 +1,15 @@
 package com.kbrainc.plum.mng.rcpmnyAfter.service;
 
-import com.kbrainc.plum.mng.rcpmnyAfter.model.RcpmnyAfterDao;
-import com.kbrainc.plum.mng.rcpmnyAfter.model.RcpmnyAfterVo;
-import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import com.kbrainc.plum.mng.rcpmnyAfter.model.RcpmnyAfterDao;
+import com.kbrainc.plum.mng.resveReqst.model.ResveReqstDao;
+import com.kbrainc.plum.mng.resveReqst.model.ResveReqstVo;
+import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
 * 입금 후 서비스 구현 클래스
@@ -29,6 +32,9 @@ public class RcpmnyAfterServiceImpl extends PlumAbstractServiceImpl implements R
     @Autowired
     private RcpmnyAfterDao rcpmnyAfterDao;
     
+    @Autowired
+    private ResveReqstDao resveReqstDao;
+    
     /**
     * 입금 후 목록 조회
     *
@@ -39,8 +45,8 @@ public class RcpmnyAfterServiceImpl extends PlumAbstractServiceImpl implements R
     * @return List<RcpmnyAfterVo>
     */
     @Override
-    public List<RcpmnyAfterVo> selectRcpmnyAfterList(RcpmnyAfterVo rcpmnyAfterVo) throws Exception{
-        return rcpmnyAfterDao.selectRcpmnyAfterList(rcpmnyAfterVo);
+    public List<ResveReqstVo> selectRcpmnyAfterList(ResveReqstVo resveReqstVo) throws Exception{
+        return rcpmnyAfterDao.selectRcpmnyAfterList(resveReqstVo);
     }
 
     /**
@@ -53,8 +59,8 @@ public class RcpmnyAfterServiceImpl extends PlumAbstractServiceImpl implements R
     * @return RcpmnyAfterVo
     */
     @Override
-    public RcpmnyAfterVo selectRcpmnyAfterInfo(RcpmnyAfterVo rcpmnyAfterVo) throws Exception {
-        return rcpmnyAfterDao.selectRcpmnyAfterInfo(rcpmnyAfterVo);
+    public ResveReqstVo selectRcpmnyAfterInfo(ResveReqstVo resveReqstVo) throws Exception {
+        return rcpmnyAfterDao.selectRcpmnyAfterInfo(resveReqstVo);
     }
 
     /**
@@ -67,8 +73,8 @@ public class RcpmnyAfterServiceImpl extends PlumAbstractServiceImpl implements R
     * @return RcpmnyAfterVo
     */
     @Override
-    public RcpmnyAfterVo selectDsptCheckInfo(RcpmnyAfterVo rcpmnyAfterVo) throws Exception {
-        return rcpmnyAfterDao.selectDsptCheckInfo(rcpmnyAfterVo);
+    public ResveReqstVo selectDsptCheckInfo(ResveReqstVo resveReqstVo) throws Exception {
+        return rcpmnyAfterDao.selectDsptCheckInfo(resveReqstVo);
     }
 
     /**
@@ -81,8 +87,17 @@ public class RcpmnyAfterServiceImpl extends PlumAbstractServiceImpl implements R
      * @return int
      */
     @Override
-    public int updateDsptCheckCancel(RcpmnyAfterVo rcpmnyAfterVo) throws Exception {
-        return rcpmnyAfterDao.updateDsptCheckCancel(rcpmnyAfterVo);
+    @Transactional
+    public int updateDsptCheckCancel(ResveReqstVo resveReqstVo) throws Exception {
+        
+        int resInt = 0 ;
+        resInt += rcpmnyAfterDao.updateDsptCheckCancel(resveReqstVo);
+        ResveReqstVo paramVo = new ResveReqstVo();
+        // 상태변경이력 추가
+        paramVo.setAplyid(resveReqstVo.getAplyid());
+        paramVo.setUser(resveReqstVo.getUser());
+        resInt += resveReqstDao.insertHstry(paramVo);
+        return resInt;
     }
 
     /**
@@ -95,7 +110,16 @@ public class RcpmnyAfterServiceImpl extends PlumAbstractServiceImpl implements R
      * @return int
      */
     @Override
-    public int updateRefnd(RcpmnyAfterVo rcpmnyAfterVo) throws Exception {
-        return rcpmnyAfterDao.updateRefnd(rcpmnyAfterVo);
+    @Transactional
+    public int updateRefnd(ResveReqstVo resveReqstVo) throws Exception {
+        
+        int resInt = 0 ;
+        resInt += rcpmnyAfterDao.updateRefnd(resveReqstVo);
+        ResveReqstVo paramVo = new ResveReqstVo();
+        // 상태변경이력 추가
+        paramVo.setAplyid(resveReqstVo.getAplyid());
+        paramVo.setUser(resveReqstVo.getUser());
+        resInt += resveReqstDao.insertHstry(paramVo);
+        return resInt;
     }
 }

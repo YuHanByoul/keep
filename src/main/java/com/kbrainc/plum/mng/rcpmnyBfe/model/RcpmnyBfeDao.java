@@ -1,8 +1,10 @@
 package com.kbrainc.plum.mng.rcpmnyBfe.model;
 
+import java.util.List;
+
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
-import java.util.List;
+import com.kbrainc.plum.mng.resveReqst.model.ResveReqstVo;
 
 /**
 * 입금 전 Dao 클래스
@@ -31,7 +33,7 @@ public interface RcpmnyBfeDao {
     * @throws Exception 예외
     * @return List<RcpmnyBfeVo>
     */
-    public List<RcpmnyBfeVo> selectRcpmnyBfeList(RcpmnyBfeVo rcpmnyBfeVo) throws Exception;
+    public List<ResveReqstVo> selectRcpmnyBfeList(ResveReqstVo resveReqstVo) throws Exception;
 
     /**
     * 입금 전 상세정보 조회
@@ -42,7 +44,7 @@ public interface RcpmnyBfeDao {
     * @throws Exception 예외
     * @return RcpmnyBfeVo
     */
-    public RcpmnyBfeVo selectRcpmnyBfeInfo(RcpmnyBfeVo rcpmnyBfeVo) throws Exception;
+    public ResveReqstVo selectRcpmnyBfeInfo(ResveReqstVo resveReqstVo) throws Exception;
 
     /**
     * 입금 확인 전 상세정보 조회
@@ -53,7 +55,7 @@ public interface RcpmnyBfeDao {
     * @throws Exception 예외
     * @return RcpmnyBfeVo
     */
-    public RcpmnyBfeVo selectDsptCheckInfo(RcpmnyBfeVo rcpmnyBfeVo) throws Exception;
+    public ResveReqstVo selectDsptCheckInfo(ResveReqstVo resveReqstVo) throws Exception;
 
     /**
      * 입금 확인 처리
@@ -64,7 +66,7 @@ public interface RcpmnyBfeDao {
      * @throws Exception 예외
      * @return int
      */
-    public int updateDsptCheck(RcpmnyBfeVo rcpmnyBfeVo) throws Exception;
+    public int updateDsptCheck(ResveReqstVo resveReqstVo) throws Exception;
 
     /**
      * 예약 신청 취소 처리
@@ -75,7 +77,7 @@ public interface RcpmnyBfeDao {
      * @throws Exception 예외
      * @return int
      */
-    public int updateResveCancel(RcpmnyBfeVo rcpmnyBfeVo) throws Exception;
+    public int updateResveCancel(ResveReqstVo resveReqstVo) throws Exception;
     /**
      * 현재 해당 신청건의 예약 일정중 진행중인 예약이 있는지 확인
      *
@@ -85,6 +87,6 @@ public interface RcpmnyBfeDao {
      * @throws Exception 예외
      * @return int
      */
-    public String isThereResveNow(RcpmnyBfeVo rcpmnyBfeVo) throws Exception;
+    public String isThereResveNow(ResveReqstVo resveReqstVo) throws Exception;
     
 }

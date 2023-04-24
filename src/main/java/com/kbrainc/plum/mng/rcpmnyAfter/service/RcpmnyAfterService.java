@@ -1,6 +1,7 @@
 package com.kbrainc.plum.mng.rcpmnyAfter.service;
 
 import com.kbrainc.plum.mng.rcpmnyAfter.model.RcpmnyAfterVo;
+import com.kbrainc.plum.mng.resveReqst.model.ResveReqstVo;
 
 import java.util.List;
 
@@ -30,7 +31,7 @@ public interface RcpmnyAfterService {
     * @throws Exception 예외
     * @return List<RcpmnyAfterVo>
     */
-    public List<RcpmnyAfterVo> selectRcpmnyAfterList(RcpmnyAfterVo rcpmnyAfterVo) throws Exception;
+    public List<ResveReqstVo> selectRcpmnyAfterList(ResveReqstVo resveReqstVo) throws Exception;
 
     /**
     * 입금 후 상세 화면
@@ -41,7 +42,7 @@ public interface RcpmnyAfterService {
     * @throws Exception 예외
     * @return RcpmnyAfterVo
     */
-    public RcpmnyAfterVo selectRcpmnyAfterInfo(RcpmnyAfterVo rcpmnyAfterVo) throws Exception;
+    public ResveReqstVo selectRcpmnyAfterInfo(ResveReqstVo resveReqstVo) throws Exception;
 
     /**
     * 입금 확인 전 상세 화면
@@ -52,7 +53,7 @@ public interface RcpmnyAfterService {
     * @throws Exception 예외
     * @return RcpmnyAfterVo
     */
-    public RcpmnyAfterVo selectDsptCheckInfo(RcpmnyAfterVo rcpmnyAfterVo) throws Exception;
+    public ResveReqstVo selectDsptCheckInfo(ResveReqstVo resveReqstVo) throws Exception;
 
     /**
      * 입금 확인 취소 처리
@@ -63,7 +64,7 @@ public interface RcpmnyAfterService {
      * @throws Exception 예외
      * @return int
      */
-    public int updateDsptCheckCancel(RcpmnyAfterVo rcpmnyAfterVo) throws Exception;
+    public int updateDsptCheckCancel(ResveReqstVo resveReqstVo) throws Exception;
 
     /**
      * 환불요청 처리
@@ -74,5 +75,5 @@ public interface RcpmnyAfterService {
      * @throws Exception 예외
      * @return int
      */
-    public int updateRefnd(RcpmnyAfterVo rcpmnyAfterVo) throws Exception;
+    public int updateRefnd(ResveReqstVo resveReqstVo) throws Exception;
 }
