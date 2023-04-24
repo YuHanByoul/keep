@@ -24,11 +24,13 @@ import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.front.eduInst.model.EduExprtVo;
 import com.kbrainc.plum.front.eduInst.model.EduInstVo;
 import com.kbrainc.plum.front.eduInst.model.SchdlVo;
+import com.kbrainc.plum.front.eduInst.model.SeePrgrmVo;
 import com.kbrainc.plum.front.eduInst.service.EduInstService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.StringUtil;
+import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -482,8 +484,64 @@ public class EduInstController {
 	* @return String
 	*/
 	@RequestMapping(value="/front/eduInst/hldngSttsForm.html")
-	public String hldngSttsForm(Model model, @UserInfo UserVo user) throws Exception {
+	public String hldngSttsForm(EduInstVo eduInstVo, Model model, @UserInfo UserVo user) throws Exception {
+		List<SeePrgrmVo> seePrgrmList = null;
+		seePrgrmList = eduInstService.selectSeePrgrmList(eduInstVo);
+
+		model.addAttribute("eduInstVo", eduInstVo);
+		model.addAttribute("seePrgrmList", seePrgrmList);
+
 		return "front/eduInst/hldngSttsForm";
+	}
+
+	/**
+	* 프로그램 검색 팝업
+	*
+	* @Title : eduPrgrmPopup
+	* @Description : 프로그램 검색 팝업
+	* @param eduInstVo
+	* @param model
+	* @param user
+	* @return
+	* @throws Exception
+	* @return String
+	*/
+	@RequestMapping(value="/front/eduInst/eduPrgrmPopup.html")
+	public String eduPrgrmPopup(EduInstVo eduInstVo, Model model, @UserInfo UserVo user) throws Exception {
+		eduInstVo.setAplcntid(user.getUserid());
+		model.addAttribute("eduInstVo", eduInstVo);
+
+		return "front/eduInst/eduPrgrmPopup";
+	}
+
+	/**
+	* 지정프로그램 목록 조회
+	*
+	* @Title : selectDsgnPrgrmList
+	* @Description : 지정프로그램 목록 조회
+	* @param eduInstVo
+	* @param model
+	* @param user
+	* @return
+	* @throws Exception
+	* @return Map<String,Object>
+	*/
+	@RequestMapping(value="/front/eduInst/selectDsgnPrgrmList.do")
+	@ResponseBody
+    public Map<String, Object> selectDsgnPrgrmList(EduInstVo eduInstVo, Model model, @UserInfo UserVo user) throws Exception {
+		Map<String, Object> response = new HashMap<>();
+		eduInstVo.setAplcntid(user.getUserid());
+		List<SeePrgrmVo> list = eduInstService.selectDsgnPrgrmList(eduInstVo);
+
+		if (list.size() > 0) {
+    		response.put("totalCount", (list.get(0).getTotalCount()));
+    		response.put("pagination", PaginationUtil.getFrontPaginationHtml(list.get(0).getTotalPage(), list.get(0).getPageNumber(), 10));
+    	} else {
+    		response.put("totalCount", 0);
+    	}
+    	response.put("list", list);
+    	return response;
+
 	}
 
 	/**

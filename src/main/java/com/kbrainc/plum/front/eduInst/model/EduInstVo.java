@@ -17,6 +17,9 @@ public class EduInstVo extends ParentRequestVo {
 	/** 로그인사용자정보 */
     private UserVo user;
 
+    private String searchPrgrmNm;  /** 검색.프로그램아이디 */
+    private String searchDsgnNo;   /** 검색.지정번호 */
+
     private Integer aplyid;           /** 신청아이디 */
     private Integer planKey;          /** 운영계획KEY */
     private String rcptno;            /** 접수번호 */
