@@ -118,7 +118,7 @@ public class RcpmnyBfeServiceImpl extends PlumAbstractServiceImpl implements Rcp
         resInt += rcpmnyBfeDao.updateResveCancel(rcpmnyBfeVo);
         ResveReqstVo resveReqstVo = new ResveReqstVo();
         // 상태변경이력 추가
-        resveReqstVo.setAplyid(rcpmnyBfeVo.getAplyid());
+        resveReqstVo.setAplyids(rcpmnyBfeVo.getAplyids());
         resveReqstVo.setUser(rcpmnyBfeVo.getUser());
         resInt += resveReqstDao.insertHstry(resveReqstVo);
         return resInt; 

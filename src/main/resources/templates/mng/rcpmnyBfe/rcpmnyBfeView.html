@@ -277,23 +277,62 @@
             </div>
          <div class="tab-pane" id="managerInfo" role="tabpanel"></div>
 </form>
-<div class="card-block-small">
-    <button class="btn btn-disabled m-r-5" onclick="cancelProcesslModal()">신청취소</button>
-    <button class="btn btn-primary" onclick="fn_openDsptCheckModal()">입금확인</button>
+<div class="card-block-small" th:if = "${rcpmnyBfe.aplySttsCd != '160103' }">
+    <th:block sec:authorize-url="/mng/rcpmnyBfe/resveCancelPopup.html">
+    <button class="btn btn-disabled m-r-5" onclick="processDsptForDetail('C')">신청취소</button>
+    </th:block>
+    <th:block sec:authorize-url="/mng/rcpmnyBfe/dsptCheckPopup.html">
+    <button class="btn btn-primary" onclick="processDsptForDetail('D')">입금확인</button>
+    </th:block>
+    
 </div>
-<!-- 임시비밀번호발급 Start -->
-<div class="modal fade" id="popCon1" tabindex="-1" role="dialog" aria-labelledby="popCon1Title" aria-hidden="true"></div>
-<!-- 임시비밀번호발급 End -->
 
 <script th:inline="javascript">
     /*<![CDATA[*/
     var selectAplyid =/*[[${rcpmnyBfe.aplyid}]]*/null;
     /*]]>*/
-    function cancelProcesslModal(){
-    	fn_openResveCancelModal(selectAplyid);
+    
+    processDsptForDetail=(mode)=>{
+        
+        let openPopUrl = "";
+        let alertStr = "";
+        
+        if(mode=='C'){ //신청취소 
+            openPopUrl = "/mng/rcpmnyBfe/resveCancelPopup.html?aplyids="+selectAplyid;
+            alertStr = "신청취소";
+        }else{//입금확인
+            openPopUrl = "/mng/rcpmnyBfe/dsptCheckPopup.html?aplyid="+selectAplyid;
+            alertStr = "입금확인";
+        }
+
+	    if(displayWorkProgress() ){
+	        $.ajax({
+	            type: "GET",
+	            contentType: "application/json; charset=utf-8",
+	            url: "/mng/resveReqst/selectResveReqstList.do",
+	            dataType: "json",
+	            data : {selectedApplyid : selectAplyid},
+	            success : function (response){
+	            	closeWorkProgress();
+	                if(response.totalCount == 0){
+	                    alert("신청건이 존재하지 않습니다. 새로 고침 후 확인해주십시오");
+	                    return;
+	                }else if(response.totalCount >= 2){
+	                    alert("중복 신청건이 존재합니다. 새로 고침 후 확인해주십시오");
+	                    return;
+	                }else{
+	                    if(response.list[0].aplySttsCd == "160103"){
+	                        alert("예약 취소 건은 처리가 불가합니다.");
+	                        return false;
+	                    }else{
+	                        openDsptPop(openPopUrl);
+	                    }
+	                }
+	            }
+	        });
+       }
     }
-    function dsptCheckProcesslModal(){
-    	fn_openDsptCheckModal(selectAplyid);
-    }
+
+    
 </script>
 

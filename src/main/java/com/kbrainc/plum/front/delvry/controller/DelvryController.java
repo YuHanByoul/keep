@@ -64,7 +64,8 @@ public class DelvryController {
     * @throws Exception 예외
     */
     @RequestMapping(value = "/front/delvry/delvryAplyListForm.html")
-    public String delvryAplyListForm() throws Exception {
+    public String delvryAplyListForm(Model model, DelvryAplyVo delvryAplyVo) throws Exception {
+        model.addAttribute("search", delvryAplyVo);
         return "front/delvry/delvryList";
     }
     

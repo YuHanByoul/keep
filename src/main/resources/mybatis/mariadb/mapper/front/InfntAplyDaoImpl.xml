@@ -22,7 +22,16 @@
                 , G.FILE_IDNTFC_KEY
                 , E.CD_NM CTPRVN_NM
                 ,(SELECT GROUP_CONCAT(TB.CD_NM SEPARATOR', ') FROM TB_EDU_INFNT_PRGRM_TRGT_MAPNG TA, TB_CMM_CD TB WHERE TA.PRGRMID = A.PRGRMID and TA.TRGT_CD = TB.CD) AS TRGT_NM
-                , CASE WHEN NOW() <![CDATA[<=]]> DATE_FORMAT(Z.DE,'%Y.%m.%d') THEN '모집전'
+                , CASE WHEN NOW() <![CDATA[<=]]> DATE_FORMAT((
+                        SELECT MAX(T4.DE) DE 
+                        FROM TB_EDU_CLSSRM T1
+                        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM T2 ON T2.CLSSRMID = T1.CLSSRMID
+                        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME T3 ON T3.PRGRMID = T2.PRGRMID
+                        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME_SCHDL T4 ON T4.TMEID = T3.TMEID
+                        WHERE 1=1
+                        AND T1.CLSSRMID = B.CLSSRMID        
+                        AND T2.PRGRMID <![CDATA[<>]]> A.PRGRMID
+                        GROUP BY T1.CLSSRMID),'%Y.%m.%d') THEN '모집전'
                    ELSE CASE WHEN B.RCPT_BGNG_DT <![CDATA[>]]> NOW() THEN '모집전' 
                        WHEN NOW() BETWEEN B.RCPT_BGNG_DT AND B.RCPT_END_DT THEN '모집중'
                        WHEN B.RCPT_END_DT <![CDATA[<]]> NOW() THEN '마감'
@@ -38,15 +47,6 @@
                 LEFT OUTER JOIN TB_CMM_CD E ON E.CD = B.CTPRVN_CD
                 LEFT OUTER JOIN TB_CMM_CD F ON F.CD = C.CLSF_CD
                 LEFT OUTER JOIN TB_CMM_FILE G ON A.EDU_PHOTO_FILEID = G.FILEID
-                LEFT OUTER JOIN (
-                    SELECT T1.CLSSRMID, MAX(T4.DE) DE 
-                    FROM TB_EDU_CLSSRM T1
-                    LEFT OUTER JOIN TB_EDU_INFNT_PRGRM T2 ON T2.CLSSRMID = T1.CLSSRMID
-                    LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME T3 ON T3.PRGRMID = T2.PRGRMID 
-                    LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME_SCHDL T4 ON T4.TMEID = T3.TMEID  
-                    GROUP BY T1.CLSSRMID
-                ) Z ON Z.CLSSRMID = B.CLSSRMID            
-                
                 WHERE 1=1
                 AND A.USE_YN = 'Y'
                 <!-- 유아환경교육관 교육신청 프로그램명 -->
@@ -99,7 +99,16 @@
                 , A.MTTRAT              
                 , E.CD_NM CTPRVN_NM
                 ,(SELECT GROUP_CONCAT(TB.CD_NM SEPARATOR', ') FROM TB_EDU_INFNT_PRGRM_TRGT_MAPNG TA, TB_CMM_CD TB WHERE TA.PRGRMID = A.PRGRMID and TA.TRGT_CD = TB.CD) AS TRGT_NM
-                , CASE WHEN NOW() <![CDATA[<=]]> DATE_FORMAT(Z.DE,'%Y.%m.%d') THEN '모집전'
+                , CASE WHEN NOW() <![CDATA[<=]]> DATE_FORMAT((
+                        SELECT MAX(T4.DE) DE 
+                        FROM TB_EDU_CLSSRM T1
+                        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM T2 ON T2.CLSSRMID = T1.CLSSRMID
+                        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME T3 ON T3.PRGRMID = T2.PRGRMID
+                        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME_SCHDL T4 ON T4.TMEID = T3.TMEID
+                        WHERE 1=1
+                        AND T1.CLSSRMID = B.CLSSRMID        
+                        AND T2.PRGRMID <![CDATA[<>]]> A.PRGRMID
+                        GROUP BY T1.CLSSRMID),'%Y.%m.%d') THEN '모집전'
                    ELSE CASE WHEN B.RCPT_BGNG_DT <![CDATA[>]]> NOW() THEN '모집전' 
                        WHEN NOW() BETWEEN B.RCPT_BGNG_DT AND B.RCPT_END_DT THEN '모집중'
                        WHEN B.RCPT_END_DT <![CDATA[<]]> NOW() THEN '마감'
@@ -115,19 +124,10 @@
                 LEFT OUTER JOIN TB_CMM_CD F ON F.CD = C.CLSF_CD
                 LEFT OUTER JOIN TB_CMM_FILE G ON A.EDU_PHOTO_FILEID = G.FILEID
                 LEFT OUTER JOIN TB_CMM_FILE H ON A.EDU_INTRCN_FILEID = H.FILEID
-                LEFT OUTER JOIN TB_CMM_CD I ON I.CD = A.RCPT_MTHD_CD
-                LEFT OUTER JOIN (
-                    SELECT T1.CLSSRMID, MAX(T4.DE) DE 
-                    FROM TB_EDU_CLSSRM T1
-                    LEFT OUTER JOIN TB_EDU_INFNT_PRGRM T2 ON T2.CLSSRMID = T1.CLSSRMID
-                    LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME T3 ON T3.PRGRMID = T2.PRGRMID 
-                    LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME_SCHDL T4 ON T4.TMEID = T3.TMEID  
-                    GROUP BY T1.CLSSRMID
-                ) Z ON Z.CLSSRMID = B.CLSSRMID            
-                
+                LEFT OUTER JOIN TB_CMM_CD I ON I.CD = A.RCPT_MTHD_CD        
             WHERE A.USE_YN = 'Y'
               AND A.PRGRMID = #{prgrmid}
-            GROUP BY A.PRGRMID;
+            GROUP BY A.PRGRMID
     </select>
     
     <!-- 유아환경교육관 교육신청 교육사진 파일 목록 조회 -->

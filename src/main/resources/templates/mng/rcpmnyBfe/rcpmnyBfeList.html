@@ -43,7 +43,7 @@
 								<div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
 									<strong>예약신청일</strong></div>
 								<div class="col-12">
-								     <input type="text" class="form-control form-control-sm" name="filterSearchSelectDate" id="filterSearchSelectDate">
+								     <input type="text" class="form-control form-control-sm" name="daterange" id="filterSearchSelectDate">
 								     <input type="hidden" id="searchBgngDt" name="searchBgngDt"/>
 								     <input type="hidden" id="searchEndDt" name="searchEndDt"/>
 								</div>
@@ -66,10 +66,10 @@
 						</h5>
 					</div>
                     <div class="col-12 col-md-6 text-right">
-                        <th:block sec:authorize-url="/mng/spce/spceDetail.html">
+                        <th:block sec:authorize-url="/mng/rcpmnyBfe/resveCancelPopup.html">
                             <button type="button" class="btn btn-disabled waves-effect waves-light" onclick="processDspt('C');" >신청취소</button>
                         </th:block>
-                        <th:block sec:authorize-url="/mng/spce/spceDetail.html">
+                        <th:block sec:authorize-url="/mng/rcpmnyBfe/dsptCheckPopup.html">
                             <button type="button" class="btn btn-primary m-r-5" onclick="processDspt('D');" >입금확인</button>
                         </th:block>
                     </div>
@@ -179,16 +179,22 @@
 					},
 				},
 				fields: [
- 	                 {
-	                     title : '선택' ,
-	                     itemTemplate: function(_, item) {
-	                         return $("<input>").attr("type", "radio").attr("class", "singleCheckbox").attr("name","aplyChk")
-	                         .attr("value",item.aplyid).attr("id","aplyChk"+item.aplyid)
-	                     },
-	                     align: "center",
-	                     width: "80",
-	                     sorting: false
-	                 }
+                    {
+                        headerTemplate: function() {
+                            return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
+                        },
+                        itemTemplate: function(_, item) {
+                            return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox")
+                            //.prop("checked", $.inArray(String(item.userid), selectedItems) > -1)
+                            .prop("checked", $.inArray(item, selectedItems) > -1)
+                            .on("change", function () {
+                            $(this).is(":checked") ? selectItem($(this).parent().next().text()) : unselectItem($(this).parent().next().text());
+                            });
+                        },
+                        align: "center",
+                        width: "30",
+                        sorting: false
+                    }
 					,{ name: 'aplyid', css: 'hide' }
 					,{ title: 'No.' ,name: 'rowNumber',    type: "number", width : "80", align:"center",  sorting :false }
 					,{ title: '신청자ID'    ,name: 'acnt',    type: "text", width: "150",align:"center"}
@@ -234,60 +240,111 @@
 					selectedItems = [];
 				}
 			});
+
+	         var selectItem = function(item) {
+	                selectedItems.push(item);
+	                if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+	                    $("#selectAllCheckbox").prop("checked", true);
+	                } else {
+	                    $("#selectAllCheckbox").prop("checked", false);
+	                }
+	            };
+
+	            var unselectItem = function(item) {
+	                selectedItems = $.grep(selectedItems, function(i) {
+	                    return i !== item;
+	                });
+	                if(selectedItems.length == 0) {
+	                    $('#selectAllCheckbox').attr('checked', false);
+	                }
+	                if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+	                    $("#selectAllCheckbox").prop("checked", true);
+	                } else {
+	                    $("#selectAllCheckbox").prop("checked", false);
+	                }
+	            };
+	            
+	            $("#selectAllCheckbox").click(function(item) {
+	                selectedItems = [];
+	                if(this.checked) { // check select status
+	                    $('.singleCheckbox').each(function() {
+	                        this.checked = true;
+	                        selectItem($(this).parent().next().text());
+	                    });
+	                }else {
+	                    $('.singleCheckbox').each(function() {
+	                        this.checked = false;
+	                        unselectItem(item);
+	                    });
+	                    selectedItems = [];
+	                }
+	            });
 		}
 		
 	    processDspt=(mode)=>{
 		    
 		    let openPopUrl = "";
 		    let alertStr = "";
-	    	let checkedAplyid = $("input[name=aplyChk]:checked").val();
 	    	
+
+            if(selectedItems.length <=0 ){
+                alert(alertStr+" 대상을 선택해주십시오.");
+                return;
+            }
+
+            if(mode=='D' && selectedItems.length > 1){
+                alert("두개 이상의 예약건은 처리 할 수 없습니다.");
+                return;
+            }
+            
 		    if(mode=='C'){ //신청취소 
-		        openPopUrl = "/mng/rcpmnyBfe/resveCancelPopup.html?aplyid="+checkedAplyid;
+		        openPopUrl = "/mng/rcpmnyBfe/resveCancelPopup.html?aplyids="+selectedItems.join(",");
 		        alertStr = "신청취소";
 			}else{//입금확인
-		        openPopUrl = "/mng/rcpmnyBfe/dsptCheckPopup.html?aplyid="+checkedAplyid;
+		        openPopUrl = "/mng/rcpmnyBfe/dsptCheckPopup.html?aplyid="+selectedItems.join(",");
 		        alertStr = "입금확인";
 			}
-	    	if(checkedAplyid==null || checkedAplyid =='undefined'){
-		    	alert( alertStr+" 대상을 선택해주십시오.");
-		    	return;
-		    }
+			
+		    let params =(mode=='D')?{selectedApplyid : selectedItems.join(",")}:{aplyids : selectedItems.join(",")}
 
-	        if(displayWorkProgress()){
-	            $.ajax({
-                    type: "GET",
-                    contentType: "application/json; charset=utf-8",
-                    url: "/mng/resveReqst/selectResveReqstList.do",
-                    dataType: "json",
-	                data : {selectedApplyid : checkedAplyid },
-	                success : function (response){
-		                
-                        if(response.totalCount == 0){
-                            closeWorkProgress();
-                            alert("신청건이 존재하지 않습니다. 새로 고침 후 확인해주십시오");
-                            return;
-                        }else if(response.totalCount >= 2){
-                            closeWorkProgress();
-                            alert("중복 신청건이 존재합니다. 새로 고침 후 확인해주십시오");
-                            return;
-                        }else{
-                            closeWorkProgress();
-                        	if(response.list[0].aplySttsCd == "160103"){
-	                            alert("신청 취소 건은 처리가 불가합니다.");
-	                            return false;
-                        	}else{
-                        		openDsptPop(openPopUrl);
-                        	}
-                        }
-	                }
-	            });
-	        }
+		    if( mode=='D'){
+		        if(displayWorkProgress() ){
+		            $.ajax({
+	                    type: "GET",
+	                    contentType: "application/json; charset=utf-8",
+	                    url: "/mng/resveReqst/selectResveReqstList.do",
+	                    dataType: "json",
+		                data : params,
+		                success : function (response){
+			                
+	                        if(response.totalCount == 0){
+	                            closeWorkProgress();
+	                            alert("신청건이 존재하지 않습니다. 새로 고침 후 확인해주십시오");
+	                            return;
+	                        }else if(response.totalCount >= 2){
+	                            closeWorkProgress();
+	                            alert("중복 신청건이 존재합니다. 새로 고침 후 확인해주십시오");
+	                            return;
+	                        }else{
+	                            closeWorkProgress();
+	                        	if(response.list[0].aplySttsCd == "160103"){
+		                            alert("예약 취소 건은 처리가 불가합니다.");
+		                            return false;
+	                        	}else{
+	                        		openDsptPop(openPopUrl);
+	                        	}
+	                        }
+		                }
+		            });
+			    }
+	        }else{
+		       //신청 취소건 
+               openDsptPop(openPopUrl);
+		    }
 		}
 		
-        openDsptPop=(popupUrl)=>{
+        var openDsptPop=(popupUrl)=>{
 		    $("#dsptProcessPopup").load(popupUrl, function(response, status, xhr) {
-	            console.log(status);
 	            if (status == "success") {
 	                dsptCheckAddModal = new bootstrap.Modal($('#dsptProcessPopup'));
 	                dsptCheckAddModal.show();

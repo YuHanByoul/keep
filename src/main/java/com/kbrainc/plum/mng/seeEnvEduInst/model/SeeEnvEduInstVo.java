@@ -109,8 +109,11 @@ public class SeeEnvEduInstVo extends ParentRequestVo {
     /** 기관 전화번호 */
     private String telno;
 
-    /** 기관 대표자 이름*/
+    /** 기관 대표자 이름 */
     private String rprsvNm;
+
+    /** 기관 홈페이지 */
+    private String hmpg;
 
     /** 검색용 파라미터 */
     private String searchCtprvn;

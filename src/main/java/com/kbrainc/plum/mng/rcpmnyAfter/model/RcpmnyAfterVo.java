@@ -32,7 +32,6 @@ public class RcpmnyAfterVo extends ParentRequestVo {
     /** 로그인사용자정보 */
     private UserVo user;
 
-
     /** 신청아이디 */
     private int aplyid;
 
@@ -194,11 +193,6 @@ public class RcpmnyAfterVo extends ParentRequestVo {
     /** 입금정보 결제방법 */
     private int hstryid;
 
-
-
-
-
-
     /** MODE */
     private String mode;
 
@@ -278,6 +272,9 @@ public class RcpmnyAfterVo extends ParentRequestVo {
     /** 중복 입금 후명 수 */
     public static Integer dupCnt;
     private String alldayYn;
+    
+    /** 신청아이디(s) */
+    private int aplyids;
 
     /** 검색 관련*/
     private String searchSeCd;

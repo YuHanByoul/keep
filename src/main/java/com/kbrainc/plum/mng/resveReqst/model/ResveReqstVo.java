@@ -322,10 +322,13 @@ public class ResveReqstVo extends ParentRequestVo {
     private String alldayYn;
     
     /** 중복 시설명 수 */
-    public static Integer dupCnt;
+    public Integer dupCnt;
     
     /** 사용일자 */        
-    public static String resveDt;
+    public String resveDt;
+    
+    /** 사용일자 */        
+    public String[] aplyids;
     
     /** 검색 관련*/
     private String searchSeCd;
