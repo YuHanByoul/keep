@@ -57,7 +57,7 @@ public class EnveduCntrVO extends ParentRequestVo {
     /** 기관 주소상세 */
     private String addrDtl;
     /** 기관 로고파일아이디 */
-    private String logoFileid;
+    private Integer  logoFileid;
     /** 기관 파일식별키 */
     private String fileIdntfcKey;
     
