@@ -125,8 +125,8 @@ public class RcpmnyBfeController {
     }
 
     /**
-     * @Title : dsptCheckPopup
-     * @Description : 입금 확인 팝업
+     * @Title : 예약취소 팝업
+     * @Description : 예약취소 팝업
      * @throws Exception :
      * @return String 이동화면경로
      * @throws Exception 예외
@@ -180,7 +180,7 @@ public class RcpmnyBfeController {
 
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "입금 확인(예약승인)처리 하였습니다.");
+            resultMap.put("msg", "입금 완료(예약승인)처리 하였습니다.");
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
             resultMap.put("msg", "입금 확인처리에 실패했습니다.");

@@ -6,20 +6,20 @@
 <body>
 	<div layout:fragment="content">
 		<!-- content -->
-		<form class="search-filter" id="searchForm" name="searchForm">
+		<form class="search-filter" id="searchForm" name="searchForm" onsubmit="return false;">
 			<div class="form-input mo-flex-wrap">
 				<strong class="label">검색어</strong>
 				<div class="form-input">
 					<select title="검색어" name="searchType" id="searchType">
-						<option value="" selected>- 전체 - </option>	
+						<option value="" selected>- 선택 - </option>	
 						<option value="searchTtl">제목</option>
 						<option value="searchOxprNm">언론사</option>
 					</select>
 					<input type="search" title="검색어" name="searchKeyword" id="searchKeyword" placeholder="검색어를 입력해 주세요.">
 				</div>
 				<div class="search-filter-submit">
-					<button type="button" class="btn-medium btn-green btn-before-search" onclick="mmnws.search()">검색</button>
-					<button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="mmnws.searchInit()">초기화</button>
+					<button type="button" class="btn-medium btn-green" onclick="mmnws.search()">검색</button>
+					<button type="button" class="btn-medium btn-gray" onclick="mmnws.searchInit()">초기화</button>
 				</div>
 			</div>
 			
@@ -80,7 +80,13 @@
 		</div>
 		<!-- //content -->
 	
-		<script th:inline="javascript">		
+		<script th:inline="javascript">
+	    $("#searchKeyword").on("keyup",function(key){
+	        if(key.keyCode==13) {
+	        	mmnws.search();
+	        }
+	    });
+		
         var mmnws = {
                 listUrl: '/front/mmnws/selectMmnwsList.do',
                 detailUrl : '/front/mmnws/mmnwsDetailForm.html',
@@ -108,34 +114,22 @@
     				if (searchType != null && searchType != "") {
     					if (searchKeyword == null || searchKeyword == "") {
     						alert("검색어를 입력해주십시오");
-    						return;
+    						return false;
     					}
     				} else {
     					if (searchKeyword != null && searchKeyword != "") {
     						alert("검색조건을 선택해주십시오");
-    						return;
+    						return false;
     					}
     				}
                 	
                     $('#pageNumber').val('1');
-                	$('#card-table').removeClass();
-                    $('#card-table').addClass('card-list card-list-n3');
                     this.selectMmnwsList();
                 },
 
                 searchInit() {
     				$("#searchType").val('');
-    				$("#searchKeyword").val('');
-    				$("#searchEduSbjctCd_1").val('');
-    				$("#searchEduSbjctCd_2").val('');
-    				$("#searchEduTrgtCd").val('');
-    				$("#searchTypeCd_1").val('');
-    				$("#searchTypeCd_2").val('');
-    				$("#startDt").val('');
-    				$("#endDt").val('');
-                	$('#card-table').removeClass();
-                    $('#card-table').addClass('card-list card-list-n3');
-    				this.selectMmnwsList();
+    				$("#searchKeyword").val('')
                 },
 
                 selectMmnwsList() {
@@ -151,6 +145,10 @@
                             success: function (result) {
                                 $("#pagination").html(result.pagination);
                                 $("#totalCount").html(result.totalCount);
+                                
+                            	$('#card-table').removeClass();
+                                $('#card-table').addClass('card-list card-list-n3');
+                                
                             	var data = escapeData(result);
                             	mmnws.makeListHtml(data);
                                 closeWorkProgress();
