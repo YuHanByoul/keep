@@ -28,7 +28,6 @@
         </ol>
     </div>
 
-
     <div class="row row-section">
         <div class="col col-small">
             <div class="sticky-navigation">
@@ -44,15 +43,17 @@
                     </ul>
                     <div class="btn-wrap">
                         <div class="center">
-                            <button type="button" class="btn-large btn-gray">중간저장</button>
-                            <button type="button" class="btn-large btn-green"onclick="goNext()">다음</button>
+                            <button type="button" class="btn-large btn-gray"  onclick="doSave()">중간저장</button>
+                            <button type="button" class="btn-large btn-green" onclick="doSave('next')">다음</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col col-wide">
+        <form id="hldngForm" name="eduExPrtForm" class="col col-wide">
+            <div id="eduPrgrmPop"></div>
+            <input type="hidden" id="aplyid" name="aplyid" th:value="${eduInstVo.aplyid}" />
 
             <div class="table-caption mt0">
                 <div class="left">
@@ -60,8 +61,8 @@
                 </div>
             </div>
 
-            <div class="table-add-group">
-                <div class="table-row table-row-mo">
+            <div class="table-add-group" >
+                <div class="table-row table-row-mo" th:id="'prgrmDiv'+${i.count}" th:if="${#lists.size(seePrgrmList) > 0}" th:each="prgrm, i: ${seePrgrmList}">
                     <table>
                         <caption>교육프로그램 보유현황 - 재직구분, 재직기관명, 부서(소속), 지위(직급), 재직기간, 재직증명서</caption>
                         <colgroup>
@@ -76,118 +77,54 @@
                                 <td colspan="3">
                                     <div class="form-input">
                                         <div class="form-check-list no-flex-wrap">
-                                            <label class="inp"><input type="radio"><b>직접입력</b></label>
-                                            <label class="inp"><input type="radio"><b>검색</b></label>
+                                            <label class="inp"><input type="radio" id="selfYn" name="selfYn" ><b>직접입력</b></label>
+                                            <label class="inp"><input type="radio" id="selfYn" name="selfYn" ><b>검색</b></label>
                                         </div>
-                                        <button type="button" class="btn-medium btn-green">검색</button>
+                                        <button type="button" class="btn-medium btn-green" onclick="openPopup()">검색</button>
                                     </div>
                                     <div class="form-input mt10">
-                                        <input type="text" title="직접입력 프로그램명을 입력해 주세요." placeholder="프로그램명을 입력해 주세요.">
+                                        <input type="text" title="직접입력 프로그램명을 입력해 주세요." placeholder="프로그램명을 입력해 주세요." id="prgrmNm" name="prgrmNm" th:value="${prgrm.prgrmNm}">
                                     </div>
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row">교육주제</th>
-                                <td colspan="3"><input type="text" title="교육주제" placeholder="교육주제를 입력해 주세요"></td>
+                                <td colspan="3"><input type="text" title="교육주제" placeholder="교육주제를 입력해 주세요" id="eduSbjct" name="eduSbjct" th:value="${prgrm.eduSbjct}"></td>
                             </tr>
                             <tr>
                                 <th scope="row">교육대상</th>
-                                <td><input type="text" title="교육대상" placeholder="교육대상을 입력해 주세요"></td>
+                                <td><input type="text" title="교육대상" placeholder="교육대상을 입력해 주세요" id="eduTrgt" name="eduTrgt" th:value="${prgrm.eduTrgt}"></td>
                                 <th scope="row">교육인원</th>
-                                <td><input type="number" title="교육인원" placeholder="교육인원을 입력해 주세요"></td>
+                                <td><input type="number" title="교육인원" placeholder="교육인원을 입력해 주세요" id="eduNope" name="eduNope" th:value="${prgrm.eduNope}"></td>
                             </tr>
                             <tr>
                                 <th scope="row">교육방법</th>
-                                <td><input type="text" title="교육방법" placeholder="교육방법을 입력해 주세요"></td>
+                                <td><input type="text" title="교육방법" placeholder="교육방법을 입력해 주세요" id="eduMthd" name="eduMthd" th:value="${prgrm.eduMthd}"></td>
                                 <th scope="row">교육차시</th>
-                                <td><input type="number" title="교육차시" placeholder="교육차시를 입력해 주세요"></td>
+                                <td><input type="text" title="교육차시" placeholder="교육차시를 입력해 주세요" id="eduRnd" name="eduRnd" th:value="${prgrm.eduRnd}"></td>
                             </tr>
                             <tr>
                                 <th scope="row">교육장소</th>
-                                <td><input type="text" title="교육장소" placeholder="교육장소를 입력해 주세요"></td>
+                                <td><input type="text" title="교육장소" placeholder="교육장소를 입력해 주세요" id="eduPlc" name="eduPlc" th:value="${prgrm.eduPlc}"></td>
                                 <th scope="row">참가비</th>
-                                <td><input type="number" class="ar" title="참가비" placeholder="참가비를 입력해 주세요"></td>
+                                <td><input type="number" class="ar" title="참가비" placeholder="참가비를 입력해 주세요" id="etrfee" name="etrfee" th:value="${prgrm.etrfee}"></td>
                             </tr>
                             <tr>
                                 <th scope="row">지정 및 인증여부</th>
                                 <td colspan="3">
-                                    <select title="지정 및 인증여부">
-                                        <option value="선택">선택</option>
-                                        <option value="선택">선택</option>
-                                    </select>
+                                    <span kattr:select_code="prgrmSttsCd" th:attr='grpcd=250,selectedCd=${prgrm.prgrmSttsCd}' firstOptTxt="- 선택 -" ></span>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                     <div class="table-add-button">
-                        <button type="button" class="btn-remove-table mb0" title="테이블 삭제"><span class="icon icon-remove"></span></button>
+                        <button th:if="${i.count > 1}" type="button" class="btn-remove-table mb0" title="테이블 삭제" onclick="delRow()">
+                            <span class="icon icon-remove"></span>
+                        </button>
                     </div>
                 </div>
 
-                <div class="table-row table-row-mo">
-                    <table>
-                        <caption>교육프로그램 보유현황 - 재직구분, 재직기관명, 부서(소속), 지위(직급), 재직기간, 재직증명서</caption>
-                        <colgroup>
-                            <col style="width:140px;">
-                            <col>
-                            <col style="width:140px;">
-                            <col>
-                        </colgroup>
-                        <tbody>
-                            <tr>
-                                <th scope="row">프로그램명</th>
-                                <td colspan="3">
-                                    <div class="form-input">
-                                        <div class="form-check-list no-flex-wrap">
-                                            <label class="inp"><input type="radio"><b>직접입력</b></label>
-                                            <label class="inp"><input type="radio"><b>검색</b></label>
-                                        </div>
-                                        <button type="button" class="btn-medium btn-green">검색</button>
-                                    </div>
-                                    <div class="form-input mt10">
-                                        <input type="text" title="직접입력 프로그램명을 입력해 주세요." placeholder="프로그램명을 입력해 주세요.">
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row">교육주제</th>
-                                <td colspan="3"><input type="text" title="교육주제" placeholder="교육주제를 입력해 주세요"></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">교육대상</th>
-                                <td><input type="text" title="교육대상" placeholder="교육대상을 입력해 주세요"></td>
-                                <th scope="row">교육인원</th>
-                                <td><input type="number" title="교육인원" placeholder="교육인원을 입력해 주세요"></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">교육방법</th>
-                                <td><input type="text" title="교육방법" placeholder="교육방법을 입력해 주세요"></td>
-                                <th scope="row">교육차시</th>
-                                <td><input type="number" title="교육차시" placeholder="교육차시를 입력해 주세요"></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">교육장소</th>
-                                <td><input type="text" title="교육장소" placeholder="교육장소를 입력해 주세요"></td>
-                                <th scope="row">참가비</th>
-                                <td><input type="number" class="ar" title="참가비" placeholder="참가비를 입력해 주세요"></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">지정 및 인증여부</th>
-                                <td colspan="3">
-                                    <select title="지정 및 인증여부">
-                                        <option value="선택">선택</option>
-                                        <option value="선택">선택</option>
-                                    </select>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="table-add-button">
-                        <button type="button" class="btn-remove-table mb0" title="테이블 삭제"><span class="icon icon-remove"></span></button>
-                    </div>
-                </div>
-
-                <button type="button" class="btn-row-add" title="테이블 추가">
+                <button type="button" class="btn-row-add" title="테이블 추가" onclick="addRow()">
                     <span class="icon icon-row-add"></span>
                 </button>
 
@@ -196,18 +133,18 @@
             <div class="mo-only">
                 <div class="btn-wrap">
                     <div class="center">
-                        <button type="button" class="btn-medium btn-gray">중간저장</button>
+                        <button type="button" class="btn-medium btn-gray" onclick="doSave()">중간저장</button>
                     </div>
                 </div>
                 <div class="btn-wrap">
                     <div class="center">
-                        <button type="button" class="btn-medium btn-gray">이전</button>
-                        <button type="button" class="btn-medium btn-green" onclick="goNext()">다음</button>
+                        <button type="button" class="btn-medium btn-gray"  onclick="doPrev()">이전</button>
+                        <button type="button" class="btn-medium btn-green" onclick="doSave('next')">다음</button>
                     </div>
                 </div>
             </div>
 
-        </div>
+        </form>
     </div>
     <script th:inline="javascript">
 
@@ -217,6 +154,52 @@
             //if(!valid()) return false;
             location.href = nextUrl;
         }
+
+        function openPopup(){
+
+        	var aplyid= $('#aplyid').val();
+
+        	$("#eduPrgrmPop").load("/front/eduInst/eduPrgrmPopup.html?aplyid="+aplyid, function(response, status, xhr) {
+                if (status == "success") {
+                    layerPopup.open({target:'eduPrgrmPop'});
+                }
+            });
+        }
+
+        function addRow() {
+            var lastRow = $('div[id^="prgrmDiv"]:last');
+            var idx = lastRow.index() + 2;
+
+            if ($('#exprtListDiv div[id^="prgrmDiv"]').length >= 2) {
+                alert("최대 20행까지만 추가 가능합니다.");
+                return;
+            }
+
+            var newRow = lastRow.clone().attr('id', 'prgrmDiv' + idx);
+
+            newRow.find('input').val('');
+            newRow.find('select').val('');
+
+            lastRow.after(newRow);
+debugger;
+            if ($('div[id^="prgrmDiv"]').length == 2) {
+                $('div[id^="prgrmDiv"] div:last')
+                    .append(`<button type="button" class="btn-remove-table mb0" title="테이블 삭제" onclick="delRow()"><span class="icon icon-remove"></span></button>`);
+//                              <button type="button" class="btn-remove-table mb0" title="테이블 삭제" onclick="delRow()"><span class="icon icon-remove"></span></button>
+            }
+        }
+
+        function delRow(){
+            var lastRow = $('div[id^="prgrmDiv"]:last');
+            if(lastRow.index() > 0) lastRow.remove();
+        }
+
+        function doSave(call){
+        	if(call=='next'){
+        		location.href = nextUrl;
+        	}
+        };
+
 
         $(function(){
 
