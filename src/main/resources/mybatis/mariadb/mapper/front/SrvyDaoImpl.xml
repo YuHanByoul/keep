@@ -144,6 +144,17 @@
         <include refid="PaginationMapper.footer"/>
     </select>
     
+    <!-- 설문 참여 정보 조회 -->
+    <select id="selectSbmsnCnt" parameterType="front.SrvyVo" resultType="int">
+        SELECT
+            COUNT(SBMSNID) AS CNT
+        FROM
+            TB_CMM_SRVY_SBMSN
+        WHERE
+            SRVYID = #{srvyid}
+            AND RGTRID = #{user.userid}             
+    </select>
+    
     <!-- 설문 정보 조회 -->
     <select id="selectSrvyInfo" parameterType="front.SrvyVo" resultType="front.SrvyVo">
         /* SrvyDao.selectSrvyInfo */
@@ -151,6 +162,8 @@
             A.SRVYID
             , A.SRVY_NM
             , A.EXPLN
+            , B.SBMSNID
+            , CASE WHEN NOW() > A.END_DE THEN '기간종료' ELSE '설문참여' END AS STTS_NM
             <if test="user != null">
             , B.SBMSN_DT
             </if>
@@ -162,12 +175,14 @@
         FROM
             TB_CMM_SRVY A
         <if test="user != null">  
-        LEFT OUTER JOIN TB_CMM_QESTNR C ON A.QESTNRID = C.QESTNRID
+        LEFT OUTER JOIN 
+            TB_CMM_QESTNR C ON A.QESTNRID = C.QESTNRID
         LEFT OUTER JOIN
             TB_CMM_SRVY_SBMSN B ON (B.SRVYID = A.SRVYID AND B.USERID = #{user.userid})
         </if>
         <if test="sbmsnid != 0 and ((infntPrgrmAplyid != null and infntPrgrmAplyid != 0) or (mvmnPrgrmAplyid != null or mvmnPrgrmAplyid != 0))">
-        LEFT OUTER JOIN TB_CMM_SRVY_SBMSN D ON D.SRVYID = A.SRVYID AND D.SBMSNID = #{sbmsnid} 
+        LEFT OUTER JOIN 
+            TB_CMM_SRVY_SBMSN D ON D.SRVYID = A.SRVYID AND D.SBMSNID = #{sbmsnid} 
         </if>        
         WHERE 
             A.SRVYID = #{srvyid}

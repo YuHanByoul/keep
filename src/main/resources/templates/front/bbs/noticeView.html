@@ -43,7 +43,7 @@
                     <p>총 <b id="totalCount" th:text="${totalCount}">0</b> 건</p>
                 </div>
                 <div class="right">
-                    <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage" onclick="changeRowPerPage()">
+                    <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage" onchange="changeRowPerPage()">
                         <option value="10" th:selected="${BbsVo.rowPerPage== 10}">10개씩 보기</option>
                         <option value="50" th:selected="${BbsVo.rowPerPage== 50}">50개씩 보기</option>
                         <option value="100" th:selected="${BbsVo.rowPerPage== 100}">100개씩 보기</option>
@@ -57,6 +57,7 @@
                         <caption>공지사항 - 번호, 등록기관, 제목, 첨부파일, 등록일, 조회수</caption>
                         <colgroup>
                             <col>
+                            <col th:if="${BbsVo.tabType == 2}">
                             <col style="width:50%;">
                             <col>
                             <col>
@@ -65,6 +66,7 @@
                         <thead>
                         <tr>
                             <th scope="col">번호</th>
+                            <th scope="col" th:if="${BbsVo.tabType == 2}">등록기관</th>
                             <th scope="col">제목</th>
                             <th scope="col">첨부파일</th>
                             <th scope="col">등록일</th>
@@ -89,6 +91,7 @@
                                         [[${notice.rowNumber}]]
                                     </th:block>
                                 </td>
+                                <td th:if="${BbsVo.tabType == 2}" th:text="${notice.instNm}">등록기관</td>
                                 <td class="al article">
                                     <th:block th:if="${bbsInfo.newUseYn == 'Y' and notice.newYn == 'Y'}">
                                         <a href="javascript:void(0)" class="link ellipsis new" title="새 글" th:onclick="|moveToDetail(${notice.pstid})|">[[${notice.title}]]</a>
@@ -136,6 +139,10 @@
                                                     [[${notice.rowNumber}]]
                                                 </th:block>
                                             </dd>
+                                        </div>
+                                        <div class="list" th:if="${BbsVo.tabType == 2}">
+                                            <dt>등록기관</dt>
+                                            <dd th:text="${notice.instNm}">환경보전협회</dd>
                                         </div>
                                         <div class="list">
                                             <dt>제목</dt>
@@ -186,6 +193,7 @@
 
         function changeRowPerPage() {
             $('#rowPerPage').val($('#selectRowPerPage').val());
+            $('#searchForm')[0].submit();
         };
 
         function moveToDetail(pstid) {
@@ -197,7 +205,6 @@
 
         function goPage(num) {
             $("#pageNumber").val(num);
-            $('#searchForm')[0].action = listUrl;
             $('#searchForm')[0].submit();
         }
 

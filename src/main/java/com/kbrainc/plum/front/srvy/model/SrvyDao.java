@@ -69,6 +69,17 @@ public interface SrvyDao {
     * @throws Exception 예외
     */
     public List<QitemExVo> selectExList(QitemVo qitemVo) throws Exception;
+
+    /**
+    * 설문 참여 정보 조회
+    *
+    * @Title : selectSbmsnCnt
+    * @Description : 설문 참여 정보 조회
+    * @param srvyVo SrvyVo 객체
+    * @return int 설문 참여이력 cnt
+    * @throws Exception 예외
+    */
+    public int selectSbmsnCnt(SrvyVo srvyVo) throws Exception;
     
     /**
     * 설문 정보 조회

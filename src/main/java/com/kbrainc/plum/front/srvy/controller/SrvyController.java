@@ -90,9 +90,11 @@ public class SrvyController {
     * @throws Exception 예외
     */
     @RequestMapping(value = "/front/srvy/srvySbmsnInsertPopup.html")
-    public String srvySbmsnInsertPopup(SrvyVo srvyVo, Model model) throws Exception {
+    public String srvySbmsnInsertPopup(SrvyVo srvyVo, @UserInfo UserVo user, Model model) throws Exception {
+        srvyVo.setUser(user);
         model.addAttribute("qitemList", srvyService.selectQitemList(srvyVo));
-        model.addAttribute("srvyInfo", srvyService.selectSrvyInfo(srvyVo));
+        SrvyVo srvyInfo = srvyService.selectSrvyInfo(srvyVo);
+        model.addAttribute("srvyInfo", srvyInfo);
         model.addAttribute("infntPrgrmAplyid", srvyVo.getInfntPrgrmAplyid());
         model.addAttribute("mvmnPrgrmAplyid", srvyVo.getMvmnPrgrmAplyid());
         
@@ -102,7 +104,7 @@ public class SrvyController {
     /**
      * 설문 확인 팝업
      *
-     * @Title : userListPopup
+     * @Title : srvySbmsnInfoPopup
      * @Description : 설문 확인 팝업
      * @return String 화면경로
      * @throws Exception 예외
@@ -110,7 +112,9 @@ public class SrvyController {
      @RequestMapping(value = "/front/srvy/srvySbmsnInfoPopup.html")
      public String srvySbmsnInfoPopup(SrvyVo srvyVo, @UserInfo UserVo user, Model model) throws Exception {
          srvyVo.setUser(user);
-         model.addAttribute("srvyInfo", srvyService.selectSrvyInfo(srvyVo));
+         SrvyVo srvyInfo = srvyService.selectSrvyInfo(srvyVo);
+         model.addAttribute("srvyInfo", srvyInfo);
+         srvyVo.setSbmsnid(srvyInfo.getSbmsnid());
          model.addAttribute("ansList", srvyService.selectAnsList(srvyVo));
          
          return "front/srvy/srvySbmsnInfoPopup";
@@ -204,7 +208,10 @@ public class SrvyController {
         srvySbmsnVo.setUser(user);
         retVal = srvyService.insertSrvySbmsn(request, srvySbmsnVo, srvySbmsnAnsList);
         
-        if(retVal > 0) {
+        if(retVal == 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "설문 제출이 이미 완료되어 제출할 수 없습니다");
+        } else if(retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
             resultMap.put("msg", "설문 제출이 완료되었습니다");
         } else {

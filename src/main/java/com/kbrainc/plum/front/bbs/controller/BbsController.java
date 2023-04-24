@@ -508,7 +508,7 @@ public class BbsController {
             bbsVo.setBbsClid(paramVO.getBbsClid());
             bbsVo.setSearchKeyword(paramVO.getSearchKeyword());
             bbsVo.setSearchType(paramVO.getSearchType());
-            bbsVo.setRowPerPage(bbsVo.getRowPerPage());
+            bbsVo.setRowPerPage(paramVO.getRowPerPage());
             bbsVo.setPageNumber(paramVO.getPageNumber());
             bbsVo.setUser(user);
             bbsVo.setSite(site);

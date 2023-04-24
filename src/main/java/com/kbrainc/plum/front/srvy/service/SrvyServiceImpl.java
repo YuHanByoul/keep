@@ -74,6 +74,20 @@ public class SrvyServiceImpl extends PlumAbstractServiceImpl implements SrvyServ
     }
     
     /**
+    * 설문 참여 정보 조회
+    *
+    * @Title : selectSbmsnCnt
+    * @Description : 설문 참여 정보 조회
+    * @param srvyVo SrvyVo 객체
+    * @return int 설문 참여 cnt
+    * @throws Exception 예외
+    */
+    @Override
+    public int selectSbmsnCnt(SrvyVo srvyVo) throws Exception {
+        return srvyDao.selectSbmsnCnt(srvyVo);
+    }
+    
+    /**
     * 설문 정보 조회
     *
     * @Title : selectSrvyInfo
@@ -127,6 +141,15 @@ public class SrvyServiceImpl extends PlumAbstractServiceImpl implements SrvyServ
     @Transactional
     public int insertSrvySbmsn(HttpServletRequest request, SrvySbmsnVo srvySbmsnVo, List<SrvySbmsnAnsVo> srvySbmsnAnsList) throws Exception {
         int retVal = 0;
+        
+        // 0. 제출전 제출 내역이 있는지 확인
+        SrvyVo srvyVo = new SrvyVo();
+        srvyVo.setUser(srvySbmsnVo.getUser());
+        srvyVo.setSrvyid(srvySbmsnVo.getSrvyid());
+        int cnt = srvyDao.selectSbmsnCnt(srvyVo);
+        if(cnt > 0) {
+            return retVal;
+        }
         // 아이피 확인
         srvySbmsnVo.setUserIp(CommonUtil.getClientIp(request));
         // 브라우저 확인
@@ -161,9 +184,9 @@ public class SrvyServiceImpl extends PlumAbstractServiceImpl implements SrvyServ
             deviceCd = "PC";
         }
         srvySbmsnVo.setDeviceKndCd(deviceCd);
+        
         // 1. 설문 제출
         retVal += srvyDao.insertSrvySbmsn(srvySbmsnVo);
-        
         //List<SrvySbmsnAnsVo> ansList = srvySbmsnVo.getAnsList();
         if(srvySbmsnAnsList != null && srvySbmsnAnsList.size() > 0) {
             SrvySbmsnAnsVo ans = new SrvySbmsnAnsVo();
