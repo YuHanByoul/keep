@@ -82,11 +82,19 @@
             AND B.END_DT <![CDATA[<=]]> date(#{searchEndDt})
         </if>
         <if test='user.roleInfo.trgtInstCd == "S"'>
-           AND C.INST_ID = #{user.instid}
+           AND C.INSTID = #{user.instid}
         </if>
         <!-- 상태 변경 전 조회 -->
         <if test="selectedApplyid  != null and selectedApplyid != ''">
             AND A.APLYID = #{selectedApplyid}
+        </if>  
+        <!-- 상태 변경 전 조회 -->
+        <if test="aplyids  != null and aplyids != ''">
+            AND A.APLYID IN (
+            <foreach item="aplyid" collection="aplyids" separator=",">
+               #{aplyid}
+            </foreach>
+            )
         </if>  
         <include refid="PaginationMapper.footer"/>
     </select>
@@ -107,6 +115,7 @@
              ,A.RFND_DMND_DT
              ,A.PYR_NM
              ,A.DPST_BANK_CD
+             ,A.DPST_BACNT
              ,A.DPST_AMT
              ,A.DPST_DE
              ,A.RFND_BANK_CD

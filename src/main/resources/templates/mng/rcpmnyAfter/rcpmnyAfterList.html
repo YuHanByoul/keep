@@ -61,6 +61,14 @@
 							<strong>입금 후 검색결과</strong>
 						</h5>
 					</div>
+                    <div class="col-12 col-md-6 text-right">
+                        <th:block sec:authorize-url="/mng/spce/spceDetail.html">
+                            <button type="button" class="btn btn-disabled waves-effect waves-light" onclick="processDspt('C');" >입금확인 취소 </button>
+                        </th:block>
+                        <th:block sec:authorize-url="/mng/spce/spceDetail.html">
+                            <button type="button" class="btn btn-primary m-r-5" onclick="processDspt('D');" >환불요청</button>
+                        </th:block>
+                    </div>
 				</div>
 				<div class="card-block">
 					<table id="jsGrid" class="table-responsive"></table>
@@ -72,7 +80,8 @@
 			<div id="contentPanel" style="display: none" class="card"></div>
 		</div>
 	</div>
-
+	<div class="modal fade" id="refndPopup" data-bs-backdrop="static"></div>
+	
 	<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 	<script type="text/javascript" src="/js/common/jsgrid-master/dist/jsgrid.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
@@ -84,6 +93,8 @@
 	    /*]]>*/
 		var selectedItems = [];
 		var gridHelper2;
+        var refndAddModal;
+        
 		$(function(){
 			gridHelper2 = new GridHelper('jsGrid','contentPanel');
 			initDateRangePicker("filterSearchSelectDate","searchBgngDt","searchEndDt");
@@ -168,23 +179,39 @@
 					},
 				},
 				fields: [
-					{ name: 'aplyid', css: 'hide' }
+	                 {
+	                     headerTemplate: function() {
+	                         return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
+	                     },
+	                     itemTemplate: function(_, item) {
+	                         return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox")
+	                         //.prop("checked", $.inArray(String(item.userid), selectedItems) > -1)
+	                         .prop("checked", $.inArray(item, selectedItems) > -1)
+	                         .on("change", function () {
+	                         $(this).is(":checked") ? selectItem($(this).parent().next().text()) : unselectItem($(this).parent().next().text());
+	                         });
+	                     },
+	                     align: "center",
+	                     width: "30",
+	                     sorting: false
+	                 }
+					,{ name: 'aplyid', css: 'hide' }
 					,{ title: 'No.' ,name: 'rowNumber',    type: "number", width : "80", align:"center",  sorting :false }
 					,{ title: '신청자ID'    ,name: 'acnt',    type: "text", width: "250"}
 					,{ title: '신청자명'    ,name: 'nm', type: "text", width: "150", align:"center" }
 					,{ title: '공간'   ,name: 'spceNm',   type: "text", width: "150", align:"center"  }
 					,{ title: '이용일(시)'   ,name: 'bgngDt',   type: "text", width: "300", align:"center"
-						, itemTemplate: function(value, item){
-							if( item.alldayYn == 'N' ){
-								return date2str(parseDate(item.bgngDt), 'yyyy-mm-dd HH:MM') +' ~ '+ date2str(parseDate(item.endDt), 'HH:MM');
-							}else{
-								if( new Date(item.bgngDt).valueOf() === new Date(item.endDt).valueOf() ){
-									return date2str(parseDate(item.bgngDt), 'yyyy-mm-dd');
-								}else{
-									return date2str(parseDate(item.bgngDt), 'yyyy-mm-dd') +' ~ '+ date2str(parseDate(item.endDt), 'yyyy-mm-dd');
-								}
-							}
-						}
+                        , itemTemplate: function(value, item){
+                            if( item.alldayYn == 'N' ){
+                                return item.bgngDt.substring(0,16) +' ~ '+item.endDt.substring(11,16);
+                            }else{
+                                if( item.bgngDt.substring(0,10) == item.endDt.substring(0,10)){
+                                    return item.bgngDt.substring(0,10);
+                                }else{
+                                    return item.bgngDt.substring(0,10) +' ~ '+ item.endDt.substring(0,10);
+                                }
+                            }
+                        }
 					}
 					,{ title: '결제금액' ,name: 'amt',  type: "text", width: "150", align:"center", itemTemplate: function(value) {
 						return value.toLocaleString()+'원';
@@ -192,9 +219,7 @@
 					,{ title: '신청상태' ,name: 'aplySttsCdNm',  type: "text", width: "150", align:"center" }
 					,{ title: '결제상태' ,name: 'stlmSttsCdNm',  type: "text", width: "150", align:"center" }
 					,{ title: '예약 승인일' ,name: 'regDt',  type: "text", width: "150", align:"center"
-						, itemTemplate: function(value, item){
-							return date2str(parseDate(item.mdfcnDt), 'yyyy-mm-dd');
-						}
+		                  ,itemTemplate: function(value, item){return value.substring(0,10)}
 					}
 				],
 				rowClick: function(args) {
@@ -253,53 +278,53 @@
 				}
 			});
 		}
+		
+	    var fn_dsptCheckCancel = () => {
 
-		function date2str(x, y) {
-			var z = {
-				m: x.getMonth() + 1,
-				d: x.getDate(),
-				H: x.getHours(),
-				M: x.getMinutes(),
-				S: x.getSeconds()
-			};
+	        if(selectedItems.length <=0 ){
+	            alert("입금취소 대상을 선택해주십시오.");
+	            return;
+	      }
+	      
+	      var aplyids = selectedItems.join(",")
+	      
+	      if(!confirm('입금확인을 취소 하시겠습니까?\n 예약 취소건을 제외하고 입금대기 상태로 전환됩니다.') )return;
+	      
+	      var data = {"aplyids" : aplyids }
+	            
+          if(displayWorkProgress()){
 
-			y = y.replace(/(m+|d+|H+|M+|S+)/g, function(v) {
-				return ((v.length > 1 ? "0" : "") + z[v.slice(-1)]).slice(-2)
-			});
-
-			return y.replace(/(y+)/g, function(v) {
-				return x.getFullYear().toString().slice(-v.length)
-			});
-		}
-
-		function parseDate(strDate) {
-			var _strDate = strDate;
-			var _dateObj = new Date(_strDate);
-			if (_dateObj.toString() == 'Invalid Date') {
-				_strDate = _strDate.split('.').join('-');
-				_dateObj = new Date(_strDate);
-			}
-			if (_dateObj.toString() == 'Invalid Date') {
-				var _parts = _strDate.split(' ');
-
-				var _dateParts = _parts[0];
-				_dateObj = new Date(_dateParts);
-
-				if (_parts.length > 1) {
-					var _timeParts = _parts[1].split(':');
-					_dateObj.setHours(_timeParts[0]);
-					_dateObj.setMinutes(_timeParts[1]);
-					if (_timeParts.length > 2) {
-						_dateObj.setSeconds(_timeParts[2]);
-					}
-				}
-			}
-
-			return _dateObj;
-		}
+	            $.ajax({
+	                url: "/mng/rcpmnyAfter/updateDsptCheckCancel.do",
+	                type: 'POST',
+	                cache : false,
+	                dataType: 'json',
+	                data : data,
+	                success : function (data){
+	                    if(data.result=="success"){
+	                        alert("입금확인 취소처리가 완료 되었습니다.");
+	                        gridHelper2.resetPageContent();
+	                    }else{
+	                        alert("입금확인 취소처리중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+	                    }
+	                },
+	                error : function (error){
+	                }
+	            });
+	        }
+	  }
+		    
+	  // 환불요청 팝업
+	  var refndPopupUrl = "/mng/rcpmnyAfter/refndPopup.html?aplyids=" ;
+	    var fn_openResveCancelModal = () => {
+	        $("#refndPopup").load(refndPopupUrl, function(response, status, xhr) {
+	            if (status == "success") {
+	                refndAddModal = new bootstrap.Modal($('#refndPopup'));
+	                refndAddModal.show();
+	            }
+	        });
+	    }
 	</script>
-
-	<script src="/js/ckeditor/ckeditor.js"></script>
 </div>
 </body>
 </html>

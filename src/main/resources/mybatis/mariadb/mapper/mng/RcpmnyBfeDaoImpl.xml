@@ -88,7 +88,7 @@
             AND A.APLYID = #{selectedApplyid}
         </if>
         <if test='user.roleInfo.trgtInstCd == "S"'>
-           AND C.INST_ID = #{user.instid}
+           AND C.INSTID = #{user.instid}
         </if>
         <include refid="PaginationMapper.footer"/>
     </select>
@@ -109,6 +109,7 @@
              ,A.RFND_DMND_DT
              ,A.PYR_NM
              ,A.DPST_BANK_CD
+             ,A.DPST_BACNT
              ,A.DPST_AMT
              ,A.DPST_DE
              ,A.CNCL_RSN_CD
@@ -258,18 +259,32 @@
     <update id="updateResveCancel" parameterType="RcpmnyBfeVo" keyProperty="userid">
         /* RcpmnyBfeDao.updateResveCancel */
         UPDATE TB_FCL_SPCE_APLY SET
-             CNCL_RSN_CD       = #{cnclRsnCd}
-             ,APLY_STTS_CD     = '160103'
-             ,RSVT_CNCL_RSN    = #{rsvtCnclRsn}
-             ,CNCL_DT          = NOW()
-             ,MDFRID           = #{user.userid}
-             ,MDFCN_DT         = NOW()
-        WHERE APLYID = #{aplyid}
+             CNCL_RSN_CD         = #{cnclRsnCd}
+             ,APLY_STTS_CD       = '160103'
+             ,RSVT_CNCL_RSN      = #{rsvtCnclRsn}
+             ,CNCL_DT            = NOW()
+             ,RFND_REJECT_RSN_CD = null 
+             ,RFND_REJECT_RSN    = null
+             ,MDFRID             = #{user.userid}
+             ,MDFCN_DT           = NOW()
+        WHERE 1=1
+          <if test="aplyid  != null and aplyid != ''">
+           AND APLYID = #{aplyid}
+          </if>
+          <if test="aplyids  != null and aplyids != ''">
+          AND APLYID IN (
+             SELECT APLYID FROM TB_FCL_SPCE_APLY WHERE APLY_STTS_CD != '160103'  AND APLYID IN (
+            <foreach item="aplyid" collection="aplyids" separator=",">
+               #{aplyid}
+            </foreach>
+             )
+            )
+         </if>          
     </update>
     
     <!-- 현재 해당 신청건의 예약 일정중 진행중인 예약이 있는지 확인 -->
     <select id="isThereResveNow" parameterType="ResveReqstVo" resultType="String">
-         /* ResveReqstDao.insertHstry */
+         /* ResveReqstDao.isThereResveNow */
          SELECT 
             CASE WHEN IFNULL(count(*),0) > 0 THEN 'Y'
                  ELSE 'N'
@@ -277,6 +292,7 @@
           FROM
             TB_FCL_APLY_RSVTDE A
             INNER JOIN TB_FCL_SPCE_APLY B
+            ON A.APLYID = B.APLYID
          WHERE 1=1 
            AND B.APLY_STTS_CD IN ('160101','160102')
            AND B.APLYID != #{aplyid}
