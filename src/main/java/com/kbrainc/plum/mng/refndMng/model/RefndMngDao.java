@@ -78,4 +78,14 @@ public interface RefndMngDao {
      * @return int
      */
     public int updateRefndRollback(ResveReqstVo resveReqstVo) throws Exception;
+    /**
+     * 환불 요청 취소 처리(재승인)전 기예약 없는(재승인 가능한) 신청건 체크 및 호출    
+     *
+     * @Title : selectSuitableAplyids
+     * @Description : 환불 요청 취소 처리(재승인)전 기예약 없는(재승인 가능한) 신청건 체크 및 호출
+     * @param refndMngVo 입금 전 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    public String[] selectSuitableAplyids(ResveReqstVo resveReqstVo) throws Exception;
 }
