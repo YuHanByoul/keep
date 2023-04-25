@@ -324,4 +324,28 @@ public interface BizRptService {
 	*/
 	public int deleteCnsltngTrgt(BizRptVo bizRptVo) throws Exception;
 
+    /**
+    * 사업보고 제출하지 않은 접수번호 조회. 
+    *
+    * @Title : selectAplyList
+    * @Description : TODO
+    * @param bizRptVo
+    * @return
+    * @throws Exception
+    * @return List<BizRptVo>
+     */
+    public List<BizRptVo> selectAplyList(BizRptVo bizRptVo) throws Exception;
+    
+    /**
+    * 사업보고 등록 
+    *
+    * @Title : insertReport
+    * @Description : TODO
+    * @param bizRptVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    public int insertReport(BizRptVo bizRptVo) throws Exception;
+    
 }

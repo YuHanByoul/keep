@@ -87,6 +87,12 @@ import lombok.Data;
 
     /** 중간 보고 종료 일시 */
     private Date rsltReportEndDt;
+    
+    /** 보고 시작 일시 */
+    private String reportBgngDt;
+    
+    /** 보고 종료 일시 */
+    private String reportEndDt;
 
     /** 중간 보고 기간 */
     private String rsltReportPrd;
@@ -375,6 +381,7 @@ import lombok.Data;
     /** 핸드폰 번호  */
     private String moblphon;
 
+    private String jsonString;
 
 
 

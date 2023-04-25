@@ -2,12 +2,10 @@ package com.kbrainc.plum.mng.bizAply.bizRpt.model;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
+import com.kbrainc.plum.front.report.model.ReportOperVo;
 import com.kbrainc.plum.rte.model.UserVo;
 
 /**
@@ -429,4 +427,39 @@ public interface BizRptDao {
 	*/
 	public void deleteCnsltngMng(BizRptVo bizRptVo) throws Exception;
 
+	/**
+	* 사업보고 제출하지 않은 접수번호 조회. 
+	*
+	* @Title : selectAplyList
+	* @Description : TODO
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return List<BizRptVo>
+	 */
+	public List<BizRptVo> selectAplyList(BizRptVo bizRptVo) throws Exception;
+	
+	/**
+	* 사업보고 등록 
+	*
+	* @Title : insertReport
+	* @Description : TODO
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return int
+	 */
+	public int insertReport(BizRptVo bizRptVo) throws Exception;
+	
+	/**
+	* 사업보고 교육 운영 등록  
+	*
+	* @Title : insertReportOper
+	* @Description : TODO
+	* @param reportOperVo
+	* @return
+	* @throws Exception
+	* @return int
+	 */
+	public int insertReportOper(ReportOperVo reportOperVo) throws Exception;
 }

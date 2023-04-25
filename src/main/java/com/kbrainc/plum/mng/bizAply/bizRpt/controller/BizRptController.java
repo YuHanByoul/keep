@@ -7,20 +7,20 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileServiceImpl;
 import com.kbrainc.plum.mng.bizAply.bizRpt.model.BizRptVo;
 import com.kbrainc.plum.mng.bizAply.bizRpt.service.BizRptServiceImpl;
-import com.kbrainc.plum.mng.bizAply.pcntst.model.PublicContestMngGrpVo;
-import com.kbrainc.plum.mng.bizAply.srng.model.BizAplySrngVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
@@ -221,6 +221,12 @@ public class BizRptController {
 
 	public String mdlRptSbmsnDetailForm(BizRptVo bizRptVo, Model model) throws Exception {
 
+	    if (bizRptVo.getReportid() == 0) {
+	        model.addAttribute("aplyList", bizRptService.selectAplyList(bizRptVo));
+	        model.addAttribute("bizRptVo", bizRptVo);
+	        return "mng/bizAply/bizRpt/mdlRptSbmsnInsert"; 
+	    }
+	    
 		BizRptVo mdlRptSbmsnInfo = new BizRptVo();
 		//중간보고제출 상세 조회
 		mdlRptSbmsnInfo = bizRptService.selectMdlRptSbmsnDetail(bizRptVo);
@@ -236,6 +242,7 @@ public class BizRptController {
         	model.addAttribute("fileList", Collections.emptyList());
         }
 
+		
 		model.addAttribute("mdlRptSbmsnInfo", mdlRptSbmsnInfo);
 
 		return "mng/bizAply/bizRpt/mdlRptSbmsnDetail";
@@ -855,4 +862,43 @@ public class BizRptController {
         return resultMap;
     }
 
+    /**
+    * 사업보고서 제출 등록. 
+    *
+    * @Title : insertReport
+    * @Description : TODO
+    * @param bizRptVo
+    * @param bindingResult
+    * @param user
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+     */
+    @RequestMapping(value="/mng/bizAply/bizRpt/insertReport.do")
+    @ResponseBody
+    public Map<String, Object> insertReport(@Valid BizRptVo bizRptVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+        
+        bizRptVo.setUser(user);
+        
+        int retVal = bizRptService.insertReport(bizRptVo);
+        
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "등록에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "등록에 실패했습니다.");
+        }
+        
+        return resultMap;
+    }
 }
