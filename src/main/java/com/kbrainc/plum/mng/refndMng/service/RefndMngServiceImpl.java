@@ -95,18 +95,14 @@ public class RefndMngServiceImpl extends PlumAbstractServiceImpl implements Refn
      */
     @Transactional
     public int updateRefndCancel(ResveReqstVo resveReqstVo) throws Exception{
+        
         int resInt = 0 ;
-        
-        String [] aplyids = refndMngDao.selectSuitableAplyids(resveReqstVo);
-        
-        if(aplyids.length > 0 ) {
-            resInt += refndMngDao.updateRefndCancel(resveReqstVo);
-            ResveReqstVo paramVo = new ResveReqstVo();
-            // 상태변경이력 추가
-            paramVo.setAplyid(resveReqstVo.getAplyid());
-            paramVo.setUser(resveReqstVo.getUser());
-            resInt += resveReqstDao.insertHstry(paramVo);
-        }
+        resInt += refndMngDao.updateRefndCancel(resveReqstVo);
+        ResveReqstVo paramVo = new ResveReqstVo();
+        // 상태변경이력 추가
+        paramVo.setAplyids(resveReqstVo.getAplyids());
+        paramVo.setUser(resveReqstVo.getUser());
+        resInt += resveReqstDao.insertHstry(paramVo);
         return resInt;
     }
 
@@ -125,9 +121,21 @@ public class RefndMngServiceImpl extends PlumAbstractServiceImpl implements Refn
         resInt += refndMngDao.updateRefndRollback(resveReqstVo);
         ResveReqstVo paramVo = new ResveReqstVo();
         // 상태변경이력 추가
-        paramVo.setAplyid(resveReqstVo.getAplyid());
+        paramVo.setAplyids(resveReqstVo.getAplyids());
         paramVo.setUser(resveReqstVo.getUser());
         resInt += resveReqstDao.insertHstry(paramVo);
         return resInt;
+    }
+    /**
+     * 환불 요청 취소 처리(재승인)전 기예약 없는(재승인 가능한) 신청건 체크 및 호출    
+     *
+     * @Title : selectSuitableAplyids
+     * @Description : 환불 요청 취소 처리(재승인)전 기예약 없는(재승인 가능한) 신청건 체크 및 호출
+     * @param refndMngVo 입금 전 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    public String[] selectSuitableAplyids(ResveReqstVo resveReqstVo) throws Exception{
+        return refndMngDao.selectSuitableAplyids(resveReqstVo);
     }
 }

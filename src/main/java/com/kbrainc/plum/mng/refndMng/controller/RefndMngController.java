@@ -261,20 +261,23 @@ public class RefndMngController {
      */
     @RequestMapping(value = "/mng/refndMng/updateRefndCancel.do")
     @ResponseBody
-    public Map<String, Object> updateRefndCancel(@Valid ResveReqstVo resveReqstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> updateRefndCancel(ResveReqstVo resveReqstVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
-        if (bindingResult.hasErrors()) {
-            FieldError fieldError = bindingResult.getFieldError();
-            if (fieldError != null) {
-                resultMap.put("msg", fieldError.getDefaultMessage());
-            }
-            return resultMap;
-        }
-        
         resveReqstVo.setUser(user);
         int retVal = 0;
-        retVal = refndMngService.updateRefndCancel(resveReqstVo);
+        
+        String [] aplyids = refndMngService.selectSuitableAplyids(resveReqstVo);
+        
+        if(aplyids.length > 0 ) {
+            resveReqstVo.setAplyids(aplyids);
+            retVal = refndMngService.updateRefndCancel(resveReqstVo);
+            
+        }else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "이미 다른 예약이 진행 되어 환불요청을 취소 할 수 없습니다.");
+            return resultMap;
+        }
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);

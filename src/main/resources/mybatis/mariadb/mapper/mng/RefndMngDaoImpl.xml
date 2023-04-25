@@ -26,6 +26,7 @@
           ,A.RFND_REJECT_RSN_CD 
           ,A.MDFCN_DT
           ,A.DPST_IDNTY_DT
+          ,A.RFND_DMND_DT
           ,C.INSTID
           ,C.INST_NM
           ,B.BGNG_DT
@@ -101,95 +102,101 @@
         <include refid="PaginationMapper.footer"/>
     </select>
     
-    <!-- 환불 확인 처리 -->
-    <update id="updateRefndComplete" parameterType="ResveReqstVo" >
-        /* RefndMngDao.updateRefndComplete */
-        UPDATE TB_FCL_SPCE_APLY SET
-            RFND_DE                = #{rfndDe}
-             ,RFND_AMT                    = #{rfndAmt}
-             ,APLY_STTS_CD                 = '160103'
-             ,STLM_STTS_CD                 = '161104'
-             ,RFND_BANK_CD                    = #{rfndBankCd}
-             ,RFND_BACNT                    = #{rfndBacnt}
-             ,RFND_PYR_NM                    = #{rfndPyrNm}
-             ,MDFCN_DT                 = NOW()
-             ,MDFRID                 = #{user.userid}
-        WHERE APLYID = #{aplyid}
-    </update>
-
     <!-- 환불요청 취소 처리 -->
     <update id="updateRefndCancel" parameterType="ResveReqstVo" >
         /* RefndMngDao.updateResveCancel */
-       UPDATE TB_FCL_SPCE_APLY       
+        UPDATE TB_FCL_SPCE_APLY A
           SET
-             APLY_STTS_CD   = '160102' 
-             ,STLM_STTS_CD  = '161102'
-             ,DPST_IDNTY_DT = NOW()
-             ,CNCL_DT       = NULL
-             ,CNCL_RSN_CD   = NULL
-             ,RFND_DMND_DT  = NULL 
-             ,RFND_DE       = NULL
-             ,RFND_AMT      = null
-             ,RFND_DMND_AMT = NULL 
-             ,RFND_CMPTN_DT = NULL 
-             ,MDFRID        = #{user.userid}
-             ,MDFCN_DT      = NOW()
-        WHERE A.APLYID IN 
-             (
+            APLY_STTS_CD        = '160102' 
+            ,STLM_STTS_CD       = '161102'
+            ,DPST_IDNTY_DT      = NOW()
+            ,RFND_REJECT_RSN_CD = #{rfndRejectRsnCd} 
+            ,RFND_REJECT_RSN    = #{rfndRejectRsn}
+            ,CNCL_DT            = NULL 
+            ,CNCL_RSN_CD        = NULL 
+            ,RFND_DMND_DT       = NULL 
+            ,RFND_DE            = NULL
+            ,RFND_AMT           = NULL
+            ,RFND_DMND_AMT      = NULL 
+            ,RFND_CMPTN_DT      = NULL 
+            ,MDFRID             = #{user.userid}
+            ,MDFCN_DT           = NOW()
+        WHERE APLYID IN (
               <foreach item="aplyid" collection="aplyids" separator=",">
-                #{aplyid}
-              </foreach>
-              )
+                 #{aplyid}
+               </foreach>
+              ) 
     </update>
-
+    
+    <!-- 환불 완료 처리 -->
+    <update id="updateRefndComplete" parameterType="ResveReqstVo" >
+        /* RefndMngDao.updateRefndComplete */
+        UPDATE TB_FCL_SPCE_APLY SET
+            RFND_DE            = #{rfndDe}
+             ,RFND_AMT         = #{rfndAmt}
+             ,APLY_STTS_CD     = '160103'
+             ,STLM_STTS_CD     = '161104'
+             ,RFND_BANK_CD     = #{rfndBankCd}
+             ,RFND_BACNT       = #{rfndBacnt}
+             ,RFND_PYR_NM      = #{rfndPyrNm}
+             ,MDFCN_DT         = NOW()
+             ,MDFRID           = #{user.userid}
+        WHERE APLYID = #{aplyid}
+    </update>
+    
     <!-- 환불완료취소 처리 -->
     <update id="updateRefndRollback" parameterType="ResveReqstVo" >
         /* RefndMngDao.updateRefndRollback */
         UPDATE TB_FCL_SPCE_APLY SET
-             CNCL_RSN_CD                    = ''
-             ,STLM_STTS_CD                    = '161103'
-             ,RFND_REJECT_RSN                    = ''
-             ,CNCL_DT                 = null
-             ,MDFRID                 = #{user.userid}
-             ,MDFCN_DT                 = NOW()
-        WHERE APLYID = #{aplyid}
+             STLM_STTS_CD      = '161103'
+             ,CNCL_RSN_CD      = null
+             ,RSVT_CNCL_RSN    = null
+             ,RFND_REJECT_RSN  = null
+             ,RFND_BANK_CD     = null
+             ,RFND_BACNT       = null
+             ,RFND_PYR_NM      = null
+             ,MDFRID           = #{user.userid}
+             ,MDFCN_DT         = NOW()
+        WHERE APLYID IN (
+               <foreach item="aplyid" collection="aplyids" separator=",">
+                    #{aplyid}
+                </foreach>
+               ) 
     </update>
     
-    <!-- 환불요청취소로 예약 승인 변경건중 예약이 없는  -->
+    <!-- 환불요청취소로 예약 승인 변경건중 예약이 없는 목록 호출 -->
     <select id="selectSuitableAplyids" parameterType="ResveReqstVo" resultType="String">
-        /* RefndMngDao.selectSuitableAplyids */    
-          SELECT 
-               A.APLYID
-             FROM
-               (
-                SELECT  
-                    A.APLYID
-                    ,COUNT(*) AS CNT 
-                  FROM
-                    TB_FCL_APLY_RSVTDE A
-                    INNER JOIN TB_FCL_SPCE_APLY B
-                    ON A.APLYID = B.APLYID
-                    INNER JOIN tb_fcl_spce_rsvtde C
-                    ON A.RSVTDEID = C.RSVTDEID 
-                 WHERE 1=1 
-                   AND B.APLY_STTS_CD IN ('160101','160102')
-                   AND A.APLYID NOT IN (
-                      <foreach item="aplyid" collection="aplyids" separator=",">
+          /* RefndMngDao.selectSuitableAplyids */    
+           SELECT 
+               APLYID
+               FROM (   
+                SELECT
+                   B.APLYID 
+                   ,COUNT(C.RSVTDEID) AS OTHER_RESVE_CNT
+                   ,group_concat(C.APLYID) AP_NM
+                 FROM
+                   TB_FCL_SPCE_APLY A 
+                   LEFT JOIN TB_FCL_APLY_RSVTDE B
+                   ON A.APLYID  = B.APLYID  
+                   LEFT OUTER JOIN (
+                       SELECT
+                          A.RSVTDEID
+                          ,A.APLYID
+                         FROM
+                           TB_FCL_APLY_RSVTDE A
+                           INNER JOIN TB_FCL_SPCE_APLY B
+                           ON A.APLYID  = B.APLYID
+                           AND B.APLY_STTS_CD IN ('160101','160102')
+                   )C ON B.RSVTDEID = C.RSVTDEID AND A.APLYID  != C.APLYID   
+               WHERE 1=1 
+                 AND A.APLYID IN (
+                     <foreach item="aplyid" collection="aplyids" separator=",">
                         #{aplyid}
                       </foreach>
-                      )
-                   AND A.RSVTDEID IN(
-                       SELECT  A.RSVTDEID FROM TB_FCL_APLY_RSVTDE A WHERE APLYID IN 
-                       (
-                        <foreach item="aplyid" collection="aplyids" separator=",">
-                          #{aplyid}
-                        </foreach>
-                       )
-                   )
-                   GROUP BY A.APLYID
+                     ) 
+               GROUP BY A.APLYID
                ) A
-               WHERE 1=1
-                 AND A.CNT <![CDATA[<=]]>0
+             WHERE A.OTHER_RESVE_CNT <![CDATA[<=]]>0
      </select>
     
     
