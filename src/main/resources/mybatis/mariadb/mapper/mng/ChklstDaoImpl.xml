@@ -238,14 +238,15 @@
     <!-- 체크리스트 문항구성 목록 조회 -->
     <select id="selectChklstQitemMapngList" parameterType="ChklstQitemMapngVo" resultType="ChklstQitemMapngVo">
         /* ChklstDao.selectChklstQitemMapngList */
-        WITH RECURSIVE CODE_VIEW(PSE_CD, SE_CD, CN, QITM_ORDR, TREE_ORD, QITEMID)  AS (
+        WITH RECURSIVE CODE_VIEW(CHKLSTID, QITEMID, PSE_CD, SE_CD, CN, QITM_ORDR, TREE_ORD)  AS (
             SELECT
-                '-' AS PSE_CD
-                 , CD AS SE_CD
-                 , CONCAT(CD_NM) AS CN
-                 , 0 AS QITM_ORDR
-                 , CASE WHEN UPPR_CD  = 0 THEN 1 ELSE 2 END AS TREE_ORD
-                 , 0 AS QITEMID
+                0 AS CHKLSTID
+                , 0 AS QITEMID
+                , '-' AS PSE_CD
+                , CD AS SE_CD
+                , CONCAT(CD_NM) AS CN
+                , 0 AS QITM_ORDR
+                , CASE WHEN UPPR_CD  = 0 THEN 1 ELSE 2 END AS TREE_ORD
             FROM
                 TB_CMM_CD CCD
             WHERE
@@ -255,12 +256,13 @@
               AND CCD.UPPR_CD = 0
             UNION ALL
             SELECT
-                IFNULL(CCD.UPPR_CD, '-') AS PSE_CD
-                 , CD AS SE_CD
-                 , CONCAT(CD_NM) AS CN
-                 , 0 AS QITM_ORDR
-                 , CASE WHEN UPPR_CD  = 0 THEN 1 ELSE 2 END AS TREE_ORD
-                 , 0 AS QITEMID
+                0 AS CHKLSTID
+                , 0 AS QITEMID
+                , IFNULL(CCD.UPPR_CD, '-') AS PSE_CD
+                , CD AS SE_CD
+                , CONCAT(CD_NM) AS CN
+                , 0 AS QITM_ORDR
+                , CASE WHEN UPPR_CD  = 0 THEN 1 ELSE 2 END AS TREE_ORD
             FROM
                 TB_CMM_CD CCD
             WHERE
@@ -270,39 +272,43 @@
               AND CCD.UPPR_CD != 0
             UNION ALL
             SELECT
-                B.SE_CD AS PSE_CD
+                A.CHKLSTID
+                , A.QITEMID
+                , B.SE_CD AS PSE_CD
                  , '-' AS SE_CD
                  , B.IDNTY_MTTR
                  , A.ORDR AS QITM_ORDR
                  , 3 AS TREE_ORD
-                 , A.QITEMID AS QITEMID
             FROM
                 TB_ASS_CHKLST_QITEM_MAPNG A
-                    LEFT OUTER JOIN TB_ASS_CHKLST_QITEM B
-                                    ON B.QITEMID = A.QITEMID
+                LEFT OUTER JOIN 
+                    TB_ASS_CHKLST_QITEM B ON (B.QITEMID = A.QITEMID)
             WHERE
                 A.CHKLSTID = #{chklstid}
         )
         SELECT
-            CV.PSE_CD
-             , CV.SE_CD
-             , CV.CN
-             , CV.QITM_ORDR
-             , CV.TREE_ORD
-             , CV.QITEMID
-             , BB.SE_ORDR
-        FROM CODE_VIEW CV
-                 LEFT OUTER JOIN (
+            CV.CHKLSTID
+            , CV.QITEMID
+            , CV.PSE_CD
+            , CV.SE_CD
+            , CV.CN
+            , CV.QITM_ORDR
+            , CV.TREE_ORD
+            , BB.SE_ORDR
+        FROM 
+            CODE_VIEW CV
+        LEFT OUTER JOIN (
             SELECT
                 ACSO.CHKLSTID
-                 , ACSO.SE_CD
-                 , ACSO.ORDR SE_ORDR
+                , ACSO.SE_CD
+                , ACSO.ORDR SE_ORDR
             FROM
                 TB_ASS_CHKLST_SE_ORDR ACSO
             WHERE
                 ACSO.CHKLSTID = #{chklstid}
-        ) BB ON BB.SE_CD = CV.SE_CD
-        ORDER BY CV.TREE_ORD, CV.QITM_ORDR, BB.SE_ORDR, CV.SE_CD
+        ) BB ON (BB.SE_CD = CV.SE_CD)
+        ORDER BY 
+            CV.TREE_ORD, CV.QITM_ORDR, BB.SE_ORDR, CV.SE_CD
     </select>
 
     <!-- 체크리스트 1,2뎁스 순서 삭제 전 있는지 체크 -->

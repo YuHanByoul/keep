@@ -65,6 +65,10 @@
                     <div class="col-auto">
                         <input type="hidden" name="seCds" />
                         <p class="card-text"></p>
+                        <!-- <button type="button">-</button> -->
+                    </div>
+                    <div class="col-auto d-none qitem-delete">
+                        <a class="btn btn-ico"><i class="feather icon-x"></i></a>
                     </div>
                 </div>
             </div>
@@ -95,8 +99,8 @@
         , setQitemList: function (list) {
             const parentMap = {};
             const childMap = {};
-            for(let item of list){
-                if(item.treeOrd === 1){
+            for(let item of list) {
+                if(item.treeOrd === 1) {
                     const $item = $itemTemp.clone(true);
                     parentMap[item.seCd] = $item.children('ol');
                     $listBody.append(
@@ -104,29 +108,34 @@
                             .find('input[name=seCds]').val(item.seCd).end()
                             .find('ol').addClass('qitem-parent').end()
                     );
-                }else if(item.treeOrd === 2){
+                } else if(item.treeOrd === 2) {
                     const $item = $itemTemp.clone(true);
                     childMap[item.seCd] = $item.children('ol');
                     parentMap[item.pseCd].append(
                         $item.find('.card-text').text(item.cn).end()
                             .find('input[name=seCds]').val(item.seCd).end()
                     );
-                }else{
+                } else {
                     const $item = $itemTemp.clone(true);
                     childMap[item.pseCd].append(
                         $item.find('input[name=seCds]').remove().end()
-                            .find('.card-text').text(item.cn).data('qitem-id',item.qitemid).addClass('qitem-id').end()
+                            .find('.card-text').text(item.cn).data('qitem-id', item.qitemid).addClass('qitem-id').end()
                     );
-                    qitemArrParam += "&qitemArr="+item.qitemid;
+                    /*
+                    $item.find(".qitem-delete").removeClass("d-none").on("click", function() {
+                        qitemMapng.deleteItem($item.find(".card-text").data("qitem-id"));
+                    });
+                    */
+                    qitemArrParam += "&qitemArr=" + item.qitemid;
                 }
             }
         }
-
+        
         , addQitem: function() {
             const $modalBody = $('#qitemGrid');
             const $checked = $modalBody.find(".singleCheckbox:checked");
 
-            if ($checked.length === 0) {
+            if($checked.length === 0) {
                 alert("문항을 선택해주세요.");
                 return;
             }
@@ -143,13 +152,31 @@
                 const $item = $itemTemp.clone(true);
                 $li.children('ol').append(
                     $item.find('input[name=seCds]').remove().end()
-                        .find('.card-text').text(cn).data('qitem-id',qitemid).addClass('qitem-id').end()
+                        .find('.card-text').text(cn).data('qitem-id', qitemid).addClass('qitem-id').end()
                 );
-                qitemArrParam += "&qitemArr="+qitemid;
+                
+                $item.find(".qitem-delete").removeClass("d-none").on("click", function() {
+                    $item.remove();
+                    qitemArrParam = qitemArrParam.replace("&qitemArr=" + qitemid, "");
+                    if($li.find(" > ol > li").length == 0) {
+                        $li.find(".expendable-toggle-btn").remove();
+                    }
+                });
+                
+                qitemArrParam += "&qitemArr=" + qitemid;
             });
+            
             qitemListModal.hide();
             this.expendable.refresh();
             this.setSortable();
+        }
+        
+        , removeItem: function() {
+            //console.log("removeItem");
+        }
+        
+        , deleteItem: function(qitemid) {
+            //console.log("deleteItem: " + qitemid);
         }
         
         , setSortable: function() {
@@ -186,12 +213,12 @@
             ];
             $('#chklstFormQitemMapgForm input[name=seCds]').each(function (){
                 params.push(
-                    {name:'seCds', value:$(this).val()}
+                    {name: 'seCds', value:$(this).val()}
                 )
             });
             $('#chklstFormQitemMapgForm .qitem-id').each(function (){
                 params.push(
-                    {name:'qitemids', value:$(this).data('qitem-id')}
+                    {name: 'qitemids', value: $(this).data('qitem-id')}
                 )
             });
             
