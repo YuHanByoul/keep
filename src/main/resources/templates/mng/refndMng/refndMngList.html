@@ -14,7 +14,7 @@
 			</div>
 			<div class="col-12 col-md-6 text-right">
                 <th:block sec:authorize-url="/mng/rcpmnyBfe/resveCancelPopup.html">
-                    <button type="button" class="btn btn-disabled waves-effect waves-light" onclick="cancelRefund();" >환불 요청 취소</button>
+                    <button type="button" class="btn btn-disabled waves-effect waves-light" onclick="openCancelRefundPopup();" >환불 요청 취소</button>
                 </th:block>
                 <th:block sec:authorize-url="/mng/rcpmnyBfe/dsptCheckPopup.html">
                     <button type="button" class="btn btn-primary m-r-5" onclick="completeRefund();" >환불 완료 </button>
@@ -31,21 +31,21 @@
 	<div id="contentPanel" style="display: none" class="card"></div>
 </div>
 
+
+<div class="modal fade" data-bs-backdrop="static" id="refndPopup"></div>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script type="text/javascript" src="/js/common/jsgrid-master/dist/jsgrid.min.js"></script>
 <script th:inline="javascript">
 	var selectedItems = [];
 	var gridHelper2;
+    // 환불요청취소 팝업
+    var refndModal;
+	
 	$(function(){
 		gridHelper2 = new GridHelper('jsGrid','contentPanel');
 		writeJsGridData();
 	});
-
-	function fn_goInsertForm(){
-		var insertUrl = "/mng/refndMng/refndMngForm.html?mode=f"
-			gridHelper2.loadContent(insertUrl);
-	}
-
+	
 	function fn_searchForm(){
 		gridHelper2.resetListContent();
 	}
@@ -92,7 +92,7 @@
 						params.push({name: "orderField", value: filter.sortField});
 						params.push({name: "orderDirection", value: filter.sortOrder});
 					}else{
-						params.push({name: "orderField", value: 'reg_dt'});
+						params.push({name: "orderField", value: 'RFND_DMND_DT DESC, A1.REG_DT'});
 					}
 
                     if(!selectedApplyidUsedOnce && selectedApplyid !=null && selectedApplyid !=''){
@@ -142,7 +142,7 @@
 				,{ title: '신청자ID'    ,name: 'acnt',    type: "text", width: "100px"}
 				,{ title: '공간'   ,name: 'spceNm',   type: "text", width: "150", align:"center"  }
 				,{ title: '이용일(시)'   ,name: 'bgngDt',   type: "text", width: "250", align:"center"
-                    , itemTemplate: function(value, item){
+                    ,itemTemplate: function(value, item){
                         if( item.alldayYn == 'N' ){
                             return item.bgngDt.substring(0,16) +' ~ '+item.endDt.substring(11,16);
                         }else{
@@ -152,7 +152,7 @@
                                 return item.bgngDt.substring(0,10) +' ~ '+ item.endDt.substring(0,10);
                             }
                         }
-                    }
+                      }
 				}
 				,{ title: '결제금액' ,name: 'amt',  type: "text", width: "150", align:"center", itemTemplate: function(value) {
 					return value.toLocaleString()+'원';
@@ -226,8 +226,16 @@
 		});
 	}
 
+    var fn_openRefndModal = (refndPopupUrl) => {
+        $("#refndPopup").load(refndPopupUrl, function(response, status, xhr) {
+            if (status == "success") {
+                refndModal = new bootstrap.Modal($('#refndPopup'));
+                refndModal.show();
+            }
+        });
+    }
 
-    var cancelRefund = (aplyid) => {
+    var openCancelRefundPopup = (aplyid) => {
         
         let aplyidForParam = 0;
         
@@ -240,32 +248,11 @@
             }
             aplyidForParam = selectedItems.join(",");
         }
+        let resveCancelPopupUrl = "/mng/refndMng/refndCancelPopup.html?"+"aplyids="+aplyidForParam;
+        fn_openRefndModal(resveCancelPopupUrl);
         
-        if(!confirm('환불요청을 취소 하시겠습니까?\n이미 다른 예약신청이 있는 요청건을 제외하고 예약승인 및 입금완료 상태로 전환됩니다.') )return;
-        
-        var data = {"aplyids" : aplyidForParam }
-        if(displayWorkProgress()){
-              $.ajax({
-                  url: "/mng/refndMng/updateRefndCancel.do",
-                  type: 'POST',
-                  cache : false,
-                  dataType: 'json',
-                  data : data,
-                  success : function (data){
-                      closeWorkProgress();
-                      if(data.result=="success"){
-                          alert(data.msg);
-                          gridHelper2.resetPageContent();
-                      }else{
-                          alert(data.msg);
-                      }
-                  },
-                  error : function (error){
-                  }
-             });
-        }
-   }
-
+    }
+    
    var completeRefund = (aplyid) => {
        
         let aplyidForParam = 0;
@@ -289,7 +276,7 @@
            $.ajax({
                type: "GET",
                contentType: "application/json; charset=utf-8",
-               url: "/mng/refndMng/updateRefndComplete.do",
+               url: "/mng/resveReqst/selectResveReqstList.do",
                dataType: "json",
                data : {selectedApplyid : aplyidForParam},
                success : function (response){
@@ -305,20 +292,17 @@
                    
                    }
                    closeWorkProgress();
-                   let refndPopupUrl = "/mng/rcpmnyAfter/refndPopup.html?aplyid="+aplyidForParam;
-                   fn_openResveCancelModal(refndPopupUrl);
+                   let refndPopupUrl = "/mng/refndMng/refndCompletePopup.html?aplyid="+aplyidForParam;
+                   fn_openRefndModal(refndPopupUrl);
                }
            });
        }
    }
+
+
+
+
    
-   // 환불요청 팝업
-   var fn_openResveCancelModal = (refndPopupUrl) => {
-       $("#refndPopup").load(refndPopupUrl, function(response, status, xhr) {
-            if (status == "success") {
-                refndModal = new bootstrap.Modal($('#refndPopup'));
-                refndModal.show();
-            }
-       });
-   }
+   
+
 </script>
