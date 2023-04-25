@@ -10,6 +10,8 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
@@ -18,13 +20,16 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kbrainc.plum.front.report.model.ReportOperVo;
 import com.kbrainc.plum.mng.bizAply.bizRpt.model.BizRptDao;
 import com.kbrainc.plum.mng.bizAply.bizRpt.model.BizRptVo;
-import com.kbrainc.plum.mng.bizAply.pcntst.model.PublicContestMngGrpVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import com.kbrainc.plum.rte.util.StringUtil;
@@ -1246,4 +1251,58 @@ public class BizRptServiceImpl extends PlumAbstractServiceImpl implements BizRpt
 		ret += bizRptDao.updateTrgtCn(bizRptVo);
 		return ret;
 	}
+
+    @Override
+    public List<BizRptVo> selectAplyList(BizRptVo bizRptVo) throws Exception {
+        // TODO Auto-generated method stub
+        return bizRptDao.selectAplyList(bizRptVo);
+    }
+
+    @Transactional
+    @Override
+    public int insertReport(BizRptVo bizRptVo) throws Exception {
+        // TODO Auto-generated method stub
+        int retVal = 0;
+
+        // 1. 신청정보 등록
+        retVal += bizRptDao.insertReport(bizRptVo);
+        
+        String data = bizRptVo.getJsonString();
+        if (StringUtils.isNotBlank(data)) {
+            JSONParser json = new JSONParser();
+            JSONObject jsonobj = (JSONObject)json.parse(data);
+            
+            JSONArray dataArray = (JSONArray)jsonobj.get("data");
+            if (CollectionUtils.isNotEmpty(dataArray)) {
+                ReportOperVo reportOperVo = new ReportOperVo();
+                reportOperVo.setUser(bizRptVo.getUser());
+                reportOperVo.setReportid(bizRptVo.getReportid());
+                
+                for(int i = 0; i < dataArray.size(); i++){
+                    JSONObject jsonObj = (JSONObject) dataArray.get(i);
+                    String operid = jsonObj.get("operid") != null ? jsonObj.get("operid").toString().trim() : "";
+                    String seCd = jsonObj.get("seCd") != null ? jsonObj.get("seCd").toString().trim() : "";
+                    String bgngDe = jsonObj.get("bgngDe") != null ? jsonObj.get("bgngDe").toString().trim() : "";
+                    String endDe = jsonObj.get("endDe") != null ? jsonObj.get("endDe").toString().trim() : "";
+                    String rnd = jsonObj.get("rnd") != null ? jsonObj.get("rnd").toString().trim() : "";
+                    String nope = jsonObj.get("nope") != null ? jsonObj.get("nope").toString().trim() : "";
+                    String mnt = jsonObj.get("mnt") != null ? jsonObj.get("mnt").toString().trim() : "";
+                    String rmrk = jsonObj.get("rmrk") != null ? jsonObj.get("rmrk").toString().trim() : "";
+                    
+                    reportOperVo.setOperid(Integer.valueOf(operid));
+                    reportOperVo.setSeCd(seCd);
+                    reportOperVo.setBgngDe(bgngDe);
+                    reportOperVo.setEndDe(endDe);
+                    reportOperVo.setRnd(Integer.valueOf(rnd));
+                    reportOperVo.setNope(Integer.valueOf(nope));
+                    reportOperVo.setMnt(Integer.valueOf(mnt));
+                    reportOperVo.setRmrk(rmrk);
+                    
+                    bizRptDao.insertReportOper(reportOperVo);
+                }
+            }
+        }
+        
+        return retVal;
+    }
 }

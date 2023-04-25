@@ -54,7 +54,8 @@ public class CancelController {
     * @return String
      */
     @RequestMapping(value = "/front/cncl/cancelListForm.html")
-    public String cancelListForm(Model model) throws Exception {
+    public String cancelListForm(Model model, CancelVo cancelVo) throws Exception {
+        model.addAttribute("reqMngVo", cancelVo);
         return "front/cncl/cancelList";
     }
     

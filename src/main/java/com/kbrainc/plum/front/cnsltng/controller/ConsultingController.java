@@ -50,7 +50,8 @@ public class ConsultingController {
     * @return String
      */
     @RequestMapping(value = "/front/cnsltng/cnsltngListForm.html")
-    public String cnsltngListForm(Model model) throws Exception {
+    public String cnsltngListForm(Model model, ConsultingVo consultingVo) throws Exception {
+        model.addAttribute("reqMngVo", consultingVo);
         return "front/cnsltng/cnsltngList";
     }
 

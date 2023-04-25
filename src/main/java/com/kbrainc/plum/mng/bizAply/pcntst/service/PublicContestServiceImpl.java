@@ -209,8 +209,13 @@ public class PublicContestServiceImpl extends PlumAbstractServiceImpl implements
             publicContestVo.setDelvryCfmtnPrsntnEndDt(publicContestVo.getDelvryCfmtnPrsntnEndDtFirst());
             publicContestVo.setCptalExcutBgngDt(publicContestVo.getCptalExcutBgngDtFirst());
             publicContestVo.setCptalExcutEndDt(publicContestVo.getCptalExcutEndDtFirst());
-            publicContestVo.setDelvryid(publicContestVo.getFrstCyclDelvryid());
-            publicContestDao.updateDelevery(publicContestVo);
+            if (publicContestVo.getFrstCyclDelvryid() == 0) {
+                publicContestVo.setCycl(1);
+                publicContestDao.insertDelevery(publicContestVo);
+            } else {
+                publicContestVo.setDelvryid(publicContestVo.getFrstCyclDelvryid());
+                publicContestDao.updateDelevery(publicContestVo);
+            }
             
             if (publicContestVo.getWctDelvryCnt() == 2) {
                 publicContestVo.setDelvryAplyBgngDt(publicContestVo.getDelvryAplyBgngDtScnd());
@@ -219,8 +224,13 @@ public class PublicContestServiceImpl extends PlumAbstractServiceImpl implements
                 publicContestVo.setDelvryCfmtnPrsntnEndDt(publicContestVo.getDelvryCfmtnPrsntnEndDtScnd());
                 publicContestVo.setCptalExcutBgngDt(publicContestVo.getCptalExcutBgngDtScnd());
                 publicContestVo.setCptalExcutEndDt(publicContestVo.getCptalExcutEndDtScnd());
-                publicContestVo.setDelvryid(publicContestVo.getScndCyclDelvryid());
-                publicContestDao.updateDelevery(publicContestVo);
+                if (publicContestVo.getScndCyclDelvryid() == 0) {
+                    publicContestVo.setCycl(2);
+                    publicContestDao.insertDelevery(publicContestVo);
+                } else {
+                    publicContestVo.setDelvryid(publicContestVo.getScndCyclDelvryid());
+                    publicContestDao.updateDelevery(publicContestVo);
+                }
             }
         }
         String data = publicContestVo.getJsonString();
