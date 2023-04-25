@@ -6,6 +6,8 @@ import javax.validation.Valid;
 
 import com.kbrainc.plum.front.eduInst.model.EduExprtVo;
 import com.kbrainc.plum.front.eduInst.model.EduInstVo;
+import com.kbrainc.plum.front.eduInst.model.EqpVo;
+import com.kbrainc.plum.front.eduInst.model.LctrumVo;
 import com.kbrainc.plum.front.eduInst.model.SchdlVo;
 import com.kbrainc.plum.front.eduInst.model.SeePrgrmVo;
 
@@ -205,5 +207,42 @@ public interface EduInstService {
 	* @return EduInstVo
 	*/
 	public EduInstVo selectSeeFclt(EduInstVo eduInstVo) throws Exception;
+
+	/**
+	* 시설 강의실 목록 조회
+	*
+	* @Title : selectLctrumList
+	* @Description : 시설 강의실 목록 조회
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return List<LctrumVo>
+	*/
+	public List<LctrumVo> selectLctrumList(EduInstVo eduInstVo) throws Exception;
+
+	/**
+	* 시설 설비 목록 조회
+	*
+	* @Title : selectFcltEqpList
+	* @Description : 시설 설비 목록 조회
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return List<EqpVo>
+	*/
+	public List<EqpVo> selectFcltEqpList(EduInstVo eduInstVo) throws Exception;
+
+	/**
+	* 교육시설 및 설비 현황 등록
+	*
+	* @Title : insertFcltStts
+	* @Description : 교육시설 및 설비 현황 등록
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertFcltStts(EduInstVo eduInstVo) throws Exception;
+
 
 }

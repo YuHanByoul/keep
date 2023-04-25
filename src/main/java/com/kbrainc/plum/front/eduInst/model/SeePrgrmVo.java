@@ -19,7 +19,7 @@ public class SeePrgrmVo extends ParentRequestVo {
     private Integer prgrmid;        /** 프로그램아이디 */
     private String  prgrmNm;        /** 프로그램명 */
     private String  dsgnNo;         /** 지정번호 */
-    private String  rfrncPrgrmid;   /** 참조 프로그램아이디 */
+    private Integer rfrncPrgrmid;   /** 참조 프로그램아이디 */
     private String  rfrncPrgrmNm;   /** 참조 프로그램명 */
     private String  eduSbjct;       /** 교육 주제 */
     private String  eduTrgt;        /** 교육 대상 */

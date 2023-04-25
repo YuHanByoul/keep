@@ -43,16 +43,17 @@
                     </ul>
                     <div class="btn-wrap">
                         <div class="center">
-                            <button type="button" class="btn-large btn-gray">중간저장</button>
-                            <button type="button" class="btn-large btn-green"onclick="goNext()">신청완료</button>
+                            <button type="button" class="btn-large btn-gray" onclick="doSave()">중간저장</button>
+                            <button type="button" class="btn-large btn-green"onclick="doSave('next')">신청완료</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col col-wide">
-[[${fcltSttsForm}]]
+        <form id='fclstForm' class="col col-wide">
+            <input type="hidden" id="aplyid" name="aplyid" th:value="${eduInstVo.aplyid}" />
+
             <div class="table-caption mt0">
                 <div class="left">
                     <h3 class="sub-title">시설개요</h3>
@@ -73,8 +74,8 @@
                             <th scope="row">임대여부</th>
                             <td colspan="3">
                                 <div class="form-check-list no-flex-wrap">
-                                    <label class="inp"><input type="radio" name="rentYn" value="Y" th:checked="${eduInstVo.rentYn eq 'Y'}"><b>임대</b></label>
-                                    <label class="inp"><input type="radio" name="rentYn" value="N" th:checked="${eduInstVo.rentYn eq 'N' or eduInstVo.rentYn eq null}"><b>소유</b></label>
+                                    <label class="inp"><input type="radio" id="rentYn1" name="rentYn1" value="Y" th:checked="${eduInstVo.rentYn eq 'Y'}"><b>임대</b></label>
+                                    <label class="inp"><input type="radio" id="rentYn2" name="rentYn2" value="N" th:checked="${eduInstVo.rentYn eq 'N' or eduInstVo.rentYn eq null}"><b>소유</b></label>
                                 </div>
                             </td>
                         </tr>
@@ -88,8 +89,8 @@
                             <th scope="row">숙박시설 보유여부</th>
                             <td colspan="3">
                                 <div class="form-check-list no-flex-wrap">
-                                    <label class="inp"><input type="radio" name="styFcltHoldYn" value="Y" th:checked="${eduInstVo.styFcltHoldYn eq 'Y'}"><b>보유</b></label>
-                                    <label class="inp"><input type="radio" name="styFcltHoldYn" value="N" th:checked="${eduInstVo.styFcltHoldYn eq 'N' or eduInstVo.styFcltHoldYn eq null}"><b>미보유</b></label>
+                                    <label class="inp"><input type="radio" id="styFcltHoldYn1" name="styFcltHoldYn" value="Y" th:checked="${eduInstVo.styFcltHoldYn eq 'Y'}"><b>보유</b></label>
+                                    <label class="inp"><input type="radio" id="styFcltHoldYn2" name="styFcltHoldYn" value="N" th:checked="${eduInstVo.styFcltHoldYn eq 'N' or eduInstVo.styFcltHoldYn eq null}"><b>미보유</b></label>
                                 </div>
                             </td>
                         </tr>
@@ -127,26 +128,22 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td><input type="text" title="강의실명"></td>
-                            <td><input type="text" title="면적(m2)"></td>
-                            <td><input type="text" title="수용인원"></td>
-                            <td class="ac"></td>
-                        </tr>
-                        <tr>
-                            <td><input type="text" title="강의실명"></td>
-                            <td><input type="text" title="면적(m2)"></td>
-                            <td><input type="text" title="수용인원"></td>
-                            <td class="ac"><button type="button" class="btn-remove-table" title="행 삭제"><span class="icon icon-remove"></span></button></td>
+                        <tr th:id=' lctrum1Tr + ${j.count} ' th:if='${lctrum1.seCd=="251101"}' th:each='lctrum1, j: ${lctrumList1}'>
+                            <td><input type="text" title="강의실명" id="nm" name="nm" th:value="${lctrum1.nm}">
+                            <td><input type="text" title="면적(m2)" id="ar" name="ar" th:value="${lctrum1.ar}">
+                            <td><input type="text" title="수용인원" id="nope" name="nope" th:value="${lctrum1.nope}">
+                            <input type="hidden" title="구분코드" id="seCd" name="seCd" th:value="${lctrum1.seCd}">
+                            <td class="ac">
+                                <button th:if='${j.count > 1}' type="button" class="btn-remove-table" title="행 삭제"><span class="icon icon-remove"></span></button>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <button type="button" class="btn-row-add" title="행 추가" onclick="addRow()">
+            <button type="button" class="btn-row-add" title="행 추가" id="addBtn1" onclick="addRow(this.id)">
                 <span class="icon icon-row-add"></span>
             </button>
-
 
             <div class="table-caption">
                 <div class="left">
@@ -172,17 +169,14 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td><input type="text" title="실습실명"></td>
-                            <td><input type="text" title="면적(m2)"></td>
-                            <td><input type="text" title="수용인원"></td>
-                            <td class="ac"></td>
-                        </tr>
-                        <tr>
-                            <td><input type="text" title="실습실명"></td>
-                            <td><input type="text" title="면적(m2)"></td>
-                            <td><input type="text" title="수용인원"></td>
-                            <td class="ac"><button type="button" class="btn-remove-table" title="행 삭제"><span class="icon icon-remove"></span></button></td>
+                        <tr th:id=' lctrum2Tr + ${k.count} 'th:if='${lctrum2.seCd=="251102"}' th:each='lctrum2, k: ${lctrumList2}'>
+                            <td><input type="text" title="강의실명" id="nm" name="nm" th:value="${lctrum2.nm}">
+                            <td><input type="text" title="면적(m2)" id="ar" name="ar" th:value="${lctrum2.ar}">
+                            <td><input type="text" title="수용인원" id="nope" name="nope" th:value="${lctrum2.nope}">
+                            <input type="hidden" title="구분코드" id="seCd" name="seCd" th:value="${lctrum2.seCd}">
+                            <td class="ac">
+                                <button th:if='${k.count > 1}' type="button" class="btn-remove-table" title="행 삭제"><span class="icon icon-remove"></span></button>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -191,7 +185,6 @@
             <button type="button" class="btn-row-add" title="행 추가" onclick="addRow()">
                 <span class="icon icon-row-add"></span>
             </button>
-
 
             <div class="table-caption">
                 <div class="left">
@@ -219,18 +212,11 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td><input type="text" title="설비명"></td>
-                            <td><input type="number" title="수량"></td>
-                            <td><input type="text" title="활용방안"></td>
-                            <td><input type="text" title="비고"></td>
-                            <td class="ac"></td>
-                        </tr>
-                        <tr>
-                            <td><input type="text" title="설비명"></td>
-                            <td><input type="number" title="수량"></td>
-                            <td><input type="text" title="활용방안"></td>
-                            <td><input type="text" title="비고"></td>
+                        <tr th:id=' eqp1Tr + ${n.count} ' th:if='${eqpList != null}' th:each='eqp, n: ${eqpList}'>
+                            <td><input type="text" title="설비명" id="nm" name="nm" th:value="${eqp.nm}"></td>
+                            <td><input type="number" title="수량" id="qnty" name="qnty" th:value="${eqp.qnty}"></td>
+                            <td><input type="text" title="활용방안"id="prcuseMthd" name="prcuseMthd" th:value="${eqp.prcuseMthd}"></td>
+                            <td><input type="text" title="비고"id="rmrk" name="rmrk" th:value="${eqp.rmrk}"></td>
                             <td class="ac"><button type="button" class="btn-remove-table" title="행 삭제"><span class="icon icon-remove"></span></button></td>
                         </tr>
                     </tbody>
@@ -241,11 +227,10 @@
                 <span class="icon icon-row-add"></span>
             </button>
 
-
             <div class="mo-only">
                 <div class="btn-wrap">
                     <div class="center">
-                        <button type="button" class="btn-medium btn-gray">중간저장</button>
+                        <button type="button" class="btn-medium btn-gray" onclick="doSave()">중간저장</button>
                     </div>
                 </div>
                 <div class="btn-wrap">
@@ -255,20 +240,117 @@
                     </div>
                 </div>
             </div>
-
-        </div>
+        </form>
     </div>
 
     <script th:inline="javascript">
         var nextUrl="/front/eduInst/aplyCmptnForm.html";
+        var insertUrl="/front/eduInst/insertFcltStts.do";
 
         function goNext(){
             //if(!valid()) return false;
             location.href = nextUrl;
         }
 
+        function addRow() {
+
+        }
+
+        function doSave(call){
+
+            if(call!="next")if(!confirm("저장하시겠습니까?")) return;
+
+            var param = {};
+
+            var lctrumList = [];
+            var eqpList = [];
+
+
+            $('tr[id^="lctrum"]').each(function(index, value){
+            	var nm   = $(this).find('input[name="nm"]').val();
+            	var ar   = $(this).find('input[name="ar"]').val();
+            	var nope = $(this).find('input[name="nope"]').val();
+            	var seCd = $(this).find('input[name="seCd"]').val();
+
+            	lctrumList.push({
+                    nm   :nm
+                  , ar   :ar
+                  , nope :nope
+                  , seCd :seCd
+                });
+            });
+
+            $('tr[id^="eqp"]').each(function(index, value){
+            	var nm         = $(this).find('input[name="nm"]').val();
+            	var qnty       = $(this).find('input[name="qnty"]').val();
+            	var prcuseMthd = $(this).find('input[name="prcuseMthd"]').val();
+            	var rmrk       = $(this).find('input[name="rmrk"]').val();
+
+            	eqpList.push({
+                    nm         :nm
+                  , qnty       :qnty
+                  , prcuseMthd :prcuseMthd
+                  , rmrk       :rmrk
+                });
+            });
+
+            param = {
+                aplyid        : $("#aplyid").val()
+              , rentYn        : $("#rentYn1").attr("checked") ? 'Y':'N'  /** 임대 여부 */
+              , rentPrd       : $("#rentPrd").val()          /** 임대 기간 */
+              , totar         : $("#totar").val()            /** 총면적 */
+              , styFcltHoldYn : $("#styFcltHoldYn1").attr("checked") ? 'Y':'N'    /** 숙박 시설 보유 여부 */
+              , styFcltAr     : $("#styFcltAr").val()        /** 숙박 시설 면적 */
+              , styFcltNope   : $("#styFcltNope").val()      /** 숙박 시설 인원수 */
+              , lctrumList: lctrumList
+              , eqpList   : eqpList
+            };
+
+            $.ajax({
+                url : insertUrl,
+                type: 'POST',
+                cache : false,
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(param),
+                success : function (data){
+
+                    if(data.result=="success"){
+                        alert(data.msg);
+                        var id = $("#aplyid").val();
+                        if(call == "next") {
+                            location.href = nextUrl+"?aplyid=" + id;
+                        }else{
+                            location.href = reUrl+"?aplyid=" + id;
+                        }
+                    }else{
+                        alert(data.msg);
+                    }
+                },
+                error : function (error){
+                }
+            });
+        };
+
+
         $(function(){
 
+//         	var validator= $("#fclstForm").validate({
+//                 rules: {
+//                      ctprvnCd       : { required: true }
+//                     ,instEml        : { isBlank : true, maxlength: 50 }
+//                     ,aplcntNm       : { isBlank : true ,maxlength: 50 }
+//                     ,aplcntMoblphon : { isBlank : true}
+//                     ,aplcntEml      : { isBlank : true, maxlength: 50 }
+//                 },
+//                 messages: {
+//                     ctprvnCd        : { required: "시도를 선택해 주십시오."}
+//                     ,instEml        : { isBlank : "입력값에 공백이 있습니다.", maxlength: "이메일은 50자 이하여야 합니다." }
+//                     ,aplcntNm       : { isBlank : "입력값에 공백이 있습니다.", maxlength: "신청자명은 20자 이하여야 합니다." }
+//                     ,aplcntMoblphon : { isBlank : "입력값에 공백이 있습니다." }
+//                     ,aplcntEml      : { isBlank : "입력값에 공백이 있습니다.", maxlength: "이메일은 50자 이하여야 합니다." }
+//                 }
+//             })
 
         });
     </script>

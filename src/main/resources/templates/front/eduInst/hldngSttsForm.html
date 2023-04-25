@@ -76,6 +76,7 @@
                                 <th scope="row">프로그램명</th>
                                 <td colspan="3">
                                     <div class="form-input">
+
                                         <div class="form-check-list no-flex-wrap">
                                             <label class="inp">
                                                 <input type="radio" th:id="'selfYn' + ${i.count}"
@@ -90,19 +91,23 @@
                                                                     value='search'><b>검색</b>
                                             </label>
                                         </div>
+
                                         <button type="button" class="btn-medium btn-green"
                                                 th:id="'srchBtn'+${i.count}"
                                                 name='srchBtn'
-                                                th:disabled="${prgrm.rfrncPrgrmid!=null && prgrm.rfrncPrgrmid!=0 ? '' : 'disabled'}"
+                                                th:disabled="${prgrm.rfrncPrgrmid!=null && prgrm.rfrncPrgrmid!=0 ? false : true}"
                                                 th:onclick="'openPopup('+${i.count}+')'">검색</button>
-                                        <input type="hidden" title="참조프로그램아이디" placeholder="프로그램명을 입력해 주세요." th:id="'rfrncPrgrmid'+${i.count}" th:name="'rfrncPrgrmid'+${i.count}" th:value="${prgrm.rfrncPrgrmid}">
+
+
+                                        <input type="hidden" th:id="'rfrncPrgrmid'+${i.count}" name="rfrncPrgrmid" th:value="${prgrm.rfrncPrgrmid}">
+
                                     </div>
                                     <div class="form-input mt10">
                                         <input type="text"
                                         th:placeholder="${prgrm.rfrncPrgrmid==null || prgrm.rfrncPrgrmid==0 ? '프로그램명을 입력해 주세요.':'검색버튼을 눌러 프로그램을 선택해주세요.'}"
                                         th:id="'prgrmNm'+${i.count}"
                                         th:value="${prgrm.prgrmNm}"
-                                        th:readonly="${prgrm.rfrncPrgrmid!=null && prgrm.rfrncPrgrmid!=0 ? false: true}"
+                                        th:readonly="${prgrm.rfrncPrgrmid==null || prgrm.rfrncPrgrmid==0 ? false: true}"
                                         name="prgrmNm">
                                     </div>
                                 </td>
@@ -220,9 +225,7 @@
         }
 
         function doSave(call){
-        	if(call=='next'){
-        		location.href = nextUrl;
-        	}
+
         	if(call!="next")if(!confirm("저장하시겠습니까?")) return;
 
             var param = {};
@@ -293,6 +296,7 @@
         		if(this.value=='self'){
         			$('#prgrmNm'+no).show();
                     $('#rfrncPrgrmid'+no).val("");
+                    $('#prgrmNm'+no).val("");
         			$('#srchBtn'+no).prop('disabled','disabled')
         			$('#prgrmNm'+no).prop('readonly','')
                     $('#prgrmNm'+no).prop('placeholder','프로그램명을 입력해 주세요.');
@@ -304,6 +308,8 @@
 
         		}
         	})
+
+//         	$("[id^=selfYn]").trigger("onchange");
         });
     </script>
 </div>

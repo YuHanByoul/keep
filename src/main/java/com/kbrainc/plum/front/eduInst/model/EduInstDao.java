@@ -2,8 +2,6 @@ package com.kbrainc.plum.front.eduInst.model;
 
 import java.util.List;
 
-import javax.validation.Valid;
-
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 /**
@@ -236,5 +234,79 @@ public interface EduInstDao {
 	* @return EduInstVo
 	*/
 	public EduInstVo selectSeeFclt(EduInstVo eduInstVo) throws Exception;
+
+	/**
+	* 시설 강의실 목록 조회
+	*
+	* @Title : selectLctrumList
+	* @Description : 시설 강의실 목록 조회
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return List<LctrumVo>
+	*/
+	public List<LctrumVo> selectLctrumList(EduInstVo eduInstVo) throws Exception;
+
+	/**
+	* 시설 강의실 등록
+	*
+	* @Title : insertFcltLctrum
+	* @Description : 시설 강의실 등록
+	* @param vo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertFcltLctrum(LctrumVo vo) throws Exception;
+
+	/**
+	* 시설 강의시실 삭제
+	*
+	* @Title : deleteFcltLctrum
+	* @Description : 시설 강의시실 삭제
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int deleteFcltLctrum(EduInstVo eduInstVo) throws Exception;
+
+	/**
+	* 시설 설비 목록 조회
+	*
+	* @Title : selectFcltEqpList
+	* @Description : 시설 설비 목록 조회
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return List<EqpVo>
+	*/
+	public List<EqpVo> selectFcltEqpList(EduInstVo eduInstVo) throws Exception;
+
+	/**
+	* 시설 설비 등록
+	*
+	* @Title : insertFcltEqp
+	* @Description : 시설 설비 등록
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertFcltEqp(EqpVo eduInstVo) throws Exception;
+
+	/**
+	* 시설 설비 삭제
+	*
+	* @Title : deleteEqp
+	* @Description : 시설 설비 삭제
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int deleteFcltEqp(EduInstVo eduInstVo) throws Exception;
+
+
 
 }

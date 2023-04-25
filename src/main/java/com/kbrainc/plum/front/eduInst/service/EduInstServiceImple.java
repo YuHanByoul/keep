@@ -3,7 +3,6 @@ package com.kbrainc.plum.front.eduInst.service;
 import java.util.List;
 
 import javax.annotation.Resource;
-import javax.validation.Valid;
 
 import org.apache.ibatis.type.Alias;
 import org.springframework.stereotype.Service;
@@ -12,9 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kbrainc.plum.front.eduInst.model.EduExprtVo;
 import com.kbrainc.plum.front.eduInst.model.EduInstDao;
 import com.kbrainc.plum.front.eduInst.model.EduInstVo;
+import com.kbrainc.plum.front.eduInst.model.EqpVo;
+import com.kbrainc.plum.front.eduInst.model.LctrumVo;
 import com.kbrainc.plum.front.eduInst.model.SchdlVo;
 import com.kbrainc.plum.front.eduInst.model.SeePrgrmVo;
-import com.kbrainc.plum.mng.asgsysSrng.model.ExpndArtclVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
@@ -320,6 +320,82 @@ public class EduInstServiceImple extends PlumAbstractServiceImpl implements EduI
 	@Override
 	public EduInstVo selectSeeFclt(EduInstVo eduInstVo) throws Exception{
 		return eduInstDao.selectSeeFclt(eduInstVo);
+	}
+
+	/**
+	* 시설 강의실 목록 조회
+	*
+	* @Title : selectLctrumList
+	* @Description : 시설 강의실 목록 조회
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return List<LctrumVo>
+	*/
+	@Override
+	public List<LctrumVo> selectLctrumList(EduInstVo eduInstVo) throws Exception{
+		return eduInstDao.selectLctrumList(eduInstVo);
+	}
+
+	/**
+	* 시설 설비 목록 조회
+	*
+	* @Title : selectFcltEqpList
+	* @Description : 시설 설비 목록 조회
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return List<EqpVo>
+	*/
+	@Override
+	public List<EqpVo> selectFcltEqpList(EduInstVo eduInstVo) throws Exception{
+		return eduInstDao.selectFcltEqpList(eduInstVo);
+	}
+
+	/**
+	* 교육시설 및 설비 현황 등록
+	*
+	* @Title : insertFcltStts
+	* @Description : 교육시설 및 설비 현황 등록
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	@Override
+	@Transactional
+	public int insertFcltStts(EduInstVo eduInstVo) throws Exception {
+		int ret=0;
+
+		List<LctrumVo> lctrumList = null;
+	    List<EqpVo>    eqpList = null;
+
+		eduInstDao.deleteFcltLctrum(eduInstVo);
+	    eduInstDao.deleteFcltEqp(eduInstVo);
+
+
+		lctrumList = eduInstVo.getLctrumList();
+		eqpList = eduInstVo.getEqpList();
+
+		if(lctrumList != null && lctrumList.size()> 0) {
+			for(LctrumVo vo : lctrumList) {
+				vo.setUser(eduInstVo.getUser());
+				vo.setAplyid(eduInstVo.getAplyid());
+
+				ret+=eduInstDao.insertFcltLctrum(vo);
+			}
+		}
+
+		if(eqpList != null && eqpList.size()> 0) {
+			for(EqpVo vo : eqpList) {
+				vo.setUser(eduInstVo.getUser());
+				vo.setAplyid(eduInstVo.getAplyid());
+
+				ret+=eduInstDao.insertFcltEqp(vo);
+			}
+		}
+
+		return ret;
 	}
 
 }

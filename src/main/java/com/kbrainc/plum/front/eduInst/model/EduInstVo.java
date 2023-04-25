@@ -67,6 +67,7 @@ public class EduInstVo extends ParentRequestVo {
     private Integer styFcltNope;      /** 숙박 시설 인원수 */
 
     private Integer schdlid;	       /** 일정아이디 */
+    private String  seCd;             /** 구분_코드    */
 
     private String cd;                /** 코드 */
     private String cdNm;              /** 코드명 */
@@ -75,6 +76,9 @@ public class EduInstVo extends ParentRequestVo {
     private List<SchdlVo> schdlList;
     private List<EduExprtVo> eduExprtList;
     private List<SeePrgrmVo> seePrgrmList;
+    private List<LctrumVo> lctrumList;
+    private List<EqpVo> eqpList;
+
 
 
 }
