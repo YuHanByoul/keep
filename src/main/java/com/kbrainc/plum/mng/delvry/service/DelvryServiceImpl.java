@@ -136,7 +136,7 @@ public class DelvryServiceImpl extends PlumAbstractServiceImpl implements Delvry
         if (0 == delvryAplyVo.getDelvryAplyid()) {
             // 1. 신청정보 등록
             retVal += delvryDao.insertDelvryAply(delvryAplyVo);       
-            // 2. 산출내역 등록/업데이트/삭제
+            // 2. 산출내역 등록
             List<DelvryAplyComputVo> computList = delvryAplyVo.getComputList();
             if(computList != null && computList.size() > 0) {
                 for(int i = 0; i < computList.size(); i++) {
@@ -146,7 +146,6 @@ public class DelvryServiceImpl extends PlumAbstractServiceImpl implements Delvry
                     retVal += delvryDao.insertDelvryAplyComput(computVo);
                 }
             }
-
         } else {
             // 1. 신청정보 업데이트
             retVal += delvryDao.updateDelvryAply(delvryAplyVo);

@@ -45,12 +45,20 @@
         <if test="searchPcntstNm != null and searchPcntstNm != ''">
             AND A.PCNTST_NM LIKE CONCAT('%',#{searchPcntstNm},'%')
         </if>
+        <if test="searchBgngDt != null and searchBgngDt != '' and searchEndDt != null and searchEndDt != ''">
+            AND (
+                DATE_FORMAT(A.DELVRY_APLY_PRSNTN_BGNG_DT, '%Y-%m-%d') BETWEEN #{searchBgngDt} AND #{searchEndDt} 
+                OR DATE_FORMAT(A.DELVRY_APLY_PRSNTN_END_DT, '%Y-%m-%d') BETWEEN #{searchBgngDt} AND #{searchEndDt}
+            )
+        </if>
+        <!--  
         <if test="searchBgngDt != null and searchBgngDt != ''">
             AND A.DELVRY_APLY_PRSNTN_BGNG_DT <![CDATA[>=]]> CONCAT(#{searchBgngDt}, ' 00:00:00')
         </if>
         <if test="searchEndDt != null and searchEndDt != ''">
             AND A.DELVRY_APLY_PRSNTN_END_DT <![CDATA[<=]]> CONCAT(#{searchEndDt}, ' 23:59:59')
         </if>
+        -->
         <if test="searchPrgrsStts != null and searchPrgrsStts != '' and searchPrgrsStts == 'before'">
             AND NOW() <![CDATA[<]]> A.APLY_BGNG_DT 
         </if>
