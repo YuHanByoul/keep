@@ -1,18 +1,18 @@
 package com.kbrainc.plum.mng.inqry.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.kbrainc.plum.cmm.file.model.FileDao;
+import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.inqry.model.*;
+import com.kbrainc.plum.mng.ntcn.model.NtcnDao;
+import com.kbrainc.plum.mng.ntcn.model.NtcnVo;
 import com.kbrainc.plum.rte.model.UserVo;
-import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kbrainc.plum.cmm.file.model.FileVo;
-import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 
@@ -38,6 +38,9 @@ public class InqryServiceImpl extends PlumAbstractServiceImpl implements InqrySe
 
     @Autowired
     private FileDao fileDao;
+
+    @Autowired
+    private NtcnDao ntcnDao;
 
     /**
      * @Title : selectInqryList
@@ -101,6 +104,10 @@ public class InqryServiceImpl extends PlumAbstractServiceImpl implements InqrySe
         if (inqryAnswrVO.getManagerId().length >= 1) {
             retVal += inqryDao.insertInqryManager(inqryAnswrVO);
         }
+
+        /*if(inqryAnswrVO.getInqrySttsCd().equals("103104")) {
+            insertNtcn(inqryAnswrVO);
+        }*/
 
         return retVal;
     }
@@ -190,4 +197,20 @@ public class InqryServiceImpl extends PlumAbstractServiceImpl implements InqrySe
             return inqryDao.selectTelInqryManagerList((TelInqryVo)inqryVo);
         }
     }
+
+    private int insertNtcn(InqryAnswrVo inqryAnswrVo) throws Exception {
+        NtcnVo ntcnVo = new NtcnVo();
+        ntcnVo.setUserid(inqryAnswrVo.getUserid());
+
+        ntcnVo.setTtl("1:1문의 게시글에 답변 등록");
+        ntcnVo.setCn("1:1문의에 남겨주신 글에 답변이 등록되었습니다.\r\n"
+                + "자세한 내용은 내 문의 내역에서 확인해 주십시오.\r\n");
+        ntcnVo.setMvmnurl("/front/mypage/inqry/inqryDetail.html?inqryid=" + inqryAnswrVo.getInqryid());
+        ntcnVo.setKndCd("245102");
+        ntcnVo.setInqYn("N");
+        ntcnDao.insertNtcn(ntcnVo);
+
+        return 1;
+    }
 }
+
