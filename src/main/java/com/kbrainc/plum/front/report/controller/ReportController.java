@@ -66,7 +66,8 @@ public class ReportController {
     * @return String
      */
     @RequestMapping(value = "/front/report/reportListForm.html")
-    public String reportListForm() throws Exception {
+    public String reportListForm(Model model, ReportVo reportVo) throws Exception {
+        model.addAttribute("reqMngVo", reportVo);
         return "front/report/reportList";
     }
     

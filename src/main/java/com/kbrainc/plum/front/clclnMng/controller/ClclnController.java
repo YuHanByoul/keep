@@ -64,8 +64,8 @@ public class ClclnController {
     * @return String
     */
     @RequestMapping(value = "/front/clclnMng/clclnMngListForm.html")
-    public String clclnMngListForm(Model model) throws Exception {
-
+    public String clclnMngListForm(Model model, ClclnVo clclnVo) throws Exception {
+        model.addAttribute("reqMngVo", clclnVo);
         return "front/clclnMng/clclnMngList";
     }
     
