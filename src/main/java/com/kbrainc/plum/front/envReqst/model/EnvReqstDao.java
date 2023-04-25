@@ -33,7 +33,17 @@ public interface EnvReqstDao {
      * @param envReqstVo
      * @return list
      */
-    List<EnvReqstVo> selectEnvReqstList(EnvReqstVo envReqstVo);
+    List<EnvReqstVo> selectEnvReqstList(EnvReqstVo envReqstVo) throws Exception;
+
+    /**
+     * 환경교육시설 예약 후기 리스트 조회
+     * Title : selectResveEnvRvwList
+     * Description : 환경교육시설 예약 후기 리스트 조회
+     *
+     * @param envReqstVo
+     * @return list
+     */
+    List<EnvReqstVo> selectResveEnvRvwList(EnvReqstVo envReqstVo);
 
     /**
      * 환경교육시설 예약 상세화면으로 이동

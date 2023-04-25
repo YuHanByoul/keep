@@ -62,6 +62,24 @@
         <include refid="PaginationMapper.footer"/>
     </select>
 
+    <select id="selectResveEnvRvwList" resultType="com.kbrainc.plum.front.envReqst.model.EnvReqstVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT
+        RVW_CN
+        ,RVW_SCR
+        ,RVW_DT
+        ,REPLACE(F.ACNT,RIGHT(F.ACNT,3),'***') AS MASK_ACNT
+        FROM
+        TB_FCL_SPCE_APLY A
+        LEFT JOIN (SELECT B.APLYID, C.SPCEID FROM TB_FCL_APLY_RSVTDE B
+        LEFT JOIN TB_FCL_SPCE_RSVTDE C ON B.RSVTDEID = C.RSVTDEID GROUP BY B.APLYID) B ON A.APLYID = B.APLYID
+        LEFT JOIN TB_FCL_SPCE D ON B.SPCEID = D.SPCEID
+        LEFT JOIN TB_FCL_FCLT E ON D.FCLTID = E.FCLTID
+        LEFT JOIN TB_CMM_USER F ON A.APLCNTID = F.USERID
+        WHERE E.FCLTID = #{fcltid} AND RVW_CN IS NOT NULL
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
     <!-- 환경교육시설 예약 상세조회 -->
     <select id="selectResveEnvInfo" resultType="com.kbrainc.plum.front.envReqst.model.EnvReqstVo">
         /* EnvReqstDao.selectResveEnvInfo */

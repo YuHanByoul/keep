@@ -29,7 +29,7 @@
             <dd>
                 <textarea name="rvwCn" placeholder="내용을 입력해주세요."></textarea>
                 <div class="check-wrap j-end">
-                    <div class="size"><span>0</span> / 1,000자</div>
+                    <div class="size"><span id="currentSize">0</span> / 1,000자</div>
                 </div>
             </dd>
         </dl>
@@ -53,12 +53,23 @@
 
 <script th:inline="javascript">
     var ratingTxt = ['1점(매우 불만족)', '2점(불만족)', '3점(보통)', '4점(만족)', '5점(매우 만족)']
+    var maxSize = 1000;
+
     $(function(){
         $('input[name=rating]').prop('checked', false);
 
         $('input[name=rating]').on('change', function (e) {
             let ratingNum = e.target.value;
             $('#ratingDescription').text(ratingTxt[ratingNum-1]);
+        });
+
+        $('textarea[name=rvwCn]').on('keyup', function (e) {
+            let size = e.target.value.length;
+            if( size > maxSize ){
+                alert(maxSize+'까지 입력 가능합니다.');
+                e.target.value = e.target.value.substr(0, maxSize)
+            }
+            $('#currentSize').text(e.target.value.length);
         });
     })
 

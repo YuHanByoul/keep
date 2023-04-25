@@ -187,24 +187,30 @@
             <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">상세정보</button>
             <ul class="tab-list target" role="tablist">
                 <li class="tab active"><button aria-controls="tab-subpanel01" id="tab-sub01" role="tab">상세정보</button></li>
-                <li class="tab"><button aria-controls="tab-subpanel02" id="tab-sub02" role="tab">후기(211)</button></li>
+                <li class="tab"><button aria-controls="tab-subpanel02" id="tab-sub02" role="tab">후기(<span class="total-count"></span>)</button></li>
             </ul>
             <div id="tab-subpanel01" class="tabpanel active" role="tabpanel" aria-labelledby="tab-sub01">
                 <th:block th:text="${envReqst.dtlCn}"/>
             </div>
             <div id="tab-subpanel02" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub02">
+                <form id="searchForm" name="searchForm" onsubmit="return false;">
+                    <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+                    <input type="hidden" id="rowPerPage" name="rowPerPage" value="10"/>
+                    <input type="hidden" id="orderField" name="orderField" value="RVW_DT">
+                    <input type="hidden" id="ORDER_DIRECTION" name="orderDirection" value="desc">
+                </form>
 
-                <div class="accordion-content acc-list">
+                <div class="accordion-content acc-list" id="list-area">
                     <h3 class="acc-title active">
-										<span class="acc-trigger mo-flex-wrap">
-											<span class="name">ti**23</span>
-											<span class="rate" title="별점4">
-												<span class="icon icon-star" title=""></span>
-												<span class="icon icon-star" title=""></span>
-												<span class="icon icon-star" title=""></span>
-												<span class="icon icon-star" title=""></span>
-											</span>
-										</span>
+                        <span class="acc-trigger mo-flex-wrap">
+                            <span class="name">ti**23</span>
+                            <span class="rate" title="별점4">
+                                <span class="icon icon-star" title=""></span>
+                                <span class="icon icon-star" title=""></span>
+                                <span class="icon icon-star" title=""></span>
+                                <span class="icon icon-star" title=""></span>
+                            </span>
+                        </span>
                     </h3>
                     <div class="acc-panel active">
                         <span class="blind">후기</span>
@@ -260,22 +266,8 @@
                         </div>
                     </div>
                 </div>
-옝
-                <div class="pagination" aria-label="pagination">
-                    <button type="button" class="first" title="처음"></button>
-                    <button type="button" class="prev" title="이전"></button>
-                    <button type="button" class="active" title="현재 페이지">1</button>
-                    <button type="button">2</button>
-                    <button type="button">3</button>
-                    <button type="button">4</button>
-                    <button type="button">5</button>
-                    <button type="button">6</button>
-                    <button type="button">7</button>
-                    <button type="button">8</button>
-                    <button type="button">9</button>
-                    <button type="button">10</button>
-                    <button type="button" class="next" title="다음"></button>
-                    <button type="button" class="last" title="마지막"></button>
+
+                <div class="pagination" id="pagination" aria-label="pagination">
                 </div>
 
             </div>
@@ -395,38 +387,9 @@
 
         var envReqstView = {
             fcltid: /*[[${envReqst.fcltid}]]*/null,
-            updateFormUrl: '/front/envReqst/envReqstForm.html',
             updateUrl: '/front/envReqst/updateEnvReqst.html',
             listUrl: '/front/envReqst/envReqstList.html',
-            deleteUrl: '/front/envReqst/deleteHelpdesk.do',
-            cancelUrl: '/front/envReqst/cancelHelpdesk.do',
 
-            update(mode) {
-                if (mode == 'cancel') {
-                    if (!confirm('접수를 취소 하시겠습니까?')) return;
-                    this.ajaxForSttsUpdate(this.cancelUrl);
-                } else if (mode == 'delete') {
-                    if (!confirm('등록하신 게시글을 삭제 하시겠습니까?')) return;
-                    this.ajaxForSttsUpdate(this.deleteUrl);
-                }
-            },
-
-            ajaxForSttsUpdate(url) {
-                if (displayWorkProgress(true)) {
-                    $.ajax({
-                        method: 'post',
-                        url: url,
-                        dataType: 'json',
-                        data: {fcltid: envReqstView.fcltid},
-                        success: function (response) {
-                            closeWorkProgress();
-                            alert(response.msg);
-                            if (response.success)
-                                envReqstView.submit(envReqstView.listUrl);
-                        }
-                    })
-                }
-            },
             moveToList() {
                 this.submit(this.listUrl);
             },
@@ -968,6 +931,63 @@
                 $('input[name='+inputId+']').val(numInput.val());
 
             });
+
+            selectResveEnvRvwList();
         })
+
+        function selectResveEnvRvwList() {
+            $('#list-area').empty();
+            var formData = $('#searchForm').serializeArray()
+            let param = [];
+
+            param.push({name: 'fcltid', value: envReqstView.fcltid});
+            formData = formData.concat(param);
+            console.log('asdf');
+            if (displayWorkProgress(true)) {
+                $.ajax({
+                    url: '/front/envReqst/selectResveEnvRvwList.do',
+                    cache: false,
+                    dataType: 'json',
+                    data: formData,
+                    type: 'POST',
+                    success: function (data) {
+                        console.log(data);
+                        $("#list-area").html(makeListHtml(data.list));
+                        if( data.list == null || data.list.length <= 0 ){
+                            $("#pagination").html('');
+                        }else{
+                            $("#pagination").html(data.pagination);
+                        }
+                        $(".total-count").html(data.totalCount);
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+
+        function makeListHtml(list) {
+            var html = "";
+            if (list == null || list.length <= 0) {
+                html += `<div class="nodata"><p><span class="icon icon-notice bg-black9"></span>등록된 후기가 없습니다.</p></div>`;
+            } else {
+                list.forEach(function (item) {
+                    html += '<h3 class="acc-title active">' +
+    '                        <span class="acc-trigger mo-flex-wrap">' +
+    '                            <span class="name">'+item.maskAcnt+'</span>' +
+    '                            <span class="rate" title="별점4">';
+                    for( var i=0; i<item.rvwScr; i++ ){
+                        html += '<span class="icon icon-star" title=""></span>';
+                    }
+    html += '                            </span>' +
+    '                        </span>' +
+    '                    </h3>' +
+    '                    <div class="acc-panel active">' +
+    '                        <span class="blind">후기</span>' +
+    '                        <div class="acc-content bg-white p0 fc-black6 fw-300">'+item.rvwCn+'</div>'+
+    '                    </div>';
+                })
+            }
+            return html;
+        }
     </script>
 </div>

@@ -3,6 +3,7 @@ package com.kbrainc.plum.front.envReqst.controller;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.cmm.service.CommonService;
+import com.kbrainc.plum.front.bbs.model.PstVo;
 import com.kbrainc.plum.front.envReqst.model.EnvReqstVo;
 import com.kbrainc.plum.front.envReqst.service.EnvReqstService;
 import com.kbrainc.plum.mng.inst.model.InstVo;
@@ -80,6 +81,24 @@ public class EnvReqstController {
         Map<String, Object> response = new HashMap<>();
 
         List<EnvReqstVo> list = envReqstService.selectEnvReqstList(envReqstVo);
+        if (list.size() > 0) {
+            response.put("totalCount", (list.get(0).getTotalCount()));
+            response.put("pagination", PaginationUtil.getFrontPaginationHtml(list.get(0).getTotalPage(), list.get(0).getPageNumber(), 10));
+        } else {
+            response.put("totalCount", 0);
+        }
+
+        response.put("list", list);
+
+        return response;
+    }
+
+    @RequestMapping("/front/envReqst/selectResveEnvRvwList.do")
+    @ResponseBody
+    public Map<String, Object> selectResveEnvRvwList(EnvReqstVo envReqstVo) throws Exception {
+        Map<String, Object> response = new HashMap<>();
+
+        List<EnvReqstVo> list = envReqstService.selectResveEnvRvwList(envReqstVo);
         if (list.size() > 0) {
             response.put("totalCount", (list.get(0).getTotalCount()));
             response.put("pagination", PaginationUtil.getFrontPaginationHtml(list.get(0).getTotalPage(), list.get(0).getPageNumber(), 10));

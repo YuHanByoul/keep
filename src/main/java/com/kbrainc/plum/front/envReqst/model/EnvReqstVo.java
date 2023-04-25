@@ -1,5 +1,6 @@
 package com.kbrainc.plum.front.envReqst.model;
 
+import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.spce.model.SpceRsvtdeVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -7,6 +8,7 @@ import lombok.Data;
 
 import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -161,7 +163,22 @@ public class EnvReqstVo extends ParentRequestVo {
     /** 종료일시   */
     private String endTm;
 
+    /** 종료일시   */
+    private String rvwCn;
+    private int rvwScr;
+    private Date rvwDt;
+
+    private String acnt;
+
+    private String maskAcnt;
+
     private String todayRsvtPsbltyYn;
+
+    private ArrayList<FileVo> fileMap;
+
+    private Integer currentFileCnt;
+
+    private FileVo rprsImgFileMap;
 
     /** 검색 관련*/
     private String searchSeCd;

@@ -1,5 +1,9 @@
 package com.kbrainc.plum.front.envReqst.service;
 
+import com.kbrainc.plum.cmm.file.model.FileDao;
+import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.cmm.file.service.FileService;
+import com.kbrainc.plum.front.bbs.model.PstVo;
 import com.kbrainc.plum.front.envReqst.model.EnvReqstDao;
 import com.kbrainc.plum.front.envReqst.model.EnvReqstVo;
 import com.kbrainc.plum.mng.spce.model.SpceRsvtdeVo;
@@ -7,6 +11,7 @@ import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +37,11 @@ public class EnvReqstServiceImpl extends PlumAbstractServiceImpl implements EnvR
     @Autowired
     private EnvReqstDao envReqstDao;
 
+    @Autowired
+    private FileDao fileDao;
+
+    @Autowired
+    private FileService fileService;
     /**
      * 지역 환경교육센터 목록 조회
      * Title : selectEnvReqstList
@@ -41,8 +51,39 @@ public class EnvReqstServiceImpl extends PlumAbstractServiceImpl implements EnvR
      * @return list
      */
     @Override
-    public List<EnvReqstVo> selectEnvReqstList(EnvReqstVo envReqstVo) {
-        return envReqstDao.selectEnvReqstList(envReqstVo);
+    public List<EnvReqstVo> selectEnvReqstList(EnvReqstVo envReqstVo) throws Exception{
+        List<EnvReqstVo> list = envReqstDao.selectEnvReqstList(envReqstVo);
+
+        for(EnvReqstVo vo : list) {
+            FileVo fileVo = new FileVo();
+
+            if (vo.getRprsImgFileid() != null && !vo.getRprsImgFileid().equals(0)) {
+                if (vo.getRprsImgFileid() != null && !vo.getRprsImgFileid().equals(0)) {
+                    fileVo.setFileid(Integer.parseInt(vo.getRprsImgFileid().toString()));
+                    FileVo logoVo= fileService.getFileInfo(fileVo);
+                    vo.setRprsImgFileMap(logoVo);
+                } else {
+                    vo.setRprsImgFileMap(null);
+                }
+            } else {
+                vo.setRprsImgFileMap(null);
+            }
+        }
+
+        return list;
+    }
+
+    /**
+     * 환경교육시설 예약 후기 리스트 조회
+     * Title : selectResveEnvRvwList
+     * Description : 환경교육시설 예약 후기 리스트 조회
+     *
+     * @param envReqstVo
+     * @return list
+     */
+    @Override
+    public List<EnvReqstVo> selectResveEnvRvwList(EnvReqstVo envReqstVo) {
+        return envReqstDao.selectResveEnvRvwList(envReqstVo);
     }
 
     /**
