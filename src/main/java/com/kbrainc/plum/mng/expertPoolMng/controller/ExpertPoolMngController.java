@@ -22,10 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -282,7 +279,7 @@ public class ExpertPoolMngController {
      * @Title : downloadFile
      * @Description : 전문가 파일 다운로드 및 로그 생성
      */
-    @RequestMapping("/mng/expertPoolMng/downloadFileByFileid.do")
+    @PostMapping("/mng/expertPoolMng/downloadFileByFileid.do")
     @ResponseBody
     public ResponseEntity<Resource> downloadFile(@RequestParam(name="fileid",required=true) int fileid, @RequestParam(name="file_idntfc_key",required=true) String fileIdntfcKey
                                                  , ExpertLogVo expertLogVo,HttpServletRequest request, @UserInfo UserVo user) throws Exception {

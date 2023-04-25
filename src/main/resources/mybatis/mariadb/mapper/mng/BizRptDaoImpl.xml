@@ -279,10 +279,10 @@
         SELECT
             A.APLYID
           , A.CNSLTNG_TRGT_CN
-          , B.DELVRY_APLYID
-          , B.DELVRYID
+<!--           , B.DELVRY_APLYID -->
+<!--           , B.DELVRYID -->
           , C.REPORTID
-          , B.RCPTNO            /*접수번호*/
+          , A.APLYNO AS RCPTNO            /*접수번호*/
           , C.REPORT_STTS_CD    /*제출(보고)상태*/
           , A.INST_NM           /*기관명*/
           , A.USERID
@@ -296,7 +296,7 @@
           , IF(IFNULL(A.CNSLTNG_TRGT_CN,'' ) = '','N','Y')    AS CNSLTNG_TRGT_YN
         FROM
             TB_SPB_APLY A
-        LEFT OUTER JOIN TB_SPB_DELVRY_APLY B  ON A.APLYID = B.APLYID
+<!--         LEFT OUTER JOIN TB_SPB_DELVRY_APLY B  ON A.APLYID = B.APLYID -->
         LEFT OUTER JOIN TB_SPB_REPORT C ON A.APLYID = C.APLYID
         LEFT OUTER JOIN TB_CMM_USER USR ON A.USERID = USR.USERID
         WHERE 1=1
@@ -311,10 +311,10 @@
         /* BizRptDao.selectRptSbmsnListExcel */
         SELECT
             A.APLYID
-          , B.DELVRY_APLYID
-          , B.DELVRYID
+<!--           , B.DELVRY_APLYID -->
+<!--           , B.DELVRYID -->
           , C.REPORTID
-          , B.RCPTNO            /*접수번호*/
+          , A.APLYNO AS RCPTNO            /*접수번호*/
           , C.REPORT_STTS_CD    /*제출(보고)상태*/
           , A.INST_NM           /*기관명*/
           , A.USERID
@@ -328,7 +328,7 @@
           , IF(A.CNSLTNG_TRGT_CN IS NOT NULL,'Y','N')    AS CNSLTNG_TRGT_YN
         FROM
             TB_SPB_APLY A
-        LEFT OUTER JOIN TB_SPB_DELVRY_APLY B  ON A.APLYID = B.APLYID
+<!--         LEFT OUTER JOIN TB_SPB_DELVRY_APLY B  ON A.APLYID = B.APLYID -->
         LEFT OUTER JOIN TB_SPB_REPORT C ON A.APLYID = C.APLYID
         LEFT OUTER JOIN TB_CMM_USER USR ON A.USERID = USR.USERID
         WHERE 1=1
@@ -365,10 +365,10 @@
         /* BizRptDao.selectMdlRptSbmsnDetail */
         SELECT
             B.APLYID
-          , C.DELVRY_APLYID
-          , C.DELVRYID
+<!--           , C.DELVRY_APLYID -->
+<!--           , C.DELVRYID -->
           , A.REPORTID
-          , C.RCPTNO            /*접수번호*/
+          , B.APLYNO AS RCPTNO            /*접수번호*/
           , B.INST_NM           /*기관명*/
           , B.PRGRM_NM
           , CONCAT(USR.NM,"(",USR.ACNT ,")")    AS USER_NM_ACNT /*신청자 명(ID)*/
@@ -389,7 +389,7 @@
             TB_SPB_REPORT A
         INNER JOIN TB_SPB_APLY B ON A.APLYID = B.APLYID
         LEFT OUTER JOIN TB_CMM_USER USR ON B.USERID = USR.USERID
-        LEFT OUTER JOIN TB_SPB_DELVRY_APLY C ON B.APLYID = C.APLYID
+<!--         LEFT OUTER JOIN TB_SPB_DELVRY_APLY C ON B.APLYID = C.APLYID -->
         LEFT OUTER JOIN TB_SPB_PRGRM D ON B.APLYID = D.APLYID
         LEFT OUTER JOIN TB_SPB_APLY_CNSLTNG E ON A.APLYID = E.CNSLTNGID
         WHERE 1=1
@@ -1112,5 +1112,90 @@
         WHERE A.APLYID = #{aplyid}
     </select>
 
-
+    <!-- 2023.04.25 사업보고 등록 기능 추가 (KCS) -->
+    <!-- 사업보고제출 하지 않은 신청자 조회 -->
+    <select id="selectAplyList" parameterType="BizRptVo" resultType="BizRptVo">
+        /* BizRptDao.selectAplyList */
+        SELECT TSA.APLYNO AS RCPTNO
+            , TSA.APLYID 
+            , TSA.PRGRM_NM 
+            , TSA.INST_NM 
+            , TSA.APLCNT_NM AS USER_NM_ACNT
+            , CASE WHEN TSR.REPORT_SE_CD = '204101' THEN TSP.MDL_REPORT_BGNG_DT ELSE TSP.RSLT_REPORT_BGNG_DT END AS REPORT_BGNG_DT  
+            , CASE WHEN TSR.REPORT_SE_CD = '204101' THEN TSP.MDL_REPORT_END_DT ELSE TSP.RSLT_REPORT_END_DT END AS REPORT_END_DT  
+            , TSR.REPORTID 
+        FROM TB_SPB_PCNTST TSP 
+        INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID
+        LEFT OUTER JOIN TB_SPB_REPORT TSR ON TSR.APLYID = TSA.APLYID AND TSR.REPORT_SE_CD = #{reportSeCd} 
+        WHERE TSP.PCNTSTID = #{pcntstid}
+        AND TSR.REPORTID IS NULL
+        AND TSA.APLY_STTS_CD = '192102'
+        ORDER BY TSA.APLYNO DESC
+    </select>
+    
+    <!-- 사업보고관리 등록 -->
+    <insert id="insertReport" parameterType="BizRptVo" useGeneratedKeys="true" keyProperty="reportid">
+        /* BizRptDao.insertReport */
+        INSERT INTO TB_SPB_REPORT (
+            APLYID
+            , REPORT_SE_CD
+            , ATCH_FILEGRPID
+            , ETC_CN
+            , TRGT
+            , SBJCT
+            , REPORT_BGNG_DT
+            , REPORT_END_DT
+            , REPORT_STTS_CD
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{aplyid}
+            , #{reportSeCd}
+            , #{atchFilegrpid}
+            , #{etcCn}
+            , #{trgt}
+            , #{sbjct}
+            , STR_TO_DATE(DATE_FORMAT(#{reportBgngDt}, '%Y-%m-%d %H:%i:%s'), '%Y-%m-%d %H:%i:%s')
+            , STR_TO_DATE(DATE_FORMAT(#{reportEndDt}, '%Y-%m-%d %H:%i:%s'), '%Y-%m-%d %H:%i:%s')
+            , '203102'
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    
+    <!-- 사업보고관리 교육운영정보 등록 -->
+    <insert id="insertReportOper" parameterType="com.kbrainc.plum.front.report.model.ReportOperVo" useGeneratedKeys="true" keyProperty="operid">
+        /* BizRptDao.insertReportOper */
+        INSERT INTO TB_SPB_REPORT_OPER (
+            REPORTID
+            , SE_CD
+            , BGNG_DE
+            , END_DE
+            , RND
+            , NOPE
+            , MNT
+            , RMRK
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{reportid}
+            , #{seCd}
+            , #{bgngDe}
+            , #{endDe}
+            , #{rnd}
+            , #{nope}
+            , #{mnt}
+            , #{rmrk}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
 </mapper>
