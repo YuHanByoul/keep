@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 입금 전관리 컨트롤러 클래스
+ * 교육시설 입금 전 관리 컨트롤러 클래스
  *
  * <pre>
  * com.kbrainc.plum.mng.rcpmnyBfe.contoller
@@ -30,7 +30,7 @@ import java.util.Map;
  * </pre>
  *
  * @ClassName : RcpmnyBfeController
- * @Description : 입금 전 컨트롤러 클래스
+ * @Description : 교육시설 입금 전 관리 컨트롤러 클래스
  * @author : NTK
  * @date : 2023. 01. 09.
  * @Version :
@@ -54,13 +54,13 @@ public class RcpmnyBfeController {
      * @return String
      */
     @RequestMapping(value = "/mng/rcpmnyBfe/rcpmnyBfeList.html")
-    public String rcpmnyBfeList(RcpmnyBfeVo rcpmnyBfeVo, Model model) throws Exception {
-        model.addAttribute("param", rcpmnyBfeVo);
+    public String rcpmnyBfeList(ResveReqstVo resveReqstVo, Model model) throws Exception {
+        model.addAttribute("param", resveReqstVo);
         return "mng/rcpmnyBfe/rcpmnyBfeList";
     }
 
     /**
-     * 입금 전 상세화면으로 이동
+     * 입금 전 상세화면
      *
      * @Title : rcpmnyBfeView
      * @Description : 입금 전 상세화면으로 이동
@@ -70,20 +70,16 @@ public class RcpmnyBfeController {
      * @return String
      */
     @RequestMapping(value = "/mng/rcpmnyBfe/rcpmnyBfeView.html")
-    public String rcpmnyBfeView(RcpmnyBfeVo rcpmnyBfeVo, Model model, @UserInfo UserVo user, InstVo instVo) throws Exception {
-
-        model.addAttribute("param", rcpmnyBfeVo);
-
-        rcpmnyBfeVo.setUser(user);
-        RcpmnyBfeVo resultVo = rcpmnyBfeService.selectRcpmnyBfeInfo(rcpmnyBfeVo);
-
-        model.addAttribute("rcpmnyBfe", resultVo);
-
+    public String rcpmnyBfeView(ResveReqstVo resveReqstVo, Model model, @UserInfo UserVo user, InstVo instVo) throws Exception {
+        model.addAttribute("param", resveReqstVo);
+        resveReqstVo.setUser(user);
+        ResveReqstVo resultVo = resveReqstService.selectResveReqstInfo(resveReqstVo);
+        model.addAttribute("aplyVo", resultVo);
         return "mng/rcpmnyBfe/rcpmnyBfeView";
     }
 
     /**
-     * 입금 전 리스트 기능
+     * 입금 전 리스트 호출
      *
      * @Title : selectRcpmnyBfeList
      * @Description : 입금 전 리스트 기능
@@ -93,12 +89,11 @@ public class RcpmnyBfeController {
      */
     @RequestMapping(value = "/mng/rcpmnyBfe/selectRcpmnyBfeList.do")
     @ResponseBody
-    public Map<String, Object> selectRcpmnyBfeList(RcpmnyBfeVo rcpmnyBfeVo, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> selectRcpmnyBfeList(ResveReqstVo resveReqstVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
-        List<RcpmnyBfeVo> result = null;
-        rcpmnyBfeVo.setUser(user);
-        result =  rcpmnyBfeService.selectRcpmnyBfeList(rcpmnyBfeVo);
-
+        List<ResveReqstVo> result = null;
+        resveReqstVo.setUser(user);
+        result =  rcpmnyBfeService.selectRcpmnyBfeList(resveReqstVo);
         if (result.size() > 0) {
             resultMap.put("totalCount", (result.get(0).getTotalCount()));
         } else {
@@ -110,6 +105,8 @@ public class RcpmnyBfeController {
     }
 
     /**
+     * 입금 확인 팝업
+     * 
      * @Title : dsptCheckPopup
      * @Description : 입금 확인 팝업
      * @throws Exception :
@@ -117,9 +114,9 @@ public class RcpmnyBfeController {
      * @throws Exception 예외
      */
     @RequestMapping(value = "/mng/rcpmnyBfe/dsptCheckPopup.html")
-    public String dsptCheckPopup(RcpmnyBfeVo rcpmnyBfeVo, Model model) throws Exception {
-        model.addAttribute("param", rcpmnyBfeVo);
-        RcpmnyBfeVo resultVo = rcpmnyBfeService.selectRcpmnyBfeInfo(rcpmnyBfeVo);
+    public String dsptCheckPopup(ResveReqstVo resveReqstVo, Model model) throws Exception {
+        model.addAttribute("param", resveReqstVo);
+        ResveReqstVo resultVo = resveReqstService.selectResveReqstInfo(resveReqstVo);
         model.addAttribute("popupVo", resultVo);
         return "mng/rcpmnyBfe/dsptCheckPopup";
     }
@@ -132,9 +129,9 @@ public class RcpmnyBfeController {
      * @throws Exception 예외
      */
     @RequestMapping(value = "/mng/rcpmnyBfe/resveCancelPopup.html")
-    public String resveCancelPopup(RcpmnyBfeVo rcpmnyBfeVo, Model model) throws Exception {
-        model.addAttribute("param", rcpmnyBfeVo);
-        RcpmnyBfeVo resultVo = rcpmnyBfeService.selectRcpmnyBfeInfo(rcpmnyBfeVo);
+    public String resveCancelPopup(ResveReqstVo resveReqstVo, Model model) throws Exception {
+        model.addAttribute("param", resveReqstVo);
+        ResveReqstVo resultVo = resveReqstService.selectResveReqstInfo(resveReqstVo);
         model.addAttribute("popupVo", resultVo);
         return "mng/rcpmnyBfe/resveCancelPopup";
     }
@@ -152,14 +149,14 @@ public class RcpmnyBfeController {
      */
     @RequestMapping(value = "/mng/rcpmnyBfe/updateDsptCheck.do")
     @ResponseBody
-    public Map<String, Object> updateDsptCheck(RcpmnyBfeVo rcpmnyBfeVo, @UserInfo UserVo user, ResveReqstVo resveReqstVo) throws Exception {
+    public Map<String, Object> updateDsptCheck(ResveReqstVo resveReqstVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
-        rcpmnyBfeVo.setUser(user);
+        resveReqstVo.setUser(user);
         int retVal = 0;
         resultMap.put("result", Constant.REST_API_RESULT_FAIL);
         
-        RcpmnyBfeVo resultVo = rcpmnyBfeService.selectRcpmnyBfeInfo(rcpmnyBfeVo);
+        ResveReqstVo resultVo = resveReqstService.selectResveReqstInfo(resveReqstVo);
         
         if(resultVo==null) {
             resultMap.put("msg", "해당 신청건이 존재하지 않습니다. 다시 확인 후 처리해주십시오.");
@@ -171,12 +168,12 @@ public class RcpmnyBfeController {
             return resultMap; 
         }
         
-        if(rcpmnyBfeService.isThereResveNow(rcpmnyBfeVo).equals("Y")) {
+        if(rcpmnyBfeService.isThereResveNow(resveReqstVo).equals("Y")) {
             resultMap.put("msg", "해당 일정중 이미 예약(신청/승인) 건이 존재 하여 예약승인/입금확인 처리 할 수 없습니다.");
             return resultMap; 
         }
         
-        retVal = rcpmnyBfeService.updateDsptCheck(rcpmnyBfeVo);
+        retVal = rcpmnyBfeService.updateDsptCheck(resveReqstVo);
 
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -188,7 +185,7 @@ public class RcpmnyBfeController {
 
         return resultMap;
     }
-
+    
     /**
      * 예약 신청 취소 처리
      *
@@ -202,14 +199,14 @@ public class RcpmnyBfeController {
      */
     @RequestMapping(value = "/mng/rcpmnyBfe/updateResveCancel.do")
     @ResponseBody
-    public Map<String, Object> updateResveCancel(RcpmnyBfeVo rcpmnyBfeVo, @UserInfo UserVo user, ResveReqstVo resveReqstVo) throws Exception {
+    public Map<String, Object> updateResveCancel(ResveReqstVo resveReqstVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
-        rcpmnyBfeVo.setUser(user);
+        resveReqstVo.setUser(user);
         int retVal = 0;
-        retVal = rcpmnyBfeService.updateResveCancel(rcpmnyBfeVo);
+        retVal = rcpmnyBfeService.updateResveCancel(resveReqstVo);
         
-        if (retVal > 0) {
+        if (retVal > 0 || resveReqstVo.getAplyids().length > 0 ) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
             resultMap.put("msg", "예약신청 취소에 성공하였습니다.");
         } else {

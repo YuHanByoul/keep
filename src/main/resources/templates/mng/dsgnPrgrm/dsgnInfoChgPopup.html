@@ -25,31 +25,31 @@
 	                        <div class="mb-2 form-group row required">
 	                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="assignUpdatePopupDegree"><strong>차수</strong></label>
 	                            <div class="col-12">
-	                                <input type="text" class="form-control form-control-sm" name="pDsgnCycl" id="pDsgnCycl" placeholder="Text Input Validation" th:value="${dsgnPrgrmInfo.dsgnCycl}">
+	                                <input type="text" class="form-control form-control-sm" name="pDsgnCycl" id="pDsgnCycl" placeholder="" th:value="${dsgnPrgrmInfo.dsgnCycl}">
 	                            </div>
 	                        </div>
 	                        <div class="mb-2 form-group row required">
 	                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="assignUpdatePopupAppointedNum"><strong>지정번호</strong></label>
 	                            <div class="col-12">
-	                                <input type="text" class="form-control form-control-sm" name="pDsgnNo" id="pDsgnNo" placeholder="Text Input Validation" th:value="${dsgnPrgrmInfo.dsgnNo}">
+	                                <input type="text" class="form-control form-control-sm" name="pDsgnNo" id="pDsgnNo" placeholder="" th:value="${dsgnPrgrmInfo.dsgnNo}">
 	                            </div>
 	                        </div>
 	                        <div class="mb-2 form-group row required">
 	                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="pDsgnObtainDe"><strong>지정 획득일</strong></label>
 	                            <div class="col-12">
-	                                <input type="date" class="form-control form-control-sm" name="pDsgnObtainDe" id="pDsgnObtainDe" placeholder="Text Input Validation" th:value="${dsgnPrgrmInfo.dsgnObtainDe}">
+	                                <input type="date" class="form-control form-control-sm" name="pDsgnObtainDe" id="pDsgnObtainDe" placeholder="" th:value="${dsgnPrgrmInfo.dsgnObtainDe}">
 	                            </div>
 	                        </div>
 	                        <div class="mb-2 form-group row required">
 	                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="pDsgnBgngDe"><strong>유효지정 시작일</strong></label>
 	                            <div class="col-12">
-	                                <input type="date" class="form-control form-control-sm" name="pDsgnBgngDe" id="pDsgnBgngDe" placeholder="Text Input Validation" th:value="${dsgnPrgrmInfo.dsgnBgngDe}">
+	                                <input type="date" class="form-control form-control-sm" name="pDsgnBgngDe" id="pDsgnBgngDe" placeholder="" th:value="${dsgnPrgrmInfo.dsgnBgngDe}">
 	                            </div>
 	                        </div>
 	                        <div class="mb-0 form-group row required">
 	                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="pDsgnEndDe"><strong>유효지정 만료일</strong></label>
 	                            <div class="col-12">
-	                                <input type="date" class="form-control form-control-sm" name="pDsgnEndDe" id="pDsgnEndDe" placeholder="Text Input Validation" th:value="${dsgnPrgrmInfo.dsgnEndDe}">
+	                                <input type="date" class="form-control form-control-sm" name="pDsgnEndDe" id="pDsgnEndDe" placeholder="" th:value="${dsgnPrgrmInfo.dsgnEndDe}">
 	                            </div>
 	                        </div>
 	                    </div>
@@ -119,7 +119,8 @@ function dsgnInfoChgSaveBtn(){
 
 	var vUrl;
 
-	if(popupSe=="reDsgn" || (popupSe == "dsgnAprv" && $("#hstryid").val() == 0)){
+// 	if(popupSe=="reDsgn" || (popupSe == "dsgnAprv" && $("#hstryid").val() == 0)){
+	if(popupSe=="reDsgn" || (popupSe == "dsgnAprv" )){
         if(!($("#dsgnInfoChgPopupFrm").valid())) return;
 
         var params ={
@@ -159,37 +160,38 @@ function dsgnInfoChgSaveBtn(){
 
 	if(!confirm("저장하시겠습니까?")) return;
 
-    if(displayWorkProgress()){
-        $.ajax({
-            url : vUrl,
-            type: 'POST',
-            cache : false,
-            dataType: 'json',
-            data : params,
-            success : function (data){
-               alert(data.msg);
 
-               if(data.result=="fail"){
-            	   $("#pDsgnNo").focus();
-               }else{
-            	   debugger;
-                   if(popupSe == "dsgnInfoChgA"){
-                	   dsgnInfoChgListModal.hide();
-                   }else if(popupSe == "dsgnAprv"){
-                	   dsgnAprvModal.hide();
-                   }else{
-                	    dsgnInfoChgModal.hide();
-                	    gridHelper1.resetListContent();
-                   }
-                   gridHelper1.resetListContent();
 
-               }
-               closeWorkProgress();
+    $.ajax({
+    	url : vUrl,
+        type: 'POST',
+        cache : false,
+        dataType: 'json',
+        data : params,
+        success : function (data){
 
+            if(data.result=="success"){
+
+        	    debugger;
+                alert(data.msg);
+                if(popupSe == "dsgnInfoChgA"){
+                   dsgnInfoChgListModal.hide();
+                }else if(popupSe == "dsgnAprv"){
+                   dsgnAprvModal.hide();
+                }else{
+                    dsgnInfoChgModal.hide();
+                    gridHelper1.resetListContent();
+                }
+                gridHelper1.resetListContent();
+
+            }else{
+                alert(data.msg);
             }
-        });
-    }
-
+            closeWorkProgress();
+        },
+        error : function (error){
+        }
+    })
 }
 
 function initDsgnInfoChg(){
@@ -200,8 +202,9 @@ function initDsgnInfoChg(){
 
     $("#pSttsCd").attr("disabled",true);
 
-    if(popupSe=="reDsgn" || (popupSe == "dsgnAprv" && $("#hstryid").val() != 0)) {    //재지정
-		$("#pSttsCd").val( "132101");        //지정상태-지정승인
+//     if(popupSe=="reDsgn" || (popupSe == "dsgnAprv" && $("#hstryid").val() != 0)) {    //재지정
+    if(popupSe=="reDsgn" || (popupSe == "dsgnAprv" )) {    //재지정
+		$("#pSttsCd").val("132101");        //지정상태-지정승인
 	}
 
 }

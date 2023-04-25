@@ -17,6 +17,9 @@ public class EduInstVo extends ParentRequestVo {
 	/** 로그인사용자정보 */
     private UserVo user;
 
+    private String searchPrgrmNm;  /** 검색.프로그램아이디 */
+    private String searchDsgnNo;   /** 검색.지정번호 */
+
     private Integer aplyid;           /** 신청아이디 */
     private Integer planKey;          /** 운영계획KEY */
     private String rcptno;            /** 접수번호 */
@@ -55,14 +58,23 @@ public class EduInstVo extends ParentRequestVo {
     private String expcEffect;        /** 기대 계획 */
     private String etcDta;            /** 기타 자료 */
 
+    private Integer fcltKey;          /** 시설 개요 KEY*/
+    private String  rentYn;           /** 임대 여부 */
+    private String  rentPrd;          /** 임대 기간 */
+    private Integer totar;            /** 총면적 */
+    private String  styFcltHoldYn;    /** 숙박 시설 보유 여부 */
+    private Integer styFcltAr;        /** 숙박 시설 면적 */
+    private Integer styFcltNope;      /** 숙박 시설 인원수 */
+
     private Integer schdlid;	       /** 일정아이디 */
 
     private String cd;                /** 코드 */
     private String cdNm;              /** 코드명 */
+    private String idx;
 
     private List<SchdlVo> schdlList;
     private List<EduExprtVo> eduExprtList;
-
+    private List<SeePrgrmVo> seePrgrmList;
 
 
 }

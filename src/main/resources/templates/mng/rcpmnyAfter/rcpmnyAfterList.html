@@ -63,10 +63,10 @@
 					</div>
                     <div class="col-12 col-md-6 text-right">
                         <th:block sec:authorize-url="/mng/spce/spceDetail.html">
-                            <button type="button" class="btn btn-disabled waves-effect waves-light" onclick="processDspt('C');" >입금확인 취소 </button>
+                            <button type="button" class="btn btn-disabled waves-effect waves-light" onclick="fn_dsptCheckCancel();" >입금확인 취소 </button>
                         </th:block>
                         <th:block sec:authorize-url="/mng/spce/spceDetail.html">
-                            <button type="button" class="btn btn-primary m-r-5" onclick="processDspt('D');" >환불요청</button>
+                            <button type="button" class="btn btn-primary m-r-5" onclick="requestRefund();" >환불요청</button>
                         </th:block>
                     </div>
 				</div>
@@ -105,11 +105,9 @@
 			var insertUrl = "/mng/rcpmnyAfter/rcpmnyAfterForm.html?mode=f"
 			gridHelper2.loadContent(insertUrl);
 		}
-
 		function fn_searchForm(){
 			gridHelper2.resetListContent();
 		}
-
 		function fn_init() {
 			$("#searchType").val('spceNm');
 			$("#searchKeyword").val('');
@@ -118,7 +116,6 @@
 			$("#filterSearchSelectDate").val('');
 			gridHelper2.resetListContent();
 		}
-
 		function writeJsGridData(){
 			$("#jsGrid").jsGrid({
 				height: "auto",
@@ -152,7 +149,7 @@
 							params.push({name: "orderField", value: filter.sortField});
 							params.push({name: "orderDirection", value: filter.sortOrder});
 						}else{
-							params.push({name: "orderField", value: 'aplyid'});
+							params.push({name: "orderField", value: 'DPST_IDNTY_DT DESC, A1.REG_DT'});
 						}
 
 	                    if(selectedApplyid !=null && selectedApplyid !=''){
@@ -197,7 +194,7 @@
 	                 }
 					,{ name: 'aplyid', css: 'hide' }
 					,{ title: 'No.' ,name: 'rowNumber',    type: "number", width : "80", align:"center",  sorting :false }
-					,{ title: '신청자ID'    ,name: 'acnt',    type: "text", width: "250"}
+					,{ title: '신청자ID'    ,name: 'acnt',    type: "text", width: "200",align:"center"}
 					,{ title: '신청자명'    ,name: 'nm', type: "text", width: "150", align:"center" }
 					,{ title: '공간'   ,name: 'spceNm',   type: "text", width: "150", align:"center"  }
 					,{ title: '이용일(시)'   ,name: 'bgngDt',   type: "text", width: "300", align:"center"
@@ -218,8 +215,10 @@
 					}}
 					,{ title: '신청상태' ,name: 'aplySttsCdNm',  type: "text", width: "150", align:"center" }
 					,{ title: '결제상태' ,name: 'stlmSttsCdNm',  type: "text", width: "150", align:"center" }
-					,{ title: '예약 승인일' ,name: 'regDt',  type: "text", width: "150", align:"center"
-		                  ,itemTemplate: function(value, item){return value.substring(0,10)}
+					,{ title: '예약 승인일' ,name: 'dpstIdntyDt',  type: "text", width: "150", align:"center"
+		                  ,itemTemplate: function(value, item){
+			                  return (value !=null && value.length > 10)?value.substring(0,10):item.regDt.substring(0,10);
+			              }
 					}
 				],
 				rowClick: function(args) {
@@ -230,8 +229,8 @@
 				},
                 onDataLoaded: function(args) { 
                     if(selectedApplyid == null || args.grid.data == null || args.grid.data.length == 0) return;
-					var updateUrl = "/mng/rcpmnyAfter/rcpmnyAfterView.html?aplyid=" + selectedApplyid;
-                    gridHelper2.loadContent(updateUrl);
+					var detailUrl = "/mng/rcpmnyAfter/rcpmnyAfterView.html?aplyid=" + selectedApplyid;
+                    gridHelper2.loadContent(detailUrl);
                     selectedApplyid = null;
                 },
 				onPageChanged: function(args) {
@@ -279,44 +278,98 @@
 			});
 		}
 		
-	    var fn_dsptCheckCancel = () => {
-
-	        if(selectedItems.length <=0 ){
-	            alert("입금취소 대상을 선택해주십시오.");
-	            return;
-	      }
-	      
-	      var aplyids = selectedItems.join(",")
-	      
-	      if(!confirm('입금확인을 취소 하시겠습니까?\n 예약 취소건을 제외하고 입금대기 상태로 전환됩니다.') )return;
-	      
-	      var data = {"aplyids" : aplyids }
-	            
-          if(displayWorkProgress()){
-
-	            $.ajax({
-	                url: "/mng/rcpmnyAfter/updateDsptCheckCancel.do",
-	                type: 'POST',
-	                cache : false,
-	                dataType: 'json',
-	                data : data,
-	                success : function (data){
-	                    if(data.result=="success"){
-	                        alert("입금확인 취소처리가 완료 되었습니다.");
-	                        gridHelper2.resetPageContent();
-	                    }else{
-	                        alert("입금확인 취소처리중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
-	                    }
-	                },
-	                error : function (error){
-	                }
-	            });
+	    var fn_dsptCheckCancel = (aplyid) => {
+		    
+	    	let aplyidForParam = 0;
+	    	
+	    	if(aplyid!=null && aplyid !='undefiend' && aplyid > 0){
+	    		aplyidForParam = aplyid;
+		    }else{
+		        if(selectedItems.length <=0 ){
+		            alert("입금취소 대상을 선택해주십시오.");
+		            return;
+		        }
+	    		aplyidForParam = selectedItems.join(",");
+			}
+			
+	        if(!confirm('입금확인을 취소 하시겠습니까?\n 예약 취소건을 제외하고 입금대기 상태로 전환됩니다.') )return;
+	        
+	        var data = {"aplyids" : aplyidForParam }
+            if(displayWorkProgress()){
+	              $.ajax({
+	                  url: "/mng/rcpmnyAfter/updateDsptCheckCancel.do",
+	                  type: 'POST',
+	                  cache : false,
+	                  dataType: 'json',
+	                  data : data,
+	                  success : function (data){
+                          closeWorkProgress();
+	                      if(data.result=="success"){
+	                          alert(data.msg);
+	                          gridHelper2.resetPageContent();
+	                      }else{
+	                          alert(data.msg);
+	                      }
+	                  },
+	                  error : function (error){
+	                  }
+	             });
 	        }
-	  }
+	   }
+
+       var requestRefund = (aplyid) => {
+           
+            let aplyidForParam = 0;
+            
+            if(aplyid!=null && aplyid !='undefiend' && aplyid > 0){
+                aplyidForParam = aplyid;
+            }else{
+                if(selectedItems.length <=0 ){
+                    alert("환불 요청 대상을 선택해주십시오.");
+                    return;
+                }
+                
+                if(selectedItems.length > 1 ){
+                    alert("두개 이상의 예약건은 처리 할 수 없습니다.");
+                    return;
+                }
+                aplyidForParam = selectedItems.join(",");
+           }
+            
+           if(displayWorkProgress() ){
+               $.ajax({
+                   type: "GET",
+                   contentType: "application/json; charset=utf-8",
+                   url: "/mng/resveReqst/selectResveReqstList.do",
+                   dataType: "json",
+                   data : {selectedApplyid : aplyidForParam},
+                   success : function (response){
+                       
+                       if(response.totalCount == 0){
+                           closeWorkProgress();
+                           alert("신청건이 존재하지 않습니다. 새로 고침 후 확인해주십시오");
+                           return;
+                       }else if(response.totalCount >= 2){
+                           closeWorkProgress();
+                           alert("중복 신청건이 존재합니다. 새로 고침 후 확인해주십시오");
+                           return;
+                       }else{
+                           closeWorkProgress();
+                           if(response.list[0].aplySttsCd == "160103"){
+                               alert("예약 취소 건은 처리가 불가합니다.");
+                               return false;
+                           }else{
+                        	   let refndPopupUrl = "/mng/rcpmnyAfter/refndPopup.html?aplyid="+aplyidForParam;
+                        	   fn_openResveCancelModal(refndPopupUrl);
+                           }
+                       }
+                   }
+               });
+           }
+       }
 		    
 	  // 환불요청 팝업
-	  var refndPopupUrl = "/mng/rcpmnyAfter/refndPopup.html?aplyids=" ;
-	    var fn_openResveCancelModal = () => {
+	  var fn_openResveCancelModal = (refndPopupUrl) => {
 	        $("#refndPopup").load(refndPopupUrl, function(response, status, xhr) {
 	            if (status == "success") {
 	                refndAddModal = new bootstrap.Modal($('#refndPopup'));

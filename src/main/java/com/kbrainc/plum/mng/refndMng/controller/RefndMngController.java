@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
-* 시설관리 컨트롤러 클래스
+* 교육 시설 환불 관리 컨트롤러 클래스
 *
 * <pre>
 * com.kbrainc.plum.mng.refndMng.contoller
@@ -37,7 +37,7 @@ import java.util.Map;
 * </pre>
 *
 * @ClassName : RefndMngController
-* @Description : 시설 컨트롤러 클래스
+* @Description : 교육 시설 환불 관리 컨트롤러 클래스
 * @author : NTK
 * @date : 2023. 01. 09.
 * @Version :
@@ -56,10 +56,10 @@ public class RefndMngController {
     private ResveReqstService resveReqstService;
     
     /**
-    * 시설관리 리스트화면으로 이동
+    * 환불관리 리스트화면으로 이동
     *
     * @Title : refndMngList
-    * @Description : 시설관리 리스트화면으로 이동
+    * @Description : 환불관리 리스트화면으로 이동
     * @throws Exception 예외
     * @return String
     */
@@ -87,7 +87,7 @@ public class RefndMngController {
     }
 
     /**
-     * 공간정보 조회화면
+     * 환불완료 상세 페이지 이동
      *
      * @Title       : refndMngCompleteList
      * @Description : 공간정보 조회화면 이동.
@@ -101,10 +101,10 @@ public class RefndMngController {
     
     
     /**
-    * 공간정보 조회 기능
+    * 환불완료 목록 조회
     *
     * @Title : selectRefndMngCompleteList
-    * @Description : 공간정보 조회 기능
+    * @Description : 환불완료 목록 조회
     * @param refndMngVo 시설 객체
     * @throws Exception 예외
     * @return Map<String,Object>
@@ -147,15 +147,11 @@ public class RefndMngController {
     * @return String
     */
     @RequestMapping(value = "/mng/refndMng/refndMngView.html")
-    public String refndMngView(RefndMngVo refndMngVo, Model model, @UserInfo UserVo user, InstVo instVo) throws Exception {
-
-        model.addAttribute("param", refndMngVo);
-        
-        refndMngVo.setUser(user);
-        RefndMngVo resultVo = refndMngService.selectRefndMngInfo(refndMngVo);
-
-        model.addAttribute("refndMng", resultVo);
-        
+    public String refndMngView(ResveReqstVo resveReqstVo, Model model, @UserInfo UserVo user, InstVo instVo) throws Exception {
+        model.addAttribute("param", resveReqstVo);
+        resveReqstVo.setUser(user);
+        ResveReqstVo resultVo = resveReqstService.selectResveReqstInfo(resveReqstVo);
+        model.addAttribute("aplyVo", resultVo);
         return "mng/refndMng/refndMngView";
     }
    
@@ -170,11 +166,11 @@ public class RefndMngController {
     */
     @RequestMapping(value = "/mng/refndMng/selectRefndMngList.do")
     @ResponseBody
-    public Map<String, Object> selectRefndMngList(RefndMngVo refndMngVo, @UserInfo UserVo user, InstVo instVo) throws Exception {
+    public Map<String, Object> selectRefndMngList(ResveReqstVo resveReqstVo, @UserInfo UserVo user, InstVo instVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
-        List<RefndMngVo> result = null;
+        List<ResveReqstVo> result = null;
 
-        result =  refndMngService.selectRefndMngList(refndMngVo);
+        result =  refndMngService.selectRefndMngList(resveReqstVo);
         
         if (result.size() > 0) {
             resultMap.put("totalCount", (result.get(0).getTotalCount()));
@@ -194,12 +190,10 @@ public class RefndMngController {
      * @throws Exception 예외
      */
     @RequestMapping(value = "/mng/refndMng/refndCancelPopup.html")
-    public String refndCancelPopup(RefndMngVo refndMngVo, Model model) throws Exception {
-        model.addAttribute("param", refndMngVo);
-
-        RefndMngVo resultVo = refndMngService.selectRefndMngInfo(refndMngVo);
-
-        model.addAttribute("refndMng", resultVo);
+    public String refndCancelPopup(ResveReqstVo resveReqstVo, Model model) throws Exception {
+        model.addAttribute("param", resveReqstVo);
+        ResveReqstVo resultVo = resveReqstService.selectResveReqstInfo(resveReqstVo);
+        model.addAttribute("aplyVo", resultVo);
         return "mng/refndMng/refndCancelPopup";
     }
 
@@ -211,12 +205,10 @@ public class RefndMngController {
      * @throws Exception 예외
      */
     @RequestMapping(value = "/mng/refndMng/refndCompletePopup.html")
-    public String refndCompletePopup(RefndMngVo refndMngVo, Model model) throws Exception {
-        model.addAttribute("param", refndMngVo);
-
-        RefndMngVo resultVo = refndMngService.selectRefndMngInfo(refndMngVo);
-
-        model.addAttribute("refndMng", resultVo);
+    public String refndCompletePopup(ResveReqstVo resveReqstVo, Model model) throws Exception {
+        model.addAttribute("param", resveReqstVo);
+        ResveReqstVo resultVo = resveReqstService.selectResveReqstInfo(resveReqstVo);
+        model.addAttribute("aplyVo", resultVo);
         return "mng/refndMng/refndCompletePopup";
     }
 
@@ -233,28 +225,17 @@ public class RefndMngController {
      */
     @RequestMapping(value = "/mng/refndMng/updateRefndComplete.do")
     @ResponseBody
-    public Map<String, Object> updateRefndComplete(@Valid RefndMngVo refndMngVo, BindingResult bindingResult, @UserInfo UserVo user, ResveReqstVo resveReqstVo) throws Exception {
+    public Map<String, Object> updateRefndComplete(ResveReqstVo resveReqstVo, @UserInfo UserVo user) throws Exception {
+        
         Map<String, Object> resultMap = new HashMap<String, Object>();
-
-        if (bindingResult.hasErrors()) {
-            FieldError fieldError = bindingResult.getFieldError();
-            if (fieldError != null) {
-                resultMap.put("msg", fieldError.getDefaultMessage());
-            }
-            return resultMap;
-        }
-
-        refndMngVo.setUser(user);
-
-        int retVal = 0;
-
-        retVal = refndMngService.updateRefndComplete(refndMngVo);
-
-        // 상태변경 데이터 세팅
-        resveReqstVo.setAplyid(refndMngVo.getAplyid());
         resveReqstVo.setUser(user);
-        // 상태변경이력 추가
-        resveReqstService.insertHstry(resveReqstVo);
+        int retVal = 0;
+        
+        resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+        
+        ResveReqstVo resultVo = resveReqstService.selectResveReqstInfo(resveReqstVo);
+        
+        retVal = refndMngService.updateRefndComplete(resveReqstVo);
 
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -268,7 +249,7 @@ public class RefndMngController {
     }
 
     /**
-     * 예약 신청 취소 처리
+     * 환불 요청 취소 처리
      *
      * @Title : updateRefndCancel
      * @Description : 예약 신청 취소 처리
@@ -280,7 +261,7 @@ public class RefndMngController {
      */
     @RequestMapping(value = "/mng/refndMng/updateRefndCancel.do")
     @ResponseBody
-    public Map<String, Object> updateRefndCancel(@Valid RefndMngVo refndMngVo, BindingResult bindingResult, @UserInfo UserVo user, ResveReqstVo resveReqstVo) throws Exception {
+    public Map<String, Object> updateRefndCancel(@Valid ResveReqstVo resveReqstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
         if (bindingResult.hasErrors()) {
@@ -290,25 +271,17 @@ public class RefndMngController {
             }
             return resultMap;
         }
-
-        refndMngVo.setUser(user);
-
-        int retVal = 0;
-
-        retVal = refndMngService.updateRefndCancel(refndMngVo);
-
-        // 상태변경 데이터 세팅
-        resveReqstVo.setAplyid(refndMngVo.getAplyid());
+        
         resveReqstVo.setUser(user);
-        // 상태변경이력 추가
-        resveReqstService.insertHstry(resveReqstVo);
-
+        int retVal = 0;
+        retVal = refndMngService.updateRefndCancel(resveReqstVo);
+        
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "예약신청 취소에 성공하였습니다.");
+            resultMap.put("msg", "환불요청 취소에 성공하였습니다.");
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-            resultMap.put("msg", "예약신청 취소에 실패했습니다.");
+            resultMap.put("msg", "환불요청 취소에 실패했습니다.");
         }
 
         return resultMap;
@@ -327,28 +300,12 @@ public class RefndMngController {
      */
     @RequestMapping(value = "/mng/refndMng/updateRefndRollback.do")
     @ResponseBody
-    public Map<String, Object> updateRefndRollback(@Valid RefndMngVo refndMngVo, BindingResult bindingResult, @UserInfo UserVo user, ResveReqstVo resveReqstVo) throws Exception {
+    public Map<String, Object> updateRefndRollback(ResveReqstVo resveReqstVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
-        if (bindingResult.hasErrors()) {
-            FieldError fieldError = bindingResult.getFieldError();
-            if (fieldError != null) {
-                resultMap.put("msg", fieldError.getDefaultMessage());
-            }
-            return resultMap;
-        }
-
-        refndMngVo.setUser(user);
-
-        int retVal = 0;
-
-        retVal = refndMngService.updateRefndRollback(refndMngVo);
-
-        // 상태변경 데이터 세팅
-        resveReqstVo.setAplyid(refndMngVo.getAplyid());
         resveReqstVo.setUser(user);
-        // 상태변경이력 추가
-        resveReqstService.insertHstry(resveReqstVo);
+        int retVal = 0;
+        retVal = refndMngService.updateRefndRollback(resveReqstVo);
 
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);

@@ -107,11 +107,11 @@ public class ResveReqstVo extends ParentRequestVo {
     /** 취소 일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date cnclDt;
-
+    
     /** 환불 요청 일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date rfndDmndDt;
-
+    
     /** 환불 일자 */
     private String rfndDe;
 
@@ -162,7 +162,7 @@ public class ResveReqstVo extends ParentRequestVo {
     
     /** 환불 거절 사유 코드명*/ 
     private String rfndRejectRsnCdNm;
-
+    
     /** 수정 일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date mdfcnDt;

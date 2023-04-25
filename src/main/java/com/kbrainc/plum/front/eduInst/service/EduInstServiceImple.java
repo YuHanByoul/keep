@@ -13,6 +13,7 @@ import com.kbrainc.plum.front.eduInst.model.EduExprtVo;
 import com.kbrainc.plum.front.eduInst.model.EduInstDao;
 import com.kbrainc.plum.front.eduInst.model.EduInstVo;
 import com.kbrainc.plum.front.eduInst.model.SchdlVo;
+import com.kbrainc.plum.front.eduInst.model.SeePrgrmVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.ExpndArtclVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
@@ -242,6 +243,83 @@ public class EduInstServiceImple extends PlumAbstractServiceImpl implements EduI
 		}
 
 		return ret;
+	}
+
+	/**
+	* 교육프로그램 목록 조회
+	*
+	* @Title : selectSeePrgrmList
+	* @Description : 교육프로그램 목록 조회
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return List<SeePrgrmVo>
+	*/
+	@Override
+	public List<SeePrgrmVo> selectSeePrgrmList(EduInstVo eduInstVo) throws Exception{
+		return eduInstDao.selectSeePrgrmList(eduInstVo);
+	}
+
+	/**
+	* 지정 프로그램 목록 조회
+	*
+	* @Title : selectDsgnPrgrmList
+	* @Description : 지정 프로그램 목록 조회
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return List<SeePrgrmVo>
+	*/
+	@Override
+	public List<SeePrgrmVo> selectDsgnPrgrmList(EduInstVo eduInstVo) throws Exception{
+		return eduInstDao.selectDsgnPrgrmList(eduInstVo);
+	}
+
+	/**
+	* 교육프로그램보유현황 등록
+	*
+	* @Title : insertHldngStts
+	* @Description : 교육프로그램보유현황 등록
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	@Override
+	@Transactional
+	public int insertHldngStts(EduInstVo eduInstVo) throws Exception{
+		int ret=0;
+
+		List<SeePrgrmVo> prgrmList = null;
+
+		eduInstDao.deleteSeePrgrm(eduInstVo);
+
+		prgrmList = eduInstVo.getSeePrgrmList();
+		if(prgrmList != null && prgrmList.size()> 0) {
+			for(SeePrgrmVo vo : prgrmList) {
+				vo.setUser(eduInstVo.getUser());
+				vo.setAplyid(eduInstVo.getAplyid());
+
+				ret+=eduInstDao.insertSeePrgrm(vo);
+			}
+		}
+
+		return ret;
+	}
+
+	/**
+	* 시설 개요 조회
+	*
+	* @Title : selectSeeFclt
+	* @Description : 시설 개요 조회
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return EduInstVo
+	*/
+	@Override
+	public EduInstVo selectSeeFclt(EduInstVo eduInstVo) throws Exception{
+		return eduInstDao.selectSeeFclt(eduInstVo);
 	}
 
 }

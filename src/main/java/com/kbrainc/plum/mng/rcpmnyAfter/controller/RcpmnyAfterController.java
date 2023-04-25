@@ -54,8 +54,8 @@ public class RcpmnyAfterController {
      * @return String
      */
     @RequestMapping(value = "/mng/rcpmnyAfter/rcpmnyAfterList.html")
-    public String rcpmnyAfterList(RcpmnyAfterVo rcpmnyAfterVo, Model model) throws Exception {
-        model.addAttribute("param", rcpmnyAfterVo);
+    public String rcpmnyAfterList(ResveReqstVo resveReqstVo, Model model) throws Exception {
+        model.addAttribute("param", resveReqstVo);
         return "mng/rcpmnyAfter/rcpmnyAfterList";
     }
 
@@ -70,15 +70,12 @@ public class RcpmnyAfterController {
      * @return String
      */
     @RequestMapping(value = "/mng/rcpmnyAfter/rcpmnyAfterView.html")
-    public String rcpmnyAfterView(RcpmnyAfterVo rcpmnyAfterVo, Model model, @UserInfo UserVo user, InstVo instVo) throws Exception {
+    public String rcpmnyAfterView(ResveReqstVo resveReqstVo, Model model, @UserInfo UserVo user, InstVo instVo) throws Exception {
 
-        model.addAttribute("param", rcpmnyAfterVo);
-
-        rcpmnyAfterVo.setUser(user);
-        RcpmnyAfterVo resultVo = rcpmnyAfterService.selectRcpmnyAfterInfo(rcpmnyAfterVo);
-
-        model.addAttribute("rcpmnyAfter", resultVo);
-
+        model.addAttribute("param", resveReqstVo);
+        resveReqstVo.setUser(user);
+        ResveReqstVo resultVo = resveReqstService.selectResveReqstInfo(resveReqstVo);
+        model.addAttribute("aplyVo", resultVo);
         return "mng/rcpmnyAfter/rcpmnyAfterView";
     }
 
@@ -93,12 +90,10 @@ public class RcpmnyAfterController {
      */
     @RequestMapping(value = "/mng/rcpmnyAfter/selectRcpmnyAfterList.do")
     @ResponseBody
-    public Map<String, Object> selectRcpmnyAfterList(RcpmnyAfterVo rcpmnyAfterVo, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> selectRcpmnyAfterList(ResveReqstVo resveReqstVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
-        List<RcpmnyAfterVo> result = null;
-
-        result =  rcpmnyAfterService.selectRcpmnyAfterList(rcpmnyAfterVo);
-
+        List<ResveReqstVo> result = null;
+        result =  rcpmnyAfterService.selectRcpmnyAfterList(resveReqstVo);
         if (result.size() > 0) {
             resultMap.put("totalCount", (result.get(0).getTotalCount()));
         } else {
@@ -117,12 +112,10 @@ public class RcpmnyAfterController {
      * @throws Exception 예외
      */
     @RequestMapping(value = "/mng/rcpmnyAfter/refndPopup.html")
-    public String refndPopup(RcpmnyAfterVo rcpmnyAfterVo, Model model) throws Exception {
-        model.addAttribute("param", rcpmnyAfterVo);
-
-        RcpmnyAfterVo resultVo = rcpmnyAfterService.selectDsptCheckInfo(rcpmnyAfterVo);
-
-        model.addAttribute("rcpmnyAfter", resultVo);
+    public String refndPopup(ResveReqstVo resveReqstVo, Model model) throws Exception {
+        model.addAttribute("param", resveReqstVo);
+        ResveReqstVo resultVo = resveReqstService.selectResveReqstInfo(resveReqstVo);
+        model.addAttribute("aplyVo", resultVo);
         return "mng/rcpmnyAfter/refndPopup";
     }
 
@@ -139,35 +132,19 @@ public class RcpmnyAfterController {
      */
     @RequestMapping(value = "/mng/rcpmnyAfter/updateDsptCheckCancel.do")
     @ResponseBody
-    public Map<String, Object> updateDsptCheckCancel(@Valid RcpmnyAfterVo rcpmnyAfterVo, BindingResult bindingResult, @UserInfo UserVo user, ResveReqstVo resveReqstVo) throws Exception {
+    public Map<String, Object> updateDsptCheckCancel(ResveReqstVo resveReqstVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
-        if (bindingResult.hasErrors()) {
-            FieldError fieldError = bindingResult.getFieldError();
-            if (fieldError != null) {
-                resultMap.put("msg", fieldError.getDefaultMessage());
-            }
-            return resultMap;
-        }
-
-        rcpmnyAfterVo.setUser(user);
-
         int retVal = 0;
-
-        retVal = rcpmnyAfterService.updateDsptCheckCancel(rcpmnyAfterVo);
-
-        // 상태변경 데이터 세팅
-        resveReqstVo.setAplyid(rcpmnyAfterVo.getAplyid());
         resveReqstVo.setUser(user);
-        // 상태변경이력 추가
-        resveReqstService.insertHstry(resveReqstVo);
-
-        if (retVal > 0) {
+        retVal = rcpmnyAfterService.updateDsptCheckCancel(resveReqstVo);
+        
+        if (retVal > 0 || resveReqstVo.getAplyids().length > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "입금 확인취소처리에 성공하였습니다.");
+            resultMap.put("msg", "입금확인 취소처리에 성공하였습니다.");
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-            resultMap.put("msg", "입금 확인취소처리에 실패했습니다.");
+            resultMap.put("msg", "입금확인 취소처리에 실패했습니다.");
         }
 
         return resultMap;
@@ -186,35 +163,19 @@ public class RcpmnyAfterController {
      */
     @RequestMapping(value = "/mng/rcpmnyAfter/updateRefnd.do")
     @ResponseBody
-    public Map<String, Object> updateRefnd(@Valid RcpmnyAfterVo rcpmnyAfterVo, BindingResult bindingResult, @UserInfo UserVo user, ResveReqstVo resveReqstVo) throws Exception {
+    public Map<String, Object> updateRefnd(ResveReqstVo resveReqstVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
-        if (bindingResult.hasErrors()) {
-            FieldError fieldError = bindingResult.getFieldError();
-            if (fieldError != null) {
-                resultMap.put("msg", fieldError.getDefaultMessage());
-            }
-            return resultMap;
-        }
-
-        rcpmnyAfterVo.setUser(user);
-
-        int retVal = 0;
-
-        retVal = rcpmnyAfterService.updateRefnd(rcpmnyAfterVo);
-
-        // 상태변경 데이터 세팅
-        resveReqstVo.setAplyid(rcpmnyAfterVo.getAplyid());
         resveReqstVo.setUser(user);
-        // 상태변경이력 추가
-        resveReqstService.insertHstry(resveReqstVo);
-
+        int retVal = 0;
+        retVal = rcpmnyAfterService.updateRefnd(resveReqstVo);
+        
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "예약신청 취소에 성공하였습니다.");
+            resultMap.put("msg", "환불요청 처리에 성공하였습니다.");
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-            resultMap.put("msg", "예약신청 취소에 실패했습니다.");
+            resultMap.put("msg", "환불요청 처리에 실패했습니다.");
         }
 
         return resultMap;

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+</head>
+<body>
+    <form id="eduPrgrmPopFrom" >
+        <input type="hidden" id="aplyid" name="aplyid" th:value="${eduInstVo.aplyid}" />
+        <input type="hidden" id="idx" name="idx" th:value="${eduInstVo.idx}" />
+
+        <div class="layer-popup layer-large" data-layer-id="eduPrgrmPop">
+            <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+            <div class="layer-wrap">
+                <div class="layer-header">
+                    <strong class="tit">프로그램 검색</strong>
+                    <button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
+                </div>
+                <div class="layer-content">
+
+                    <form class="search-filter">
+                        <div class="form-input-wrap">
+                            <div class="form-row">
+                                <div class="form-header"><strong class="label">프로그램명</strong></div>
+                                <div class="form-body">
+                                    <input type="text" title="프로그램명" placeholder="프로그램명을 입력해 주세요." id="searchPrgrmNm" name="searchPrgrmNm" onkeydown="if(event.keyCode == 13){eduPrgrmPop.search(); return false;};">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-header"><strong class="label">지정번호</strong></div>
+                                <div class="form-body">
+                                    <input type="text" title="지정번호" placeholder="지정번호를 입력해 주세요." id="searchDsgnNo" name="searchDsgnNo" onkeydown="if(event.keyCode == 13){eduPrgrmPop.search(); return false;};">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="search-filter-submit">
+                            <button type="reset"  class="btn-medium btn-gray btn-before-refresh"  onclick="eduPrgrmPop.init()">초기화</button>
+                            <button type="button" class="btn-medium btn-green btn-before-search" onclick="eduPrgrmPop.search()">검색</button>
+                        </div>
+                    </form>
+
+                    <div class="table-col table-layout-auto">
+                        <table>
+                            <caption>프로그램 검색 - 프로그램명, 지정번호, 선택</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">프로그램명</th>
+                                    <th scope="col">지정번호</th>
+                                    <th scope="col">선택</th>
+                                </tr>
+                            </thead>
+                            <tbody id="list-area"></tbody>
+                        </table>
+                    </div>
+                    <div class="pagination" aria-label="pagination">
+                    <div id="pagination" aria-label="pagination"></div>
+                </div>
+
+                <div class="layer-footer">
+                    <div class="btn-wrap">
+                        <div class="center">
+                            <button type="button" class="btn-medium btn-gray" id="closeBtn" data-layer-close="">닫기</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <script th:inline="javascript">
+
+    function validate(){
+
+        $("#eduPrgrmPopFrom").validate({
+            ignore: [],
+            rules: {
+                prgrmid : { required : true }
+              , ttl     : { maxlength:100  }
+              , cn      : { maxlength:100  }
+              , ans     : { maxlength:100  }
+            } ,
+            messages: {
+                prgrmid : { required: "프로그램을 선택해 주십시오." }
+              , ttl     : { maxlength:"제목은 1000자를 넘을 수 없습니다."  }
+              , cn      : { maxlength:"이의신청은 300자를 넘을 수 없습니다."  }
+              , ans     : { maxlength:"답변은 1000자를 넘을 수 없습니다."  }
+             }
+        });
+    }
+
+
+    var eduPrgrmPop ={
+    	listUrl : "/front/eduInst/selectDsgnPrgrmList.do",
+
+    	init(){
+
+    	},
+    	search(){
+
+    		$('#pageNumber').val('1');
+            this.selectList();
+    	},
+    	selectList() {
+        if (displayWorkProgress(true)) {
+
+            let formData = $('#eduPrgrmPopFrom').serializeArray();
+
+            $.ajax({
+                url: eduPrgrmPop.listUrl,
+                cache: false,
+                dataType: 'json',
+                data: formData,
+                type: 'GET',
+                success: function (result) {
+                	debugger;
+                    $("#pagination").html(result.pagination);
+
+                    //$("#totalCount").html(result.totalCount);
+
+                    let data = escapeData(result);
+                    eduPrgrmPop.makeListHtml(data);
+
+                    closeWorkProgress();
+                }
+            });
+            }
+        },
+        makeListHtml(data) {
+
+            var listHtml = "";
+
+            if (data.list == null || data.list.length <= 0) {
+
+//                 listCount.innerHTML = `<p>총 <b>${data.list.length}</b> 건</p>`;
+
+                listHtml += `
+                    <tr>
+                        <td class="nodata" colspan="3">
+                            <p><span class="icon icon-notice bg-black9"></span>검색된 내용이 없습니다.</p>
+                        </td>
+                    </tr>`;
+            } else {
+
+//                 listCount.innerHTML = `<p>총 <b>${data.list.length}</b> 건</p>`;
+
+                data.list.forEach(function(item, idx) {
+                    var rowNumber     = item?.rowNumber    ?? '';
+                    var rfrncPrgrmid  = item?.rfrncPrgrmid ?? '';
+                    var rfrncPrgrmNm  = item?.rfrncPrgrmNm ?? '';
+                    var dsgnNo        = item?.dsgnNo       ?? '';
+
+                    listHtml += `
+                	<tr>
+                        <td class="al">${rfrncPrgrmNm}</td>
+                        <td>${dsgnNo}</td>
+                        <td><button type="button" class="btn-small btn-outline-blue" onclick="eduPrgrmPop.select('${rfrncPrgrmid}','${rfrncPrgrmNm}')">선택</button></td>
+                    </tr>`;
+
+
+                });
+            }
+
+            $('#list-area').html(listHtml);
+        },
+        select(id,nm){
+            var idx= $("#idx").val();
+        	 $("#rfrncPrgrmid"+idx).val(id);
+        	 $("#prgrmNm"+idx).val(nm);
+        	 debugger;
+        	 closeBtn.click();
+        }
+    };
+
+    $(function () {
+
+    });
+
+    </script>
+</body>
+</html>

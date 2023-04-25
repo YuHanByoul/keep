@@ -1,5 +1,5 @@
 <form id="refndMngUpdate" >
-    <input type="hidden" id="aplyid" name="aplyid" th:value="${refndMng.aplyid}">
+    <input type="hidden" id="aplyid" name="aplyid" th:value="${aplyVo.aplyid}">
     <!--탭영역 start -->
     <div class="tab-content tabs p-t-20">
 
@@ -14,7 +14,7 @@
                             <div class="mb-0 form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>운영기관</strong></label>
                                 <div class="col-12">
-                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${refndMng.instNm}">
+                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${aplyVo.instNm}">
                                 </div>
                             </div>
                         </div>
@@ -22,7 +22,7 @@
                             <div class="mb-0 form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>시설</strong></label>
                                 <div class="col-12">
-                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${refndMng.fcltNm}">
+                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${aplyVo.fcltNm}">
                                 </div>
                             </div>
                         </div>
@@ -32,7 +32,7 @@
                             <div class="mb-0 form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>공간</strong></label>
                                 <div class="col-12">
-                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${refndMng.spceNm}">
+                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${aplyVo.spceNm}">
                                 </div>
                             </div>
                         </div>
@@ -40,15 +40,11 @@
                             <div class="mb-0 form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>이용일(시)</strong></label>
                                 <div class="col-12">
-                                    <th:block th:if ="${refndMng.alldayYn} == 'N'">
-                                        <input type="text" class="form-control form-control-sm" readonly="" th:value="${#dates.format(refndMng.bgngDt, 'yyyy-MM-dd HH:mm')}+' ~ '+${#dates.format(refndMng.endDt, 'HH:mm')}">
+                                <th:block th:with="exid= ${#strings.arraySplit(aplyVo.resveDt,'/')} ">
+                                    <th:block th:each="item:${exid}" >
+                                        <input type="text" class="form-control form-control-sm mb-2" readonly="" th:value ="${item}"/>
                                     </th:block>
-                                    <th:block th:if ="${refndMng.alldayYn} == 'Y' and ${#dates.format(refndMng.bgngDt, 'yyyy-MM-dd')} == ${#dates.format(refndMng.endDt, 'yyyy-MM-dd')}">
-                                        <input type="text" class="form-control form-control-sm" readonly="" th:value="${#dates.format(refndMng.bgngDt, 'yyyy-MM-dd')}">
-                                    </th:block>
-                                    <th:block th:if ="${refndMng.alldayYn} == 'Y' and ${#dates.format(refndMng.bgngDt, 'yyyy-MM-dd')} != ${#dates.format(refndMng.endDt, 'yyyy-MM-dd')}">
-                                        <input type="text" class="form-control form-control-sm" readonly="" th:value="${#dates.format(refndMng.bgngDt, 'yyyy-MM-dd')}+' ~ '+${#dates.format(refndMng.endDt, 'yyyy-MM-dd')}">
-                                    </th:block>
+                                </th:block>
                                 </div>
                             </div>
                         </div>
@@ -58,15 +54,15 @@
                             <div class="mb-0 form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>신청상태</strong></label>
                                 <div class="col-12">
-                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${refndMng.aplySttsCdNm}">
+                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${aplyVo.aplySttsCdNm}">
                                 </div>
                             </div>
                         </div>
                         <div class="col-12 col-lg-6 mb-3">
-                            <div class="mb-0 form-group">
+                            <div class="mb-0 form-group" >
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>예약승인일시</strong></label>
                                 <div class="col-12">
-                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${#dates.format(refndMng.aplyDt, 'yyyy-MM-dd HH:mm:ss')}">
+                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${#dates.format(aplyVo.dpstIdntyDt, 'yyyy-MM-dd HH:mm:ss')}">
                                 </div>
                             </div>
                         </div>
@@ -76,7 +72,7 @@
                             <div class="mb-0 form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>결제금액</strong></label>
                                 <div class="col-12">
-                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${#numbers.formatInteger(refndMng.amt, 0, 'COMMA') + '원'}">
+                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${#numbers.formatInteger(aplyVo.amt, 0, 'COMMA') + '원'}">
                                 </div>
                             </div>
                         </div>
@@ -84,7 +80,7 @@
                             <div class="mb-0 form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>결제상태</strong></label>
                                 <div class="col-12">
-                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${refndMng.stlmSttsCdNm}">
+                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${aplyVo.stlmSttsCdNm}">
                                 </div>
                             </div>
                         </div>
@@ -94,7 +90,7 @@
                             <div class="mb-0 form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>환불요청금액</strong></label>
                                 <div class="col-12">
-                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${#numbers.formatInteger(refndMng.rfndDmndAmt, 0, 'COMMA') + '원'}">
+                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${#numbers.formatInteger(aplyVo.rfndDmndAmt, 0, 'COMMA') + '원'}">
                                 </div>
                             </div>
                         </div>
@@ -102,7 +98,7 @@
                     <div class="row form-group mb-3">
                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>환불요청일시</strong></label>
                         <div class="col-12">
-                            <input type="text" class="form-control form-control-sm" readonly="" th:value="${#dates.format(refndMng.rfndDmndDt, 'yyyy-MM-dd HH:mm:ss')}">
+                            <input type="text" class="form-control form-control-sm" readonly="" th:value="${#dates.format(aplyVo.rfndDmndDt, 'yyyy-MM-dd HH:mm:ss')}">
                         </div>
                     </div>
                 </div>
@@ -116,7 +112,7 @@
                             <div class="mb-0 form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>신청자 ID</strong></label>
                                 <div class="col-12">
-                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${refndMng.acnt}">
+                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${aplyVo.acnt}">
                                 </div>
                             </div>
                         </div>
@@ -124,7 +120,7 @@
                             <div class="mb-0 form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>이름/기관명</strong></label>
                                 <div class="col-12">
-                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${refndMng.nm}+' / '+${refndMng.userInstNm}">
+                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${aplyVo.nm}+' / '+${aplyVo.userInstNm}">
                                 </div>
                             </div>
                         </div>
@@ -134,7 +130,7 @@
                             <div class="mb-0 form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>회원유형</strong></label>
                                 <div class="col-12">
-                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${refndMng.rolecdnm}">
+                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${aplyVo.rolecdnm}">
                                 </div>
                             </div>
                         </div>
@@ -142,7 +138,7 @@
                             <div class="mb-0 form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>기관유형</strong></label>
                                 <div class="col-12">
-                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${refndMng.instTypeCdNm}">
+                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${aplyVo.instTypeCdNm}">
                                 </div>
                             </div>
                         </div>
@@ -152,7 +148,7 @@
                             <div class="mb-0 form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>휴대전화</strong></label>
                                 <div class="col-12">
-                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${refndMng.moblphon}">
+                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${aplyVo.moblphon}">
                                 </div>
                             </div>
                         </div>
@@ -160,7 +156,7 @@
                             <div class="mb-0 form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>이메일</strong></label>
                                 <div class="col-12">
-                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${refndMng.eml}">
+                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${aplyVo.eml}">
                                 </div>
                             </div>
                         </div>
@@ -174,7 +170,7 @@
                                         성인
                                     </div>
                                     <div class="col-auto">
-                                        <input type="text" class="col-lg-auto form-control form-control-sm" style="width: 80px;" readonly="" th:value="${refndMng.nopeAdult}">
+                                        <input type="text" class="col-lg-auto form-control form-control-sm" style="width: 80px;" readonly="" th:value="${aplyVo.nopeAdult}">
                                     </div>
                                     <div class="col-auto p-l-0 p-r-0">
                                         명
@@ -183,7 +179,7 @@
                                         아동
                                     </div>
                                     <div class="col-auto">
-                                        <input type="text" class="col-lg-auto form-control form-control-sm" style="width: 80px;" readonly="" th:value="${refndMng.nopeChil}">
+                                        <input type="text" class="col-lg-auto form-control form-control-sm" style="width: 80px;" readonly="" th:value="${aplyVo.nopeChil}">
                                     </div>
                                     <div class="col-auto p-l-0 p-r-0">
                                         명
@@ -192,7 +188,7 @@
                                         유아
                                     </div>
                                     <div class="col-auto">
-                                        <input type="text" class="col-lg-auto form-control form-control-sm" style="width: 80px;" readonly="" th:value="${refndMng.nopeInfnt}">
+                                        <input type="text" class="col-lg-auto form-control form-control-sm" style="width: 80px;" readonly="" th:value="${aplyVo.nopeInfnt}">
                                     </div>
                                     <div class="col-auto p-l-0 p-r-0">
                                         명
@@ -204,7 +200,7 @@
                     <div class="row form-group mb-3">
                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>이용목적</strong></label>
                         <div class="col-12">
-                            <textarea rows="5" cols="5" class="form-control form-control-sm" readonly=""><th:block th:text="${refndMng.utztnPrps}"/></textarea>
+                            <textarea rows="5" cols="5" class="form-control form-control-sm" readonly=""><th:block th:text="${aplyVo.utztnPrps}"/></textarea>
                         </div>
                     </div>
                 </div>
@@ -218,7 +214,7 @@
                             <div class="mb-0 form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>이름</strong></label>
                                 <div class="col-12">
-                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${refndMng.aplcntNm}">
+                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${aplyVo.aplcntNm}">
                                 </div>
                             </div>
                         </div>
@@ -226,7 +222,7 @@
                             <div class="mb-0 form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>휴대전화</strong></label>
                                 <div class="col-12">
-                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${refndMng.aplcntMoblphon}">
+                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${aplyVo.aplcntMoblphon}">
                                 </div>
                             </div>
                         </div>
@@ -236,7 +232,7 @@
                             <div class="mb-0 form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>이메일</strong></label>
                                 <div class="col-12">
-                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${refndMng.aplcntEml}">
+                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${aplyVo.aplcntEml}">
                                 </div>
                             </div>
                         </div>
@@ -252,7 +248,7 @@
                             <div class="mb-0 form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>결제방법</strong></label>
                                 <div class="col-12">
-                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${refndMng.stlmMthdCdNm}">
+                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${aplyVo.stlmMthdCdNm}">
                                 </div>
                             </div>
                         </div>
@@ -260,7 +256,7 @@
                             <div class="mb-0 form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>입금계좌</strong></label>
                                 <div class="col-12">
-                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${refndMng.bankCdNm}+' '+${refndMng.bacntNo}+' '+${refndMng.dpstrNm}">
+                                                                        <input type="text" class="form-control form-control-sm" readonly="" th:value="${aplyVo.dpstBankCdNm+' '+aplyVo.dpstBacnt}">
                                 </div>
                             </div>
                         </div>
@@ -270,7 +266,7 @@
                             <div class="mb-0 form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>입금자명</strong></label>
                                 <div class="col-12">
-                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${refndMng.pyrNm}">
+                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${aplyVo.pyrNm}">
                                 </div>
                             </div>
                         </div>
@@ -278,7 +274,7 @@
                             <div class="mb-0 form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>입금금액</strong></label>
                                 <div class="col-12">
-                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${#numbers.formatInteger(refndMng.dpstAmt, 0, 'COMMA') + '원'}">
+                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${#numbers.formatInteger(aplyVo.dpstAmt, 0, 'COMMA') + '원'}">
                                 </div>
                             </div>
                         </div>
@@ -288,7 +284,7 @@
                             <div class="mb-0 form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>입금일</strong></label>
                                 <div class="col-12">
-                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${refndMng.dpstDe}">
+                                    <input type="text" class="form-control form-control-sm" readonly="" th:value="${aplyVo.dpstDe}">
                                 </div>
                             </div>
                         </div>
@@ -296,64 +292,62 @@
                 </div>
 
                 <!-- 환불정보 -->
-                <div class="card-header p-t-0 p-b-0">
+                <div class="card-header p-t-0 p-b-0" th:if ="${aplyVo.stlmSttsCd} == '161104'">
                     <h3 class="sub-title"><strong>환불정보</strong></h3>
                 </div>
-                <div class="card-block-small p-t-0">
+                <div class="card-block-small p-t-0" th:if ="${aplyVo.stlmSttsCd} == '161104'" >
                     <div class="row">
                         <div class="col-12 col-lg-6 mb-3">
                             <div class="mb-0 row form-group">
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="rfndBankCd"><strong>환불계좌</strong></label>
                                 <div class="col-12 row m-r-0 m-l-0">
                                     <div class="col-3 p-l-0 p-r-0">
-                                        <span kattr:select_code="rfndBankCd" id="rfndBankCd" grpCd="154" firstOptTxt="- 선택 -" th:attr="selectedCd=${refndMng.rfndBankCd}" addClass="form-select form-select-sm form-control-sm" disabled=""></span>
+                                        <span kattr:select_code="rfndBankCd" id="rfndBankCd" grpCd="154" firstOptTxt="- 선택 -" th:attr="selectedCd=${aplyVo.rfndBankCd}" addClass="form-select form-select-sm form-control-sm" disabled=""></span>
                                     </div>
                                     <div class="col-6 p-r-0">
-                                        <input type="text" class="form-control form-control-sm" name="rfndBacnt" id="rfndBacnt" readonly="" th:value="${refndMng.rfndBacnt}">
+                                        <input type="text" class="form-control form-control-sm" name="rfndBacnt" id="rfndBacnt" readonly="" th:value="${aplyVo.rfndBacnt}">
                                     </div>
                                     <div class="col-3 p-r-0">
-                                        <input type="text" class="form-control form-control-sm" name="rfndPyrNm" id="rfndPyrNm" readonly="" th:value="${refndMng.rfndPyrNm}">
+                                        <input type="text" class="form-control form-control-sm" name="rfndPyrNm" id="rfndPyrNm" readonly="" th:value="${aplyVo.rfndPyrNm}">
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <th:block th:if ="${refndMng.stlmSttsCd} == '161104'">
+                        
+                        <!-- <th:block th:if ="${aplyVo.stlmSttsCd} == '161104'"> -->
                             <div class="col-12 col-lg-6 mb-3">
                                 <div class="mb-0 form-group">
                                     <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="rfndAmt"><strong>환불금액</strong></label>
                                     <div class="col-12">
-                                        <input type="text" class="form-control form-control-sm" name="rfndAmt" id="rfndAmt" readonly="" th:value="${refndMng.rfndAmt}">
+                                        <input type="text" class="form-control form-control-sm" name="rfndAmt" id="rfndAmt" readonly="" th:value="${aplyVo.rfndAmt}">
                                     </div>
                                 </div>
                             </div>
-                        </th:block>
+<!--                         </th:block> -->
                     </div>
-                    <th:block th:if ="${refndMng.stlmSttsCd} == '161104'">
+<!--                     <th:block th:if ="${aplyVo.stlmSttsCd} == '161104'"> -->
                         <div class="row">
                             <div class="col-12 col-lg-6 mb-3">
                                 <div class="mb-0 form-group">
                                     <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="rfndDe"><strong>환불일</strong></label>
                                     <div class="col-12">
-                                        <input type="text" class="form-control form-control-sm" name="rfndDe" id="rfndDe" readonly="" th:value="${refndMng.rfndDe}">
+                                        <input type="text" class="form-control form-control-sm" name="rfndDe" id="rfndDe" readonly="" th:value="${aplyVo.rfndDe}">
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </th:block>
+<!--                     </th:block> -->
                 </div>
             </div>
-
             <div class="tab-pane" id="managerInfo" role="tabpanel"></div>
-
-
     </div>
 </form>
 <div class="card-block-small">
-    <th:block th:if ="${refndMng.stlmSttsCd} == '161103'">
+    <th:block th:if ="${aplyVo.stlmSttsCd} == '161103'">
         <button class="btn btn-disabled m-r-5" onclick="fn_openRefndCancelModal()">환불요청취소</button>
         <button class="btn btn-primary" onclick="fn_openRefndCompleteModal()">환불완료</button>
     </th:block>
-    <th:block th:if ="${refndMng.stlmSttsCd} == '161104'">
+    <th:block th:if ="${aplyVo.stlmSttsCd} == '161104'">
         <button class="btn btn-primary" onclick="updateRefndRollback()">환불완료취소</button>
     </th:block>
 </div>
@@ -370,7 +364,7 @@
 
     // 환불완료 팝업
     /*<![CDATA[*/
-    var refndCancelPopupUrl = "/mng/refndMng/refndCompletePopup.html?"+"aplyid=" + /*[[${refndMng.aplyid}]]*/null;
+    var refndCancelPopupUrl = "/mng/refndMng/refndCompletePopup.html?"+"aplyid=" + /*[[${aplyVo.aplyid}]]*/null;
     /*]]>*/
     var refndCancelAddModal;
 
@@ -384,7 +378,7 @@
     }
 
     // 환불요청취소 팝업
-    var resveCancelPopupUrl = "/mng/refndMng/refndCancelPopup.html?"+"aplyid=" + /*[[${refndMng.aplyid}]]*/null;
+    var resveCancelPopupUrl = "/mng/refndMng/refndCancelPopup.html?"+"aplyid=" + /*[[${aplyVo.aplyid}]]*/null;
     var resveCancelAddModal;
 
     var fn_openRefndCancelModal = () => {

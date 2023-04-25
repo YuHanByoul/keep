@@ -362,11 +362,138 @@
         )
     </insert>
 
-     <!-- 추진일정 목록 삭제 -->
+    <!-- 추진일정 목록 삭제 -->
     <delete id="deleteEduExprt" parameterType="front.EduInstVo" >
         /* EduInstDao.deleteEduExprt*/
         DELETE FROM
             TB_SEE_EXPRT
         WHERE APLYID = #{aplyid}
     </delete>
+
+    <!-- 교육프로그램 목록 조회 -->
+    <select id="selectSeePrgrmList" parameterType="front.EduInstVo" resultType="front.SeePrgrmVo">
+        /* EduInstDao.selectSeePrgrmList*/
+        SELECT
+            A.APLYID
+          , B.PRGRMID
+          , B.PRGRM_NM
+          , B.RFRNC_PRGRMID
+          , B.EDU_SBJCT
+          , B.EDU_TRGT
+          , B.EDU_NOPE
+          , B.EDU_MTHD
+          , B.EDU_RND
+          , B.EDU_PLC
+          , B.ETRFEE
+          , B.PRGRM_STTS_CD
+          , B.MDFCN_DT
+          , B.MDFRID
+          , B.REG_DT
+          , B.RGTRID
+        FROM
+            TB_SEE_ENV_EDU_INST A
+        LEFT OUTER JOIN
+            TB_SEE_PRGRM B ON A.APLYID = B.APLYID
+        WHERE  1=1
+        AND A.APLYID = #{aplyid}
+    </select>
+
+    <!-- 교육프로그램 등록 -->
+    <insert id="insertSeePrgrm" parameterType="front.SeePrgrmVo">
+        /* EduInstDao.insertSeePrgrm */
+        INSERT INTO TB_SEE_PRGRM
+        (
+             APLYID
+           , PRGRM_NM
+           , RFRNC_PRGRMID
+           , EDU_SBJCT
+           , EDU_TRGT
+           , EDU_NOPE
+           , EDU_MTHD
+           , EDU_RND
+           , EDU_PLC
+           , ETRFEE
+           , PRGRM_STTS_CD
+           , MDFCN_DT
+           , MDFRID
+           , REG_DT
+           , RGTRID
+        )VALUES
+        (
+             #{aplyid      }
+           , #{prgrmNm     }
+           , #{rfrncPrgrmid}
+           , #{eduSbjct    }
+           , #{eduTrgt     }
+           , #{eduNope     }
+           , #{eduMthd     }
+           , #{eduRnd      }
+           , #{eduPlc      }
+           , #{etrfee      }
+           , #{prgrmSttsCd }
+           , NOW()
+           , #{user.userid}
+           , NOW()
+           , #{user.userid}
+
+        )
+    </insert>
+
+    <!-- 교육프로그램 삭제 -->
+    <delete id="deleteSeePrgrm" parameterType="front.SeePrgrmVo" >
+        /* EduInstDao.deleteSeePrgrm */
+        DELETE FROM
+            TB_SEE_PRGRM
+        WHERE APLYID = #{aplyid}
+    </delete>
+
+    <!-- 지정프로그램 목록 조회 -->
+    <select id="selectDsgnPrgrmList" parameterType="front.EduInstVo" resultType="front.SeePrgrmVo">
+        /* EduInstDao.selectDsgnPrgrmList*/
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            PRGRMID     AS RFRNC_PRGRMID
+          , PRGRM_NM    AS RFRNC_PRGRM_NM
+          , DSGN_NO
+          , MDFCN_DT
+        FROM TB_ASS_PRGRM
+        WHERE STTS_CD = '111111'
+        AND   APLCNTID = #{aplcntid}
+        <if test="searchPrgrmNm!= null and searchPrgrmNm != '' ">
+            AND A.PRGRM_NM LIKE CONCAT('%',#{searchPrgrmNm},'%')
+        </if>
+        <if test="searchDsgnNo!= null and searchDsgnNo != '' ">
+            AND A.DSGN_NO LIKE CONCAT('%',#{searchDsgnNo},'%')
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!-- 교육시설 조회-->
+    <select id="selectSeeFclt" parameterType="front.EduInstVo" resultType="front.EduInstVo">
+        /* EduInstDao.selectSeeFclt*/
+        SELECT
+            A.APLYID
+          , B.APLYID    AS FCLT_KEY
+          , B.RENT_YN
+          , B.RENT_PRD
+          , B.TOTAR
+          , B.STY_FCLT_HOLD_YN
+          , B.STY_FCLT_AR
+          , B.STY_FCLT_NOPE
+          , B.MDFCN_DT
+          , B.MDFRID
+          , B.REG_DT
+          , B.RGTRID
+        FROM
+            TB_SEE_ENV_EDU_INST A
+        LEFT OUTER JOIN
+            TB_SEE_FCLT B ON A.APLYID = B.APLYID
+        WHERE 1=1
+        AND A.APLYID = #{aplyid}
+    </select>
+
+    <!-- 교육시설 조회-->
+    <!-- 교육시설 조회-->
+    <!-- 교육시설 조회-->
+
 </mapper>

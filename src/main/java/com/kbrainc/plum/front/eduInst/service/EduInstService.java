@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import com.kbrainc.plum.front.eduInst.model.EduExprtVo;
 import com.kbrainc.plum.front.eduInst.model.EduInstVo;
 import com.kbrainc.plum.front.eduInst.model.SchdlVo;
+import com.kbrainc.plum.front.eduInst.model.SeePrgrmVo;
 
 /**
 * 사회환경교육기관 Service
@@ -156,5 +157,53 @@ public interface EduInstService {
 	* @return int
 	*/
 	public int insertEduExprt(@Valid EduInstVo eduInstVo) throws Exception;
+
+	/**
+	* 교육프로그램 목록 조회
+	*
+	* @Title : selectSeePrgrmList
+	* @Description : 교육프로그램 목록 조회
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return List<SeePrgrmVo>
+	*/
+	public List<SeePrgrmVo> selectSeePrgrmList(EduInstVo eduInstVo) throws Exception;
+
+	/**
+	* 지정 프로그램 목록 조회
+	*
+	* @Title : selectDsgnPrgrmList
+	* @Description : 지정 프로그램 목록 조회
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return List<SeePrgrmVo>
+	*/
+	public List<SeePrgrmVo> selectDsgnPrgrmList(EduInstVo eduInstVo) throws Exception;
+
+	/**
+	* 교육프로그램보유현황 등록
+	*
+	* @Title : insertHldngStts
+	* @Description : 교육프로그램보유현황 등록
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertHldngStts(EduInstVo eduInstVo) throws Exception;
+
+	/**
+	* 시설 개요 조회
+	*
+	* @Title : selectSeeFclt
+	* @Description : 시설 개요 조회
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return EduInstVo
+	*/
+	public EduInstVo selectSeeFclt(EduInstVo eduInstVo) throws Exception;
 
 }

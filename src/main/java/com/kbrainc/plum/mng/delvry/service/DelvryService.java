@@ -158,4 +158,15 @@ public interface DelvryService {
     */
     public List<FileVo> selectDelvryAplyFileList(DelvryAplyVo delvryAplyVo) throws Exception;
     
+    /**
+    * 교부신청 하지않은 공모 신청자 목록 조회. 
+    *
+    * @Title : selectAplyList
+    * @Description : TODO
+    * @param delvryAplyVo
+    * @return
+    * @throws Exception
+    * @return List<DelvryAplyVo>
+     */
+    public List<DelvryAplyVo> selectAplyList(DelvryAplyVo delvryAplyVo) throws Exception;
 }

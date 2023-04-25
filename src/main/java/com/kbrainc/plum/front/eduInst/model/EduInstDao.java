@@ -179,5 +179,62 @@ public interface EduInstDao {
 	*/
 	public void deleteEduExprt(EduInstVo eduInstVo) throws Exception;
 
+	/**
+	* 교육프로그램 목록 조회
+	*
+	* @Title : selectSeePrgrmList
+	* @Description : 교육프로그램 목록 조회
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return List<SeePrgrmVo>
+	*/
+	public List<SeePrgrmVo> selectSeePrgrmList(EduInstVo eduInstVo) throws Exception;
+
+	/**
+	* 교육프로그램 등록
+	*
+	* @Title : insertSeePrgrm
+	* @Description : 교육프로그램 등록
+	* @param eduInstVo
+	* @throws Exception
+	* @return void
+	*/
+	public int insertSeePrgrm(SeePrgrmVo seePrgrmVo) throws Exception;
+
+	/**
+	* 교육프로그램 삭제
+	*
+	* @Title : deleteSeePrgrm
+	* @Description : 교육프로그램 삭제
+	* @param eduInstVo
+	* @throws Exception
+	* @return void
+	*/
+	public void deleteSeePrgrm(EduInstVo eduInstVo) throws Exception;
+
+	/**
+	* 지정 프로그램 목록 조회
+	*
+	* @Title : selectDsgnPrgrmList
+	* @Description : 지정 프로그램 목록 조회
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return List<SeePrgrmVo>
+	*/
+	public List<SeePrgrmVo> selectDsgnPrgrmList(EduInstVo eduInstVo) throws Exception;
+
+	/**
+	* 시설 개요 조회
+	*
+	* @Title : selectSeeFclt
+	* @Description : 시설 개요 조회
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return EduInstVo
+	*/
+	public EduInstVo selectSeeFclt(EduInstVo eduInstVo) throws Exception;
 
 }

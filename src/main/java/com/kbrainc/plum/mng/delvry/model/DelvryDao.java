@@ -200,5 +200,28 @@ public interface DelvryDao {
     * @throws Exception 예외
     */
     public List<FileVo> selectDelvryAplyFileList(DelvryAplyVo delvryAplyVo) throws Exception;
+
+    /**
+    * 교부신청 하지않은 공모 신청자 목록 조회. 
+    *
+    * @Title : selectAplyList
+    * @Description : TODO
+    * @param delvryAplyVo
+    * @return
+    * @throws Exception
+    * @return List<DelvryAplyVo>
+     */
+    public List<DelvryAplyVo> selectAplyList(DelvryAplyVo delvryAplyVo) throws Exception;
+    
+    /**
+    * 교부 신청
+    *
+    * @Title : insertDelvryAply
+    * @Description : 교부 신청
+    * @param delvryAplyVo DelvryAplyVo 객체
+    * @return int
+    * @throws Exception 예외
+    */
+    public int insertDelvryAply(DelvryAplyVo delvryAplyVo) throws Exception;
     
 }
