@@ -94,7 +94,7 @@ public class RcpmnyAfterServiceImpl extends PlumAbstractServiceImpl implements R
         resInt += rcpmnyAfterDao.updateDsptCheckCancel(resveReqstVo);
         ResveReqstVo paramVo = new ResveReqstVo();
         // 상태변경이력 추가
-        paramVo.setAplyid(resveReqstVo.getAplyid());
+        paramVo.setAplyids(resveReqstVo.getAplyids());
         paramVo.setUser(resveReqstVo.getUser());
         resInt += resveReqstDao.insertHstry(paramVo);
         return resInt;

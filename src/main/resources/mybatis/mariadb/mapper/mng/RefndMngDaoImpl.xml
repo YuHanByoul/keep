@@ -38,13 +38,21 @@
           ,A.REG_DT
         FROM
           TB_FCL_SPCE_APLY A
-          INNER JOIN (SELECT B.APLYID, D.SPCEID, MIN(D.BGNG_DT) AS BGNG_DT, B.ALLDAY_YN,
-          CASE
-          WHEN B.ALLDAY_YN = 'N' THEN MAX(D.END_DT)
-          ELSE MAX(D.BGNG_DT) END AS END_DT
-          FROM TB_FCL_APLY_RSVTDE B
-          LEFT JOIN TB_FCL_SPCE_RSVTDE D ON B.RSVTDEID = D.RSVTDEID
-          GROUP BY APLYID) B
+          INNER JOIN (
+              SELECT 
+                  B.APLYID
+                  , D.SPCEID
+                  , MIN(D.BGNG_DT) AS BGNG_DT
+                  , B.ALLDAY_YN
+                  , CASE  WHEN B.ALLDAY_YN = 'N' THEN MAX(D.END_DT)
+                          ELSE MAX(D.BGNG_DT) 
+                    END AS END_DT
+                FROM 
+                  TB_FCL_APLY_RSVTDE B
+                  LEFT JOIN TB_FCL_SPCE_RSVTDE D 
+                  ON B.RSVTDEID = D.RSVTDEID
+                GROUP BY APLYID
+          ) B
           ON A.APLYID = B.APLYID
           INNER JOIN TB_FCL_SPCE E
           ON B.SPCEID = E.SPCEID
@@ -112,8 +120,48 @@
     <!-- 환불요청 취소 처리 -->
     <update id="updateRefndCancel" parameterType="ResveReqstVo" >
         /* RefndMngDao.updateResveCancel */
-        UPDATE TB_FCL_SPCE_APLY A
-          LEFT OUTER JOIN (
+       UPDATE TB_FCL_SPCE_APLY       
+          SET
+             APLY_STTS_CD   = '160102' 
+             ,STLM_STTS_CD  = '161102'
+             ,DPST_IDNTY_DT = NOW()
+             ,CNCL_DT       = NULL
+             ,CNCL_RSN_CD   = NULL
+             ,RFND_DMND_DT  = NULL 
+             ,RFND_DE       = NULL
+             ,RFND_AMT      = null
+             ,RFND_DMND_AMT = NULL 
+             ,RFND_CMPTN_DT = NULL 
+             ,MDFRID        = #{user.userid}
+             ,MDFCN_DT      = NOW()
+        WHERE A.APLYID IN 
+             (
+              <foreach item="aplyid" collection="aplyids" separator=",">
+                #{aplyid}
+              </foreach>
+              )
+    </update>
+
+    <!-- 환불완료취소 처리 -->
+    <update id="updateRefndRollback" parameterType="ResveReqstVo" >
+        /* RefndMngDao.updateRefndRollback */
+        UPDATE TB_FCL_SPCE_APLY SET
+             CNCL_RSN_CD                    = ''
+             ,STLM_STTS_CD                    = '161103'
+             ,RFND_REJECT_RSN                    = ''
+             ,CNCL_DT                 = null
+             ,MDFRID                 = #{user.userid}
+             ,MDFCN_DT                 = NOW()
+        WHERE APLYID = #{aplyid}
+    </update>
+    
+    <!-- 환불요청취소로 예약 승인 변경건중 예약이 없는  -->
+    <select id="selectSuitableAplyids" parameterType="ResveReqstVo" resultType="String">
+        /* RefndMngDao.selectSuitableAplyids */    
+          SELECT 
+               A.APLYID
+             FROM
+               (
                 SELECT  
                     A.APLYID
                     ,COUNT(*) AS CNT 
@@ -139,38 +187,11 @@
                        )
                    )
                    GROUP BY A.APLYID
-          ) B ON A.APLYID = B.APLYID 
-          SET
-             APLY_STTS_CD   = CASE WHEN B.CNT > 0 THEN '160103' ELSE '160102' END 
-             ,STLM_STTS_CD  = '161102'
-             ,DPST_IDNTY_DT = CASE WHEN B.CNT > 0 THEN NULL  ELSE NOW() END
-             ,CNCL_DT       = CASE WHEN B.CNT > 0 THEN NOW() ELSE NULL END
-             ,CNCL_RSN_CD   = CASE WHEN B.CNT > 0 THEN '243101' ELSE NULL END
-             ,RFND_DMND_DT  = NULL 
-             ,RFND_DE       = NULL
-             ,RFND_AMT      = null
-             ,RFND_DMND_AMT = NULL 
-             ,RFND_CMPTN_DT = NULL 
-             ,MDFRID                  = #{user.userid}
-             ,MDFCN_DT                = NOW()
-        WHERE A.APLYID IN 
-             (
-              <foreach item="aplyid" collection="aplyids" separator=",">
-                #{aplyid}
-              </foreach>
-              )
-    </update>
-
-    <!-- 환불완료취소 처리 -->
-    <update id="updateRefndRollback" parameterType="ResveReqstVo" >
-        /* RefndMngDao.updateRefndRollback */
-        UPDATE TB_FCL_SPCE_APLY SET
-             CNCL_RSN_CD                    = ''
-             ,STLM_STTS_CD                    = '161103'
-             ,RFND_REJECT_RSN                    = ''
-             ,CNCL_DT                 = null
-             ,MDFRID                 = #{user.userid}
-             ,MDFCN_DT                 = NOW()
-        WHERE APLYID = #{aplyid}
-    </update>
+               ) A
+               WHERE 1=1
+                 AND A.CNT <![CDATA[<=]]>0
+     </select>
+    
+    
+    
 </mapper>

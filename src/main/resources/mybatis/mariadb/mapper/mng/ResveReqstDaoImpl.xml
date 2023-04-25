@@ -414,6 +414,17 @@
               ,MDFRID 
               ,NOW()
               ,#{user.userid}
-        FROM TB_FCL_SPCE_APLY WHERE APLYID = #{aplyid}
+        FROM TB_FCL_SPCE_APLY
+       WHERE 1=1
+         <if test="aplyid  != null and aplyid != ''">
+          AND APLYID = #{aplyid}
+         </if>
+         <if test="aplyids  != null and aplyids != ''">
+            AND A.APLYID IN (
+              <foreach item="aplyid" collection="aplyids" separator=",">
+               #{aplyid}
+              </foreach>
+             )
+          </if>
     </insert>
 </mapper>

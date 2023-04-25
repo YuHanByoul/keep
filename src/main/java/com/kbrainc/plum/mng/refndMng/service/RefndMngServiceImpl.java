@@ -96,14 +96,18 @@ public class RefndMngServiceImpl extends PlumAbstractServiceImpl implements Refn
     @Transactional
     public int updateRefndCancel(ResveReqstVo resveReqstVo) throws Exception{
         int resInt = 0 ;
-        resInt += refndMngDao.updateRefndCancel(resveReqstVo);
-        ResveReqstVo paramVo = new ResveReqstVo();
-        // 상태변경이력 추가
-        paramVo.setAplyid(resveReqstVo.getAplyid());
-        paramVo.setUser(resveReqstVo.getUser());
-        resInt += resveReqstDao.insertHstry(paramVo);
-        return resInt;
         
+        String [] aplyids = refndMngDao.selectSuitableAplyids(resveReqstVo);
+        
+        if(aplyids.length > 0 ) {
+            resInt += refndMngDao.updateRefndCancel(resveReqstVo);
+            ResveReqstVo paramVo = new ResveReqstVo();
+            // 상태변경이력 추가
+            paramVo.setAplyid(resveReqstVo.getAplyid());
+            paramVo.setUser(resveReqstVo.getUser());
+            resInt += resveReqstDao.insertHstry(paramVo);
+        }
+        return resInt;
     }
 
     /**
