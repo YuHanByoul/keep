@@ -91,12 +91,20 @@
         <if test="searchInstType != null and searchInstType != '' and searchInstType == 'other'">
             AND (F.INST_CD != 'epa' OR F.INST_CD IS NULL)
         </if>
+        <if test="searchBgngDt != null and searchBgngDt != '' and searchEndDt != null and searchEndDt != ''">
+            AND (
+                DATE_FORMAT(A.BGNG_DT, '%Y-%m-%d') BETWEEN #{searchBgngDt} AND #{searchEndDt} 
+                OR DATE_FORMAT(A.END_DT, '%Y-%m-%d') BETWEEN #{searchBgngDt} AND #{searchEndDt}
+            )
+        </if>
+        <!--  
         <if test="searchBgngDt != null and searchBgngDt != ''">
             AND A.BGNG_DT <![CDATA[>=]]> CONCAT(#{searchBgngDt}, ' 00:00:00')
         </if>
         <if test="searchEndDt != null and searchEndDt != ''">
             AND A.END_DT <![CDATA[<=]]> CONCAT(#{searchEndDt}, ' 23:59:59')
         </if>
+        -->
         GROUP BY
             B.JNTPURCHSID
         <include refid="PaginationMapper.footer"/>
