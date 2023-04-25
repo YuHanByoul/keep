@@ -108,7 +108,9 @@ public class DsgnPrgrmController {
     public Map<String, Object> selectDsgnSttusList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
     	Map<String, Object> response = new HashMap<>();
 
+    	log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@ 1");
     	List<DsgnPrgrmVo> list = dsgnPrgrmService.selectDsgnSttusList(dsgnPrgrmVo);
+    	log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@ 2");
     	if (list.size() > 0) {
     		response.put("totalCount", (list.get(0).getTotalCount()));
     		response.put("pagination", PaginationUtil.getFrontPaginationHtml(list.get(0).getTotalPage(), list.get(0).getPageNumber(), 10));

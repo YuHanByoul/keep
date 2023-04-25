@@ -804,40 +804,35 @@ public class DsgnPrgrmController {
      */
     @RequestMapping(value = "/mng/dsgnPrgrm/insertDsgnHstry.do")
     @ResponseBody
-    public Map<String, Object> insertDsgnHstry(@Valid DsgnPrgrmVo dsgnPrgrmVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> insertDsgnHstry(DsgnPrgrmVo dsgnPrgrmVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
 
     	Map<String, Object> resultMap = new HashMap<String, Object>();
     	int retVal = 0;
 
     	dsgnPrgrmVo.setUser(user);
 
-    	if (bindingResult1.hasErrors()) {
-            FieldError fieldError = bindingResult1.getFieldError();
-            if (fieldError != null) {
-                resultMap.put("msg", fieldError.getDefaultMessage());
-            }
-            return resultMap;
+
+    	if("".equalsIgnoreCase(dsgnPrgrmVo.getChkVal()) )
+        {
         }
 
-    	if("".equalsIgnoreCase(dsgnPrgrmVo.getChkVal()) ){
+		retVal = dsgnPrgrmServiceImpl.selectDsgnNoDupChk(dsgnPrgrmVo);
+		if(retVal > 0) {
 
-    		retVal = dsgnPrgrmServiceImpl.selectDsgnNoDupChk(dsgnPrgrmVo);
-    		if(retVal > 0) {
-    			resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-    			resultMap.put("msg", "중복되는 지정번호가 존재합니다. 지정번호를 변경 후 다시 시도(저장)하시기 바랍니다.");
-    		}
-    		return resultMap;
-    	}
-
-		retVal = dsgnPrgrmServiceImpl.insertDsgnHstry(dsgnPrgrmVo);
-
-		if (retVal > 0) {
-			resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-			resultMap.put("msg", "저장에 성공하였습니다.");
-		} else {
 			resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-			resultMap.put("msg", "저장에 실패했습니다.");
+			resultMap.put("msg", "중복되는 지정번호가 존재합니다. 지정번호를 변경 후 다시 시도(저장)하시기 바랍니다.");
+			return resultMap;
 		}
+
+    	retVal = dsgnPrgrmServiceImpl.insertDsgnHstry(dsgnPrgrmVo);
+
+    	if (retVal > 0) {
+    		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+    		resultMap.put("msg", "저장에 성공하였습니다.");
+    	} else {
+    		resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+    		resultMap.put("msg", "저장에 실패했습니다.");
+    	}
 
     	return resultMap;
     }
