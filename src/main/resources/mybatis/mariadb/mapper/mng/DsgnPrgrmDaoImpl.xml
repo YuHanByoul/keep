@@ -68,8 +68,6 @@
             DISTINCT A.PRGRMID
           , Z.HSTRYID
           , A.INSTID
-          --, A.DSGN_CYCL
-          --, A.DSGN_NO
           , Z.DSGN_CYCL
           , Z.DSGN_NO
           , A.PRGRM_NM
@@ -169,7 +167,7 @@
         </if>
         <!-- 차수 -->
         <if test="searchDsgnCycl != null and searchDsgnCycl != ''">
-            AND A.DSGN_CYCL = #{searchDsgnCycl}
+            AND Z.DSGN_CYCL = #{searchDsgnCycl}
         </if>
         <include refid="PaginationMapper.footer"/>
     </select>
@@ -181,8 +179,8 @@
             DISTINCT A.PRGRMID
           , Z.HSTRYID
           , A.INSTID
-          , A.DSGN_CYCL
-          , A.DSGN_NO
+          , Z.DSGN_CYCL
+          , Z.DSGN_NO
           , A.PRGRM_NM
           , A.INST_NM
           , ( SELECT STTS_CD FROM TB_ASS_DSGN_HSTRY WHERE PRGRMID = A.PRGRMID AND HSTRYID = Z.HSTRYID) AS STTS_CD
@@ -201,6 +199,8 @@
                 ZZ.PRGRMID
               , MAX(ZZ.HSTRYID) AS HSTRYID
               , ZZ.STTS_CD    AS STTS_CD
+              , ZZ.DSGN_CYCL
+              , ZZ.DSGN_NO
             FROM TB_ASS_DSGN_HSTRY ZZ
             WHERE 1=1
             GROUP BY ZZ.PRGRMID
@@ -262,7 +262,7 @@
         </if>
         <!-- 키워드.지정번호 -->
         <if test="searchKeyword != null and searchKeyword != '' and searchType == 'dsgnNo'">
-            AND A.DSGN_NO LIKE CONCAT('%',#{searchKeyword},'%')
+            AND Z.DSGN_NO LIKE CONCAT('%',#{searchKeyword},'%')
         </if>
         <!-- 지정상태  -->
         <if test="searchSttsCd != null and searchSttsCd != ''">
@@ -278,7 +278,7 @@
         </if>
         <!-- 차수 -->
         <if test="searchDsgnCycl != null and searchDsgnCycl != ''">
-            AND A.DSGN_CYCL = #{searchDsgnCycl}
+            AND Z.DSGN_CYCL = #{searchDsgnCycl}
         </if>
 
     </select>
