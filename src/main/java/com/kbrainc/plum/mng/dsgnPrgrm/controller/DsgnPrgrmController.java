@@ -479,7 +479,7 @@ public class DsgnPrgrmController {
     /**
      * 운영결과 수정
      *
-     * @Title       : updateDsgnHstry
+     * @Title       : updateOperRslt
      * @Description : 운영결과 수정
      * @param DsgnPrgrmVo 객체
      * @param bindingResult 유효성검증결과

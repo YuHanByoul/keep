@@ -10,6 +10,7 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -1965,6 +1966,14 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     @Override
 	public List<DsgnPrgrmVo> selectCsltngList(AsgsysSrngVo asgsysSrngVo) throws Exception{
 		return asgsysSrngDao.selectCsltngList(asgsysSrngVo);
+	}
+
+	public int insertDsgnPrgrm(@Valid AsgsysSrngVo asgsysSrngVo) {
+		//지정이력생성
+		//운영결과 차수 생성 3년치
+		//지정프로그램 상태 업데이트
+
+		return 0;
 	}
 
 }
