@@ -50,9 +50,6 @@ public class MyInfoController {
     @Resource(name = "front.myInfoServiceImpl")
     private MyInfoService myInfoService;
     
-    @Value("${crypto.key}")
-    private String encryptKey;
-    
     /**
     * 내 정보 수정 페이지
     *
@@ -71,11 +68,13 @@ public class MyInfoController {
         memberVo.setUser(userVo);
         MemberVo resultVo = myInfoService.selectMemberInfo(memberVo);
         
-        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
-        encryptor.setSaltGenerator(new RandomSaltGenerator());
-        encryptor.setPassword(encryptKey);
-        encryptor.setAlgorithm("PBEWithMD5AndDES");
-        String decStr = encryptor.decrypt(resultVo.getGndr());
+        ScpDbAgent agt = new ScpDbAgent();
+        String decStr = "";
+        if (System.getenv("PC_KIND") != null) {
+            decStr = agt.ScpDecStr(CommonUtil.damoScpIniFilePath, "KEY1", resultVo.getGndr());
+        } else {
+            decStr = "M"; // 암호화 모듈을 사용할수 없는 MAC인경우 무조건 남자로 설정.
+        }
         
         resultVo.setGndr(decStr);
         

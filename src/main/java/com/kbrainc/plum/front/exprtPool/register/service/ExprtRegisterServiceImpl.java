@@ -6,6 +6,9 @@ import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.front.exprtPool.register.model.*;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+import com.kbrainc.plum.rte.util.CommonUtil;
+import com.penta.scpdb.ScpDbAgent;
+
 import lombok.RequiredArgsConstructor;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.salt.RandomSaltGenerator;
@@ -36,9 +39,6 @@ public class ExprtRegisterServiceImpl extends PlumAbstractServiceImpl implements
 
     private final ExprtRegisterDao exprtRegisterDao;
     private final FileDao fileDao;
-
-    @Value("${crypto.key}")
-    private String encryptKey;
 
     /**
      * 사용자 기본정보 조회
@@ -107,11 +107,14 @@ public class ExprtRegisterServiceImpl extends PlumAbstractServiceImpl implements
         retVal += exprtRegisterDao.insertActvtRgnCds(actvtRgnCds, exprtRegisterVo.getUser());
         retVal += exprtRegisterDao.insertActvtScopeCds(actvtScopeCds, exprtRegisterVo.getUser());
 
-        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
-        encryptor.setSaltGenerator(new RandomSaltGenerator());
-        encryptor.setPassword(encryptKey);
-        encryptor.setAlgorithm("PBEWithMD5AndDES");
-        String encStr = encryptor.encrypt(exprtRegisterVo.getGndr());
+        ScpDbAgent agt = new ScpDbAgent();
+        String encStr = "";
+        if (System.getenv("PC_KIND") != null) {
+            encStr = agt.ScpEncStr(CommonUtil.damoScpIniFilePath, "KEY1", new String(exprtRegisterVo.getGndr().getBytes(), "UTF-8"));
+        } else {
+            encStr = "5D960651E824637099A116BB4A6BA665A6BA3C25"; // 암호화 모듈을 사용할수 없는 MAC인경우 무조건 남자로 설정.
+        }
+    
         exprtRegisterVo.setGndr(encStr);
 
         retVal += exprtRegisterDao.insertDefaultInfo(exprtRegisterVo);
