@@ -21,8 +21,9 @@
                   , EXTRNL_CRSE_NM AS EDU_NM
                   , EDU_FORM
                   , CRTF_NO AS FNSH_RSLT_CODE
-                  , DATE_FORMAT(FNSH_PRCS_DT, '%Y-%m-%d %H:%i:%s') AS FNSH_PRCS_DT
+                  , DATE_FORMAT(FNSH_PRCS_DT, '%Y-%M-%D %H:%I:%S') AS FNSH_PRCS_DT
                   , CRTF_URL AS FNSH_URL
+                  , USER_ID AS USER_ID
                 FROM
                     EPALMSDB.VW_ENROLL_LEARN_PORTAL
             
@@ -34,13 +35,15 @@
                   , CONCAT(CRS_GRD, ' ', CRS_DVSN) AS EDU_NM
                   , '-' AS EDU_FORM
                   , FNSH_RSLT_CODE
-                  , DATE_FORMAT(FNSH_YMD, '%Y-%m-%d %H:%i:%s') AS FNSH_PRCS_DT
+                  , DATE_FORMAT(FNSH_YMD, '%Y-%M-%D %H:%I:%S') AS FNSH_PRCS_DT
                   , '-' AS FNSH_URL
+                  , MBER_ID AS USER_ID
                 FROM
                     LICENSE.VW_CRS_APLCNT_RSLT
                 ) TB1
             WHERE
                 1 = 1
+                AND TB1.USER_ID = #{user.userid}
         <include refid="PaginationMapper.footer"/>
     </select>
     
@@ -89,10 +92,12 @@
               , CONCAT('환경교육사', ' - ', CRS_GRD) AS QLFC_NM
               , QLFC_RSLT_CODE
               , DATE_FORMAT(LCNC_ACQS_YMD, '%Y-%m-%d') AS LCNC_ACQS_YMD
+              , MBER_ID
             FROM
                 LICENSE.VW_MMBR_QLFC
             WHERE
                 1 = 1
+                AND MBER_ID = #{user.userid}
         <include refid="PaginationMapper.footer"/>
     </select>
     

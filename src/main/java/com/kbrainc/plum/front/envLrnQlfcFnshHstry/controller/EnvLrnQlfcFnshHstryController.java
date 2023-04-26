@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.kbrainc.plum.front.envLrnQlfcFnshHstry.model.EnvLrnQlfcFnshHstryVo;
 import com.kbrainc.plum.front.envLrnQlfcFnshHstry.service.EnvLrnQlfcFnshHstryService;
 import com.kbrainc.plum.front.envWord.model.EnvWordVo;
+import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 
 /**
@@ -129,9 +131,11 @@ public class EnvLrnQlfcFnshHstryController {
     */
     @RequestMapping(value = "/front/envLrnQlfcFnshHstry/selectFnshInfoList.do")
     @ResponseBody
-    public Map<String, Object> selectFnshInfoList(EnvLrnQlfcFnshHstryVo envLrnQlfcFnshHstryVo) throws Exception {
+    public Map<String, Object> selectFnshInfoList(EnvLrnQlfcFnshHstryVo envLrnQlfcFnshHstryVo, @UserInfo UserVo userVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         List<EnvLrnQlfcFnshHstryVo> result = null;
+        
+        envLrnQlfcFnshHstryVo.setUser(userVo);
         
         result =  envLrnQlfcFnshHstryService.selectFnshInfoList(envLrnQlfcFnshHstryVo);
         
@@ -157,9 +161,11 @@ public class EnvLrnQlfcFnshHstryController {
     */
     @RequestMapping(value = "/front/envLrnQlfcFnshHstry/selectQlfcInfoList.do")
     @ResponseBody
-    public Map<String, Object> selectQlfcInfoList(EnvLrnQlfcFnshHstryVo envLrnQlfcFnshHstryVo) throws Exception {
+    public Map<String, Object> selectQlfcInfoList(EnvLrnQlfcFnshHstryVo envLrnQlfcFnshHstryVo, @UserInfo UserVo userVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         List<EnvLrnQlfcFnshHstryVo> result = null;
+        
+        envLrnQlfcFnshHstryVo.setUser(userVo);
         
         result =  envLrnQlfcFnshHstryService.selectQlfcInfoList(envLrnQlfcFnshHstryVo);
         
