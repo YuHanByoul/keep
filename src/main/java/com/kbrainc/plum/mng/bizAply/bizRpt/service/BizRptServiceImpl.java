@@ -1305,4 +1305,21 @@ public class BizRptServiceImpl extends PlumAbstractServiceImpl implements BizRpt
         
         return retVal;
     }
+
+    @Override
+    public List<BizRptVo> selectAllAplyList(BizRptVo bizRptVo) throws Exception {
+        // TODO Auto-generated method stub
+        return bizRptDao.selectAllAplyList(bizRptVo);
+    }
+
+    @Transactional
+    @Override
+    public int insertCancel(BizRptVo bizRptVo) throws Exception {
+        // TODO Auto-generated method stub
+        int retVal = 0;
+        retVal += bizRptDao.insertCancel(bizRptVo);
+        retVal += bizRptDao.updateAplyCancel(bizRptVo);
+        retVal += bizRptDao.updateDelvryInfo(bizRptVo);
+        return retVal;
+    }
 }
