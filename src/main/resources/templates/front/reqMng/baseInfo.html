@@ -406,7 +406,7 @@
 	        var regex = /[^0-9]/g;
 	        var fileNum = fileOjbId.replace(regex, "");
 	        var fileLength = $("#multipleFileUploadSuccess" + fileNum).find("ul > li").length;
-
+	        var isSameFile = false;
             for( i = 0 ; i < objFile.files.length ; i++) {
                 if (fileNum == "3") {
                     if (fileLength+objFile.files.length > 1) {
@@ -419,6 +419,15 @@
                         break;
                     }
                 }
+
+//                 $('#multipleFileUploadSuccess'+fileNum).find("li").each(function(){
+//                 	if ($(this).text().indexOf(objFile.files[i].name) > -1) {
+//                 		alert("동일한 파일이 존재합니다.");
+//                 		isSameFile = true;
+//                 		return false;
+//                 	}
+//                 });
+//                 if (isSameFile) break;
                 
                 formData.append("files", objFile.files[i]);
                 uploadFileCnt++;
@@ -453,18 +462,24 @@
 	                }
 	            });
 	        }
+	        if (detectBrowser() == "other") {
+                $(objFile).val("");
+            } else {
+               $(objFile).replaceWith( $(objFile).clone(true))
+            }
 	    });
 
 	    // 파일삭제
 	    function fn_deleteFileList(fileid, fileIdntfcKey){
 	        if(!confirm("파일을 삭제하시겠습니까?")){return;}
 	        fn_deleteFile(fileid, fileIdntfcKey);
-	        $("#"+fileid).remove();
+// 	        $("#"+fileid).remove();
 	    }
 
 	    // 파일삭제
 	    function fn_deleteFile(fileid, fileIdntfcKey){
 	        var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey;
+	        if(displayWorkProgress(true)){
 	          $.ajax({
 	            url : deleteFileUrl,
 	            type: 'GET',
@@ -482,6 +497,7 @@
 	            error : function (error){
 	            }
 	         })
+	        }
 	    };
 	    
 	    // 중간저장
