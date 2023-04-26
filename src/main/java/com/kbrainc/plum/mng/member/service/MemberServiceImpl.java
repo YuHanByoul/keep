@@ -247,7 +247,7 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
         
         // 비밀번호 암호화
         String hashPassword = "";
-        if (System.getenv("PC_KIND") != null) {
+        if (System.getenv("PC_KIND") == null) {
             ScpDbAgent agt = new ScpDbAgent();
             hashPassword = agt.ScpHashStr(CommonUtil.damoScpIniFilePath, 73, new String(password.getBytes(), "UTF-8")).toLowerCase();
         } else {

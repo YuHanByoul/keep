@@ -70,7 +70,7 @@ public class MyInfoController {
         
         ScpDbAgent agt = new ScpDbAgent();
         String decStr = "";
-        if (System.getenv("PC_KIND") != null) {
+        if (System.getenv("PC_KIND") == null) {
             decStr = agt.ScpDecStr(CommonUtil.damoScpIniFilePath, "KEY1", resultVo.getGndr());
         } else {
             decStr = "M"; // 암호화 모듈을 사용할수 없는 MAC인경우 무조건 남자로 설정.
@@ -184,7 +184,7 @@ public class MyInfoController {
         
         String password = memberVo.getPswd();
         String hashPassword = "";
-        if (System.getenv("PC_KIND") != null) {
+        if (System.getenv("PC_KIND") == null) {
             ScpDbAgent agt = new ScpDbAgent();
             hashPassword = agt.ScpHashStr(CommonUtil.damoScpIniFilePath, 73, new String(password.getBytes(), "UTF-8")).toLowerCase();
         } else {
@@ -206,7 +206,7 @@ public class MyInfoController {
             }else {
                 String changePassword = chgPswdIdnty;
                 String hashChangePassword = "";
-                if (System.getenv("PC_KIND") != null) {
+                if (System.getenv("PC_KIND") == null) {
                     ScpDbAgent agt = new ScpDbAgent();
                     hashChangePassword = agt.ScpHashStr(CommonUtil.damoScpIniFilePath, 73, new String(changePassword.getBytes(), "UTF-8")).toLowerCase();
                 } else {

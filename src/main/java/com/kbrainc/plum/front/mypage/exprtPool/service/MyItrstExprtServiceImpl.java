@@ -54,7 +54,7 @@ public class MyItrstExprtServiceImpl extends PlumAbstractServiceImpl implements 
         List<ExprtVo> exprts = myItrstExprtDao.selectItrstExprtList(exprtVo);
         ScpDbAgent agt = new ScpDbAgent();
         String decStr = "";
-        if (System.getenv("PC_KIND") != null) {
+        if (System.getenv("PC_KIND") == null) {
             for (ExprtVo exprt : exprts) {
                 decStr = agt.ScpDecStr(CommonUtil.damoScpIniFilePath, "KEY1", exprt.getGndr());
                 exprt.setGndr(decStr);

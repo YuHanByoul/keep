@@ -118,7 +118,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         if ("G".equals(loginType)) {
             // 비밀번호 암호화
             try {
-                if (System.getenv("PC_KIND") != null) {
+                if (System.getenv("PC_KIND") == null) {
                     ScpDbAgent agt = new ScpDbAgent();
                     password = agt.ScpHashStr(CommonUtil.damoScpIniFilePath, 73, new String(password.getBytes(), "UTF-8")).toLowerCase();
                 } else {

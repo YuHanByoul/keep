@@ -156,7 +156,7 @@ public class ExpertPoolMngController {
 
         ScpDbAgent agt = new ScpDbAgent();
         String decStr = "";
-        if (System.getenv("PC_KIND") != null) {
+        if (System.getenv("PC_KIND") == null) {
             decStr = agt.ScpDecStr(CommonUtil.damoScpIniFilePath, "KEY1", expertInfo.getGndr());
         } else {
             decStr = "M"; // 암호화 모듈을 사용할수 없는 MAC인경우 무조건 남자로 설정.

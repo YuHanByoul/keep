@@ -856,7 +856,7 @@ public class MemberController {
                 }
                 
                 String encryptPassword = "";
-                if (System.getenv("PC_KIND") != null) {
+                if (System.getenv("PC_KIND") == null) {
                     ScpDbAgent agt = new ScpDbAgent();
                     encryptPassword = agt.ScpHashStr(CommonUtil.damoScpIniFilePath, 73, new String(memberAcntPswdFindVo.getPswd().getBytes(), "UTF-8")).toLowerCase();
                 } else {                    
@@ -922,7 +922,7 @@ public class MemberController {
         MemberVo memberInfo = memberService.selectMemberInfo(memberVo);
         
         String encryptPassword = "";
-        if (System.getenv("PC_KIND") != null) {
+        if (System.getenv("PC_KIND") == null) {
             ScpDbAgent agt = new ScpDbAgent();
             encryptPassword = agt.ScpHashStr(CommonUtil.damoScpIniFilePath, 73, new String(memberVo.getPswd().getBytes(), "UTF-8")).toLowerCase();
         } else {

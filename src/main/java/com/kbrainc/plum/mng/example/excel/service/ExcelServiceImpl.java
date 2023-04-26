@@ -396,7 +396,7 @@ public class ExcelServiceImpl extends PlumAbstractServiceImpl implements ExcelSe
 		//비밀번호
         String password = (String)data.get(2);
         String hashPassword = "";
-        if (System.getenv("PC_KIND") != null) {
+        if (System.getenv("PC_KIND") == null) {
             ScpDbAgent agt = new ScpDbAgent();
             hashPassword = agt.ScpHashStr(CommonUtil.damoScpIniFilePath, 73, new String(password.getBytes(), "UTF-8")).toLowerCase();
         } else {

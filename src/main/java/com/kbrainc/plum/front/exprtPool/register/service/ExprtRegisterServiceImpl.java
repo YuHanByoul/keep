@@ -109,7 +109,7 @@ public class ExprtRegisterServiceImpl extends PlumAbstractServiceImpl implements
 
         ScpDbAgent agt = new ScpDbAgent();
         String encStr = "";
-        if (System.getenv("PC_KIND") != null) {
+        if (System.getenv("PC_KIND") == null) {
             encStr = agt.ScpEncStr(CommonUtil.damoScpIniFilePath, "KEY1", new String(exprtRegisterVo.getGndr().getBytes(), "UTF-8"));
         } else {
             encStr = "5D960651E824637099A116BB4A6BA665A6BA3C25"; // 암호화 모듈을 사용할수 없는 MAC인경우 무조건 남자로 설정.

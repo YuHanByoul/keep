@@ -285,7 +285,7 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
         if (memberVo.getUserid() == null) {
             String password = null;
             if (memberVo.getPswd() != null) {
-                if (System.getenv("PC_KIND") != null) {
+                if (System.getenv("PC_KIND") == null) {
                     ScpDbAgent agt = new ScpDbAgent();
                     password = agt.ScpHashStr(CommonUtil.damoScpIniFilePath, 73, new String(memberVo.getPswd().getBytes(), "UTF-8")).toLowerCase();
                 } else {
@@ -297,7 +297,7 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
             if (memberVo.getGndr() != null) {
                 ScpDbAgent agt = new ScpDbAgent();
                 String encStr = "";
-                if (System.getenv("PC_KIND") != null) {
+                if (System.getenv("PC_KIND") == null) {
                     encStr = agt.ScpEncStr(CommonUtil.damoScpIniFilePath, "KEY1", new String(memberVo.getGndr().getBytes(), "UTF-8"));
                 } else {
                     encStr = "5D960651E824637099A116BB4A6BA665A6BA3C25"; // 암호화 모듈을 사용할수 없는 MAC인경우 무조건 남자로 설정.
@@ -498,7 +498,7 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     */
     public int updatePassword(MemberAcntPswdFindVo memberAcntPswdFindVo) throws Exception {
         String password = null;
-        if (System.getenv("PC_KIND") != null) {
+        if (System.getenv("PC_KIND") == null) {
             ScpDbAgent agt = new ScpDbAgent();
             password = agt.ScpHashStr(CommonUtil.damoScpIniFilePath, 73, new String(memberAcntPswdFindVo.getPswd().getBytes(), "UTF-8")).toLowerCase();
         } else {
