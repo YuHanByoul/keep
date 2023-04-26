@@ -162,6 +162,9 @@ public class SpceVo extends ParentRequestVo {
     /** 검색용 사용여부 */
     private String searchUseYn;
     
+    /** 검색 리스트 모드*/
+    private String searchMode;
+    
     /** 검색용 예약 신청 코드 */
     private String searchAplyMthdCd;
     
