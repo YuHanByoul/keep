@@ -4,6 +4,7 @@ import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngDao;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
+import com.kbrainc.plum.mng.dsgnPrgrm.controller.DsgnPrgrmController;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmDao;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmObjcVo;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmVo;
@@ -30,6 +32,8 @@ import com.kbrainc.plum.mng.dsgnPrgrm.model.OperPrfmncVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import com.kbrainc.plum.rte.util.StringUtil;
 import com.kbrainc.plum.rte.util.excel.ExcelUtils;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
@@ -48,6 +52,7 @@ import com.kbrainc.plum.rte.util.excel.ExcelUtils;
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Service
+@Slf4j
 public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements DsgnPrgrmService {
 
     @Autowired
@@ -169,6 +174,52 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 
 		int ret=0;
 
+		//차수 조회
+//		List<DsgnPrgrmVo> rsltCyclList = dsgnPrgrmDao.selectOperRsltCyclList(dsgnPrgrmVo);
+//		if( rsltCyclList == null  ) {
+			//운영결과 차수 생성
+			DsgnPrgrmVo prgrmInfo =  dsgnPrgrmDao.selectPrgrm(dsgnPrgrmVo);
+
+			String dateFormat = "yyyy";
+			String cyclBangDe = "";
+			String cyclEndDe ="";
+			DateFormat sdf = new SimpleDateFormat(dateFormat);
+			Calendar cal = Calendar.getInstance();  // 현재 시간정보 가지고오기
+			sdf.format(cal.getTime());
+
+			//1차
+			cyclBangDe = sdf.format(cal.getTime())+"-01-01" ;
+			cyclEndDe = sdf.format(cal.getTime())+"-12-31" ;
+
+			prgrmInfo.setCycl("1");
+			prgrmInfo.setSbmsnBgngDe(cyclBangDe);
+			prgrmInfo.setSbmsnEndDe(cyclEndDe);
+			prgrmInfo.setCycl("1");
+			cyclEndDe = sdf.format(cal.getTime()) ;
+			ret+=dsgnPrgrmDao.insertOperRsltCyCl(prgrmInfo);
+
+			//2차
+			cal.add(Calendar.YEAR, 1);  //현재 시간에 + 1년
+
+			cyclBangDe = sdf.format(cal.getTime())+"-01-01" ;
+			cyclEndDe = sdf.format(cal.getTime())+"-12-31" ;
+
+			prgrmInfo.setSbmsnBgngDe(cyclBangDe);
+			prgrmInfo.setSbmsnEndDe(cyclEndDe);
+			prgrmInfo.setCycl("2");
+			ret+=dsgnPrgrmDao.insertOperRsltCyCl(prgrmInfo);
+
+			//3차
+			cal.add(Calendar.YEAR, 1);  //현재 시간에 + 1년
+			cyclBangDe = sdf.format(cal.getTime())+"-01-01" ;
+			cyclEndDe = sdf.format(cal.getTime())+"-12-31" ;
+
+			prgrmInfo.setSbmsnBgngDe(cyclBangDe);
+			prgrmInfo.setSbmsnEndDe(cyclEndDe);
+			prgrmInfo.setCycl("3");
+			ret+=dsgnPrgrmDao.insertOperRsltCyCl(prgrmInfo);
+//		}
+
 		AsgsysSrngVo asgsysSrngVo = new AsgsysSrngVo();
 
 		//지정 이력 insert
@@ -217,6 +268,51 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	@Transactional
 	public int updateDsgnHstry(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
 		int ret=0;
+
+		//차수 조회
+		List<DsgnPrgrmVo> rsltCyclList = dsgnPrgrmDao.selectOperRsltCyclList(dsgnPrgrmVo);
+		if( rsltCyclList == null) {
+			//운영결과 차수 생성
+			DsgnPrgrmVo prgrmInfo =  dsgnPrgrmDao.selectPrgrm(dsgnPrgrmVo);
+
+			String dateFormat = "yyyy-MM-dd";
+			String cyclBangDe = "";
+			String cyclEndDe ="";
+			DateFormat sdf = new SimpleDateFormat(dateFormat);
+			Calendar cal = Calendar.getInstance();  // 현재 시간정보 가지고오기
+			sdf.format(cal.getTime());
+
+			//1차
+			prgrmInfo.setCycl("1");
+			cal.getActualMinimum(Calendar.DAY_OF_YEAR);  //초일
+			cyclBangDe = sdf.format(cal.getTime()) ;
+
+			cal.getActualMaximum(Calendar.DAY_OF_YEAR);  //말일
+			cyclEndDe = sdf.format(cal.getTime()) ;
+			ret+=dsgnPrgrmDao.insertOperRsltCyCl(prgrmInfo);
+
+			//2차
+			cal.add(Calendar.YEAR, 1);  //현재 시간에 + 1년
+			cal.getActualMinimum(Calendar.DAY_OF_YEAR);  //초일
+			cyclBangDe = sdf.format(cal.getTime()) ;
+
+			cal.getActualMaximum(Calendar.DAY_OF_YEAR);  //말일
+			cyclEndDe = sdf.format(cal.getTime()) ;
+
+			prgrmInfo.setCycl("2");
+			ret+=dsgnPrgrmDao.insertOperRsltCyCl(prgrmInfo);
+
+			//3차
+			cal.add(Calendar.YEAR, 1);  //현재 시간에 + 1년
+			cal.getActualMinimum(Calendar.DAY_OF_YEAR);  //초일
+			cyclBangDe = sdf.format(cal.getTime()) ;
+
+			cal.getActualMaximum(Calendar.DAY_OF_YEAR);  //말일
+			cyclEndDe = sdf.format(cal.getTime()) ;
+			prgrmInfo.setCycl("3");
+			ret+=dsgnPrgrmDao.insertOperRsltCyCl(prgrmInfo);
+		}
+
 
 		AsgsysSrngVo asgsysSrngVo = new AsgsysSrngVo();
 
@@ -380,6 +476,7 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	@Transactional
 	public int updateOperRslt(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
 		int ret=0;
+
 		if(dsgnPrgrmVo.getRsltCyclid() != null && dsgnPrgrmVo.getRsltCyclid() !=0 ) {
 			ret+=dsgnPrgrmDao.updateOperRslt(dsgnPrgrmVo);
 		}else {

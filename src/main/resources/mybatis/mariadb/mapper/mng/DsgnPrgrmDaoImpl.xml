@@ -60,6 +60,45 @@
             PRGRMID = #{prgrmid}
     </select>
 
+    <!-- 지정 프로그램 조회-->
+    <select id="selectPrgrm" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
+        SELECT
+            PRGRMID              /*프로그램아이디*/
+          , INSTID              /*기관아이디*/
+          , APLCNTID            /*신청자아이디*/
+          , APLCNT_NM           /*신청자_이름*/
+          , APLCNT_EML          /*신청자_이메일*/
+          , APLCNT_MOBLPHON     /*신청자_휴대폰*/
+          , INST_NM             /*기관_이름*/
+          , INST_EML            /*기관_이메일*/
+          , INST_CNTCT          /*기관_연락처*/
+          , INST_HMPG           /*기관_홈페이지*/
+          , INST_TYPE_CD        /*기관_유형_코드*/
+          , INST_RGN_CD         /*기관_지역_코드*/
+          , INST_ZIP            /*기관_우편번호*/
+          , INST_ADDR           /*기관_주소*/
+          , INST_DTLADDR        /*기관_상세주소*/
+          , PRGRM_NM            /*프로그램_이름*/
+          , FILEGRPID           /*파일그룹아이디*/
+          , STTS_CD             /*상태_코드*/
+          , DSGN_CYCL           /*지정_차수*/
+          , DSGN_NO             /*지정_번호*/
+          , DSGN_DE             /*지정_일자*/
+          , DSGN_BGNG_DE        /*지정_시작_일자*/
+          , DSGN_END_DE         /*지정_종료_일자*/
+          , AUTZRID             /*승인자아이디*/
+          , CHKLSTID            /*체크리스트아이디*/
+          , CNSLTNG_PRGRS_YN    /*컨설팅__진행_여부*/
+          , CNSLTNGID           /*컨설텅아이디*/
+          , APLY_DT             /*신청_일시*/
+          , MDFCN_DT            /*수정_일시*/
+          , MDFRID              /*수정자아이디*/
+          , REG_DT              /*등록_일시*/
+          , RGTRID              /*등록자아이디*/
+        FROM TB_ASS_PRGRM
+        WHERE PRGRMID = #{prgrmid}
+    </select>
+
     <!-- 지정프로그램 목록 조회. -->
     <select id="selectDsgnPrgrmList" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
         /* DsgnPrgrmDao.selectDsgnPrgrmList */
@@ -745,6 +784,53 @@
         AND CYCLID = #{cyclid}
     </select>
 
+    <!-- 운영결과 등록 -->
+    <insert id="insertOperRsltCyCl" parameterType="DsgnPrgrmVo">
+        /* DsgnPrgrmDao.insertOperRsltCycl*/
+        INSERT INTO TB_ASS_OPER_RSLT_CYCL
+        (
+            PRGRMID
+          , CYCL
+          , SBMSN_BGNG_DE
+          , SBMSN_END_DE
+          , STTS_CD
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        ) VALUES
+        (
+            #{prgrmid    }
+          , #{cycl       }
+          , #{sbmsnBgngDe}
+          , #{sbmsnEndDe }
+          , #{sttsCd     }
+          , NOW()
+          , #{user.userid}
+          , NOW()
+          , #{user.userid}
+        )
+    </insert>
+
+    <!-- 운영결과차수목록 조회 -->
+    <select id="selectOperRsltCyclList" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
+        SELECT
+            CYCLID
+          , PRGRMID
+          , CYCL
+          , SBMSN_BGNG_DE
+          , SBMSN_END_DE
+          , STTS_CD
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        FROM
+            TB_ASS_OPER_RSLT_CYCL
+        WHERE 1=1
+        AND PRGRMID = #{prgrmid}
+    </select>
+
     <!-- 이행확인심사 조회 -->
     <select id="selectImplmntIdntySrng" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
         SELECT
@@ -897,7 +983,6 @@
         WHERE 1=1
         AND A.DMNDID = #{dmndid}
     </select>
-
 
     <!-- 보완계획서 (이행확인심사) 수정 -->
     <update id="updateScrtyImprvPlanln" parameterType="DsgnPrgrmVo" >

@@ -473,6 +473,7 @@
         /* EduInstDao.selectSeeFclt*/
         SELECT
             A.APLYID
+          , A.STTS_CD
           , B.APLYID    AS FCLT_KEY
           , B.RENT_YN
           , B.RENT_PRD
@@ -589,7 +590,7 @@
           , #{nm        }
           , #{qnty      }
           , #{prcuseMthd}
-          , rmrk
+          , #{rmrk      }
           , NOW()
           , #{user.userid}
           , NOW()
@@ -604,6 +605,52 @@
             TB_SEE_FCLT_EQP
         WHERE APLYID = #{aplyid}
     </delete>
+
+    <!-- 시설 설비 등록 -->
+    <insert id="insertSeeFclt" parameterType="front.EduInstVo">
+        INSERT INTO TB_SEE_FCLT(
+            APLYID
+          , RENT_YN
+          , RENT_PRD
+          , TOTAR
+          , STY_FCLT_HOLD_YN
+          , STY_FCLT_AR
+          , STY_FCLT_NOPE
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        )VALUES(
+            #{aplyid       }
+          , #{rentYn       }
+          , #{rentPrd      }
+          , #{totar        }
+          , #{styFcltHoldYn}
+          , #{styFcltAr    }
+          , #{styFcltNope  }
+          , NOW()
+          , #{user.userid}
+          , NOW()
+          , #{user.userid}
+        )
+    </insert>
+
+    <!-- 시설 설비 수정 -->
+    <update id="updateSeeFclt" parameterType="front.EduInstVo">
+        /* EduInstDao.updateSeeFclt*/
+        UPDATE TB_SEE_FCLT SET
+            RENT_YN             = #{rentYn       }
+          , RENT_PRD            = #{rentPrd      }
+          , TOTAR               = #{totar        }
+          , STY_FCLT_HOLD_YN    = #{styFcltHoldYn}
+          , STY_FCLT_AR         = #{styFcltAr    }
+          , STY_FCLT_NOPE       = #{styFcltNope  }
+          , MDFCN_DT            = NOW()
+          , MDFRID              = #{user.userid}
+        WHERE 1=1
+        AND APLYID = #{aplyid}
+    </update>
+
 
 
 </mapper>

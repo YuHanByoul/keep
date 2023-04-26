@@ -91,14 +91,14 @@
                         <tbody>
                             <tr>
                                 <th scope="col">첨부파일<span class="ast">*</span></th>
-                                <td>
+                                <td id="fileTr">
                                     <div class="form-input-file">
 
                                         <label class="form-input">
                                             <input id="multiFileInput1" name="files" type="file" multiple class="blind" title="파일첨부" maxcount="5" style="display: none;" th:attr="accept=${acceptUploadFileExt}">
                                             <span class="btn-medium btn-gray">파일선택</span>
                                         </label>
-                                        <ul id="multipleFileUploadSuccess">
+                                        <ul id="multipleFileUploadSuccess1">
                                             <th:block th:if="${fileList ne null}" th:each="file : ${fileList}">
                                                 <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}" th:id="${file.fileid}">
                                                 <span class="name">
@@ -302,19 +302,23 @@
 
         function goNext(){
 
-            //if(!$("#sftyMngForm").valid()) return false;
+            if(!$("#sftyMngForm").valid()) return false;
 
         	//첨부파일
-            var fileCnt = $("#multipleFileUploadSuccess1 [data_ext]").length;
+            var fileCnt = $("#multipleFileUploadSuccess1 li").length;
+
             if(fileCnt==0){
                 //$("[fileid]").length
                 var msg="첨부파일을 입력해 주십시오";
-                if (!$("#multipleFileUploadSuccess1").find(".feedback.invalid").length) {
-                    $("#multipleFileUploadSuccess1").append(`<p class="feedback invalid">${msg}</p>`);
+                if (!$("#fileTr").find(".feedback.invalid").length) {
+                    $("#fileTr").append(`<p class="feedback invalid">${msg}</p>`);
                 }
                 var offset = $("#multipleFileUploadSuccess1").offset();
-                $('html, body').animate({scrollTop : offset.top - 300}, 300);
-                $("#multipleFileUploadSuccess1").focus();
+                if($("#multipleFileUploadSuccess1").length>0)
+                	{
+                        $('html, body').animate({scrollTop : offset.top - 300}, 300);
+                        $("#multipleFileUploadSuccess1").focus();
+                	}
                 return false;
             } else {
                 $("#multipleFileUploadSuccess1").find(".feedback.invalid").remove();

@@ -453,8 +453,40 @@ public interface DsgnPrgrmDao {
 	*/
 	public List<DsgnPrgrmVo> selectSprtgrpClndrList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
+	/**
+	* 프로그램 상세 조회
+	*
+	* @Title : selectPrgrm
+	* @Description : 프로그램 상세 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return DsgnPrgrmVo
+	*/
+	public DsgnPrgrmVo selectPrgrm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
+	/**
+	* 운영결과 차수 목록 조회
+	*
+	* @Title : selectOperRsltCyclList
+	* @Description : 운영결과 차수 목록 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnPrgrmVo>
+	*/
+	public List<DsgnPrgrmVo> selectOperRsltCyclList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
-
+	/**
+	* 운영결과 차수 등록
+	*
+	* @Title : insertOperRsltCyCl
+	* @Description : 운영결과 차수 등록
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertOperRsltCyCl(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 }

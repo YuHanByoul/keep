@@ -582,7 +582,36 @@ public class AsgsysSrngController {
     	return "mng/asgsysSrng/rsltRpt";
     }
 
-    //지정탈락
+    //지정프로그램 등록 (승인처리)
+    @RequestMapping(value = "/mng/asgsysSrng/insertDsgnPrgrm.do")
+    @ResponseBody
+    public Map<String, Object> insertDsgnPrgrm(@Valid AsgsysSrngVo asgsysSrngVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+
+        if (bindingResult1.hasErrors()) {
+            FieldError fieldError = bindingResult1.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+
+        asgsysSrngVo.setUser(user);
+
+        int retVal = 0;
+
+        //retVal = asgsysSrngService.insertDsgnPrgrm(asgsysSrngVo);
+
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "등록에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "등록에 실패했습니다.");
+        }
+
+        return resultMap;
+    }
 
     /**
     * @Title : prgrmDstnctn
@@ -1631,7 +1660,7 @@ public class AsgsysSrngController {
 
         return resultMap;
     }
-    
+
     /**
     * 지원단심사 목록 엑셀 다운
     *
@@ -1691,6 +1720,8 @@ public class AsgsysSrngController {
 
         return "mng/asgsysSrng/sprtgrpSrngInsertForm";
     }
+
+
 
 
 }
