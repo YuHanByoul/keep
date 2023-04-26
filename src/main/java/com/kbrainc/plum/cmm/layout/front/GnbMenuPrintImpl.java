@@ -145,10 +145,10 @@ public class GnbMenuPrintImpl {
                 ariaCurrentL1Attr = "";
                 
                 if (menuItem1.getMenuid().equals(activeMenuidL1)) {
-                    menuTag.append("    <li class=\"current-page active\">\n");
+                    menuTag.append(String.format("    <li class=\"current-page active %s\">\n", "".equals(StringUtil.nvl(menuItem1.getClassNm())) ? "" : menuItem1.getClassNm()));
                     ariaCurrentL1Attr = " aria-current=\"page\"";
                 } else {
-                    menuTag.append("    <li>\n");
+                    menuTag.append(String.format("    <li class=\"%s\">\n", "".equals(StringUtil.nvl(menuItem1.getClassNm())) ? "" : menuItem1.getClassNm()));
                 }
                 
                 if ("D".equals(menuItem1.getTypeCd())) { // 메뉴타입코드가 디렉토리인경우
