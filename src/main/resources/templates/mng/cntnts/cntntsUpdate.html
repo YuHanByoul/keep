@@ -324,6 +324,7 @@
 	
 
 	var validator= $("#cntntsUpdateForm").validate({
+		ignore: [],
 	    rules: {
 	    	 mainTypeCd 	 :  { required: true }  
 	     	,typeCd   	 	 : 	{ required: true }
@@ -334,8 +335,7 @@
 	     	,plyMinute   	 : 	{ number: true, maxlength: 2}
 	     	,plySecnd   	 : 	{ number: true, maxlength: 2, max: 59 }
 	     	,ttl   			 : 	{ required: true }
-	     	,cn   			 : 	{ required: true }
-	     	,thmbnFile   	 : 	{ required: true }
+	     	,cn   			 : 	{ ckRequired: true }
 	    },
 	    messages: {
 	    	 mainTypeCd		 :  { required: "콘텐츠 유형(대분류)를 선택해주십시오." }
@@ -347,8 +347,7 @@
 		    ,plyMinute   	 : 	{ number: "재생시간(분)은 숫자만 입력해주십시오.", maxlength: "재생시간(분)는 2자리까지 입력가능합니다.", max: "59분까지 입력가능합니다."  }
 		    ,plySecnd   	 : 	{ number: "재생시간(초)은 숫자만 입력해주십시오.", maxlength: "재생시간(초)는 2자리까지 입력가능합니다.", max: "59초까지 입력가능합니다." }
 		    ,ttl   	 		 : 	{ required: "제목을 입력해주십시오." }
-		    ,cn   			 : 	{ required: "내용을 입력해주십시오." }
-		    ,thmbnFile   	 : 	{ required: "대표 이미지를 첨부해주십시오." }
+		    ,cn   			 : 	{ ckRequired: "내용을 입력해주십시오." }
 	    }
 	})
 	
@@ -469,8 +468,6 @@
 	};
 	
  	function fn_updateCntnts(){
-	 	if(!($("#cntntsUpdateForm").valid())) return;
-		
   	 	var subjectParamArr=[];
         var errorFrmNum = 0;
         if(subjectNum.length<=0){
@@ -491,7 +488,17 @@
            showErrorMark("#subjectSelect"+errorFrmNum);
            return;
         }
+        
+ 		var editorData = editor.getData();
+        $("#cn").val(editorData);
+        
+        if(!($("#cntntsUpdateForm").valid())) return;
 	 	
+        if($("#rprsImgFileid").val() == 0) {
+        	alert("대표 이미지를 첨부해주십시오.");
+        	return false;
+        }
+        
   	 	if(!confirm("저장하시겠습니까?")) return;
   	 	
   	 	var editorData = editor.getData();
@@ -540,7 +547,5 @@
     				}
     			});
 	    	}
-	    	
-		
     }
 </script>
