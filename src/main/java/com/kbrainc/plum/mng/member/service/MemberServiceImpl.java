@@ -39,6 +39,7 @@ import com.kbrainc.plum.rte.util.StringUtil;
 import com.kbrainc.plum.rte.util.mail.model.MailRcptnVo;
 import com.kbrainc.plum.rte.util.mail.model.MailVo;
 import com.kbrainc.plum.rte.util.mail.service.MailService;
+import com.penta.scpdb.ScpDbAgent;
 
 /**
  * 
@@ -245,7 +246,13 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
         }
         
         // 비밀번호 암호화
-        String hashPassword = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(password.getBytes("UTF-8")));
+        String hashPassword = "";
+        if (System.getenv("PC_KIND") != null) {
+            ScpDbAgent agt = new ScpDbAgent();
+            hashPassword = agt.ScpHashStr(CommonUtil.damoScpIniFilePath, 73, new String(password.getBytes(), "UTF-8")).toLowerCase();
+        } else {
+            hashPassword = Hex.encodeHexString(MessageDigest.getInstance("SHA-512").digest(password.getBytes("UTF-8")));
+        }
         tempPwdVo.setPswd(hashPassword);
         //db저장
         int retVal = memberDao.updateMemberTempPwd(tempPwdVo);

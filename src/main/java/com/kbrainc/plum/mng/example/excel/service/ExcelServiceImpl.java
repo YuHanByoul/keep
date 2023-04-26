@@ -29,9 +29,11 @@ import com.kbrainc.plum.mng.member.model.MemberDtlVo;
 import com.kbrainc.plum.mng.member.model.MemberVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+import com.kbrainc.plum.rte.util.CommonUtil;
 import com.kbrainc.plum.rte.util.FormChecker;
 import com.kbrainc.plum.rte.util.StringUtil;
 import com.kbrainc.plum.rte.util.excel.ExcelUtils;
+import com.penta.scpdb.ScpDbAgent;
 
 /**
  * 
@@ -393,7 +395,13 @@ public class ExcelServiceImpl extends PlumAbstractServiceImpl implements ExcelSe
 		memVo.setNm((String)data.get(1));
 		//비밀번호
         String password = (String)data.get(2);
-        String hashPassword = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(password.getBytes("UTF-8")));
+        String hashPassword = "";
+        if (System.getenv("PC_KIND") != null) {
+            ScpDbAgent agt = new ScpDbAgent();
+            hashPassword = agt.ScpHashStr(CommonUtil.damoScpIniFilePath, 73, new String(password.getBytes(), "UTF-8")).toLowerCase();
+        } else {
+            hashPassword = Hex.encodeHexString(MessageDigest.getInstance("SHA-512").digest(password.getBytes("UTF-8")));
+        }
 		memVo.setPswd(hashPassword);
 		//이메일
 		memVo.setEml((String)data.get(3));

@@ -66,6 +66,8 @@ public class CommonUtil {
     
     public static String reportingUrl = applicationConfig.getString("reporting.host");
     
+    public static final String damoScpIniFilePath = applicationConfig.getString("damo.scp.iniFilePath");
+    
     /**
      * @Title : getBean
      * @Description : 특정 bean을 가져오는 함수

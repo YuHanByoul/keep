@@ -40,6 +40,7 @@ import com.kbrainc.plum.rte.util.CommonUtil;
 import com.kbrainc.plum.rte.util.DateTimeUtil;
 import com.kbrainc.plum.rte.util.StringUtil;
 import com.kbrainc.plum.rte.util.mail.model.MailVo;
+import com.penta.scpdb.ScpDbAgent;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -237,7 +238,13 @@ public class MemberController {
         int retVal = 0;
         
         String password = memberVo.getPswd();
-        String hashPassword = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(password.getBytes("UTF-8")));
+        String hashPassword = "";
+        if (System.getenv("PC_KIND") != null) {
+            ScpDbAgent agt = new ScpDbAgent();
+            hashPassword = agt.ScpHashStr(CommonUtil.damoScpIniFilePath, 73, new String(password.getBytes(), "UTF-8")).toLowerCase();
+        } else {
+            hashPassword = Hex.encodeHexString(MessageDigest.getInstance("SHA-512").digest(password.getBytes("UTF-8")));
+        }
         memberVo.setPswd(hashPassword);
         
         StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();

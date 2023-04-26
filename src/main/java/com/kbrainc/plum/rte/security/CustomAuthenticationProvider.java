@@ -42,6 +42,7 @@ import com.kbrainc.plum.rte.model.RoleInfoVo;
 import com.kbrainc.plum.rte.model.SiteInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.util.CommonUtil;
+import com.penta.scpdb.ScpDbAgent;
 
 /**
  * 
@@ -117,7 +118,12 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         if ("G".equals(loginType)) {
             // 비밀번호 암호화
             try {
-                 password = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(password.getBytes("UTF-8")));
+                if (System.getenv("PC_KIND") != null) {
+                    ScpDbAgent agt = new ScpDbAgent();
+                    password = agt.ScpHashStr(CommonUtil.damoScpIniFilePath, 73, new String(password.getBytes(), "UTF-8")).toLowerCase();
+                } else {
+                    password = Hex.encodeHexString(MessageDigest.getInstance("SHA-512").digest(password.getBytes("UTF-8")));
+                }
                  // sha3-512 비밀번호 암호화
             } catch (NoSuchAlgorithmException e) {
                 throw new InternalAuthenticationServiceException("Login Error !!");
