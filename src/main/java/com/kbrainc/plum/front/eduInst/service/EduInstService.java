@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import com.kbrainc.plum.front.eduInst.model.EduExprtVo;
 import com.kbrainc.plum.front.eduInst.model.EduInstVo;
 import com.kbrainc.plum.front.eduInst.model.EqpVo;
@@ -244,5 +246,16 @@ public interface EduInstService {
 	*/
 	public int insertFcltStts(EduInstVo eduInstVo) throws Exception;
 
+	/**
+	 * 교육시설 및 설비 현황 수정
+	 *
+	 * @Title : updateFcltStts
+	 * @Description : 교육시설 및 설비 현황 수정
+	 * @param eduInstVo
+	 * @return
+	 * @throws Exception
+	 * @return int
+	 */
+	public int updateFcltStts(EduInstVo eduInstVo) throws Exception;
 
 }

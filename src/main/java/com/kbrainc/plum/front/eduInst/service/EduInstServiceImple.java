@@ -370,9 +370,10 @@ public class EduInstServiceImple extends PlumAbstractServiceImpl implements EduI
 		List<LctrumVo> lctrumList = null;
 	    List<EqpVo>    eqpList = null;
 
+	    ret+=eduInstDao.insertSeeFclt(eduInstVo);
+
 		eduInstDao.deleteFcltLctrum(eduInstVo);
 	    eduInstDao.deleteFcltEqp(eduInstVo);
-
 
 		lctrumList = eduInstVo.getLctrumList();
 		eqpList = eduInstVo.getEqpList();
@@ -381,7 +382,6 @@ public class EduInstServiceImple extends PlumAbstractServiceImpl implements EduI
 			for(LctrumVo vo : lctrumList) {
 				vo.setUser(eduInstVo.getUser());
 				vo.setAplyid(eduInstVo.getAplyid());
-
 				ret+=eduInstDao.insertFcltLctrum(vo);
 			}
 		}
@@ -390,7 +390,51 @@ public class EduInstServiceImple extends PlumAbstractServiceImpl implements EduI
 			for(EqpVo vo : eqpList) {
 				vo.setUser(eduInstVo.getUser());
 				vo.setAplyid(eduInstVo.getAplyid());
+				ret+=eduInstDao.insertFcltEqp(vo);
+			}
+		}
 
+		return ret;
+	}
+
+	/**
+	 * 교육시설 및 설비 현황 수정
+	 *
+	 * @Title : updateFcltStts
+	 * @Description : 교육시설 및 설비 현황 수정
+	 * @param eduInstVo
+	 * @return
+	 * @throws Exception
+	 * @return int
+	 */
+	@Override
+	@Transactional
+	public int updateFcltStts(EduInstVo eduInstVo) throws Exception {
+		int ret=0;
+
+		List<LctrumVo> lctrumList = null;
+		List<EqpVo>    eqpList = null;
+
+		ret+=eduInstDao.updateSeeFclt(eduInstVo);
+
+		eduInstDao.deleteFcltLctrum(eduInstVo);
+	    eduInstDao.deleteFcltEqp(eduInstVo);
+
+		lctrumList = eduInstVo.getLctrumList();
+		eqpList = eduInstVo.getEqpList();
+
+		if(lctrumList != null && lctrumList.size()> 0) {
+			for(LctrumVo vo : lctrumList) {
+				vo.setUser(eduInstVo.getUser());
+				vo.setAplyid(eduInstVo.getAplyid());
+				ret+=eduInstDao.insertFcltLctrum(vo);
+			}
+		}
+
+		if(eqpList != null && eqpList.size()> 0) {
+			for(EqpVo vo : eqpList) {
+				vo.setUser(eduInstVo.getUser());
+				vo.setAplyid(eduInstVo.getAplyid());
 				ret+=eduInstDao.insertFcltEqp(vo);
 			}
 		}

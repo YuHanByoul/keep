@@ -307,6 +307,28 @@ public interface EduInstDao {
 	*/
 	public int deleteFcltEqp(EduInstVo eduInstVo) throws Exception;
 
+	/**
+	* 시설 등록
+	*
+	* @Title : 시설 등록
+	* @Description : 시설 등록
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertSeeFclt(EduInstVo eduInstVo) throws Exception;
 
+	/**
+	 * 시설 수정
+	 *
+	 * @Title : updateSeeFclt
+	 * @Description : 시설 수정
+	 * @param eduInstVo
+	 * @return
+	 * @throws Exception
+	 * @return int
+	 */
+	public int updateSeeFclt(EduInstVo eduInstVo) throws Exception;
 
 }
