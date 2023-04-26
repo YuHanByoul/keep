@@ -36,6 +36,8 @@ import com.kbrainc.plum.front.member.model.MemberVo;
 import com.kbrainc.plum.front.member.service.MemberServiceImpl;
 import com.kbrainc.plum.front.mmnws.model.MmnwsVo;
 import com.kbrainc.plum.front.mmnws.service.MmnwsServiceImpl;
+import com.kbrainc.plum.front.wbzn.now.model.EnveduVo;
+import com.kbrainc.plum.front.wbzn.now.service.EnveduServiceImpl;
 import com.kbrainc.plum.mng.banner.model.BannerVo;
 import com.kbrainc.plum.mng.banner.service.BannerServiceImpl;
 import com.kbrainc.plum.mng.site.model.SiteVo;
@@ -93,6 +95,9 @@ public class CommonController {
     
     @Autowired
     private BannerServiceImpl bannerSerivice;
+    
+    @Autowired
+    private EnveduServiceImpl enveduService;
     
     /**
     * 인덱스.
@@ -208,6 +213,9 @@ public class CommonController {
                     }
                     List<BannerVo> bannerList = bannerSerivice.selectExpsrBannerList(bannerVo);
                     mav.addObject("bannerList", bannerList);
+                    EnveduVo enveduVo = new EnveduVo();
+                    List<EnveduVo> enveduList = enveduService.selectEnveduExpsrList(enveduVo);
+                    mav.addObject("enveduList", enveduList);
                 } catch(SQLException e) {
                     mav.addObject("list", null);
                 } catch(Exception e) {
@@ -295,6 +303,9 @@ public class CommonController {
                 }
                 List<BannerVo> bannerList = bannerSerivice.selectExpsrBannerList(bannerVo); 
                 model.addAttribute("bannerList", bannerList);
+                EnveduVo enveduVo = new EnveduVo();
+                List<EnveduVo> enveduList = enveduService.selectEnveduExpsrList(enveduVo);
+                model.addAttribute("enveduList", enveduList);
             } catch(SQLException e) {
                 model.addAttribute("noticList", null);
             } catch(Exception e) {
