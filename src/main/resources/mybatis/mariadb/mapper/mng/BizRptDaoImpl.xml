@@ -925,6 +925,7 @@
         <sql id="selectBizAbndMngListSql">
              SELECT
                 A.APLYID
+              , B.PCNTSTID  
               , Z.DMNDID
               , Z.RTURN_BGNG_DE
               , Z.RTURN_END_DE
@@ -986,10 +987,10 @@
     <!-- 사업포기관리 상세 조회-->
     <select id="selectBizAbndMng" parameterType="BizRptVo" resultType="BizRptVo">
         /* BizRptDao.selectBizAbndMng */
-       SELECT
+       SELECT DISTINCT 
             A.APLYID
           , Z.DMNDID
-          , D.RCPTNO               /*접수번호*/
+          , A.APLYNO AS RCPTNO               /*접수번호*/
           , A.INSTID
           , A.INST_NM              /*기관명*/
           , A.PRGRM_NM             /*프로그램명*/
@@ -1198,4 +1199,94 @@
             , #{user.userid}
         )
     </insert>
+    
+    <!-- 사업포기관리 등록 접수번호 목록 조회 -->
+    <select id="selectAllAplyList" parameterType="BizRptVo" resultType="BizRptVo">
+        /* BizRptDao.selectAllAplyList */
+        SELECT TSA.APLYNO AS RCPTNO
+            , TSA.APLYID 
+            , TSP.FLD_CD 
+            , TSA.APLYNO 
+            , TSA.PRGRM_NM 
+            , TSA.INSTID 
+            , TSA.INST_NM 
+            , TSA.USERID 
+            , TSA.APLCNT_NM AS USER_NM_ACNT
+            , TSP.BSNS_BGNG_DE 
+            , TSP.BSNS_END_DE
+            , BANK_CD
+            , BACNTNO
+            , DPSTR_NM
+        FROM TB_SPB_PCNTST TSP 
+        INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID
+        LEFT OUTER JOIN (SELECT 
+                        APLYID
+                        , BANK_CD
+                        , BACNTNO
+                        , DPSTR_NM 
+                    FROM TB_SPB_DELVRY_APLY A
+                    INNER JOIN TB_SPB_DELVRY TSD ON A.DELVRYID = TSD.DELVRYID
+                    WHERE TSD.CYCL = 1 AND A.DELVRY_STTS_CD = '202102') TSDA ON TSDA.APLYID = TSA.APLYID 
+        LEFT OUTER JOIN TB_SPB_BSNS_CNCL_DMND TSBCD ON TSBCD.APLYID = TSA.APLYID AND TSBCD.DMND_STTS_CD NOT IN ('220101','220103') 
+        WHERE 1 = 1
+        AND TSBCD.DMNDID IS NULL
+        AND TSA.SLCTN_STTS_CD = '193102'
+        AND TSA.APLY_STTS_CD = '192102'
+        ORDER BY TSA.APLYNO DESC
+    </select>
+    
+    <!-- 사업포기신청 등록 -->
+    <insert id="insertCancel" parameterType="BizRptVo" useGeneratedKeys="true" keyProperty="dmndid">
+        /* BizRptDao.insertCancel */
+        INSERT INTO TB_SPB_BSNS_CNCL_DMND (
+            APLYID
+            , USERID
+            , INSTID
+            , RTURN_BGNG_DE
+            , RTURN_END_DE
+            , CN
+            , DMND_STTS_CD
+            , CNCL_DT
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{aplyid}
+            , #{userid}
+            , #{instid}
+            , #{rturnBgngDe}
+            , #{rturnEndDe}
+            , #{cn}
+            , '220101'
+            , NOW()
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    
+    <!-- 공모신청서 상태 수정 -->
+    <update id="updateAplyCancel" parameterType="BizRptVo">
+        /* BizRptDao.insertCancel */
+        UPDATE TB_SPB_APLY SET
+            APLY_STTS_CD = '192103'
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE APLYID = #{aplyid}
+    </update>
+        
+    <!-- 송금은행 정보 수정 -->
+    <update id="updateDelvryInfo" parameterType="BizRptVo">
+        /* BizRptDao.updateDelvryInfo */
+        UPDATE TB_SPB_DELVRY_APLY SET
+            BANK_CD = #{bankCd}
+            , BACNTNO = #{bacntno}
+            , DPSTR_NM = #{dpstrNm}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE APLYID = #{aplyid}
+    </update>
+    
 </mapper>

@@ -462,4 +462,52 @@ public interface BizRptDao {
 	* @return int
 	 */
 	public int insertReportOper(ReportOperVo reportOperVo) throws Exception;
+	
+	/**
+	* 사업포기신청 등록화면 접수번호 목록 조회. 
+	*
+	* @Title : selectAllAplyList
+	* @Description : TODO
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return List<BizRptVo>
+	 */
+	public List<BizRptVo> selectAllAplyList(BizRptVo bizRptVo) throws Exception;
+	
+	/**
+	* 사업포기신청 등록. 
+	*
+	* @Title : insertCancel
+	* @Description : TODO
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return int
+	 */
+	public int insertCancel(BizRptVo bizRptVo) throws Exception;
+	
+	/**
+	* 공모 신청서 상태 수정. 
+	*
+	* @Title : updateAplyCancel
+	* @Description : TODO
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return int
+	 */
+	public int updateAplyCancel(BizRptVo bizRptVo) throws Exception;
+	
+	/**
+	* 교부 입금 계좌 정보 수정. 
+	*
+	* @Title : updateDelvryInfo
+	* @Description : TODO
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return int
+	 */
+	public int updateDelvryInfo(BizRptVo bizRptVo) throws Exception;
 }

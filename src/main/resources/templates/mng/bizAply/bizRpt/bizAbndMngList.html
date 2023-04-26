@@ -67,6 +67,7 @@
                                 <h5><strong>사업포기관리 검색결과</strong></h5>
                             </div>
                             <div class="col-12 col-md-auto text-right">
+                                <button type="button" class="btn btn-primary" onclick="bizAbndMng.insertPage();">등록</button>
                                 <button type="button" class="btn btn-primary" onclick="openExcelDownRsnPopup('dwnldDsctnPopup', 'searchFrm', bizAbndMng.excelUrl);">엑셀다운로드</button>
                             </div>
                         </div>
@@ -93,7 +94,7 @@
                 listUrl  : "/mng/bizAply/bizRpt/selectBizAbndMngList.do",
                 excelUrl : "/mng/bizAply/bizRpt/selectBizAbndMngExcelList.do",
                 dtlUrl : "/mng/bizAply/bizRpt/bizAbndMngDetailForm.html",
-
+                pcntstid : null,
                 init : function() {
                     bizAbndMngGridHelper = new GridHelper('bizAbndMngGrid','contentPanel');
                     this.initSearch();
@@ -166,7 +167,7 @@
                              if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
 
                                  var detailUrl = bizAbndMng.dtlUrl + "?aplyid=" +args.item.aplyid+"&dmndid="+args.item.dmndid;
-
+                                 bizAbndMng.pcntstid = args.item.pcntstid;
                                  bizAbndMngGridHelper.loadContent(detailUrl);
                                  bizAbndMngGridHelper.rowClick(args);
                              if(args.event.originalEvent.target.cellIndex == 4 ){
@@ -186,6 +187,10 @@
                 	var f = document.searchFrm;
                     f.action = bizAbndMng.excelUrl;
                     f.submit();
+                }
+                , insertPage : function() {
+                	var insertUrl = bizAbndMng.dtlUrl + "?aplyid=0&dmndid=0";
+                    bizAbndMngGridHelper.loadContent(insertUrl);
                 }
             }
 

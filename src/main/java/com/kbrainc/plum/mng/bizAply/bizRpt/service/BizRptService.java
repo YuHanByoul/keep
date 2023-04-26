@@ -348,4 +348,27 @@ public interface BizRptService {
      */
     public int insertReport(BizRptVo bizRptVo) throws Exception;
     
+    /**
+    * 사업포기신청 등록화면 접수번호 목록 조회. 
+    *
+    * @Title : selectAllAplyList
+    * @Description : TODO
+    * @param bizRptVo
+    * @return
+    * @throws Exception
+    * @return List<BizRptVo>
+     */
+    public List<BizRptVo> selectAllAplyList(BizRptVo bizRptVo) throws Exception;
+    
+    /**
+    * 사업포기신청 등록. 
+    *
+    * @Title : insertCancel
+    * @Description : TODO
+    * @param bizRptVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    public int insertCancel(BizRptVo bizRptVo) throws Exception;
 }

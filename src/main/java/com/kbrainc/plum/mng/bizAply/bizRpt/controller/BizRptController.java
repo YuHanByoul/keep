@@ -825,11 +825,14 @@ public class BizRptController {
   	*/
   	@RequestMapping(value = "/mng/bizAply/bizRpt/bizAbndMngDetailForm.html")
   	public String bizAbndMngDetailForm(BizRptVo bizRptVo, Model model) throws Exception {
+  	    if (bizRptVo.getDmndid() == 0) {
+  	      model.addAttribute("bizRptVo", bizRptVo);
+  	    model.addAttribute("aplyList", bizRptService.selectAllAplyList(bizRptVo));
+          return "mng/bizAply/bizRpt/bizAbndMngInsert";
+  	    }
   		model.addAttribute("bizAbndMngInfo", bizRptService.selectBizAbndMng(bizRptVo));
         return "mng/bizAply/bizRpt/bizAbndMngDetail";
     }
-
-
 
     /**
     * 사업포기 수정
@@ -847,16 +850,22 @@ public class BizRptController {
     public Map<String, Object> updateBizAbnd(BizRptVo bizRptVo, @UserInfo UserVo user) throws Exception {
     	Map<String, Object> resultMap = new HashMap<String, Object>();
         int ret = 0;
-
+        String msg = "";
         bizRptVo.setUser(user);
-        ret = bizRptService.updateBizAbnd(bizRptVo);
+        if (bizRptVo.getDmndid() == 0) {
+            msg = "등록에";
+            ret = bizRptService.insertCancel(bizRptVo);
+        } else {
+            msg = "포기승인 처리에";
+            ret = bizRptService.updateBizAbnd(bizRptVo);
+        }
 
         if (ret > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "포기승인 처리에 성공하였습니다.");
+            resultMap.put("msg", msg + " 성공하였습니다.");
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-            resultMap.put("msg", "포기승인 처리에 실패했습니다.");
+            resultMap.put("msg", msg + " 실패했습니다.");
         }
 
         return resultMap;
