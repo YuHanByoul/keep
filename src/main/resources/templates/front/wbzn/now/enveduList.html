@@ -53,13 +53,11 @@
 						<strong class="label">지난호 보기</strong>
 						<div class="form-input">
 							<select title="지난호 보기 년 선택" name="enveduSearchYr" id="enveduSearchYr">
-								<option value="">- 전체 -</option>
 								<th:block th:each="item : ${enveduYr}">
 									<option th:value="${item.yr}"><th:block th:text="${item.yr}"></th:block>년</option>
 								</th:block>
 							</select>
 							<select title="지난호 보기 월 선택" name="enveduSearchMm" id="enveduSearchMm">
-								<option value="">- 전체 -</option>
 								<th:block th:each="item : ${enveduMm}">
 									<option th:value="${item.mm}"><th:block th:text="${item.mm}"></th:block>월</option>
 								</th:block>
@@ -91,8 +89,8 @@
 
 				<div class="btn-wrap">
 					<div class="center">
-						<button type="button" id="beforeBtn" class="btn-medium btn-gray btn-before-prev" onclick="beforeList()">이전호</button>
-						<button type="button" id="nextBtn" class="btn-medium btn-blue btn-after-next" onclick="nextList()">다음호</button>
+						<button type="button" id="beforeBtn" class="btn-medium btn-gray btn-before-prev" onclick="beforeList('edu')">이전호</button>
+						<button type="button" id="nextBtn" class="btn-medium btn-blue btn-after-next" onclick="nextList('edu')">다음호</button>
 					</div>
 				</div>
 
@@ -105,13 +103,11 @@
 						<strong class="label">지난호 보기</strong>
 						<div class="form-input">
 							<select title="지난호 보기 년 선택" name="prgrmgdSearchYr" id="prgrmgdSearchYr">
-								<option value="">- 전체 -</option>
 								<th:block th:each="item : ${prgrmgdYr}">
 									<option th:value="${item.yr}"><th:block th:text="${item.yr}"></th:block>년</option>
 								</th:block>
 							</select>
 							<select title="지난호 보기 월 선택" name="prgrmgdSearchMm" id="prgrmgdSearchMm">
-								<option value="">- 전체 -</option>				
 								<th:block th:if="${not #strings.isEmpty(prgrmgdMm)}" th:each="item : ${prgrmgdMm}">
 									<option th:value="${item.mm}"><th:block th:text="${item.mm}"></th:block>월</option>
 								</th:block>
@@ -143,8 +139,8 @@
 
 				<div class="btn-wrap">
 					<div class="center">
-						<button type="button" id="beforeBtn" class="btn-medium btn-gray btn-before-prev" onclick="beforeList()">이전호</button>
-						<button type="button" id="nextBtn" class="btn-medium btn-blue btn-after-next" onclick="nextList()">다음호</button>
+						<button type="button" id="prgrm-beforeBtn" class="btn-medium btn-gray btn-before-prev" onclick="beforeList('prgrm')">이전호</button>
+						<button type="button" id="prgrm-nextBtn" class="btn-medium btn-blue btn-after-next" onclick="nextList('prgrm')">다음호</button>
 					</div>
 				</div>
 
@@ -241,33 +237,32 @@
 				$('#pageNumber').val('1');
 				
 				if($("#enveduSearchYr").val() != "" && $("#enveduSearchMm").val() != "") {
-					transformMonth("search");
+					transformMonth("search", "envedu");
 					$("#compareDate").val($("#enveduSearchYr").val() + "-" + $("#enveduSearchMm").val() + "-" + date);
 				}
 				
 				if(month != "") {
-					$("#enveduNowDate").text(month+"월호 환경교육 프로그램");
+					$("#enveduNowDate").text(year + "년 " + month + "월호 환경교육 프로그램");
 				}else {
 					$("#enveduNowDate").text("환경교육 프로그램");
 				}
 				
 				this.selectEnveduList();
-				prgrmgd.init();
 			},
 			
 			searchInit() {
-				$("#enveduSearchYr").val('');
-				$("#enveduSearchMm").val('');
-				
 				year = now.getFullYear();
 				month = now.getMonth() + 1;
+				
+				$("#enveduSearchYr").val(year);
+				$("#enveduSearchMm").val(String(month).padStart(2, '0'));				
 				
 				transformMonth();
 				$("#beforeMonth").val("");
 				$("#nextMonth").val("");
 				$("#compareDate").val("");
 				if(month != "") {
-					$("#enveduNowDate").text(month+"월호 환경교육");
+					$("#enveduNowDate").text(year + "년 " + month + "월호 환경교육");
 				}else {
 					$("#enveduNowDate").text("환경교육");
 				}
@@ -283,22 +278,30 @@
 						dataType: 'json',
 						data: formData,
 						type: 'GET',
-						success: function (data) {
-							if(data.list.length != 0){
+						success: function (result) {
+							if(result.list.length != 0){
 								$('#envedu-card-list').removeClass();
 								$('#envedu-card-list').addClass('card-section');
 							}
-							/* if(data.totalCount == 0 && type != "") {
+							if(result.totalCount == 0 && type != "" && type != undefined) {
 								if(type == "next") {
 									alert("등록된 다음호가 없습니다.")
-									beforeList();
+									beforeList("edu");
 									$("#nextBtn").attr("disabled", true);
 								}else {
 									alert("등록된 이전호가 없습니다.")
-									nextList();
+									nextList("edu");
 									$("#beforeBtn").attr("disabled", true);
 								}
-							} */
+							}else if(result.totalCount != 0 && type != "" && type != undefined) {
+								if(type == "next") {
+									$("#nextBtn").attr("disabled", false);
+								}else {
+									$("#beforeBtn").attr("disabled", false);
+								}
+							}
+							
+							var data = escapeData(result);
 							envedu.makeListHtml(data);
 							closeWorkProgress();
 						}
@@ -417,33 +420,32 @@
 				$('#pageNumber').val('1');
 				
 				if($("#prgrmgdSearchYr").val() != "" && $("#prgrmgdSearchMm").val() != "") {
- 					transformMonth("search");
+ 					transformMonth("search", "prgrmgd");
 					$("#prgrmgd-compareDate").val($("#prgrmgdSearchYr").val() + "-" + $("#prgrmgdSearchMm").val() + "-" + date);
 				}
 				
 				if(month != "") {
-					$("#prgrmgdNowDate").text(month+"월호 환경교육 프로그램");
+					$("#prgrmgdNowDate").text(year + "년 " + month + "월호 환경교 프로그램");
 				}else {
 					$("#prgrmgdNowDate").text("환경교육 프로그램");
 				}
 				
 				this.selectPrgrmgdList();
-				envedu.init();
 			},
 			
 			searchInit() {
-				$("#prgrmgdSearchYr").val('');
-				$("#prgrmgdSearchMm").val('');
-				
 				year = now.getFullYear();
 				month = now.getMonth() + 1;
+				
+				$("#prgrmgdSearchYr").val(year);
+				$("#prgrmgdSearchMm").val(String(month).padStart(2, '0'));						
 				
 				transformMonth();
 				$("#prgrmgd-beforeMonth").val("");
 				$("#prgrmgd-nextMonth").val("");
 				$("#prgrmgd-compareDate").val("");
 				if(month != "") {
-					$("#prgrmgdNowDate").text(month+"월호 환경교육 프로그램");
+					$("#prgrmgdNowDate").text(year + "년 " + month + "월호 환경교육 프로그램");
 				}else {
 					$("#prgrmgdNowDate").text("환경교육 프로그램");
 				}
@@ -459,24 +461,31 @@
 						dataType: 'json',
 						data: formData,
 						type: 'GET',
-						success: function (data) {
-							if(data.list.length != 0){
+						success: function (result) {
+							if(result.list.length != 0){
 								$('#prgrmgd-card-list').removeClass();
 								$('#prgrmgd-card-list').addClass('card-section');
 							}
 							
-/* 							if(data.totalCount == 0 && type != "") {
+							if(result.totalCount == 0 && type != "" && type != undefined) {
 								if(type == "next") {
 									alert("등록된 다음호가 없습니다.")
-									beforeList();
-									$("#nextBtn").attr("disabled", true);
+									beforeList("prgrm");
+									$("#prgrm-nextBtn").attr("disabled", true);
 								}else {
 									alert("등록된 이전호가 없습니다.")
-									nextList();
-									$("#beforeBtn").attr("disabled", true);
+									nextList("prgrm");
+									$("#prgrm-beforeBtn").attr("disabled", true);
 								}
-							} */
+							}else if(result.totalCount != 0 && type != "" && type != undefined) {
+								if(type == "next") {
+									$("#prgrm-nextBtn").attr("disabled", false);
+								}else {
+									$("#prgrm-beforeBtn").attr("disabled", false);
+								}
+							}
 							
+							var data = escapeData(result);
 							prgrmgd.makeListHtml(data);
 							closeWorkProgress();
 						}
@@ -571,7 +580,7 @@
 		var month = now.getMonth() + 1;
 		var date = now.getDate();
 		
-		function transformMonth(type) {
+		function transformMonth(type, tab) {
 			if(type == "before"){
 				if (month === 1) {
 				  year--;
@@ -589,10 +598,10 @@
 				}				
 				return month;
 			}else if(type == "search"){
-				if($("#enveduSearchYr").val() != '' || $("#enveduSearchMm").val() != ''){
+				if(tab == "envedu" && ($("#enveduSearchYr").val() != '' || $("#enveduSearchMm").val() != '')){
 					year = $("#enveduSearchYr").val();
 					month = parseInt($("#enveduSearchMm").val());
-				}else if($("#prgrmgdSearchYr").val() != '' || $("#prgrmgdSearchMm").val() != ''){
+				}else if(tab == "prgrmgd" && ($("#prgrmgdSearchYr").val() != '' || $("#prgrmgdSearchMm").val() != '')){
 					year = $("#prgrmgdSearchYr").val();
 					month = parseInt($("#prgrmgdSearchMm").val());
 				}
@@ -601,88 +610,100 @@
 			}
 		}
 		
-		function beforeList() {
+		function beforeList(type) {
 			$("#beforeMonth").val("before");
 			$("#nextMonth").val("");
 			$("#prgrmgd-beforeMonth").val("before");
 			$("#prgrmgd-nextMonth").val("");
 			
 			transformMonth("before");
-			$("#enveduNowDate").text(month+"월호 환경교육");
-			$("#prgrmgdNowDate").text(month+"월호 환경교육 프로그램");
 			
 			$("#compareDate").val(`${year}-${month}-${date}`);
 			$("#prgrmgd-compareDate").val(`${year}-${month}-${date}`);
 			
 			$("#nextBtn").attr("disabled", false);
-			envedu.selectEnveduList("before");
-			prgrmgd.selectPrgrmgdList("before");
+			$("#prgrm-nextBtn").attr("disabled", false);
+			
+			if(type == "edu") {
+				$("#enveduNowDate").text(year + "년 " + month + "월호 환경교육");
+				envedu.selectEnveduList("before");
+			}else {
+				$("#prgrmgdNowDate").text(year + "년 " + month + "월호 환경교육 프로그램");
+				prgrmgd.selectPrgrmgdList("before");				
+			}
 		}
 		
-		function nextList() {
+		function nextList(type) {
 			$("#beforeMonth").val("");
 			$("#nextMonth").val("next");
 			$("#prgrmgd-beforeMonth").val("");
 			$("#prgrmgd-nextMonth").val("next");
 			
 			transformMonth("next");
-			$("#enveduNowDate").text(month+"월호 환경교육");
-			$("#prgrmgdNowDate").text(month+"월호 환경교육 프로그램");
 			
 			$("#compareDate").val(`${year}-${month}-${date}`);
 			$("#prgrmgd-compareDate").val(`${year}-${month}-${date}`);
 			
 			$("#beforeBtn").attr("disabled", false);
-			envedu.selectEnveduList("next");
-			prgrmgd.selectPrgrmgdList("next");
+			$("#prgrm-beforeBtn").attr("disabled", false);
+			
+			if(type == "edu") {
+				$("#enveduNowDate").text(year + "년 " + month + "월호 환경교육");
+				envedu.selectEnveduList("next");
+			}else {
+				$("#prgrmgdNowDate").text(year + "년 " + month + "월호 환경교육 프로그램");
+				prgrmgd.selectPrgrmgdList("next");				
+			}
 		}
 
 		$(function () {
+			var enveduMm = /*[[${enveduMm}]]*/ null;
+			var prgrmMm = /*[[${prgrmgdMm}]]*/ null;
 			$("#enveduSearchYr").val(year);
 			$("#enveduSearchMm").val(String(month).padStart(2, '0'));
 			$("#prgrmgdSearchYr").val(year);
 			$("#prgrmgdSearchMm").val(String(month).padStart(2, '0'));
-			$("#enveduNowDate").text(transformMonth()+"월호 환경교육")
-			$("#prgrmgdNowDate").text(transformMonth()+"월호 환경교육 프로그램")
+			$("#enveduNowDate").text(year + "년 " + transformMonth() + "월호 환경교육")
+			$("#prgrmgdNowDate").text(year + "년 " + transformMonth() + "월호 환경교육 프로그램")
 			envedu.init();
 			prgrmgd.init();
 		})
 		
 		//footer banner
-			var subBannerSwiper = new Swiper(".sub-banner-swiper .swiper", {
-				slidesPerView : 1,
-				spaceBetween: 24,
-				navigation: {
-					nextEl: ".sub-banner-swiper .swiper-button-next",
-					prevEl: ".sub-banner-swiper .swiper-button-prev",
-				},
-				pagination: {
-					el: ".sub-banner-swiper .swiper-pagination",
-				},
-				a11y: {
-					prevSlideMessage: '이전 슬라이드',
-					nextSlideMessage: '다음 슬라이드',
-				},
-				autoplay : {
-					delay : 3000,
-					disableOnInteraction : false
-				},
-				loop : true
-			});
-			$('.sub-banner-swiper .swiper').find('.swiper-button-play').bind({
-				'click':function(e){
-					subBannerSwiper.autoplay.start();
-					$(this).hide();
-					$(this).parent().find('.swiper-button-stop').show().focus();
-				}
-			});
-			$('.sub-banner-swiper .swiper').find('.swiper-button-stop').bind({
-				'click':function(e){
-					subBannerSwiper.autoplay.stop();
-					$(this).hide();
-					$(this).parent().find('.swiper-button-play').show().focus();
-				}
-			});
+		var subBannerSwiper = new Swiper(".sub-banner-swiper .swiper", {
+			slidesPerView : 1,
+			spaceBetween: 24,
+			navigation: {
+				nextEl: ".sub-banner-swiper .swiper-button-next",
+				prevEl: ".sub-banner-swiper .swiper-button-prev",
+			},
+			pagination: {
+				el: ".sub-banner-swiper .swiper-pagination",
+			},
+			a11y: {
+				prevSlideMessage: '이전 슬라이드',
+				nextSlideMessage: '다음 슬라이드',
+			},
+			autoplay : {
+				delay : 3000,
+				disableOnInteraction : false
+			},
+			loop : true
+		});
+		$('.sub-banner-swiper .swiper').find('.swiper-button-play').bind({
+			'click':function(e){
+				subBannerSwiper.autoplay.start();
+				$(this).hide();
+				$(this).parent().find('.swiper-button-stop').show().focus();
+			}
+		});
+		$('.sub-banner-swiper .swiper').find('.swiper-button-stop').bind({
+			'click':function(e){
+				subBannerSwiper.autoplay.stop();
+				$(this).hide();
+				$(this).parent().find('.swiper-button-play').show().focus();
+			}
+		});
 		</script>
 	</div>
 

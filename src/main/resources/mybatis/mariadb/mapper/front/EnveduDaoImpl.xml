@@ -112,7 +112,7 @@
         	, A.MDFRID
         	, A.REG_DT AS REGDT
         	, A.RGTRID
-            , B.NM
+            , B.NM         
         FROM 
             TB_CMM_WBZN_ENVEDU A
             LEFT OUTER JOIN TB_CMM_USER B ON A.RGTRID = B.USERID
@@ -130,20 +130,15 @@
                     AND A.MM = DATE_FORMAT(#{compareDate}, '%m')
                     AND A.YR = DATE_FORMAT(#{compareDate}, '%Y')
                 </when>
-                <when test="enveduSearchYr != null and enveduSearchYr != ''">
-                    
+                <when test="enveduSearchYr != null and enveduSearchYr != '' and enveduSearchMm != null and enveduSearchMm!= ''">
+                    AND A.YR = #{enveduSearchYr}
+                    AND A.MM = #{enveduSearchMm}
                 </when>                
                 <otherwise>
                     AND A.MM = DATE_FORMAT(NOW(), '%m')
                     AND A.YR = DATE_FORMAT(NOW(), '%Y')
                 </otherwise>
-            </choose>
-            <if test="enveduSearchYr != null and enveduSearchYr != ''">
-            AND A.YR = #{enveduSearchYr}
-            </if>
-            <if test="enveduSearchMm != null and enveduSearchMm!= ''">
-            AND A.MM = #{enveduSearchMm}
-            </if>                        
+            </choose>                   
         <include refid="PaginationMapper.footer"/>
     </select>
     
@@ -217,21 +212,23 @@
                     AND A.MM = DATE_FORMAT(#{compareDate}, '%m')
                     AND A.YR = DATE_FORMAT(#{compareDate}, '%Y')
                 </when>
-                <when test="prgrmgdSearchYr != null and prgrmgdSearchYr != ''">
-                    
+                <when test="prgrmgdSearchYr != null and prgrmgdSearchYr != '' and prgrmgdSearchMm != null and prgrmgdSearchMm != ''">
+                    AND A.YR = #{prgrmgdSearchYr}
+                    AND A.MM = #{prgrmgdSearchMm}
                 </when>                
                 <otherwise>
                     AND A.MM = DATE_FORMAT(NOW(), '%m')
                     AND A.YR = DATE_FORMAT(NOW(), '%Y')
                 </otherwise>
             </choose>
-
+            <!-- 
             <if test="prgrmgdSearchYr != null and prgrmgdSearchYr != ''">
             AND A.YR = #{prgrmgdSearchYr}
             </if>
             <if test="prgrmgdSearchMm != null and prgrmgdSearchMm != ''">
             AND A.MM = #{prgrmgdSearchMm}
-            </if>                        
+            </if>
+             -->
         <include refid="PaginationMapper.footer"/>
     </select>
 
