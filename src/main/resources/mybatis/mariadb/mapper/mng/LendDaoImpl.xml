@@ -43,12 +43,12 @@
            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'lendNo'">
               AND RCRITID = #{searchKeyword}
            </if>
-           <if test="searchStartDt != null and searchStartDt != '' ">
-              AND date_format(BGNG_DT, '%Y-%m-%d'  )  <![CDATA[>=]]> #{searchStartDt}
-           </if>
-           <if test="searchEndDt != null and searchEndDt != '' ">
-              AND date_format(END_DT, '%Y-%m-%d'  )  <![CDATA[<=]]> #{searchEndDt}
-           </if>
+           <if test="searchStartDt != null and searchStartDt != '' and searchEndDt != null and searchEndDt != '' ">
+               AND(
+                    (date_format(BGNG_DT, '%Y-%m-%d'  ) <![CDATA[<=]]> #{searchStartDt} AND date_format(BGNG_DT, '%Y-%m-%d'  ) <![CDATA[>=]]> #{searchEndDt} )OR 
+                    (date_format(END_DT, '%Y-%m-%d'  ) <![CDATA[>=]]> #{searchStartDt}  AND date_format(END_DT, '%Y-%m-%d'  ) <![CDATA[<=]]> #{searchEndDt}  )
+                 )
+            </if>
          <include refid="PaginationMapper.footer"/>
    </select>
    <!-- 대여 등록-->
@@ -324,7 +324,7 @@
    
    <!-- 대여 차시 꾸러미 상세 리스트  --> 
    <select id="selectLendRndPackageindvdList" parameterType="LendRndVo" resultType="LendRndPackageindvdVo">
-        /* LendDao.selectLendList */
+        /* LendDao.selectLendRndPackageindvdList */
        SELECT
             A.RNDID
            ,A.PACKAGEINDVDID
@@ -587,11 +587,11 @@
                     </otherwise>
                 </choose>
             </if>
-            <if test="searchStrtDt != null and searchStrtDt != '' ">
-               AND A.LEND_BGNG_DE  <![CDATA[>=]]> #{searchStrtDt}
-            </if>
-            <if test="searchEndDt != null and searchEndDt != '' ">
-               AND A.LEND_END_DE  <![CDATA[<=]]> #{searchEndDt}
+            <if test="searchStrtDt != null and searchStrtDt != '' and searchEndDt != null and searchEndDt != '' ">
+               AND(
+                    (date_format(A.LEND_BGNG_DE, '%Y-%m-%d')<![CDATA[<=]]> #{searchStrtDt} AND date_format(A.LEND_BGNG_DE, '%Y-%m-%d') <![CDATA[>=]]> #{searchEndDt} )OR 
+                    (date_format(A.LEND_END_DE, '%Y-%m-%d' )<![CDATA[>=]]> #{searchStrtDt} AND date_format(A.LEND_END_DE , '%Y-%m-%d') <![CDATA[<=]]> #{searchEndDt} )
+                 )
             </if>
             <if test="searchRndid != null and searchRndid != '' ">
                AND B.RNDID = #{searchRndid}

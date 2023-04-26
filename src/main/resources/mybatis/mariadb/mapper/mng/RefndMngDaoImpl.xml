@@ -27,6 +27,7 @@
           ,A.MDFCN_DT
           ,A.DPST_IDNTY_DT
           ,A.RFND_DMND_DT
+          ,A.RFND_CMPTN_DT
           ,C.INSTID
           ,C.INST_NM
           ,B.BGNG_DT
@@ -87,13 +88,11 @@
         <if test="searchStlmSttsCd != null and searchStlmSttsCd != ''">
             AND A.STLM_STTS_CD = #{searchStlmSttsCd}
         </if>
-        <!-- 신청일 검색시작일  -->
-        <if test="searchBgngDt != null and searchBgngDt != ''">
-            AND B.BGNG_DT >= date(#{searchBgngDt})
+        <if test="stlmSttsCd != null and stlmSttsCd == '161103' and searchBgngDt != null and searchBgngDt != '' and searchEndDt  != null and searchEndDt != ''">
+            AND A.RFND_DMND_DT <![CDATA[>=]]> CONCAT(#{searchBgngDt},' 00:00:00')  AND  A.RFND_DMND_DT <![CDATA[<=]]> CONCAT(#{searchEndDt},' 23:59:59')
         </if>
-        <!-- 신청일 검색종료일  -->
-        <if test="searchEndDt  != null and searchEndDt != ''">
-            AND B.END_DT <![CDATA[<=]]> date(#{searchEndDt})
+        <if test="stlmSttsCd != null and stlmSttsCd == '161104' and searchBgngDt != null and searchBgngDt != '' and searchEndDt  != null and searchEndDt != ''">
+            AND A.RFND_CMPTN_DT <![CDATA[>=]]> CONCAT(#{searchBgngDt},' 00:00:00')  AND  A.RFND_CMPTN_DT <![CDATA[<=]]> CONCAT(#{searchEndDt},' 23:59:59')
         </if>
         <!-- 타메뉴에서 상세 진입시  -->
         <if test="selectedApplyid  != null and selectedApplyid != ''">
@@ -139,6 +138,7 @@
              ,RFND_BANK_CD     = #{rfndBankCd}
              ,RFND_BACNT       = #{rfndBacnt}
              ,RFND_PYR_NM      = #{rfndPyrNm}
+             ,RFND_CMPTN_DT    = NOW()
              ,MDFCN_DT         = NOW()
              ,MDFRID           = #{user.userid}
         WHERE APLYID = #{aplyid}
@@ -155,6 +155,7 @@
              ,RFND_BANK_CD     = null
              ,RFND_BACNT       = null
              ,RFND_PYR_NM      = null
+             ,RFND_CMPTN_DT    = null
              ,MDFRID           = #{user.userid}
              ,MDFCN_DT         = NOW()
         WHERE APLYID IN (

@@ -73,13 +73,11 @@
         <if test="searchStlmSttsCd != null and searchStlmSttsCd != ''">
             AND A.STLM_STTS_CD = #{searchStlmSttsCd}
         </if>
-        <!-- 신청일 검색시작일  -->
-        <if test="searchBgngDt != null and searchBgngDt != ''">
-            AND B.BGNG_DT >= date(#{searchBgngDt})
-        </if>
-        <!-- 신청일 검색종료일  -->
-        <if test="searchEndDt  != null and searchEndDt != ''">
-            AND B.END_DT <![CDATA[<=]]> date(#{searchEndDt})
+        <if test="searchBgngDt != null and searchBgngDt != '' and searchEndDt != null and searchEndDt != '' ">
+               AND(
+                    (date_format(BGNG_DT, '%Y-%m-%d'  ) <![CDATA[<=]]> #{searchBgngDt} AND date_format(BGNG_DT, '%Y-%m-%d'  ) <![CDATA[>=]]> #{searchEndDt} )OR 
+                    (date_format(END_DT, '%Y-%m-%d'  ) <![CDATA[>=]]> #{searchBgngDt}  AND date_format(END_DT, '%Y-%m-%d'  ) <![CDATA[<=]]> #{searchEndDt}  )
+                 )
         </if>
         <if test='user.roleInfo.trgtInstCd == "S"'>
            AND C.INSTID = #{user.instid}

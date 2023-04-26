@@ -376,8 +376,8 @@ public class CnsltngController {
         
         if(!CommonUtil.isEmpty(cnsltngResultVo.getVstBgngDt()) &&!CommonUtil.isEmpty(cnsltngResultVo.getVstEndDt())) {
             SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.getDefault());
-            cnsltngResultVo.setVstBgngDate(dtFormat.parse("1970-01-01 "+cnsltngResultVo.getVstBgngDt()));
-            cnsltngResultVo.setVstEndDate(dtFormat.parse("1970-01-01 "+cnsltngResultVo.getVstEndDt()));
+            cnsltngResultVo.setVstBgngDate(dtFormat.parse(cnsltngResultVo.getVstDe()+" "+cnsltngResultVo.getVstBgngDt()));
+            cnsltngResultVo.setVstEndDate(dtFormat.parse(cnsltngResultVo.getVstDe()+" "+cnsltngResultVo.getVstEndDt()));
         }
         
         retVal = cnsltngService.mergeCnsltngRslt(cnsltngResultVo);
