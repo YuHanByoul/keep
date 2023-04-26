@@ -67,15 +67,6 @@ public class MemberController {
     @Autowired
     private MemberServiceImpl memberService;
     
-    @Resource(name="digestService")
-    EgovDigestService digestService;
-    
-    @Resource(name="ariaCryptoService")
-    EgovCryptoService cryptoService;
-    
-    @Value("${crypto.key}")
-    private String encryptKey;
-    
     /**
     * 개인회원관리 리스트화면 이동.
     *
@@ -134,12 +125,14 @@ public class MemberController {
         
         MemberVo resultVo = memberService.selectMemberInfo(memberVo);
         
-        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
-        encryptor.setSaltGenerator(new RandomSaltGenerator());
-        encryptor.setPassword(encryptKey);
-        encryptor.setAlgorithm("PBEWithMD5AndDES");
-        String decStr = encryptor.decrypt(resultVo.getGndr());
-        
+        ScpDbAgent agt = new ScpDbAgent();
+        String decStr = "";
+        if (System.getenv("PC_KIND") != null) {
+            decStr = agt.ScpDecStr(CommonUtil.damoScpIniFilePath, "KEY1", resultVo.getGndr());
+        } else {
+            decStr = "M"; // 암호화 모듈을 사용할수 없는 MAC인경우 무조건 남자로 설정.
+        }
+
         resultVo.setGndr(decStr);
         
         model.addAttribute("member", resultVo);
@@ -247,11 +240,13 @@ public class MemberController {
         }
         memberVo.setPswd(hashPassword);
         
-        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
-        encryptor.setSaltGenerator(new RandomSaltGenerator());
-        encryptor.setPassword(encryptKey);
-        encryptor.setAlgorithm("PBEWithMD5AndDES");
-        String encStr = encryptor.encrypt(memberVo.getGndr());
+        ScpDbAgent agt = new ScpDbAgent();
+        String encStr = "";
+        if (System.getenv("PC_KIND") != null) {
+            encStr = agt.ScpEncStr(CommonUtil.damoScpIniFilePath, "KEY1", new String(memberVo.getGndr().getBytes(), "UTF-8"));
+        } else {
+            encStr = "5D960651E824637099A116BB4A6BA665A6BA3C25"; // 암호화 모듈을 사용할수 없는 MAC인경우 무조건 남자로 설정.
+        }
         
         memberVo.setGndr(encStr);
         retVal = memberService.insertMember(memberVo);
@@ -324,13 +319,14 @@ public class MemberController {
 
         int retVal = 0;
         
-        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
-        encryptor.setSaltGenerator(new RandomSaltGenerator());
-        encryptor.setPassword(encryptKey);
-        encryptor.setAlgorithm("PBEWithMD5AndDES");
-        String encStr = encryptor.encrypt(memberVo.getGndr());
+        ScpDbAgent agt = new ScpDbAgent();
+        String encStr = "";
+        if (System.getenv("PC_KIND") != null) {
+            encStr = agt.ScpEncStr(CommonUtil.damoScpIniFilePath, "KEY1", new String(memberVo.getGndr().getBytes(), "UTF-8"));
+        } else {
+            encStr = "5D960651E824637099A116BB4A6BA665A6BA3C25"; // 암호화 모듈을 사용할수 없는 MAC인경우 무조건 남자로 설정.
+        }
         
-        String decStr = encryptor.decrypt(encStr);
         memberVo.setGndr(encStr);
         
         retVal = memberService.modifyMember(memberVo);

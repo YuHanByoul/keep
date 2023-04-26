@@ -97,9 +97,6 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     @Value("${server.servlet.session.cookie.domain}")
     private String serverCookieDomain;
     
-    @Value("${crypto.key}")
-    private String encryptKey;
-    
     /**
     * 회원 탈퇴 처리.
     *
@@ -298,11 +295,13 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
             }
             
             if (memberVo.getGndr() != null) {
-                StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
-                encryptor.setSaltGenerator(new RandomSaltGenerator());
-                encryptor.setPassword(encryptKey);
-                encryptor.setAlgorithm("PBEWithMD5AndDES");
-                String encStr = encryptor.encrypt(memberVo.getGndr());
+                ScpDbAgent agt = new ScpDbAgent();
+                String encStr = "";
+                if (System.getenv("PC_KIND") != null) {
+                    encStr = agt.ScpEncStr(CommonUtil.damoScpIniFilePath, "KEY1", new String(memberVo.getGndr().getBytes(), "UTF-8"));
+                } else {
+                    encStr = "5D960651E824637099A116BB4A6BA665A6BA3C25"; // 암호화 모듈을 사용할수 없는 MAC인경우 무조건 남자로 설정.
+                }
                 
                 memberVo.setGndr(encStr);
             }
