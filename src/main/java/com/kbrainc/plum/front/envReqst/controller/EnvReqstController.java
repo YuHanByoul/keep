@@ -71,6 +71,7 @@ public class EnvReqstController {
      */
     @RequestMapping(value = "/front/envReqst/envReqstList.html")
     public String envReqstList(EnvReqstVo envReqstVo, Model model) throws Exception {
+        model.addAttribute("param", envReqstVo);
         model.addAttribute("sidoList", commonService.selectCtprvnList());
         return "front/envReqst/envReqstList";
     }
@@ -123,18 +124,14 @@ public class EnvReqstController {
      */
     @RequestMapping(value = "/front/envReqst/resveEnvView.html")
     public String resveEnvView(EnvReqstVo envReqstVo, Model model, @UserInfo UserVo user, SpceVo spceVo) throws Exception {
-
+        
         model.addAttribute("param", envReqstVo);
-
         envReqstVo.setUser(user);
         EnvReqstVo resultVo = envReqstService.selectResveEnvInfo(envReqstVo);
-
+        
         model.addAttribute("envReqst", resultVo);
-
-
         FileVo fileVo = new FileVo();
         fileVo.setUser(user);
-
         // 대표 이미지
         if (resultVo.getRprsImgFileid() != null && !resultVo.getRprsImgFileid().equals(0)) {
             fileVo.setFilegrpid(Integer.parseInt(resultVo.getRprsImgFileid().toString()));
@@ -165,11 +162,11 @@ public class EnvReqstController {
             model.addAttribute("gdncFileMap", null);
             model.addAttribute("gdncCurrentFileCnt", 0);
         }
-
+        
         // 공간 보유개수 조회
         spceVo.setFcltid(envReqstVo.getFcltid());
         spceVo.setUser(user);
-
+        //spceVo.setSearchMode("A");
         model.addAttribute("spceList", spceService.selectSpceList(spceVo));
 
         return "front/envReqst/resveEnvView";

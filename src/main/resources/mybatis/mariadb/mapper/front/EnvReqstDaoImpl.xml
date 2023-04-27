@@ -7,35 +7,42 @@
 -->
 <mapper namespace="com.kbrainc.plum.front.envReqst.model.EnvReqstDao">
 
-    <select id="selectEnvReqstList" resultType="com.kbrainc.plum.front.envReqst.model.EnvReqstVo">
+    <select id="selectEnvReqstList" resultType="front.EnvReqstVo">
+        /* EnvReqstDao.selectEnvReqstList*/
         <include refid="PaginationMapper.header"/>
-        select A.SPCEID
-        , B.FCLTID
-        , B.FCLT_NM
-        , B.ADDR
-        , B.ADDR_DTL
-        , B.RPRS_IMG_FILEID
-        , B.APLY_MTHD_CD
-        , B1.CD_NM                                                                     AS APLY_MTHD_NM
-        , C.INSTID
-        , C.INST_NM
-        , D.FILE_IDNTFC_KEY
-        , F.BGNG_DT
-        , F.END_DT
-        from TB_FCL_SPCE A
-        INNER JOIN TB_FCL_FCLT B ON A.FCLTID = B.FCLTID
-        LEFT OUTER JOIN (
-        SELECT CD
-        , CD_NM
-        FROM TB_CMM_CD
-        WHERE CDGRPID = 153
-        ) B1 ON (B1.CD = B.APLY_MTHD_CD)
-        LEFT OUTER JOIN TB_CMM_INST C ON B.INSTID = C.INSTID
-        LEFT OUTER JOIN TB_CMM_FILE D ON B.RPRS_IMG_FILEID = D.FILEID
-        INNER JOIN (SELECT SPCEID, MIN(BGNG_DT) BGNG_DT, MAX(END_DT) END_DT FROM TB_FCL_SPCE_RSVTDE F GROUP BY SPCEID) F ON A.SPCEID = F.SPCEID
+        SELECT 
+           A.SPCEID
+           , B.FCLTID
+           , B.FCLT_NM
+           , B.ADDR
+           , B.ADDR_DTL
+           , B.RPRS_IMG_FILEID
+           , B.APLY_MTHD_CD
+           , C.INSTID
+           , C.INST_NM
+           , D.FILE_IDNTFC_KEY
+           , F.BGNG_DT
+           , F.END_DT
+        FROM 
+           TB_FCL_SPCE A
+           INNER JOIN TB_FCL_FCLT B 
+           ON A.FCLTID = B.FCLTID
+           LEFT OUTER JOIN TB_CMM_INST C 
+           ON B.INSTID = C.INSTID
+           LEFT OUTER JOIN TB_CMM_FILE D 
+           ON B.RPRS_IMG_FILEID = D.FILEID
+           INNER JOIN (
+                 SELECT 
+                    SPCEID
+                    , MIN(BGNG_DT) BGNG_DT
+                    , MAX(END_DT) END_DT 
+                   FROM 
+                     TB_FCL_SPCE_RSVTDE F 
+                    GROUP BY SPCEID
+            ) F ON A.SPCEID = F.SPCEID
         WHERE 1 = 1
-        AND A.USE_YN = 'Y'
-        AND B.USE_YN = 'Y'
+          AND A.USE_YN = 'Y'
+          AND B.USE_YN = 'Y'
         <if test="instNm != null and instNm != ''">
             AND C.INST_NM LIKE CONCAT('%',#{instNm},'%')
         </if>
@@ -53,35 +60,36 @@
         </if>
         <!-- 신청일 검색시작일  -->
         <if test="searchBgngDt != null and searchBgngDt != ''">
-            AND B.BGNG_DT >= date(#{searchBgngDt})
+            AND B.BGNG_DT >= CONCAT(#{searchBgngDt},' 00:00:00')
         </if>
         <!-- 신청일 검색종료일  -->
         <if test="searchEndDt  != null and searchEndDt != ''">
-            AND B.END_DT <![CDATA[<=]]> date(#{searchEndDt})
+            AND B.END_DT <![CDATA[<=]]> CONCAT(#{searchEndDt},' 23:59:59')
         </if>
         <include refid="PaginationMapper.footer"/>
     </select>
 
-    <select id="selectResveEnvRvwList" resultType="com.kbrainc.plum.front.envReqst.model.EnvReqstVo">
+    <select id="selectResveEnvRvwList" resultType="front.EnvReqstVo">
+        /* EnvReqstDao.selectResveEnvRvwList*/
         <include refid="PaginationMapper.header"/>
         SELECT
-        RVW_CN
-        ,RVW_SCR
-        ,RVW_DT
-        ,REPLACE(F.ACNT,RIGHT(F.ACNT,3),'***') AS MASK_ACNT
+           RVW_CN
+           ,RVW_SCR
+           ,RVW_DT
+           ,REPLACE(F.ACNT,RIGHT(F.ACNT,3),'***') AS MASK_ACNT
         FROM
-        TB_FCL_SPCE_APLY A
-        LEFT JOIN (SELECT B.APLYID, C.SPCEID FROM TB_FCL_APLY_RSVTDE B
-        LEFT JOIN TB_FCL_SPCE_RSVTDE C ON B.RSVTDEID = C.RSVTDEID GROUP BY B.APLYID) B ON A.APLYID = B.APLYID
-        LEFT JOIN TB_FCL_SPCE D ON B.SPCEID = D.SPCEID
-        LEFT JOIN TB_FCL_FCLT E ON D.FCLTID = E.FCLTID
-        LEFT JOIN TB_CMM_USER F ON A.APLCNTID = F.USERID
+           TB_FCL_SPCE_APLY A
+           LEFT JOIN (SELECT B.APLYID, C.SPCEID FROM TB_FCL_APLY_RSVTDE B
+           LEFT JOIN TB_FCL_SPCE_RSVTDE C ON B.RSVTDEID = C.RSVTDEID GROUP BY B.APLYID) B ON A.APLYID = B.APLYID
+           LEFT JOIN TB_FCL_SPCE D ON B.SPCEID = D.SPCEID
+           LEFT JOIN TB_FCL_FCLT E ON D.FCLTID = E.FCLTID
+           LEFT JOIN TB_CMM_USER F ON A.APLCNTID = F.USERID
         WHERE E.FCLTID = #{fcltid} AND RVW_CN IS NOT NULL
         <include refid="PaginationMapper.footer"/>
     </select>
 
     <!-- 환경교육시설 예약 상세조회 -->
-    <select id="selectResveEnvInfo" resultType="com.kbrainc.plum.front.envReqst.model.EnvReqstVo">
+    <select id="selectResveEnvInfo" resultType="front.EnvReqstVo">
         /* EnvReqstDao.selectResveEnvInfo */
         SELECT
             A.FCLTID
@@ -108,34 +116,31 @@
              , A.RGTRID
              , B.INST_NM
              , C.SIGNGU_NM AS RGN_NM
-             , D.CD_NM AS APLY_MTHD_NM
              , E.NM
         FROM
             TB_FCL_FCLT A
-                LEFT OUTER JOIN TB_CMM_INST B ON A.INSTID = B.INSTID
-                LEFT OUTER JOIN TB_CMM_USER E ON A.RGTRID = E.USERID
-                INNER JOIN (SELECT
-                A.SIGNGU_CD AS RGN_CD,
-                B.CTPRVN_NM,
-                A.SIGNGU_NM,
-                A.CTPRVN_CD FROM
-                TB_CMM_ADDR_SIGNGU A INNER JOIN TB_CMM_ADDR_CTPRVN B ON A.CTPRVN_CD = B.CTPRVN_CD) C ON C.RGN_CD = A.RGN_CD
-                LEFT OUTER JOIN (
-                SELECT
-                    CD
-                     , CD_NM
-                FROM
-                    TB_CMM_CD
-                WHERE
-                    CDGRPID = 153
-            ) D ON (D.CD = A.APLY_MTHD_CD)
-        WHERE
-            1=1
+            LEFT OUTER JOIN TB_CMM_INST B 
+            ON A.INSTID = B.INSTID
+            LEFT OUTER JOIN TB_CMM_USER E 
+            ON A.RGTRID = E.USERID
+            INNER JOIN (
+                   SELECT
+                       A.SIGNGU_CD AS RGN_CD
+                       ,B.CTPRVN_NM
+                       ,A.SIGNGU_NM
+                       ,A.CTPRVN_CD 
+                     FROM
+                       TB_CMM_ADDR_SIGNGU A 
+                       INNER JOIN TB_CMM_ADDR_CTPRVN B 
+                       ON A.CTPRVN_CD = B.CTPRVN_CD
+            ) C ON C.RGN_CD = A.RGN_CD
+        WHERE 1=1
           AND A.INSTID = B.INSTID
           AND FCLTID = #{fcltid}
     </select>
 
-    <select id="selectSpceInfo" resultType="com.kbrainc.plum.front.envReqst.model.EnvReqstVo">
+    <select id="selectSpceInfo" resultType="front.EnvReqstVo">
+        /* EnvReqstDao.selectSpceInfo */
         SELECT
             A.SPCEID
              , A.FCLTID
@@ -162,28 +167,18 @@
              , B.ADDR
              , B.ADDR_DTL
              , B.APLY_MTHD_CD
-             , B1.CD_NM AS BANK_CD_NM
              , C.INST_NM
              , C.INSTID
              , F.BGNG_DT
              , F.END_DT
-        FROM
+         FROM
             TB_FCL_SPCE A
-                INNER JOIN TB_FCL_FCLT B
-                           ON A.FCLTID = B.FCLTID
-                INNER JOIN TB_CMM_INST C
-                           ON B.INSTID = C.INSTID
-                LEFT OUTER JOIN (
-                    SELECT
-                        CD
-                         , CD_NM
-                    FROM
-                        TB_CMM_CD
-                    WHERE
-                        CDGRPID = 154
-                ) B1 ON (B.BANK_CD = B1.CD)
-                INNER JOIN (SELECT SPCEID, MIN(BGNG_DT) BGNG_DT, MAX(END_DT) END_DT FROM TB_FCL_SPCE_RSVTDE F
-                WHERE RSVTDEID IN(
+            INNER JOIN TB_FCL_FCLT B
+            ON A.FCLTID = B.FCLTID
+            INNER JOIN TB_CMM_INST C
+            ON B.INSTID = C.INSTID
+            INNER JOIN (SELECT SPCEID, MIN(BGNG_DT) BGNG_DT, MAX(END_DT) END_DT FROM TB_FCL_SPCE_RSVTDE F
+            WHERE RSVTDEID IN(
                 <foreach item="item" collection="rsvtdeid"  separator=",">
                     #{item.rsvtdeid}
                 </foreach>
@@ -281,26 +276,26 @@
     <insert id="insertResveEnvFclAplyHstry" useGeneratedKeys="true" keyProperty="aplyid">
         /* EnvReqstDao.insertResveEnvFclAply */
         INSERT INTO TB_FCL_SPCE_APLY_HSTRY (
-                                      APLYID
-                                     ,APLCNTID
-                                     ,APLCNT_NM
-                                     ,APLCNT_MOBLPHON
-                                     ,APLCNT_EML
-                                     ,NOPE_ADULT
-                                     ,NOPE_CHIL
-                                     ,NOPE_INFNT
-                                     ,UTZTN_PRPS
-                                     ,AMT
-                                     ,STLM_MTHD_CD
-                                     ,DPST_BACNT
-                                     ,PYR_NM
-                                     ,APLY_DT
-                                     ,APLY_STTS_CD
-                                     ,STLM_STTS_CD
-                                     ,MDFCN_DT
-                                     ,MDFRID
-                                     ,REG_DT
-                                     ,RGTRID
+               APLYID
+              ,APLCNTID
+              ,APLCNT_NM
+              ,APLCNT_MOBLPHON
+              ,APLCNT_EML
+              ,NOPE_ADULT
+              ,NOPE_CHIL
+              ,NOPE_INFNT
+              ,UTZTN_PRPS
+              ,AMT
+              ,STLM_MTHD_CD
+              ,DPST_BACNT
+              ,PYR_NM
+              ,APLY_DT
+              ,APLY_STTS_CD
+              ,STLM_STTS_CD
+              ,MDFCN_DT
+              ,MDFRID
+              ,REG_DT
+              ,RGTRID
         )VALUES
             (
              #{aplyid}
@@ -392,34 +387,38 @@
 
     <!--************* 공간 예약 일자 *************** -->
     <!-- 공간 예약 일자 목록 -->
-    <select id="selectSpceRsvtdeList" parameterType="EnvReqstVo" resultType="com.kbrainc.plum.front.envReqst.model.EnvReqstVo">
-        SELECT
-        A.RSVTDEID
-        ,DE
-        ,date_format(A.BGNG_DT, '%H:%i' )   AS STRT_TM
-        ,date_format(A.END_DT, '%H:%i' )    AS END_TM
-        ,A.UTZTN_SE_CD
-        ,A.ALLDAY_YN
-        ,A.AMT
-        ,A.RSVT_PSBLTY_YN
-        ,A.BGNG_DT
-        ,A.END_DT
-        ,IFNULL(B.RSVTDEID, '0')         AS FULL_YN
-        ,C.TODAY_RSVT_PSBLTY_YN
+    <select id="selectSpceRsvtdeList" parameterType="front.EnvReqstVo" resultType="front.EnvReqstVo">
+       /* SpceDao.selectSpceRsvtdeList */
+       SELECT
+           A.RSVTDEID
+           ,DE
+           ,date_format(A.BGNG_DT, '%H:%i' )   AS STRT_TM
+           ,date_format(A.END_DT, '%H:%i' )    AS END_TM
+           ,A.UTZTN_SE_CD
+           ,A.ALLDAY_YN
+           ,A.AMT
+           ,A.RSVT_PSBLTY_YN
+           ,A.BGNG_DT
+           ,A.END_DT
+           ,IFNULL(B.RSVTDEID, '0')         AS FULL_YN
+           ,C.TODAY_RSVT_PSBLTY_YN
         FROM
-        TB_FCL_SPCE_RSVTDE A
-        LEFT JOIN (SELECT B.RSVTDEID
-        FROM TB_FCL_APLY_RSVTDE B
-        INNER JOIN TB_FCL_SPCE_APLY C ON B.APLYID = C.APLYID
-        WHERE (C.APLY_STTS_CD = '160102'
-        AND C.STLM_STTS_CD = '161102')
-        OR
-        (C.APLY_STTS_CD = '160101'
-        AND C.STLM_STTS_CD = '161101')
-        ) B ON A.RSVTDEID = B.RSVTDEID
-        INNER JOIN TB_FCL_SPCE C ON A.SPCEID = C.SPCEID
+           TB_FCL_SPCE_RSVTDE A
+           LEFT OUTER JOIN (
+               SELECT 
+                    B.RSVTDEID
+                 FROM 
+                    TB_FCL_APLY_RSVTDE B
+                    INNER JOIN TB_FCL_SPCE_APLY C 
+                    ON B.APLYID = C.APLYID
+                 WHERE 1=1
+                    AND C.APLY_STTS_CD IN ('160101','160102')
+                  GROUP BY B.RSVTDEID
+           ) B ON A.RSVTDEID = B.RSVTDEID
+           INNER JOIN TB_FCL_SPCE C ON A.SPCEID = C.SPCEID
         WHERE 1=1
-        AND A.SPCEID = #{spceid}
+          AND A.RSVT_PSBLTY_YN = 'Y'
+          AND A.SPCEID = #{spceid}
         <if test="utztnSe.equals('single')">
             AND A.UTZTN_SE_CD = '169102'
         </if>
@@ -444,4 +443,7 @@
             AND A.DE = #{de}
         </if>
     </select>
+    
+    
+    
 </mapper>

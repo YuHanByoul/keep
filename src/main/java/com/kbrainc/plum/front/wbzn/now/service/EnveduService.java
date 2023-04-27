@@ -24,6 +24,17 @@ import com.kbrainc.plum.front.wbzn.now.model.PrgrmgdVo;
 public interface EnveduService {
     
     /**
+    * 환경교육 NOW 메인 웹진 목록 조회
+    *
+    * @Title : selectEnveduExpsrList
+    * @Description : 환경교육 NOW 메인 웹진 목록 조회
+    * @param enveduVo
+    * @throws Exception
+    * @return List<EnveduVo>
+    */
+    public List<EnveduVo> selectEnveduExpsrList(EnveduVo enveduVo) throws Exception;
+    
+    /**
     * 환경교육NOW 목록 조회
     *
     * @Title : selectEnveduList
