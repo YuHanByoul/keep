@@ -1,8 +1,17 @@
 package com.kbrainc.plum.front.envReqst.model;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
+import org.apache.ibatis.type.Alias;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.cmm.file.model.FileVo;
-import com.kbrainc.plum.mng.spce.model.SpceRsvtdeVo;
 import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -10,16 +19,6 @@ import com.kbrainc.plum.rte.service.ResCodeService;
 import com.kbrainc.plum.rte.util.CommonUtil;
 
 import lombok.Data;
-
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
-
-import org.apache.ibatis.type.Alias;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * 교육시설 신청 VO 클래스
