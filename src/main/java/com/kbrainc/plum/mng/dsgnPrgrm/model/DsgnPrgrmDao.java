@@ -478,6 +478,18 @@ public interface DsgnPrgrmDao {
 	public List<DsgnPrgrmVo> selectOperRsltCyclList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 	/**
+	* 운영결과실적 목록 조회
+	*
+	* @Title : selectOperRsltPrfmncList
+	* @Description : 운영결과실적 목록 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return List<OperPrfmncVo>
+	*/
+	public List<OperPrfmncVo> selectOperRsltPrfmncList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
 	* 운영결과 차수 등록
 	*
 	* @Title : insertOperRsltCyCl
@@ -488,5 +500,40 @@ public interface DsgnPrgrmDao {
 	* @return int
 	*/
 	public int insertOperRsltCyCl(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 담당자 목록검색
+	*
+	* @Title : selectPicList
+	* @Description : 담당자 목록검색
+	* @param dsgnPrgrmVo
+	* @return
+	* @return List<DsgnPrgrmVo>
+	*/
+	public List<DsgnPrgrmVo> selectPicList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 이행확인심사 등록
+	*
+	* @Title : insertImplmntIdntySrng
+	* @Description : 이행확인심사 등록
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertImplmntIdntySrng(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 운영결과 차수 상태 수정
+	*
+	* @Title : updateOperRsltSttsCd
+	* @Description : 운영결과 차수 상태 수정
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int updateCyClSttsCd(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 }

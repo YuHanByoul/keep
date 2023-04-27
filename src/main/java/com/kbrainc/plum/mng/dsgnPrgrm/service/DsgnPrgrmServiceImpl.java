@@ -195,6 +195,7 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 			prgrmInfo.setSbmsnBgngDe(cyclBangDe);
 			prgrmInfo.setSbmsnEndDe(cyclEndDe);
 			prgrmInfo.setCycl("1");
+			prgrmInfo.setSttsCd("");
 			cyclEndDe = sdf.format(cal.getTime()) ;
 			ret+=dsgnPrgrmDao.insertOperRsltCyCl(prgrmInfo);
 
@@ -833,6 +834,59 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 		workbook.write(fileOutput);
 		fileOutput.flush();
 		fileOutput.close();
+	}
+
+	/**
+	* 운영결과 실적 목록 조회
+	*
+	* @Title : selectOperRsltPrfmncList
+	* @Description : 운영결과 실적 목록 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @return List<OperPrfmncVo>
+	*/
+	@Override
+	public List<OperPrfmncVo> selectOperRsltPrfmncList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		return dsgnPrgrmDao.selectOperRsltPrfmncList(dsgnPrgrmVo);
+	}
+
+	/**
+	* 담당자 목록검색
+	*
+	* @Title : selectPicList
+	* @Description : 담당자 목록검색
+	* @param dsgnPrgrmVo
+	* @return
+	* @return List<DsgnPrgrmVo>
+	*/
+	@Override
+	public List<DsgnPrgrmVo> selectPicList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		return dsgnPrgrmDao.selectPicList(dsgnPrgrmVo);
+	}
+
+	/**
+	* 운영결과 제출 상태 변경
+	*
+	* @Title : updateSbmsnStts
+	* @Description : 운영결과 제출 상태 변경
+	* @param dsgnPrgrmVo
+	* @return
+	* @return int
+	*/
+	@Override
+	@Transactional
+	public int updateSbmsnStts(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		int ret = 0;
+
+		if(dsgnPrgrmVo.getSttsCd().equals("128104")) {
+			//이행확인심사 등록
+			ret+=dsgnPrgrmDao.insertImplmntIdntySrng(dsgnPrgrmVo);
+		}
+
+		ret+=dsgnPrgrmDao.updateCyClSttsCd(dsgnPrgrmVo);
+
+		//제출상태변경
+		return ret;
 	}
 
 }
