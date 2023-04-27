@@ -1714,13 +1714,10 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 
     	//숙박여부,운영형태코드로 체크리스트 가 정해진경우
 
-
     	if(null != asgsysSrngVo.getChkOperFrmCd()){
-
     		chklstid = asgsysSrngDao.getCheckListId(asgsysSrngVo);
     	}
     	if(null != chklstid ) {
-
     		assPrgrmVo.setChklstid(chklstid);
     	}
 

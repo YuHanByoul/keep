@@ -175,35 +175,48 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 		int ret=0;
 
 		//차수 조회
-//		List<DsgnPrgrmVo> rsltCyclList = dsgnPrgrmDao.selectOperRsltCyclList(dsgnPrgrmVo);
-//		if( rsltCyclList == null  ) {
+		List<DsgnPrgrmVo> rsltCyclList = dsgnPrgrmDao.selectOperRsltCyclList(dsgnPrgrmVo);
+		if( rsltCyclList.size() == 0) {
 			//운영결과 차수 생성
 			DsgnPrgrmVo prgrmInfo =  dsgnPrgrmDao.selectPrgrm(dsgnPrgrmVo);
 
-			String dateFormat = "yyyy";
+			String dateFormatYear= "yyyy";
+			String dateFormatday= "yyyy-MM-dd";
 			String cyclBangDe = "";
 			String cyclEndDe ="";
-			DateFormat sdf = new SimpleDateFormat(dateFormat);
+			String today ="";
+			DateFormat sdfDay = new SimpleDateFormat(dateFormatYear);
 			Calendar cal = Calendar.getInstance();  // 현재 시간정보 가지고오기
-			sdf.format(cal.getTime());
+
+			today = sdfDay.format(cal.getTime());
+
+			//지정일자
+			dsgnPrgrmVo.setDsgnDe(today);
+
+			sdfDay.format(cal.getTime());
+
+			DateFormat sdfYear = new SimpleDateFormat(dateFormatYear);
+			sdfYear.format(cal.getTime());
 
 			//1차
-			cyclBangDe = sdf.format(cal.getTime())+"-01-01" ;
-			cyclEndDe = sdf.format(cal.getTime())+"-12-31" ;
+			cyclBangDe = sdfYear.format(cal.getTime())+"-01-01" ;
+			cyclEndDe = sdfYear.format(cal.getTime())+"-12-31" ;
+
+			prgrmInfo.setUser(dsgnPrgrmVo.getUser());
 
 			prgrmInfo.setCycl("1");
 			prgrmInfo.setSbmsnBgngDe(cyclBangDe);
 			prgrmInfo.setSbmsnEndDe(cyclEndDe);
 			prgrmInfo.setCycl("1");
 			prgrmInfo.setSttsCd("");
-			cyclEndDe = sdf.format(cal.getTime()) ;
+			cyclEndDe = sdfYear.format(cal.getTime()) ;
 			ret+=dsgnPrgrmDao.insertOperRsltCyCl(prgrmInfo);
 
 			//2차
 			cal.add(Calendar.YEAR, 1);  //현재 시간에 + 1년
 
-			cyclBangDe = sdf.format(cal.getTime())+"-01-01" ;
-			cyclEndDe = sdf.format(cal.getTime())+"-12-31" ;
+			cyclBangDe = sdfYear.format(cal.getTime())+"-01-01" ;
+			cyclEndDe = sdfYear.format(cal.getTime())+"-12-31" ;
 
 			prgrmInfo.setSbmsnBgngDe(cyclBangDe);
 			prgrmInfo.setSbmsnEndDe(cyclEndDe);
@@ -212,32 +225,54 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 
 			//3차
 			cal.add(Calendar.YEAR, 1);  //현재 시간에 + 1년
-			cyclBangDe = sdf.format(cal.getTime())+"-01-01" ;
-			cyclEndDe = sdf.format(cal.getTime())+"-12-31" ;
+			cyclBangDe = sdfYear.format(cal.getTime())+"-01-01" ;
+			cyclEndDe = sdfYear.format(cal.getTime())+"-12-31" ;
 
 			prgrmInfo.setSbmsnBgngDe(cyclBangDe);
 			prgrmInfo.setSbmsnEndDe(cyclEndDe);
 			prgrmInfo.setCycl("3");
 			ret+=dsgnPrgrmDao.insertOperRsltCyCl(prgrmInfo);
-//		}
+		}
 
-		AsgsysSrngVo asgsysSrngVo = new AsgsysSrngVo();
 
-		//지정 이력 insert
-		ret += dsgnPrgrmDao.insertDsgnHstry(dsgnPrgrmVo);
+	    //신청 프로그램 정보 수정
+		DsgnPrgrmVo assPrgrm = dsgnPrgrmDao.selectPrgrm(dsgnPrgrmVo);
+		assPrgrm.setUser(dsgnPrgrmVo.getUser());
+		assPrgrm.setDsgnNo(dsgnPrgrmVo.getDsgnNo());
+		assPrgrm.setDsgnCycl(dsgnPrgrmVo.getDsgnCycl());
+		assPrgrm.setDsgnBgngDe(dsgnPrgrmVo.getDsgnBgngDe());
+		assPrgrm.setDsgnEndDe(dsgnPrgrmVo.getDsgnEndDe());
+		assPrgrm.setDsgnDe(dsgnPrgrmVo.getDsgnDe());
+		assPrgrm.setDsgnObtainDe(dsgnPrgrmVo.getDsgnObtainDe());
 
-		//지정 프로그램 update
-		asgsysSrngVo.setPrgrmid(dsgnPrgrmVo.getPrgrmid());
-		//지정상태코드 - 지정승인
 		if("132101".equals(dsgnPrgrmVo.getSttsCd())){
-			asgsysSrngVo.setSttsCd("111111");  //상태코드 지정승인
+			assPrgrm.setSttsCd("111111");  //상태코드 지정승인
 		}
 		//지정상태코드 - 지정탈락
 		else if("132102".equals(dsgnPrgrmVo.getSttsCd())){
-			asgsysSrngVo.setSttsCd("111112");  //상태코드 지정탈락
+			assPrgrm.setSttsCd("111112");  //상태코드 지정탈락
 		}
 
-		ret += asgSrngDao.updatePrgrSttsCd(asgsysSrngVo);
+		dsgnPrgrmDao.updatePrgrm(assPrgrm);
+
+		//지정이력 생성
+		ret += dsgnPrgrmDao.insertDsgnHstry(dsgnPrgrmVo);
+
+//		AsgsysSrngVo asgsysSrngVo = new AsgsysSrngVo();
+//		//지정 이력 insert
+//
+//		//지정 프로그램 update
+//		asgsysSrngVo.setPrgrmid(dsgnPrgrmVo.getPrgrmid());
+//		//지정상태코드 - 지정승인
+//		if("132101".equals(dsgnPrgrmVo.getSttsCd())){
+//			asgsysSrngVo.setSttsCd("111111");  //상태코드 지정승인
+//		}
+//		//지정상태코드 - 지정탈락
+//		else if("132102".equals(dsgnPrgrmVo.getSttsCd())){
+//			asgsysSrngVo.setSttsCd("111112");  //상태코드 지정탈락
+//		}
+//
+//		ret += asgSrngDao.updatePrgrSttsCd(asgsysSrngVo);
 
 		return ret;
 	}
@@ -313,7 +348,6 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 			prgrmInfo.setCycl("3");
 			ret+=dsgnPrgrmDao.insertOperRsltCyCl(prgrmInfo);
 		}
-
 
 		AsgsysSrngVo asgsysSrngVo = new AsgsysSrngVo();
 

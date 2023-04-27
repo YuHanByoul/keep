@@ -38,16 +38,9 @@
                     <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
                         <strong>지역</strong></div>
                     <div class="col-12">
-                        <select name="objcInfoRegionSelect" class="form-select form-select-sm form-control-sm" disabled="">
-                            <option value="opt1">Select One Value Only
-                            </option>
-                            <option value="opt2">Type 2</option>
-                            <option value="opt3">Type 3</option>
-                            <option value="opt4">Type 4</option>
-                            <option value="opt5">Type 5</option>
-                            <option value="opt6">Type 6</option>
-                            <option value="opt7">Type 7</option>
-                            <option value="opt8">Type 8</option>
+                        <select name="searchRgnCd" id="searchRgnCd" class="form-select form-select-sm form-control-sm" disabled>
+                            <option value="">- 전체 -</option>
+                            <option th:each="item:${sidoList}" th:value="${item.CTPRVN_CD}" th:selected="${item.CTPRVN_CD == operRsltInfo.instRgnCd}"><th:block th:text="${item.CTPRVN_NM}" ></th:block></option>
                         </select>
                     </div>
                 </div>
@@ -685,8 +678,8 @@
     	if(!confirm("저장하시겠습니까?")) return;
 
         var param = {};
-
-        $("#objcInfoFrm input").each(function(index, item) {
+debugger;
+        $("#objcInfoFrm input, textarea").each(function(index, item) {
 
             if("checkbox" == item.type){
                 if(item.checked ) {
@@ -710,6 +703,9 @@
             param["operPrfmncLst[" + index + "].wholNope"    ] = $("#"+item.id + ' input[id^=wholNope]').val();
             param["operPrfmncLst[" + index + "].ldrPostngRt" ] = $("#"+item.id + ' input[id^=ldrPostngRt]').val();
         });
+
+        param["rsltCyclid"] = $("#cyclid").val();
+
 
     	if(displayWorkProgress()){
             $.ajax({

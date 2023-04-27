@@ -215,7 +215,7 @@ public class DsgnPrgrmController {
     public String dsgnInfoForm(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
     	InstVo instVo = new InstVo();
         model.addAttribute("typeCdList", instService.selectInstTypeCdList(instVo));
-    	model.addAttribute("dsgnAplyInfo",dsgnPrgrmServiceImpl.selectDsgnPrgrm(dsgnPrgrmVo));
+    	model.addAttribute("dsgnInfo",dsgnPrgrmServiceImpl.selectDsgnPrgrm(dsgnPrgrmVo));
     	return "mng/dsgnPrgrm/dsgnInfoForm";
     }
 
@@ -420,9 +420,10 @@ public class DsgnPrgrmController {
     	AsgsysSrngVo asgsysSrngVo = new AsgsysSrngVo();
 
     	asgsysSrngVo.setPrgrmid(dsgnPrgrmVo.getPrgrmid());
-    	
+
     	model.addAttribute("sidoList", commonService.selectCtprvnList());
-    	model.addAttribute("prgrmBscInfo", asgsysSrngServiceImpl.selectDsgnAplyDtlInfo(asgsysSrngVo));    //프로그램 기본 정보
+    	//model.addAttribute("prgrmBscInfo", asgsysSrngServiceImpl.selectDsgnAplyDtlInfo(asgsysSrngVo));    //프로그램 기본 정보
+    	model.addAttribute("dsgnInfo",dsgnPrgrmServiceImpl.selectDsgnPrgrm(dsgnPrgrmVo));
 
     	return "mng/dsgnPrgrm/operRsltForm";
     }
@@ -466,6 +467,10 @@ public class DsgnPrgrmController {
 
     	model.addAttribute("operRsltInfo", dsgnPrgrmServiceImpl.selectOperRsltDetail(dsgnPrgrmVo));
     	model.addAttribute("prfmncList", dsgnPrgrmServiceImpl.selectOperRsltPrfmncList(dsgnPrgrmVo));
+
+    	InstVo instVo = new InstVo();
+    	model.addAttribute("typeCdList", instService.selectInstTypeCdList(instVo));
+    	model.addAttribute("sidoList", commonService.selectCtprvnList());
 
         return "mng/dsgnPrgrm/operRsltDetail";
     }

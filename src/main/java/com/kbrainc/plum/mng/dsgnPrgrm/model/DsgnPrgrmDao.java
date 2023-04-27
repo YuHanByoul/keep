@@ -536,4 +536,16 @@ public interface DsgnPrgrmDao {
 	*/
 	public int updateCyClSttsCd(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
+	/**
+	* 신청 프로그램 정보 수정
+	*
+	* @Title : updatePrgrm
+	* @Description : 신청 프로그램 정보 수정
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int updatePrgrm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
 }

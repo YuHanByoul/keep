@@ -38,6 +38,7 @@ import com.kbrainc.plum.mng.code.service.CodeServiceImpl;
 import com.kbrainc.plum.mng.inst.model.InstVo;
 import com.kbrainc.plum.mng.inst.service.InstServiceImpl;
 import com.kbrainc.plum.mng.member.model.MemberVo;
+import com.kbrainc.plum.mng.tchaid.service.TchaidService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
@@ -76,6 +77,9 @@ public class AsgsysSrngController {
 
 	@Autowired
 	private InstServiceImpl instService;
+
+	@Autowired
+    private TchaidService tchaidService;
 
 	/**********************************************************************************
      * 지정신청
@@ -634,6 +638,10 @@ public class AsgsysSrngController {
     	//컨설팅목록
     	List<DsgnPrgrmVo> csltngList = asgsysSrngService.selectCsltngList(prgrmDstnctnInfo);
     	model.addAttribute("csltngList", csltngList );
+
+    	Map<String,String> map = new HashMap();
+        map.put("cdgrpid", "155");
+        model.addAttribute("sbjctCdLsit", tchaidService.selectTchaidCdList(map)  );
 
     	//교육주제코드목록
     	List<String> eduSbjctCdLst = new ArrayList<>();
