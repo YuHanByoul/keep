@@ -178,7 +178,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.addFilterAfter(new AjaxSessionTimeoutFilter(), ExceptionTranslationFilter.class); 
 
         // http.csrf().disable(); // 주석풀지마세요!!! csrf공격대응 기능을 기본적으로 사용함(보안강화)
-        http.csrf().csrfTokenRepository(csrfTokenRepository()).ignoringAntMatchers("/onepass/acs.html");
+        http.csrf().ignoringAntMatchers("/onepass/acs.html");
 
         http.headers().frameOptions().disable(); // iframe사용가능
     }
