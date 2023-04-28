@@ -5,16 +5,15 @@
     
     <cacheManagerPeerProviderFactory
 class="net.sf.ehcache.distribution.jgroups.JGroupsCacheManagerPeerProviderFactory"
-properties="connect=UDP(mcast_addr=224.0.0.1;mcast_port=5554;ip_ttl=32;
-                                     mcast_send_buf_size=150000;mcast_recv_buf_size=80000):
-                                     PING(timeout=2000;num_initial_members=6):
-                                     MERGE2(min_interval=5000;max_interval=10000):
-                                     FD_SOCK:VERIFY_SUSPECT(timeout=1500):
-                                     pbcast.NAKACK(retransmit_timeout=3000):
-                                     UNICAST(timeout=5000):
-                                     pbcast.STABLE(desired_avg_gossip=20000):
-                                     FRAG:
-                                     pbcast.GMS(print_local_addr=false)"
+properties="connect=TCP(bind_addr=127.0.0.1;bind_port=9000):
+TCPPING(initial_hosts=127.0.0.1[9000],127.0.0.1[9001];port_range=10;timeout=3000;num_initial_members=2):
+VERIFY_SUSPECT(timeout=1500):
+UNICAST2:
+MERGE3(min_interval=10000;max_interval=30000):
+pbcast.NAKACK2(use_mcast_xmit=false;use_mcast_xmit_req=false;discard_delivered_msgs=false):
+pbcast.STABLE(stability_delay=1000;desired_avg_gossip=50000;max_bytes=400000):
+pbcast.GMS(join_timeout=3000;print_local_addr=true;view_bundling=true,join_retry_timeout=2000):
+pbcast.STATE_TRANSFER()"
 propertySeparator="::" />
    
     <defaultCache eternal="true" maxElementsInMemory="100"
@@ -66,5 +65,5 @@ propertySeparator="::" />
        
       <bootstrapCacheLoaderFactory class="com.kbrainc.plum.rte.cache.MyBootstrapCacheLoaderFactory" />  
     </cache>
-    
+
 </ehcache>
