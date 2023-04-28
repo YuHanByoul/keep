@@ -2,6 +2,7 @@ package com.kbrainc.plum.mng.dsgnPrgrm.service;
 
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmObjcVo;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmVo;
+import com.kbrainc.plum.mng.dsgnPrgrm.model.OperPrfmncVo;
 
 import java.util.List;
 
@@ -409,6 +410,39 @@ public interface DsgnPrgrmService {
 	* @return List<DsgnPrgrmVo>
 	*/
 	public List<DsgnPrgrmVo> selectSprtgrpClndrList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 운영결과 실적 목록 조회
+	*
+	* @Title : selectOperRsltPrfmncList
+	* @Description : 운영결과 실적 목록 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @return List<OperPrfmncVo>
+	*/
+	public List<OperPrfmncVo> selectOperRsltPrfmncList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 담당자 목록검색
+	*
+	* @Title : selectPicList
+	* @Description : 담당자 목록검색
+	* @param dsgnPrgrmVo
+	* @return
+	* @return List<DsgnPrgrmVo>
+	*/
+	public List<DsgnPrgrmVo> selectPicList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 운영결과 제출 상태 변경
+	*
+	* @Title : updateSbmsnStts
+	* @Description : 운영결과 제출 상태 변경
+	* @param dsgnPrgrmVo
+	* @return
+	* @return int
+	*/
+	public int updateSbmsnStts(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 
 }

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.error.controller.CustomErrorController;
 import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.asgsysSrng.service.AsgsysSrngServiceImpl;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmObjcVo;
@@ -64,6 +65,9 @@ public class DsgnPrgrmController {
 
 	@Autowired
     private AsgsysSrngServiceImpl asgsysSrngServiceImpl;
+
+	@Autowired
+    private CommonService commonService;
 
 	@Autowired
 	private InstServiceImpl instService;
@@ -211,7 +215,7 @@ public class DsgnPrgrmController {
     public String dsgnInfoForm(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
     	InstVo instVo = new InstVo();
         model.addAttribute("typeCdList", instService.selectInstTypeCdList(instVo));
-    	model.addAttribute("dsgnAplyInfo",dsgnPrgrmServiceImpl.selectDsgnPrgrm(dsgnPrgrmVo));
+    	model.addAttribute("dsgnInfo",dsgnPrgrmServiceImpl.selectDsgnPrgrm(dsgnPrgrmVo));
     	return "mng/dsgnPrgrm/dsgnInfoForm";
     }
 
@@ -417,7 +421,9 @@ public class DsgnPrgrmController {
 
     	asgsysSrngVo.setPrgrmid(dsgnPrgrmVo.getPrgrmid());
 
-    	model.addAttribute("prgrmBscInfo", asgsysSrngServiceImpl.selectDsgnAplyDtlInfo(asgsysSrngVo));    //프로그램 기본 정보
+    	model.addAttribute("sidoList", commonService.selectCtprvnList());
+    	//model.addAttribute("prgrmBscInfo", asgsysSrngServiceImpl.selectDsgnAplyDtlInfo(asgsysSrngVo));    //프로그램 기본 정보
+    	model.addAttribute("dsgnInfo",dsgnPrgrmServiceImpl.selectDsgnPrgrm(dsgnPrgrmVo));
 
     	return "mng/dsgnPrgrm/operRsltForm";
     }
@@ -460,6 +466,11 @@ public class DsgnPrgrmController {
     public String selectOperRsltDetail(DsgnPrgrmVo dsgnPrgrmVo ,Model model) throws Exception {
 
     	model.addAttribute("operRsltInfo", dsgnPrgrmServiceImpl.selectOperRsltDetail(dsgnPrgrmVo));
+    	model.addAttribute("prfmncList", dsgnPrgrmServiceImpl.selectOperRsltPrfmncList(dsgnPrgrmVo));
+
+    	InstVo instVo = new InstVo();
+    	model.addAttribute("typeCdList", instService.selectInstTypeCdList(instVo));
+    	model.addAttribute("sidoList", commonService.selectCtprvnList());
 
         return "mng/dsgnPrgrm/operRsltDetail";
     }
@@ -472,8 +483,89 @@ public class DsgnPrgrmController {
      */
     @RequestMapping(value = "/mng/dsgnPrgrm/sbmsnSttsChgPopup.html")
     public String sbmsnSttsChgPopup(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
+
+    	model.addAttribute("popInfo", dsgnPrgrmVo);
     	//model.addAttribute("sbmsnPrdChgInfo", dsgnPrgrmServiceImpl.selectOperRsltCycl(dsgnPrgrmVo));
     	return "mng/dsgnPrgrm/sbmsnSttsChgPopup";
+    }
+
+    /**
+     * @Title : sbmsnPrdChgPopup
+     * @Description : (운영결과)제출상태 변경 담당자검색 팝업
+     * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/dsgnPrgrm/searchPicPopup.html")
+    public String searchPicPopup(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
+    	model.addAttribute("sidoList", commonService.selectCtprvnList());
+    	model.addAttribute("picPopInfo", dsgnPrgrmVo);
+    	return "mng/dsgnPrgrm/searchPicPopup";
+    }
+
+    /**
+    * 담당자 목록 조회
+    *
+    * @Title : selectPicList
+    * @Description : 담당자 목록 조회
+    * @param dsgnPrgrmVo
+    * @param model
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/mng/dsgnPrgrm/selectPicList.do")
+    @ResponseBody
+    public Map<String, Object> selectPicList(DsgnPrgrmVo dsgnPrgrmVo ,Model model) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        List<DsgnPrgrmVo> result = null;
+
+        //담당자 목록 조회
+        result = dsgnPrgrmServiceImpl.selectPicList(dsgnPrgrmVo);
+
+        if (result.size() > 0) {
+            resultMap.put("totalCount", (result.get(0).getTotalCount()));
+        } else {
+            resultMap.put("totalCount", 0);
+        }
+
+        resultMap.put("list", result);
+
+        return resultMap;
+    }
+
+
+    /**
+    * 운영결과 제출상태 상태변경
+    *
+    * @Title : updateSbmsnStts
+    * @Description : 운영결과 제출상태 상태변경
+    * @param dsgnPrgrmVo
+    * @param bindingResult1
+    * @param user
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/mng/dsgnPrgrm/updateSbmsnStts.do")
+    @ResponseBody
+    public Map<String, Object> updateSbmsnStts(DsgnPrgrmVo dsgnPrgrmVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
+
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+    	int retVal = 0;
+
+    	dsgnPrgrmVo.setUser(user);
+    	retVal = dsgnPrgrmServiceImpl.updateSbmsnStts(dsgnPrgrmVo);
+
+    	if (retVal > 0) {
+    		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+    		resultMap.put("msg", "저장에 성공하였습니다.");
+    	} else {
+    		resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+    		resultMap.put("msg", "저장에 실패했습니다.");
+    	}
+
+    	return resultMap;
     }
 
     /**

@@ -61,7 +61,7 @@
         </div>
 
         <input type="hidden" id="pageNumber" name="pageNumber" value="1">
-        <input type="hidden" id="rowPerPage" name="rowPerPage" value="10"/>
+        <input type="hidden" id="rowPerPage" name="rowPerPage" value="12"/>
         <input type="hidden" id="orderField" name="orderField" value="SPCEID">
         <input type="hidden" id="ORDER_DIRECTION" name="orderDirection" value="desc">
         <input type="hidden" id="fcltid" name="fcltid" value="0">
@@ -69,30 +69,52 @@
 
     <div class="table-caption flex-nowrap">
         <div class="left">
-            <p>총 <b id="total-count">0</b> 개</p>
+            <p>총 <b id="totalCount">0</b> 개</p>
         </div>
     </div>
-    <div id="list-area">
+    
+    <div class="card-section">
+	    <ul class="n3" id="listArea">
+	    </ul>
     </div>
 
-    <div class="pagination" aria-label="pagination" id="pagination">
-    </div>
-
+    <div class="pagination" aria-label="pagination" id="pagination"></div>
+    
+    
+    <script src="/js/common/handlebars/handlebars-v4.7.7.js"></script>   
+    <script src="/js/common/handlebars/handlebars.helper.js"></script>
+    
+    <script id="listTemplate" type="text/x-handlebars-template">
+    {{#each aplyList}}
+      <li>
+          <div class="thumb">
+              <img src="/downloadFileByFileid.do?fileid={{rprsImgFileid}}&file_idntfc_key={{rprsImgFileKey}}" alt="" >
+              <div class="tag {{tagStr}}">{{aplyMthdNm}}</div>
+          </div>
+          <div class="cont mt0">
+              <div class="part ellipsis">{{instNm}}</div>
+              <a href="javascript:moveToView('{{fcltid}}')" class="title ellipsis" data-ellipsis="2">{{fcltNm}}</a>
+              <div class="fs-14 fc-black6">{{addr}} {{addrDtl}}</div>
+          </div>
+      </li>
+    {{/each}}
+    </script>
     <script th:inline="javascript">
         var listUrl = "/front/envReqst/selectEnvReqstList.do";
         var viewUrl = '/front/envReqst/resveEnvView.html';
         var formUrl = '/front/envReqst/envReqstForm.html';
         var loginUserid = /*[[${loginUserid}]]*/null;
-
+        var listTemplet = Handlebars.compile($("#listTemplate").html());
+        
         $(function () {
             selectEnvReqstList();
         });
-
+        
         function search() {
             $('#pageNumber').val(1);
             selectEnvReqstList();
         }
-
+        
         function searchInit() {
             $('input[name="instNm"]').val('');
             $('input[name="fcltNm"]').val('');
@@ -113,53 +135,26 @@
                     data: formData = $('#searchForm').serializeArray(),
                     type: 'GET',
                     success: function (data) {
-                        $("#list-area").html(makeListHtml(data.list));
+                    	renderingListData(data.list);
                         $("#pagination").html(data.pagination);
-                        $("#total-count").html(data.totalCount);
+                        $("#totalCount").html(data.totalCount);
                         closeWorkProgress();
                     }
                 });
             }
         }
-
-        function makeListHtml(list) {
-            var html = "";
-            if (list == null || list.length <= 0) {
-                html += `<div class="nodata"><p><span class="icon icon-notice bg-black9"></span>등록된 환경교육시설이 없습니다.</p></div>`;
-            } else {
-                html +='<div class="card-list card-list-n3">\n' +
-                    '            <ul>';
-                list.forEach(function (item) {
-                    html += '<li>\n' +
-                        '                <a href="/front/envReqst/resveEnvView.html?fcltid='+item.fcltid+'">\n' +
-                        '                    <div class="thumb" style="height:163px;"><img src="/downloadFileByFileid.do?fileid='+item.rprsImgFileMap.fileid+'&file_idntfc_key='+item.rprsImgFileMap.fileIdntfcKey+'" alt="'+item.fcltNm+'"></div>\n' +
-                        '                    <dl class="card-cate-list">\n' +
-                        '                        <dt>\n' +
-                        '                            <div class="tag tag-blue">'+item.aplyMthdNm+'</div>'+item.instNm+'\n' +
-                        '                        </dt>\n' +
-                        '                        <dd>\n' +
-                        '                            <p class="ellipsis" data-ellipsis="2">'+item.fcltNm+'</p>\n' +
-                        '                            <p class="fw-400">'+item.addr+ ' '+item.addrDtl+'</p>\n' +
-                        '                        </dd>\n' +
-                        '                    </dl>\n' +
-                        '                </a>\n' +
-                        '            </li>';
-                    /*html += `<tr>
-                                    <td>${item.rowNumber}</td>
-                                    <td>${item.prcsSttsCdNm}</td>
-                                    <td class="al article"><a href="javascript:void(0)" class="link ellipsis" onclick="moveToView(${item.prpslid}, ${canGoToDetail})">${item.ttl}</a></td>
-                                    <td>${item.clsfCdNm}</td>
-                                    <td>${item.acnt}</td>
-                                    <td>${item.rlsYn == 'Y' ? '공개' : '비공개'}</td>
-                                    <td>${item.regDt}</td>
-                                </tr>`;*/
-                })
-                html += '</ul>' +
-                    '</div>';
-            }
-            return html;
+        function renderingListData(list){
+            
+            list.forEach(function(item){
+                if(item.aplyMthdCd == '153101'){
+                    item.tagStr = ' tag-green';
+                }else{
+                    item.tagStr = ' tag-blue ';
+                }
+            })
+            $("#listArea").html(listTemplet({aplyList:list}));
         }
-
+        
         function moveToInsertForm() {
             var f = document.forms.searchForm;
             f.action = formUrl;

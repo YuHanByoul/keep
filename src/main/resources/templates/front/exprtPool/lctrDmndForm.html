@@ -220,23 +220,25 @@
             save() {
                 if (!$('#lctrDmndForm').valid()) return;
 
-                $('#eml').val($('#emailLocal').val() + "@" + $('#emailDomain').val());
-                if (displayWorkProgress(true)) {
-                    $.ajax({
-                        method: 'post',
-                        cache: false,
-                        url: frontLctrDmndForm.insertUrl,
-                        data: $('#lctrDmndForm').serializeArray(),
-                        dataType: 'json',
-                        success: function (response) {
-                            if (response.result == "success") {
-                                location.href = frontLctrDmndForm.successUrl;
-                            } else {
-                                alert(response.msg);
+                if(confirm('섭외요청을 완료하시겠습니까?')) {
+                    $('#eml').val($('#emailLocal').val() + "@" + $('#emailDomain').val());
+                    if (displayWorkProgress(true)) {
+                        $.ajax({
+                            method: 'post',
+                            cache: false,
+                            url: frontLctrDmndForm.insertUrl,
+                            data: $('#lctrDmndForm').serializeArray(),
+                            dataType: 'json',
+                            success: function (response) {
+                                if (response.result == "success") {
+                                    location.href = frontLctrDmndForm.successUrl;
+                                } else {
+                                    alert(response.msg);
+                                }
+                                closeWorkProgress();
                             }
-                            closeWorkProgress();
-                        }
-                    })
+                        })
+                    }
                 }
             },
 

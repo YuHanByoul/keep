@@ -6,6 +6,31 @@
 	Description : 환경교육 NOW -> 환경교육관리
 -->
 <mapper namespace="com.kbrainc.plum.front.wbzn.now.model.EnveduDao">
+    <!-- 환경교육 NOW 메인 웹진 목록 조회 -->
+    <select id="selectEnveduExpsrList" parameterType="front.EnveduVo" resultType="front.EnveduVo">
+        SELECT
+            A.ENVEDUID
+            , A.URL
+            , A.THMBN_FILEID
+            , B.FILE_IDNTFC_KEY
+            , A.ENVEDU_SE_CD
+            , C.CD_NM AS ENVEDU_SE_CD_NM
+            , A.TTL
+        FROM
+            TB_CMM_WBZN_ENVEDU A
+        LEFT OUTER JOIN
+            TB_CMM_FILE B ON (B.FILEID = A.THMBN_FILEID)
+        LEFT OUTER JOIN
+            TB_CMM_CD C ON (C.CD = A.ENVEDU_SE_CD)
+        WHERE
+            A.CLSF_CD = '232101'
+            AND A.EXPSR_YN = 'Y'
+        ORDER BY
+            A.REG_DT DESC
+        LIMIT 
+            0, 8
+    </select>
+
     <!-- 환경교육관리 게시글 목록 조회 -->
     <select id="selectBannerList" parameterType="front.BannerVo" resultType="front.BannerVo">
         /* EnveduDao.selectBannerList */

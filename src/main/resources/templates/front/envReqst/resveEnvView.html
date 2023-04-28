@@ -1,10 +1,12 @@
-<html xmlns:th="http://www.thymeleaf.org"
+<html xmlns:th="http://wwwymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
       layout:decorator="layout/front/subLayout">
 <div layout:fragment="content">
     <link rel="stylesheet" href="/css/front/flatpickr.min.css">
+    <script type="text/javascript" src="/files/bower_components/moment/moment.js" charset="utf-8"></script>
     <script src="/js/front/flatpickr.js"></script>
+    <script src="/js/front/flatpickr-locale-ko.js"></script>
     <script src="/js/front/flatpickr-locale-ko.js"></script>
 
     <div class="product-wrap sub-banner-swiper">
@@ -14,14 +16,14 @@
                     <th:block th:if="${rprsImgFileMap}">
                         <div class="swiper-slide" th:each="item : ${rprsImgFileMap}" th:id="${item.fileid}">
                             <div class="thumb">
-                                <img th:src="@{'/downloadFileByFileid.do?fileid='+${item.fileid}+'&file_idntfc_key='+${item.fileIdntfcKey}}"/>
+                                <img th:src="@{'/downloadFileByFileid.do?fileid='+${item.fileid}+'&file_idntfc_key='+${item.fileIdntfcKey}}" alt=""/>
                             </div>
                         </div>
                     </th:block>
                     <th:block th:if="${dtlImgFileMap}">
                         <div class="swiper-slide" th:each="item : ${dtlImgFileMap}" th:id="${item.fileid}">
                             <div class="thumb">
-                                <img th:src="@{'/downloadFileByFileid.do?fileid='+${item.fileid}+'&file_idntfc_key='+${item.fileIdntfcKey}}"/>
+                                <img th:src="@{'/downloadFileByFileid.do?fileid='+${item.fileid}+'&file_idntfc_key='+${item.fileIdntfcKey}}" alt=""/>
                             </div>
                         </div>
                     </th:block>
@@ -34,14 +36,14 @@
                     <th:block th:if="${rprsImgFileMap}">
                         <div class="swiper-slide" th:each="item : ${rprsImgFileMap}" th:id="${item.fileid}">
                             <div class="thumb">
-                                <img th:src="@{'/downloadFileByFileid.do?fileid='+${item.fileid}+'&file_idntfc_key='+${item.fileIdntfcKey}}"/>
+                                <img th:src="@{'/downloadFileByFileid.do?fileid='+${item.fileid}+'&file_idntfc_key='+${item.fileIdntfcKey}}" alt=""/>
                             </div>
                         </div>
                     </th:block>
                     <th:block th:if="${dtlImgFileMap}">
                         <div class="swiper-slide" th:each="item : ${dtlImgFileMap}" th:id="${item.fileid}">
                             <div class="thumb">
-                                <img th:src="@{'/downloadFileByFileid.do?fileid='+${item.fileid}+'&file_idntfc_key='+${item.fileIdntfcKey}}"/>
+                                <img th:src="@{'/downloadFileByFileid.do?fileid='+${item.fileid}+'&file_idntfc_key='+${item.fileIdntfcKey}}" alt=""/>
                             </div>
                         </div>
                     </th:block>
@@ -60,6 +62,7 @@
                     </th:block>
                 </div>
             </div>
+            
             <th:block th:if="${envReqst.aplyMthdCd} == '153102'">
                 <div class="detail">
                     <div class="desc">
@@ -76,6 +79,7 @@
                     </dl>
                 </div>
             </th:block>
+            
         </div>
     </div>
     <th:block th:if="${envReqst.aplyMthdCd} == '153101'">
@@ -101,10 +105,10 @@
 
             <div class="reservation-inner">
                 <div class="left">
-                    <input type="date" datepicker="true" class="blind">
+                    <input type="date" id="flatpickr" name="flatpickr" datepicker="true" class="blind">
                 </div>
                 <div class="right">
-                    <div>
+                        <!--대여 선택시 표출 테이블 -->
                         <div class="table-col table-layout-auto table-col-sm" id="timeTable" style="display:none;">
                             <table>
                                 <caption>환경교육시설 예약 - 선택, 시간, 가격</caption>
@@ -113,7 +117,7 @@
                                 </colgroup>
                                 <thead>
                                 <tr>
-                                    <th scope="col"><span class="blind">선택</span></th>
+                                    <th scope="col"><span class="">선택</span></th>
                                     <th scope="col">시간</th>
                                     <th scope="col">가격</th>
                                 </tr>
@@ -122,31 +126,34 @@
                                 </tbody>
                             </table>
                         </div>
-                    </div>
+                    
                     <div class="detail">
                         <dl>
                             <div class="list">
-                                <dt><span>이용인원<i class="ast" title="필수 입력">*</i></span><p class="fs-14 fc-black6">최대 <span id="maxNope">0</span>인</p></dt>
+                                <dt><span>이용인원 <i class="ast" title="필수 입력"> * </i></span><p class="fs-14 fc-black6">최대 <span id="maxNope">0</span>인</p></dt>
                                 <dd>
                                     <div class="form-input d-flex mo-flex-wrap al a-center j-between pt0 pb0">
                                         <div class="form-input" style="flex:1;max-width:calc(100% / 3 - 10px)">
                                             <div class="bul fs-14">성인</div>
                                             <div class="form-input form-input-number">
-                                                <input type="number" id="nopeAdult" min="0" max="15" title="성인" class="ac pl0 pr0">
-                                                <div class="btn-number"><button type="button" class="num-up" title="숫자 증가"></button><button type="button" class="num-down" title="숫자 감소"></button></div>
+                                                <input type="number" id="nopeAdult" name="nopeAdult" min="0" max="15" title="성인" class="ac pl0 pr0">
+                                                <div class="btn-number">
+                                                      <button type="button" class="num-up"   title="숫자 증가"></button>
+                                                      <button type="button" class="num-down" title="숫자 감소"></button>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="form-input" style="flex:1;max-width:calc(100% / 3 - 10px)">
                                             <div class="bul fs-14">아동</div>
                                             <div class="form-input form-input-number">
-                                                <input type="number" id="nopeChil" min="0" max="15" title="아동" class="ac pl0 pr0">
+                                                <input type="number" id="nopeChil"  name="nopeChil" min="0" max="15" title="아동" class="ac pl0 pr0">
                                                 <div class="btn-number"><button type="button" class="num-up" title="숫자 증가"></button><button type="button" class="num-down" title="숫자 감소"></button></div>
                                             </div>
                                         </div>
                                         <div class="form-input" style="flex:1;max-width:calc(100% / 3 - 10px)">
                                             <div class="bul fs-14">유아</div>
                                             <div class="form-input form-input-number">
-                                                <input type="number" id="nopeInfnt" min="0" max="15" title="유아" class="ac pl0 pr0">
+                                                <input type="number" id="nopeInfnt" name="nopeInfnt" min="0" max="15" title="유아" class="ac pl0 pr0">
                                                 <div class="btn-number"><button type="button" class="num-up" title="숫자 증가"></button><button type="button" class="num-down" title="숫자 감소"></button></div>
                                             </div>
                                         </div>
@@ -156,7 +163,7 @@
                         </dl>
                         <dl>
                             <div class="list">
-                                <dt><span>이용목적<i class="ast" title="필수 입력">*</i></dt>
+                                <dt><span>이용목적 <i class="ast" title="필수 입력"> *</i></dt>
                                 <dd>
                                     <div class="form-input">
                                         <textarea title="이용목적" id="utztnPrps"></textarea>
@@ -192,6 +199,7 @@
             <div id="tab-subpanel01" class="tabpanel active" role="tabpanel" aria-labelledby="tab-sub01">
                 <th:block th:text="${envReqst.dtlCn}"/>
             </div>
+            
             <div id="tab-subpanel02" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub02">
                 <form id="searchForm" name="searchForm" onsubmit="return false;">
                     <input type="hidden" id="pageNumber" name="pageNumber" value="1">
@@ -199,77 +207,9 @@
                     <input type="hidden" id="orderField" name="orderField" value="RVW_DT">
                     <input type="hidden" id="ORDER_DIRECTION" name="orderDirection" value="desc">
                 </form>
-
-                <div class="accordion-content acc-list" id="list-area">
-                    <h3 class="acc-title active">
-                        <span class="acc-trigger mo-flex-wrap">
-                            <span class="name">ti**23</span>
-                            <span class="rate" title="별점4">
-                                <span class="icon icon-star" title=""></span>
-                                <span class="icon icon-star" title=""></span>
-                                <span class="icon icon-star" title=""></span>
-                                <span class="icon icon-star" title=""></span>
-                            </span>
-                        </span>
-                    </h3>
-                    <div class="acc-panel active">
-                        <span class="blind">후기</span>
-                        <div class="acc-content bg-white p0 fc-black6 fw-300">
-                            Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. <br>Nullam id dolor id nibh ultricies vehicula. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla.
-                        </div>
-                    </div>
-                    <h3 class="acc-title active">
-										<span class="acc-trigger mo-flex-wrap">
-											<span class="name">ti**23</span>
-											<span class="rate" title="별점0"></span>
-										</span>
-                    </h3>
-                    <div class="acc-panel active">
-                        <span class="blind">후기</span>
-                        <div class="acc-content bg-white p0 fc-black6 fw-300">
-                            Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. <br>Nullam id dolor id nibh ultricies vehicula. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla.
-                        </div>
-                    </div>
-                    <h3 class="acc-title active">
-										<span class="acc-trigger mo-flex-wrap">
-											<span class="name">ti**23</span>
-											<span class="rate" title="별점5">
-												<span class="icon icon-star" title=""></span>
-												<span class="icon icon-star" title=""></span>
-												<span class="icon icon-star" title=""></span>
-												<span class="icon icon-star" title=""></span>
-												<span class="icon icon-star" title=""></span>
-											</span>
-										</span>
-                    </h3>
-                    <div class="acc-panel active">
-                        <span class="blind">후기</span>
-                        <div class="acc-content bg-white p0 fc-black6 fw-300">
-                            Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. <br>Nullam id dolor id nibh ultricies vehicula. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla.
-                        </div>
-                    </div>
-                    <h3 class="acc-title active">
-										<span class="acc-trigger mo-flex-wrap">
-											<span class="name">ti**23</span>
-											<span class="rate" title="별점4">
-												<span class="icon icon-star" title=""></span>
-												<span class="icon icon-star" title=""></span>
-												<span class="icon icon-star" title=""></span>
-												<span class="icon icon-star" title=""></span>
-											</span>
-										</span>
-                    </h3>
-                    <div class="acc-panel active">
-                        <span class="blind">답변</span>
-                        <div class="acc-content bg-white p0 fc-black6 fw-300">
-                            Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. <br>Nullam id dolor id nibh ultricies vehicula. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla.
-                        </div>
-                    </div>
-                </div>
-
-                <div class="pagination" id="pagination" aria-label="pagination">
-                </div>
-
+                
+                <div class="accordion-content acc-list" id="list-area"></div>
+                <div class="pagination" id="pagination" aria-label="pagination"></div>
             </div>
         </div>
     </th:block>
@@ -290,6 +230,8 @@
 
     <form id="viewForm" method="get" onsubmit="return false;">
         <input type="hidden" id="fcltid" name="fcltid" th:value="${envReqst.fcltid}">
+        
+        
         <input type="hidden" id="spceid" name="spceid">
         <input type="hidden" id="rsvtdeid" name="rsvtdeid">
         <input type="hidden" id="startDate" name="startDate">
@@ -297,11 +239,48 @@
         <input type="hidden" name="nopeAdult" value="0">
         <input type="hidden" name="nopeChil" value="0">
         <input type="hidden" name="nopeInfnt" value="0">
-        <input type="hidden" id="utztnSeCd" name="utztnSeCd">
+        <!-- <input type="hidden" id="utztnSeCd" name="utztnSeCd"> -->
         <input type="hidden" name="utztnPrps">
     </form>
 
     <script th:inline="javascript">
+
+        /* 이용 형태 변경 event(숙박 or 대여) */
+        $(document).on('change', 'input[name="utztnSe"]' , function () {
+            var selectedVal = $('select[name="spceList"]').val()
+            if(selectedVal ==null || selectedVal ==''){
+                alert("공간을 선택해주십시오.");
+                $('input[name="utztnSe"]').prop("checked",false);
+                return;
+            }
+            
+            resetData();
+            
+            var mode = 'range';
+            if( $(this).val() == '169101' ){
+                // 숙박
+                $('.dot-blue').show();
+                $('.dot-red').hide();
+            }else{
+                // 대여
+                mode = 'single';
+                $('.dot-blue').hide();
+                $('.dot-red').show();
+            }
+            
+            $('#spceid').val(selectedVal);
+            
+            makeCalendarEvent(null, selectedVal, mode);
+            
+            for( var i=0; i<spceList.length; i++ ){
+                if( spceList[i].spceid == selectedVal ){
+                    // 선택한 이용공간의 정보
+                    maxNope = spceList[i].maxNope;
+                    $('#maxNope').text(maxNope);
+                }
+            }
+            utztnSeCd = $(this).val();
+        });
 
         // 공간리스트
         var spceList = /*[[${spceList}]]*/null;
@@ -315,29 +294,125 @@
         var selectedAmt;
         // 대여인지, 숙박인지 구분값(대여 : 169102, 숙박 : 169101)
         var utztnSeCd = '169101';
-
         var selectedTimeList = [];
+        var datepicker = null;
+        var today = date2str(parseDate(new Date()), 'yyyy-mm-dd');
+        var newToday = new Date(today);
+        
+        let list01 = '<ul><li class="dot-white">예약불가</li><li class="dot-blue">숙박</li><li class="dot-red">대여</li><ul>';
 
-        let list01 = `<ul><li class="dot-white">예약불가</li><li class="dot-blue">숙박</li><li class="dot-red">대여</li><ul>`;
-
-        let datepicker = flatpickr("[datepicker=true]",{
-            mode: "range",
-            minDate: "today",
-            dateFormat: "Y-m-d",
-            locale: "ko",
-            inline: true,
-            position: "bottom center",
-            onDayCreate: function(dObj, dStr, fp, dayElem) {
-                var date = dayElem.dateObj,
-                    key = date.getFullYear() + '-' + get2DigitFmt(date.getMonth() + 1) + '-' + get2DigitFmt(date.getDate()),
-                    value = '';
-                if (value) {
-                    dayElem.className += ' ' + value[0];
-                    dayElem.title = value[1]
+        // 초기화용 picker
+        var initFlatpickr = function(){
+            datepicker = flatpickr("#flatpickr",{
+                mode: "single",
+                minDate: "today",
+                dateFormat: "Y-m-d",
+                locale: "ko",
+                inline: true,
+                position: "bottom center",
+                onDayCreate: function(dObj, dStr, fp, dayElem) {
+                    var date = dayElem.dateObj,
+                        key = date.getFullYear() + '-' + get2DigitFmt(date.getMonth() + 1) + '-' + get2DigitFmt(date.getDate()),
+                        value = '';
+                    if (value) {
+                        dayElem.className += ' ' + value[0];
+                        dayElem.title = value[1]
+                    }
+                },
+                onChange: function(dObj, dStr, fp, dayElem) {
+                    if($('select[name="spceList"]').val() == "" || $('input[name="utztnSe"]:checked').val()==null  ){
+                        alert("먼저 공간 및 숙박/대여 여부를 선택 하세요");
+                        $(".flatpickr-day").removeClass(" selected startRange endRange"); 
+                        return false;
+                    }
                 }
-            }
-        });
+            });
+        }
 
+        
+        $(function(){
+            
+        	initFlatpickr();
+        	
+            $(document).off('keyup', '.form-input-number input[type="number"]');
+            
+            $(document).off('click', '.form-input-number button');
+            
+            $(document).on('keyup', '.form-input-number input[type="number"]' , function () {
+                const numInput = $(this);
+                const valueMin = parseInt(numInput[0].min);
+                const valueMax = parseInt(numInput[0].max);
+                if (numInput.val() > valueMax) {
+                    numInput.val(valueMax)
+                }
+                if (numInput.val() < valueMin) {
+                    numInput.val(valueMin)
+                }
+
+                let tempCnt = 0;
+                
+                $('.form-input-number input[type="number"]').each(function(){
+                    tempCnt += parseInt(this.value);
+                })
+                let inputId = $(this).attr('id');
+
+                if( tempCnt > maxNope ){
+                    alert('최대 '+maxNope+'명 까지만 신청 가능합니다.');
+                    $('input[name='+inputId+']').val(0);
+                    numInput.val(0);
+                }else{
+                    userCnt = tempCnt;
+                    $('input[name='+inputId+']').val(this.value);
+                }
+            });
+
+            $(document).on('click', '.form-input-number button' , function () {
+                
+                const par = $(this).closest('.form-input-number');
+                const numInput = par.find('input[type="number"]');
+                const valueMin = parseInt(numInput[0].min);
+                const valueMax = parseInt(numInput[0].max);
+
+                //value up
+                if ($(this).hasClass('num-up')) {
+                    userCnt++;
+                    if (numInput.val() === '') {
+                        numInput.val(0)
+                    }
+                    if (valueMax > numInput.val() || numInput[0].max === '') {
+                        if( userCnt > maxNope ){
+                            userCnt--;
+                            if( userCnt == maxNope ){
+                                alert('최대 '+maxNope+'명 까지만 신청 가능합니다.');
+                                numInput.val(parseInt(numInput.val()));
+                            }
+                        }else{
+                            numInput[0].value++;
+                        }
+                    }
+                }
+
+                //value down
+                if ($(this).hasClass('num-down')) {
+                    if (numInput.val() === '') {
+                        numInput.val(0)
+                    }
+                    if (numInput.val() > valueMin || numInput[0].min === '') {
+                        numInput[0].value--;
+                        userCnt--;
+                    }
+                }
+
+                let inputId = $(numInput).attr('id');
+                $('input[name='+inputId+']').val(numInput.val());
+
+            });
+
+            //후기 목록 호출 
+            selectResveEnvRvwList();
+        })
+        
+        
         function date2str(x, y) {
             var z = {
                 m: x.getMonth() + 1,
@@ -381,10 +456,7 @@
 
             return _dateObj;
         }
-
-        var today = date2str(parseDate(new Date()), 'yyyy-mm-dd');
-        var newToday = new Date(today);
-
+        
         var envReqstView = {
             fcltid: /*[[${envReqst.fcltid}]]*/null,
             updateUrl: '/front/envReqst/updateEnvReqst.html',
@@ -408,45 +480,13 @@
                 f.submit();
             }
         };
-
-        var swiper = new Swiper(".gallery-list", {
-            loop: false,
-            spaceBetween: 0,
-            slidesPerView: 5,
-            freeMode: true,
-            watchSlidesProgress: true,
-        });
-        var swiper2 = new Swiper(".gallery-thumb", {
-            loop: false,
-            spaceBetween: 10,
-            thumbs: {
-                swiper: swiper,
-            },
-            navigation: {
-                nextEl: ".swiper-button-next",
-                prevEl: ".swiper-button-prev",
-            },
-            a11y: {
-                prevSlideMessage: '이전 슬라이드',
-                nextSlideMessage: '다음 슬라이드',
-            },
-        });
-
-
-        const dates01 = {
-            '2023-04-09': '0',
-            '2023-04-21': '0',
-            '2023-04-22': '0',
-            '2023-04-23': '0',
-            '2023-04-24': '0',
-            '2023-04-25': '1',
-        }
-
+        
         const classDict02 = {
             '0' : ['dot-blue','숙박'],
             '1' : ['dot-red','대여'],
         };
-        let list02 = `<ul><li class="dot-white">예약불가</li><li class="dot-blue">숙박</li><li class="dot-red">대여</li><ul>`;
+        
+        let list02 = '<ul><li class="dot-white">예약불가</li><li class="dot-blue">숙박</li><li class="dot-red">대여</li><ul>';
 
         // Better always use a two digit format in your dates obj
         function get2DigitFmt(val) {
@@ -454,28 +494,15 @@
         }
 
         function selectSpce(el){
+            // 숙박,대여 라디오 버튼 초기화 
             $('input[name="utztnSe"]').prop('checked', false);
+            //데이터 초기화
             resetData();
-
-            datepicker = flatpickr("[datepicker=true]",{
-                mode: "single",
-                minDate: "today",
-                dateFormat: "Y-m-d",
-                locale: "ko",
-                inline: true,
-                position: "bottom center",
-                onDayCreate: function(dObj, dStr, fp, dayElem) {
-                    var date = dayElem.dateObj,
-                        key = date.getFullYear() + '-' + get2DigitFmt(date.getMonth() + 1) + '-' + get2DigitFmt(date.getDate()),
-                        value = '';
-                    if (value) {
-                        dayElem.className += ' ' + value[0];
-                        dayElem.title = value[1]
-                    }
-                }
-            });
+            //flatpicker 초기화 
+            initFlatpickr();
         }
 
+        //데이터 초기화 
         function resetData(){
             userCnt = 0;
             selectedAmt = 0;
@@ -490,6 +517,7 @@
         }
 
         function checkData(){
+            
             let spceid = $('#spceid').val();
             let startDate = $('#startDate').val();
             let endDate = $('#endDate').val();
@@ -502,37 +530,32 @@
                 alert('이용공간을 선택해 주세요.');
                 return false;
             }
-
             if( startDate == '' || endDate == '' ){
                 alert('이용날짜를 선택해 주세요.');
                 return false;
             }
-
             if( utztnSeCd == '169102' && time == '' ){
                 alert('이용시간을 선택해 주세요.');
                 return false;
             }
-
             if( nopeCnt == 0 ){
                 alert('이용인원수를 입력해 주세요.');
                 return false;
             }
-
             if( utztnPrps == '' ){
                 alert('이용목적을 입력해 주세요.');
                 return false;
             }
-
             return true;
         }
-
+        
         function makeCalendarEvent(gotoYYYYMM, spceid, mode){
 
             var date = new Date();
             y = date.getFullYear();
             m = date.getMonth();
             var firstDay = new Date(y, m, 1);
-            var lastDay = new Date(y, m + 1, 0);
+            var lastDay = new Date(y, m + 2, 0);
 
             var firstDay_string = date2str(parseDate(firstDay), 'yyyy-mm-dd');
 
@@ -552,11 +575,11 @@
             }
 
             if( mode == 'single' ){
-                list02 = `<ul><li class="dot-white">예약불가</li><li class="dot-red">대여</li><ul>`;
+                list02 = '<ul><li class="dot-white">예약불가</li><li class="dot-red">대여</li><ul>';
             }else{
-                list02 = `<ul><li class="dot-white">예약불가</li><li class="dot-blue">숙박</li><ul>`;
+                list02 = '<ul><li class="dot-white">예약불가</li><li class="dot-blue">숙박</li><ul>';  
             }
-
+            
             if(displayWorkProgress()){
                 $.ajax({
                     url : "/front/envReqst/selectSpceRsvtdeList.do",
@@ -565,34 +588,27 @@
                     dataType: 'json',
                     data : params,
                     success : function (data){
-
+                        
                         let list = data.rsvtdelist;
-
-                        let enableDates = [
-                        ];
-
-                        let disableDates = [
-                        ];
-
+                        
+                        let enableDates = [];
+                        let disableDates = [];
                         let dates02 = {};
 
                         if(list.length > 0){
-
-                            var schdul_events = { events: []};
-
+                            
                             list.forEach(function(item){
                                 let de = item.de;
                                 // let amt = (item.amt=='0')? "무료":addComma3(item.amt)+'원';
-
-                                if( item.fullYn == 0 ){
+                                              
+                                if( item.fullYn == 0 ){ // 이미 신청 되어 있거나 승인된 이벤트가 없는
                                     if(item.utztnSeCd == '169102'){//대여
                                         if( item.todayRsvtPsbltyYn == 'Y' ){
                                             dates02[de] = '1';
                                             enableDates.push(de);
                                         }else{
-                                            if( !( newToday.getFullYear() === new Date(de).getFullYear() &&
-                                                newToday.getMonth() === new Date(de).getMonth() &&
-                                                newToday.getDate()=== new Date(de).getDate() ) ){
+                                            if( (moment(newToday).format("YYYY-MM-DD")) != (moment(new Date(de)).format("YYYY-MM-DD")) ){
+                                                console.log(de)
                                                 dates02[de] = '1';
                                                 enableDates.push(de);
                                             }
@@ -602,9 +618,7 @@
                                             dates02[de] = '0';
                                             enableDates.push(de);
                                         }else{
-                                            if( !( newToday.getFullYear() === new Date(de).getFullYear() &&
-                                                newToday.getMonth() === new Date(de).getMonth() &&
-                                                newToday.getDate()=== new Date(de).getDate() ) ){
+                                        	if( moment(newToday).format("YY-MM-DD") != moment(new Date(de)).format("YY-MM-DD") ){
                                                 dates02[de] = '0';
                                                 enableDates.push(de);
                                             }
@@ -612,7 +626,7 @@
                                     }
                                 }
                             })
-
+                            
                             datepicker = flatpickr("[datepicker=true]",{
                                 mode: mode,
                                 dateFormat: "Y-m-d",
@@ -628,7 +642,7 @@
                                         key = date.getFullYear() + '-' + get2DigitFmt(date.getMonth() + 1) + '-' + get2DigitFmt(date.getDate()),
                                         value = classDict02[dates02[key]];
                                     if (value) {
-                                        dayElem.className += ' ' + value[0];
+                                        dayElem.className +=' ' + value[0];
                                         dayElem.title = value[1]
                                     }
                                 },
@@ -639,57 +653,87 @@
                                     datepickerWrap.appendChild(datepickerList)
                                     datepickerList.insertAdjacentHTML('beforeend', list02);
                                 },
+                                onOpen : function(selectedDates, dateStr, instance){
+                                },
+                                onMonthChange: function(selectedDates, dateStr, instance){
+                                },
                                 onChange : function(selectedDates, dateStr, instance){
                                     selectedRsvtdeidList = [];
                                     resetData();
+                                    
                                     if( mode == 'single' ){
                                         // 대여
                                         var str = '';
                                         $('#timeList').empty();
-                                        for( var t=0; t<data.rsvtdelist.length; t++ ){
+                                        for( var t=0;  t< data.rsvtdelist.length; t++ ){
+                                            
                                             let innerData = data.rsvtdelist[t];
                                             let target1 = new Date(innerData.de);
+                                            //체킹 한 날자
                                             let target2 = new Date(dateStr);
                                             let disabledStr = 'disabled';
-                                            if( innerData.fullYn == '0' ){
-                                                disabledStr = '';
-                                            }
-                                            if( target1.getFullYear() === target2.getFullYear() &&
-                                                target1.getMonth() === target2.getMonth() &&
-                                                target1.getDate()=== target2.getDate() ){
+                                            if( innerData.fullYn == '0' ){ disabledStr = ''; }
+
+                                            if(moment(target1).format("YY-MM-DD") == moment(new Date(target2)).format("YY-MM-DD")
+                                                //target1.getFullYear() === target2.getFullYear() &&
+                                                //target1.getMonth() === target2.getMonth() &&
+                                                //target1.getDate()=== target2.getDate() 
+                                                ){
+                                                
                                                 let amt = (innerData.amt=='0')? "무료":addComma3(innerData.amt)+'원';
+                                                
                                                 str = '<tr class="tr-check">\n' +
-                                                    '                                <td><label class="inp vm"><input type="checkbox" data-strtTm="'+innerData.strtTm+'" data-endTm="'+innerData.endTm+'" id="rsvtdeTime'+innerData.rsvtdeid+'" name="rsvtdeTime" data-amt="'+innerData.amt+'" value="'+innerData.rsvtdeid+'" '+disabledStr+'></label></td>\n' +
-                                                    '                                <td class="timeStr">'+innerData.strtTm +' ~ '+ innerData.endTm+'</td>\n' +
-                                                    '                                <td>'+amt+'</td>\n' +
-                                                    '                            </tr>';
+                                                      '<td><label class="inp vm">'+
+                                                      '<input type="checkbox" data-strtTm="'+innerData.strtTm
+                                                        +'" data-endTm="'+innerData.endTm
+                                                        +'" id="rsvtdeTime'+innerData.rsvtdeid
+                                                        +'" name="rsvtdeTime" data-amt="'
+                                                        +innerData.amt+'" value="'+innerData.rsvtdeid+'" '+disabledStr+'>'
+                                                      '</label></td>\n' +
+                                                      '<td class="timeStr">'+innerData.strtTm +' ~ '+ innerData.endTm+'</td>\n' +
+                                                      '<td>'+amt+'</td>\n' +
+                                                      '</tr>';
                                                 $('#timeList').append(str);
                                             }
                                         }
+                                        
                                         $('#timeTable').show();
                                         $('#startDate').val(dateStr);
                                         $('#endDate').val(dateStr);
-                                        $('#useDate').text(date2str(parseDate(dateStr), 'yyyy년 mm월 dd일'));
+                                        $('#useDate').text( moment(new Date(dateStr)).format('yyyy년 mm월 dd일'));
+                                        
+                                        //$('#useDate').text(date2str(parseDate(dateStr), 'yyyy년 mm월 dd일'));
+                                        
                                     }else{
                                         // 숙박
                                         $('#timeTable').hide();
 
+                                        console.log(selectedDates);
+                                        
                                         if( selectedDates.length > 1 ) {
                                             let selectedDatesList = [];
                                             let target1 = new Date(selectedDates[0]);
                                             let target2 = new Date(selectedDates[1]);
+                                            
                                             $('#startDate').val(date2str(parseDate(selectedDates[0]), 'yyyy-mm-dd'));
                                             $('#endDate').val(date2str(parseDate(selectedDates[1]), 'yyyy-mm-dd'));
-                                            if( !( target1.getFullYear() === target2.getFullYear() &&
-                                                target1.getMonth() === target2.getMonth() &&
-                                                target1.getDate()=== target2.getDate() ) ){
+                                            
+                                            if( !moment(target1).isSame(target2)
+                                                //moment(target1).format("YY-MM-DD") != moment(new Date(target2)).format("YY-MM-DD")
+                                                //!( target1.getFullYear() === target2.getFullYear() &&
+                                                //target1.getMonth() === target2.getMonth() &&
+                                                //target1.getDate()=== target2.getDate() ) 
+                                                ){
                                                 // 2일 이상
                                                 let dateList = getDatesStartToLast(date2str(parseDate(selectedDates[0]), 'yyyy-mm-dd'), date2str(parseDate(selectedDates[1]), 'yyyy-mm-dd'));
                                                 for( var s=0; s<selectedDates.length; s++ ){
                                                     selectedDatesList.push(date2str(parseDate(selectedDates[s]), 'yyyy년 mm월 dd일'));
                                                 }
+                                                
                                                 for( var da=0; da<dateList.length; da++ ){
+                                                    
                                                     for( var da2=0; da2<data.rsvtdelist.length; da2++ ){
+                                                        
                                                         let innerData = data.rsvtdelist[da2];
                                                         let daTarget1 = new Date(dateList[da]);
                                                         let daTarget2 = new Date(innerData.de);
@@ -700,13 +744,16 @@
                                                             selectedAmt += innerData.amt;
                                                         }
                                                     }
+                                                    
                                                 }
 
                                                 $('#useDate').text(selectedDatesList.join(' ~ '));
                                                 $('#useAmt').text(addComma3(selectedAmt)+'원');
                                                 $('#amt').val(selectedAmt);
                                                 $('#rsvtdeid').val(JSON.stringify(selectedRsvtdeidList));
+                                                
                                             }else{
+                                                
                                                 if( dates02[dateStr] != 1 ){
                                                     // 당일 숙박
                                                     let dateList = getDatesStartToLast(date2str(parseDate(selectedDates[0]), 'yyyy-mm-dd'), date2str(parseDate(selectedDates[0]), 'yyyy-mm-dd'));
@@ -761,16 +808,15 @@
                 // 이전것과 비교해 더 작은 것 리턴
                 return prev <= curr ? prev : curr;
             })
-        }
 
+            }
         function maxOfArray(arr) {
             arr.reduce((prev,curr) => {
                 // 이전것과 비교해 더 큰 것을 리턴
                 return prev <= curr ? curr : prev;
             })
         }
-
-
+        
         $(document).on('change', 'input[name="rsvtdeTime"]' , function () {
             var strtTm = $(this).attr('data-strtTm');
             var endTm = $(this).attr('data-endTm');
@@ -779,7 +825,6 @@
                 selectedAmt += parseInt($(this).attr('data-amt'));
                 selectedStrtTmTimeList.push(strtTm);
                 selectedEndTmTimeList.push($(this).attr('data-endTm'));
-
                 selectedRsvtdeidList.push({rsvtdeid : $(this).val()});
             }else{
                 selectedAmt -= parseInt($(this).attr('data-amt'));
@@ -815,126 +860,24 @@
             }else{
                 $('#useTime').text('');
             }
-
-
+            
             $('#rsvtdeid').val(JSON.stringify(selectedRsvtdeidList));
-
             $('#useAmt').text(addComma3(selectedAmt)+'원');
             $('#amt').val(selectedAmt);
-        });
-
-        /* 이용 형태 변경 event(숙박 or 대여) */
-        $(document).on('change', 'input[name="utztnSe"]' , function () {
-            resetData();
-            var mode = 'range';
-            if( $(this).val() == '169101' ){
-                // 숙박
-                $('.dot-blue').show();
-                $('.dot-red').hide();
-            }else{
-                // 대여
-                mode = 'single';
-                $('.dot-blue').hide();
-                $('.dot-red').show();
-            }
-
-            var selectedVal = $('select[name="spceList"]').val()
-            $('#spceid').val(selectedVal);
-            makeCalendarEvent(null, selectedVal, mode);
-            for( var i=0; i<spceList.length; i++ ){
-                if( spceList[i].spceid == selectedVal ){
-                    // 선택한 이용공간의 정보
-                    maxNope = spceList[i].maxNope;
-                    $('#maxNope').text(maxNope);
-                }
-            }
-
-            utztnSeCd = $(this).val();
-
         });
 
         $(document).on('click', '#submitData', function(){
             if( checkData() ){
                 $('input[name="utztnPrps"]').val($('#utztnPrps').val());
-                envReqstView.moveToUpdate()
+                envReqstView.moveToUpdate();
             }
         })
 
-        $(function(){
-            $(document).off('keyup', '.form-input-number input[type="number"]');
-            $(document).off('click', '.form-input-number button');
-
-            $(document).on('keyup', '.form-input-number input[type="number"]' , function () {
-                const numInput = $(this);
-                const valueMin = parseInt(numInput[0].min);
-                const valueMax = parseInt(numInput[0].max);
-                if (numInput.val() > valueMax) {
-                    numInput.val(valueMax)
-                }
-                if (numInput.val() < valueMin) {
-                    numInput.val(valueMin)
-                }
-
-                let tempCnt = 0;
-                $('.form-input-number input[type="number"]').each(function(){
-                    tempCnt += parseInt(this.value);
-                })
-                let inputId = $(this).attr('id');
-
-                if( tempCnt > maxNope ){
-                    alert('최대 '+maxNope+'명 까지만 신청 가능합니다.');
-                    $('input[name='+inputId+']').val(0);
-                    numInput.val(0);
-                }else{
-                    userCnt = tempCnt;
-                    $('input[name='+inputId+']').val(this.value);
-                }
-            });
-
-            $(document).on('click', '.form-input-number button' , function () {
-                const par = $(this).closest('.form-input-number');
-                const numInput = par.find('input[type="number"]');
-                const valueMin = parseInt(numInput[0].min);
-                const valueMax = parseInt(numInput[0].max);
-
-                //value up
-                if ($(this).hasClass('num-up')) {
-                    userCnt++;
-                    if (numInput.val() === '') {
-                        numInput.val(0)
-                    }
-                    if (valueMax > numInput.val() || numInput[0].max === '') {
-                        if( userCnt > maxNope ){
-                            userCnt--;
-                            if( userCnt == maxNope ){
-                                alert('최대 '+maxNope+'명 까지만 신청 가능합니다.');
-                                numInput.val(parseInt(numInput.val()));
-                            }
-                        }else{
-                            numInput[0].value++;
-                        }
-                    }
-                }
-
-                //value down
-                if ($(this).hasClass('num-down')) {
-                    if (numInput.val() === '') {
-                        numInput.val(0)
-                    }
-                    if (numInput.val() > valueMin || numInput[0].min === '') {
-                        numInput[0].value--;
-                        userCnt--;
-                    }
-                }
-
-                let inputId = $(numInput).attr('id');
-                $('input[name='+inputId+']').val(numInput.val());
-
-            });
-
-            selectResveEnvRvwList();
-        })
-
+        
+        
+        
+        
+        //후기 리스트 호출
         function selectResveEnvRvwList() {
             $('#list-area').empty();
             var formData = $('#searchForm').serializeArray()
@@ -972,22 +915,45 @@
             } else {
                 list.forEach(function (item) {
                     html += '<h3 class="acc-title active">' +
-    '                        <span class="acc-trigger mo-flex-wrap">' +
-    '                            <span class="name">'+item.maskAcnt+'</span>' +
-    '                            <span class="rate" title="별점4">';
+                             '<span class="acc-trigger mo-flex-wrap">' +
+                             '<span class="name">'+item.maskAcnt+'</span>' +
+                             '<span class="rate" title="별점4">';
                     for( var i=0; i<item.rvwScr; i++ ){
                         html += '<span class="icon icon-star" title=""></span>';
                     }
-    html += '                            </span>' +
-    '                        </span>' +
-    '                    </h3>' +
-    '                    <div class="acc-panel active">' +
-    '                        <span class="blind">후기</span>' +
-    '                        <div class="acc-content bg-white p0 fc-black6 fw-300">'+item.rvwCn+'</div>'+
-    '                    </div>';
+                    html += '</span>' +
+                            '</span>' +
+                            '</h3>' +
+                            '<div class="acc-panel active">' +
+                              '<span class="blind">후기</span>' +
+                               '<div class="acc-content bg-white p0 fc-black6 fw-300">'+item.rvwCn+'</div>'+
+                            '</div>';
                 })
             }
             return html;
         }
+        
+        var swiper = new Swiper(".gallery-list", {
+            loop: false,
+            spaceBetween: 0,
+            slidesPerView: 5,
+            freeMode: true,
+            watchSlidesProgress: true,
+        });
+        var swiper2 = new Swiper(".gallery-thumb", {
+            loop: false,
+            spaceBetween: 10,
+            thumbs: {
+                swiper: swiper,
+            },
+            navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
+            a11y: {
+                prevSlideMessage: '이전 슬라이드',
+                nextSlideMessage: '다음 슬라이드',
+            },
+        });
     </script>
 </div>

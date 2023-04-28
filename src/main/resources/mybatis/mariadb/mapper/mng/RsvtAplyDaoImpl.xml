@@ -14,26 +14,26 @@
                   ,A.STLM_STTS_CD
                   ,A.APLY_STTS_CD
                   ,B.RSVTDEID
-                  ,C.INSTID 
+                  ,F.INSTID 
                   ,B.DE 
-                  ,D.BGNG_DT 
-                  ,D.END_DT 
+                  ,MIN(D.BGNG_DT) AS BGNG_DT 
+                  ,MAX(D.END_DT) AS END_DT
                   ,E.SPCE_NM 
                 FROM 
                   TB_FCL_SPCE_APLY A
                   INNER JOIN TB_FCL_APLY_RSVTDE B
                   ON A.APLYID = B.APLYID 
-                  INNER JOIN TB_CMM_INST C 
-                  ON A.INSTID = C.INSTID 
                   INNER JOIN TB_FCL_SPCE_RSVTDE D
                   ON B.RSVTDEID = D.RSVTDEID 
                   INNER JOIN TB_FCL_SPCE E
                   ON D.SPCEID = E.SPCEID 
+                  INNER JOIN TB_FCL_FCLT F
+                  ON E.FCLTID = F.FCLTID
                WHERE 1=1 
                  AND DATE_FORMAT(B.BGNG_DT,'%Y-%m-%d') <![CDATA[>=]]> #{strtDe}
-                 AND DATE_FORMAT(B.BGNG_DT,'%Y-%m-%d') <![CDATA[<=]]> #{endDe}
+                 AND DATE_FORMAT(B.END_DT,'%Y-%m-%d') <![CDATA[<=]]> #{endDe}
                 <if test="instid != null and instid != '' ">
-                   AND C.INSTID = #{instid}
+                   AND F.INSTID = #{instid}
                 </if>
                 <if test="fcltid != null and fcltid != '' ">
                    AND E.FCLTID = #{fcltid}
@@ -66,6 +66,7 @@
                         AND 1=2
                     </otherwise>
                 </choose>
+                GROUP BY A.APLYID
     </select>
     
     <select id="selectSpcetList" parameterType="SpceVo" resultType="map">
