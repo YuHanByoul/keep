@@ -19,14 +19,14 @@
                                 <div class="form-radio">
                                     <div class="radio radio-inline">
                                         <label class="mb-0 form-label">
-                                            <input type="radio" name="sbmsnSttsCd" th:checked="${popInfo.sttsCd=='128103'? true:false}" value='128103'>
+                                            <input type="radio" id="sbmsnSttsCd1" name="sbmsnSttsCd" th:checked="${popInfo.sttsCd=='128103'? true:false}" value='128103'>
 
                                             <i class="helper"></i>제출확인
                                         </label>
                                     </div>
                                     <div class="radio radio-inline">
                                         <label class="mb-0 form-label">
-                                            <input type="radio" name="sbmsnSttsCd" th:checked="${popInfo.sttsCd=='128104'? true:false}" value='128104'>
+                                            <input type="radio" id="sbmsnSttsCd2" name="sbmsnSttsCd" th:checked="${popInfo.sttsCd=='128104'? true:false}" value='128104'>
                                             <i class="helper"></i>이행확인심사
                                         </label>
                                     </div>
@@ -68,7 +68,9 @@
     	if(!confirm("저장하시겠습니까?")) return;
     	var param={};
 
-    	param["sttsCd"]=$("#sttsCd").val();
+    	param["sttsCd"]= $('#sbmsnSttsCd1').prop('checked') ?
+    			             $('#sbmsnSttsCd1').val() : $('#sbmsnSttsCd2').prop('checked') ? $('#sbmsnSttsCd2').val() : ''
+
     	param["cyclid"]=$("#cyclid").val();
     	param["picid"]=$("input[id^='cnstnt']").length==0?'':$("input[id^='cnstnt']").val();
 
@@ -83,6 +85,7 @@
                     if(data.result=="success"){
                         alert(data.msg);
                         sbmsnSttsChgModal.hide();
+                        operRsltGridHelper.resetListContent();
                     }else{
                     	alert(data.msg);
                     }

@@ -472,7 +472,7 @@ public class DsgnPrgrmController {
     	DsgnPrgrmVo operRsltInfo = null;
     	operRsltInfo = dsgnPrgrmServiceImpl.selectOperRsltDetail(dsgnPrgrmVo);
 
-    	model.addAttribute("operRsltInfo", dsgnPrgrmServiceImpl.selectOperRsltDetail(dsgnPrgrmVo));
+    	model.addAttribute("operRsltInfo", operRsltInfo);
     	model.addAttribute("prfmncList",   dsgnPrgrmServiceImpl.selectOperRsltPrfmncList(dsgnPrgrmVo));
 
     	InstVo instVo = new InstVo();
