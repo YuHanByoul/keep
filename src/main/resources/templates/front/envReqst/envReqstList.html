@@ -9,13 +9,13 @@
             <div class="form-row">
                 <div class="form-header"><strong class="label">운영기관</strong></div>
                 <div class="form-body">
-                    <input type="search" title="운영기관" name="instNm" placeholder="검색어를 입력해주세요.">
+                    <input type="search" title="운영기관" name="instNm" placeholder="검색어를 입력해주세요." th:value="${params.instNm}">
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-header"><strong class="label">환경교육시설</strong></div>
                 <div class="form-body">
-                    <input type="search" title="환경교육시설" name="fcltNm" placeholder="검색어를 입력해주세요.">
+                    <input type="search" title="환경교육시설" name="fcltNm" placeholder="검색어를 입력해주세요." th:value="${params.fcltNm}">
                 </div>
             </div>
             <div class="form-row">
@@ -23,21 +23,21 @@
                 <div class="form-body">
                     <select name="searchRgnCd" id="searchRgnCd">
                         <option value="">전체</option>
-                        <option th:each="item:${sidoList}" th:value="${item.CTPRVN_CD}" th:text="${item.CTPRVN_NM}" ></option>
+                        <option th:each="item:${sidoList}" th:value="${item.CTPRVN_CD}" th:text="${item.CTPRVN_NM}"  th:selected="${params.searchRgnCd eq item.CTPRVN_CD} "></option>
                     </select>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-header"><strong class="label">예약신청방법</strong></div>
                 <div class="form-body">
-                    <span kattr:select_code="searchAplyMthdCd" name="searchAplyMthdCd" id="searchAplyMthdCd" grpCd="153" firstOptTxt="전체" addClass="input-sm" isAdmin="true">
+                    <span kattr:select_code="searchAplyMthdCd" th:attr="selectedCd=${params.searchAplyMthdCd}" grpCd="153" firstOptTxt="전체" addClass="input-sm" ></span>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-header"><strong class="label">인원</strong></div>
                 <div class="form-body">
                     <div class="form-input form-input-number">
-                        <input type="number" value="" name="maxNope" min="0" max="10" title="인원" class="mr0">
+                        <input type="number" value="" name="maxNope" min="0"  title="인원" class="mr0" th:value="${params.maxNope}">
                         <div class="btn-number"><button type="button" class="num-up" title="숫자 증가"></button><button type="button" class="num-down" title="숫자 감소"></button></div>
                         <div class="bul">이상</div>
                     </div>
@@ -47,14 +47,14 @@
                 <div class="form-header"><strong class="label">기간</strong></div>
                 <div class="form-body">
                     <div class="form-input">
-                        <input type="date" title="시작일" name="searchBgngDt" id="searchBgngDt">
+                        <input type="date" title="시작일" name="searchBgngDt" id="searchBgngDt" />
                         <div class="bul">~</div>
-                        <input type="date" title="종료일" name="searchEndDt" id="searchEndDt">
+                        <input type="date" title="종료일" name="searchEndDt" id="searchEndDt" />
                     </div>
                 </div>
             </div>
-
         </div>
+        
         <div class="search-filter-submit">
             <button type="reset" class="btn-medium btn-gray btn-before-refresh" onclick="searchInit();">초기화</button>
             <button type="submit" class="btn-medium btn-green btn-before-search" onclick="search();">검색</button>
@@ -89,7 +89,7 @@
       <li>
           <div class="thumb">
               <img src="/downloadFileByFileid.do?fileid={{rprsImgFileid}}&file_idntfc_key={{rprsImgFileKey}}" alt="" >
-              <div class="tag {{tagStr}}">{{aplyMthdNm}}</div>
+              <div class="tag {{tagStr}}">{{aplyMthdCdNm}} 신청</div>
           </div>
           <div class="cont mt0">
               <div class="part ellipsis">{{instNm}}</div>
@@ -104,9 +104,16 @@
         var viewUrl = '/front/envReqst/resveEnvView.html';
         var formUrl = '/front/envReqst/envReqstForm.html';
         var loginUserid = /*[[${loginUserid}]]*/null;
+        var searchBgngDt = /*[[${params.searchBgngDt}]]*/null;
+        var searchEndDt = /*[[${params.searchEndDt}]]*/null;
         var listTemplet = Handlebars.compile($("#listTemplate").html());
         
         $(function () {
+
+            if(searchBgngDt!= null ){ $('#searchBgngDt').val(searchBgngDt);}
+            if(searchEndDt!= null ){ $('#searchEndDt').val(searchEndDt);}
+
+            
             selectEnvReqstList();
         });
         
@@ -121,8 +128,11 @@
             $('select[name="searchRgnCd"]').val('');
             $('select[name="searchAplyMthdCd"]').val('');
             $('input[name="maxNope"]').val(0);
-            $('input[name="searchBgngDt"]').val('');
-            $('input[name="searchEndDt"]').val('');
+            
+            $('#searchBgngDt').attr("required",false);
+            
+            $('#searchBgngDt').val(null);
+            $('#searchEndDt').val(null);
         }
 
         function selectEnvReqstList() {
@@ -144,7 +154,7 @@
             }
         }
         function renderingListData(list){
-            
+
             list.forEach(function(item){
                 if(item.aplyMthdCd == '153101'){
                     item.tagStr = ' tag-green';

@@ -1,18 +1,13 @@
 package com.kbrainc.plum.front.envReqst.controller;
 
-import com.kbrainc.plum.cmm.file.model.FileVo;
-import com.kbrainc.plum.cmm.file.service.FileService;
-import com.kbrainc.plum.cmm.service.CommonService;
-import com.kbrainc.plum.front.bbs.model.PstVo;
-import com.kbrainc.plum.front.envReqst.model.EnvReqstVo;
-import com.kbrainc.plum.front.envReqst.service.EnvReqstService;
-import com.kbrainc.plum.mng.inst.model.InstVo;
-import com.kbrainc.plum.mng.spce.model.SpceVo;
-import com.kbrainc.plum.mng.spce.service.SpceService;
-import com.kbrainc.plum.rte.constant.Constant;
-import com.kbrainc.plum.rte.model.UserVo;
-import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
-import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.validation.Valid;
+
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,12 +17,19 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.validation.Valid;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.cmm.file.service.FileService;
+import com.kbrainc.plum.cmm.service.CommonService;
+import com.kbrainc.plum.front.envReqst.model.AplyRsvtdeVo;
+import com.kbrainc.plum.front.envReqst.model.EnvReqstVo;
+import com.kbrainc.plum.front.envReqst.service.EnvReqstService;
+import com.kbrainc.plum.mng.inst.model.InstVo;
+import com.kbrainc.plum.mng.spce.model.SpceVo;
+import com.kbrainc.plum.mng.spce.service.SpceService;
+import com.kbrainc.plum.rte.constant.Constant;
+import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 
 /**
  * 환경교육시설 예약 Controller
@@ -71,7 +73,7 @@ public class EnvReqstController {
      */
     @RequestMapping(value = "/front/envReqst/envReqstList.html")
     public String envReqstList(EnvReqstVo envReqstVo, Model model) throws Exception {
-        model.addAttribute("param", envReqstVo);
+        model.addAttribute("params", envReqstVo);
         model.addAttribute("sidoList", commonService.selectCtprvnList());
         return "front/envReqst/envReqstList";
     }
@@ -125,7 +127,7 @@ public class EnvReqstController {
     @RequestMapping(value = "/front/envReqst/resveEnvView.html")
     public String resveEnvView(EnvReqstVo envReqstVo, Model model, @UserInfo UserVo user, SpceVo spceVo) throws Exception {
         
-        model.addAttribute("param", envReqstVo);
+        model.addAttribute("params", envReqstVo);
         envReqstVo.setUser(user);
         EnvReqstVo resultVo = envReqstService.selectResveEnvInfo(envReqstVo);
         
@@ -166,7 +168,7 @@ public class EnvReqstController {
         // 공간 보유개수 조회
         spceVo.setFcltid(envReqstVo.getFcltid());
         spceVo.setUser(user);
-        //spceVo.setSearchMode("A");
+        spceVo.setSearchMode("A");
         model.addAttribute("spceList", spceService.selectSpceList(spceVo));
 
         return "front/envReqst/resveEnvView";
@@ -183,25 +185,15 @@ public class EnvReqstController {
      * @return String
      */
     @RequestMapping(value = "/front/envReqst/updateEnvReqst.html")
-    public String updateEnvReqst(EnvReqstVo envReqstVo, Model model, @UserInfo UserVo user, SpceVo spceVo, int fcltid, int spceid, String rsvtdeid, String startDate, String endDate, int nopeAdult, int nopeChil, int nopeInfnt, String utztnPrps) throws Exception {
+    public String updateEnvReqst(EnvReqstVo envReqstVo, Model model, @UserInfo UserVo user, SpceVo spceVo) throws Exception {
 
-        model.addAttribute("fcltid", fcltid);
-        model.addAttribute("spceid", spceid);
+        model.addAttribute("params", envReqstVo);
+        
         JSONParser parser = new JSONParser();
-        Object obj = parser.parse(rsvtdeid);
-
-        model.addAttribute("rsvtdeid", rsvtdeid);
-        model.addAttribute("startDate", startDate);
-        model.addAttribute("endDate", endDate);
-        model.addAttribute("utztnPrps", utztnPrps);
-        model.addAttribute("nopeAdult", nopeAdult);
-        model.addAttribute("nopeChil", nopeChil);
-        model.addAttribute("nopeInfnt", nopeInfnt);
-        model.addAttribute("param", envReqstVo);
-
+        //Object obj = parser.parse(envReqstVo.getRsvtdeid().toString());
         // 공간 보유개수 조회
-        envReqstVo.setSpceid(spceid);
-        envReqstVo.setRsvtdeid(obj);
+        envReqstVo.setSpceid(envReqstVo.getSpceid());
+        //envReqstVo.setRsvtdeid(obj);
 
         model.addAttribute("user", user);
         model.addAttribute("param", spceVo);
@@ -250,14 +242,29 @@ public class EnvReqstController {
         }
 
         envReqstVo.setUser(user);
-
         int retVal = 0;
-        // 1. 공간 예약신청
+        
+        List<AplyRsvtdeVo> checkList = envReqstService.selectReservedRsvtdeList(envReqstVo);
+        
+        
+        if(checkList!= null && checkList.size() > 0 ) {
+            
+            boolean isThereImpossibleResve =  false;
+            boolean isThereReservedResve =  false;
+            for(AplyRsvtdeVo vo :checkList) {
+                if(vo.getRsvtPsbltyYn().equals("N")){
+                    isThereImpossibleResve = true;
+                }
+            }
+            String failMsg=(isThereImpossibleResve)? "운영중지 된 일정이 존재 합니다. 일정을 다시 확인 후 신청 하여주시기 바랍니다."
+                    :"이미 예약이 신청(승인) 된 일정이 존재합니다.일정을 다시 확인 후 신청 하여주시기 바랍니다. ";
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", failMsg);
+            return resultMap;
+        }
+        
         retVal = envReqstService.insertResveEnvFclSpceAply(envReqstVo);
-        // 2. 시설 예약신청
-        envReqstService.insertResveEnvFclAply(envReqstVo);
-        // 3. 공간 예약로그
-        envReqstService.insertResveEnvFclAplyHstry(envReqstVo);
+        
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
             resultMap.put("msg", "등록에 성공하였습니다.");

@@ -55,11 +55,11 @@
                         </th:block>
                     </th:block>
                     <th scope="row">이용인원</th>
-                    <td th:text ="성인 +${nopeAdult}+'명, 아동'+${nopeChil}+'명, 유아'+${nopeInfnt}+'명'"></td>
+                    <td th:text ="성인 +${params.nopeAdult}+'명,  아동'+${params.nopeChil}+'명,  유아'+${params.nopeInfnt}+'명'"></td>
                 </tr>
                 <tr>
                     <th scope="row">이용목적</th>
-                    <td colspan="3" th:text ="${utztnPrps}"></td>
+                    <td colspan="3" th:utext ="${params.utztnPrps}"></td>
                 </tr>
                 <th:block th:if ="${amt} > 0">
                     <tr>
@@ -159,7 +159,7 @@
                         <th scope="row">결제방법</th>
                         <td>무통장입금</td>
                         <th scope="row">입금계좌</th>
-                        <td th:text="${spceInfo.bankCdNm}+' '+${spceInfo.bacntNo}+' '+${spceInfo.dpstrNm}">농협 0000-000-0000 청소년교육재단</td>
+                        <td th:text="${spceInfo.bankCdNm}+' '+${spceInfo.bacntNo}+' '+${spceInfo.dpstrNm}"></td>
                     </tr>
                     <tr>
                         <th scope="row">입금자명<i class="ast" title="필수입력">*</i></th>
@@ -174,7 +174,7 @@
 
         <div class="btn-wrap">
             <div class="center">
-                <button type="button" class="btn-medium btn-gray">이전</button>
+                <button type="button" class="btn-medium btn-gray" onclick="javascript:moveToDetail()">이전</button>
                 <button type="button" class="btn-medium btn-green" onclick="fn_updateEnvReqst()">확인</button>
             </div>
         </div>
@@ -186,41 +186,34 @@
 
             if( !checkData() ) return;
 
-            if(!confirm("저장하시겠습니까?")) return;
+            if(!confirm("신청 하시겠습니까?")) return;
 
-            // let data =  $("#envReqstUpdate").serialize();
             let email = $('#eml1').val()+'@'+$('#eml2').val();
             let aplcntNm = $('#aplcntNm').val();
             let aplcntMoblphon = $('#aplcntMoblphon').val();
             let pyrNm = $('#pyrNm').val();
 
-            let rsvtdeids = JSON.parse(/*[[${rsvtdeid}]]*/null);
-
-            // data = data+'&aplcntEml='+email+'&rsvtdeidLen='+rsvtdeidLen;
-
+            let rsvtdeids = /*[[${params.rsvtdeids}]]*/null;
+            
             var param = {
-                startDt: /*[[${startDate}]]*/null,
-                enddDt: /*[[${endDate}]]*/null,
-                nopeAdult: /*[[${nopeAdult}]]*/null,
-                nopeChil: /*[[${nopeChil}]]*/null,
-                nopeInfnt: /*[[${nopeInfnt}]]*/null,
-                utztnPrps: /*[[${utztnPrps}]]*/null,
-                amt: /*[[${amt}]]*/null,
+                nopeAdult: /*[[${params.nopeAdult}]]*/null,
+                nopeChil:  /*[[${params.nopeChil}]]*/null,
+                nopeInfnt: /*[[${params.nopeInfnt}]]*/null,
+                utztnPrps: /*[[${params.utztnPrps}]]*/null,
                 aplcntEml : email,
-                utztnSeCd : /*[[${utztnSeCd}]]*/null,
-                bacntNo : /*[[${spceInfo.bacntNo}]]*/null,
                 aplcntNm : aplcntNm,
                 aplcntMoblphon : aplcntMoblphon,
                 pyrNm : pyrNm,
-                instid : /*[[${spceInfo.instid}]]*/null,
-                alldayYn : /*[[${alldayYn}]]*/null
+                spceid : /*[[${params.spceid}]]*/null,
+                rsvtdeids :rsvtdeids.join(",")
             };
+            
             /* 169101 숙박, 169102 대여 */
-            for( var i=0; i<rsvtdeids.length; i++ ){
-                param["rsvtdeids[" + i + "]"] = rsvtdeids[i].rsvtdeid;
-            }
+            //for( var i=0; i<rsvtdeids.length; i++ ){
+            //    param["rsvtdeids[" + i + "]"] = rsvtdeids[i].rsvtdeid;
+            //}
 
-            if(displayWorkProgress()){
+            if(displayWorkProgress(true)){
                 $.ajax({
                     url : "/front/envReqst/resveEnvUpdate.do",
                     type: 'POST',
@@ -229,9 +222,7 @@
                     data : param,
                     success : function (data){
                         if(data.result=="success"){
-                            console.log(data);
                             moveToComplete();
-                            alert(data.msg);
                         }else{
                             alert(data.msg);
                         }
@@ -248,32 +239,39 @@
             let eml2 = $('#eml2').val();
             let pyrNm = $('#pyrNm').val();
 
-            if( aplcntNm == '' ){
+            if( aplcntNm == null || aplcntNm == '' || aplcntNm.trim() == '' ){
                 alert('예약자명을 입력해 주세요.');
+                showErrorMark('#aplcntNm');
                 return false;
             }
-            if( aplcntMoblphon == '' ){
+            if( aplcntMoblphon == null || aplcntMoblphon == '' || aplcntMoblphon.trim() == '' ){
                 alert('예약자 휴대전화를 입력해 주세요.');
+                showErrorMark('#aplcntMoblphon');
                 return false;
             }
-            if( eml1 == '' ){
+            if( eml1 == null || eml1 == '' || eml1.trim() == '' ){
                 alert('이메일을 입력해 주세요.');
+                showErrorMark('#eml1');
                 return false;
             }
-            if( eml2 == '' ){
+            if( eml2 == null || eml2 == '' || eml2.trim() == '' ){
                 alert('이메일 주소를 입력해 주세요.');
+                showErrorMark('#eml2');
                 return false;
             }
-            if( pyrNm == '' ){
+            if( pyrNm == null || pyrNm == '' || pyrNm.trim() == '' ){
                 alert('입금자명을 입력해 주세요.');
+                showErrorMark('#pyrNm');
                 return false;
             }
-
             return true;
         }
 
         function moveToComplete() {
             location.href = '/front/envReqst/envReqstComplete.html';
+        }
+        function moveToDetail() {
+	        location.href='/front/envReqst/resveEnvView.html?fcltid='+/*[[${params.fcltid}]]*/null;
         }
 
         $(function(){
@@ -282,8 +280,6 @@
                 var val = self.val();
                 $('input#eml2').val(val);
             });
-
-
         })
     </script>
 </div>
