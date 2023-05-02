@@ -349,23 +349,47 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 			ret+=dsgnPrgrmDao.insertOperRsltCyCl(prgrmInfo);
 		}
 
-		AsgsysSrngVo asgsysSrngVo = new AsgsysSrngVo();
+		//신청 프로그램 정보 수정
+		DsgnPrgrmVo assPrgrm = dsgnPrgrmDao.selectPrgrm(dsgnPrgrmVo);
+		assPrgrm.setUser(dsgnPrgrmVo.getUser());
+		assPrgrm.setDsgnNo(dsgnPrgrmVo.getDsgnNo());
+		assPrgrm.setDsgnCycl(dsgnPrgrmVo.getDsgnCycl());
+		assPrgrm.setDsgnBgngDe(dsgnPrgrmVo.getDsgnBgngDe());
+		assPrgrm.setDsgnEndDe(dsgnPrgrmVo.getDsgnEndDe());
+		assPrgrm.setDsgnDe(dsgnPrgrmVo.getDsgnDe());
+		assPrgrm.setDsgnObtainDe(dsgnPrgrmVo.getDsgnObtainDe());
 
-		//지정 이력 update
-		ret += dsgnPrgrmDao.updateDsgnHstry(dsgnPrgrmVo);
-		//지정 프로그램 update
-		asgsysSrngVo.setPrgrmid(dsgnPrgrmVo.getPrgrmid());
-
-		//지정상태코드 - 지정승인
 		if("132101".equals(dsgnPrgrmVo.getSttsCd())){
-			asgsysSrngVo.setSttsCd("111111");  //상태코드 지정승인
+			assPrgrm.setSttsCd("111111");  //상태코드 지정승인
 		}
 		//지정상태코드 - 지정탈락
 		else if("132102".equals(dsgnPrgrmVo.getSttsCd())){
-			asgsysSrngVo.setSttsCd("111112");  //상태코드 지정탈락
+			assPrgrm.setSttsCd("111112");  //상태코드 지정탈락
 		}
 
-		ret += asgSrngDao.updatePrgrSttsCd(asgsysSrngVo);
+		dsgnPrgrmDao.updatePrgrm(assPrgrm);
+
+		//지정이력 생성
+		ret += dsgnPrgrmDao.insertDsgnHstry(dsgnPrgrmVo);
+
+
+//		AsgsysSrngVo asgsysSrngVo = new AsgsysSrngVo();
+//
+//		//지정 이력 update
+//		ret += dsgnPrgrmDao.updateDsgnHstry(dsgnPrgrmVo);
+//		//지정 프로그램 update
+//		asgsysSrngVo.setPrgrmid(dsgnPrgrmVo.getPrgrmid());
+//
+//		//지정상태코드 - 지정승인
+//		if("132101".equals(dsgnPrgrmVo.getSttsCd())){
+//			asgsysSrngVo.setSttsCd("111111");  //상태코드 지정승인
+//		}
+//		//지정상태코드 - 지정탈락
+//		else if("132102".equals(dsgnPrgrmVo.getSttsCd())){
+//			asgsysSrngVo.setSttsCd("111112");  //상태코드 지정탈락
+//		}
+//
+//		ret += asgSrngDao.updatePrgrSttsCd(asgsysSrngVo);
 		return ret;
 	}
 
@@ -518,6 +542,9 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 			ret+=dsgnPrgrmDao.insertOperRslt(dsgnPrgrmVo);
 		}
 
+		//updateCyclStts();
+
+		//운영실적 등록
 		List<OperPrfmncVo> prfmncLst = dsgnPrgrmVo.getOperPrfmncLst();
 		dsgnPrgrmDao.deleteOperPrfmnc(dsgnPrgrmVo);
 
@@ -707,6 +734,21 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	@Override
 	public DsgnPrgrmVo selectDsgnOutl(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
 		return dsgnPrgrmDao.selectDsgnOutl(dsgnPrgrmVo);
+	}
+
+	/**
+	* 지정프로그램 개요 체크리스트 목록 조회
+	*
+	* @Title : selectDsgnOutlChkList
+	* @Description : 지정프로그램 개요 체크리스트 목록 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnPrgrmVo>
+	*/
+	@Override
+	public List<DsgnPrgrmVo> selectDsgnOutlChkList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
+		return dsgnPrgrmDao.selectDsgnOutlChkList(dsgnPrgrmVo);
 	}
 
 	/**

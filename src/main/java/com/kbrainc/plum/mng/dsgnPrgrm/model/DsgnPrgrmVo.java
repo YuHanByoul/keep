@@ -759,6 +759,15 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     /** 체크 값 */
     private String chkVal;
 
+    /** 코드명 */
+    private String cdNm;
+
+    /** 구분 코드 */
+    private String sbmsnSeCd;
+
+    /** 점수 */
+    private String scr;
+
     /** 운영실적 목록*/
     private List<OperPrfmncVo> operPrfmncLst;
 

@@ -442,6 +442,18 @@ public interface DsgnPrgrmDao {
 	public DsgnPrgrmVo selectDsgnOutl(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 	/**
+	* 지정프로그램 개요 체크리스트 목록 조회
+	*
+	* @Title : selectDsgnOutlChkList
+	* @Description : 지정프로그램 개요 체크리스트 목록 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnPrgrmVo>
+	*/
+	public List<DsgnPrgrmVo> selectDsgnOutlChkList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
 	* 심사일정캘린더 목록 조회
 	*
 	* @Title : selectSprtgrpClndrList

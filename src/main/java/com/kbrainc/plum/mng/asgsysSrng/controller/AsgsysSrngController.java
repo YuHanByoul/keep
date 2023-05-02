@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.error.controller.CustomErrorController;
 import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.cmm.file.service.FileServiceImpl;
 import com.kbrainc.plum.front.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.DsgnSrngFormVo;
@@ -80,6 +81,9 @@ public class AsgsysSrngController {
 
 	@Autowired
     private TchaidService tchaidService;
+
+	@Autowired
+    private FileServiceImpl fileService;
 
 	/**********************************************************************************
      * 지정신청
@@ -1066,7 +1070,8 @@ public class AsgsysSrngController {
             FileVo fileVo = new FileVo();
             fileVo.setFilegrpid(sftyMngInfo.getFilegrpid());
 
-            model.addAttribute("mnlFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
+            //model.addAttribute("mnlFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
+            model.addAttribute("fileList", fileService.getFileList(fileVo));
 
         } else {
             model.addAttribute("mnlFileList", Collections.emptyList());

@@ -112,28 +112,19 @@
           , A.PRGRM_NM
           , A.INST_NM
           , Z.STTS_CD
-          , B.CHG_APLY_CNT
-          , C.OPER_RSLT_CNT
-          , D.IMPLMNT_IDNTY_CNT
-          , E.OBJC_INFO_CNT
+          , IFNULL(B.CHG_APLY_CNT      ,'0/0')    AS CHG_APLY_CNT
+          , IFNULL(C.OPER_RSLT_CNT     ,'0/0')    AS OPER_RSLT_CNT
+          , IFNULL(D.IMPLMNT_IDNTY_CNT ,'0/0')    AS IMPLMNT_IDNTY_CNT
+          , IFNULL(E.OBJC_INFO_CNT     ,'0/0')    AS OBJC_INFO_CNT
           , A.DSGN_BGNG_DE
           , A.DSGN_END_DE
           , CONCAT(A.DSGN_BGNG_DE, " ~ ", A.DSGN_END_DE )   AS DSGN_PRD
         FROM
             TB_ASS_PRGRM A
         INNER JOIN /*지정 이력*/
-        (
-            SELECT
-                ZZ.PRGRMID
-              , MAX(ZZ.HSTRYID) AS HSTRYID
-              , MAX(ZZ.STTS_CD) AS STTS_CD
-              , MAX(ZZ.DSGN_CYCL) AS DSGN_CYCL
-              , MAX(ZZ.DSGN_NO) AS DSGN_NO
-            FROM TB_ASS_DSGN_HSTRY ZZ
-            WHERE 1=1
-            GROUP BY ZZ.PRGRMID
-        ) Z ON A.PRGRMID = Z.PRGRMID
-        LEFT OUTER JOIN    /*운영결과차수*/
+            TB_ASS_DSGN_HSTRY Z  ON A.PRGRMID = Z.PRGRMID
+                                AND Z.HSTRYID =(SELECT MAX(ZZ.HSTRYID) FROM TB_ASS_DSGN_HSTRY ZZ WHERE   Z.PRGRMID = ZZ.PRGRMID )
+        LEFT OUTER JOIN
             (
                 SELECT
                     BB.PRGRMID
@@ -144,7 +135,7 @@
                 GROUP BY
                     BB.PRGRMID
             ) B ON A.PRGRMID = B.PRGRMID
-        LEFT OUTER JOIN    /*운영결과차수*/
+        LEFT OUTER JOIN
             (
                 SELECT
                     CC.PRGRMID
@@ -233,18 +224,9 @@
         FROM
             TB_ASS_PRGRM A
         INNER JOIN /*지정 이력*/
-        (
-            SELECT
-                ZZ.PRGRMID
-              , MAX(ZZ.HSTRYID) AS HSTRYID
-              , MAX(ZZ.STTS_CD) AS STTS_CD
-              , MAX(ZZ.DSGN_CYCL) AS DSGN_CYCL
-              , MAX(ZZ.DSGN_NO) AS DSGN_NO
-            FROM TB_ASS_DSGN_HSTRY ZZ
-            WHERE 1=1
-            GROUP BY ZZ.PRGRMID
-        ) Z ON A.PRGRMID = Z.PRGRMID
-        LEFT OUTER JOIN    /*운영결과차수*/
+            TB_ASS_DSGN_HSTRY Z  ON A.PRGRMID = Z.PRGRMID
+                                AND Z.HSTRYID =(SELECT MAX(ZZ.HSTRYID) FROM TB_ASS_DSGN_HSTRY ZZ WHERE   Z.PRGRMID = ZZ.PRGRMID )
+        LEFT OUTER JOIN
             (
                 SELECT
                     BB.PRGRMID
@@ -255,7 +237,7 @@
                 GROUP BY
                     BB.PRGRMID
             ) B ON A.PRGRMID = B.PRGRMID
-        LEFT OUTER JOIN    /*운영결과차수*/
+        LEFT OUTER JOIN
             (
                 SELECT
                     CC.PRGRMID
@@ -339,6 +321,7 @@
           , A.INST_TYPE_CD        /* 기관_유형_코드 */
           , A.INST_RGN_CD         /* 기관_지역_코드 */
           , CTPRVN.CTPRVN_NM    AS INST_RGN_CD_NM         /* 기관_지역_코드 */
+          , INST.RPRSV_NM
           , A.INST_ZIP            /* 기관_우편번호 */
           , A.INST_ADDR           /* 기관_주소 */
           , A.INST_DTLADDR        /* 기관_상세주소 */
@@ -358,22 +341,10 @@
         FROM
             TB_ASS_PRGRM A
         INNER JOIN /*지정 이력*/
-        (
-            SELECT
-                ZZ.PRGRMID
-              , MAX(ZZ.HSTRYID) AS HSTRYID
-              , MAX(ZZ.STTS_CD) AS STTS_CD
-              , MAX(ZZ.DSGN_CYCL) AS DSGN_CYCL
-              , MAX(ZZ.DSGN_NO) AS DSGN_NO
-              , MAX(ZZ.DSGN_CNCL_DE) AS DSGN_CNCL_DE
-              , MAX(ZZ.DSGN_BGNG_DE) AS DSGN_BGNG_DE
-              , MAX(ZZ.DSGN_END_DE) AS DSGN_END_DE
-              , MAX(ZZ.DSGN_OBTAIN_DE) AS DSGN_OBTAIN_DE
-            FROM TB_ASS_DSGN_HSTRY ZZ
-            WHERE 1=1
-            GROUP BY ZZ.PRGRMID
-        ) Z ON A.PRGRMID = Z.PRGRMID
+            TB_ASS_DSGN_HSTRY Z  ON A.PRGRMID = Z.PRGRMID
+                                AND Z.HSTRYID =(SELECT MAX(ZZ.HSTRYID) FROM TB_ASS_DSGN_HSTRY ZZ WHERE   Z.PRGRMID = ZZ.PRGRMID )
         LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN CTPRVN ON SUBSTR(A.INST_RGN_CD,1,2) = CTPRVN.CTPRVN_CD
+        LEFT OUTER JOIN TB_CMM_INST INST ON A.INSTID = INST.INSTID
         WHERE 1=1
         AND A.PRGRMID = #{prgrmid}
 
@@ -460,6 +431,7 @@
                   FROM TB_ASS_DSGN_HSTRY
                  WHERE 1=1
                    AND STTS_CD = 132101
+                   AND PRGRMID = #{prgrmid}
                  ORDER BY DSGN_CYCL DESC
             ) C ON A.PRGRMID = C.PRGRMID
             LEFT OUTER JOIN
@@ -484,6 +456,25 @@
         WHERE 1=1
         AND   A.PRGRMID = #{prgrmid}
         GROUP BY A.PRGRMID
+    </select>
+
+    <!-- 지정프로그램 개요 체크리스트 목록 조회 -->
+    <select id="selectDsgnOutlChkList" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
+         SELECT
+             A.PRGRMID
+           , B.USERID
+           , B.SBMSN_SE_CD
+           , C.ORDR
+           , C.SE_CD
+           , CD.CD_NM
+           , SUM(D.SCR)    AS SCR
+         FROM TB_ASS_PRGRM A
+         LEFT OUTER JOIN TB_ASS_CHKLST_SBMSN B ON A.PRGRMID = B.PRGRMID
+         LEFT OUTER JOIN TB_ASS_CHKLST_SE_ORDR_ANS C ON B.SBMSNID =C.SBMSNID
+         LEFT OUTER JOIN TB_ASS_CHKLST_ANS D ON B.SBMSNID = D.SBMSNID AND C.SE_CD = D.SE_CD
+         LEFT OUTER JOIN TB_CMM_CD CD ON C.SE_CD =CD.CD
+         WHERE A.PRGRMID = #{prgrmid}
+         GROUP BY B.USERID, C.SE_CD
     </select>
 
     <!-- 이의신청 목록 조회 -->
@@ -1170,6 +1161,10 @@
           , B.STTS_CD
           , D.PICID
           , D.SRNGID
+          , USR.NM
+          , USR.ACNT
+          , USR.MOBLPHON
+          , USR.EML
         FROM
             TB_ASS_OPER_RSLT A
         INNER JOIN
@@ -1177,6 +1172,7 @@
         INNER JOIN
             TB_ASS_PRGRM C ON B.PRGRMID = C.PRGRMID
         LEFT OUTER JOIN TB_ASS_IMPLMNT_IDNTY_SRNG D  ON A.CYCLID = D.CYCLID
+        LEFT OUTER JOIN TB_CMM_USER USR ON D.PICID = USR.USERID
         WHERE A.CYCLID = #{cyclid}
     </select>
 
