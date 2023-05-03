@@ -1,6 +1,8 @@
 <form id="sbmsnSttsPopFrm">
     <input type="hidden" id="cyclid" name="cyclid" th:value="${popInfo.cyclid}">
     <input type="hidden" id="sttsCd" name="sttsCd" th:value="${popInfo.sttsCd}">
+    <input type="hidden" id="srngid" name="srngid" th:value="${popInfo.srngid}">
+
 
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content type_2">
@@ -41,7 +43,7 @@
                             </div>
                             <div class="m-0 row">
                                 <div class="col-12 row border rounded p-t-10 p-b-10 m-0 mt-2" >
-                                    <div class="col-auto" id="mng_list_area">
+                                    <div class="col-auto" id="mng_list_area" name="mng_list_area">
 
                                     </div>
                                 </div>
@@ -72,11 +74,12 @@
     	if(!confirm("저장하시겠습니까?")) return;
 
     	var param={};
-
+debugger;
     	param["sttsCd"]= $('#sbmsnSttsCd1').prop('checked') ?
     			             $('#sbmsnSttsCd1').val() : $('#sbmsnSttsCd2').prop('checked') ? $('#sbmsnSttsCd2').val() : ''
 
     	param["cyclid"]=$("#cyclid").val();
+    	param["srngid"]=$("#srngid").val();
     	param["picid"]=$("input[id^='cnstnt']").length==0?'':$("input[id^='cnstnt']").val();
 
         if(displayWorkProgress()){
@@ -118,13 +121,19 @@
         });
     }
 
+    function setPic(){
+	    var html = $("#mng_main_area").prop("innerHTML");
+
+	    $("#mng_list_area").append(html);
+    }
+
     $(function() {
     	$("[name=sbmsnSttsCd]").on("change",function(){
     		$("sttsCd").val($(this).val());
-
     		if($(this).val()=='128104'){
     			$("#openPicPopBtn").prop("disabled","");
     			$("#mng_list_area").children().prop('disabled', false);
+
     		}else{
     			$("#openPicPopBtn").prop("disabled","disabled");
 
@@ -132,6 +141,8 @@
 
     		}
     	});
+
+    	setPic();
     });
 
 

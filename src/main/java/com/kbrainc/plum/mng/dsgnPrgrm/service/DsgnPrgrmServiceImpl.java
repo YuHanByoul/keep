@@ -687,7 +687,20 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	@Override
 	@Transactional
 	public int updateSplmntImprv(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
-		return dsgnPrgrmDao.updateSplmntImprv (dsgnPrgrmVo);
+		int ret=0;
+
+		DsgnPrgrmVo srngDtl = dsgnPrgrmDao.selectImplmntIdntySrngDtl(dsgnPrgrmVo);
+		dsgnPrgrmDao.selectImplmntIdntySrngDtl(dsgnPrgrmVo);
+		srngDtl.setVstDe(dsgnPrgrmVo.getVstDe());
+		srngDtl.setVstHr(dsgnPrgrmVo.getVstHr());
+		srngDtl.setVstMnt(dsgnPrgrmVo.getVstMnt());
+		srngDtl.setUser(dsgnPrgrmVo.getUser());
+		//이행확인심사 수정
+		ret+=dsgnPrgrmDao.updateImplmntIdntySrng(srngDtl);
+		//보완요청 수정
+		ret+=dsgnPrgrmDao.updateSplmntImprv(dsgnPrgrmVo);
+
+		return ret;
 	}
 
 	/**
@@ -956,7 +969,11 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 
 		if(dsgnPrgrmVo.getSttsCd().equals("128104")) {
 			//이행확인심사 등록
-			ret+=dsgnPrgrmDao.insertImplmntIdntySrng(dsgnPrgrmVo);
+			if(dsgnPrgrmVo.getSrngid()!=null && !dsgnPrgrmVo.getSrngid().equals("")) {
+				ret+=dsgnPrgrmDao.updateImplmntIdntySrng(dsgnPrgrmVo);
+			}else {
+				ret+=dsgnPrgrmDao.insertImplmntIdntySrng(dsgnPrgrmVo);
+			}
 		}
 
 		ret+=dsgnPrgrmDao.updateCyClSttsCd(dsgnPrgrmVo);

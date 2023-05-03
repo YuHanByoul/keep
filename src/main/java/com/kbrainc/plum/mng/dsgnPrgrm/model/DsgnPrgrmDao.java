@@ -537,6 +537,18 @@ public interface DsgnPrgrmDao {
 	public int insertImplmntIdntySrng(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 	/**
+	* 이행확인심사 수정
+	*
+	* @Title : updateImplmntIdntySrng
+	* @Description : 이행확인심사 수정
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int updateImplmntIdntySrng(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
 	* 운영결과 차수 상태 수정
 	*
 	* @Title : updateOperRsltSttsCd
@@ -559,5 +571,7 @@ public interface DsgnPrgrmDao {
 	* @return int
 	*/
 	public int updatePrgrm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+
 
 }

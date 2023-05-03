@@ -698,10 +698,10 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     private String vstDe;
 
     /** 방문_시간 */
-    private String vstHr;
+    private Integer vstHr;
 
     /** 방문_분 */
-    private String vstMnt;
+    private Integer vstMnt;
 
     /** 종합_의견 */
     @Size(max = 2000, message = "종합의견은 2000자를 넘을 수 없습니다.")

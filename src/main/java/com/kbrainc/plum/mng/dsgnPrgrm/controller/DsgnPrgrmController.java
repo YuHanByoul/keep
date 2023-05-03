@@ -1062,7 +1062,22 @@ public class DsgnPrgrmController {
      */
     @RequestMapping(value = "/mng/dsgnPrgrm/splmntImprvForm.html")
     public String splmntImprvForm(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
-    	model.addAttribute("splmntDmndInfo", dsgnPrgrmServiceImpl.selectSplmntDmnd(dsgnPrgrmVo));
+
+    	DsgnPrgrmVo  splmntDmndInfo = dsgnPrgrmServiceImpl.selectSplmntDmnd(dsgnPrgrmVo);
+    	splmntDmndInfo.setSrngid(dsgnPrgrmVo.getSrngid());
+    	model.addAttribute("splmntDmndInfo", splmntDmndInfo);
+
+    	if (!StringUtil.nvl(splmntDmndInfo.getFilegrpid()).equals("") && !StringUtil.nvl(splmntDmndInfo.getFilegrpid()).equals(0)) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(splmntDmndInfo.getFilegrpid());
+
+            model.addAttribute("fileList", fileService.getFileList(fileVo));
+
+        } else {
+            model.addAttribute("fileList", Collections.emptyList());
+        }
+
+
     	return "mng/dsgnPrgrm/splmntImprvForm";
     }
 

@@ -6,32 +6,45 @@
 <div class="card-header p-t-0 p-b-0">
     <h3 class="sub-title"><strong>지원단 정보</strong></h3>
 </div>
+
 <div class="card-block-small p-t-0">
     <div class="mb-0 row">
         <div class="col-12 col-lg-6 mb-2 mb-lg-0">
             <div class="mb-0 form-group required">
                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="vstDe"><strong>현장방문일</strong></label>
                 <div class="col-sm-12">
-                    <input type="date" class="form-control form-control-sm" name="vstDe" id="vstDe" placeholder="" th:value="${dtlInfo.vstDe}"/>
+                    <input type="date" class="form-control form-control-sm" name="vstDe" id="vstDe" maxlength="10" placeholder="" th:value='${dtlInfo.vstDe}' />
+<!--                         th:value='${#strings.substring(dtlInfo.vstDe, 0,4) +"-" + #strings.substring(dtlInfo.vstDe, 4,6) + "-" + #strings.substring(dtlInfo.vstDe, 6,8)}' /> -->
+
+
                 </div>
             </div>
         </div>
         <div class="col-12 col-lg-6">
             <div class="mb-0 form-group required">
                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="vstHr"><strong>현장방문 시작시간</strong></label>
-                <div class="col-sm-12">
-                    <input type="time" class="form-control form-control-sm" name="vstHr" id="vstHr" placeholder="시(간)분을 24시간제로 입력하세요" th:value="${dtlInfo.vstHr}"/>
+                <div class="col-12 row align-items-center">
+                    <div class="col-auto">
+                        <input type="number" class="form-control form-control-sm" max="23" name="vstHr" id="vstHr" placeholder="" style="width: 100px;" th:value="${dtlInfo.vstHr}"/>
+                    </div>
+                    <div class="col-auto p-l-0">시</div>
+                    <div class="col-auto">
+                        <input type="number" class="form-control form-control-sm" max="59" name="vstMnt" id="vstMnt" placeholder="" style="width: 100px;" th:value="${dtlInfo.vstMnt}"/>
+                    </div>
+                    <div class="col-auto p-l-0">분</div>
                 </div>
+
             </div>
         </div>
     </div>
 </div>
 
+
 <div class="card-header p-t-0 p-b-0">
     <ul class="nav nav-tabs tabs" role="tablist">
         <th:block sec:authorize-url="/mng/dsgnPrgrm/splmntImprvForm.html">
-            <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="tab" href="#tab2Con1" role="tab" id="tab2Con1Link"><strong>보완개선 요청서</strong></a>
+            <li class="nav-item active">
+                <a class="nav-link active" data-bs-toggle="tab" href="#tab2Con1" role="tab" id="tab2Con1Link"><strong>보완개선 요청서</strong></a>
             </li>
         </th:block>
         <th:block sec:authorize-url="/mng/dsgnPrgrm/scrtyImprvPlanlnForm.html">
@@ -60,6 +73,7 @@
 
             this.setTab();
             this.registEvent();
+            this.setValid();
 
 
         },
@@ -104,7 +118,7 @@
             $("#cidx").val("");
 
             if(tabId == "tab2Con1Link") {
-                this.loadTabContent("/mng/dsgnPrgrm/splmntImprvForm.html);
+                this.loadTabContent("/mng/dsgnPrgrm/splmntImprvForm.html");
             } else if(tabId == "tab2Con2Link") {
                 this.loadTabContent("/mng/dsgnPrgrm/scrtyImprvPlanlnForm.html");
             }  else if(tabId == "tab2Con3Link") {
@@ -121,8 +135,8 @@
             var vSrngid = $("#srngid").val();
             var vDmndid =$("#dmndid").val();
 
-            //vSrngid = vSrngid == null || vSrngid == ''? 0 :vSrngid;
-            //vDmndid = vDmndid == null || vDmndid == ''? 0 :vDmndid;
+            vSrngid = vSrngid == null || vSrngid == ''? 0 :vSrngid;
+            vDmndid = vDmndid == null || vDmndid == ''? 0 :vDmndid;
 
             $.ajax({
                 cache: false,
@@ -134,8 +148,24 @@
                     $("#myTabContent2").html(result);
                 }
             });
+        },
+
+        setValid: function() {
+
+            var validator = $('#dtlTabFrm').validate({
+                rules: {
+                    vstDe : {required: true},
+                    vstHr : {required: true},
+                },
+                messages: {
+                    vstDe : {required: "현장방문일을 입력해주세요."        },
+                    vstHr : {required: "현장방문 시작시간을 입력해주세요." },
+                }
+            });
         }
     };
+
+
 
     $(function() {
         implmntIdntySrngDtl.init();

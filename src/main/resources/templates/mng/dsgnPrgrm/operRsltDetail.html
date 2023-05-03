@@ -1,5 +1,6 @@
 <form id="objcInfoFrm">
 <input type="hidden" id="cyclid" name="cyclid" th:value="${operRsltInfo.cyclid}">
+<input type="hidden" id="srngid" name="srngid" th:value="${operRsltInfo.srngid}">
 
     <div class="card-header p-t-0 p-b-0">
         <h3 class="sub-title"><strong>운영결과서 확인 - 프로그램 개요</strong></h3>
@@ -573,7 +574,7 @@
                             <strong>지원단 배정</strong></div>
                         <div class="m-0 row">
                             <div class="col-12 row border rounded pt-1 pb-2 m-0">
-                                <div class="col-auto">
+                                <div class="col-auto" id="mng_main_area" name="mng_main_area">
                                     <span class="label label-inverse">
                                         <th:block th:if='${operRsltInfo.picid}'  th:text='${operRsltInfo.nm + "("+operRsltInfo.acnt+") | " + operRsltInfo.eml + " | " + operRsltInfo.moblphon}'></th:block> <a href="javascript:void(0)" class="text-white"></a>
                                     </span>
@@ -585,10 +586,10 @@
             </div>
         </div>
         <div class="card-block-small">
-            <button type="button" onclick="gridHelper1.toggleContent()" class="btn btn-inverse m-r-5" >목록</button>
-            <button type="button" onclick="deleteBtnObjcInfo()"         class="btn btn-disabled m-r-5">삭제</button>
+            <button type="button" onclick="gridHelper1.toggleContent()" class="btn btn-inverse m-r-5" id="listBtn">목록</button>
+            <button type="button" onclick="deleteBtnObjcInfo()"         class="btn btn-disabled m-r-5" id="delBtn">삭제</button>
             <button type="button" onclick="openSbmsnSttsChgModal()"     class="btn btn-primary m-r-5" >상태변경</button>
-            <button type="button" onclick="saveBtnObjcInfo()"           class="btn btn-primary">저장</button>
+            <button type="button" onclick="saveBtnObjcInfo()"           class="btn btn-primary" id="saveBtn">저장</button>
         </div>
 </form>
 
@@ -597,11 +598,16 @@
 
 <script th:inline="javascript">
 
-    initObjcInfo();
+
 
     function initObjcInfo(){
     	$("#instCd").attr("disabled",true);
+    	$("#delBtn").prop("disabled",'disabled');
 
+    	if(!$("#sttsCd").val()=="128102"){
+
+    		$("#delBtn").prop("disabled",'disabled');
+    	}
     }
 
     var sbmsnSttsChgModal;
@@ -611,7 +617,8 @@
 
     	var cyclid = $("#cyclid").val();
     	var sttsCd = $("#sttsCd").val();
-    	url= url+"?cyclid="+cyclid+"&sttsCd="+sttsCd;
+    	var srngid = $("#srngid").val();
+    	url= url+"?cyclid="+cyclid+"&sttsCd="+sttsCd+"&srngid="+srngid;
 
         $("#sbmsnSttsChgPopup").load(url, function(response, status, xhr) {
             if (status == "success") {
@@ -767,6 +774,8 @@
 
     $(function() {
 
+    	initObjcInfo();
+
     	$('tr[id^="prfmncTr"]').on("change",function(e){
     		var nope=0;
     		var hr  =0;
@@ -876,6 +885,7 @@
             }
          })
     };
+
 
 
 </script>
