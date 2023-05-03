@@ -10,6 +10,7 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -647,21 +648,6 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	}
 
 	/**
-	* 보완계획서 수정
-	*
-	* @Title : updateScrtyImprvPlanln
-	* @Description : 보완계획서 수정
-	* @param dsgnPrgrmVo
-	* @return int
-	* @throws Exception
-	*/
-	@Override
-	@Transactional
-	public int updateScrtyImprvPlanln(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
-		return dsgnPrgrmDao.updateScrtyImprvPlanln(dsgnPrgrmVo);
-	}
-
-	/**
 	 * 결과보고서 조회
 	 *
 	 * @Title : selectRsltRptln
@@ -676,7 +662,7 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	}
 
 	/**
-	* 보완요청 수정
+	* 보완개선요청 수정
 	*
 	* @Title : updateSplmntImprv
 	* @Description : 보완요청 수정
@@ -716,7 +702,23 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	@Override
 	@Transactional
 	public int updateRsltRptln(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
-		return dsgnPrgrmDao.updateRsltRptln (dsgnPrgrmVo);
+		int ret=0;
+
+		//이행확인심사 조회
+		DsgnPrgrmVo srngInfo = null;
+		srngInfo = dsgnPrgrmDao.selectImplmntIdntySrngDtl(dsgnPrgrmVo);
+		srngInfo.setVstDe(dsgnPrgrmVo.getVstDe());
+		srngInfo.setVstHr(dsgnPrgrmVo.getVstHr());
+		srngInfo.setVstMnt(dsgnPrgrmVo.getVstMnt());
+		srngInfo.setGrdCd(dsgnPrgrmVo.getGrdCd());
+		srngInfo.setGnrlzOpnn(dsgnPrgrmVo.getGnrlzOpnn());
+		srngInfo.setFilegrpid(dsgnPrgrmVo.getFilegrpid());
+		srngInfo.setUser(dsgnPrgrmVo.getUser());
+
+		//이행확인심사 수정
+		ret+=dsgnPrgrmDao.updateImplmntIdntySrng(srngInfo);
+
+		return ret;
 	}
 
 	/**
@@ -979,6 +981,77 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 		ret+=dsgnPrgrmDao.updateCyClSttsCd(dsgnPrgrmVo);
 
 		//제출상태변경
+		return ret;
+	}
+
+	/**
+	* 보완개선계획 등록
+	*
+	* @Title : insertScrtyImprvPlanln
+	* @Description : 보완개선계획 등록
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	@Override
+	@Transactional
+	public int insertScrtyImprvPlanln(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
+		int ret = 0;
+
+		//이행확인심사 조회
+		DsgnPrgrmVo srngInfo = null;
+		srngInfo = dsgnPrgrmDao.selectImplmntIdntySrngDtl(dsgnPrgrmVo);
+		srngInfo.setVstDe(dsgnPrgrmVo.getVstDe());
+		srngInfo.setVstHr(dsgnPrgrmVo.getVstHr());
+		srngInfo.setVstMnt(dsgnPrgrmVo.getVstMnt());
+		srngInfo.setUser(dsgnPrgrmVo.getUser());
+
+		//이행확인심사 수정
+		ret+=dsgnPrgrmDao.updateImplmntIdntySrng(srngInfo);
+
+		//보완개선 계획 조회
+		//DsgnPrgrmVo plan = null;
+		ret+=dsgnPrgrmDao.insertSplmntPlan(dsgnPrgrmVo);
+
+		return ret;
+	}
+
+	/**
+	* 보완개선계획 수정
+	*
+	* @Title : updateScrtyImprvPlanln
+	* @Description : 보완개선계획 수정
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	@Override
+	@Transactional
+	public int updateScrtyImprvPlanln(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		int ret = 0;
+
+		//이행확인심사 조회
+		DsgnPrgrmVo srngInfo = null;
+		srngInfo = dsgnPrgrmDao.selectImplmntIdntySrngDtl(dsgnPrgrmVo);
+		srngInfo.setVstDe(dsgnPrgrmVo.getVstDe());
+		srngInfo.setVstHr(dsgnPrgrmVo.getVstHr());
+		srngInfo.setVstMnt(dsgnPrgrmVo.getVstMnt());
+		srngInfo.setUser(dsgnPrgrmVo.getUser());
+
+		//이행확인심사 수정
+		ret+=dsgnPrgrmDao.updateImplmntIdntySrng(srngInfo);
+
+		//보완개선 계획 조회
+		DsgnPrgrmVo plan = null;
+		plan = dsgnPrgrmDao.selectSplmntPlan(dsgnPrgrmVo);
+		plan.setSmrizeOpnn(dsgnPrgrmVo.getCn());
+		plan.setFilegrpid(dsgnPrgrmVo.getFilegrpid());
+		plan.setUser(dsgnPrgrmVo.getUser());
+
+		ret+=dsgnPrgrmDao.updateScrtyImprvPlanln(plan);
+
 		return ret;
 	}
 

@@ -407,29 +407,6 @@ public interface DsgnPrgrmDao {
 	public int updateSplmntImprv(@Valid DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 	/**
-	* 결과보고서 수정
-	*
-	* @Title : updateRsltRptln
-	* @Description : 결과보고서 수정
-	* @param dsgnPrgrmVo
-	* @return
-	* @throws Exception
-	* @return int
-	*/
-	public int updateRsltRptln(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
-
-	/**
-	* 보완계획서 수정
-	*
-	* @Title : updateScrtyImprvPlanln
-	* @Description : 보완계획서 수정
-	* @param dsgnPrgrmVo
-	* @return int
-	* @throws Exception
-	*/
-	public int updateScrtyImprvPlanln(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
-
-	/**
 	* 지정프로그램 개요 조회
 	*
 	* @Title : selectDsgnOutl
@@ -572,6 +549,29 @@ public interface DsgnPrgrmDao {
 	*/
 	public int updatePrgrm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
+	/**
+	* 보완개선 계획 등록
+	*
+	* @Title : insertSplmntPlan
+	* @Description : 보완개선 계획 등록
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertSplmntPlan(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 보완개선 계획 수정
+	*
+	* @Title : updateScrtyImprvPlanln
+	* @Description : 보완개선 계획 수정
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int updateScrtyImprvPlanln(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 
 }

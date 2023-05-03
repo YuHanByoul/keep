@@ -302,9 +302,6 @@ public class DsgnPrgrmController {
 
     	DsgnPrgrmVo chgAplyInfo = dsgnPrgrmServiceImpl.selectChgAplyDtl(dsgnPrgrmVo);
 
-    	logger.info("@@@@@@@@@@@@@@@@@@@ filegrpid : " + chgAplyInfo.toString());
-    	logger.info("@@@@@@@@@@@@@@@@@@@ filegrpid : " + chgAplyInfo.getFilegrpid());
-
     	if (!StringUtil.nvl(chgAplyInfo.getFilegrpid()).equals("") && !StringUtil.nvl(chgAplyInfo.getFilegrpid()).equals(0)) {
             FileVo fileVo = new FileVo();
             fileVo.setFilegrpid(chgAplyInfo.getFilegrpid());
@@ -426,7 +423,6 @@ public class DsgnPrgrmController {
     	asgsysSrngVo.setPrgrmid(dsgnPrgrmVo.getPrgrmid());
 
     	model.addAttribute("sidoList", commonService.selectCtprvnList());
-    	//model.addAttribute("prgrmBscInfo", asgsysSrngServiceImpl.selectDsgnAplyDtlInfo(asgsysSrngVo));    //프로그램 기본 정보
     	model.addAttribute("dsgnInfo",dsgnPrgrmServiceImpl.selectDsgnPrgrm(dsgnPrgrmVo));
 
     	return "mng/dsgnPrgrm/operRsltForm";
@@ -1077,7 +1073,6 @@ public class DsgnPrgrmController {
             model.addAttribute("fileList", Collections.emptyList());
         }
 
-
     	return "mng/dsgnPrgrm/splmntImprvForm";
     }
 
@@ -1142,9 +1137,60 @@ public class DsgnPrgrmController {
     	}
     	model.addAttribute("scrtyImprvPlanln", scrtyImprvPlanln);
 
+    	if (!StringUtil.nvl(scrtyImprvPlanln.getFilegrpid()).equals("") && !StringUtil.nvl(scrtyImprvPlanln.getFilegrpid()).equals(0)) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(scrtyImprvPlanln.getFilegrpid());
+
+            model.addAttribute("fileList", fileService.getFileList(fileVo));
+
+        } else {
+            model.addAttribute("fileList", Collections.emptyList());
+        }
+
     	return "mng/dsgnPrgrm/scrtyImprvPlanlnForm";
     }
 
+    /**
+     * 보완개선계획 등록
+     *
+     * @Title : insertSplmntImprv
+     * @Description : 보완요청 등록
+     * @param DsgnPrgrmVo 객체
+     * @param bindingResult 유효성검증결과
+     * @param user 사용자세션정보
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/dsgnPrgrm/insertScrtyImprvPlanln.do")
+    @ResponseBody
+    public Map<String, Object> insertScrtyImprvPlanln(@Valid DsgnPrgrmVo dsgnPrgrmVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
+
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+    	if (bindingResult1.hasErrors()) {
+    		FieldError fieldError = bindingResult1.getFieldError();
+    		if (fieldError != null) {
+    			resultMap.put("msg", fieldError.getDefaultMessage());
+    		}
+    		return resultMap;
+    	}
+
+    	int retVal = 0;
+
+    	dsgnPrgrmVo.setUser(user);
+
+    	retVal = dsgnPrgrmServiceImpl.insertScrtyImprvPlanln(dsgnPrgrmVo);
+
+    	if (retVal > 0) {
+    		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+    		resultMap.put("msg", "등록에 성공하였습니다.");
+    	} else {
+    		resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+    		resultMap.put("msg", "등록에 실패했습니다.");
+    	}
+
+    	return resultMap;
+    }
 
     /**
 	 * 보완계획서 수정
@@ -1207,6 +1253,16 @@ public class DsgnPrgrmController {
     		rsltRptln = dsgnPrgrmVo;
     	}
     	model.addAttribute("rsltRptln", rsltRptln);
+
+    	if (!StringUtil.nvl(rsltRptln.getFilegrpid()).equals("") && !StringUtil.nvl(rsltRptln.getFilegrpid()).equals(0)) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(rsltRptln.getFilegrpid());
+
+            model.addAttribute("fileList", fileService.getFileList(fileVo));
+
+        } else {
+            model.addAttribute("fileList", Collections.emptyList());
+        }
 
     	return "mng/dsgnPrgrm/rsltRptlnForm";
     }

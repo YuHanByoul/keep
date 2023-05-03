@@ -727,7 +727,7 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     private String splmntImprvWrtpln;
 
     /** 보완요청 결과보고서 */
-    private String splmntImprvltRptp;
+    private String rsltln;
 
     /** 보안개선계획 */
     @Size(max = 2000, message = "내용은 2000자를 넘을 수 없습니다.")

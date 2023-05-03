@@ -1,6 +1,7 @@
 <!-- 보안계획서 -->
 <form id="splmntPlanFrm">
-    <input type="hidden" id="dmndid" name="dmndid" th:value="${scrtyImprvPlanln.dmndid}"
+    <input type="hidden" id="dmndid" name="dmndid" th:value="${scrtyImprvPlanln.dmndid}">
+    <input type="hidden" id="srngid" name="srngid" th:value="${scrtyImprvPlanln.srngid}">
 
     <div class="card-header p-t-0 p-b-0">
         <h3 class="sub-title"><strong>보완개선 계획서</strong></h3>
@@ -9,33 +10,34 @@
         <div class="mb-2 form-group row required">
             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="smrizeOpnn"><strong>책임개발자 총괄의견</strong></label>
             <div class="col-12">
-                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="Default textarea" id="smrizeOpnn" name="smrizeOpnn">[[${scrtyImprvPlanln.smrizeOpnn}]]</textarea>
+                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="책임개발자 총괄의견 입력" id="smrizeOpnn" name="smrizeOpnn">[[${scrtyImprvPlanln.smrizeOpnn}]]</textarea>
             </div>
         </div>
         <div class="mb-2 form-group row required">
             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="dmndCn"><strong>보완개선요청</strong></label>
             <div class="col-12">
-                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="Default textarea" id="dmndCn" name="dmndCn" readonly>[[${scrtyImprvPlanln.dmndCn}]]</textarea>
+                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="보완개선요청 입력" id="dmndCn" name="dmndCn" readonly>[[${scrtyImprvPlanln.dmndCn}]]</textarea>
             </div>
         </div>
         <div class="mb-2 form-group row required">
             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cn"><strong>보완개선계획</strong></label>
             <div class="col-12">
-                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="Default textarea" id="cn" name="cn">[[${cn}]]</textarea>
+                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="보완개선계획 입력" id="cn" name="cn">[[${scrtyImprvPlanln.cn}]]</textarea>
             </div>
         </div>
         <div class="mb-0 form-group row">
             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>첨부파일</strong></label>
             <div class="col-sm-12">
                 <input id="multiFileInput" type="file" name="files" multiple accept="image/jpeg,image/gif,image/png,application/pdf" class="form-control form-control-sm"/>
-                <input type="hidden" name="filegrpid" id="filegrpid" value="0">
+                <input type="hidden" name="filegrpid" id="filegrpid" th:value="${scrtyImprvPlanln.filegrpid ==null?0:scrtyImprvPlanln.filegrpid }">
             </div>
             <div class="row">
                 <div class="col-auto" id="fileListArea">
                     <th:block th:if = "${fileList} != null" >
                         <th:block th:each="item:${fileList}" th:if = "${item.fileid} > 0">
-                            <span class ='label label-inverse ' th:id="'file_'+${item.fileid}">
+                            <span class ='label label-inverse ' th:id="${item.fileid}">
                                 <span class='text-white' href="javascript:void(0)" th:name="${item.fileid}" th:onclick="downloadFileByFileid([[${item.fileid}]],[[${item.fileIdntfcKey}]])"><th:block th:text="${item.orginlFileNm}"></th:block>&nbsp;&nbsp;</a></span>
+                                <a class='text-white' href="javascript:void(0)" th:onclick="fn_deleteFileList([[${item.fileid}]],[[${item.fileIdntfcKey}]])">X</a>
                             </span>
                         </th:block>
                     </th:block>
@@ -49,6 +51,7 @@
     </div>
 </form>
 <script th:inline="javascript">
+
     var splmntPlan = {
 
         init:function(){
@@ -64,11 +67,13 @@
                 rules: {
 
                 	smrizeOpnn : {required: true,  isBlank:true, maxlength: 1000},
+                	dmndCn     : {required: true,  maxlength: 1000},
                 	cn         : {required: true,  isBlank:true, maxlength: 1000}
                 },
                 messages: {
-                	smrizeOpnn : {required: "책임개발자 총괄의견을 입력해주세요.",isBlank:"입력 값에 공백이 있습니다.", maxlength: "책임개발자 총괄의견은 1000자 이하여야 합니다."},
-                	cn         : {required: "보완개선계획을 입력해 주세요."      ,isBlank:"입력 값에 공백이 있습니다.", maxlength: "보완개선계획은 1000자 이하여야 합니다."}
+                	smrizeOpnn : {required: "책임개발자 총괄의견을 입력해주세요.", isBlank:"입력 값에 공백이 있습니다.", maxlength: "책임개발자 총괄의견은 1000자 이하여야 합니다."},
+                	dmndCn     : {required: "보완개선요청을 입력해 주세요."      , isBlank:"입력 값에 공백이 있습니다.", maxlength: "보완개선요청은 1000자 이하여야 합니다."},
+                	cn         : {required: "보완개선계획을 입력해 주세요."      , isBlank:"입력 값에 공백이 있습니다.", maxlength: "보완개선계획은 1000자 이하여야 합니다."}
                 }
             });
         } ,
@@ -76,6 +81,45 @@
         doSave:function(){
         	if(!($('#dtlTabFrm').valid())) return;
         	if(!($('#splmntPlanFrm').valid())) return;
+
+        	if(!confirm("저장 하시겠습니까?")){return;}
+
+
+            var url ="";
+            var keyid = $("#dmndid").val();
+
+            if("" == keyid || null == keyid) {
+                url +="/mng/dsgnPrgrm/insertScrtyImprvPlanln.do";
+            }else{
+                url +="/mng/dsgnPrgrm/updateScrtyImprvPlanln.do";
+            }
+
+
+            var param = $("#splmntPlanFrm").serialize();
+            var hr= $("#vstHr").val();
+            var mnt= $("#vstMnt").val();
+            param+= "&vstDe="+$("#vstDe").val() + "&vstHr="+hr+"&vstMnt="+mnt;
+
+            if(displayWorkProgress()) {
+                $.ajax({
+                    url : url,
+                    type: "POST",
+                    cache: false,
+                    dataType: "json",
+                    data: param,
+                    success: function(response) {
+                        if(response.result == "success") {
+
+                            alert(response.msg);
+                            gridHelper1.resetListContent();
+
+                        } else {
+                            alert(response.msg);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
         }
 
     };
@@ -85,7 +129,6 @@
 
     	$('#multiFileInput').change(function(event) {
 
-    		debugger;
             var objFile = document.querySelector('#multiFileInput');
             var formData = new FormData();
             var content = "";
@@ -131,4 +174,37 @@
             }
         });
     });
+
+    /* 파일삭제 */
+    function fn_deleteFileList(fileid, fileIdntfcKey){
+        if(!confirm("파일을 삭제하시겠습니까?")){return;}
+        fn_deleteFile(fileid, fileIdntfcKey);
+        $("#"+fileid).remove();
+        $('#multiFileInput').val('');
+    }
+
+    function fn_deleteFile(fileid, fileIdntfcKey){
+
+        var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey;
+          $.ajax({
+            url : deleteFileUrl,
+            type: 'GET',
+            cache : false,
+            dataType: 'json',
+            success : function (data){
+                if(data.result=="success"){
+                    $("#"+fileid).remove();
+                    $('#atchFilegrpid').val(0);
+                    $('#multiFileInput').val('');
+                    alert("파일삭제가 완료 되었습니다.");
+                }else{
+                    alert("파일삭제중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+                }
+            },
+            error : function (error){
+            }
+         })
+    };
+
+
 </script>
