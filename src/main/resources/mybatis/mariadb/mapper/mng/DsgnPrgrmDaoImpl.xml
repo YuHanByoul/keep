@@ -152,13 +152,17 @@
                     AA.PRGRMID
                   , AA.CYCLID
                   , CC.SRNGID
-                  , CONCAT(COUNT(CASE WHEN CC.FILEGRPID IS NOT NULL THEN 0 END), "/", COUNT(BB.CYCLID))    AS IMPLMNT_IDNTY_CNT
+                  , CONCAT(COUNT(CASE WHEN FILE.FILEID IS NOT NULL THEN 0 END), "/", COUNT(BB.CYCLID))    AS IMPLMNT_IDNTY_CNT
                 FROM
                     TB_ASS_OPER_RSLT_CYCL AA
                 LEFT OUTER JOIN
                     TB_ASS_OPER_RSLT BB ON AA.CYCLID = BB.CYCLID
                 LEFT OUTER JOIN
                     TB_ASS_IMPLMNT_IDNTY_SRNG CC ON AA.CYCLID =CC.CYCLID
+                LEFT OUTER JOIN
+                (
+                    SELECT MAX(FILEID) AS FILEID ,FILEGRPID FROM TB_CMM_FILE GROUP BY FILEGRPID
+                ) FILE ON CC.FILEGRPID = FILE.FILEGRPID
                 WHERE 1=1
                 AND NOW() BETWEEN AA.SBMSN_BGNG_DE AND AA.SBMSN_END_DE
                 GROUP BY AA.PRGRMID
@@ -985,6 +989,7 @@
     <select id="selectSplmntPlan" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
         SELECT
             A.PLANID
+          , B.SRNGID
           , A.DMNDID
           , A.SMRIZE_OPNN
           , A.CN
@@ -1037,6 +1042,7 @@
 
     </insert>
 
+    <!-- 이행확인심사 수정 -->
     <update id="updateImplmntIdntySrng" parameterType="DsgnPrgrmVo" >
         UPDATE TB_ASS_IMPLMNT_IDNTY_SRNG SET
             PICID        = #{picid     }
@@ -1063,6 +1069,31 @@
 
     </update>
 
+    <!-- 보완계획서 (이행확인심사) 등록 -->
+    <insert id="insertSplmntPlan" parameterType="DsgnPrgrmVo" >
+        INSERT INTO TB_ASS_SPLMNT_PLAN
+        (
+            DMNDID
+          , SMRIZE_OPNN
+          , CN
+          , FILEGRPID
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        ) VALUES
+        (
+            #{dmndid    }
+          , #{smrizeOpnn}
+          , #{cn        }
+          , #{filegrpid }
+          , NOW()            /*수정일시*/
+          , #{user.userid}   /*수정자아이디*/
+          , NOW()            /*등록일시*/
+          , #{user.userid}   /*등록자아이디*/
+        )
+    </insert>
+
     <!-- 보완계획서 (이행확인심사) 수정 -->
     <update id="updateScrtyImprvPlanln" parameterType="DsgnPrgrmVo" >
         UPDATE
@@ -1085,18 +1116,6 @@
         WHERE
             A.CYCLID = #{cyclid}
     </select>
-
-    <!-- 결과보고서(이행확인심사) 수정 -->
-    <update id="updateRsltRptln" parameterType="DsgnPrgrmVo" >
-        UPDATE
-            TB_ASS_IMPLMNT_IDNTY_SRNG
-        SET GNRLZ_OPNN = #{gnrlzOpnn}
-          , GRD_CD     = #{grdCd}
-          , FILEGRPID  = #{filegrpid}
-          , MDFRID     = #{user.userid}
-          , MDFCN_DT   = NOW()
-        WHERE SRNGID   = #{srngid}
-    </update>
 
     <update id="updateSbmsnPrd" parameterType="DsgnPrgrmVo" >
         UPDATE

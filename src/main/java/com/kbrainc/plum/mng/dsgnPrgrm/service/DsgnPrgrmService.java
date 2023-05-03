@@ -351,7 +351,7 @@ public interface DsgnPrgrmService {
 	* @return int
 	* @throws Exception
 	*/
-	public int updateSplmntImprv(@Valid DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+	public int updateSplmntImprv(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 	/**
 	* 결과보고서 수정
@@ -455,6 +455,19 @@ public interface DsgnPrgrmService {
 	* @return int
 	*/
 	public int updateSbmsnStts(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 보완개선계획 등록
+	*
+	* @Title : insertScrtyImprvPlanln
+	* @Description : 보완개선계획 등록
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertScrtyImprvPlanln(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
 
 
 }
