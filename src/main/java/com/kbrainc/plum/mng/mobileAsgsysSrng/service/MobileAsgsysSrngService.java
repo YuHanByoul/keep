@@ -5,6 +5,8 @@ import com.kbrainc.plum.mng.mobileAsgsysSrng.model.MobileAsgsysSrngVo;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 /**
 * 시설 서비스 인터페이스
 *
@@ -23,7 +25,7 @@ import java.util.List;
 public interface MobileAsgsysSrngService {
     
     /**
-    * 시설 목록 조회
+    * 지원단심사 목록 조회
     *
     * @Title : selectAsgsysSrngList
     * @Description : 시설 목록 조회
@@ -45,35 +47,38 @@ public interface MobileAsgsysSrngService {
     public MobileAsgsysSrngVo selectAsgsysSrngInfo(MobileAsgsysSrngVo mobileAsgsysSrngVo) throws Exception;
 
     /**
-     * 지원단심사 체크리스트 조회
-     *
-     * @Title : selectSprtgrpSrngList
-     * @Description : 지원단심사 체크리스트 조회
-     * @param mobileAsgsysSrngVo
-     * @return List<MobileAsgsysSrngVo>
-     * @throws Exception
-     */
+    * 지원단심사 상세 수정
+    *
+    * @Title : updateAsgsysSrng
+    * @Description : TODO
+    * @param mobileAsgsysSrngVo
+    * @return
+    * @throws Exception
+    * @return int
+    */
+    public int updateAsgsysSrng(MobileAsgsysSrngVo mobileAsgsysSrngVo) throws Exception;
+    
+    /**
+    * 체크리스트 목록 조회
+    *
+    * @Title : selectCheckList
+    * @Description : TODO
+    * @param mobileAsgsysSrngVo
+    * @return
+    * @throws Exception
+    * @return List<MobileAsgsysSrngVo>
+    */
     public List<MobileAsgsysSrngVo> selectCheckList(MobileAsgsysSrngVo mobileAsgsysSrngVo) throws Exception;
 
     /**
-     * 지원단심사 등록
-     *
-     * @Title : insertSprtgrpSrng
-     * @Description : 지원단심사 등록
-     * @param mobileAsgsysSrngVo
-     * @return int
-     * @throws Exception
-     */
+    * 지원담심사 등록
+    *
+    * @Title : insertSprtgrpSrng
+    * @Description : TODO
+    * @param mobileAsgsysSrngVo
+    * @return
+    * @throws Exception
+    * @return int
+    */
     public int insertSprtgrpSrng(MobileAsgsysSrngVo mobileAsgsysSrngVo) throws Exception;
-
-    /**
-     * 지원단심사 수정
-     *
-     * @Title : updateSprtgrpSrng
-     * @Description : 지원단심사 등록
-     * @param mobileAsgsysSrngVo
-     * @return int
-     * @throws Exception
-     */
-    public int updateSprtgrpSrng(MobileAsgsysSrngVo mobileAsgsysSrngVo) throws Exception;
 }

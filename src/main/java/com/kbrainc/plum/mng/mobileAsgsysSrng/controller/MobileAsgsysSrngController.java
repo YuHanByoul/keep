@@ -1,29 +1,28 @@
 package com.kbrainc.plum.mng.mobileAsgsysSrng.controller;
 
-import com.kbrainc.plum.cmm.file.service.FileService;
-import com.kbrainc.plum.cmm.service.CommonService;
-import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
-import com.kbrainc.plum.mng.inst.model.InstVo;
-import com.kbrainc.plum.mng.inst.service.InstService;
 import com.kbrainc.plum.mng.mobileAsgsysSrng.model.MobileAsgsysSrngVo;
 import com.kbrainc.plum.mng.mobileAsgsysSrng.service.MobileAsgsysSrngService;
-import com.kbrainc.plum.mng.spce.service.SpceService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.CommonUtil;
-import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 /**
 * 시설관리 컨트롤러 클래스
@@ -45,18 +44,6 @@ public class MobileAsgsysSrngController {
 
     @Autowired
     private MobileAsgsysSrngService mobileAsgsysSrngService;
-
-    @Autowired
-    private FileService fileService;
-
-    @Autowired
-    private InstService instService;
-
-    @Autowired
-    private SpceService spceService;
-
-    @Autowired
-    private CommonService commonService;
 
     /**
     * 모바일 우수프로그램 지정제사업 지원단심사 리스트화면
@@ -82,15 +69,15 @@ public class MobileAsgsysSrngController {
     */
     @RequestMapping(value = "/mng/mobileAsgsysSrng/selectAsgsysSrngList.do")
     @ResponseBody
-    public Map<String, Object> selectAsgsysSrngList(MobileAsgsysSrngVo mobileAsgsysSrngVo, @UserInfo UserVo user, InstVo instVo) throws Exception {
+    public Map<String, Object> selectAsgsysSrngList(MobileAsgsysSrngVo mobileAsgsysSrngVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
+        
         List<MobileAsgsysSrngVo> result = null;
         mobileAsgsysSrngVo.setUser(user);
         result =  mobileAsgsysSrngService.selectAsgsysSrngList(mobileAsgsysSrngVo);
 
         if (result.size() > 0) {
             resultMap.put("totalCount", (result.get(0).getTotalCount()));
-            resultMap.put("pagination", PaginationUtil.getPagingHtml(result.get(0).getTotalPage(), result.get(0).getPageNumber(), 10));
         } else {
             resultMap.put("totalCount", 0);
         }
@@ -110,17 +97,54 @@ public class MobileAsgsysSrngController {
      */
     @RequestMapping(value = "/mng/mobileAsgsysSrng/asgsysSrngUpdate.html")
     public String asgsysSrngUpdate(MobileAsgsysSrngVo mobileAsgsysSrngVo, Model model) throws Exception {
-
-
-        //신청자와 심사위원의 체크리스 제출 ID 조회
         MobileAsgsysSrngVo mobileAsgsysSrngInfo = mobileAsgsysSrngService.selectAsgsysSrngInfo(mobileAsgsysSrngVo);
-
         model.addAttribute("mobileAsgsysSrngInfo", mobileAsgsysSrngInfo);
-        model.addAttribute("checkList", mobileAsgsysSrngService.selectCheckList(mobileAsgsysSrngInfo));
-
+        
         return "mng/mobileAsgsysSrng/asgsysSrngUpdate";
     }
+    
+    /**
+    * 프로그램 방문일시 저장
+    *
+    * @Title : updateAsgsysSrng
+    * @Description : 프로그램 방문일시 저장
+    * @param mobileAsgsysSrngVo
+    * @param bindingResult
+    * @param user
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/mng/mobileAsgsysSrng/updateAsgsysSrng.do")
+    @ResponseBody
+    public Map<String, Object> updateAsgsysSrng(@Valid MobileAsgsysSrngVo mobileAsgsysSrngVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+        
+        mobileAsgsysSrngVo.setUser(user);
 
+        int retVal = 0;
+                
+        retVal = mobileAsgsysSrngService.updateAsgsysSrng(mobileAsgsysSrngVo);
+        
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "저장에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "저장에 실패했습니다.");
+        }
+
+        return resultMap;
+    }
+    
     /**
      * 지원단심사 체크리스트 화면 이동
      *
@@ -132,12 +156,10 @@ public class MobileAsgsysSrngController {
      */
     @RequestMapping(value = "/mng/mobileAsgsysSrng/asgsysSrngCheckList.html")
     public String asgsysSrngCheckList(MobileAsgsysSrngVo mobileAsgsysSrngVo, Model model) throws Exception {
-        //신청자와 심사위원의 체크리스 제출 ID 조회
-        MobileAsgsysSrngVo mobileAsgsysSrngInfo = mobileAsgsysSrngService.selectAsgsysSrngInfo(mobileAsgsysSrngVo);
-
-        model.addAttribute("mobileAsgsysSrngInfo", mobileAsgsysSrngInfo);
         model.addAttribute("checkList", mobileAsgsysSrngService.selectCheckList(mobileAsgsysSrngVo));
-
+        MobileAsgsysSrngVo mobileAsgsysSrngInfo = mobileAsgsysSrngService.selectAsgsysSrngInfo(mobileAsgsysSrngVo);
+        model.addAttribute("mobileAsgsysSrngInfo", mobileAsgsysSrngInfo);
+        
         return "mng/mobileAsgsysSrng/asgsysSrngCheckList";
     }
 
@@ -151,22 +173,17 @@ public class MobileAsgsysSrngController {
      * @throws Exception
      * @return Map<String,Object>
      */
-    @RequestMapping(value = "/mng/mobileAsgsysSrng/insertSprtgrpSrng.do")
+    @RequestMapping(value = "/mng/mobileAsgsysSrng/insertSprtgrpSrng.do", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> insertSprtgrpSrng(@Valid MobileAsgsysSrngVo mobileAsgsysSrngVo, @UserInfo UserVo user, HttpServletRequest request) throws Exception {
+    public Map<String, Object> insertSprtgrpSrng(@RequestBody MobileAsgsysSrngVo mobileAsgsysSrngVo, @UserInfo UserVo user, HttpServletRequest request) throws Exception {
 
         Map<String, Object> resultMap = new HashMap<String, Object>();
-
+        
         mobileAsgsysSrngVo.setUser(user);
         mobileAsgsysSrngVo.setUserIp(CommonUtil.getClientIp(request));
-
+        
         int retVal = 0;
-
-        if (null != mobileAsgsysSrngVo.getSbmsnid() && 0 != mobileAsgsysSrngVo.getSbmsnid()) {
-            retVal = mobileAsgsysSrngService.updateSprtgrpSrng(mobileAsgsysSrngVo);
-        } else {
-            retVal = mobileAsgsysSrngService.insertSprtgrpSrng(mobileAsgsysSrngVo);
-        }
+        retVal = mobileAsgsysSrngService.insertSprtgrpSrng(mobileAsgsysSrngVo);
 
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);

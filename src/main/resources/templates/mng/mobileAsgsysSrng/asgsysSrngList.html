@@ -36,7 +36,7 @@
 											<div class="mb-0 form-group row">
 												<div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>심사상태</strong></div>
 												<div class="col-12">
-													<span id="searchSrngSttsCd" name="searchSrngSttsCd" kattr:select_code="searchSrngSttsCd" grpCd="114" firstOptTxt="- 전체 -" addClass="form-select form-select-sm" isAdmin="true">
+													<span kattr:select_code="searchSrngStts" grpCd="114" firstOptTxt="- 전체 -" addClass="form-select form-select-sm" isAdmin="true">
 												</div>
 											</div>
 										</div>
@@ -51,13 +51,6 @@
 					</div>
 				</div>
 			</div>
-			<input type="hidden" id="pageNumber" name="pageNumber" value="1">
-			<input type="hidden" id="rowPerPage" name="rowPerPage" value="12">
-			<input type="hidden" id="orderField" name="orderField" value="REG_DT">
-			<input type="hidden" id="searchRegStartDt" name="searchRegStartDt" value="" />
-			<input type="hidden" id="searchRegEndDt"   name="searchRegEndDt"   value="" />
-<!--			<input type="hidden" id="searchDlvySttsCd" name="searchDlvySttsCd" value="230101">-->
-<!--			<input type="hidden" id="searchSttsCd" name="searchSttsCd" value="231102">-->
 		</form>
 
 		<div class="page-wrapper">
@@ -77,13 +70,9 @@
 			<!-- Page-body start -->
 			<div class="page-body" id="list-area">
 			</div>
-			<div class="text-center mt-3" id="pagination">
-			</div>
 			<!-- Page-body end -->
 		</div>
 
-		<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-		<script type="text/javascript" src="/js/common/jsgrid-master/dist/jsgrid.min.js"></script>
 		<script th:inline="javascript">
 			var listUrl = "/mng/mobileAsgsysSrng/selectAsgsysSrngList.do";
 			var viewUrl = '/mng/mobileAsgsysSrng/asgsysSrngUpdate.html';
@@ -129,32 +118,30 @@
 					html += `<div class="nodata"><p><span class="icon icon-notice bg-black9"></span>데이터가 없습니다.</p></div>`;
 				} else {
 					list.forEach(function (item) {
-						let badge = 'badge badge-primary lh-sm';
-						let srngDt = item.srngDt;
-						if( item.srgnSttsCd == '114102' ){
+						let badge = "";
+						if( item.srgnStts == '114102' ){
 							// 심사전
-							badge = 'badge badge-primary lh-sm';
-							srngDt = '-';
-						}else if( item.srgnSttsCd == '114103' ){
+							badge = '<div class="badge badge-inverse-primary">심사전</div>';
+						}else if( item.srgnStts == '114103' ){
 							// 심사중
-							badge = 'badge badge-primary lh-sm';
-						}else if( item.srgnSttsCd == '114104' ){
+							badge = '<div class="badge badge-primary lh-sm">심사중</div>';
+						}else if( item.srgnStts == '114104' ){
 							// 심사완료
-							badge = 'badge badge-default lh-sm';
+							badge = '<div class="badge badge-default lh-sm">심사완료</div>';
 						}
 						html += '<div class="card position-relative">'+
 									'<div class="card-header pb-2 row">'+
 										'<div class="col text-truncate">'+
-											'<strong><a href="/mng/mobileAsgsysSrng/asgsysSrngUpdate.html?prgrmid='+item.prgrmid+'&sprtgrpid='+item.sprtgrpid+'" class="stretched-link f-16 text-dark">'+item.prgrmNm+'</a></strong>'+
+											'<strong><a href="/mng/mobileAsgsysSrng/asgsysSrngUpdate.html?prgrmid='+item.prgrmid+'" class="stretched-link f-16 text-dark">'+item.prgrmNm+'</a></strong>'+
 										'</div>'+
 										'<div class="col-auto ps-0">'+
-											'<div class="'+badge+'">'+item.srgnSttsCdNm+'</div>'+
+										badge+
 										'</div>'+
 									'</div>'+
 									'<div class="card-block">'+
 										'<ul class="lh-lg">'+
 											'<li>기관명 : '+item.instNm+'</li>'+
-											'<li>현장점검 지정일 : '+srngDt+'</li>'+
+											'<li>현장점검 지정일 : '+item.vstDt+'</li>'+
 											'<li>배정일 : '+item.regDt+'</li>'+
 										'</ul>'+
 									'</div>'+
@@ -174,8 +161,6 @@
 				}
 			}
 		</script>
-
-		<script src="/js/ckeditor/ckeditor.js"></script>
 	</div>
 </body>
 </html>

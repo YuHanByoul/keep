@@ -1,7 +1,5 @@
 package com.kbrainc.plum.mng.mobileAsgsysSrng.model;
 
-import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
-import com.kbrainc.plum.mng.asgsysSrng.model.ChklstAnsVo;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import java.util.List;
@@ -47,116 +45,94 @@ public interface MobileAsgsysSrngDao {
     public MobileAsgsysSrngVo selectAsgsysSrngInfo(MobileAsgsysSrngVo mobileAsgsysSrngVo) throws Exception;
 
     /**
-     * 지원단심사 체크리스트 조회
-     *
-     * @Title : selectSprtgrpSrngList
-     * @Description : 지원단심사 체크리스트 조회
-     * @param mobileAsgsysSrngVo
-     * @return List<MobileAsgsysSrngVo>
-     * @throws Exception
-     */
+    * 지원단심사 상세 수정
+    *
+    * @Title : updateAsgsysSrng
+    * @Description : 지원단심사 상세 수정
+    * @param mobileAsgsysSrngVo
+    * @throws Exception
+    * @return int
+    */
+    public int updateAsgsysSrng(MobileAsgsysSrngVo mobileAsgsysSrngVo) throws Exception;
+    
+    /**
+    * 체크리스트 목록 조회
+    *
+    * @Title : selectCheckList
+    * @Description : 체크리스트 목록 조회
+    * @param mobileAsgsysSrngVo
+    * @throws Exception
+    * @return List<MobileAsgsysSrngVo>
+    */
     public List<MobileAsgsysSrngVo> selectCheckList(MobileAsgsysSrngVo mobileAsgsysSrngVo) throws Exception;
 
     /**
-     * 지원단심사 심사의견 수정
-     *
-     * @Title : updateSprtgrpOpnn
-     * @Description : 지원단심사 심사의견 수정
-     * @param mobileAsgsysSrngVo
-     * @return int
-     * @throws Exception
-     */
-    public int updateSprtgrpOpnn(MobileAsgsysSrngVo mobileAsgsysSrngVo) throws Exception;
+    * 지원단 심사 수정
+    *
+    * @Title : updateSprtgrpSrng
+    * @Description : 지원단 심사 수정
+    * @param mobileAsgsysSrngVo
+    * @return int
+    */
+    public int updateSprtgrpSrng(MobileAsgsysSrngVo mobileAsgsysSrngVo);
 
     /**
-     * 체크리스트 제출 수정
-     *
-     * @Title : updateChklstSbmsn
-     * @Description : 체크리스트 제출 수정
-     * @param mobileAsgsysSrngVo
-     * @return int
-     * @throws Exception
-     */
-    public int updateChklstSbmsn(MobileAsgsysSrngVo mobileAsgsysSrngVo) throws Exception;
+    * 체크리스트 제출 등록
+    *
+    * @Title : insertChkLstSbmsn
+    * @Description : 체크리스트 제출 등록
+    * @param mobileAsgsysSrngVo
+    * @return int
+    */
+    public int insertChkLstSbmsn(MobileAsgsysSrngVo mobileAsgsysSrngVo);
 
     /**
-     * 체크리스트제출 등록
-     *
-     * @Title : insertChklstSbmsn
-     * @Description : 체크리스트제출 등록
-     * @param mobileAsgsysSrngVo
-     * @return
-     * @throws Exception
-     * @return int
-     */
-    public int insertChklstSbmsn(MobileAsgsysSrngVo mobileAsgsysSrngVo) throws Exception;
+    * 체크리스트 답변 등록
+    *
+    * @Title : insertChkLstAns
+    * @Description : 체크리스트 답변 등록
+    * @param mobileAsgsysSrngVo
+    * @return int
+    */
+    public int insertChkLstAns(MobileAsgsysSrngVo mobileAsgsysSrngVo);
 
     /**
-     * 체크리스트 제출 조회
-     *
-     * @Title : selectChkListSbmsn
-     * @Description : 체크리스트 제출 조회
-     * @param mobileAsgsysSrngVo
-     * @return
-     * @throws Exception
-     * @return MobileAsgsysSrngVo
-     */
-    public MobileAsgsysSrngVo selectChkListSbmsn(MobileAsgsysSrngVo mobileAsgsysSrngVo) throws Exception;
+    * 체크리스트 구분 순서 답변 등록
+    *
+    * @Title : insertChkLstSeOrdrAns
+    * @Description : 체크리스트 구분 순서 답변 등록
+    * @param mobileAsgsysSrngVo
+    * @return int
+    */
+    public int insertChkLstSeOrdrAns(MobileAsgsysSrngVo mobileAsgsysSrngVo);
 
     /**
-     * 체크리스트답변순서목록 삭제
-     *
-     * @Title : deleteChklstSeOrdrAnsList
-     * @Description : TODO
-     * @param dsgnSrngFormVo
-     * @return
-     * @throws Exception
-     * @return int
-     */
-    public int deleteChklstSeOrdrAnsList (ChklstAnsVo chklstAnsVo) throws Exception;
+    * 체크리스트 제출 수정
+    *
+    * @Title : updateChkLstSbmsn
+    * @Description : 체크리스트 제출 수정
+    * @param mobileAsgsysSrngVo
+    * @return int
+    */
+    public int updateChkLstSbmsn(MobileAsgsysSrngVo mobileAsgsysSrngVo);
 
     /**
-     * 체크리스트 key count 조회
-     *
-     * @Title : selectKeyCntChklstAns
-     * @Description : 체크리스트 key count 조회
-     * @param vo
-     * @return int
-     * @throws Exception
-     */
-    public int selectKeyCntChklstAns(ChklstAnsVo chklstAnsVo) throws Exception;
+    * 체크리스트 답변 수정
+    *
+    * @Title : updateChkLstAns
+    * @Description : 체크리스트 답변 수정
+    * @param mobileAsgsysSrngVo
+    * @return int
+    */
+    public int updateChkLstAns(MobileAsgsysSrngVo mobileAsgsysSrngVo);
 
     /**
-     * 체크리스트 답변 수정
-     *
-     * @Title : updateChklstAns
-     * @Description : 체크리스트 답변 수정
-     * @param chklstAnsVo
-     * @return int
-     * @throws Exception
-     */
-    public int updateChklstAns(ChklstAnsVo chklstAnsVo) throws Exception;
-
-    /**
-     * 체크리스트 답변 등록
-     *
-     * @Title : insertChklstAns
-     * @Description : 체크리스트 답변 등록
-     * @param chklstAnsVo
-     * @return int
-     * @throws Exception
-     */
-    public int insertChklstAns(ChklstAnsVo chklstAnsVo) throws Exception;
-
-    /**
-     * 체크리스트답변순서목록 등록
-     *
-     * @Title : insertChklstSeOrdrAnsList
-     * @Description : 체크리스트답변순서 등록
-     * @param dsgnSrngFormVo
-     * @return
-     * @throws Exception
-     * @return int
-     */
-    public int insertChklstSeOrdrAnsList (ChklstAnsVo chklstAnsVo) throws Exception;
+    * 체크리스트 구분 순서 답변 수정
+    *
+    * @Title : updateChkLstSeOrdrAns
+    * @Description : 체크리스트 구분 순서 답변 수정
+    * @param mobileAsgsysSrngVo
+    * @return int
+    */
+    public int updateChkLstSeOrdrAns(MobileAsgsysSrngVo mobileAsgsysSrngVo);
 }
