@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" 
+>
+
+<body>
+<div layout:fragment="content">
+    <section>
+        <form class="search-filter" id="searchForm" name="searchForm">
+            <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+            <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
+<!--             <input type="hidden" id="ORDER_DIRECTION" name="orderDirection" value="desc"> -->
+            <input type="hidden" id="orderField" name="orderField" value="REG_DT">
+            <div class="form-input-wrap">
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">접수번호</strong></div>
+                    <div class="form-body">
+                        <div class="form-input">
+                            <input type="text" title="접수번호" id="searchRcptNo" name="searchRcptNo" />
+                        </div>
+                    </div>                
+                </div>
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">신청상태</strong></div>
+                    <div class="form-body">
+                        <span kattr:select_code="searchSttsCd" grpCd="248" firstOptTxt="- 전체 -"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="search-filter-submit">
+                <button type="reset" class="btn-medium btn-gray btn-before-refresh" onclick="listPage.searchInit();">초기화</button>
+                <button type="button" class="btn-medium btn-green btn-before-search" onclick="listPage.search();">검색</button>
+            </div>
+        </form>
+
+        <div class="table-caption flex-nowrap">
+            <div class="left">
+                <p>총 <b id="totalCount">0</b> 건</p>
+            </div>
+            <div class="right">
+                <select title="글 보기 개수" id="rowPerPageChange" name="rowPerPageChange">
+                    <option value="10">10개씩 보기</option>
+                    <option value="50">50개씩 보기</option>
+                    <option value="100">100개씩 보기</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="pc-only">
+            <div class="table-col table-layout-auto">
+                <table>
+                    <caption>신청내역 - 번호, 시도, 접수번호, 신청상태, 신청일, 신청자</caption>
+                    <colgroup>
+                        <col style="width:6%;">
+                        <col>
+                        <col>
+                        <col>
+                        <col>
+                        <col>
+                    </colgroup>                    
+                    <thead>
+                        <tr>
+                            <th scope="col">번호</th>
+                            <th scope="col">시도</th>
+                            <th scope="col">접수상태</th>
+                            <th scope="col">신청상태</th>
+                            <th scope="col">보완요청</th>
+                            <th scope="col">신청일</th>
+                            <th scope="col">신청자</th>
+                        </tr>
+                    </thead>
+                    <tbody id="list-area">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mo-only">
+            <div class="table-list">
+                <ul id="list-mobile-area">
+                </ul>
+            </div>
+        </div>
+        <div id="pagination" aria-label="pagination"></div>
+    </section>
+    <!-- layerpopup -->
+    <div class="layer-popup layer-large" data-layer-id="suppModalPopup">
+        <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+        <div class="layer-wrap" id="suppModalPopup"></div>
+    </div>
+    
+    <script th:inline="javascript">
+        var listPage = {
+            listUrl: '/front/mypage/seeEnvEduInstHist/selectSeeEnvEduInstHistList.do',
+            detailUrl : '/front/eduInst/aplyInfoForm.html',
+    
+            init(rowPerPage) {
+                if(rowPerPage != null) {
+                    $("#rowPerPage").val(parseInt(rowPerPage));
+                    $('#pageNumber').val('1');
+                }
+                this.selectList();
+            },
+            search() {
+                $('#pageNumber').val('1');
+                this.selectList();
+            },
+            searchInit() {
+                $("#searchRcptNo").val('');
+                $("#searchSttsCd").val('');
+                this.selectList();
+            },
+            selectList() {
+            	
+                if (displayWorkProgress(true)) {
+                    let formData = $('#searchForm').serializeArray();
+    
+                    $.ajax({
+                        url: listPage.listUrl,
+                        cache: false,
+                        dataType: 'json',
+                        data: formData,
+                        type: 'GET',
+                        success: function (data) {
+                            listPage.makeListHtml(data);
+                            closeWorkProgress();
+                        }
+                    });
+                }
+            },
+            moveToDetail(aplyid) {
+                location.href = this.detailUrl + '?aplyid=' + aplyid;
+            },
+            suppPopup: function(splmntid,aplyid,sttsCd) {
+                $("#suppModalPopup").load("/front/mypage/seeEnvEduInstHist/selectSplmntPopup.html?splmntid=" + splmntid + '&aplyid=' + aplyid + '&sttsCd=' + sttsCd, function(response, status, xhr) {
+                    if (status == "success") {
+                        layerPopup.open({target:'suppModalPopup'});
+                    }
+                });
+            },
+            makeListHtml(data) {
+                var listHtml = "";
+                var mobileHtml = "";
+                if (data.list == null || data.list.length <= 0) {
+                    listHtml += `
+                    <tr>
+                        <td class="nodata" colspan="6">
+                            <p><span class="icon icon-notice bg-black9"></span>신청내역이 없습니다.</p>
+                        </td>
+                    </tr>
+                    `;
+                    mobileHtml += `
+                    <div class="nodata">
+                        <p><span class="icon icon-notice bg-black9"></span>신청내역이 없습니다.</p>
+                    </div>
+                    `;
+                } else {
+                    data.list.forEach(function(item) {
+                        listHtml += `
+                        <tr>
+                       	<td>${item.rowNumber}</td>
+                        <td>${item.ctprvnNm}</td>`;
+                        if(item.sttsCd == '248101' || item.sttsCd == '248102'){
+                        	listHtml += `<td><a href="javascript:void(0)" onclick="listPage.moveToDetail(${item.aplyid})" class="link">${item.rcptno}</a></td>`;
+                        }else{
+                        	listHtml += `<td>${item.rcptno}</td>`;
+                        }
+                        listHtml += `<td>${item.sttsNm}</td>`;
+                        if(item.ansSttsCd == '201101' || item.ansSttsCd == '201102'){
+                            listHtml += `<td><button type="button" class="link" onclick="listPage.suppPopup(${item.splmntid},${item.aplyid},${item.sttsCd})">${item.ansSttsNm}</button></td>`;
+                        } else {
+                            listHtml += `<td>${item.ansSttsNm}</td>`;
+                        }
+                        listHtml += `
+                        <td>${item.regDt}</td>
+                        <td>${item.aplcntNm}</td>`;
+                        mobileHtml += `
+                        <li class="block" >
+	                        <div class="tbody">
+	                            <dl>
+	                                <div class="list">
+	                                    <dt>번호</dt>
+	                                    <dd>${item.rowNumber}</dd>
+	                                </div>
+	                                <div class="list">
+	                                    <dt>시도</dt>
+	                                    <dd>${item.ctprvnNm}</dd>
+	                                </div>
+	                                <div class="list">
+		                                <dt>접수번호</dt>`;
+		                                if(item.sttsCd == '248101' || item.sttsCd == '248102'){
+		                                	mobileHtml += `<dd><a href="javascript:void(0)" onclick="listPage.moveToDetail(${item.aplyid})" class="link">${item.rcptno}</a></dd>`;
+		                                }else{
+		                                	mobileHtml += `<dd>${item.rcptno}</dd>`;		                                	
+		                                }
+	                                mobileHtml += `</div>
+	                                <div class="list">
+	                                    <dt>신청상태</dt>
+	                                    <dd>${item.sttsNm}</dd>
+	                                </div>`;
+                                    if(item.ansSttsCd == '201101' || item.ansSttsCd == '201102'){
+                                        mobileHtml += `<dd><button type="button" class="link" onclick="listPage.suppPopup(${item.splmntid},${item.aplyid},${item.sttsCd})">${item.ansSttsNm}</button></dd>`;
+                                    } else {
+                                        mobileHtml += `<dd>${item.ansSttsNm}</dd>`;
+                                    }
+                                    mobileHtml += `
+	                                <div class="list">
+	                                    <dt>신청일</dt>
+	                                    <dd>${item.regDt}</dd>
+	                                </div>
+	                                <div class="list">
+	                                    <dt>신청자</dt>
+	                                    <dd>${item.aplcntNm}</dd>
+	                                `;
+	                                mobileHtml += `
+	                                </div>
+	                            </dl>
+	                        </div>
+	                    </li>`;
+                    });
+                }
+                $('#list-area').html(listHtml);
+                $('#list-mobile-area').html(mobileHtml);
+                $("#pagination").html(data.pagination);
+                $("#totalCount").html(data.totalCount);
+            }
+        };
+    
+        $(function () {
+            listPage.init();
+            $("#rowPerPageChange").change(function(){
+                $("#rowPerPage").val($(this).val());
+                listPage.init($(this).val());
+            });
+        });
+    </script>
+</div>
+</body>
+</html>

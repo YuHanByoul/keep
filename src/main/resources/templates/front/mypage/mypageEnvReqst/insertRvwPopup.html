@@ -27,7 +27,7 @@
         <dl>
             <dt class="fc-black3"><b>기타의견</b>(필수)</dt>
             <dd>
-                <textarea name="rvwCn" placeholder="내용을 입력해주세요."></textarea>
+                <textarea id="rvwCn" name="rvwCn" placeholder="내용을 입력해주세요."></textarea>
                 <div class="check-wrap j-end">
                     <div class="size"><span id="currentSize">0</span> / 1,000자</div>
                 </div>
@@ -75,17 +75,23 @@
 
     function fn_insertRvw(){
         if (!$('input[name=rating]').is(':checked')) {
-            alert('필수항목을 입력해주세요.');
+            alert('별점을 등록해주세요.');
             $("#ratingStar").attr("tabindex", -1).focus();
             return;
         }
 
-        if ($('#insertRsnPopup textarea[name="rvwCn"]').val() == '' ) {
-            alert('필수항목을 입력해주세요.');
+        if ($('#rvwCn').val() == '' || $('#rvwCn').val() == null || ($('#rvwCn').val()).trim() == ""  ) {
+            alert('의견을 입력해주세요.');
+            showErrorMark('#rvwCn');
             return;
         }
 
-        var param = {aplyid : /*[[${aplyid}]]*/null, rvwCn : $('#insertRvwPopup textarea[name="rvwCn"]').val(), rvwScr : $('input[name="rating"]:checked').val()};
+        var param = {
+                aplyid : /*[[${aplyid}]]*/null
+                , rvwCn : $('#rvwCn').val()
+                , rvwScr : $('input[name="rating"]:checked').val()
+            };
+        
         if (displayWorkProgress(true)) {
             $.ajax({
                 url: '/front/mypage/mypageEnvReqst/insertRvw.do',
@@ -95,7 +101,7 @@
                 type: 'POST',
                 success: function (data) {
                     alert(data.msg);
-                    layerPopup.close({target:'insertRvwPopup'});
+                    layerPopup.close({target:'lendHistoryPopup'});
                     selectEnvReqstList();
                     closeWorkProgress();
                 }

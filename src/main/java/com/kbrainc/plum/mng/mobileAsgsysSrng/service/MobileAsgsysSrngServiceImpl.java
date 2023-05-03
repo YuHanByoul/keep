@@ -1,5 +1,7 @@
 package com.kbrainc.plum.mng.mobileAsgsysSrng.service;
 
+import com.kbrainc.plum.cmm.file.model.FileDao;
+import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.ChklstAnsVo;
 import com.kbrainc.plum.mng.mobileAsgsysSrng.model.MobileAsgsysSrngDao;
@@ -9,7 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /**
 * 언론보도관리 서비스 구현 클래스
@@ -31,6 +36,9 @@ public class MobileAsgsysSrngServiceImpl extends PlumAbstractServiceImpl impleme
     
     @Autowired
     private MobileAsgsysSrngDao mobileAsgsysSrngDao;
+    
+    @Autowired
+    private FileDao fileDao;
     
     /**
     * 시설 목록 조회
@@ -57,133 +65,61 @@ public class MobileAsgsysSrngServiceImpl extends PlumAbstractServiceImpl impleme
      */
     @Override
     public MobileAsgsysSrngVo selectAsgsysSrngInfo(MobileAsgsysSrngVo mobileAsgsysSrngVo) throws Exception {
-        return mobileAsgsysSrngDao.selectAsgsysSrngInfo(mobileAsgsysSrngVo);
+        MobileAsgsysSrngVo mobileAsgsysSrngInfo = mobileAsgsysSrngDao.selectAsgsysSrngInfo(mobileAsgsysSrngVo);
+        
+        if(mobileAsgsysSrngInfo != null && Objects.nonNull(mobileAsgsysSrngInfo.getEduPhotoFilegrpid())) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(Integer.parseInt(mobileAsgsysSrngInfo.getEduPhotoFilegrpid().toString()));
+            ArrayList<FileVo> fileInfo= fileDao.getFileList(fileVo);
+            mobileAsgsysSrngInfo.setEduPhotoFileInfo(fileInfo);
+        }
+        
+        if(mobileAsgsysSrngInfo != null && Objects.nonNull(mobileAsgsysSrngInfo.getFilegrpid())) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(Integer.parseInt(mobileAsgsysSrngInfo.getFilegrpid().toString()));
+            ArrayList<FileVo> fileInfo= fileDao.getFileList(fileVo);
+            mobileAsgsysSrngInfo.setFileInfo(fileInfo);
+        }
+        
+        if(mobileAsgsysSrngInfo != null && Objects.nonNull(mobileAsgsysSrngInfo.getBfrCertFilegrpid())) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(Integer.parseInt(mobileAsgsysSrngInfo.getBfrCertFilegrpid().toString()));
+            ArrayList<FileVo> fileInfo= fileDao.getFileList(fileVo);
+            mobileAsgsysSrngInfo.setBfrCertFilegrpInfo(fileInfo);
+        }
+        
+        return mobileAsgsysSrngInfo;
     }
 
-    /**
-     * 지원단심사 체크리스트 조회
-     *
-     * @Title : selectCheckList
-     * @Description : 지원단심사 체크리스트 조회
-     * @param mobileAsgsysSrngVo
-     * @return List<MobileAsgsysSrngVo>
-     * @throws Exception
-     */
+    @Override
+    @Transactional
+    public int updateAsgsysSrng(MobileAsgsysSrngVo mobileAsgsysSrngVo) throws Exception {
+        return mobileAsgsysSrngDao.updateAsgsysSrng(mobileAsgsysSrngVo);
+    }
+    
     @Override
     public List<MobileAsgsysSrngVo> selectCheckList(MobileAsgsysSrngVo mobileAsgsysSrngVo) throws Exception {
         return mobileAsgsysSrngDao.selectCheckList(mobileAsgsysSrngVo);
     }
 
-    /**
-     * 지원단심사 등록
-     *
-     * @Title : insertSprtgrpSrng
-     * @Description : 지원단심사 등록
-     * @param mobileAsgsysSrngVo
-     * @return int
-     * @throws Exception
-     */
     @Override
     @Transactional
     public int insertSprtgrpSrng(MobileAsgsysSrngVo mobileAsgsysSrngVo) throws Exception {
-
-        int ret=0;
-        String preSeCd="";
-        int ordrAns=1;
-        ChklstAnsVo ordrAnsVo = new ChklstAnsVo();
-
-        //지원단심사 수정
-        ret += mobileAsgsysSrngDao.updateSprtgrpOpnn(mobileAsgsysSrngVo);
-
-        if (mobileAsgsysSrngVo.getSbmsnid() != null && !mobileAsgsysSrngVo.getSbmsnid().equals(0)) {
-            //체크리스트 제출 수정
-            ret = mobileAsgsysSrngDao.updateChklstSbmsn(mobileAsgsysSrngVo);
+        int retVal = 0;
+        
+        // Sbmsnid(제출아이디) 지원단이 심사한 제출아이디가 없을때 등록
+        if(Objects.isNull( mobileAsgsysSrngVo.getSbmsnid())) {
+            retVal += mobileAsgsysSrngDao.updateSprtgrpSrng(mobileAsgsysSrngVo);     //지원단 심사 수정
+            retVal += mobileAsgsysSrngDao.insertChkLstSbmsn(mobileAsgsysSrngVo);     //체크리스트 제출 등록
+            retVal += mobileAsgsysSrngDao.insertChkLstAns(mobileAsgsysSrngVo);       //체크리스트 답변 등록
+            retVal += mobileAsgsysSrngDao.insertChkLstSeOrdrAns(mobileAsgsysSrngVo); //체크리스트 구분 순서 답변 등록
         }else {
-            //체크리스트 제출 등록
-            ret = mobileAsgsysSrngDao.insertChklstSbmsn(mobileAsgsysSrngVo);
+            retVal += mobileAsgsysSrngDao.updateSprtgrpSrng(mobileAsgsysSrngVo);     //지원단 심사 수정
+            retVal += mobileAsgsysSrngDao.updateChkLstSbmsn(mobileAsgsysSrngVo);     //체크리스트 제출 수정
+            retVal += mobileAsgsysSrngDao.updateChkLstAns(mobileAsgsysSrngVo);       //체크리스트 답변 수정
+            retVal += mobileAsgsysSrngDao.updateChkLstSeOrdrAns(mobileAsgsysSrngVo); //체크리스트 구분 순서 답변 수정
         }
-
-        MobileAsgsysSrngVo sbmsnInfo = mobileAsgsysSrngDao.selectChkListSbmsn(mobileAsgsysSrngVo);
-
-        //체크리스트 답변 수정
-        List<ChklstAnsVo> lst = mobileAsgsysSrngVo.getAnsLst();
-
-        //체크리스트 답변 순서 삭제
-        ordrAnsVo.setSbmsnid(sbmsnInfo.getSbmsnid());
-        mobileAsgsysSrngDao.deleteChklstSeOrdrAnsList(ordrAnsVo);
-
-        if(lst.size() > 0 ) {
-
-            for(ChklstAnsVo vo : lst) {
-
-                vo.setUser(mobileAsgsysSrngVo.getUser());
-                vo.setSbmsnid(sbmsnInfo.getSbmsnid());
-
-                if(1 == mobileAsgsysSrngDao.selectKeyCntChklstAns(vo)) {
-                    ret += mobileAsgsysSrngDao.updateChklstAns(vo);
-                }else if(0 == mobileAsgsysSrngDao.selectKeyCntChklstAns(vo)) {
-                    ret += mobileAsgsysSrngDao.insertChklstAns(vo);
-                }
-                //체크리스트 답변 순서 등록
-                if(!vo.getSeCd().equals(preSeCd)) {
-                    ordrAnsVo.setSbmsnid(sbmsnInfo.getSbmsnid());
-                    ordrAnsVo.setSeCd(vo.getSeCd());
-                    ordrAnsVo.setOrdr(ordrAns);
-                    ordrAnsVo.setUser(vo.getUser());
-                    ret+=mobileAsgsysSrngDao.insertChklstSeOrdrAnsList(ordrAnsVo);
-                    ordrAns++;
-                    preSeCd=vo.getSeCd();
-                }
-            }
-        }
-
-        return ret;
-    }
-
-    /**
-     * 지원단심사 수정
-     *
-     * @Title : updateSprtgrpSrng
-     * @Description : 지원단심사 등록
-     * @param mobileAsgsysSrngVo
-     * @return int
-     * @throws Exception
-     */
-    @Override
-    @Transactional
-    public int updateSprtgrpSrng(MobileAsgsysSrngVo mobileAsgsysSrngVo) throws Exception {
-
-        int ret=0;
-
-        //지원단심사 수정
-        ret += mobileAsgsysSrngDao.updateSprtgrpOpnn(mobileAsgsysSrngVo);
-
-        //체크리스트 제출 저장
-        ret += mobileAsgsysSrngDao.updateChklstSbmsn(mobileAsgsysSrngVo);
-
-        //체크리스트 답변 수정
-        List<ChklstAnsVo> lst = mobileAsgsysSrngVo.getAnsLst();
-        if(lst.size() > 0 ) {
-            //체크리스트 답변 순서 삭제
-            //ret += mobileAsgsysSrngDao.deleteChklstSeOrdrAnsList(lst.get(0)); todo
-
-            for(ChklstAnsVo vo : lst) {
-
-                vo.setUser(mobileAsgsysSrngVo.getUser());
-
-                if(1 == mobileAsgsysSrngDao.selectKeyCntChklstAns(vo)) {
-                    ret += mobileAsgsysSrngDao.updateChklstAns(vo);
-                }else if(0 == mobileAsgsysSrngDao.selectKeyCntChklstAns(vo)) {
-                    ret += mobileAsgsysSrngDao.insertChklstAns(vo);
-                }
-
-                //체크리스트 답변 순서 등록 todo
-                //ret += mobileAsgsysSrngDao.insertChklstSeOrdrAnsList(vo);
-
-            }
-
-        }
-
-        return ret;
+        
+        return retVal;
     }
 }

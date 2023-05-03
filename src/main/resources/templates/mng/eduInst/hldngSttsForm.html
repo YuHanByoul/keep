@@ -1,0 +1,272 @@
+<form id="hldngSttsForm" >
+    <input type="hidden"  id="aplyid" name="aplyid" th:value="${eduInstVo.aplyid}" />
+    <div class="card-header p-b-0">
+        <h3 class="sub-title"><strong>교육프로그램 보유현황</strong></h3>
+    </div>
+    <div class="card-block-small p-t-0">
+        <div class="row" th:id="'prgrmDiv'+${i.count}" th:if="${#lists.size(seePrgrmList) > 0}" th:each="prgrm, i: ${seePrgrmList}">
+            <div class="col-12 col-lg-6 mb-3">
+                <div class="mb-0 form-group">
+                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>프로그램명</strong></div>
+                    <div class="row align-items-center">
+                        <div class="col-12 col-sm-auto mb-1 mb-sm-0">
+                            <div class="form-radio">
+                                <div class="radio radio-inline">
+                                    <label class="mb-0 form-label">
+                                        <input type="radio" th:id="'selfYn' + ${i.count}"
+                                                            th:name="'selfYn' + ${i.count}"
+                                                            th:checked="${prgrm.rfrncPrgrmid==null || prgrm.rfrncPrgrmid==0 ? true:false}"
+                                                            value='self'><i class="helper"></i>직접입력
+                                    </label>
+                                </div>
+                                <div class="radio radio-inline">                                
+                                    <label class="mb-0 form-label">
+                                        <input type="radio" th:id="'selfYn' + ${i.count}"
+                                                            th:name="'selfYn' + ${i.count}"
+                                                            th:checked="${prgrm.rfrncPrgrmid!=null && prgrm.rfrncPrgrmid!=0 ? true:false}"
+                                                            value='search'><i class="helper"></i>검색
+                                    </label>                                
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm ps-sm-0 align-items-center">
+                            <div class="row">
+                                <div class="col-auto">
+                                    <button type="button" class="btn btn-inverse btn-sm"
+                                            th:id="'srchBtn'+${i.count}"
+                                            name='srchBtn'
+                                            th:disabled="${prgrm.rfrncPrgrmid!=null && prgrm.rfrncPrgrmid!=0 ? false : true}"
+                                            th:onclick="'openChgAltmntModal('+${i.count}+')'">검색</button>
+                                    <input type="hidden" th:id="'rfrncPrgrmid'+${i.count}" name="rfrncPrgrmid" th:value="${prgrm.rfrncPrgrmid}">                                            
+                                </div>
+                                <div class="col ps-0">
+                                    <input class="form-control form-control-sm" type="text"
+                                    th:placeholder="${prgrm.rfrncPrgrmid==null || prgrm.rfrncPrgrmid==0 ? '프로그램명을 입력해 주세요.':'검색버튼을 눌러 프로그램을 선택해주세요.'}"
+                                    th:id="'prgrmNm'+${i.count}"
+                                    th:value="${prgrm.prgrmNm}"
+                                    th:readonly="${prgrm.rfrncPrgrmid==null || prgrm.rfrncPrgrmid==0 ? false: true}"
+                                    name="prgrmNm">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6 mb-3">
+                <div class="mb-0 form-group">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>교육주제</strong></label>
+                    <div class="col-sm-12">
+                        <input type="text" class="form-control form-control-sm" title="교육주제" placeholder="교육주제를 입력해 주세요" id="eduSbjct" name="eduSbjct" th:value="${prgrm.eduSbjct}">
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3 mb-3">
+                <div class="mb-0 form-group">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>교육대상</strong></label>
+                    <div class="col-sm-12">
+                        <input type="text" class="form-control form-control-sm" title="교육대상" placeholder="교육대상을 입력해 주세요" id="eduTrgt" name="eduTrgt" th:value="${prgrm.eduTrgt}">
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3 mb-3">
+                <div class="mb-0 form-group">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>교육인원</strong></label>
+                    <div class="col-sm-12">
+                        <input type="number" class="form-control form-control-sm" title="교육인원" placeholder="교육인원을 입력해 주세요" id="eduNope" name="eduNope" th:value="${prgrm.eduNope}">
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3 mb-3">
+                <div class="mb-0 form-group">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>교육방법</strong></label>
+                    <div class="col-sm-12">
+                        <input type="text" class="form-control form-control-sm" title="교육방법" placeholder="교육방법을 입력해 주세요" id="eduMthd" name="eduMthd" th:value="${prgrm.eduMthd}">
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3 mb-3">
+                <div class="mb-0 form-group">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>교육차시</strong></label>
+                    <div class="col-sm-12">
+                        <input type="text" class="form-control form-control-sm" title="교육차시" placeholder="교육차시를 입력해 주세요" id="eduRnd" name="eduRnd" th:value="${prgrm.eduRnd}">
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3 mb-3">
+                <div class="mb-0 form-group">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>교육장소</strong></label>
+                    <div class="col-sm-12">
+                        <input type="text" class="form-control form-control-sm" title="교육장소" placeholder="교육장소를 입력해 주세요" id="eduPlc" name="eduPlc" th:value="${prgrm.eduPlc}">
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3 mb-3">
+                <div class="mb-0 form-group">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>참가비</strong></label>
+                    <div class="col-sm-12">
+                        <input type="number" class="form-control form-control-sm" title="참가비" placeholder="참가비를 입력해 주세요" id="etrfee" name="etrfee" th:value="${prgrm.etrfee}">
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3 mb-3">
+                <div class="mb-0 form-group">
+                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>지정 및 인증여부</strong></div>
+                    <div class="col-sm-12">
+                        <span kattr:select_code="prgrmSttsCd" th:attr='grpcd=250,selectedCd=${prgrm.prgrmSttsCd}' firstOptTxt="- 선택 -" addClass="form-select form-select-sm form-control-sm"></span>
+                    </div>
+                </div>
+            </div>
+	        <div th:id="'buttonDiv'+${i.count}" class="row mx-0 btn-group-sm mb-4">
+	            <button type="button" class="btn btn-inverse col" onclick="delRow()" th:if="${i.count > 1}">삭제</button>
+	            <button type="button" class="btn btn-primary col" onclick="addRow()">추가</button>
+	        </div>
+        </div>
+    </div>
+    <div class="card-block-small">
+        <button type="button" class="btn btn-disabled" onclick="gridHelper1.toggleContent();">취소</button>
+        <button type="button" class="btn btn-primary" onclick="fn_insertHldngSttsInfo()" id="saveBtn">저장</button>
+    </div>
+</div>    
+</form>
+<div class="modal fade" id="eduPrgrmPopup" aria-hidden="true" data-bs-backdrop="static"></div>
+    <script th:inline="javascript">
+    
+        var insertUrl="/mng/eduInst/insertHldngStts.do";
+        
+        //담당자 변경 팝업
+        var eduPrgrmModal;
+        var openChgAltmntModal = (idx) => {
+        	var aplyid= $('#aplyid').val();
+            var url = "/mng/eduInst/eduPrgrmPopup.html?aplyid=" + aplyid +"&idx="+idx;    //회원검색
+            $("#eduPrgrmPopup").load(url, function(response, status, xhr) {
+                if (status == "success") {
+                    eduPrgrmModal = new bootstrap.Modal($('#eduPrgrmPopup'));
+                    eduPrgrmModal.show();
+                }
+            });
+        
+        }    
+        
+        function addRow() {
+        	var lastRow = $('div[id^="prgrmDiv"]:last');
+            var idx = lastRow.index() + 2;
+
+            if ($('#exprtListDiv div[id^="prgrmDiv"]').length >= 20) {
+                alert("최대 20행까지만 추가 가능합니다.");
+                return false;
+            }
+            var newRow = lastRow.clone(true).attr('id', 'prgrmDiv' + idx);
+
+            newRow.find('input[name=prgrmNm]').attr('id','prgrmNm'+idx);
+
+            newRow.find('input[type="radio"]').each(function() {
+                  $(this).attr('id', 'selfYn'+idx);
+                  $(this).attr('name', 'selfYn'+idx);
+            });
+            newRow.find('[name=srchBtn]').attr('id','srchBtn'+idx)
+
+            newRow.find('input:not([type="radio"])').val('');
+            newRow.find('select').val('');
+
+            newRow.find('[id^=buttonDiv]').each(function() {
+                $(this).remove();
+            });
+
+            lastRow.after(newRow);
+
+            if ($('div[id^="prgrmDiv"]').length == 2) {
+                $('div[id^="prgrmDiv"]:last').after(`<div id="buttonDiv"+ idx class="row mx-0 btn-group-sm mb-4">
+                        <button type="button" class="btn btn-inverse col" onclick="delRow()">삭제</button>
+                        <button type="button" class="btn btn-primary col" onclick="addRow()">추가</button>
+                    </div>`);
+            }else if($('div[id^="prgrmDiv"]').length < 2){
+                $('div[id^="prgrmDiv"]:last').after(`<div id="buttonDiv"+ idx class="row mx-0 btn-group-sm mb-4">
+                        <button type="button" class="btn btn-primary col" onclick="addRow()">추가</button>
+                    </div>`);
+            }
+        }
+
+        function delRow(){
+        	var lastRow = $('div[id^="prgrmDiv"]:last');
+            if(lastRow.index() > 0) lastRow.remove();
+        }
+
+        function fn_insertHldngSttsInfo(){
+            var param = {};
+
+            if(!confirm("저장하시겠습니까?")) return;
+
+            var prgrmList = [];
+            $('div[id^="prgrmDiv"]').each(function(index, value){
+                var prgrmid      = $(this).find('input[name="prgrmid"]').val();
+                var prgrmNm      = $(this).find('input[name="prgrmNm"]').val();
+                var rfrncPrgrmid = $(this).find('input[name="rfrncPrgrmid"]').val();
+                var eduSbjct     = $(this).find('input[name="eduSbjct"]').val();
+                var eduTrgt      = $(this).find('input[name="eduTrgt"]').val();
+                var eduNope      = $(this).find('input[name="eduNope"]').val();
+                var eduMthd      = $(this).find('input[name="eduMthd"]').val();
+                var eduRnd       = $(this).find('input[name="eduRnd"]').val();
+                var eduPlc       = $(this).find('input[name="eduPlc"]').val();
+                var etrfee       = $(this).find('input[name="etrfee"]').val();
+                var prgrmSttsCd  = $(this).find('select[name="prgrmSttsCd"]').val();
+
+                prgrmList.push({
+                    prgrmid     :prgrmid
+                  , prgrmNm     :prgrmNm
+                  , rfrncPrgrmid:rfrncPrgrmid
+                  , eduSbjct    :eduSbjct
+                  , eduTrgt     :eduTrgt
+                  , eduNope     :eduNope
+                  , eduMthd     :eduMthd
+                  , eduRnd      :eduRnd
+                  , eduPlc      :eduPlc
+                  , etrfee      :etrfee
+                  , prgrmSttsCd :prgrmSttsCd
+                });
+            });
+
+            param = {
+              aplyid: $("#aplyid").val()
+            , seePrgrmList: prgrmList
+            };
+            if(displayWorkProgress()){
+                $.ajax({
+                    url : insertUrl,
+                    type: 'POST',
+                    cache : false,
+                    dataType: 'json',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(param),
+                    success : function (data){
+                        if(data.result=="success"){
+                            alert(data.msg);
+                            gridHelper1.resetListContent();                    
+                        }else{
+                            alert(data.msg);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+
+        $(function(){
+            $(document).on('change', '[id^=selfYn]', function(idx, item) {
+                var no =this.id.replace("selfYn",'');
+                if(this.value=='self'){
+                    $('#prgrmNm'+no).show();
+                    $('#rfrncPrgrmid'+no).val("");
+                    $('#prgrmNm'+no).val("");
+                    $('#srchBtn'+no).prop('disabled','disabled')
+                    $('#prgrmNm'+no).prop('readonly','')
+                    $('#prgrmNm'+no).prop('placeholder','프로그램명을 입력해 주세요.');
+                }else{
+                    $('#rfrncPrgrmNm'+no).show();
+                    $('#prgrmNm'+no).prop('readonly','readonly')
+                    $('#srchBtn'+no).prop('disabled','')
+                    $('#prgrmNm'+no).prop('placeholder','검색버튼을 눌러 프로그램을 선택해주세요.');
+
+                }
+            })            
+        });
+    </script>

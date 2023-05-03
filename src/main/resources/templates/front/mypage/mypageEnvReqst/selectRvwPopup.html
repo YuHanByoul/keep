@@ -27,7 +27,7 @@
         <dl>
             <dt class="fc-black3"><b>기타의견</b>(필수)</dt>
             <dd>
-                <textarea placeholder="내용을 입력해주세요." name="rvwCn" readonly=""></th:block></textarea>
+                <textarea placeholder="내용을 입력해주세요." id="rvwCn" name="rvwCn" readonly=""></textarea>
                 <div class="check-wrap j-end">
                     <div class="size"><span>125</span> / 1,000자</div>
                 </div>
@@ -52,17 +52,19 @@
 </div>
 
 <script th:inline="javascript">
-    var ratingTxt = ['1점(매우 불만족)', '2점(불만족)', '3점(보통)', '4점(만족)', '5점(매우 만족)']
 
+    var ratingTxt = ['1점(매우 불만족)', '2점(불만족)', '3점(보통)', '4점(만족)', '5점(매우 만족)']
+    
     $(function(){
         var selectedRating = /*[[${mypageEnvReqst.rvwScr}]]*/null;
-        $('#selectRvwPopup textarea[name="rvwCn"]').val(/*[[${mypageEnvReqst.rvwCn}]]*/null);
-        for( var i=0; i<$('#selectRvwPopup input[name="rating"]').length; i++ ){
-            if( $($('#selectRvwPopup input[name="rating"]')[i]).val() == selectedRating ){
-                $($('#selectRvwPopup input[name="rating"]')[i]).attr('checked', true);
-                $('#ratingDescription').text(ratingTxt[selectedRating-1]);
+        $('#rvwCn').val(/*[[${mypageEnvReqst.rvwCn}]]*/null);
+        $('#ratingDescription').text(ratingTxt[selectedRating-1]);
+        $('input[name="rating"]').each(function(){
+            if($(this).val() == selectedRating){
+            	$(this).attr('checked', true);
             }
-        }
+        })
+        
     })
     function fn_deleteRvw(){
         var param = {aplyid : /*[[${aplyid}]]*/null};
@@ -75,7 +77,7 @@
                 type: 'POST',
                 success: function (data) {
                     alert(data.msg);
-                    layerPopup.close({target:'selectRvwPopup'});
+                    layerPopup.close({target:'lendHistoryPopup'});
                     selectEnvReqstList();
                     closeWorkProgress();
                 }

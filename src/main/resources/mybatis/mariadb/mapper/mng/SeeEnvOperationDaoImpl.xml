@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : SeeEnvOperationDaoImpl.xml
+	Description : 사회환경교육기관 지정 > 운영관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.seeEnvOper.model.SeeEnvOperationDao">
+    
+    <!-- 운영관리 목록 조회 -->
+    <select id="selectOperationList" parameterType="SeeEnvOperationVo" resultType="SeeEnvOperationVo">
+        /* SeeEnvOperationDao.selectOperationList */
+        <if test="excelYn != 'Y'.toString">
+        <include refid="PaginationMapper.header"/>
+        </if>
+        SELECT T.*
+        FROM (
+            SELECT
+                TSEEI.APLYID                -- 신청아이디
+                , RCPTNO            -- 접수번호
+                , TSEEI.INSTID          -- 기관아이디
+                , APLCNTID          -- 신청자아이디
+                , APLCNT_NM         -- 신청자_이름
+                , TCU.ACNT 
+                , APLCNT_EML        -- 신청자_이메일
+                , APLCNT_MOBLPHON   -- 신청자_휴대폰
+                , TSEEI.INST_NM         -- 기관명
+                , TCI.INST_TYPE_CD 
+                , TCC2.CD_NM AS INST_TYPE_NM
+                , TCI.BRNO 
+                , TCI.ZIP 
+                , TCI.ADDR
+                , TCI.ADDR_DTL 
+                , INST_EML          -- 기관 이메일
+                , INST_CNTCT        -- 기관_연락처
+                , TSEEI.CTPRVN_CD           -- 시도_코드
+                , TCAC.CTPRVN_NM 
+                , TCI.RPRSV_NM 
+                , RPRSV_BRDT        -- 대표자_생년월일
+                , TSEEI.ATCH_FILEGRPID  -- 첨부파일 아이디
+                , TSDD.DSGNNO           -- 지정번호
+                , TSDD.DSGN_DE          -- 지정_일자
+                , AUTZRID           -- 승인자아이디
+                , IFNULL(ISSU_DE, '-') AS ISSU_DE           -- 발급_일자
+                , IFNULL(ISGN_DE, '-') AS ISGN_DE           -- 재발급_일자
+                , TSDD.STTS_CD          -- 상태코드
+                , TCC.CD_NM AS STTS_NM  -- 상태코드명
+                , CASE WHEN IFNULL(ISSU_DE, '') = '' THEN '발급전'
+                    WHEN IFNULL(ISSU_DE, '') != '' AND IFNULL(ISGN_DE, '') = '' THEN '발급완료'
+                    WHEN IFNULL(ISGN_DE, '') != '' THEN '재발급'
+                    ELSE '' END AS DELVRY_STTS_NM
+                , TSEEI.MDFCN_DT
+                , TSEEI.MDFRID
+                , TSEEI.REG_DT
+                , TSEEI.RGTRID
+                , CONCAT((SELECT COUNT(*) FROM TB_SEE_APLY_CHG_DMND T WHERE T.APLYID = TSEEI.APLYID AND T.STTS_CD IN ('252102','252103')), '/', (SELECT COUNT(*) FROM TB_SEE_APLY_CHG_DMND T WHERE T.APLYID = TSEEI.APLYID)) AS CHG_CNT
+            FROM
+                TB_SEE_ENV_EDU_INST TSEEI
+                INNER JOIN (SELECT APLYID, DSGNNO, DSGN_DE, STTS_CD 
+                            FROM TB_SEE_DSGN_DSCTN A WHERE DSCTNID = (
+                                SELECT MAX(DSCTNID) 
+                                FROM TB_SEE_DSGN_DSCTN 
+                                WHERE APLYID = A.APLYID) 
+                                AND (SELECT COUNT(*) FROM TB_SEE_DSGN_DSCTN WHERE STTS_CD = '248104' AND APLYID = A.APLYID) <![CDATA[>]]> 0) TSDD ON TSEEI.APLYID = TSDD.APLYID 
+                INNER JOIN TB_CMM_USER TCU ON TSEEI.APLCNTID = TCU.USERID
+                LEFT OUTER JOIN TB_CMM_INST TCI ON TSEEI.INSTID = TCI.INSTID
+                LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN TCAC ON TCAC.CTPRVN_CD = TSEEI.CTPRVN_CD 
+                LEFT OUTER JOIN TB_CMM_CD TCC ON TSDD.STTS_CD = TCC.CD
+                LEFT OUTER JOIN (SELECT A.CD, CONCAT(B.CD_NM, ' > ', A.CD_NM) AS CD_NM FROM TB_CMM_CD A INNER JOIN TB_CMM_CD B ON A.UPPR_CD = B.CD WHERE A.CDGRPID = '108') TCC2 ON TCI.INST_TYPE_CD = TCC2.CD  
+            WHERE 1 = 1
+        ) T
+        WHERE 1 = 1
+        <if test="aplyid != null and aplyid != ''">
+        AND APLYID = #{aplyid}
+        </if>
+        <if test="searchCtprvnCd != null and searchCtprvnCd != ''">
+        AND CTPRVN_CD = #{searchCtprvnCd}
+        </if>
+        <if test="searchKeyword != null and searchKeyword != '' and searchKeywordType == 'searchInstNm'">
+        AND INST_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+        </if>
+        <if test="searchKeyword != null and searchKeyword != '' and searchKeywordType == 'searchReceptNo'">
+        AND RCPTNO = #{searchKeyword}
+        </if>
+        <if test="searchSttsCd != null and searchSttsCd != ''">
+        AND STTS_CD = #{searchSttsCd}
+        </if>
+        <if test="excelYn != 'Y'.toString">
+        <include refid="PaginationMapper.footer"/>
+        </if>
+        <if test="excelYn == 'Y'.toString">
+        ORDER BY REG_DT DESC
+        </if>
+    </select>
+
+    <!-- 지정내역 조회 -->
+    <select id="selectDsgnList" parameterType="SeeEnvOperationVo" resultType="SeeEnvOperationVo">
+        /* SeeEnvOperationDao.selectDsgnList */
+        SELECT T.*
+        FROM (
+            SELECT
+                ROW_NUMBER() OVER(ORDER BY DSCTNID) AS ROW_NUMBER
+                , DSCTNID
+                , APLYID
+                , TSDD.STTS_CD
+                , TCC.CD_NM AS STTS_NM 
+                , DSGNNO
+                , DSGN_DE
+                , DSGN_CNCL_DE
+                , PRCRID
+                , TSDD.MDFCN_DT
+                , TSDD.MDFRID
+                , TSDD.REG_DT
+                , TSDD.RGTRID
+                , CONCAT(TCU.NM, '(', TCU.ACNT, ')') AS APLCNT_NM 
+            FROM
+                TB_SEE_DSGN_DSCTN TSDD
+                INNER JOIN TB_CMM_USER TCU ON TSDD.PRCRID = TCU.USERID
+                LEFT OUTER JOIN TB_CMM_CD TCC ON TSDD.STTS_CD = TCC.CD
+            WHERE 1 = 1
+            AND APLYID = #{aplyid}
+        ) T
+        ORDER BY ROW_NUMBER DESC
+    </select>
+    
+    <!-- 변경신청 목록 -->
+    <select id="selectChangeList" parameterType="SeeEnvOperationVo" resultType="SeeEnvOperationVo">
+        /* SeeEnvOperationDao.selectChangeList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            DMNDID
+            , APLYID
+            , DMND_CN
+            , RQSTRID
+            , ANS_CN
+            , ANSWRRID
+            , DATE_FORMAT(DMND_DT, '%Y-%m-%d %H:%m') AS DMND_DT
+            , DATE_FORMAT(ANS_DT, '%Y-%m-%d %H:%m') AS ANS_DT
+            , STTS_CD
+            , TCC.CD_NM AS STTS_NM
+            , ATCH_FILEGRPID
+            , TSACD.MDFCN_DT
+            , TSACD.MDFRID
+            , TSACD.REG_DT
+            , TSACD.RGTRID
+        FROM
+            TB_SEE_APLY_CHG_DMND TSACD
+            LEFT OUTER JOIN TB_CMM_CD TCC ON TSACD.STTS_CD = TCC.CD
+        WHERE APLYID = #{aplyid}
+        <if test="dmndid != null and dmndid != ''">
+        AND DMNDID = #{dmndid}
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 담당자 목록 조회 -->
+    <select id="selectUserList" parameterType="SeeEnvOperationVo" resultType="SeeEnvOperationVo">
+        /* SeeEnvOperationDao.selectUserList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.USERID AS APLCNTID
+          , A.ACNT
+          , A.NM AS APLCNT_NM
+          , A.MOBLPHON AS APLCNT_MOBLPHON
+          , A.EML AS APLCNT_EML
+          , B.INST_NM
+          , (SELECT COUNT(*) FROM TB_SEE_ENV_EDU_INST WHERE APLYID = #{aplyid} AND A.USERID = APLCNTID) AS APLY_CNT
+        FROM
+        TB_CMM_USER A
+        LEFT OUTER JOIN TB_CMM_INST B ON A.INSTID = B.INSTID
+        WHERE 1=1
+        AND A.INSTID = #{instid}
+        <if test="searchCondition != null and searchCondition != ''">
+            <if test="searchKeywordType == 'userNm'">
+        AND A.NM LIKE CONCAT('%',#{searchCondition},'%')
+            </if>
+            <if test="searchKeywordType == 'instNm'">
+        AND B.INST_NM LIKE CONCAT('%',#{searchCondition},'%')
+            </if>
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 지정정보 수정 -->
+    <update id="updateInfo" parameterType="SeeEnvOperationVo">
+        /* SeeEnvOperationDao.updateInfo */
+        UPDATE TB_SEE_ENV_EDU_INST SET
+            RPRSV_BRDT = #{rprsvBrdt}
+            , APLCNTID = #{aplcntid}
+            , APLCNT_NM = #{aplcntNm}
+            , APLCNT_EML = #{aplcntEml}
+            , APLCNT_MOBLPHON = #{aplcntMoblphon}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE APLYID = #{aplyid}
+    </update>
+    
+    <!-- 지정상태 변경 -->
+    <update id="updateDsgnStts" parameterType="SeeEnvOperationVo">
+        /* SeeEnvOperationDao.updateDsgnStts */
+        UPDATE TB_SEE_ENV_EDU_INST SET
+            STTS_CD = #{sttsCd}
+            <if test="dsgnno != null and dsgnno != ''">
+            , DSGNNO = #{dsgnno}
+            </if>
+            <if test="dsgnDe != null and dsgnDe != ''">
+            , DSGN_DE = #{dsgnDe}
+            </if>
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE APLYID = #{aplyid}
+    </update>
+    
+    <!-- 지정내역 등록 -->
+    <insert id="insertDsgnDsctn" parameterType="SeeEnvOperationVo" useGeneratedKeys="true" keyProperty="dsctnid">
+        /* SeeEnvOperationDao.insertDsgnDsctn */
+        INSERT INTO TB_SEE_DSGN_DSCTN (
+            APLYID
+            , STTS_CD
+            , DSGNNO
+            , DSGN_DE
+            , DSGN_CNCL_DE
+            , PRCRID
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{aplyid}
+            , #{sttsCd}
+            <if test="sttsCd == '248105'">
+            , (SELECT DSGNNO FROM TB_SEE_DSGN_DSCTN T WHERE DSCTNID = (SELECT MAX(DSCTNID) FROM TB_SEE_DSGN_DSCTN T2 WHERE APLYID = #{aplyid} AND STTS_CD = '248104'))
+            , (SELECT DSGN_DE FROM TB_SEE_DSGN_DSCTN T WHERE DSCTNID = (SELECT MAX(DSCTNID) FROM TB_SEE_DSGN_DSCTN T2 WHERE APLYID = #{aplyid} AND STTS_CD = '248104'))
+            </if>
+            <if test="sttsCd == '248104'">
+            , #{dsgnno}
+            , #{dsgnDe}
+            </if>
+            , #{dsgnCnclDe}
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    
+    <!-- 진행상태 조회 -->
+    <select id="selectStts" parameterType="SeeEnvOperationVo" resultType="SeeEnvOperationVo">
+        /* SeeEnvOperationDao.selectStts */
+        SELECT
+            STTS_CD 
+            , DSGN_DE 
+            , DSGN_CNCL_DE 
+        FROM
+            TB_SEE_DSGN_DSCTN
+        WHERE
+            DSCTNID = (SELECT MAX(DSCTNID) FROM TB_SEE_DSGN_DSCTN WHERE APLYID = #{aplyid})
+                
+    </select>
+    
+    <!-- 지정번호 중복 조회 -->
+    <select id="selectDsgnno" parameterType="SeeEnvOperationVo" resultType="int">
+        /* SeeEnvOperationDao.selectDsgnno */
+        SELECT COUNT(*) FROM TB_SEE_DSGN_DSCTN WHERE DSGNNO = #{dsgnno}
+    </select>
+    
+    <!-- 변경신청 승인/불가 처리 -->
+    <update id="updateChange" parameterType="SeeEnvOperationVo">
+        /* SeeEnvOperationDao.updateChange */
+        UPDATE TB_SEE_APLY_CHG_DMND SET
+            ANS_CN = #{ansCn}
+            , ANSWRRID = #{user.userid}
+            , ANS_DT = NOW()
+            , STTS_CD = #{sttsCd}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE DMNDID = #{dmndid}
+    </update>
+</mapper>
