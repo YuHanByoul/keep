@@ -5,24 +5,31 @@
 
 <div layout:fragment="content">
     <div id="content" class="content">
-        <form class="search-filter">
+        <form class="search-filter" id="searchForm" name="searchForm" onsubmit="return false;">
             <div class="form-input-wrap">
                 <div class="form-row">
                     <div class="form-header"><strong class="label">키워드</strong></div>
                     <div class="form-body">
                         <div class="form-input">
-                            <select title="키워드" name="searchType" id="searchType">
+                            <select title="키워드" name="searchType" id="searchType"  th:value="${params.searchType}">
                                 <option value="fcltNm">시설명</option>
                                 <option value="spceNm">공간명</option>
                             </select>
-                            <input type="search" title="키워드" name="searchKeyword" id="searchKeyword" placeholder="키워드를 입력해 주세요.">
+                            <input type="search" title="키워드" name="searchKeyword" id="searchKeyword" placeholder="키워드를 입력해 주세요."  th:value="${params.searchKeyword}">
                         </div>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-header"><strong class="label">상태</strong></div>
                     <div class="form-body">
-                        <span kattr:select_code="searchAplySttsCd" name="searchAplySttsCd" id="searchSeCd" grpCd="160" firstOptTxt="전체">
+                         <select  id="searchAplySttsCd" name="searchAplySttsCd">
+                            <option value="" >전체 </option>
+                            <option value="161101" th:selected ="${params.searchAplySttsCd eq '161101'}">입금대기</option>
+                            <option value="161102" th:selected ="${params.searchAplySttsCd eq '161102'}">입금완료</option>
+                            <option value="160103" th:selected ="${params.searchAplySttsCd eq '160103'}">예약취소</option>
+                            <option value="161103" th:selected ="${params.searchAplySttsCd eq '161103'}">환불요청</option>
+                            <option value="161104" th:selected ="${params.searchAplySttsCd eq '161104'}">환불완료</option>
+                        </select>
                     </div>
                 </div>
                 <div class="form-row">
@@ -37,60 +44,89 @@
                 </div>
             </div>
             <div class="search-filter-submit">
-                <button type="reset" class="btn-medium btn-gray btn-before-refresh">초기화</button>
-                <button type="button" class="btn-medium btn-green btn-before-search">검색</button>
+                <button type="button" class="btn-medium btn-gray btn-before-refresh"  onclick = "initSearchFilter()">초기화</button>
+                <button type="submit" class="btn-medium btn-green btn-before-search" onclick = "search()">검색</button>
             </div>
+            <input type="hidden" id="aplyid" name="aplyid" value="0">
+	        <input type="hidden" id="rsvtdeid" name="rsvtdeid" value="0">
+	        <input type="hidden" id="pageNumber" name="pageNumber" th:value="${ (params.pageNumber==null || params.pageNumber==0 )? 1:params.pageNumber}">
+	        <input type="hidden" id="orderField" name="orderField" value="APLYID">
+	        <input type="hidden" id="rowPerPage" name="rowPerPage" value="12"/>
         </form>
         
         <div class="table-caption flex-nowrap">
             <div class="left">
-                <p>총 <b id="total-count">0</b> 개</p>
+                <p>총 <b id="totalCount">0</b> 개</p>
             </div>
         </div>
-        <div id="list-area" class="card-list card-list-n3">
-        </div>
+        <div id="listArea" class="card-section"></div>
 
-        <div class="pagination" aria-label="pagination" id="pagination">
-        </div>
+        <div class="pagination" aria-label="pagination" id="pagination"></div>
 
-    </div>
-
-    <form id="searchForm" name="searchForm" onsubmit="return false;">
-        <input type="hidden" id="aplyid" name="aplyid" value="0">
-        <input type="hidden" id="rsvtdeid" name="rsvtdeid" value="0">
-        <input type="hidden" id="pageNumber" name="pageNumber" value="1">
-        <input type="hidden" id="orderField" name="orderField" value="APLYID">
-        <input type="hidden" id="rowPerPage" name="rowPerPage" value="9"/>
-    </form>
-
-    <!-- layerpopup -->
-    <div class="layer-popup layer-large" data-layer-id="rsnPopup">
-        <div class="layer-dimmed" title="레이어팝업 닫기"></div>
-        <div class="layer-wrap" id="rsnPopup">
-        </div>
     </div>
 
     <!-- layerpopup -->
-    <div class="layer-popup layer-large" data-layer-id="dpstInfoPopup">
+    <div class="layer-popup layer-large" data-layer-id="lendHistoryPopup">
         <div class="layer-dimmed" title="레이어팝업 닫기"></div>
-        <div class="layer-wrap" id="dpstInfoPopup">
+        <div class="layer-wrap" id="lendHistoryPopup">
         </div>
     </div>
+    
+    <script src="/js/common/handlebars/handlebars-v4.7.7.js"></script>
+    <script src="/js/common/handlebars/handlebars.helper.js"></script>
+    <script id="histListTemplate" type="text/x-handlebars-template"> 
+            <ul class="n3">
+            {{#each histList}}
+                <li>
+                    <div class="flag {{sttsBgColor}}">{{sttsTxt}}</div>
+                    <div class="thumb">
+                        <img src="{{src}}" alt="">
+                    </div>
+                    <div class="cont mt0">
+                        <a href="javascript:moveToView('{{aplyid}}')" class="title ellipsis" data-ellipsis="2">[{{fcltNm}}] {{spceNm}}</a>
+                        <ul class="df">
+                            <li class="d-flex">
+                                <span class="tit">주소 :</span>
+                                <span class="dc"> {{addr}} {{addrDtl}}</span>
+                            </li>
+                            <li class="d-flex">
+                                <span class="tit">인원 :</span>
+                                <span class="dc">최대 {{maxNope}} 인</span>
+                            </li>
+                            <li class="d-flex">
+                                <span class="tit">면적 :</span>
+                                <span class="dc">{{size}} 평형</span>
+                            </li>
+                            <li class="d-flex">
+                                <span class="tit">날짜 :</span>
+                                <span class="dc">{{finalDate}}</span>
+                            </li>
+                            <li class="d-flex j-between">
+                                <div class="d-flex">
+                                    <span class="tit">가격 :</span>
+                                    <span class="dc">{{amt}} </span>
+                                </div>
+                                {{#btnWait}}
+                                 <button type="button" class="btn-small btn-outline-blue" onclick="openModal('W','{{aplyid}}')">입금정보</button>
+                                {{/btnWait}}
+                                {{#btnReply}}
+                                 <button type="button" class="btn-small btn-outline-blue" onclick="openModal('R','{{aplyid}}')">후기작성</button>
+                                {{/btnReply}}
+                                {{#btnComplete}}
+                                 <button type="button" class="btn-small btn-outline-blue" onclick="openModal('RC','{{aplyid}}')">작성완료</button>
+                                {{/btnComplete}}
+                                {{#btnCancel}}
+                                 <button type="button" class="btn-small btn-outline-blue" onclick="openModal('C','{{aplyid}}')">사유확인</button>
+                                {{/btnCancel}}
 
-    <!-- layerpopup -->
-    <div class="layer-popup layer-large" data-layer-id="insertRvwPopup">
-        <div class="layer-dimmed" title="레이어팝업 닫기"></div>
-        <div class="layer-wrap" id="insertRvwPopup">
-        </div>
-    </div>
-
-    <!-- layerpopup -->
-    <div class="layer-popup layer-large" data-layer-id="selectRvwPopup">
-        <div class="layer-dimmed" title="레이어팝업 닫기"></div>
-        <div class="layer-wrap" id="selectRvwPopup">
-        </div>
-    </div>
-
+                            </li>
+                        </ul>
+                    </div>
+              </li> 
+           {{/each}}
+        </ul>
+    </script>
+  
     <script th:inline="javascript">
         var listUrl = "/front/mypage/mypageEnvReqst/selectMypageEnvReqstList.do";
         var viewUrl = '/front/mypage/mypageEnvReqst/mypageResveEnvView.html';
@@ -103,7 +139,15 @@
         var insertRvwPopupUrl = "/front/mypage/mypageEnvReqst/insertRvwPopup.html";
         var selectRvwPopupUrl = "/front/mypage/mypageEnvReqst/selectRvwPopup.html";
 
+        var searchBgngDt = /*[[${params.searchBgngDt}]]*/null;
+        var searchEndDt = /*[[${params.searchEndDt}]]*/null;
+
+        var noDataMsg = '<div class="nodata" style="border:none;" ><p><span class="icon icon-notice bg-black9"></span> 예약 이력이 없습니다.</p></div>';
+        var listTemplet = Handlebars.compile($("#histListTemplate").html());
+
         $(function () {
+            if(searchBgngDt!= null ){ $('#searchBgngDt').val(searchBgngDt);}
+            if(searchEndDt!= null ){ $('#searchEndDt').val(searchEndDt);}
             selectEnvReqstList();
         });
 
@@ -112,8 +156,139 @@
             selectEnvReqstList();
         }
 
-        function searchInit() {
-            $('#searchKeyword, #clsfCd').val('');
+        function initSearchFilter() {
+            $("#searchType").val('fcltNm'); 
+            $("#searchBgngDt").val(''); 
+            $("#searchEndDt").val(''); 
+            $("#searchKeyword").val(''); 
+            $("#searchAplySttsCd").val(''); 
+        }
+        function selectEnvReqstList() {
+
+            if (displayWorkProgress(true)) {
+                $.ajax({
+                    url: listUrl,
+                    cache: false,
+                    dataType: 'json',
+                    data: formData = $('#searchForm').serializeArray(),
+                    type: 'GET',
+                    success: function (data) {
+                        
+                        makeListHtml(data.list);
+                        $("#totalCount").text(data.totalCount);
+                        
+                        if(data.totalCount == 0) {
+                            $("#listArea").html(noDataMsg);
+                            $("#pagination").html('');
+                        }else{
+                            $("#pagination").html(data.pagination);
+                        };
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+
+        function makeListHtml(list) {
+            
+            list.forEach(function(item){
+
+            	let finalDate = '';
+                let target1 = new Date(item.bgngDt);
+                let target2 = new Date(item.endDt);
+                if( !( target1.getFullYear() === target2.getFullYear() &&
+                    target1.getMonth() === target2.getMonth() &&
+                    target1.getDate()=== target2.getDate() ) ) {
+                    item.finalDate = date2str(parseDate(item.bgngDt), 'yyyy-mm-dd') +' ~ '+ date2str(parseDate(item.endDt), 'yyyy-mm-dd');
+                }else{
+                	item.finalDate = date2str(parseDate(item.bgngDt), 'yyyy-mm-dd HH:MM') +' ~ '+ date2str(parseDate(item.endDt), 'HH:MM');
+                }
+                
+                if(item.rprsImgFileid != null && item.rprsImgFileKey != null){
+                    item.src = '/downloadFileByFileid.do?fileid=' + item.rprsImgFileid + '&file_idntfc_key=' + item.rprsImgFileKey; 
+                }else{
+                    item.src = '/images/mng/admin_logo.png'; 
+                }
+
+                item.amt = ( Number(item.amt) > 0 )? addComma3(item.amt)+" 원" : "무료"; 
+                
+                switch(item.totalStts){
+                case '161101' :
+                    item.sttsTxt = '입금대기';
+                    item.sttsBgColor = ' bg-green';
+                    item.btnWait = true;
+                    break;
+                case '161102' :
+                	item.sttsTxt = '입금완료';
+                	item.sttsBgColor = ' bg-blue';
+                	
+            		if( item.rvwCn != null && item.rvwCn != '' && item.rvwDt != null ){
+                        item.btnComplete = true;
+                	}else{
+	                    item.btnReply = true;
+                    }
+                    break;
+                case '160103' :
+                	item.sttsTxt = '예약취소';
+                	item.sttsBgColor = ' bg-red';
+                    break;
+                case '161103' :
+                	item.sttsTxt = '환불요청';
+                	item.sttsBgColor = ' bg-green';
+                    break;
+                case '161104' :
+                	item.sttsTxt = '환불완료';
+                	item.sttsBgColor = ' bg-blue';
+                    break;
+                default :
+                	item.sttsTxt = '';
+             }
+
+             if(item.rfndRejectRsn != null && item.rfndRejectRsn !="" ){item.btnCancel = true;}
+                
+           })
+            $("#listArea").html(listTemplet({histList:list}));
+        }
+
+        var rsnPopupUrl = "/front/mypage/mypageEnvReqst/rsnPopup.html";
+        var dpstInfoPopupUrl = "/front/mypage/mypageEnvReqst/dpstInfoPopup.html";
+        var insertRvwPopupUrl = "/front/mypage/mypageEnvReqst/insertRvwPopup.html";
+        var selectRvwPopupUrl = "/front/mypage/mypageEnvReqst/selectRvwPopup.html";
+        
+        function openModal(mode , aplyid){
+            let modalUrl = "";
+        	if(mode =='W')      {modalUrl = dpstInfoPopupUrl+"?aplyid="+aplyid; }
+        	else if(mode =='R' ){modalUrl = insertRvwPopupUrl+"?aplyid="+aplyid; }
+        	else if(mode =='RC'){modalUrl = selectRvwPopupUrl+"?aplyid="+aplyid; }
+        	else if(mode =='C' ){modalUrl = rsnPopupUrl+"?aplyid="+aplyid; }
+        	fn_openPopup(modalUrl)
+        }
+        
+        function fn_openPopup(url){
+            $("#lendHistoryPopup").load(url, function(response, status, xhr) { 
+                if (status == "success") {
+                    layerPopup.open({target:'lendHistoryPopup'});
+                }
+            });
+        }
+
+        function moveToInsertForm() {
+            var f = document.forms.searchForm;
+            f.action = formUrl;
+            f.submit();
+        }
+
+        function moveToView(aplyid, rsvtdeid) {
+            var f = document.forms.searchForm;
+            f.aplyid.value = aplyid;
+            f.rsvtdeid.value = rsvtdeid;
+            f.action = viewUrl;
+            f.submit();
+        }
+
+        function goPage(num) {
+            $("#pageNumber").val(num);
+            selectEnvReqstList();
         }
 
         function date2str(x, y) {
@@ -158,190 +333,6 @@
             }
 
             return _dateObj;
-        }
-
-        function selectEnvReqstList() {
-
-            if (displayWorkProgress(true)) {
-                $.ajax({
-                    url: listUrl,
-                    cache: false,
-                    dataType: 'json',
-                    data: formData = $('#searchForm').serializeArray(),
-                    type: 'GET',
-                    success: function (data) {
-                        $("#list-area").html(makeListHtml(data.list));
-                        $("#pagination").html(data.pagination);
-                        $("#total-count").html(data.totalCount);
-                        closeWorkProgress();
-                    }
-                });
-            }
-        }
-
-        function makeListHtml(list) {
-            var html = "";
-            if (list == null || list.length <= 0) {
-                html += `<div class="nodata"><p><span class="icon icon-notice bg-black9"></span>등록된 환경교육시설이 없습니다.</p></div>`;
-            } else {
-                html +='<ul>';
-                list.forEach(function (item) {
-                    let finalDate = '';
-
-                    let target1 = new Date(item.bgngDt);
-                    let target2 = new Date(item.endDt);
-                    if( !( target1.getFullYear() === target2.getFullYear() &&
-                        target1.getMonth() === target2.getMonth() &&
-                        target1.getDate()=== target2.getDate() ) ) {
-                        finalDate = date2str(parseDate(item.bgngDt), 'yyyy-mm-dd') +' ~ '+ date2str(parseDate(item.endDt), 'yyyy-mm-dd');
-                    }else{
-                        finalDate = date2str(parseDate(item.bgngDt), 'yyyy-mm-dd HH:MM') +' ~ '+ date2str(parseDate(item.endDt), 'HH:MM');
-                    }
-
-                    let sttsTxt = '';
-                    let sttsBgColor = '';
-                    let btnTxt = '';
-
-                    switch(item.stlmSttsCd){
-                        case '161101' :
-                            if( item.aplySttsCd == '160101' ){
-                                sttsTxt = '입금대기';
-                                sttsBgColor = 'bg-green';
-                                btnTxt = '입금정보';
-                            }else{
-                                sttsTxt = '예약취소';
-                                sttsBgColor = 'bg-red';
-                                btnTxt = '사유확인';
-                            }
-                            break;
-                        case '161102' :
-                            if( item.aplySttsCd == '160102' ){
-                                sttsTxt = '입금완료';
-                                sttsBgColor = 'bg-blue';
-                                if( item.rvwCn != null && item.rvwCn != '' ){
-                                    btnTxt = '작성완료';
-                                }else{
-                                    btnTxt = '후기작성';
-                                }
-                            }else{
-                                sttsTxt = '';
-                                sttsBgColor = 'bg-blue';
-                            }
-                            break;
-                        case '161103' :
-                            if( item.aplySttsCd == '160103' ){
-                                sttsTxt = '환불요청';
-                                sttsBgColor = 'bg-green';
-                                btnTxt = '사유확인';
-                            }else{
-                                sttsTxt = '환불완료';
-                                sttsBgColor = 'bg-blue';
-                            }
-                        default :
-                            sttsTxt = '';
-                    }
-
-                    html += '<li>\n' +
-                    '<div>\n' +
-                    '<div class="flag '+sttsBgColor+'">'+sttsTxt+'</div>\n' +
-                    '<div class="thumb" style="height:163px;"><img th:src="\'/downloadFileByFileid.do?fileid='+item.rprsImgFileid+'&file_idntfc_key='+item.fileIdntfcKey+'" th:alt="'+item.fcltNm+'"></div>\n' +
-                    '<dl class="card-program-dot-list">\n' +
-                    '<dt><a href="javascript:moveToView('+item.aplyid+', '+item.rsvtdeid+')" class="after-link">['+item.fcltNm+'] '+item.spceNm+'</a></dt>\n' +
-                    '<dd>\n' +
-                    '<ul class="dot-list fc-black3">\n' +
-                    '<li class="d-flex">\n' +
-                    '<span class="tit">주소 :</span>\n' +
-                    '<span class="dc">'+item.addr+ ' '+item.addrDtl+'</span>\n' +
-                    '</li>\n' +
-                    '<li class="d-flex">\n' +
-                    '<span class="tit">인원 :</span>\n' +
-                    '<span class="dc">최대 '+item.maxNope+'인</span>\n' +
-                    '</li>\n' +
-                    '<li class="d-flex">\n' +
-                    '<span class="tit">면적 :</span>\n' +
-                    '<span class="dc">'+item.size+'평형</span>\n' +
-                    '</li>\n' +
-                    '<li class="d-flex">\n' +
-                    '<span class="tit">날짜 :</span>\n' +
-                    '<span class="dc">'+finalDate+'</span>\n' +
-                    '</li>\n' +
-                    '<li class="d-flex j-between">\n' +
-                    '<div class="d-flex">\n' +
-                    '<span class="tit">가격 :</span>\n' +
-                    '<span class="dc">'+(item.amt).toLocaleString()+'원</span>\n' +
-                    '</div>\n';
-                    if( btnTxt != '' ){
-                        if( btnTxt == '입금정보' ){
-                            html += '<button type="button" class="btn-small btn-outline-blue" onclick="fn_openDpstInfoPopup('+item.aplyid+');">'+btnTxt+'</button>\n';
-                        }else if( btnTxt == '사유확인' ){
-                            html += '<button type="button" class="btn-small btn-outline-blue" onclick="fn_openPopup('+item.aplyid+');">'+btnTxt+'</button>\n';
-                        }else if( btnTxt == '후기작성' ){
-                            html += '<button type="button" class="btn-small btn-outline-blue" onclick="fn_openInsertRvwPopup('+item.aplyid+');">'+btnTxt+'</button>\n';
-                        }else if( btnTxt == '작성완료' ){
-                            html += '<button type="button" class="btn-small btn-outline-blue" onclick="fn_openSelectRvwPopup('+item.aplyid+');">'+btnTxt+'</button>\n';
-                        }
-
-                    }
-                    html += '</li>\n' +
-                    '</ul>\n' +
-                    '</dd>\n' +
-                    '</dl>\n' +
-                    '</div>\n' +
-                    '</li>';
-                })
-                html += '</ul>';
-            }
-            return html;
-        }
-
-        function fn_openPopup(aplyid){
-            $("#rsnPopup").load(rsnPopupUrl+"?aplyid="+aplyid, function(response, status, xhr) {
-                if (status == "success") {
-                    layerPopup.open({target:'rsnPopup'});
-                }
-            });
-        }
-
-        function fn_openDpstInfoPopup(aplyid){
-            $("#dpstInfoPopup").load(dpstInfoPopupUrl+"?aplyid="+aplyid, function(response, status, xhr) {
-                if (status == "success") {
-                    layerPopup.open({target:'dpstInfoPopup'});
-                }
-            });
-        }
-        function fn_openInsertRvwPopup(aplyid){
-            $("#insertRvwPopup").load(insertRvwPopupUrl+"?aplyid="+aplyid, function(response, status, xhr) {
-                if (status == "success") {
-                    layerPopup.open({target:'insertRvwPopup'});
-                }
-            });
-        }
-
-        function fn_openSelectRvwPopup(aplyid){
-            $("#selectRvwPopup").load(selectRvwPopupUrl+"?aplyid="+aplyid, function(response, status, xhr) {
-                if (status == "success") {
-                    layerPopup.open({target:'selectRvwPopup'});
-                }
-            });
-        }
-
-        function moveToInsertForm() {
-            var f = document.forms.searchForm;
-            f.action = formUrl;
-            f.submit();
-        }
-
-        function moveToView(aplyid, rsvtdeid) {
-            var f = document.forms.searchForm;
-            f.aplyid.value = aplyid;
-            f.rsvtdeid.value = rsvtdeid;
-            f.action = viewUrl;
-            f.submit();
-        }
-
-        function goPage(num) {
-            $("#pageNumber").val(num);
-            selectEnvReqstList();
         }
     </script>
 </div>
