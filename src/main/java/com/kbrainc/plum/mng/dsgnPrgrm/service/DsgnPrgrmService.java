@@ -2,6 +2,7 @@ package com.kbrainc.plum.mng.dsgnPrgrm.service;
 
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmObjcVo;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmVo;
+import com.kbrainc.plum.mng.dsgnPrgrm.model.OperPrfmncVo;
 
 import java.util.List;
 
@@ -350,7 +351,7 @@ public interface DsgnPrgrmService {
 	* @return int
 	* @throws Exception
 	*/
-	public int updateSplmntImprv(@Valid DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+	public int updateSplmntImprv(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 	/**
 	* 결과보고서 수정
@@ -399,6 +400,18 @@ public interface DsgnPrgrmService {
 	public DsgnPrgrmVo selectDsgnOutl(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 	/**
+	* 지정프로그램 개요 체크리스트 목록 조회
+	*
+	* @Title : selectDsgnOutlChkList
+	* @Description : 지정프로그램 개요 체크리스트 목록 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnPrgrmVo>
+	*/
+	public List<DsgnPrgrmVo> selectDsgnOutlChkList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
 	* 심사일정캘린더 목록 조회
 	*
 	* @Title : selectSprtgrpClndrList
@@ -409,6 +422,52 @@ public interface DsgnPrgrmService {
 	* @return List<DsgnPrgrmVo>
 	*/
 	public List<DsgnPrgrmVo> selectSprtgrpClndrList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 운영결과 실적 목록 조회
+	*
+	* @Title : selectOperRsltPrfmncList
+	* @Description : 운영결과 실적 목록 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @return List<OperPrfmncVo>
+	*/
+	public List<OperPrfmncVo> selectOperRsltPrfmncList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 담당자 목록검색
+	*
+	* @Title : selectPicList
+	* @Description : 담당자 목록검색
+	* @param dsgnPrgrmVo
+	* @return
+	* @return List<DsgnPrgrmVo>
+	*/
+	public List<DsgnPrgrmVo> selectPicList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 운영결과 제출 상태 변경
+	*
+	* @Title : updateSbmsnStts
+	* @Description : 운영결과 제출 상태 변경
+	* @param dsgnPrgrmVo
+	* @return
+	* @return int
+	*/
+	public int updateSbmsnStts(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 보완개선계획 등록
+	*
+	* @Title : insertScrtyImprvPlanln
+	* @Description : 보완개선계획 등록
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertScrtyImprvPlanln(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
 
 
 }

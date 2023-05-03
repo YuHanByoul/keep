@@ -407,29 +407,6 @@ public interface DsgnPrgrmDao {
 	public int updateSplmntImprv(@Valid DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 	/**
-	* 결과보고서 수정
-	*
-	* @Title : updateRsltRptln
-	* @Description : 결과보고서 수정
-	* @param dsgnPrgrmVo
-	* @return
-	* @throws Exception
-	* @return int
-	*/
-	public int updateRsltRptln(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
-
-	/**
-	* 보완계획서 수정
-	*
-	* @Title : updateScrtyImprvPlanln
-	* @Description : 보완계획서 수정
-	* @param dsgnPrgrmVo
-	* @return int
-	* @throws Exception
-	*/
-	public int updateScrtyImprvPlanln(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
-
-	/**
 	* 지정프로그램 개요 조회
 	*
 	* @Title : selectDsgnOutl
@@ -440,6 +417,18 @@ public interface DsgnPrgrmDao {
 	* @return DsgnPrgrmVo
 	*/
 	public DsgnPrgrmVo selectDsgnOutl(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 지정프로그램 개요 체크리스트 목록 조회
+	*
+	* @Title : selectDsgnOutlChkList
+	* @Description : 지정프로그램 개요 체크리스트 목록 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnPrgrmVo>
+	*/
+	public List<DsgnPrgrmVo> selectDsgnOutlChkList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 	/**
 	* 심사일정캘린더 목록 조회
@@ -478,6 +467,18 @@ public interface DsgnPrgrmDao {
 	public List<DsgnPrgrmVo> selectOperRsltCyclList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 	/**
+	* 운영결과실적 목록 조회
+	*
+	* @Title : selectOperRsltPrfmncList
+	* @Description : 운영결과실적 목록 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return List<OperPrfmncVo>
+	*/
+	public List<OperPrfmncVo> selectOperRsltPrfmncList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
 	* 운영결과 차수 등록
 	*
 	* @Title : insertOperRsltCyCl
@@ -488,5 +489,89 @@ public interface DsgnPrgrmDao {
 	* @return int
 	*/
 	public int insertOperRsltCyCl(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 담당자 목록검색
+	*
+	* @Title : selectPicList
+	* @Description : 담당자 목록검색
+	* @param dsgnPrgrmVo
+	* @return
+	* @return List<DsgnPrgrmVo>
+	*/
+	public List<DsgnPrgrmVo> selectPicList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 이행확인심사 등록
+	*
+	* @Title : insertImplmntIdntySrng
+	* @Description : 이행확인심사 등록
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertImplmntIdntySrng(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 이행확인심사 수정
+	*
+	* @Title : updateImplmntIdntySrng
+	* @Description : 이행확인심사 수정
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int updateImplmntIdntySrng(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 운영결과 차수 상태 수정
+	*
+	* @Title : updateOperRsltSttsCd
+	* @Description : 운영결과 차수 상태 수정
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int updateCyClSttsCd(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 신청 프로그램 정보 수정
+	*
+	* @Title : updatePrgrm
+	* @Description : 신청 프로그램 정보 수정
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int updatePrgrm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 보완개선 계획 등록
+	*
+	* @Title : insertSplmntPlan
+	* @Description : 보완개선 계획 등록
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertSplmntPlan(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 보완개선 계획 수정
+	*
+	* @Title : updateScrtyImprvPlanln
+	* @Description : 보완개선 계획 수정
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int updateScrtyImprvPlanln(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
 
 }

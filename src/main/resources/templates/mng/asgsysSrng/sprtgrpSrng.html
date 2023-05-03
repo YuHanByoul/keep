@@ -84,7 +84,6 @@
                     </div>
                     <div class="mb-2 col-12">
                         <span th:unless="${!#lists.isEmpty(bfrCertFileList) && bfrCertFileList[0].fileid!=0 && bfrCertFileList[0].fileid!=null}">선택된 파일 없음.</span>
-<!--                         <input type="file" multiple id="evdncDcmntFile1" name="evdncDcmntFile1" class="form-control form-control-sm" th:if="${#lists.isEmpty(bfrCertFileList)}" disabled/> -->
                     </div>
 
                     <!-- 안전관리 첨부파일 -->
@@ -93,7 +92,6 @@
                             <th:block th:unless="${#lists.isEmpty(bfrCertFileList)}" th:each="item, i : ${bfrCertFileList}" th:if = "${item.fileid} > 0">
                             <span class ='label label-inverse ' th:id="'bfrCertFile_'+${item.fileid}">
                                 <th:block th:text="${item.orginlFileNm}"></th:block>&nbsp;&nbsp;
-<!--                                 <a  class = 'text-white' href = "javascript:void(0)" th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="fn_deleteFile(this.name, this.dataset.idntfcKey)">X</a> -->
                             </span>
                         </div>
                     </div>
@@ -110,7 +108,6 @@
                     </div>
                     <div class="mb-2 col-12">
                         <span th:unless="${!#lists.isEmpty(aplyFileList) && aplyFileList[0].fileid!=0 && aplyFileList[0].fileid!=null}">선택된 파일 없음.</span>
-<!--                         <input type="file" multiple id="evdncDcmntFile2" name="evdncDcmntFile2" class="form-control form-control-sm" th:if="${#lists.isEmpty(aplyFileList)}" disabled/> -->
                     </div>
 
                     <div class="row">
@@ -118,7 +115,6 @@
                             <th:block th:unless="${#lists.isEmpty(aplyFileList)}" th:each="item, i : ${aplyFileList}" th:if = "${item.fileid} > 0">
                             <span class ='label label-inverse ' th:id="'aplyFile_'+${item.fileid}">
                                 <th:block th:text="${item.orginlFileNm}"></th:block>&nbsp;&nbsp;
-<!--                                 <a  class = 'text-white' href = "javascript:void(0)" th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="fn_deleteFile(this.name, this.dataset.idntfcKey)">X</a> -->
                             </span>
                         </div>
                     </div>
@@ -144,7 +140,7 @@
         <div class="mb-0 row">
             <div class="col-12 col-lg-6 mb-2 mb-lg-0">
                 <div class="mb-0 form-group">
-                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="supportGroupJudgingSupportGroupName"><strong>지원단 성명</strong></label>
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="nm"><strong>지원단 성명</strong></label>
                     <div class="col-sm-12">
                         <input type="text" class="form-control form-control-sm" name="nm" id="nm" placeholder="지원단 성명" th:value="${aplyInfo.nm}" readonly />
                     </div>
@@ -152,7 +148,7 @@
             </div>
             <div class="col-12 col-lg-6">
                 <div class="mb-0 form-group">
-                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="supportGroupJudgingSupportGroupDate"><strong>지원단 방문일정</strong></label>
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="vstDt"><strong>지원단 방문일정</strong></label>
                     <div class="col-sm-12">
                         <input type="text" class="form-control form-control-sm" name="vstDt" id="vstDt" placeholder="지원단 방문일정" th:value="${aplyInfo.vstDt}" readonly />
                     </div>
@@ -180,7 +176,7 @@
     </div>
 
     <!-- 체크리스트 -->
-    <div th:each="title , a : ${sprtgrpCheckList}">
+    <div id="chklv1" th:each="title , a : ${sprtgrpCheckList}">
 
         <div th:if="${title.treeOrd==1}" >
 
@@ -195,7 +191,7 @@
 
         </div>
 
-        <div th:if="${title.treeOrd==2}" class="card-block-small p-t-0">
+        <div id="chklv2" th:if="${title.treeOrd==2}" class="card-block-small p-t-0">
             <div name="chkLv2block" class="col-12 table-border-style mb-3">
                 <div class="col-12 table-responsive">
                     <table class="table table-border-style table-columned">
@@ -208,8 +204,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="border-bottom" th:each="row, b : ${sprtgrpCheckList}" th:if="${row.treeOrd==3 and title.lv2key==row.lv2key}">
-                                <td class="text-center v-middle" style="width: 60px;"><th:block th:text="${row.ordr}"</th:block></td>
+                            <tr id="chklv3" class="border-bottom" th:each="row, b : ${sprtgrpCheckList}" th:if="${row.treeOrd==3 and title.lv2key==row.lv2key}">
+                                <td class="text-center v-middle" style="width: 60px;"><th:block th:text="${row.ordr+1}"</th:block></td>
                                 <td th:id="${'cnY' + row.lv1key}">
                                     <th:block th:text="${row.cn}"</th:block>
                                 </td>
@@ -288,12 +284,16 @@
 
     var sprtgrpCheckList = /*[[${sprtgrpCheckList}]]*/null;
     var prgrmid;
-
     var splmntDmndGridHelper;
-
     var gridArgs;
 
-    initSprtgrpSrngFrm();
+    $(function() {
+    	initSprtgrpSrngFrm();
+
+    	$('[id^=chklv2]').each(function(){
+    		if($(this).find('[id^=chklv3]').length == 0 )$(this).hide();
+    	});
+    });
 
     function initSprtgrpSrngFrm() {
 
@@ -308,7 +308,6 @@
         $("#sprtgrpSrngForm [id^=styYn]").prop("disabled", true);
         $("#sprtgrpSrngForm [id^=sftyMngYn]").prop("disabled", true);
     }
-
 
     //보완요청 버튼
     function fn_reqSplmntDmndBtn(id){
@@ -447,8 +446,6 @@
             totalscore = Number(totalscore) + Number(sumScr);
         }
 
-        //$("#scr").val(totalscore);
-
         //title sum
         $("[id^=chkTitle]").each(
         function(index1, item1){
@@ -510,9 +507,6 @@
 
             param["ansLst[" + index + "].seCd"] = $(item).attr("id").split("_")[0].replace("cRdoY","");
             param["ansLst[" + index + "].qitemid"] = $(item).attr("id").split("_")[1];
-            //param["ansLst[" + index + "].cn"] = $(item).attr("id").split("_")[0].replace("cRdoY","");
-            //param["ansLst[" + index + "].idntyMttr"] = $(item).attr("id").split("_")[1].replace("cRdoY","");
-
             param["ansLst[" + index + "].scr"] = $(item).prop("checked") ? $(item).attr("altm"): 0
             param["ansLst[" + index + "].ordr"] = $(item).attr("data-ordr");
 

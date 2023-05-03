@@ -73,7 +73,7 @@
                         <div class="list">
                             <dt></dt>
                             <dd>
-                                <a th:href="${envReqst.extnlUrl}" target="_blank" class="btn-medium btn-green">예약신청 바로가기</a>
+                                <a th:href="'http://'+${envReqst.extnlUrl}" target="_blank" class="btn-medium btn-green" >예약신청 바로가기</a>
                             </dd>
                         </div>
                     </dl>
@@ -136,24 +136,24 @@
                                         <div class="form-input" style="flex:1;max-width:calc(100% / 3 - 10px)">
                                             <div class="bul fs-14">성인</div>
                                             <div class="form-input form-input-number">
-                                                <input type="number" id="nopeAdult" name="nopeAdult" min="0" max="15" title="성인" class="ac pl0 pr0">
+                                                <input type="number" id="nopeAdult" name="nopeAdult" min="0" title="성인" class="ac pl0 pr0" value="0">
                                                 <div class="btn-number">
-                                                      <button type="button" class="num-up"   title="숫자 증가"></button>
-                                                      <button type="button" class="num-down" title="숫자 감소"></button>
+                                                      <button type="button" class="num-up"   title="숫자 증가" ></button>
+                                                      <button type="button" class="num-down" title="숫자 감소" ></button>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="form-input" style="flex:1;max-width:calc(100% / 3 - 10px)">
                                             <div class="bul fs-14">아동</div>
                                             <div class="form-input form-input-number">
-                                                <input type="number" id="nopeChil"  name="nopeChil" min="0" max="15" title="아동" class="ac pl0 pr0">
+                                                <input type="number" id="nopeChil"  name="nopeChil" min="0"  title="아동" class="ac pl0 pr0" value="0">
                                                 <div class="btn-number"><button type="button" class="num-up" title="숫자 증가"></button><button type="button" class="num-down" title="숫자 감소"></button></div>
                                             </div>
                                         </div>
                                         <div class="form-input" style="flex:1;max-width:calc(100% / 3 - 10px)">
                                             <div class="bul fs-14">유아</div>
                                             <div class="form-input form-input-number">
-                                                <input type="number" id="nopeInfnt" name="nopeInfnt" min="0" max="15" title="유아" class="ac pl0 pr0">
+                                                <input type="number" id="nopeInfnt" name="nopeInfnt" min="0" title="유아" class="ac pl0 pr0" value="0">
                                                 <div class="btn-number"><button type="button" class="num-up" title="숫자 증가"></button><button type="button" class="num-down" title="숫자 감소"></button></div>
                                             </div>
                                         </div>
@@ -184,7 +184,7 @@
                     </div>
                     <div class="btn-wrap">
                         <div class="right">
-                            <a href="#" class="btn-medium btn-green" id="submitData">예약신청</a>
+                            <a href="javascript:aplyResve()" class="btn-medium btn-green" id="submitData">예약신청</a>
                         </div>
                     </div>
                 </div>
@@ -220,31 +220,40 @@
                 <h3 class="sub-title">시설소개</h3>
             </div>
         </div>
-        <p th:text="${envReqst.dtlCn}"></p>
+        <p th:utext="${envReqst.dtlCn}"></p>
     </th:block>
     <div class="btn-wrap">
         <div class="center">
-            <button type="button" class="btn-medium btn-gray" onclick="javascript:location.href='/front/envReqst/envReqstList.html'">목록</button>
+            <button type="button" class="btn-medium btn-gray" onclick="javascript:returnToList()">목록</button>
         </div>
     </div>
 
     <form id="viewForm" method="get" onsubmit="return false;">
         <input type="hidden" id="fcltid" name="fcltid" th:value="${envReqst.fcltid}">
-        
-        
         <input type="hidden" id="spceid" name="spceid">
-        <input type="hidden" id="rsvtdeid" name="rsvtdeid">
-        <input type="hidden" id="startDate" name="startDate">
-        <input type="hidden" id="endDate" name="endDate">
         <input type="hidden" name="nopeAdult" value="0">
         <input type="hidden" name="nopeChil" value="0">
         <input type="hidden" name="nopeInfnt" value="0">
-        <!-- <input type="hidden" id="utztnSeCd" name="utztnSeCd"> -->
+        <input type="hidden" id="utztnSeCd" name="utztnSeCd">
+        <input type="hidden" id="rsvtdeids" name="rsvtdeids">
         <input type="hidden" name="utztnPrps">
+    </form>
+    
+    <form id="backToListForm" >
+        <input type="hidden" id="pageNumber"       name="pageNumber"        th:value="${(params != null and params.pageNumber > 0 )? params.pageNumber:1}"    >
+        <input type="hidden" id="instNm"           name="instNm"            th:value="${params.instNm}"  >
+        <input type="hidden" id="fcltNm"           name="fcltNm"            th:value="${params.fcltNm}" >
+        <input type="hidden" id="searchRgnCd"      name="searchRgnCd"       th:value="${params.searchRgnCd}"   >
+        <input type="hidden" id="searchAplyMthdCd" name="searchAplyMthdCd"  th:value="${params.searchAplyMthdCd}"    >
+        <input type="hidden" id="maxNope"          name="maxNope"           th:value="${params.maxNope}"    >
+        <input type="hidden" id="searchBgngDt"     name="searchBgngDt"      th:value="${params.searchBgngDt}"    >
+        <input type="hidden" id="searchEndDt"      name="searchEndDt"       th:value="${params.searchEndDt}"    >
     </form>
 
     <script th:inline="javascript">
 
+        var aplyMthdCd = /*[[${envReqst.aplyMthdCd}]]*/null;
+        var isInitCal = false;
         /* 이용 형태 변경 event(숙박 or 대여) */
         $(document).on('change', 'input[name="utztnSe"]' , function () {
             var selectedVal = $('select[name="spceList"]').val()
@@ -253,16 +262,12 @@
                 $('input[name="utztnSe"]').prop("checked",false);
                 return;
             }
-            
             resetData();
-            
             var mode = 'range';
-            if( $(this).val() == '169101' ){
-                // 숙박
+            if( $(this).val() == '169101' ){// 숙박
                 $('.dot-blue').show();
                 $('.dot-red').hide();
-            }else{
-                // 대여
+            }else{// 대여
                 mode = 'single';
                 $('.dot-blue').hide();
                 $('.dot-red').show();
@@ -270,12 +275,14 @@
             
             $('#spceid').val(selectedVal);
             
-            makeCalendarEvent(null, selectedVal, mode);
+            isInitCal = false;
+            makeCalendarEvent(moment().format("YYYY-MM-DD"),selectedVal, mode);
             
             for( var i=0; i<spceList.length; i++ ){
                 if( spceList[i].spceid == selectedVal ){
                     // 선택한 이용공간의 정보
                     maxNope = spceList[i].maxNope;
+                    aplyLimitDays = spceList[i].rsvtPsbltyDaycnt;
                     $('#maxNope').text(maxNope);
                 }
             }
@@ -286,17 +293,20 @@
         var spceList = /*[[${spceList}]]*/null;
         // 선택한 날짜 seq 리스트
         var selectedRsvtdeidList = [];
+        var selectedRsvtdeids = [];
         // 최대정원
         var maxNope;
         // 선택한 인원 수
         var userCnt;
         // 이용금액
         var selectedAmt;
+        // 예약 가능 일수 (금일부터)
+        var aplyLimitDays = 0;
         // 대여인지, 숙박인지 구분값(대여 : 169102, 숙박 : 169101)
         var utztnSeCd = '169101';
         var selectedTimeList = [];
         var datepicker = null;
-        var today = date2str(parseDate(new Date()), 'yyyy-mm-dd');
+        var today = moment().format('YYYY-MM-DD') //date2str(parseDate(new Date()), 'yyyy-mm-dd');
         var newToday = new Date(today);
         
         let list01 = '<ul><li class="dot-white">예약불가</li><li class="dot-blue">숙박</li><li class="dot-red">대여</li><ul>';
@@ -311,13 +321,6 @@
                 inline: true,
                 position: "bottom center",
                 onDayCreate: function(dObj, dStr, fp, dayElem) {
-                    var date = dayElem.dateObj,
-                        key = date.getFullYear() + '-' + get2DigitFmt(date.getMonth() + 1) + '-' + get2DigitFmt(date.getDate()),
-                        value = '';
-                    if (value) {
-                        dayElem.className += ' ' + value[0];
-                        dayElem.title = value[1]
-                    }
                 },
                 onChange: function(dObj, dStr, fp, dayElem) {
                     if($('select[name="spceList"]').val() == "" || $('input[name="utztnSe"]:checked').val()==null  ){
@@ -328,34 +331,34 @@
                 }
             });
         }
-
         
         $(function(){
             
         	initFlatpickr();
         	
             $(document).off('keyup', '.form-input-number input[type="number"]');
-            
             $(document).off('click', '.form-input-number button');
             
+            //인원수 버튼 컨트롤
             $(document).on('keyup', '.form-input-number input[type="number"]' , function () {
+
                 const numInput = $(this);
                 const valueMin = parseInt(numInput[0].min);
                 const valueMax = parseInt(numInput[0].max);
+                let inputId = $(this).attr('id');
+                
                 if (numInput.val() > valueMax) {
                     numInput.val(valueMax)
                 }
                 if (numInput.val() < valueMin) {
                     numInput.val(valueMin)
                 }
-
-                let tempCnt = 0;
                 
+                let tempCnt = 0;
                 $('.form-input-number input[type="number"]').each(function(){
                     tempCnt += parseInt(this.value);
                 })
-                let inputId = $(this).attr('id');
-
+                
                 if( tempCnt > maxNope ){
                     alert('최대 '+maxNope+'명 까지만 신청 가능합니다.');
                     $('input[name='+inputId+']').val(0);
@@ -367,12 +370,10 @@
             });
 
             $(document).on('click', '.form-input-number button' , function () {
-                
                 const par = $(this).closest('.form-input-number');
                 const numInput = par.find('input[type="number"]');
                 const valueMin = parseInt(numInput[0].min);
                 const valueMax = parseInt(numInput[0].max);
-
                 //value up
                 if ($(this).hasClass('num-up')) {
                     userCnt++;
@@ -391,7 +392,6 @@
                         }
                     }
                 }
-
                 //value down
                 if ($(this).hasClass('num-down')) {
                     if (numInput.val() === '') {
@@ -402,14 +402,13 @@
                         userCnt--;
                     }
                 }
-
                 let inputId = $(numInput).attr('id');
                 $('input[name='+inputId+']').val(numInput.val());
-
             });
-
             //후기 목록 호출 
-            selectResveEnvRvwList();
+            if(aplyMthdCd != "153102"){
+	            selectResveEnvRvwList();
+            }
         })
         
         
@@ -434,11 +433,11 @@
         function parseDate(strDate) {
             var _strDate = strDate;
             var _dateObj = new Date(_strDate);
-            if (_dateObj.toString() == 'Invalid Date') {
+            if(_dateObj.toString() == 'Invalid Date') {
                 _strDate = _strDate.split('.').join('-');
                 _dateObj = new Date(_strDate);
             }
-            if (_dateObj.toString() == 'Invalid Date') {
+            if(_dateObj.toString() == 'Invalid Date') {
                 var _parts = _strDate.split(' ');
 
                 var _dateParts = _parts[0];
@@ -453,7 +452,6 @@
                     }
                 }
             }
-
             return _dateObj;
         }
         
@@ -461,29 +459,17 @@
             fcltid: /*[[${envReqst.fcltid}]]*/null,
             updateUrl: '/front/envReqst/updateEnvReqst.html',
             listUrl: '/front/envReqst/envReqstList.html',
-
-            moveToList() {
-                this.submit(this.listUrl);
-            },
-
             moveToUpdateForm() {
                 this.submit(this.updateFormUrl);
             },
-
             moveToUpdate() {
                 this.submit(this.updateUrl);
             },
-
             submit(url) {
                 let f = document.forms.viewForm;
                 f.action = url;
                 f.submit();
             }
-        };
-        
-        const classDict02 = {
-            '0' : ['dot-blue','숙박'],
-            '1' : ['dot-red','대여'],
         };
         
         let list02 = '<ul><li class="dot-white">예약불가</li><li class="dot-blue">숙박</li><li class="dot-red">대여</li><ul>';
@@ -512,75 +498,78 @@
             $('#useTime').empty();
             $('#useDate').empty();
             $('#useAmt').text(0);
+            $('#rsvtdeid').val("");
+            $('#rsvtdeids').val("");
             selectedStrtTmTimeList = [];
             selectedEndTmTimeList = [];
         }
 
         function checkData(){
             
-            let spceid = $('#spceid').val();
             let startDate = $('#startDate').val();
-            let endDate = $('#endDate').val();
-            let time = null;
-            let nopeCnt = userCnt;
+            let endDate   = $('#endDate').val();
+            let time      = null;
+            let nopeCnt   = userCnt;
             let utztnPrps = $('#utztnPrps').val();
             let utztnSeCd = $('#utztnSeCd').val();
+            let rsvtdeid  = $('#rsvtdeid').val();
+            let rsvtdeids  = $('#rsvtdeids').val();
+            let utztnSe   = $('[name=utztnSe]:checked').val()
 
-            if( spceid == '' ){
-                alert('이용공간을 선택해 주세요.');
+            var selectedVal = $('select[name="spceList"]').val()
+            if(selectedVal ==null || selectedVal ==''){
+                alert("공간을 선택해주십시오.");
+                $('input[name="utztnSe"]').prop("checked",false);
+                return;
+            }
+            if( utztnSe == '' || utztnSe == 'undefined' ||utztnSe==null ){
+                alert('숙박/대여 여부를 선택해 주세요.');
                 return false;
             }
             if( startDate == '' || endDate == '' ){
                 alert('이용날짜를 선택해 주세요.');
                 return false;
             }
-            if( utztnSeCd == '169102' && time == '' ){
-                alert('이용시간을 선택해 주세요.');
+            if(rsvtdeids == null || rsvtdeids == ""){
+                alert(  (utztnSeCd == '169102')?"이용시간":"이용일" + '을 체크해 주세요.');
                 return false;
             }
             if( nopeCnt == 0 ){
                 alert('이용인원수를 입력해 주세요.');
                 return false;
             }
-            if( utztnPrps == '' ){
+            if( utztnPrps == '' || utztnPrps.trim()==''){
                 alert('이용목적을 입력해 주세요.');
+                showErrorMark("#utztnPrps");
+                return false;
+            }
+            if( utztnPrps.length >= 200  ){
+                alert('이용목적은 200자 이하여야 합니다.');
+                showErrorMark("#utztnPrps");
                 return false;
             }
             return true;
         }
-        
-        function makeCalendarEvent(gotoYYYYMM, spceid, mode){
 
-            var date = new Date();
-            y = date.getFullYear();
-            m = date.getMonth();
-            var firstDay = new Date(y, m, 1);
-            var lastDay = new Date(y, m + 2, 0);
+        function makeCalendarEvent(yearDayStr, spceid, mode ){
 
-            var firstDay_string = date2str(parseDate(firstDay), 'yyyy-mm-dd');
-
-            var lastDayOfMonth = "";
-
-            if(gotoYYYYMM != null && gotoYYYYMM != '' && gotoYYYYMM != 'undefined'){
-                lastDayOfMonth = date2str(parseDate(lastDay), 'yyyy-mm-dd');
-            }else{
-                lastDayOfMonth = date2str(parseDate(lastDay), 'yyyy-mm-dd');
-            }
-
+        	let yyyymm = "";
+            yyyymm =(yearDayStr==null || yearDayStr=='undefined')?moment().format("YYYY-MM-DD"):yearDayStr;
+            
             var params = {
-                spceid  : spceid
-                ,startDt : firstDay_string
-                ,enddDt  : lastDayOfMonth
+                 spceid   : spceid
                 ,utztnSe  : mode
+                ,startDt  : moment(yyyymm).format("YYYY-MM-DD")
+                ,enddDt   : moment(yyyymm).format("YYYY-MM-")+moment(yyyymm).daysInMonth()
             }
-
+            
             if( mode == 'single' ){
                 list02 = '<ul><li class="dot-white">예약불가</li><li class="dot-red">대여</li><ul>';
             }else{
                 list02 = '<ul><li class="dot-white">예약불가</li><li class="dot-blue">숙박</li><ul>';  
             }
             
-            if(displayWorkProgress()){
+            if(displayWorkProgress(true)){
                 $.ajax({
                     url : "/front/envReqst/selectSpceRsvtdeList.do",
                     type: 'POST',
@@ -588,13 +577,10 @@
                     dataType: 'json',
                     data : params,
                     success : function (data){
-                        
                         let list = data.rsvtdelist;
-                        
                         let enableDates = [];
                         let disableDates = [];
-                        let dates02 = {};
-
+                        let datesKind = {};
                         if(list.length > 0){
                             
                             list.forEach(function(item){
@@ -604,22 +590,21 @@
                                 if( item.fullYn == 0 ){ // 이미 신청 되어 있거나 승인된 이벤트가 없는
                                     if(item.utztnSeCd == '169102'){//대여
                                         if( item.todayRsvtPsbltyYn == 'Y' ){
-                                            dates02[de] = '1';
+                                            datesKind[de] = '1';
                                             enableDates.push(de);
                                         }else{
-                                            if( (moment(newToday).format("YYYY-MM-DD")) != (moment(new Date(de)).format("YYYY-MM-DD")) ){
-                                                console.log(de)
-                                                dates02[de] = '1';
+                                            if(moment(newToday).format("YYYY-MM-DD") != moment(new Date(de)).format("YYYY-MM-DD") ){
+                                                datesKind[de] = '1';
                                                 enableDates.push(de);
                                             }
                                         }
                                     }else{//숙박
                                         if( item.todayRsvtPsbltyYn == 'Y' ){
-                                            dates02[de] = '0';
+                                            datesKind[de] = '0';
                                             enableDates.push(de);
                                         }else{
-                                        	if( moment(newToday).format("YY-MM-DD") != moment(new Date(de)).format("YY-MM-DD") ){
-                                                dates02[de] = '0';
+                                        	if( moment(newToday).format("YYYY-MM-DD") != moment(new Date(de)).format("YYYY-MM-DD") ){
+                                                datesKind[de] = '0';
                                                 enableDates.push(de);
                                             }
                                         }
@@ -627,162 +612,39 @@
                                 }
                             })
                             
-                            datepicker = flatpickr("[datepicker=true]",{
-                                mode: mode,
-                                dateFormat: "Y-m-d",
-                                // disable: disableDates,
-                                enable: enableDates,
-                                minDate: "today",
-                                locale: "ko",
-                                inline: true,
-                                position: "bottom center",
-                                onDayCreate: function(dObj, dStr, fp, dayElem) {
-                                    var date = dayElem.dateObj,
-                                        // Note the + 1 in the month.
-                                        key = date.getFullYear() + '-' + get2DigitFmt(date.getMonth() + 1) + '-' + get2DigitFmt(date.getDate()),
-                                        value = classDict02[dates02[key]];
-                                    if (value) {
-                                        dayElem.className +=' ' + value[0];
-                                        dayElem.title = value[1]
-                                    }
-                                },
-                                onReady : function () {
-                                    const datepickerWrap = this.calendarContainer;
-                                    const datepickerList = document.createElement('div')
-                                    datepickerList.classList.add('datepicker-list')
-                                    datepickerWrap.appendChild(datepickerList)
-                                    datepickerList.insertAdjacentHTML('beforeend', list02);
-                                },
-                                onOpen : function(selectedDates, dateStr, instance){
-                                },
-                                onMonthChange: function(selectedDates, dateStr, instance){
-                                },
-                                onChange : function(selectedDates, dateStr, instance){
-                                    selectedRsvtdeidList = [];
-                                    resetData();
-                                    
-                                    if( mode == 'single' ){
-                                        // 대여
-                                        var str = '';
-                                        $('#timeList').empty();
-                                        for( var t=0;  t< data.rsvtdelist.length; t++ ){
-                                            
-                                            let innerData = data.rsvtdelist[t];
-                                            let target1 = new Date(innerData.de);
-                                            //체킹 한 날자
-                                            let target2 = new Date(dateStr);
-                                            let disabledStr = 'disabled';
-                                            if( innerData.fullYn == '0' ){ disabledStr = ''; }
-
-                                            if(moment(target1).format("YY-MM-DD") == moment(new Date(target2)).format("YY-MM-DD")
-                                                //target1.getFullYear() === target2.getFullYear() &&
-                                                //target1.getMonth() === target2.getMonth() &&
-                                                //target1.getDate()=== target2.getDate() 
-                                                ){
-                                                
-                                                let amt = (innerData.amt=='0')? "무료":addComma3(innerData.amt)+'원';
-                                                
-                                                str = '<tr class="tr-check">\n' +
-                                                      '<td><label class="inp vm">'+
-                                                      '<input type="checkbox" data-strtTm="'+innerData.strtTm
-                                                        +'" data-endTm="'+innerData.endTm
-                                                        +'" id="rsvtdeTime'+innerData.rsvtdeid
-                                                        +'" name="rsvtdeTime" data-amt="'
-                                                        +innerData.amt+'" value="'+innerData.rsvtdeid+'" '+disabledStr+'>'
-                                                      '</label></td>\n' +
-                                                      '<td class="timeStr">'+innerData.strtTm +' ~ '+ innerData.endTm+'</td>\n' +
-                                                      '<td>'+amt+'</td>\n' +
-                                                      '</tr>';
-                                                $('#timeList').append(str);
-                                            }
-                                        }
-                                        
-                                        $('#timeTable').show();
-                                        $('#startDate').val(dateStr);
-                                        $('#endDate').val(dateStr);
-                                        $('#useDate').text( moment(new Date(dateStr)).format('yyyy년 mm월 dd일'));
-                                        
-                                        //$('#useDate').text(date2str(parseDate(dateStr), 'yyyy년 mm월 dd일'));
-                                        
-                                    }else{
-                                        // 숙박
-                                        $('#timeTable').hide();
-
-                                        console.log(selectedDates);
-                                        
-                                        if( selectedDates.length > 1 ) {
-                                            let selectedDatesList = [];
-                                            let target1 = new Date(selectedDates[0]);
-                                            let target2 = new Date(selectedDates[1]);
-                                            
-                                            $('#startDate').val(date2str(parseDate(selectedDates[0]), 'yyyy-mm-dd'));
-                                            $('#endDate').val(date2str(parseDate(selectedDates[1]), 'yyyy-mm-dd'));
-                                            
-                                            if( !moment(target1).isSame(target2)
-                                                //moment(target1).format("YY-MM-DD") != moment(new Date(target2)).format("YY-MM-DD")
-                                                //!( target1.getFullYear() === target2.getFullYear() &&
-                                                //target1.getMonth() === target2.getMonth() &&
-                                                //target1.getDate()=== target2.getDate() ) 
-                                                ){
-                                                // 2일 이상
-                                                let dateList = getDatesStartToLast(date2str(parseDate(selectedDates[0]), 'yyyy-mm-dd'), date2str(parseDate(selectedDates[1]), 'yyyy-mm-dd'));
-                                                for( var s=0; s<selectedDates.length; s++ ){
-                                                    selectedDatesList.push(date2str(parseDate(selectedDates[s]), 'yyyy년 mm월 dd일'));
-                                                }
-                                                
-                                                for( var da=0; da<dateList.length; da++ ){
-                                                    
-                                                    for( var da2=0; da2<data.rsvtdelist.length; da2++ ){
-                                                        
-                                                        let innerData = data.rsvtdelist[da2];
-                                                        let daTarget1 = new Date(dateList[da]);
-                                                        let daTarget2 = new Date(innerData.de);
-                                                        if( daTarget1.getFullYear() === daTarget2.getFullYear() &&
-                                                            daTarget1.getMonth() === daTarget2.getMonth() &&
-                                                            daTarget1.getDate()=== daTarget2.getDate() ){
-                                                            selectedRsvtdeidList.push({rsvtdeid : innerData.rsvtdeid});
-                                                            selectedAmt += innerData.amt;
-                                                        }
-                                                    }
-                                                    
-                                                }
-
-                                                $('#useDate').text(selectedDatesList.join(' ~ '));
-                                                $('#useAmt').text(addComma3(selectedAmt)+'원');
-                                                $('#amt').val(selectedAmt);
-                                                $('#rsvtdeid').val(JSON.stringify(selectedRsvtdeidList));
-                                                
-                                            }else{
-                                                
-                                                if( dates02[dateStr] != 1 ){
-                                                    // 당일 숙박
-                                                    let dateList = getDatesStartToLast(date2str(parseDate(selectedDates[0]), 'yyyy-mm-dd'), date2str(parseDate(selectedDates[0]), 'yyyy-mm-dd'));
-                                                    selectedDatesList.push(date2str(parseDate(selectedDates[0]), 'yyyy년 mm월 dd일'));
-
-                                                    for( var da2=0; da2<data.rsvtdelist.length; da2++ ){
-                                                        let innerData = data.rsvtdelist[da2];
-                                                        let daTarget1 = new Date(dateList[0]);
-                                                        let daTarget2 = new Date(innerData.de);
-                                                        if( daTarget1.getFullYear() === daTarget2.getFullYear() &&
-                                                            daTarget1.getMonth() === daTarget2.getMonth() &&
-                                                            daTarget1.getDate()=== daTarget2.getDate() ){
-                                                            selectedRsvtdeidList.push({rsvtdeid : innerData.rsvtdeid});
-                                                            selectedAmt += innerData.amt;
-                                                        }
-                                                    }
-
-                                                    $('#useDate').text(selectedDatesList);
-                                                    $('#useAmt').text(addComma3(selectedAmt)+'원');
-                                                    $('#amt').val(selectedAmt);
-                                                    $('#rsvtdeid').val(JSON.stringify(selectedRsvtdeidList));
-                                                }
-                                            };
-                                        }
-                                    }
-                                }
-                            });
-
-
+                            let classDict = {                                  
+                                    '0' : ['dot-blue','숙박'],                   
+                                    '1' : ['dot-red','대여'],                    
+                            };               
+                            
+                            if(!isInitCal){
+                                datepicker.clear();
+	                            resetFlatpicker(mode,spceid);
+	                            isInitCal = true;
+                            }
+                            datepicker.set({enable:[]});
+                            datepicker.config.selectedDates= null;
+                            datepicker.set({
+                                defaultDate :moment(yyyymm).format("YYYY-MM-DD"),
+                                enable:enableDates
+                                });
+                            datepicker.config.onDayCreate.push(
+                                function(dObj, dStr, fp, dayElem) {
+                                    var date = dayElem.dateObj;                        
+                                    var calDate = moment(date).format("YYYY-MM-DD");   
+                                    var value = classDict[datesKind[calDate]];         
+                                    if (value) {                                       
+                                        dayElem.className +=' ' + value[0];            
+                                        dayElem.title = value[1]                       
+                                    }                                                  
+                                }                                
+                            );
+                            datepicker.config.onChange.push(
+                                    function(selectedDates, dateStr, instance) {
+                                    	   calendarOnchangeEvent(data,mode,selectedDates,dateStr,datesKind) 
+	                                } 
+                            );
+                            datepicker.redraw();
                         }
 
                         closeWorkProgress();
@@ -790,42 +652,165 @@
                 });
             }
         }
-
-        function getDatesStartToLast(startDate, lastDate) {
-            var regex = RegExp(/^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/);
-            if(!(regex.test(startDate) && regex.test(lastDate))) return "Not Date Format";
-            var result = [];
-            var curDate = new Date(startDate);
-            while(curDate <= new Date(lastDate)) {
-                result.push(curDate.toISOString().split("T")[0]);
-                curDate.setDate(curDate.getDate() + 1);
-            }
-            return result;
-        }
-
-        function minOfArray(arr) {
-            arr.reduce((prev,curr) => {
-                // 이전것과 비교해 더 작은 것 리턴
-                return prev <= curr ? prev : curr;
-            })
-
-            }
-        function maxOfArray(arr) {
-            arr.reduce((prev,curr) => {
-                // 이전것과 비교해 더 큰 것을 리턴
-                return prev <= curr ? curr : prev;
-            })
+        
+        function resetFlatpicker(mode,spceid){
+        	datepicker.clear();
+            datepicker = flatpickr("#flatpickr",{
+                mode: mode,
+                dateFormat: "Y-m-d",
+                maxDate : moment().add(aplyLimitDays+1,'day').format("YYYY-MM-DD"), 
+                minDate: "today",
+                locale: "ko",
+                inline: true,
+                position: "bottom center",
+                onReady : function () {
+                    const datepickerWrap = this.calendarContainer;
+                    const datepickerList = document.createElement('div')
+                    datepickerList.classList.add('datepicker-list')
+                    datepickerWrap.appendChild(datepickerList)
+                    datepickerList.insertAdjacentHTML('beforeend', list02);
+                }
+                , onMonthChange :function(selectedDates, dateStr, instance){
+                	instance.selectedDates=[];
+                    let currentMonth = (instance.currentMonth=="0")?"12":instance.currentMonth;
+                    moment(instance.currentYear+"-"+currentMonth).add(1,"month").format("YYYY-MM")
+                    makeCalendarEvent(moment(instance.currentYear+"-"+currentMonth).add(1,"month").format("YYYY-MM"), spceid, mode );
+                    resetData();
+                  }
+            });
         }
         
+        function  calendarOnchangeEvent(data,mode,selectedDates,dateStr,datesKind){
+
+            selectedRsvtdeidList = [];
+            selectedRsvtdeids = [];
+            resetData();
+            if( mode == 'single' ){
+                // 대여
+                var str = '';
+                
+                $('#timeList').empty();
+                
+                for( var t=0;  t< data.rsvtdelist.length; t++ ){
+                    
+                    let innerData = data.rsvtdelist[t];
+                    let target1 = new Date(innerData.de);
+                    //체킹 한 날자
+                    let target2 = new Date(dateStr);
+                    let disabledStr = 'disabled';
+                    if( innerData.fullYn == '0' ){ disabledStr = ''; }
+                    
+                    if( moment(target1).isSame(target2)){
+                        
+                        let amt = (innerData.amt=='0')? "무료":addComma3(innerData.amt)+'원';
+                        
+                        str = '<tr class="tr-check">' +
+                              '<td><label class="inp vm">'+
+                              '<input type="checkbox" data-strtTm="'+innerData.strtTm
+                                +'" data-endTm="'+innerData.endTm
+                                +'" id="rsvtdeTime'+innerData.rsvtdeid
+                                +'" name="rsvtdeTime" data-amt="'
+                                +innerData.amt+'" value="'+innerData.rsvtdeid+'" '+disabledStr+'>'
+                              +'</label></td>' +
+                              '<td class="timeStr">'+innerData.strtTm +' ~ '+ innerData.endTm+'</td>' +
+                              '<td>'+amt+'</td>' +
+                              '</tr>';
+                        $('#timeList').append(str);
+                    }
+                }
+                
+                $('#timeTable').show();
+                $('#startDate').val(dateStr);
+                $('#endDate').val(dateStr);
+                $('#useAmt').text((selectedAmt==0)?"무료":addComma3(selectedAmt)+'원');
+                $('#useDate').text( moment(new Date(dateStr)).format('YYYY년 MM월 DD일'));
+                
+            }else{
+                // 숙박
+                $('#timeTable').hide();
+                if( selectedDates.length > 1 ) {
+                    let selectedDatesList = [];
+                    let target1 = new Date(selectedDates[0]);
+                    let target2 = new Date(selectedDates[1]);
+                    
+                    $('#startDate').val(date2str(parseDate(selectedDates[0]), 'yyyy-mm-dd'));
+                    $('#endDate').val(date2str(parseDate(selectedDates[1]), 'yyyy-mm-dd'));
+                    
+                    if( !moment(target1).isSame(target2)){
+                        // 2일 이상
+                        let dateList = getDatesStartToLast(date2str(parseDate(selectedDates[0]), 'yyyy-mm-dd'), date2str(parseDate(selectedDates[1]), 'yyyy-mm-dd'));
+                        for( var s=0; s<selectedDates.length; s++ ){
+                            selectedDatesList.push(date2str(parseDate(selectedDates[s]), 'yyyy년 mm월 dd일'));
+                        }
+                        
+                        for( var da=0; da<dateList.length; da++ ){
+                            for( var da2=0; da2<data.rsvtdelist.length; da2++ ){
+                                let innerData = data.rsvtdelist[da2];
+                                let daTarget1 = new Date(dateList[da]);
+                                let daTarget2 = new Date(innerData.de);
+                                
+                                if( moment(daTarget1).isSame(daTarget2)){
+                                    selectedRsvtdeidList.push({rsvtdeid : innerData.rsvtdeid});
+                                    selectedRsvtdeids.push(innerData.rsvtdeid);
+                                    selectedAmt += innerData.amt;
+                                }
+                            }
+                        }
+                        //$('#useDate').text(selectedDatesList.join(' ~ ') + " ("+dateList.length+"박"+(dateList.length+1)+"일)");
+                        $('#useDate').text(selectedDatesList.join(' ~ ') + " (익일 체크아웃)");
+                        //$('#useAmt').text(addComma3(selectedAmt)+'원');
+                        $('#useAmt').text((selectedAmt==0)?"무료":addComma3(selectedAmt)+'원');
+                        $('#amt').val(selectedAmt);
+                        $('#rsvtdeid').val(JSON.stringify(selectedRsvtdeidList));
+                        $('#rsvtdeids').val(selectedRsvtdeids.join(","));
+                    }else{
+                        if( datesKind[dateStr] != 1 ){
+                            // 당일 숙박
+                            let dateList = getDatesStartToLast(date2str(parseDate(selectedDates[0]), 'yyyy-mm-dd'), date2str(parseDate(selectedDates[0]), 'yyyy-mm-dd'));
+                            selectedDatesList.push(date2str(parseDate(selectedDates[0]), 'yyyy년 mm월 dd일'));
+                            for( var da2=0; da2<data.rsvtdelist.length; da2++ ){
+                                let innerData = data.rsvtdelist[da2];
+                                let daTarget1 = new Date(dateList[0]);
+                                let daTarget2 = new Date(innerData.de);
+                                if( moment(daTarget1).isSame(daTarget2) ){
+                                    selectedRsvtdeidList.push({rsvtdeid : innerData.rsvtdeid});
+                                    selectedRsvtdeids.push(innerData.rsvtdeid);
+                                    selectedAmt += innerData.amt;
+                                }
+                            }
+                            //$('#useDate').text(selectedDatesList + " ("+selectedDatesList.length+"박"+(selectedDatesList.length+1)+"일)" );
+                            $('#useDate').text(selectedDatesList + " (익일 체크아웃)" );
+                            $('#useAmt').text((selectedAmt==0)?"무료":addComma3(selectedAmt)+'원');
+                            $('#amt').val(selectedAmt);
+                            $('#rsvtdeid').val(JSON.stringify(selectedRsvtdeidList));
+                            $('#rsvtdeids').val(selectedRsvtdeids.join(","));
+                        }
+                    };
+                }
+            }
+        }
+
+        
+
         $(document).on('change', 'input[name="rsvtdeTime"]' , function () {
+        	selectedRsvtdeids=[];
+        	$('input[name="rsvtdeTime"]').each(function(){
+            	if($(this).prop('checked')){
+            		selectedRsvtdeids.push($(this).val());	
+                }
+            })
+            
             var strtTm = $(this).attr('data-strtTm');
             var endTm = $(this).attr('data-endTm');
+            
             if( $(this).prop('checked') ){
                 // 이용시간 선택 시
                 selectedAmt += parseInt($(this).attr('data-amt'));
                 selectedStrtTmTimeList.push(strtTm);
                 selectedEndTmTimeList.push($(this).attr('data-endTm'));
-                selectedRsvtdeidList.push({rsvtdeid : $(this).val()});
+                //selectedRsvtdeidList.push({rsvtdeid : $(this).val()});
+                
+                
             }else{
                 selectedAmt -= parseInt($(this).attr('data-amt'));
                 for( var i=0; i<selectedStrtTmTimeList.length; i++){
@@ -833,18 +818,16 @@
                         selectedStrtTmTimeList.splice(i, 1);
                     }
                 }
-
                 for( var i=0; i<selectedEndTmTimeList.length; i++){
                     if( selectedEndTmTimeList[i] === endTm ){
                         selectedEndTmTimeList.splice(i, 1);
                     }
-
-                    if( selectedRsvtdeidList[i].rsvtdeid == $(this).val() ){
-                        selectedRsvtdeidList.splice(i, 1);
-                    }
+                    //if( selectedRsvtdeidList[i].rsvtdeid == $(this).val() ){
+                    //    selectedRsvtdeidList.splice(i, 1);
+                    //}
                 }
             }
-
+            
             if( selectedStrtTmTimeList.length > 0 && selectedEndTmTimeList.length > 0 ){
                 var min = selectedStrtTmTimeList.reduce((prev,curr) => {
                     // 이전것과 비교해 더 작은 것 리턴
@@ -860,32 +843,29 @@
             }else{
                 $('#useTime').text('');
             }
-            
-            $('#rsvtdeid').val(JSON.stringify(selectedRsvtdeidList));
-            $('#useAmt').text(addComma3(selectedAmt)+'원');
+            let selectedAmtStr = (selectedAmt==0)?"무료":addComma3(selectedAmt)+'원';
+            $('#rsvtdeids').val(selectedRsvtdeids.join(","));
+            //$('#rsvtdeid').val(JSON.stringify(selectedRsvtdeidList));
+            $('#useAmt').text(selectedAmtStr);
             $('#amt').val(selectedAmt);
         });
 
-        $(document).on('click', '#submitData', function(){
+        function aplyResve(){
             if( checkData() ){
                 $('input[name="utztnPrps"]').val($('#utztnPrps').val());
                 envReqstView.moveToUpdate();
             }
-        })
-
+        }
         
-        
-        
-        
+        /**************************************************/
         //후기 리스트 호출
         function selectResveEnvRvwList() {
+            
             $('#list-area').empty();
             var formData = $('#searchForm').serializeArray()
             let param = [];
-
             param.push({name: 'fcltid', value: envReqstView.fcltid});
             formData = formData.concat(param);
-            console.log('asdf');
             if (displayWorkProgress(true)) {
                 $.ajax({
                     url: '/front/envReqst/selectResveEnvRvwList.do',
@@ -894,7 +874,6 @@
                     data: formData,
                     type: 'POST',
                     success: function (data) {
-                        console.log(data);
                         $("#list-area").html(makeListHtml(data.list));
                         if( data.list == null || data.list.length <= 0 ){
                             $("#pagination").html('');
@@ -911,7 +890,7 @@
         function makeListHtml(list) {
             var html = "";
             if (list == null || list.length <= 0) {
-                html += `<div class="nodata"><p><span class="icon icon-notice bg-black9"></span>등록된 후기가 없습니다.</p></div>`;
+                html += `<div class="nodata" style="border:none"><p><span class="icon icon-notice bg-black9"></span>등록된 후기가 없습니다.</p></div>`;
             } else {
                 list.forEach(function (item) {
                     html += '<h3 class="acc-title active">' +
@@ -926,11 +905,18 @@
                             '</h3>' +
                             '<div class="acc-panel active">' +
                               '<span class="blind">후기</span>' +
+                               '<div class="acc-content bg-white p0 fc-black6 fw-300">이용공간 : '+item.spceNm+'</div>'+
                                '<div class="acc-content bg-white p0 fc-black6 fw-300">'+item.rvwCn+'</div>'+
                             '</div>';
                 })
             }
             return html;
+        }
+
+        function returnToList(){
+            var f = document.forms.backToListForm ;
+            f.action = "/front/envReqst/envReqstList.html";
+            f.submit();
         }
         
         var swiper = new Swiper(".gallery-list", {
@@ -955,5 +941,18 @@
                 nextSlideMessage: '다음 슬라이드',
             },
         });
+
+        function getDatesStartToLast(startDate, lastDate) {
+            var regex = RegExp(/^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/);
+            if(!(regex.test(startDate) && regex.test(lastDate))) return "Not Date Format";
+            var result = [];
+            var curDate = new Date(startDate);
+            while(curDate <= new Date(lastDate)) {
+                result.push(curDate.toISOString().split("T")[0]);
+                curDate.setDate(curDate.getDate() + 1);
+            }
+            return result;
+        }
     </script>
+    
 </div>

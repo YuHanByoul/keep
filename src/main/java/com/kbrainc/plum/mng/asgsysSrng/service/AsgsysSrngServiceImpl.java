@@ -1623,7 +1623,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	assPrgrmVo = asgsysSrngDao.selectPrgrm(asgsysSrngVo);
 
     	//숙박여부,운영형태코드로 체크리스트 가 정해진경우
-    	if(null != asgsysSrngVo.getChkOperFrmCd() && "".equals(asgsysSrngVo.getChkOperFrmCd())){
+    	if(null != asgsysSrngVo.getChkOperFrmCd()){
     		chklstid = asgsysSrngDao.getCheckListId(asgsysSrngVo);
     	}
     	if(null != chklstid ) {
@@ -1705,7 +1705,6 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	int ret=0;
     	Integer chklstid=null;
     	AsgsysSrngVo assPrgrmVo = null;
-
     	//프로그램_일정 저장*/
     	List<PrgrmSchdlVo> schdLst = asgsysSrngVo.getPrgrmSchdlLst();
 
@@ -1714,7 +1713,8 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	assPrgrmVo = asgsysSrngDao.selectPrgrm(asgsysSrngVo);
 
     	//숙박여부,운영형태코드로 체크리스트 가 정해진경우
-    	if(null != asgsysSrngVo.getChkOperFrmCd() && "".equals(asgsysSrngVo.getChkOperFrmCd())){
+
+    	if(null != asgsysSrngVo.getChkOperFrmCd()){
     		chklstid = asgsysSrngDao.getCheckListId(asgsysSrngVo);
     	}
     	if(null != chklstid ) {
@@ -1737,7 +1737,6 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     			ret += asgsysSrngDao.insertPrgrmSchdl(prgrmSchdlVo);
     		}
     	}
-
 
     	List<EmrgcyActnPlanVo> planLst = asgsysSrngVo.getEmrgcyActnPlanLst();
 

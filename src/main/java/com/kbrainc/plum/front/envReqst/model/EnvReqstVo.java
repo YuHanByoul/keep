@@ -17,6 +17,7 @@ import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.ResCodeService;
 import com.kbrainc.plum.rte.util.CommonUtil;
+import com.kbrainc.plum.rte.util.StringUtil;
 
 import lombok.Data;
 
@@ -78,6 +79,9 @@ public class EnvReqstVo extends ParentRequestVo {
 
     /** 대표 이미지 파일아이디 */
     private Integer rprsImgFileid;
+    
+    /** 대표 이미지 파일 키 */
+    private String rprsImgFileKey;
 
     /** 상세 이미지 파일그룹아이디 */
     private Integer dtlImgFilegrpid;
@@ -309,12 +313,8 @@ public class EnvReqstVo extends ParentRequestVo {
         }
     }
     
-    
-    
-    
-    
-    
-    
-    
+    public void setAcnt(String acnt) throws Exception{
+        this.maskAcnt = StringUtil.maskingAccount(acnt); 
+    }
     
 }

@@ -68,6 +68,8 @@ public class CommonUtil {
     
     public static final String damoScpIniFilePath = applicationConfig.getString("damo.scp.iniFilePath");
     
+    public static final String anayticsKeyFilePath = applicationConfig.getString("analytics.keyFilePath");
+    
     /**
      * @Title : getBean
      * @Description : 특정 bean을 가져오는 함수

@@ -103,6 +103,12 @@
                                                 <th class="table-active text-center v-middle">자가진단 체크리스트</th>
                                                 <th colspan="3" class="table-active text-center v-middle">지원단 현장점검 결과</th>
                                             </tr>
+                                            <tr id="chkListTr" th:if='${chkList}' th:each='list :${chkList}'>
+                                                <th th:if='${list.sbmsnSeCd == "242101"}' colspan="2" class="bg-light text-center v-middle">[[${list.cdNm}]]</th>
+                                                <td th:id="selfScr" th:name="selfScr" th:if='${list.sbmsnSeCd == "242101"}' class="text-center v-middle">[[${list.scr}]]</td>
+                                                <td th:id="srngScr" th:name="srngScr" th:if='${list.sbmsnSeCd == "242102"}' colspan="3" class="text-center v-middle"><strong class="text-danger">[[${list.scr}]]</td>
+                                            </tr>
+                                            <!--
                                             <tr>
                                                 <th colspan="2" class="bg-light text-center v-middle">프로그램 운영예산</th>
                                                 <td class="text-center v-middle">5</td>
@@ -123,10 +129,11 @@
                                                 <td class="text-center v-middle">5</td>
                                                 <td colspan="3" class="text-center v-middle">5</td>
                                             </tr>
+                                             -->
                                             <tr>
                                                 <th colspan="2" class="table-active text-center v-middle">합계</th>
-                                                <td class="table-active text-center v-middle">30</td>
-                                                <td colspan="3" class="table-active text-center v-middle"><strong class="text-danger">28</strong></td>
+                                                <td class="table-active text-center v-middle" id="sumScrSelf" >30</td>
+                                                <td colspan="3" class="table-active text-center v-middle" id="sumScrSrng" ><strong class="text-danger"></strong></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -150,6 +157,27 @@ function popPrint(){
     var popupOption="scrollbars=yes,top=300, left=900,width=1000, height=600";
     vPrint = window.open(popUrl, "_blank", popupOption);
 }
+
+function setSumScr(){
+	var selfScrSum=0;
+	var srngScrSum=0;
+	$('[name^=selfScr]').each(function(idx, item){
+		var scr = Number(this.innerText);
+		selfScrSum+=scr;
+	});
+
+	$("#sumScrSelf").prop("innerText", selfScrSum);
+
+	$('[name^=srngScr]').each(function(idx, item){
+		var scr = Number(this.innerText);
+		srngScrSum+=scr;
+    });
+	$("#sumScrSrng").prop("innerText", srngScrSum);
+}
+
+$(function() {
+	setSumScr();
+});
 
 
 </script>

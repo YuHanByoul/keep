@@ -1,19 +1,19 @@
 package com.kbrainc.plum.front.envReqst.service;
 
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.kbrainc.plum.cmm.file.model.FileDao;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
-import com.kbrainc.plum.front.bbs.model.PstVo;
+import com.kbrainc.plum.front.envReqst.model.AplyRsvtdeVo;
 import com.kbrainc.plum.front.envReqst.model.EnvReqstDao;
 import com.kbrainc.plum.front.envReqst.model.EnvReqstVo;
-import com.kbrainc.plum.mng.spce.model.SpceRsvtdeVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 지역 환경교육센처 Service
@@ -124,8 +124,16 @@ public class EnvReqstServiceImpl extends PlumAbstractServiceImpl implements EnvR
      * @return EnvReqstVo
      */
     @Override
+    @Transactional
     public int insertResveEnvFclSpceAply(EnvReqstVo envReqstVo) throws Exception {
-        return envReqstDao.insertResveEnvFclSpceAply(envReqstVo);
+       
+        int resInt =0 ;
+        resInt+=envReqstDao.insertResveEnvFclSpceAply(envReqstVo);
+        // 2. 시설 예약신청
+        resInt+=envReqstDao.insertResveEnvFclAply(envReqstVo);
+        // 3. 공간 예약로그
+        resInt+=envReqstDao.insertResveEnvFclAplyHstry(envReqstVo);
+        return resInt;
     }
 
     /**
@@ -196,4 +204,18 @@ public class EnvReqstServiceImpl extends PlumAbstractServiceImpl implements EnvR
     public List<EnvReqstVo> selectSpceRsvtdeList(EnvReqstVo envReqstVo) throws Exception{
         return envReqstDao.selectSpceRsvtdeList(envReqstVo);
     }
+    
+    /**
+     * 신청 예약중 실시간 예약 및 운영중지 상태 유무 확인 목록 
+     *
+     * @Title       : selectReservedRsvtdeList
+     * @Description : 신청 예약중 실시간 예약 및 운영중지 상태 유무 확인 목록 
+     * @param envReqstVo EnvReqstVo EnvReqstVo 객체
+     * @return List<AplyRsvtdeVo> 
+     * @throws Exception 예외
+     */
+    public List<AplyRsvtdeVo> selectReservedRsvtdeList(EnvReqstVo envReqstVo) throws Exception{
+        return envReqstDao.selectReservedRsvtdeList(envReqstVo);
+    }
+    
 }

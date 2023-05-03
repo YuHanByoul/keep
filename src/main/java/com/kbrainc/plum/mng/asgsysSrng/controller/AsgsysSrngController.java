@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.error.controller.CustomErrorController;
 import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.cmm.file.service.FileServiceImpl;
 import com.kbrainc.plum.front.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.DsgnSrngFormVo;
@@ -38,6 +39,7 @@ import com.kbrainc.plum.mng.code.service.CodeServiceImpl;
 import com.kbrainc.plum.mng.inst.model.InstVo;
 import com.kbrainc.plum.mng.inst.service.InstServiceImpl;
 import com.kbrainc.plum.mng.member.model.MemberVo;
+import com.kbrainc.plum.mng.tchaid.service.TchaidService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
@@ -76,6 +78,12 @@ public class AsgsysSrngController {
 
 	@Autowired
 	private InstServiceImpl instService;
+
+	@Autowired
+    private TchaidService tchaidService;
+
+	@Autowired
+    private FileServiceImpl fileService;
 
 	/**********************************************************************************
      * 지정신청
@@ -635,6 +643,10 @@ public class AsgsysSrngController {
     	List<DsgnPrgrmVo> csltngList = asgsysSrngService.selectCsltngList(prgrmDstnctnInfo);
     	model.addAttribute("csltngList", csltngList );
 
+    	Map<String,String> map = new HashMap();
+        map.put("cdgrpid", "155");
+        model.addAttribute("sbjctCdLsit", tchaidService.selectTchaidCdList(map)  );
+
     	//교육주제코드목록
     	List<String> eduSbjctCdLst = new ArrayList<>();
     	String cdLst = prgrmDstnctnInfo.getEduSbjctCdLst();
@@ -1058,7 +1070,8 @@ public class AsgsysSrngController {
             FileVo fileVo = new FileVo();
             fileVo.setFilegrpid(sftyMngInfo.getFilegrpid());
 
-            model.addAttribute("mnlFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
+            //model.addAttribute("mnlFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
+            model.addAttribute("fileList", fileService.getFileList(fileVo));
 
         } else {
             model.addAttribute("mnlFileList", Collections.emptyList());

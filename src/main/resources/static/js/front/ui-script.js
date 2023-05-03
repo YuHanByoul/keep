@@ -78,7 +78,7 @@ var resizeWindow = {
 	},
 	toggleLayerResize : function () {
 		$(window).on('resize', function () {
-			const $toggleLayer = $('.toggle-layer');
+			const $toggleLayer = $('.ico-alarm.toggle-layer');
 			if ($toggleLayer.length) {
 				const $toggleLayerInner = $toggleLayer.find('.toggle-layer-inner');
 				const $layerLeft = $toggleLayer.offset().left; //layer position
@@ -615,11 +615,13 @@ const toggleActiveClass = {
 		par.addClass(CLASS_TOGGLE_ACTIVE);
 		$(this).find('.on').attr('aria-hidden','true');
 		$(this).find('.off').attr('aria-hidden','false');
+		$('body').css('overflow-x','hidden')
 	},
 	close : function () {
 		par.removeClass(CLASS_TOGGLE_ACTIVE);
 		$(this).find('.on').attr('aria-hidden','false');
 		$(this).find('.off').attr('aria-hidden','true');
+		$('body').removeAttr('style')
 	},
 	onClick : function () {
 		$(document).on('click', '.toggleTrigger', function (){
@@ -631,9 +633,6 @@ const toggleActiveClass = {
 					par.find('.toggleTrigger:not(.toggle-layer-close)').focus();
 				}
 			} else {
-				if (par.hasClass('toggle-layer')) {
-					toggleActiveClass.onClickToggleLayer();
-				}
 				if (par.siblings('.toggleParent').length) {
 					par.siblings('.toggleParent').each(function () {
 						$(this).removeClass('active');
@@ -642,24 +641,40 @@ const toggleActiveClass = {
 				if (par.hasClass('pigeon')) {
 					$('body').find('.pigeon.active').removeClass('active');
 				}
+				if (par.hasClass('toggleGroup')) {
+					$('body').find('.toggleGroup.active').removeClass('active');
+				}
 				toggleActiveClass.open();
+				if (par.hasClass('toggle-layer')) {
+					toggleActiveClass.onClickToggleLayer();
+				}
 			}
 		})
 	},
 
 	onClickToggleLayer : function () {
-		const $toggleLayer = $('.toggle-layer');
+		const $toggleLayer = $('.toggle-layer.active');
 		const $toggleLayerInner = $toggleLayer.find('.toggle-layer-inner');
 		const $layerLeft = $toggleLayer.offset().left; //layer position
 		const $layerWidth = $toggleLayer.outerWidth() / 2; //layer width (center)
 		const $layerInnerWIdth = $toggleLayerInner.outerWidth() / 2; //layerpopup (center)
 		$windowWidth = $(window).outerWidth();
 		const overflowRightPosition = Math.ceil($windowWidth - ($layerLeft + $layerWidth +  $layerInnerWIdth)); //layer position + layer width + layerpopup 
+		const overflowLefttPosition = Math.ceil($layerLeft + $layerWidth - ($layerInnerWIdth)); //layer position + layer width + layerpopup 
 		if (overflowRightPosition < 0) {
 			$toggleLayerInner.css('margin-left', overflowRightPosition)
 		} else {
-			$toggleLayerInner.css('margin-left','');
+			if (overflowLefttPosition < 0) {
+				$toggleLayerInner.css('margin-left', overflowLefttPosition * -1)
+			} else {
+				$toggleLayerInner.css('margin-left',"");
+			}
 		}
+		
+		// console.log('$windowWidth ' + $windowWidth)
+		// console.log('$layerLeft ' + $layerLeft)
+		// console.log('$layerWidth ' + $layerWidth)
+		// console.log('$layerInnerWIdth ' + $layerInnerWIdth)
 	},
 	
 }

@@ -440,7 +440,6 @@ public class DsgnPrgrmController {
 		asgsysSrngVo.setPrgrmSchdlLst(dsgnPrgrmVo.getPrgrmSchdlLst());
 		asgsysSrngVo.setEmrgcyActnPlanLst(dsgnPrgrmVo.getEmrgcyActnPlanLst());
 
-		//retVal+=dsgnPrgrmService.updateAssPrgrm(dsgnPrgrmVo);
 		retVal+=asgsysSrngService.updatePrgrmDstnctn(asgsysSrngVo);
 
 		if (retVal > 0) {

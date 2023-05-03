@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="ehcache.xsd"
+    updateCheck="false">
+    
+    <cacheManagerPeerProviderFactory
+class="net.sf.ehcache.distribution.jgroups.JGroupsCacheManagerPeerProviderFactory"
+properties="connect=TCP(bind_addr=0.0.0.0;bind_port=9000):
+TCPPING(initial_hosts=100.100.26.42[9000],100.100.26.112[9000];port_range=10;timeout=3000;num_initial_members=2):
+VERIFY_SUSPECT(timeout=1500):
+UNICAST2:
+MERGE3(min_interval=10000;max_interval=30000):
+pbcast.NAKACK2(use_mcast_xmit=false;use_mcast_xmit_req=false;discard_delivered_msgs=false):
+pbcast.STABLE(stability_delay=1000;desired_avg_gossip=50000;max_bytes=400000):
+pbcast.GMS(join_timeout=3000;print_local_addr=true;view_bundling=true,join_retry_timeout=2000):
+pbcast.STATE_TRANSFER()"
+propertySeparator="::" />
+   
+    <defaultCache eternal="true" maxElementsInMemory="100"
+        overflowToDisk="false" diskPersistent="false" timeToIdleSeconds="0"
+        memoryStoreEvictionPolicy="LRU">       
+
+      <cacheEventListenerFactory
+            class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"
+            properties="replicateAsynchronously=true, replicatePuts=true,
+            replicateUpdates=true, replicateUpdatesViaCopy=false,
+            replicateRemovals=true" />
+    </defaultCache>
+    
+    <cache name="codeMap" eternal="true" maxElementsInMemory="1000"
+        overflowToDisk="false" diskPersistent="false" timeToIdleSeconds="0"
+        memoryStoreEvictionPolicy="LRU">       
+
+      <cacheEventListenerFactory
+            class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"
+            properties="replicateAsynchronously=true, replicatePuts=true,
+            replicateUpdates=true, replicateUpdatesViaCopy=false,
+            replicateRemovals=true" />   
+       
+      <bootstrapCacheLoaderFactory class="com.kbrainc.plum.rte.cache.MyBootstrapCacheLoaderFactory" />  
+    </cache>
+    
+    <cache name="menuMap" eternal="true" maxElementsInMemory="10"
+        overflowToDisk="false" diskPersistent="false" timeToIdleSeconds="0"
+        memoryStoreEvictionPolicy="LRU">       
+
+      <cacheEventListenerFactory
+            class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"
+            properties="replicateAsynchronously=true, replicatePuts=true,
+            replicateUpdates=true, replicateUpdatesViaCopy=false,
+            replicateRemovals=true" />   
+       
+      <bootstrapCacheLoaderFactory class="com.kbrainc.plum.rte.cache.MyBootstrapCacheLoaderFactory" />  
+    </cache>
+    
+    <cache name="authMap" eternal="true" maxElementsInMemory="1"
+        overflowToDisk="false" diskPersistent="false" timeToIdleSeconds="0"
+        memoryStoreEvictionPolicy="LRU">       
+
+      <cacheEventListenerFactory
+            class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"
+            properties="replicateAsynchronously=true, replicatePuts=true,
+            replicateUpdates=true, replicateUpdatesViaCopy=false,
+            replicateRemovals=true" />   
+       
+      <bootstrapCacheLoaderFactory class="com.kbrainc.plum.rte.cache.MyBootstrapCacheLoaderFactory" />  
+    </cache>
+
+</ehcache>

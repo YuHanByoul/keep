@@ -43,7 +43,6 @@
             </ol>
         </div>
 
-
         <div class="row row-section">
             <div class="col col-small">
                 <div class="sticky-navigation">
@@ -66,7 +65,7 @@
                         <div class="btn-wrap">
                             <div class="center">
                                 <button type="button" class="btn-large btn-gray" onclick="doSave()">중간저장</button>
-                                <button type="button" class="btn-medium btn-green" onclick="goNext()">다음</button>
+                                <button type="button" class="btn-large btn-green" onclick="goNext()">다음</button>
                             </div>
                         </div>
                     </div>
@@ -99,19 +98,21 @@
                                             <span class="btn-medium btn-gray">파일선택</span>
                                         </label>
                                         <ul id="multipleFileUploadSuccess1">
-                                            <th:block th:if="${fileList ne null}" th:each="file : ${fileList}">
-                                                <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}" th:id="${file.fileid}">
-                                                <span class="name">
-                                                    <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
-                                                       th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
-                                                        [[${file.orginlFileNm}]]
-                                                    </a>
-                                                </span>
-                                                    <button type="button" class="file-delete" title="삭제" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
-                                                            th:onclick="|javascript:fn_deleteFileList(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
-                                                        <span class="icon icon-circle-close"></span>
-                                                    </button>
-                                                </li>
+                                            <th:block th:if="${mnlFileList != null}">
+                                                <th:block th:each="file : ${mnlFileList}">
+                                                    <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}" th:id="${file.fileid}" th:if='${file.fileid!=0}'>
+                                                        <span class="name">
+                                                            <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                                               th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                                [[${file.orginlFileNm}]]
+                                                            </a>
+                                                        </span>
+                                                        <button th:if='${file.fileid!=null&&file.fileid!=0}'  type="button" class="file-delete" title="삭제" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                                                th:onclick="|javascript:fn_deleteFileList(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                            <span class="icon icon-circle-close"></span>
+                                                        </button>
+                                                    </li>
+                                                </th:block>
                                             </th:block>
                                         </ul>
                                         <input type="hidden" id="filegrpid" name="filegrpid" th:value="${(aplyInfo.filegrpid == '' or aplyInfo.filegrpid == null) ? 0 : aplyInfo.filegrpid}"/>
@@ -398,6 +399,8 @@
             formData.append("filegrpid", $("#"+trgtGrpid).val());
             formData.append("filegrpNm", "asgsysSrng_file");
 
+            $("#"+this.id).val("");
+
             if(uploadFileCnt > 0){
                 $.ajax({
                     url : '/uploadMultipleFiles.do',
@@ -440,7 +443,8 @@
         function fn_deleteFileList(fileid, fileIdntfcKey){
             if(!confirm("파일을 삭제하시겠습니까?")){return;}
             fn_deleteFile(fileid, fileIdntfcKey);
-            $("#"+fileid).remove();
+
+            $("#fileid"+fileid).remove();
         }
 
         // 파일삭제
