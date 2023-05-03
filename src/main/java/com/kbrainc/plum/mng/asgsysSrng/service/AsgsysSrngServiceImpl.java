@@ -369,7 +369,9 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 			cell.setCellStyle(titlestyle);
 		}
 
-		list = asgsysSrngDao.selectSprtgrpSrngListExcelDown(asgsysSrngVo);    //지원단심사 엑셀 다운 조회
+		//list = asgsysSrngDao.selectSprtgrpSrngListExcelDown(asgsysSrngVo);
+		list = asgsysSrngDao.gnrlrvwExcelDownList(asgsysSrngVo);    //지원단 총평 엑셀 다운 조회
+
 
 		if(list != null && list.size() > 0){
 			int cellnum = 0;
