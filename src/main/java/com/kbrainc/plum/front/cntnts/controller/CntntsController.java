@@ -100,14 +100,14 @@ public class CntntsController {
         result =  cntntsService.selectCntntsInfo(cntntsVo);
         
         if(result.getPlySecnd() != null) {
-            if(result.getPlySecnd() >= 3600) {
-                result.setPlyHour((result.getPlySecnd() - (result.getPlySecnd() % 3600)) / 3600);
-                result.setPlyMinute((result.getPlySecnd() - (result.getPlySecnd() % 60)) / 60 - (result.getPlyHour() * 60));
-                result.setPlySecnd(result.getPlySecnd() - (result.getPlyMinute() * 60) - (result.getPlyHour() * 3600));
+            if(Integer.parseInt(result.getPlySecnd()) >= 3600) {
+                result.setPlyHour((Integer.parseInt(result.getPlySecnd()) - (Integer.parseInt(result.getPlySecnd()) % 3600)) / 3600);
+                result.setPlyMinute((Integer.parseInt(result.getPlySecnd()) - (Integer.parseInt(result.getPlySecnd()) % 60)) / 60 - (result.getPlyHour() * 60));
+                result.setPlySecnd(Integer.toString(Integer.parseInt(result.getPlySecnd()) - (result.getPlyMinute() * 60) - (result.getPlyHour() * 3600)));
             }else {
                 result.setPlyHour(0);
-                result.setPlyMinute((result.getPlySecnd() - (result.getPlySecnd() % 60)) / 60);
-                result.setPlySecnd(result.getPlySecnd() - (result.getPlyMinute() * 60));
+                result.setPlyMinute((Integer.parseInt(result.getPlySecnd()) - (Integer.parseInt(result.getPlySecnd()) % 60)) / 60);
+                result.setPlySecnd(Integer.toString(Integer.parseInt(result.getPlySecnd()) - (result.getPlyMinute() * 60)));
             }
         }
         
