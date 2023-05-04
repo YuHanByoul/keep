@@ -71,6 +71,9 @@ public class EnveduVo extends ParentRequestVo {
     private Date regDt;
     /** 등록자아이디 */
     private int rgtrid;
+    /** 메인노출 여부*/
+    private char expsrYn;
+    
     
     /** 연-월*/
     private String yrMm;
