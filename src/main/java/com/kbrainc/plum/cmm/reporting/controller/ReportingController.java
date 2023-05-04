@@ -23,6 +23,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class ReportingController {
     
+    @RequestMapping("/cmm/reporting/sample_canvas.html")
+    public String sample() throws Exception {
+        
+        return "cmm/reporting/sample_canvas.html";
+    }
+    
     /**
     * 우수프로그램 지정제사업 > 지정제 운영 관리 > 지정 프로그램 > 상세 > 지정정보 tab > 지정프로그램 개요보기 팝업
     *
