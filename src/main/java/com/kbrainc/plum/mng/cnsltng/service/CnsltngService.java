@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.cnsltng.model.CnsltngExprtGrpVo;
 import com.kbrainc.plum.mng.cnsltng.model.CnsltngExprtVo;
@@ -153,6 +154,16 @@ public interface CnsltngService {
      * @throws Exception 예외
      */
     public int updateCnsltng(CnsltngVo cnsltngVo) throws Exception;
+    /**
+     * 컨설팅 상태 정보 수정(알림등 발송 추가 )  
+     *
+     * @Title       : updateCnsltngInfo 
+     * @Description : 컨설팅 상태 정보 수정
+     * @param CnsltngVo CnsltngVo객체
+     * @return int
+     * @throws Exception 예외
+     */
+    public int updateCnsltngInfo(CnsltngVo cnsltngVo) throws Exception;
     /**
      * 컨설턴트 엑셀 리스트 호출 
      *

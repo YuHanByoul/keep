@@ -58,6 +58,8 @@ public class CommonUtil {
     
     public static String portalUrl = applicationConfig.getString("system.portal.url");
     
+    public static String adminUrl = applicationConfig.getString("system.admin.url");
+    
     public static String kakaoJavascriptKey = applicationConfig.getString("kakao.javascript.key"); 
     
     public static String serverCookieDomain = applicationConfig.getString("server.servlet.session.cookie.domain");
