@@ -173,17 +173,18 @@
                                         <td class="text-center v-middle">[[${item.idntyMttr}]]</td>
                                         <td class="text-center v-middle">[[${item.altm}]]</td>
                                         <td class="text-center v-middle">
-                                        <input th:if     ="${item.chklstSeCd != ''}" type="number" class="text-center v-middle form-control form-control-sm" th:max="${item.altm}" th:name="${'scr'+ i.count}" th:id="${'scr'+ i.count}" placeholder="0" th:value="${item.chkLstScr}" disabled/>
-                                        <input th:unless ="${item.chklstSeCd != ''}" type="number" class="text-center v-middle form-control form-control-sm" th:max="${item.altm}"th:name="${'scr'+ i.count}" th:id="${'scr'+ i.count}" placeholder="0" th:value="${item.scr}" />
-                                        <input type="hidden" th:id="${'srngData' + i.count}"
-                                                             th:data-formid     = "${item.formid    }"
-                                                             th:data-qitemid    = "${item.qitemid   }"
-                                                             th:data-dsgncrtrCd = "${item.dsgncrtrCd}"
-                                                             th:data-idntyMttr  = "${item.idntyMttr }"
-                                                             th:data-chklstSeCd = "${item.chklstSeCd}"
-                                                             th:data-scr        = "${item.scr       }"
-                                                             th:data-ordr       = "${item.ordr      }"
-                                                             th:data-altm       = "${item.altm      }" >
+                                            <input th:if     ="${item.chklstSeCd != ''}" type="number" class="text-center v-middle form-control form-control-sm" th:max="${item.altm}" th:name="${'scr'+ i.count}" th:id="${'scr'+ i.count}" placeholder="0" th:value="${item.chkLstScr}" disabled/>
+                                            <input th:unless ="${item.chklstSeCd != ''}" type="number" class="text-center v-middle form-control form-control-sm" th:max="${item.altm}"th:name="${'scr'+ i.count}" th:id="${'scr'+ i.count}" placeholder="0" th:value="${item.scr}" />
+                                            <input type="hidden" th:id="${'srngData' + i.count}"
+                                                                 th:data-formid     = "${item.formid    }"
+                                                                 th:data-qitemid    = "${item.qitemid   }"
+                                                                 th:data-dsgncrtrCd = "${item.dsgncrtrCd}"
+                                                                 th:data-idntyMttr  = "${item.idntyMttr }"
+                                                                 th:data-chklstSeCd = "${item.chklstSeCd}"
+                                                                 th:data-scr        = "${item.scr       }"
+                                                                 th:data-ordr       = "${item.ordr      }"
+                                                                 th:data-altm       = "${item.altm      }" >
+                                        </td>
                                     </tr>
                                 </th:block>
                             </th:block>
@@ -211,30 +212,11 @@
 		</div>
     </div>
 </form>
-<script type="text/javascript">
+<script th:inline="javascript">
 
-$("[id^=scr]").focusout("change",function(){
-
-	var sumScore=0;
-
-	$("[id^=scr]").each(function(idx,item) {
-
-		var altm = Number($("#srngData"+(idx+1)).attr("data-altm"));
-
-		if(item.value > altm){
-
-			$("#scr"+(idx+1)).val(altm);
-		}
-		sumScore += Number(item.value);
-	})
-
-	$("#sumScr").prop("innerText",sumScore)
-
-})
+var ansList = /*[[${ansList}]]*/null;
 
 function fn_insertJdgsSrngInfo() {
-
-
 
 	if(!$("#jdgsSrngInfoFrm").valid())return;
 	if(!confirm("저장하시겠습니까?")) return;
@@ -262,6 +244,7 @@ function fn_insertJdgsSrngInfo() {
     param["scr"] = Number($("#sumScr").prop("innerText"));
 
     $("[id^=srngData]").each(function(index, item) {
+
         if(index==0) param["formid"] = $(item).attr("data-formid");
     	param["dsgnSrngFormLst[" + index + "].prgrmid"    ] = $("#prgrmid").val();    //프로그램 id (key)
     	param["dsgnSrngFormLst[" + index + "].sbmsnid"    ] = $("#sbmsnid").val();    //프로그램 id (key)
@@ -269,10 +252,12 @@ function fn_insertJdgsSrngInfo() {
     	param["dsgnSrngFormLst[" + index + "].dsgncrtrCd" ] = $(item).attr("data-dsgncrtrCd" );
     	param["dsgnSrngFormLst[" + index + "].idntyMttr"  ] = $(item).attr("data-idntyMttr"  );
     	param["dsgnSrngFormLst[" + index + "].chklstSeCd" ] = $(item).attr("data-chklstSeCd" );
-    	param["dsgnSrngFormLst[" + index + "].scr"        ] = $(item).attr("data-scr"        );
+//     	param["dsgnSrngFormLst[" + index + "].scr"        ] = $(item).attr("data-scr"        );
+    	param["dsgnSrngFormLst[" + index + "].scr"        ] = $(item).parent().find('[id^=scr]').val();
     	param["dsgnSrngFormLst[" + index + "].ordr"       ] = $(item).attr("data-ordr"       );
 
     });
+
 
 	if(displayWorkProgress()){
         $.ajax({
@@ -296,6 +281,36 @@ function fn_insertJdgsSrngInfo() {
     }
 }
 
+function setAns(){
+	$("#jdgsSrngInfoFrm [id^=srngData]").each(function(index, item){
+
+        for(var idx in ansList){
+            if(ansList[idx].qitemid == $(this).attr('data-qitemid')) {
+                $(item).parent().find('[id^=scr]').val(ansList[idx].scr);
+            }
+        }
+    });
+};
+
+function setSumScr(){
+	var vSumScr = 0;
+    var vSumAltm = 0;
+    $("#jdgsSrngInfoFrm [id^=srngData]").each(function(index, item){
+
+        for(var idx in ansList){
+            if(ansList[idx].qitemid == $(this).attr('data-qitemid')) {
+                $(item).parent().find('[id^=scr]').val(ansList[idx].scr);
+            }
+        }
+
+        vSumScr  += Number($(item).parent().find('[id^=scr]').val());
+        vSumAltm += Number($("#"+item.id).attr("data-altm"))
+    });
+
+    $("#sumScr").prop("innerText", vSumScr)
+    $("#sumAltm").prop("innerText",vSumAltm)
+}
+
 function fn_jdgsSrngInfoFrmInit(){
 	if($("#loginUserid").val() == $("#jdgsid").val()){
 		$("#saveBtn").prop("disabled",false);
@@ -307,22 +322,31 @@ function fn_jdgsSrngInfoFrmInit(){
     $("#jdgsSrngInfoFrm [id^=styYn]").prop("disabled", true);
     $("#jdgsSrngInfoFrm [id^=sftyMngYn]").prop("disabled", true);
 
-
-    var vSumScr = 0;
-    var vSumAltm = 0;
-    $("#jdgsSrngInfoFrm [id^=srngData]").each(function(index, item){
-
-        vSumScr  += Number($("#"+item.id).attr("data-scr"))
-        vSumAltm += Number($("#"+item.id).attr("data-altm"))
-    });
-
-    $("#sumScr").prop("innerText", vSumScr)
-    $("#sumAltm").prop("innerText",vSumAltm)
+	setAns();
+	setSumScr();
 }
-
 
 $(function(){
 	fn_jdgsSrngInfoFrmInit();
+
+	$("[id^=scr]").focusout("change",function(){
+
+	    var sumScore=0;
+
+	    $("[id^=scr]").each(function(idx,item) {
+
+	        var altm = Number($("#srngData"+(idx+1)).attr("data-altm"));
+
+	        if(item.value > altm){
+
+	            $("#scr"+(idx+1)).val(altm);
+	        }
+	        sumScore += Number(item.value);
+	    })
+
+	    $("#sumScr").prop("innerText",sumScore)
+
+	});
 
     var validator = $("#jdgsSrngInfoFrm").validate({
         rules: {
