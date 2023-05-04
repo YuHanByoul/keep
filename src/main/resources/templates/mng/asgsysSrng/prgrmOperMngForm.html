@@ -11,9 +11,9 @@
 	            <table class="table table-framed table-bordered">
 	                <thead>
 	                <tr class="border-bottom-inverse">
-	                    <th class="text-center">참가비 수입</th>
-	                    <th class="text-center">기타 (후원)</th>
-	                    <th class="text-center">자부담</th>
+	                    <th class="text-center required">참가비 수입</th>
+	                    <th class="text-center required">기타 (후원)</th>
+	                    <th class="text-center required">자부담</th>
 	                </tr>
 	                </thead>
 	                <tbody>
@@ -21,7 +21,7 @@
 	                        <td>
 	                            <div class="col-12 row m-0 align-items-center justify-content-center">
 	                                <div class="col-11 p-l-0 p-r-0">
-	                                    <input type="text" class="form-control form-control-sm" name="etrfeeIncm" id="etrfeeIncm" placeholder="" th:value="${prgrmOperMngInfo.etrfeeIncm}" onchange="btgSum()">
+	                                    <input type="Number" class="form-control form-control-sm" maxlength="3" name="etrfeeIncm" id="etrfeeIncm" placeholder="" th:value="${prgrmOperMngInfo.etrfeeIncm}" onchange="btgSum()">
 	                                </div>
 									<div class="col-auto p-l-5 p-r-0">%</div>
 								</div>
@@ -29,7 +29,7 @@
 	                        <td>
 	                            <div class="col-12 row m-0 align-items-center justify-content-center">
 	                                <div class="col-11 p-l-0 p-r-0">
-	                                    <input type="text" class="form-control form-control-sm" name="etcIncm" id="etcIncm" placeholder="" th:value="${prgrmOperMngInfo.etcIncm}" onchange="btgSum()">
+	                                    <input type="Number" class="form-control form-control-sm" maxlength="3" name="etcIncm" id="etcIncm" placeholder="" th:value="${prgrmOperMngInfo.etcIncm}" onchange="btgSum()">
 	                                </div>
 									<div class="col-auto p-l-5 p-r-0">%</div>
 								</div>
@@ -37,7 +37,7 @@
 	                        <td>
 	                            <div class="col-12 row m-0 align-items-center justify-content-center">
 	                                <div class="col-11 p-l-0 p-r-0">
-	                                    <input type="text" class="form-control form-control-sm" name="slfpy" id="slfpy" placeholder="" th:value="${prgrmOperMngInfo.slfpy}" onchange="btgSum()">
+	                                    <input type="text" class="form-control form-control-sm" maxlength="3" name="slfpy" id="slfpy" placeholder="" th:value="${prgrmOperMngInfo.slfpy}" onchange="btgSum()">
 	                                </div>
 									<div class="col-auto p-l-5 p-r-0">%</div>
 								</div>
@@ -69,14 +69,12 @@
 
     	                <tr th:unless="${#lists.isEmpty(expndArtclList)}" th:each="item ,i: ${expndArtclList}" th:id="${'expndTr' + i.count}">
     	                    <td>
-                                <input type="text" class="form-control form-control-sm" name="expndArtcl" th:id="${ 'expndArtcl' + i.count }" placeholder="지출 항목" th:value="${item.expndArtcl}"/>
+                                <input type="text" class="form-control form-control-sm" maxlength="60" name="expndArtcl" th:id="${ 'expndArtcl' + i.count }" placeholder="지출 항목" th:value="${item.expndArtcl}"/>
     	                    </td>
     	                    <td>
     	                        <div class="col-12 row m-0 align-items-center justify-content-center">
     	                            <div class="col-11 p-l-0 p-r-0">
-                                        <input type="text" class="form-control form-control-sm" name="amt" th:id="${ 'amt' + i.count }" placeholder="금액"
-                                            th:value="${#numbers.formatInteger(item.amt, 0,'COMMA')}"/>
-
+                                        <input type="text" class="form-control form-control-sm" name="amt" th:id="${ 'amt' + i.count }" placeholder="금액" th:value="${#numbers.formatInteger(item.amt, 0,'COMMA')}"/>
     	                            </div>
                                         <div class="col-auto p-l-5 p-r-0">원</div>
                                 </div>
@@ -179,7 +177,7 @@
 	                    <input type="text" class="form-control form-control-sm" name="operBfrPrmtnMthd" id="operBfrPrmtnMthd" placeholder="" th:value="${prgrmOperMngInfo.operBfrPrmtnMthd}">
 	                 </td>
 	                </tr>
-	             <tr>
+                    <tr>
 	                    <td class="v-middle text-center">운영중</td>
 	                    <td>
 	                        <input type="text" class="form-control form-control-sm" name="operMdlPrmtnSess" id="operMdlPrmtnSess" placeholder="" th:value="${prgrmOperMngInfo.operMdlPrmtnSess}">
@@ -230,7 +228,7 @@
 	    </div>
 	</div>
 	<div class="card-block-small">
-	    <button type="button" class="btn btn-inverse m-r-5" onclick="gridHelper1.resetListContent()">목록</button>
+	    <button type="button" class="btn btn-inverse m-r-5" onclick="gridHelper1.toggleContent()">목록</button>
         <button type="button" class="btn btn-primary m-r-5" onclick="fn_savePrgrmOperBtn()">저장</button>
         <button type="button" class="btn btn-primary"       onclick="fn_prgrmOperNextbtn()">다음</button>
 	</div>
@@ -243,7 +241,6 @@
     var vTchaidFcltList = /*[[${tchaidFcltList}]]*/null;
     var vIdx = vTchaidFcltList.length;
 
-
     function btgSum(){
 
     	var  vEtrfeeIncm = 0;
@@ -254,12 +251,18 @@
     	vEtcIncm    = isNaN($("#etcIncm").val()   ) ? 0 : $("#etcIncm").val()   ;
     	vSlfpy      = isNaN($("#slfpy").val()     ) ? 0 : $("#slfpy").val()     ;
 
+    	vEtrfeeIncm = vEtrfeeIncm > 100 ? 100: vEtrfeeIncm;
+        vEtcIncm    = vEtcIncm    > 100 ? 100: vEtcIncm   ;
+        vSlfpy      = vSlfpy      > 100 ? 100: vSlfpy     ;
+
+        $("#etrfeeIncm").val(vEtrfeeIncm);
+        $("#etcIncm").val(vEtcIncm);
+        $("#slfpy").val(vSlfpy);
 
     	vBtgSum = Number(vEtrfeeIncm) + Number(vEtcIncm) + Number(vSlfpy);
 
     	$("#btgSum")[0].textContent = vBtgSum +"%"
     }
-
 
     function addExpnd(btnId){
 
@@ -268,7 +271,7 @@
     	var vHtml = "";
         vHtml += "<tr id='expndTr"+trIdx+"'>";
         vHtml += "    <td>"
-        vHtml += "        <input type='text' class='form-control form-control-sm' name='expndArtcl' id='expndArtcl"+trIdx+"' placeholder='지출 항목' value=''/>";
+        vHtml += "        <input type='text' class='form-control form-control-sm' maxlength='60' name='expndArtcl' id='expndArtcl"+trIdx+"' placeholder='지출 항목' value=''/>";
         vHtml += "    </td>";
         vHtml += "    <td>";
         vHtml += "        <div class='col-12 row m-0 align-items-center justify-content-center'>";
@@ -295,18 +298,18 @@
     	var vHtml ="";
     	vHtml += "<tr id ='fcltTr"+trIdx+"'>                                                                                                                                           ";
     	vHtml += "    <td>                                                                                                                                                             ";
-    	vHtml += "        <input type='text' class='form-control form-control-sm' name='${'dtlPrgrmNm"+trIdx+"' id='${'dtlPrgrmNm"+trIdx+"' placeholder='세부 프로그램명' value=''>    ";
+    	vHtml += "        <input type='text' class='form-control form-control-sm' maxlength='60' name='${'dtlPrgrmNm"+trIdx+"' id='${'dtlPrgrmNm"+trIdx+"' placeholder='세부 프로그램명' value=''>    ";
     	vHtml += "    </td>                                                                                                                                                            ";
     	vHtml += "    <td>                                                                                                                                                             ";
-    	vHtml += "        <input type='text' class='form-control form-control-sm' name='${'eduPlc"+trIdx+"' id='${'eduPlc"+trIdx+"' placeholder='교육 장소' value=''>                  ";
+    	vHtml += "        <input type='text' class='form-control form-control-sm' maxlength='60' name='${'eduPlc"+trIdx+"' id='${'eduPlc"+trIdx+"' placeholder='교육 장소' value=''>                  ";
     	vHtml += "    </td>                                                                                                                                                            ";
     	vHtml += "    <td>                                                                                                                                                             ";
-    	vHtml += "        <input type='text' class='form-control form-control-sm' name='${'tchaid"+trIdx+"' id='${'tchaid"+trIdx+"' placeholder='교구 및 매체 등' value=''>            ";
+    	vHtml += "        <input type='text' class='form-control form-control-sm' maxlength='60' name='${'tchaid"+trIdx+"' id='${'tchaid"+trIdx+"' placeholder='교구 및 매체 등' value=''>            ";
     	vHtml += "    </td>                                                                                                                                                            ";
     	vHtml += "    <td>                                                                                                                                                             ";
     	vHtml += "        <div class='col-12 row m-0 align-items-center justify-content-center'>                                                                                       ";
     	vHtml += "            <div class='col-11 p-l-0 p-r-0'>                                                                                                                         ";
-    	vHtml += "                <input type='text' class='form-control form-control-sm' name='${'qnty"+trIdx+"' id='${'qnty"+trIdx+"' placeholder='수량(개) 또는 분량 (장)' value=''>";
+    	vHtml += "                <input type='text' class='form-control form-control-sm' maxlength='10' name='${'qnty"+trIdx+"' id='${'qnty"+trIdx+"' placeholder='수량(개) 또는 분량 (장)' value=''>";
     	vHtml += "            </div>                                                                                                                                                   ";
     	vHtml += "            <div class='col-auto p-l-5 p-r-0'>                                                                                                                       ";
     	vHtml += "                개/장                                                                                                                                                ";
@@ -340,6 +343,13 @@
         var operMngKey = $("#operMngPrgrmid").val();
         var vUrl = "/mng/asgsysSrng/";
 
+
+        if(!$("#prgrmOperMngFrm").valid()) return false;
+
+//         $("[id^=fcltTr]").each(function(index, item) {
+
+//         });
+
         if(!confirm("저장 하시겠습니까?")){return;}
 
         if(operMngKey != null && operMngKey != 0 && operMngKey != ""){
@@ -369,8 +379,7 @@
         $("[id^=eduPlc]"    ).each(function(index, item) { param["tchaidFcltLst[" + index + "].eduPlc"]     = item.value; });   //교육 장소
         $("[id^=tchaid]"    ).each(function(index, item) { param["tchaidFcltLst[" + index + "].tchaid"]     = item.value; });   //교구
         $("[id^=qnty]"      ).each(function(index, item) { param["tchaidFcltLst[" + index + "].qnty"]       = item.value; });   //수량
-// debugger;
-// return;
+
         $.ajax({
             url : vUrl ,
             type: 'POST',
@@ -396,20 +405,56 @@
         selectJdsgTab("jdsgTab3Link");
     }
 
-    $("input:checkbox").on('click', function() {
-
-        if ( $(this).prop('checked') ) {
-          $(this).parent().addClass("selected");
-        } else {
-          $(this).parent().removeClass("selected");
-        }
-      });
-
-
 
     function initPrgrmOperMng(){
-
     }
-    initPrgrmOperMng();
+
+
+    $(function() {
+    	initPrgrmOperMng();
+
+    	var validator = $('#prgrmOperMngFrm').validate({
+            rules: {
+                  etrfeeIncm        : {maxlength: 12}
+                , etcIncm           : {maxlength: 12}
+                , slfpy             : {maxlength: 12}
+                , operBfrPrmtnSess  : {maxlength: 60}
+                , operBfrPrmtnMthd  : {maxlength: 100}
+                , operMdlPrmtnSess  : {maxlength: 60}
+                , operMdlPrmtnMthd  : {maxlength: 100}
+                , operAftrPrmtnSess : {maxlength: 60}
+                , operAftrPrmtnMthd : {maxlength: 100}
+                , etcCn             : {maxlength: 100}
+
+            },
+            messages: {
+                  etrfeeIncm        : {maxlength: "12"}
+                , etcIncm           : {maxlength: "12"}
+                , slfpy             : {maxlength: "12"}
+                , operBfrPrmtnSess  : {maxlength: "운영전 홍보시기는 60자 이하 여야 합니다."}
+                , operBfrPrmtnMthd  : {maxlength: "운영전 홍보방법는 100자 이하 여야 합니다."}
+                , operMdlPrmtnSess  : {maxlength: "운영중 홍보시기는 60자 이하 여야 합니다."}
+                , operMdlPrmtnMthd  : {maxlength: "운영중 홍보방법는 100자 이하 여야 합니다."}
+                , operAftrPrmtnSess : {maxlength: "운영후 홍보시기는 60자 이하 여야 합니다."}
+                , operAftrPrmtnMthd : {maxlength: "운영후 홍보방법는 100자 이하 여야 합니다."}
+                , etcCn             : {maxlength: "기타내용은 100자 이하 여야 합니다."}
+            }
+        });
+
+	   $("input:checkbox").on('click', function() {
+
+	        if ( $(this).prop('checked') ) {
+	          $(this).parent().addClass("selected");
+	        } else {
+	          $(this).parent().removeClass("selected");
+	        }
+	   });
+
+	   $("[id^=expndTr] input[name=amt]").on('change', function() {
+		    str = isNaN(this.value) ? '' : String(this.value);
+	        this.value=(str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,'));
+	   });
+
+    });
 
 </script>

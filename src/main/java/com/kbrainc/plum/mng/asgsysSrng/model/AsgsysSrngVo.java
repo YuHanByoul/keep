@@ -664,16 +664,16 @@ public class AsgsysSrngVo extends ParentRequestVo {
     private String rsltid;
 
 	/** 참가비_수입 */
-	private BigDecimal etrfeeIncm;
+	private Integer etrfeeIncm;
 
 	/** 기타_수입 */
-	private BigDecimal etcIncm;
+	private Integer etcIncm;
 
 	/** 자부담 */
-	private BigDecimal slfpy;
+	private Integer slfpy;
 
 	/** 예산 구성 총계 */
-	private BigDecimal btgSum;
+	private Integer btgSum;
 
 	/** 운영_이전_홍보_시기 */
 	private String operBfrPrmtnSess;

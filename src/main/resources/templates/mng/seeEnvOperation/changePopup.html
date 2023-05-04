@@ -1,0 +1,115 @@
+<form id="cancelFrm">
+<input type="hidden" id="aplyid" name="aplyid" th:value="${detail.aplyid}">
+<input type="hidden" id="dmndid" name="dmndid" th:value="${detail.dmndid}">
+<input type="hidden" id="sttsCd" name="sttsCd" value="">
+
+<!-- [팝업] 변경신청 상태변경 -->
+<div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content type_2">
+        <div class="modal-header">
+            <h4 class="modal-title">변경신청 상태변경</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"></span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="card m-b-10">
+                <div class="card-block-small">
+                    <div class="mb-3 form-group row">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="popInput06"><strong>변경사유</strong></label>
+                        <div class="col-12">
+                            <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="" id="dmndCn" name="dmndCn" readonly>[[${detail.dmndCn}]]</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>첨부파일</strong></div>
+                        <div class="border rounded p-t-10 p-b-10 px-4">
+                            <div class="col-auto">
+		                        <th:block th:if="${fileList != null}">
+		                            <th:block th:each="item : ${fileList}" th:id="${item.fileid}">
+		                                <th:block th:if="${item.orginlFileNm != null}">
+		                                    <span th:fileid='${item.fileid}' th:fileIdntfcKey="${item.fileIdntfcKey}" th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))" href="javascript:void(0)" class='label label-inverse'>
+		                                        <th:block th:text="${item.orginlFileNm}" /> 
+		                                    </span>
+		                                </th:block>
+		                            </th:block>
+		                        </th:block>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3 form-group row required">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="popInput07"><strong>승인/불가 사유</strong></label>
+                        <div class="col-12">
+                            <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="" id="ansCn" name="ansCn">[[${detail.ansCn}]]</textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="mb-3 form-group">
+                                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>등록일시</strong></div>
+                                <div class="col-12">
+                                    <input type="text" class="form-control form-control-sm" th:value="${detail.dmndDt}" disabled>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="mb-3 form-group">
+                                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>완료처리일</strong></div>
+                                <div class="col-12">
+                                    <input type="text" class="form-control form-control-sm" th:value="${detail.ansDt}" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-0 form-group row">
+                        <div class="col-sm-6">
+                            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>상태</strong></div>
+                            <span kattr:select_code="sttsCd" grpCd="252" th:attr="selectedCd=${detail.sttsCd}" addClass="input-sm" isAdmin="true" disabled>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" onclick="changeUpdate('252103'); return false;">변경불가</button>
+            <button type="button" class="btn btn-primary" onclick="changeUpdate('252102'); return false;">변경승인</button>
+        </div>
+    </div>
+</div>
+<!-- //[팝업] 변경신청 상태변경 -->
+</form>
+
+
+<script th:inline="javascript">
+function changeUpdate(sttsCd) {
+	if($("#ansCn").val() == "" || $("#ansCn").val() == null) {
+		alert("승인/불가 사유 입력하십시오.");
+		return;
+	}
+    if(!confirm("저장 하시겠습니까?")) return;
+    $("#sttsCd").val(sttsCd);
+    var data =  $("#cancelFrm").serialize();
+    if(displayWorkProgress()){
+        $.ajax({
+            url : chngUrl,
+            type: 'POST',
+            cache : false,
+            dataType: 'json',
+            data : data,
+            success : function (data){
+                if(data.result=="success"){
+                    alert(data.msg);
+                    $("#jsGrid2").jsGrid("reset");                         
+                }else{
+                    alert(data.msg);
+                }
+                changeModal.hide();
+                closeWorkProgress();
+            }
+        });
+    }
+}
+</script>
+</body>
+</html>

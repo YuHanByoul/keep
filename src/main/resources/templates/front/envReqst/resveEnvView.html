@@ -272,9 +272,7 @@
                 $('.dot-blue').hide();
                 $('.dot-red').show();
             }
-            
             $('#spceid').val(selectedVal);
-            
             isInitCal = false;
             makeCalendarEvent(moment().format("YYYY-MM-DD"),selectedVal, mode);
             
@@ -287,6 +285,8 @@
                 }
             }
             utztnSeCd = $(this).val();
+            
+            $('#timeTable').hide();
         });
 
         // 공간리스트
@@ -498,10 +498,10 @@
             $('#useTime').empty();
             $('#useDate').empty();
             $('#useAmt').text(0);
-            $('#rsvtdeid').val("");
             $('#rsvtdeids').val("");
             selectedStrtTmTimeList = [];
             selectedEndTmTimeList = [];
+            selectedRsvtdeids = [];
         }
 
         function checkData(){
@@ -645,6 +645,7 @@
 	                                } 
                             );
                             datepicker.redraw();
+                            $('#timeTable').hide();
                         }
 
                         closeWorkProgress();
@@ -688,9 +689,8 @@
             if( mode == 'single' ){
                 // 대여
                 var str = '';
-                
                 $('#timeList').empty();
-                
+                $('#timeTable').hide();
                 for( var t=0;  t< data.rsvtdelist.length; t++ ){
                     
                     let innerData = data.rsvtdelist[t];
@@ -722,11 +722,13 @@
                 $('#timeTable').show();
                 $('#startDate').val(dateStr);
                 $('#endDate').val(dateStr);
-                $('#useAmt').text((selectedAmt==0)?"무료":addComma3(selectedAmt)+'원');
-                $('#useDate').text( moment(new Date(dateStr)).format('YYYY년 MM월 DD일'));
+                //$('#useAmt').text((selectedAmt==0)?"무료":addComma3(selectedAmt)+'원');
+                $('#useAmt').text(addComma3(selectedAmt)+'원');
+                //$('#useDate').text( moment(new Date(dateStr)).format('YYYY년 MM월 DD일'));
                 
             }else{
                 // 숙박
+                $('#timeList').empty();
                 $('#timeTable').hide();
                 if( selectedDates.length > 1 ) {
                     let selectedDatesList = [];
@@ -756,10 +758,11 @@
                                 }
                             }
                         }
+                        $('#useDate').text(selectedDatesList.join(' ~ ') + " ("+selectedDatesList.length+"박)" ); 
                         //$('#useDate').text(selectedDatesList.join(' ~ ') + " ("+dateList.length+"박"+(dateList.length+1)+"일)");
-                        $('#useDate').text(selectedDatesList.join(' ~ ') + " (익일 체크아웃)");
-                        //$('#useAmt').text(addComma3(selectedAmt)+'원');
-                        $('#useAmt').text((selectedAmt==0)?"무료":addComma3(selectedAmt)+'원');
+                        //$('#useDate').text(selectedDatesList.join(' ~ ') + " (익일 체크아웃)");
+                        $('#useAmt').text(addComma3(selectedAmt)+'원');
+                        //$('#useAmt').text((selectedAmt==0)?"무료":addComma3(selectedAmt)+'원');
                         $('#amt').val(selectedAmt);
                         $('#rsvtdeid').val(JSON.stringify(selectedRsvtdeidList));
                         $('#rsvtdeids').val(selectedRsvtdeids.join(","));
@@ -778,8 +781,9 @@
                                     selectedAmt += innerData.amt;
                                 }
                             }
+                            $('#useDate').text(selectedDatesList + " ("+selectedDatesList.length+"박)" ); 
                             //$('#useDate').text(selectedDatesList + " ("+selectedDatesList.length+"박"+(selectedDatesList.length+1)+"일)" );
-                            $('#useDate').text(selectedDatesList + " (익일 체크아웃)" );
+                            //$('#useDate').text(selectedDatesList + " (익일 체크아웃)" );
                             $('#useAmt').text((selectedAmt==0)?"무료":addComma3(selectedAmt)+'원');
                             $('#amt').val(selectedAmt);
                             $('#rsvtdeid').val(JSON.stringify(selectedRsvtdeidList));
@@ -789,8 +793,6 @@
                 }
             }
         }
-
-        
 
         $(document).on('change', 'input[name="rsvtdeTime"]' , function () {
         	selectedRsvtdeids=[];
@@ -808,9 +810,6 @@
                 selectedAmt += parseInt($(this).attr('data-amt'));
                 selectedStrtTmTimeList.push(strtTm);
                 selectedEndTmTimeList.push($(this).attr('data-endTm'));
-                //selectedRsvtdeidList.push({rsvtdeid : $(this).val()});
-                
-                
             }else{
                 selectedAmt -= parseInt($(this).attr('data-amt'));
                 for( var i=0; i<selectedStrtTmTimeList.length; i++){
@@ -822,9 +821,6 @@
                     if( selectedEndTmTimeList[i] === endTm ){
                         selectedEndTmTimeList.splice(i, 1);
                     }
-                    //if( selectedRsvtdeidList[i].rsvtdeid == $(this).val() ){
-                    //    selectedRsvtdeidList.splice(i, 1);
-                    //}
                 }
             }
             
@@ -845,7 +841,6 @@
             }
             let selectedAmtStr = (selectedAmt==0)?"무료":addComma3(selectedAmt)+'원';
             $('#rsvtdeids').val(selectedRsvtdeids.join(","));
-            //$('#rsvtdeid').val(JSON.stringify(selectedRsvtdeidList));
             $('#useAmt').text(selectedAmtStr);
             $('#amt').val(selectedAmt);
         });

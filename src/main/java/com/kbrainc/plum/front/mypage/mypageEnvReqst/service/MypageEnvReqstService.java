@@ -1,5 +1,6 @@
 package com.kbrainc.plum.front.mypage.mypageEnvReqst.service;
 
+import com.kbrainc.plum.front.envReqst.model.EnvReqstVo;
 import com.kbrainc.plum.front.mypage.mypageEnvReqst.model.MypageEnvReqstVo;
 import com.kbrainc.plum.mng.rcpmnyBfe.model.RcpmnyBfeVo;
 
@@ -31,7 +32,7 @@ public interface MypageEnvReqstService {
      * @param mypageEnvReqstVo
      * @return list
      */
-    List<MypageEnvReqstVo> selectMypageEnvReqstList(MypageEnvReqstVo mypageEnvReqstVo);
+    List<EnvReqstVo> selectMypageEnvReqstList(EnvReqstVo envReqstVo);
 
     /**
      * 환경교육시설 예약 상세화면으로 이동
@@ -42,7 +43,7 @@ public interface MypageEnvReqstService {
      * @throws Exception 예외
      * @return MypageEnvReqstVo
      */
-    public MypageEnvReqstVo selectResveEnvInfo(MypageEnvReqstVo mypageEnvReqstVo) throws Exception;
+    public EnvReqstVo selectResveEnvInfo(EnvReqstVo envReqstVo) throws Exception;
 
     /**
      * 환경교육시설 예약 상세 데이터 조회
@@ -53,7 +54,7 @@ public interface MypageEnvReqstService {
      * @throws Exception 예외
      * @return MypageEnvReqstVo
      */
-    public MypageEnvReqstVo selectSpceInfo(MypageEnvReqstVo mypageEnvReqstVo) throws Exception;
+    public EnvReqstVo selectSpceInfo(EnvReqstVo envReqstVo) throws Exception;
 
     /**
      * 사유 확인 팝업
@@ -64,7 +65,7 @@ public interface MypageEnvReqstService {
      * @throws Exception 예외
      * @return MypageEnvReqstVo
      */
-    public MypageEnvReqstVo selectRsnInfo(MypageEnvReqstVo mypageEnvReqstVo) throws Exception;
+    public EnvReqstVo selectRsnInfo(EnvReqstVo envReqstVo) throws Exception;
 
     /**
      * 입금정보 팝업
@@ -75,7 +76,7 @@ public interface MypageEnvReqstService {
      * @throws Exception 예외
      * @return MypageEnvReqstVo
      */
-    public MypageEnvReqstVo selectDpstInfo(MypageEnvReqstVo mypageEnvReqstVo) throws Exception;
+    public EnvReqstVo selectDpstInfo(EnvReqstVo envReqstVo) throws Exception;
 
     /**
      * 후기확인 기능
@@ -86,7 +87,7 @@ public interface MypageEnvReqstService {
      * @throws Exception 예외
      * @return MypageEnvReqstVo
      */
-    public MypageEnvReqstVo selectRwvInfo(MypageEnvReqstVo mypageEnvReqstVo) throws Exception;
+    public EnvReqstVo selectRwvInfo(EnvReqstVo envReqstVo) throws Exception;
 
     /**
      * 환경교육시설 예약 등록(시설 예약)
@@ -97,7 +98,7 @@ public interface MypageEnvReqstService {
      * @throws Exception 예외
      * @return MypageEnvReqstVo
      */
-    public int insertResveEnvFclSpceAply(MypageEnvReqstVo mypageEnvReqstVo) throws Exception;
+    public int insertResveEnvFclSpceAply(EnvReqstVo envReqstVo) throws Exception;
 
     /**
      * 환경교육시설 예약 등록(시설 예약)
@@ -108,7 +109,7 @@ public interface MypageEnvReqstService {
      * @throws Exception 예외
      * @return MypageEnvReqstVo
      */
-    public int insertResveEnvFclAply(MypageEnvReqstVo mypageEnvReqstVo) throws Exception;
+    public int insertResveEnvFclAply(EnvReqstVo envReqstVo) throws Exception;
 
     /**
      * 환경교육시설 예약 등록(시설 예약)
@@ -119,7 +120,7 @@ public interface MypageEnvReqstService {
      * @throws Exception 예외
      * @return MypageEnvReqstVo
      */
-    public int insertResveEnvFclAplyHstry(MypageEnvReqstVo mypageEnvReqstVo) throws Exception;
+    public int insertResveEnvFclAplyHstry(EnvReqstVo envReqstVo) throws Exception;
 
     /**
      * 환경교육시설 예약 등록(공간 예약)
@@ -130,7 +131,7 @@ public interface MypageEnvReqstService {
      * @throws Exception 예외
      * @return MypageEnvReqstVo
      */
-    public int insertResveEnvSpceAply(MypageEnvReqstVo mypageEnvReqstVo) throws Exception;
+    public int insertResveEnvSpceAply(EnvReqstVo envReqstVo) throws Exception;
 
     /**
      * 환경교육시설 예약 상세 데이터 조회
@@ -141,7 +142,7 @@ public interface MypageEnvReqstService {
      * @throws Exception 예외
      * @return MypageEnvReqstVo
      */
-    public List<Map<String,Object>> selectFclRsvtdeList(MypageEnvReqstVo mypageEnvReqstVo) throws Exception;
+    public List<Map<String,Object>> selectFclRsvtdeList(EnvReqstVo envReqstVo) throws Exception;
 
     /**
      * 예약 신청 취소 처리
@@ -152,7 +153,7 @@ public interface MypageEnvReqstService {
      * @throws Exception 예외
      * @return int
      */
-    public int insertRsn(MypageEnvReqstVo mypageEnvReqstVo) throws Exception;
+    public int insertRsn(EnvReqstVo envReqstVo) throws Exception;
 
     /**
      * 후기 작성 기능
@@ -163,7 +164,7 @@ public interface MypageEnvReqstService {
      * @throws Exception 예외
      * @return int
      */
-    public int insertRvw(MypageEnvReqstVo mypageEnvReqstVo) throws Exception;
+    public int insertRvw(EnvReqstVo envReqstVo) throws Exception;
 
     /**
      * 후기 삭제 기능
@@ -174,7 +175,7 @@ public interface MypageEnvReqstService {
      * @throws Exception 예외
      * @return int
      */
-    public int deleteRvw(MypageEnvReqstVo mypageEnvReqstVo) throws Exception;
+    public int deleteRvw(EnvReqstVo envReqstVo) throws Exception;
 
     /**
      * 예약 신청 취소 처리
@@ -185,5 +186,5 @@ public interface MypageEnvReqstService {
      * @throws Exception 예외
      * @return int
      */
-    public int insertHstry(MypageEnvReqstVo mypageEnvReqstVo) throws Exception;
+    public int insertHstry(EnvReqstVo envReqstVo) throws Exception;
 }

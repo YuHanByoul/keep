@@ -127,6 +127,39 @@
         <include refid="searchCondition1"/>
     </select>
 
+    <!-- 지원단 총평 목록 엑셀 다운로드 조회-->
+    <select id="gnrlrvwExcelDownList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        /* AsgsysSrngDao.aplyExcelDownList */
+        SELECT
+            A.PRGRM_NM
+          , A.PRGRMID
+          , A.INST_NM
+          , A.APLY_DT
+          , C.SRNG_OPNN
+          , E.CHKLST_RSLT_CN
+          , DATE_FORMAT(A.APLY_DT, "%Y-%m-%d")  AS APLY_DE
+          , A.REG_DT
+        FROM
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN    /* 심사위원 */
+        (
+            SELECT
+                PRGRMID
+              , SRNG_STTS_CD
+              , MAX(JDGSID)
+            FROM TB_ASS_PRGRM_JDGS
+            GROUP BY PRGRMID
+        ) B ON A.PRGRMID  = B.PRGRMID
+        LEFT OUTER JOIN    /* 지원단 */
+            TB_ASS_SPRTGRP_SRNG C ON A.PRGRMID  = C.PRGRMID
+        LEFT OUTER JOIN
+            TB_ASS_CHKLST_SBMSN E ON A.PRGRMID = E.PRGRMID AND C.SPRTGRPID = E.USERID
+        LEFT OUTER JOIN
+            TB_CMM_INST D ON A.INSTID  = D.INSTID
+        WHERE 1=1
+        <include refid="searchCondition1"/>
+    </select>
+
     <!-- 지정신청프로그램상세 조회. -->
     <select id="selectDsgnAplyDtlInfo" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
         SELECT

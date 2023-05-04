@@ -70,6 +70,12 @@ public class EnvReqstVo extends ParentRequestVo {
 
     /** 기관아이디 */
     private String instid;
+    
+    /** 기관 타입 코드  */
+    private String instTypCd;
+    
+    /** 기관 타입 코드명 */
+    private String instTypCdNm;
 
     /** 기관명 */
     private String instNm;
@@ -237,6 +243,103 @@ public class EnvReqstVo extends ParentRequestVo {
 
     /** 대표 이미지 맵 */
     private FileVo rprsImgFileMap;
+    
+    /** 공간 평수 */
+    private Integer size;
+    
+    /** 전체 상태  */
+    private String totalStts;
+    
+    /** 취소 사유 코드 */
+    private String cnclRsnCd;
+    
+    /** 취소사유 명*/
+    private String cnclRsnCdNm;
+
+    /** 예약 취소 사유 */
+    private String rsvtCnclRsn;
+
+    /** 환불 거절 사유 */
+    private String rfndRejectRsn;
+    
+    /** 환불 거절 사유 코드 */
+    private String rfndRejectRsnCd;
+    
+    /** 환불 거절 사유 코드 */
+    private String rfndRejectRsnCdNm;
+    
+    /** 입금 금액 */
+    private int dpstAmt;
+
+    /** 환불 요청 금액 */
+    private int rfndDmndAmt;
+
+    /** 환불 금액 */
+    private int rfndAmt;
+
+    /** 결제 방법 코드 */
+    private String stlmMthdCd;
+
+    /** 입금 일자 */
+    private String dpstDe;
+
+    /** 입금 확인 일시 */
+    private Date dpstIdntyDt;
+
+    /** 취소 일시 */
+    private Date cnclDt;
+
+    /** 환불 요청 일시 */
+    private Date rfndDmndDt;
+
+    /** 환불 일자 */
+    private String rfndDe;
+
+    /** 환불 완료 일시 */
+    private Date rfndCmptnDt;
+
+    /** 환불 은행 코드 */
+    private String rfndBankCd;
+    
+    /** 환불 은행 코드명 */
+    private String rfndBankCdNm;
+
+    /** 환불 계좌 */
+    private String rfndBacnt;
+
+    /** 환불 입금자 이름 */
+    private String rfndPyrNm;
+    
+    /** 신청상태 코드  */
+    private String aplySttsCd;
+    
+    /** 신청상태 코드명 */
+    private String aplySttsCdNm;
+    
+    /** 결제 상태 코드  */
+    private String stlmSttsCd;
+    
+    /** 결제 상태 코드 명 */
+    private String stlmSttsCdNm;
+    
+    /** 등록일시 */
+    private Date regDt;
+
+    /** 체크인 시간  */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="HH:mm", timezone = "Asia/Seoul")
+    private Date chkinHr;
+
+    /** 체크 아웃 시간  */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="HH:mm", timezone = "Asia/Seoul")
+    private Date chcktHr;
+    
+    private String aplcntEmlId;
+
+    private String aplcntEmlDomain;
+    
+    private String resveDt;
+    
+    private String[] resveDts;
 
     /** 검색 관련*/
     private String searchSeCd;
@@ -249,6 +352,36 @@ public class EnvReqstVo extends ParentRequestVo {
     private String searchAplySttsCd;
     private String searchStlmSttsCd;
     
+    public void setAplySttsCd(String aplySttsCd) throws Exception{
+        this.aplySttsCd = aplySttsCd;
+        
+        if(CommonUtil.isEmpty(this.aplySttsCdNm)) { 
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.aplySttsCd);
+                this.aplySttsCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                return ;
+            }catch(Exception e) {
+                return ;
+            }
+        }
+    }
+    public void setStlmSttsCd(String stlmSttsCd) throws Exception{
+        this.stlmSttsCd = stlmSttsCd;
+        
+        if(CommonUtil.isEmpty(this.stlmSttsCdNm)) { 
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.stlmSttsCd);
+                this.stlmSttsCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                return ;
+            }catch(Exception e) {
+                return ;
+            }
+        }
+    }
     public void setAplyMthdCd(String aplyMthdCd) throws Exception{
         this.aplyMthdCd = aplyMthdCd;
         
@@ -312,9 +445,76 @@ public class EnvReqstVo extends ParentRequestVo {
             }
         }
     }
+    public void setInstTypCd(String instTypCd) throws Exception{
+        this.instTypCd = instTypCd;
+        
+        if(CommonUtil.isEmpty(this.instTypCdNm)) { 
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.instTypCd);
+                this.instTypCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                return ;
+            }catch(Exception e) {
+                return ;
+            }
+        }
+    }
+    public void setCnclRsnCd(String cnclRsnCd) throws Exception{
+        this.cnclRsnCd = cnclRsnCd;
+        
+        if(CommonUtil.isEmpty(this.cnclRsnCdNm)) { 
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.cnclRsnCd);
+                this.cnclRsnCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                return ;
+            }catch(Exception e) {
+                return ;
+            }
+        }
+    }
+    public void setRfndRejectRsnCd(String rfndRejectRsnCd) throws Exception{
+        this.rfndRejectRsnCd = rfndRejectRsnCd;
+        
+        if(CommonUtil.isEmpty(this.rfndRejectRsnCdNm)) { 
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.rfndRejectRsnCd);
+                this.rfndRejectRsnCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                return ;
+            }catch(Exception e) {
+                return ;
+            }
+        }
+    }
+    
+    public void setRfndBankCd(String rfndBankCd) throws Exception{
+        this.rfndBankCd = rfndBankCd;
+        
+        if(CommonUtil.isEmpty(this.rfndBankCdNm)) { 
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.rfndBankCd);
+                this.rfndBankCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                return ;
+            }catch(Exception e) {
+                return ;
+            }
+        }
+    }
     
     public void setAcnt(String acnt) throws Exception{
+        this.acnt = acnt;
         this.maskAcnt = StringUtil.maskingAccount(acnt); 
+    }
+    
+    public void setResveDt(String resveDt) throws Exception{
+        this.resveDt = resveDt;
+        if(resveDt!= null ) this.resveDts = resveDt.split("/");  
     }
     
 }

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL File Name : SeeEnvEduInstHistDaoImpl.xml
+    Description : 사회환경교육기관 지정 관리
+-->
+<mapper namespace="com.kbrainc.plum.front.mypage.seeEnvEduInstHist.model.SeeEnvEduInstHistDao">
+
+    <select id="selectSeeEnvEduInstHistList" parameterType="front.SeeEnvEduInstHistVo" resultType="front.SeeEnvEduInstHistVo">
+        /* SeeEnvEduInstHistDao.selectSeeEnvEduInstHistList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.APLYID
+            , IFNULL(A.RCPTNO, '') RCPTNO
+            , A.INSTID
+            , A.APLCNTID
+            , A.APLCNT_NM
+            , A.APLCNT_EML
+            , A.APLCNT_MOBLPHON
+            , A.INST_NM
+            , A.INST_EML
+            , A.INST_CNTCT
+            , A.CTPRVN_CD
+            , C.CTPRVN_NM
+            , A.RPRSV_BRDT
+            , A.ATCH_FILEGRPID
+            , A.DSGNNO
+            , A.DSGN_DE
+            , A.AUTZRID
+            , A.ISSU_DE
+            , A.ISGN_DE
+            , A.STTS_CD
+            , B.SPLMNTID
+            , B.ANS_STTS_CD
+            , CASE WHEN B.ANS_STTS_CD = '201101' THEN '보안요청' 
+                   WHEN B.ANS_STTS_CD = '201102' THEN '보안완료'
+                   ELSE '-' END ANS_STTS_NM
+            , D.CD_NM STTS_NM
+            , A.MDFCN_DT
+            , A.MDFRID
+            , A.REG_DT
+            , A.RGTRID
+            , (SELECT NM FROM TB_CMM_USER WHERE USERID = A.RGTRID) RGTR_NM
+        FROM TB_SEE_ENV_EDU_INST A
+        LEFT OUTER JOIN TB_SEE_APLY_SPLMNT B ON A.APLYID = B.APLYID
+        LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN C ON A.CTPRVN_CD = C.CTPRVN_CD
+        LEFT OUTER JOIN TB_CMM_CD D ON A.STTS_CD = D.CD
+        WHERE 1=1
+        AND A.APLCNTID = #{user.userid}
+        <!-- 접수번호 -->
+        <if test="searchRcptNo != null and searchRcptNo != '' ">
+            AND A.RCPTNO LIKE CONCAT('%',#{searchRcptNo},'%')
+        </if>
+        <!-- 신청상태-->
+        <if test="searchSttsCd != null and searchSttsCd != '' ">
+            AND A.STTS_CD = #{searchSttsCd}
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!--  보완요청 상세 조회-->
+    <select id="selectSplmntInfo" parameterType="front.SupplementVo" resultType="front.SupplementVo">
+        /* SeeEnvEduInstHistDao.selectSplmntInfo */
+        SELECT
+            SPLMNTID
+            , APLYID 
+            , DMND_CN
+            , ANS_STTS_CD
+            , ANS_CN
+        FROM
+            TB_SEE_APLY_SPLMNT
+        WHERE
+            SPLMNTID = #{splmntid}
+    </select>
+    
+    <!-- 보완요청 업데이트 -->
+    <update id="updateSplmnt" parameterType="front.SupplementVo">
+        /* SeeEnvEduInstHistDao.updateSplmnt */
+        UPDATE TB_SEE_APLY_SPLMNT SET
+            ANS_CN = #{ansCn}
+            , ANS_STTS_CD = '201102'
+            , ANSWRRID = #{user.userid}
+            , ANS_DT = NOW()
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE 
+            SPLMNTID = #{splmntid}
+    </update>    
+</mapper>

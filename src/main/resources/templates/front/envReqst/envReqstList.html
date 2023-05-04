@@ -47,16 +47,16 @@
                 <div class="form-header"><strong class="label">기간</strong></div>
                 <div class="form-body">
                     <div class="form-input">
-                        <input type="date" title="시작일" name="searchBgngDt" id="searchBgngDt" />
+                        <input type="date" title="시작일" name="searchBgngDt" id="searchBgngDt" th:value="${params.searchBgngDt}"/>
                         <div class="bul">~</div>
-                        <input type="date" title="종료일" name="searchEndDt" id="searchEndDt" />
+                        <input type="date" title="종료일" name="searchEndDt" id="searchEndDt"   th:value="${params.searchEndDt}"/>
                     </div>
                 </div>
             </div>
         </div>
         
         <div class="search-filter-submit">
-            <button type="reset" class="btn-medium btn-gray btn-before-refresh" onclick="searchInit();">초기화</button>
+            <button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="searchInit();">초기화</button>
             <button type="submit" class="btn-medium btn-green btn-before-search" onclick="search();">검색</button>
         </div>
 
@@ -72,19 +72,13 @@
             <p>총 <b id="totalCount">0</b> 개</p>
         </div>
     </div>
-    
-    <div class="card-section">
-	    <ul class="n3" id="listArea">
-	    </ul>
-    </div>
-
+    <div class="card-section" id="listArea"></div>
     <div class="pagination" aria-label="pagination" id="pagination"></div>
-    
     
     <script src="/js/common/handlebars/handlebars-v4.7.7.js"></script>   
     <script src="/js/common/handlebars/handlebars.helper.js"></script>
-    
     <script id="listTemplate" type="text/x-handlebars-template">
+    <ul class="n3" >
     {{#each aplyList}}
       <li>
           <div class="thumb">
@@ -98,43 +92,33 @@
           </div>
       </li>
     {{/each}}
+    </ul>
     </script>
     <script th:inline="javascript">
         var listUrl = "/front/envReqst/selectEnvReqstList.do";
         var viewUrl = '/front/envReqst/resveEnvView.html';
-        var formUrl = '/front/envReqst/envReqstForm.html';
-        var loginUserid = /*[[${loginUserid}]]*/null;
         var searchBgngDt = /*[[${params.searchBgngDt}]]*/null;
         var searchEndDt = /*[[${params.searchEndDt}]]*/null;
         var listTemplet = Handlebars.compile($("#listTemplate").html());
+        var noDataMsg = '<div class="nodata" style="border:none;" ><p><span class="icon icon-notice bg-black9"></span>등록된 교육시설이 없습니다.</p></div>';
         
         $(function () {
-
-            if(searchBgngDt!= null ){ $('#searchBgngDt').val(searchBgngDt);}
-            if(searchEndDt!= null ){ $('#searchEndDt').val(searchEndDt);}
-
-            
             selectEnvReqstList();
         });
-        
         function search() {
             $('#pageNumber').val(1);
             selectEnvReqstList();
         }
-        
         function searchInit() {
             $('input[name="instNm"]').val('');
             $('input[name="fcltNm"]').val('');
             $('select[name="searchRgnCd"]').val('');
             $('select[name="searchAplyMthdCd"]').val('');
             $('input[name="maxNope"]').val(0);
-            
             $('#searchBgngDt').attr("required",false);
-            
             $('#searchBgngDt').val(null);
             $('#searchEndDt').val(null);
         }
-
         function selectEnvReqstList() {
 
             if (displayWorkProgress(true)) {
@@ -142,12 +126,17 @@
                     url: listUrl,
                     cache: false,
                     dataType: 'json',
-                    data: formData = $('#searchForm').serializeArray(),
+                    data: $('#searchForm').serialize(),
                     type: 'GET',
                     success: function (data) {
                     	renderingListData(data.list);
-                        $("#pagination").html(data.pagination);
-                        $("#totalCount").html(data.totalCount);
+                        $("#totalCount").text(data.totalCount);
+                        if(data.totalCount == 0) {
+                            $("#listArea").html(noDataMsg);
+                            $("#pagination").html('');
+                        }else{
+                            $("#pagination").html(data.pagination);
+                        }
                         closeWorkProgress();
                     }
                 });
@@ -164,20 +153,12 @@
             })
             $("#listArea").html(listTemplet({aplyList:list}));
         }
-        
-        function moveToInsertForm() {
-            var f = document.forms.searchForm;
-            f.action = formUrl;
-            f.submit();
-        }
-
         function moveToView(fcltid) {
             var f = document.forms.searchForm;
             f.fcltid.value = fcltid;
             f.action = viewUrl;
             f.submit();
         }
-
         function goPage(num) {
             $("#pageNumber").val(num);
             selectEnvReqstList();

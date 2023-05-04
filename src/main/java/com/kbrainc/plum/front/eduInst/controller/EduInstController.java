@@ -24,7 +24,6 @@ import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.front.eduInst.model.EduExprtVo;
 import com.kbrainc.plum.front.eduInst.model.EduInstVo;
 import com.kbrainc.plum.front.eduInst.model.EqpVo;
-import com.kbrainc.plum.front.eduInst.model.LctrumVo;
 import com.kbrainc.plum.front.eduInst.model.SchdlVo;
 import com.kbrainc.plum.front.eduInst.model.SeePrgrmVo;
 import com.kbrainc.plum.front.eduInst.service.EduInstService;
@@ -602,33 +601,14 @@ public class EduInstController {
 	*/
 	@RequestMapping(value="/front/eduInst/fcltSttsForm.html")
 	public String fcltSttsForm(EduInstVo eduInstVo, Model model, @UserInfo UserVo user) throws Exception {
-		LctrumVo lctrumVo1 = new LctrumVo();
-		LctrumVo lctrumVo2 = new LctrumVo();
-		List<LctrumVo> lctrumList1 = null;
-		List<LctrumVo> lctrumList2 = null;
-
 		model.addAttribute("eduInstVo", eduInstService.selectSeeFclt(eduInstVo));
 
 		eduInstVo.setSeCd("251101");    //강의실
-		lctrumList1 = eduInstService.selectLctrumList(eduInstVo);
-
-		eduInstVo.setSeCd("251102");    //강의실
-		lctrumList2 = eduInstService.selectLctrumList(eduInstVo);
-
-		if(lctrumList1.size() == 0) {
-			lctrumVo1.setAplyid(eduInstVo.getAplyid());
-			lctrumVo1.setSeCd("251101");
-			lctrumList1.add(lctrumVo1);
-		}
-		if(lctrumList2.size() == 0) {
-			lctrumVo2.setAplyid(eduInstVo.getAplyid());
-			lctrumVo2.setSeCd("251102");
-			lctrumList2.add(lctrumVo2);
-		}
+		model.addAttribute("lctrumList1", eduInstService.selectLctrumList(eduInstVo));
+		eduInstVo.setSeCd("251102");    //실습실
+		model.addAttribute("lctrumList2", eduInstService.selectLctrumList(eduInstVo));
 
 		model.addAttribute("eqpList", eduInstService.selectFcltEqpList(eduInstVo));
-		model.addAttribute("lctrumList1", lctrumList1);
-		model.addAttribute("lctrumList2", lctrumList2);
 
 		return "front/eduInst/fcltSttsForm";
 	}
@@ -646,7 +626,6 @@ public class EduInstController {
 	* @return Map<String,Object>
 	*/
 	@RequestMapping(value="/front/eduInst/insertFcltStts.do")
-	@ResponseBody
 	public Map<String, Object> insertFcltStts(@RequestBody EduInstVo eduInstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
@@ -664,6 +643,7 @@ public class EduInstController {
 
         if(retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("aplyid", eduInstVo.getAplyid());
             resultMap.put("msg", "저장에 성공하였습니다");
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
@@ -671,46 +651,6 @@ public class EduInstController {
         }
         return resultMap;
     }
-
-	/**
-	 * 교육시설 및 설비현황 수정
-	 *
-	 * @Title : updateFcltStts
-	 * @Description : 교육시설 및 설비현황 수정
-	 * @param eduInstVo
-	 * @param bindingResult
-	 * @param user
-	 * @return
-	 * @throws Exception
-	 * @return Map<String,Object>
-	 */
-	@RequestMapping(value="/front/eduInst/updateFcltStts.do")
-	@ResponseBody
-	public Map<String, Object> updateFcltStts(@RequestBody EduInstVo eduInstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
-		Map<String, Object> resultMap = new HashMap<String, Object>();
-
-		if(bindingResult.hasErrors()) {
-			FieldError fieldError = bindingResult.getFieldError();
-			if(fieldError != null) {
-				resultMap.put("msg", fieldError.getDefaultMessage());
-			}
-			return resultMap;
-		}
-
-		int retVal = 0;
-		eduInstVo.setUser(user);
-		retVal = eduInstService.updateFcltStts(eduInstVo);
-
-		if(retVal > 0) {
-			resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-//			resultMap.put("aplyid", eduInstVo.getAplyid());
-			resultMap.put("msg", "저장에 성공하였습니다");
-		} else {
-			resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-			resultMap.put("msg", "저장에 실패하였습니다");
-		}
-		return resultMap;
-	}
 
 	/**
 	* 신청완료 화면 이동
