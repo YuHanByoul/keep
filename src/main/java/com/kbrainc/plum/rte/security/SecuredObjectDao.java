@@ -157,7 +157,7 @@ public class SecuredObjectDao {
             String pageId = StringUtil.nvl(tempMap.get("pageid"));
             
             if (!"".equals(pageId)) {
-                presentResourceStr = presentResourceStr.replaceAll("{pageid}", pageId);
+                presentResourceStr = presentResourceStr.replaceAll("\\{pageid\\}", pageId);
             }
 
             if (!"".equals(bbsId)) {
@@ -219,7 +219,7 @@ public class SecuredObjectDao {
             String pageId = StringUtil.nvl(tempMap.get("pageid"));
             
             if (!"".equals(pageId)) {
-                presentResourceStr = presentResourceStr.replaceAll("{pageid}", pageId);
+                presentResourceStr = presentResourceStr.replaceAll("\\{pageid\\}", pageId);
             }
             
             if (!"".equals(bbsId)) {
