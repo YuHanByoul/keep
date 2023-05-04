@@ -1536,6 +1536,8 @@ public class AsgsysSrngController {
     	model.addAttribute("loginUserid", user.getUserid());
     	model.addAttribute("jdgsSrngInfo", jdgsSrngInfo);
 
+    	model.addAttribute("ansList", asgsysSrngService.selectSrngAnsList(jdgsSrngInfo));
+
     	//신청 첨부파일
     	if (!StringUtil.nvl(jdgsSrngInfo.getAplyFilegrpid()).equals("") && !StringUtil.nvl(jdgsSrngInfo.getAplyFilegrpid()).equals(0)) {
             FileVo fileVo = new FileVo();
@@ -1560,7 +1562,7 @@ public class AsgsysSrngController {
 
     	BeanUtils.copyProperties(jdgsSrngInfo, dsgnSrngFormVo);
     	logger.info(dsgnSrngFormVo.toString());
-//    	model.addAttribute("dsgnSrgnFormList", asgsysSrngService.selectDsgnSrgnFormList(dsgnSrngFormVo));
+
 
     	//심사양식 목록 조회
     	model.addAttribute("srngFormList",asgsysSrngService.selectSrngFormQitemList(dsgnSrngFormVo));

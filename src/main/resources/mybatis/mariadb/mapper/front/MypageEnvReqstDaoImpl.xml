@@ -116,6 +116,7 @@
              ,A.APLCNT_EML
              ,A.CNCL_DT
              ,A.RFND_DMND_DT
+             ,A.RFND_DMND_AMT
              ,A.PYR_NM
              ,A.DPST_AMT
              ,A.DPST_DE
@@ -195,8 +196,14 @@
                        A.APLYID
                        ,B.SPCEID
                        ,GROUP_CONCAT(
-                         CONCAT(B.DE,' ',(CASE WHEN B.ALLDAY_YN ='N' THEN CONCAT (DATE_FORMAT(B.BGNG_DT,'%H시%i분'),' ~ ',DATE_FORMAT(B.END_DT,'%H시%i분')) ELSE '숙박'END),' (',FORMAT(B.AMT,0),'원)')
-                       SEPARATOR  '/' ) AS RESVE_DT  
+                          CONCAT(B.DE
+                                 ,' '
+                                ,(CASE WHEN B.ALLDAY_YN ='N' THEN CONCAT (DATE_FORMAT(B.BGNG_DT,'%H시%i분'),' ~ ',DATE_FORMAT(B.END_DT,'%H시%i분')) ELSE '숙박'END)
+                                ,' ('
+                                , CASE WHEN B.AMT = 0 THEN '무료)'ELSE CONCAT(FORMAT(B.AMT,0),'원)') END 
+                          )
+                       SEPARATOR  '/' 
+                       ) AS RESVE_DT  
                      FROM 
                        TB_FCL_APLY_RSVTDE A
                        LEFT JOIN TB_FCL_SPCE_RSVTDE B 
@@ -279,127 +286,6 @@
           AND A.SPCEID = #{spceid}
     </select>
 
-    <!-- 예약 등록(시설 예약) -->
-    <insert id="insertResveEnvFclSpceAply" useGeneratedKeys="true" keyProperty="aplyid">
-        /* EnvReqstDao.insertResveEnvFclAply */
-        INSERT INTO TB_FCL_SPCE_APLY (
-            APLCNTID
-            ,APLCNT_NM
-            ,APLCNT_MOBLPHON
-            ,APLCNT_EML
-            ,NOPE_ADULT
-            ,NOPE_CHIL
-            ,NOPE_INFNT
-            ,UTZTN_PRPS
-            ,AMT
-            ,STLM_MTHD_CD
-            ,DPST_BACNT
-            ,PYR_NM
-            ,APLY_DT
-            ,MDFCN_DT
-            ,MDFRID
-            ,REG_DT
-            ,RGTRID
-        )VALUES
-        (
-            #{user.userid}
-            ,#{aplcntNm}
-            ,#{aplcntMoblphon}
-            ,#{aplcntEml}
-            ,#{nopeAdult}
-            ,#{nopeChil}
-            ,#{nopeInfnt}
-            ,#{utztnPrps}
-            ,#{amt}
-            ,'190101'
-            ,#{bacntNo}
-            ,#{pyrNm}
-            ,NOW()
-            ,NOW()
-            ,#{user.userid}
-            ,NOW()
-            ,#{user.userid}
-        )
-    </insert>
-
-    <!-- 예약 등록(시설 예약) -->
-    <insert id="insertResveEnvFclAply" keyProperty="userid">
-        /* EnvReqstDao.insertResveEnvFclAply */
-        INSERT INTO TB_FCL_APLY_RSVTDE (
-                APLYID,
-                RSVTDEID,
-                UTZTN_SE_CD,
-                DE,
-                BGNG_DT,
-                END_DT,
-                AMT,
-                MDFCN_DT,
-                MDFRID,
-                REG_DT,
-                RGTRID
-        )VALUES
-        <foreach item="item" collection="rsvtdeids"  separator=",">
-             (
-            #{aplyid}
-            ,#{item}
-            ,#{utztnSeCd}
-            ,#{de}
-            ,#{bgngDt}
-            ,#{endDt}
-            ,#{amt}
-            ,NOW()
-            ,#{user.userid}
-            ,NOW()
-            ,#{user.userid}
-            )
-        </foreach>
-    </insert>
-
-    <!-- 예약 등록(시설 예약-히스토리) -->
-    <insert id="insertResveEnvFclAplyHstry" useGeneratedKeys="true" keyProperty="aplyid">
-        /* EnvReqstDao.insertResveEnvFclAply */
-        INSERT INTO TB_FCL_SPCE_APLY_HSTRY (
-                                      APLYID
-                                     ,APLCNTID
-                                     ,APLCNT_NM
-                                     ,APLCNT_MOBLPHON
-                                     ,APLCNT_EML
-                                     ,NOPE_ADULT
-                                     ,NOPE_CHIL
-                                     ,NOPE_INFNT
-                                     ,UTZTN_PRPS
-                                     ,AMT
-                                     ,STLM_MTHD_CD
-                                     ,DPST_BACNT
-                                     ,PYR_NM
-                                     ,APLY_DT
-                                     ,MDFCN_DT
-                                     ,MDFRID
-                                     ,REG_DT
-                                     ,RGTRID
-        )VALUES
-            (
-             #{aplyid}
-            ,#{user.userid}
-            ,#{aplcntNm}
-            ,#{aplcntMoblphon}
-            ,#{aplcntEml}
-            ,#{nopeAdult}
-            ,#{nopeChil}
-            ,#{nopeInfnt}
-            ,#{utztnPrps}
-            ,#{amt}
-            ,'190101'
-            ,#{bacntNo}
-            ,#{pyrNm}
-            ,NOW()
-            ,NOW()
-            ,#{user.userid}
-            ,NOW()
-            ,#{user.userid}
-            )
-    </insert>
-
     <!-- 공간 예약 여부 확인 목록 -->
     <select id="selectFclRsvtdeList" resultType="map">
         /* SpceDao.selectFclRsvtdeList */
@@ -472,7 +358,7 @@
           AND A.APLYID = #{aplyid}
     </select>
 
-    <!-- 예약 등록(공간 예약) -->
+    <!-- 예약 취소 업데이트  -->
     <update id="insertRsn" parameterType="front.EnvReqstVo" >
         /* MypageEnvReqstDao.insertRsn */
         UPDATE TB_FCL_SPCE_APLY SET

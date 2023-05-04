@@ -1977,4 +1977,19 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 		return 0;
 	}
 
+	/**
+	* 심사점수 목록 조회
+	*
+	* @Title : selectSrngAnsList
+	* @Description : 심사점수 목록 조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<AsgsysSrngVo>
+	*/
+	@Override
+	public List<AsgsysSrngVo> selectSrngAnsList(AsgsysSrngVo asgsysSrngVo) throws Exception{
+		return asgsysSrngDao.selectSrngAnsList(asgsysSrngVo);
+	}
+
 }

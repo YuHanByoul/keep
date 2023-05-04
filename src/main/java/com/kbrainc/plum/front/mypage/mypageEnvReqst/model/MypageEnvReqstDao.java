@@ -92,50 +92,6 @@ public interface MypageEnvReqstDao {
     public EnvReqstVo selectRwvInfo(EnvReqstVo envReqstVo) throws Exception;
 
     /**
-     * 환경교육시설 예약 등록(시설 예약)
-     *
-     * @Title : insertResveEnvFclSpceAply
-     * @Description : 환경교육시설 예약 등록(시설 예약)
-     * @param mypageEnvReqstVo 환경교육시설 예약 객체
-     * @throws Exception 예외
-     * @return MypageEnvReqstVo
-     */
-    public int insertResveEnvFclSpceAply(EnvReqstVo envReqstVo) throws Exception;
-
-    /**
-     * 환경교육시설 예약 등록(시설 예약)
-     *
-     * @Title : insertResveEnvFclAply
-     * @Description : 환경교육시설 예약 등록(시설 예약)
-     * @param mypageEnvReqstVo 환경교육시설 예약 객체
-     * @throws Exception 예외
-     * @return MypageEnvReqstVo
-     */
-    public int insertResveEnvFclAply(EnvReqstVo envReqstVo) throws Exception;
-
-    /**
-     * 환경교육시설 예약 등록(시설 예약)
-     *
-     * @Title : insertResveEnvFclAplyHstry
-     * @Description : 환경교육시설 예약 등록(시설 예약)
-     * @param mypageEnvReqstVo 환경교육시설 예약 객체
-     * @throws Exception 예외
-     * @return MypageEnvReqstVo
-     */
-    public int insertResveEnvFclAplyHstry(EnvReqstVo envReqstVo) throws Exception;
-
-    /**
-     * 환경교육시설 예약 등록(공간 예약)
-     *
-     * @Title : insertResveEnvSpceAply
-     * @Description : 환경교육시설 예약 등록(공간 예약)
-     * @param mypageEnvReqstVo 환경교육시설 예약 객체
-     * @throws Exception 예외
-     * @return MypageEnvReqstVo
-     */
-    public int insertResveEnvSpceAply(EnvReqstVo envReqstVo) throws Exception;
-
-    /**
      * 환경교육시설 예약 상세 데이터 조회
      *
      * @Title : selectFclRsvtdeList
@@ -155,7 +111,7 @@ public interface MypageEnvReqstDao {
      * @throws Exception 예외
      * @return int
      */
-    public int insertRsn(EnvReqstVo envReqstVo) throws Exception;
+    public int insertRsn(EnvReqstVo envReqstVo) throws Exception; 
 
     /**
      * 후기 작성 기능
@@ -178,15 +134,4 @@ public interface MypageEnvReqstDao {
      * @return int
      */
     public int deleteRvw(EnvReqstVo envReqstVo) throws Exception;
-
-    /**
-     * 예약 신청 취소 처리
-     *
-     * @Title : insertHstry
-     * @Description : 예약 신청 취소 처리
-     * @param mypageEnvReqstVo 입금 전 객체
-     * @throws Exception 예외
-     * @return int
-     */
-    public int insertHstry(EnvReqstVo envReqstVo) throws Exception;
 }
