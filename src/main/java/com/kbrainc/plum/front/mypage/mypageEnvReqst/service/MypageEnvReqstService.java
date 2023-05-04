@@ -25,9 +25,9 @@ import java.util.Map;
 public interface MypageEnvReqstService {
 
     /**
-     * 지역 환경교육센터 목록 조회
+     * 교육 시설 대여 이력 리스트 조회
      * Title : selectMypageEnvReqstList
-     * Description : 지역 환경교육센터 목록 조회
+     * Description : 교육 시설 대여 이력 리스트 조회
      *
      * @param mypageEnvReqstVo
      * @return list
@@ -35,13 +35,13 @@ public interface MypageEnvReqstService {
     List<EnvReqstVo> selectMypageEnvReqstList(EnvReqstVo envReqstVo);
 
     /**
-     * 환경교육시설 예약 상세화면으로 이동
+     * 환경교육시설 예약 상세 정보
      *
      * @Title : selectResveEnvInfo
-     * @Description : 환경교육시설 예약 상세화면으로 이동
-     * @param mypageEnvReqstVo 환경교육시설 예약 객체
+     * @Description : 환경교육시설 예약 상세 정보
+     * @param EnvReqstVo 환경교육시설 예약 상세 정보
      * @throws Exception 예외
-     * @return MypageEnvReqstVo
+     * @return EnvReqstVo
      */
     public EnvReqstVo selectResveEnvInfo(EnvReqstVo envReqstVo) throws Exception;
 
@@ -57,10 +57,10 @@ public interface MypageEnvReqstService {
     public EnvReqstVo selectSpceInfo(EnvReqstVo envReqstVo) throws Exception;
 
     /**
-     * 사유 확인 팝업
+     * 사유 확인 
      *
      * @Title : selectRsnInfo
-     * @Description : 사유 확인 팝업
+     * @Description : 사유 확인 
      * @param mypageEnvReqstVo 환경교육시설 예약 객체
      * @throws Exception 예외
      * @return MypageEnvReqstVo
@@ -68,10 +68,10 @@ public interface MypageEnvReqstService {
     public EnvReqstVo selectRsnInfo(EnvReqstVo envReqstVo) throws Exception;
 
     /**
-     * 입금정보 팝업
+     * 입금정보 
      *
      * @Title : selectDpstInfo
-     * @Description : 입금정보 팝업
+     * @Description : 입금정보 
      * @param mypageEnvReqstVo 환경교육시설 예약 객체
      * @throws Exception 예외
      * @return MypageEnvReqstVo
@@ -88,51 +88,6 @@ public interface MypageEnvReqstService {
      * @return MypageEnvReqstVo
      */
     public EnvReqstVo selectRwvInfo(EnvReqstVo envReqstVo) throws Exception;
-
-    /**
-     * 환경교육시설 예약 등록(시설 예약)
-     *
-     * @Title : insertResveEnvFclSpceAply
-     * @Description : 환경교육시설 예약 등록(시설 예약)
-     * @param mypageEnvReqstVo 환경교육시설 예약 객체
-     * @throws Exception 예외
-     * @return MypageEnvReqstVo
-     */
-    public int insertResveEnvFclSpceAply(EnvReqstVo envReqstVo) throws Exception;
-
-    /**
-     * 환경교육시설 예약 등록(시설 예약)
-     *
-     * @Title : insertResveEnvFclAply
-     * @Description : 환경교육시설 예약 등록(시설 예약)
-     * @param mypageEnvReqstVo 환경교육시설 예약 객체
-     * @throws Exception 예외
-     * @return MypageEnvReqstVo
-     */
-    public int insertResveEnvFclAply(EnvReqstVo envReqstVo) throws Exception;
-
-    /**
-     * 환경교육시설 예약 등록(시설 예약)
-     *
-     * @Title : insertResveEnvFclAplyHstry
-     * @Description : 환경교육시설 예약 등록(시설 예약)
-     * @param mypageEnvReqstVo 환경교육시설 예약 객체
-     * @throws Exception 예외
-     * @return MypageEnvReqstVo
-     */
-    public int insertResveEnvFclAplyHstry(EnvReqstVo envReqstVo) throws Exception;
-
-    /**
-     * 환경교육시설 예약 등록(공간 예약)
-     *
-     * @Title : insertResveEnvSpceAply
-     * @Description : 환경교육시설 예약 등록(공간 예약)
-     * @param mypageEnvReqstVo 환경교육시설 예약 객체
-     * @throws Exception 예외
-     * @return MypageEnvReqstVo
-     */
-    public int insertResveEnvSpceAply(EnvReqstVo envReqstVo) throws Exception;
-
     /**
      * 환경교육시설 예약 상세 데이터 조회
      *
@@ -176,15 +131,4 @@ public interface MypageEnvReqstService {
      * @return int
      */
     public int deleteRvw(EnvReqstVo envReqstVo) throws Exception;
-
-    /**
-     * 예약 신청 취소 처리
-     *
-     * @Title : insertHstry
-     * @Description : 예약 신청 취소 처리
-     * @param mypageEnvReqstVo 입금 전 객체
-     * @throws Exception 예외
-     * @return int
-     */
-    public int insertHstry(EnvReqstVo envReqstVo) throws Exception;
 }

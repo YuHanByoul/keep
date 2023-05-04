@@ -50,7 +50,7 @@
             <input type="hidden" id="aplyid" name="aplyid" value="0">
 	        <input type="hidden" id="rsvtdeid" name="rsvtdeid" value="0">
 	        <input type="hidden" id="pageNumber" name="pageNumber" th:value="${ (params.pageNumber==null || params.pageNumber==0 )? 1:params.pageNumber}">
-	        <input type="hidden" id="orderField" name="orderField" value="APLYID">
+	        <input type="hidden" id="orderField" name="orderField" value="MDFCN_DT">
 	        <input type="hidden" id="rowPerPage" name="rowPerPage" value="12"/>
         </form>
         
@@ -210,13 +210,12 @@
                     item.src = '/images/mng/admin_logo.png'; 
                 }
 
-                item.amt = ( Number(item.amt) > 0 )? addComma3(item.amt)+" 원" : "무료"; 
                 
                 switch(item.totalStts){
                 case '161101' :
                     item.sttsTxt = '입금대기';
                     item.sttsBgColor = ' bg-green';
-                    item.btnWait = true;
+                    if(item.amt > 0)item.btnWait = true;
                     break;
                 case '161102' :
                 	item.sttsTxt = '입금완료';
@@ -243,6 +242,8 @@
                 default :
                 	item.sttsTxt = '';
              }
+                
+             item.amt = ( Number(item.amt) > 0 )? addComma3(item.amt)+" 원" : "무료"; 
 
              if(item.rfndRejectRsn != null && item.rfndRejectRsn !="" ){item.btnCancel = true;}
                 

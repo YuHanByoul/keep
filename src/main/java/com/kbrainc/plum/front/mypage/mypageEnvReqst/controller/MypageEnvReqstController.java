@@ -73,12 +73,8 @@ public class MypageEnvReqstController {
      */
     @RequestMapping(value = "/front/mypage/mypageEnvReqst/mypageEnvReqstList.html")
     public String mypageEnvReqstList(EnvReqstVo envReqstVo, Model model) throws Exception {
-        
         model.addAttribute("params",envReqstVo);
-        
         Map<String,List<MypageEnvReqstVo>> listMap = new HashMap<>();
-        //List<EnvReqstVo> list = mypageEnvReqstService.selectMypageEnvReqstList(envReqstVo);
-        //model.addAttribute("list",listMap);
         return "front/mypage/mypageEnvReqst/mypageEnvReqstList";
     }
 
@@ -114,47 +110,9 @@ public class MypageEnvReqstController {
     @RequestMapping(value = "/front/mypage/mypageEnvReqst/mypageResveEnvView.html")
     public String mypageResveEnvView(EnvReqstVo envReqstVo, Model model, @UserInfo UserVo user, SpceVo spceVo) throws Exception {
         model.addAttribute("params",envReqstVo);
-
         envReqstVo.setUser(user);
         EnvReqstVo resultVo = mypageEnvReqstService.selectResveEnvInfo(envReqstVo);
         model.addAttribute("mypageEnvReqst", resultVo);
-        
-        //FileVo fileVo = new FileVo();
-        //fileVo.setUser(user);
-        //
-        //// 대표 이미지
-        //if (resultVo.getRprsImgFileid() != null && !resultVo.getRprsImgFileid().equals(0)) {
-        //    fileVo.setFilegrpid(Integer.parseInt(resultVo.getRprsImgFileid().toString()));
-        //    ArrayList<FileVo> fileList= fileService.getFileList(fileVo);
-        //    model.addAttribute("rprsImgFileMap",fileList );
-        //    model.addAttribute("rprsCurrentFileCnt", fileList.size());
-        //} else {
-        //    model.addAttribute("rprsImgFileMap", null);
-        //    model.addAttribute("rprsCurrentFileCnt", 0);
-        //}
-        //
-        //// 상세 이미지
-        //if (resultVo.getDtlImgFilegrpid() != null && !resultVo.getDtlImgFilegrpid().equals(0)) {
-        //    fileVo.setFilegrpid(Integer.parseInt(resultVo.getDtlImgFilegrpid().toString()));
-        //    ArrayList<FileVo> fileList= fileService.getFileList(fileVo);
-        //    model.addAttribute("dtlImgFileMap",fileList );
-        //    model.addAttribute("dtlCurrentFileCnt", fileList.size());
-        //} else {
-        //    model.addAttribute("dtlImgFileMap", null);
-        //    model.addAttribute("dtlCurrentFileCnt", 0);
-        //}
-        //
-        //// 안내자료
-        //if (resultVo.getGdncFileid() != null && !resultVo.getGdncFileid().equals(0)) {
-        //    fileVo.setFilegrpid(Integer.parseInt(resultVo.getGdncFileid().toString()));
-        //    ArrayList<FileVo> fileList= fileService.getFileList(fileVo);
-        //    model.addAttribute("gdncFileMap",fileList );
-        //    model.addAttribute("gdncCurrentFileCnt", fileList.size());
-        //} else {
-        //    model.addAttribute("gdncFileMap", null);
-        //    model.addAttribute("gdncCurrentFileCnt", 0);
-        //}
-
         return "front/mypage/mypageEnvReqst/mypageResveEnvView";
     }
 
@@ -259,25 +217,17 @@ public class MypageEnvReqstController {
             }
             return resultMap;
         }
-
         envReqstVo.setUser(user);
-
+        
         int retVal = 0;
-
         retVal = mypageEnvReqstService.insertRsn(envReqstVo);
-
-        // 상태변경 데이터 세팅
-        resveReqstVo.setAplyid(envReqstVo.getAplyid());
-        resveReqstVo.setUser(user);
-        // 상태변경이력 추가
-        resveReqstService.insertHstry(resveReqstVo);
-
+        
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "예약신청 취소에 성공하였습니다.");
+            resultMap.put("msg", "예약 취소에 성공하였습니다.");
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-            resultMap.put("msg", "예약신청 취소에 실패했습니다.");
+            resultMap.put("msg", "예약 취소에 실패했습니다.");
         }
 
         return resultMap;
