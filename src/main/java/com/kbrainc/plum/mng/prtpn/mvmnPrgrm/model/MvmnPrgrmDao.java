@@ -84,6 +84,18 @@ public interface MvmnPrgrmDao {
     public int insertMvmnPrgrmTrgtMapngCopy(MvmnPrgrmVo mvmnPrgrmVo) throws Exception;
     
     /**
+    * 교육프로그램관리 게시글 프로그램_회차 복사 등록
+    **
+    @Title : insertMvmnPrgrmTmeCopy
+    * @Description : 교육프로그램관리 게시글 프로그램_회차 복사 등록
+    * @param mvmnPrgrmVo 교육프로그램관리 객체
+    * @return
+    * @throws Exception
+    * @return int
+    */
+    public int insertMvmnPrgrmTmeCopy(MvmnPrgrmVo mvmnPrgrmVo) throws Exception;
+    
+    /**
     * 교육프로그램관리 게시글 상세조회
     *
     * @Title : selectMvmnPrgrmInfo

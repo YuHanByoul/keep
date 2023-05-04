@@ -35,6 +35,7 @@
 		            ,A.PRGRMID
                     ,A.CLASS AS CLASS_NM
                     ,CONVERT(A.MENUID, VARCHAR(255)) AS UPPR_MENU_NM
+                    ,A.PAGEID
 					  FROM TB_CMM_MENU A
 		                  ,TB_CMM_SITE D
 					 WHERE  A.SITEID = D.SITEID
@@ -70,6 +71,7 @@
 		            ,A.PRGRMID
                     ,A.CLASS AS CLASS_NM
                     ,CASE WHEN A.UPPR_MENUID > 0 THEN  CONCAT(C.NM) ELSE '' END AS UPPR_MENU_NM
+                    ,A.PAGEID
 					  FROM TB_CMM_MENU A
 		                  ,TB_CMM_SITE D
 						  ,MENU_CTE C
@@ -100,12 +102,14 @@
 			      END) AS PTYPE_CD
                , C.CLASS_NM
                , C.UPPR_MENU_NM
+               , C.PAGEID
 		FROM MENU_CTE C LEFT OUTER JOIN TB_CMM_PRGRM B 
 		  ON C.PRGRMID = B.PRGRMID
 		UNION ALL
 		SELECT B.SITEID, A.MENUID, A.NM, A.NM_ENGL, A.DC, A.TYPE_CD, A.UPPR_MENUID, A.REF_MENUID, A.POPUP_YN, A.POPUP_HG, A.POPUP_WD, A.POPUP_TRGT_CD, A.LOGIN_YN, 
 		       A.HIDE_YN, A.HTTPS_USE_YN, A.NM_EXPSR_TRGT_CD, A.DPTH, A.ORD, A.TREE_MENU_NM, A.TREE_MENUID, A.TREE_ORD, A.PRGRMID, A.URL, A.PTYPE_CD, A.CLASS_NM
-               ,''
+               ,'' AS UPRR_MENU_NM
+               ,NULL AS PAGEID
 		  FROM (
 		        SELECT 0 MENUID, 'ROOT' NM, '' NM_ENGL, '' DC, '' TYPE_CD, 0 UPPR_MENUID, 0 REF_MENUID, '' POPUP_YN, 0 POPUP_HG, 0 POPUP_WD, '' POPUP_TRGT_CD, '' LOGIN_YN, 
 		               '' HIDE_YN, '' HTTPS_USE_YN, '' NM_EXPSR_TRGT_CD, 0 DPTH, '0' ORD, '' TREE_MENU_NM, '' TREE_MENUID, '0' TREE_ORD, 0 PRGRMID, '' URL, '' PTYPE_CD, '' CLASS_NM

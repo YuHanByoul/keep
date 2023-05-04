@@ -122,6 +122,7 @@ public class MvmnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Mvm
           retVal += mvmnPrgrmDao.insertMvmnPrgrmCopy(mvmnPrgrmVo);
           retVal += mvmnPrgrmDao.insertMvmnPrgrmClsfMapngCopy(mvmnPrgrmVo);
           retVal += mvmnPrgrmDao.insertMvmnPrgrmTrgtMapngCopy(mvmnPrgrmVo);
+          retVal += mvmnPrgrmDao.insertMvmnPrgrmTmeCopy(mvmnPrgrmVo);
         }
         
         

@@ -120,12 +120,22 @@ public class MenuItem implements Cloneable {
     /** 상위 메뉴명 */
     private String upprMenuNm;
     
+    /** 페이지아이디 */
+    private Integer pageid;
+    
     public String getNm() {
         Locale locale = LocaleContextHolder.getLocale();
         if (locale.toLanguageTag().equals("en") && !"".equals(StringUtil.nvl(this.nmEngl))) {
             return this.nmEngl;
         }
         return nm;
+    }
+    
+    public String getUrl() {
+        if (pageid != null) {
+            url = url.replaceAll("\\{pageid\\}", Integer.toString(pageid));
+        }
+        return url;
     }
     
     public String[] splitTreeMenuid() {
