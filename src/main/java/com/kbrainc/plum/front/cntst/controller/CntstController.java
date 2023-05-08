@@ -235,12 +235,12 @@ public class CntstController {
                 String yyMMdd = DateTimeFormatter.ofPattern("yyMMdd").format(LocalDate.now());
                 cntstAplyVo.setAplyno("CT" + yyMMdd + cntstAplyVo.getCntstid() + "0001");
             }else{
-                String Serial = cntstAplyVo.getAplyno();
-                int SerialFomat = Integer.parseInt(Serial);
-                SerialFomat++;
+                String serial = cntstAplyVo.getAplyno();
+                int serialFomat = Integer.parseInt(serial);
+                serialFomat++;
                 
                 String yyMMdd = DateTimeFormatter.ofPattern("yyMMdd").format(LocalDate.now());
-                cntstAplyVo.setAplyno("CT" + yyMMdd + cntstAplyVo.getCntstid() + String.format("%04d", SerialFomat));
+                cntstAplyVo.setAplyno("CT" + yyMMdd + cntstAplyVo.getCntstid() + String.format("%04d", serialFomat));
             }
             
             cntstAplyVo.setUser(userVo);

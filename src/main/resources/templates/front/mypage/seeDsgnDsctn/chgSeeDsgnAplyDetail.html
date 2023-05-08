@@ -6,18 +6,15 @@
 <body>
     <div layout:fragment="content">
         <form id="chgAplyDtlForm" name="chgAplyDtlForm" method="post">
-            <input type="hidden" id="aplyid" name="aplyid" th:value="${chgAplyInfo.aplyid}">
-            <input type="hidden" id="aplySttsCd" name="aplySttsCd" th:value="${chgAplyInfo.aplySttsCd}">
+            <input type="hidden" id="dmndid" name="dmndid" th:value="${chgSeeDsgnAplyInfo.dmndid}">
+            <input type="hidden" id="sttsCd" name="sttsCd" th:value="${chgSeeDsgnAplyInfo.sttsCd}">
             <!-- content -->
 
             <div class="tab-content tab-sub dropDown">
                 <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">변경내역</button>
                 <ul class="tab-list tab-list-pc target" role="tablist">
-                    <li class="tab"><a th:href="@{/front/dsgnMng/dsgnMngDetailForm.html?aplcntid=}+${aplcntid}" role="tab">지정내역</a></li>
-                    <li class="tab active"><a id="chgDsctnTab" th:href="@{/front/dsgnMng/chgDsctnForm.html?aplcntid=}+${aplcntid}" role="tab" >변경내역</a></li>
-                    <li class="tab"><a th:href="@{/front/dsgnMng/operRsltForm.html?aplcntid=}+${aplcntid}" role="tab" >운영결과</a></li>
-                    <li class="tab"><a th:href="@{/front/dsgnMng/implmntIdntyForm.html?aplcntid=}+${aplcntid}" role="tab" >이행확인</a></li>
-                    <li class="tab"><a th:href="@{/front/dsgnMng/objcAplyForm.html?aplcntid=}+${aplcntid}" role="tab" >이의신청</a></li>
+                    <li class="tab"><a th:href="@{/front/mypage/seeDsgnDsctn/seeDsgnDsctnDetailForm.html}" role="tab">지정내역</a></li>
+                    <li class="tab active"><a id="chgDsctnTab" th:href="@{/front/mypage/seeDsgnDsctn/chgSeeDsgnDsctnForm.html}" role="tab" >변경내역</a></li>
                 </ul>
             </div>
 
@@ -29,7 +26,7 @@
 
             <div class="table-row">
                 <table>
-                    <caption>기본정보  - 지정프로그램명, 지정번호, 기관명, 지정기간</caption>
+                    <caption>기본정보  - 시도, 지정번호, 기관명, 지정획득일</caption>
                     <colgroup>
                         <col style="width:140px;">
                         <col>
@@ -38,26 +35,28 @@
                     </colgroup>
                     <tbody>
                         <tr>
-                            <th scope="row">지정프로그램명</th>
-                            <td>
-                                <select id="prgrmid" name="prgrmid" value="" title="프로그램 선택" th:readonly="${chgAplyInfo.sttsCd='119101'}">
-                                    <th:block th:if="${dsgnPrgrmList != null}" th:each="item, idx : ${dsgnPrgrmList}">
+                            <th scope="row">접수번호</th>
+                            <td colspan="3">
+                                <select id="aplyid" name="aplyid" value="" title="접수번호 선택" th:readonly="${chgSeeDsgnAplyInfo.sttsCd=='252101'}">
+                                    <th:block th:if="${dsgnAplyList != null}" th:each="item, idx : ${dsgnAplyList}">
                                         <option th:if="${idx.count==1}"value="">선택</option>
-                                        <option th:value="${item.prgrmid}" th:selected="${item.prgrmid == chgAplyInfo.prgrmid}">[[${item.prgrmNm}]]</option>
+                                        <option th:value="${item.aplyid}" th:selected="${item.aplyid == chgSeeDsgnAplyInfo.aplyid}">[[${item.rcptno}]]</option>
                                     </th:block>
                                 </select>
                             </td>
+                        </tr>                        
+                        <tr>
+                            <th scope="row">시도</th>
+                            <td id="ctprvnNm" name="ctprvnNm">[[${chgSeeDsgnAplyInfo.ctprvnNm}]]</td>
                             <th scope="row">지정번호</th>
-                            <td>
-                                [[${chgAplyInfo.dsgnNo}]]
-                            </td>
+                            <td id="dsgnno" name="dsgnno">[[${chgSeeDsgnAplyInfo.dsgnno}]]</td>
                         </tr>
                         <tr>
                             <th scope="row">기관명</th>
-                            <td>[[${chgAplyInfo.instNm}]]</td>
-                            <th scope="row">지정기간</th>
-                            <td>[[${chgAplyInfo.dsgnPrd}]]</td>
-                        </tr>
+                            <td id="instNm" name="instNm">[[${chgSeeDsgnAplyInfo.instNm}]]</td>
+                            <th scope="row">지정획득일</th>
+                            <td id="dsgnDe" name="dsgnDe">[[${chgSeeDsgnAplyInfo.dsgnDe}]]</td>
+                        </tr>                                 
                     </tbody>
                 </table>
             </div>
@@ -69,121 +68,82 @@
                 </div>
             </div>
 
-            <div class="table-combi table-layout-auto">
+            <div class="table-row table-row-mo">
                 <table>
-                    <caption>변경내용 - 변경사항(변경시, 1.프로그램영역 (활동프로그램 세부 내용의 일부 변경,20% 이내의 예산 변경),2. 지도자 영역: 동일 경력 및 유사 자격자로 변경, 3. 교육활동환경영역: 동일조건의 장소와 인력으로 변경, 변경사유), 여부, 추가제출서류, 변경내용</caption>
-                    <colgroup></colgroup>
-                    <thead>
-                        <tr>
-                            <th scope="colgroup" colspan="2">변경사항</th>
-                            <th scope="col">여부</th>
-                            <th scope="col">추가제출서류</th>
-                            <th scope="col">변경내용</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th scope="row" colspan="2">변경 시</th>
-                            <td>[[${chgAplyInfo.samenssYn == 'Y'? 'O':'X'}]]</td>
-                            <td>-</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <th scope="rowgroup" rowspan="2">1. 프로그램 영역</th>
-                            <th scope="row">황동프로그램 세부 내용의 일부 변경</th>
-                            <td>[[${chgAplyInfo.prgrmChgYn == 'Y'? 'O':'X'}]]</td>
-                            <td>지정 기준 1</td>
-                            <td>[[${chgAplyInfo.prgrmChgCn}]]</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">20%  이내의 예산 변경</th>
-                            <td>[[${chgAplyInfo.bgtChgYn == 'Y'? 'O':'X'}]]</td>
-                            <td>지정 기준 2</td>
-                            <td>[[${chgAplyInfo.bgtChgCn}]]</td>
-                        </tr>
-                        <tr>
-                            <th scope="row" colspan="2"> 2.지도자 영역 : 동일 경력 및 유사 자격자로 변경</th>
-                            <td>[[${chgAplyInfo.ldrChgYn == 'Y'? 'O':'X'}]]</td>
-                            <td>지정 기준 1,4</td>
-                            <td>[[${chgAplyInfo.ldrChgCn}]]</td>
-                        </tr>
-                        <tr>
-                            <th scope="row" colspan="2"> 3.교육활동환경영역 : 동일조건의 장소와 인력으로 변경</th>
-                            <td>[[${chgAplyInfo.eduEnvChgYn} == 'Y'? 'O':'X']]</td>
-                            <td>지정 기준 5</td>
-                            <td>[[${chgAplyInfo.eduEnvChgCn}]]</td>
-                        </tr>
-                        <tr>
-                            <th scope="row" colspan="2">변경사유</th>
-                            <td colspan="3">[[${chgAplyInfo.eduEnvChgCn}]]</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-
-            <div class="table-caption">
-                <div class="left">
-                    <h3 class="sub-title">증빙자료</h3>
-                </div>
-            </div>
-
-            <div class="table-row">
-                <table>
-                    <caption>증빙자료  - 첨부파일</caption>
+                    <caption>변경내용 - 변경사유, 첨부파일</caption>
                     <colgroup>
                         <col style="width:140px;">
                         <col>
                     </colgroup>
                     <tbody>
                         <tr>
+                            <th scope="row">변경사유</th>
+                            <td>[[${chgSeeDsgnAplyInfo.dmndCn}]]</td>
+                        </tr>
+                        <tr>
                             <th scope="row">첨부파일</th>
                             <td>
                                 <div class="form-input-file">
-                                <ul>
-                                <th:block th:if="${fileList != null} "th:each="item : ${fileList}">
-                                    <li class="file-block" th:data_ext="${item.ext}"><span class="name"><a href="javascript:void(0)" th:onclick="javascript:downloadFileByFileid([[${item.fileid}]],[[${item.fileIdntfcKey}]])"><th:block th:text="${item.orginlFileNm}"></th:block></a></span></li>
-                                </th:block>
-                                </ul>
-                            </div>
+                                    <ul>
+	                                    <th:block th:if="${fileList != null} "th:each="item : ${fileList}">
+	                                        <li class="file-block" th:data_ext="${item.ext}"><span class="name"><a href="javascript:void(0)" th:onclick="javascript:downloadFileByFileid([[${item.fileid}]],[[${item.fileIdntfcKey}]])"><th:block th:text="${item.orginlFileNm}"></th:block></a></span></li>
+	                                    </th:block>
+                                    </ul>
+                                </div>
                             </td>
                         </tr>
+                        <tr>
+                            <th scope="row">진행상태</th>
+                            <td>[[${chgSeeDsgnAplyInfo.sttsNm}]]</td>
+                        </tr>                        
                     </tbody>
                 </table>
             </div>
-
+            <th:block th:if="${chgSeeDsgnAplyInfo.sttsCd == '252102' || chgSeeDsgnAplyInfo.sttsCd == '252103'}">
+	            <div class="table-caption">
+	                <div class="left">
+	                    <h3 class="sub-title">승인/불가 사유</h3>
+	                </div>
+	            </div>
+	            <div class="table-row table-row-mo">
+	                <table>
+	                    <caption>승인/불가 사유 - 사유</caption>
+	                    <colgroup>
+	                        <col style="width:140px;">
+	                        <col>
+	                    </colgroup>
+	                    <tbody>
+	                        <tr>
+	                            <th scope="row">사유</th>
+	                            <td>[[${chgSeeDsgnAplyInfo.ansCn}]]</td>
+	                        </tr>
+	                    </tbody>
+	                </table>
+	            </div>
+            </th:block>
             <div class="btn-wrap">
-                <div class="right">
-                    <button type="button" class="btn-medium btn-gray" id="delBtn" onclick="aplyCmptn.delAply()">삭제</button>
-                    <button type="button" class="btn-medium btn-gray" id="modBtn" onclick="aplyCmptn.modAply()">수정</button>
+                <div class="center">
+                    <button type="button" class="btn-medium btn-gray" id="delBtn" onclick="chgSeeDsgnAplyCmptn.delAply()">삭제</button>
+                    <button type="button" class="btn-medium btn-green" id="modBtn" onclick="chgSeeDsgnAplyCmptn.modAply()">수정</button>
                 </div>
             </div>
             <!-- //content -->
         </form>
         <script th:inline="javascript">
-
-
-            var aplyCmptn = {
-
-
-            	init(){
-            		if($("#aplySttsCd").val()=='119101'){
-
-            			$("#delBtn").show();
-            			$("#modBtn").hide();
-            		}else{
-            			$("#delBtn").hide();
-            			$("#modBtn").show();
-            		}
-
-
-
-            	},
-            	delAply() {
-
-                    var id=$("#aplyid").val();
+            var chgSeeDsgnAplyCmptn = {
+                init(){
+                    if($("#sttsCd").val()=='252101'){
+                        $("#delBtn").show();
+                        $("#modBtn").hide();
+                    }else{
+                        $("#delBtn").hide();
+                        $("#modBtn").show();
+                    }
+                },
+                delAply() {
+                    var id=$("#dmndid").val();
                      $.ajax({
-                    	 url: "/front/dsgnMng/deleteChgAply.do?aplyid="+id,
+                         url: "/front/mypage/seeDsgnDsctn/deleteChgSeeDsgnAply.do?dmndid="+id,
                          type: 'GET',
                          cache: false,
                          dataType: 'json',
@@ -197,15 +157,15 @@
                              closeWorkProgress();
                          }
                     });
-            	},
-            	modAply() {
-            		var id= $("#aplyid").val();
-            		location.href = "/front/dsgnMng/chgAplyUpdateForm.html?aplyid="+id;
-            	}
+                },
+                modAply() {
+                    var id= $("#dmndid").val();
+                    location.href = "/front/mypage/seeDsgnDsctn/chgSeeDsgnAplyUpdateForm.html?dmndid="+id;
+                }
             }
 
             $(function(){
-            	aplyCmptn.init();
+                chgSeeDsgnAplyCmptn.init();
             });
 
 

@@ -38,6 +38,8 @@ public class SeeDsgnDsctnVo extends ParentRequestVo {
     private Integer dsctnid;
     /** 신청아이디 */
     private Integer aplyid;
+    /** 접수번호 */
+    private String rcptno;
     /** 상태 코드 */
     private String sttsCd;
     /** 상태 코드명 */
@@ -50,6 +52,8 @@ public class SeeDsgnDsctnVo extends ParentRequestVo {
     private String dsgnno;
     /** 요청 내용 */
     private String dmndCn;
+    /** 답변 내용 */
+    private String ansCn;
     
     /** 지정_일자 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")

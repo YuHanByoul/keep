@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -101,10 +102,10 @@ public class InfntSchdlController {
         model.addAttribute("eduClssRm", eduClssRmService.selectEduClssRmInfo(eduClssRmVo));
         model.addAttribute("ym", ym);
         
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM");
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM", Locale.KOREA);
         Date date = dateFormatter.parse(ym);
 
-        SimpleDateFormat strFormatter = new SimpleDateFormat("yyyy년 MM월");
+        SimpleDateFormat strFormatter = new SimpleDateFormat("yyyy년 MM월", Locale.KOREA);
         String ymDesc = strFormatter.format(date);
         model.addAttribute("ymDesc", ymDesc);
         
@@ -128,10 +129,10 @@ public class InfntSchdlController {
         InfntSchdlVo result = null;
         result = infntSchdlService.selectInfntSchdlInfo(infntSchdlVo);
         
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM");
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM", Locale.KOREA);
         Date date = dateFormatter.parse(result.getYm());
         
-        SimpleDateFormat strFormatter = new SimpleDateFormat("yyyy년 MM월");
+        SimpleDateFormat strFormatter = new SimpleDateFormat("yyyy년 MM월", Locale.KOREA);
         String ymDesc = strFormatter.format(date);
 
         model.addAttribute("infntSchdl", result);

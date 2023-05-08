@@ -119,24 +119,26 @@ public class PrgrmMngController {
                       // 조회수 증가
                       this.prgrmMngService.updateHits(detailPrgrmMngVo);
                   }
-              }
-              
-              if (!StringUtil.nvl(prgrmMngVo.getAtchFilegrpid()).equals("") && !StringUtil.nvl(prgrmMngVo.getAtchFilegrpid()).equals(0)) {
-                  FileVo fileVo = new FileVo();
-                  fileVo.setFilegrpid(prgrmMngVo.getAtchFilegrpid());
-
-                  model.addAttribute("atchFileList", fileService.getFileList(fileVo));    //파일목록
-
-              } else {
-                  model.addAttribute("atchFileList", Collections.emptyList());
-              }
-              
-              if(detailPrgrmMngVo.getRprsImgFileid() != 0 && detailPrgrmMngVo.getFileIdntfcKey() != null) {
-                  StringBuffer fileBtn = new StringBuffer();
-                  fileBtn.append("<div class ='label label-inverse text-white' id='" +detailPrgrmMngVo.getRprsImgFileid() + "'>");
-                  fileBtn.append("<a href=javascript:downloadFileByFileid('" + detailPrgrmMngVo.getRprsImgFileid() + "','" + detailPrgrmMngVo.getFileIdntfcKey() + "') class='text-white'>" + detailPrgrmMngVo.getOrginlFileNm() + "&nbsp;&nbsp;</a>");
-                  fileBtn.append("<a href=javascript:fn_deleteMainFile('" + detailPrgrmMngVo.getRprsImgFileid() + "','" + detailPrgrmMngVo.getFileIdntfcKey() + "') class='text-white'>X</a></div>");
-                  model.addAttribute("fileBtn", fileBtn.toString());
+                  
+                  if (null != detailPrgrmMngVo) {
+                      if (!StringUtil.nvl(detailPrgrmMngVo.getAtchFilegrpid()).equals("") && !StringUtil.nvl(detailPrgrmMngVo.getAtchFilegrpid()).equals(0)) {
+                          FileVo fileVo = new FileVo();
+                          fileVo.setFilegrpid(detailPrgrmMngVo.getAtchFilegrpid());
+                          
+                          model.addAttribute("atchFileList", fileService.getFileList(fileVo));    //파일목록
+                          
+                      } else {
+                          model.addAttribute("atchFileList", Collections.emptyList());
+                      }
+                      
+                      if(detailPrgrmMngVo.getRprsImgFileid() != 0 && detailPrgrmMngVo.getFileIdntfcKey() != null) {
+                          String fileBtn = "";
+                          fileBtn += "<div class ='label label-inverse text-white' id='" +detailPrgrmMngVo.getRprsImgFileid() + "'>";
+                          fileBtn += "<a href=javascript:downloadFileByFileid('" + detailPrgrmMngVo.getRprsImgFileid() + "','" + detailPrgrmMngVo.getFileIdntfcKey() + "') class='text-white'>" + detailPrgrmMngVo.getOrginlFileNm() + "&nbsp;&nbsp;</a>";
+                          fileBtn += "<a href=javascript:fn_deleteMainFile('" + detailPrgrmMngVo.getRprsImgFileid() + "','" + detailPrgrmMngVo.getFileIdntfcKey() + "') class='text-white'>X</a></div>";
+                          model.addAttribute("fileBtn", fileBtn);
+                      }
+                  }
               }
           }
           

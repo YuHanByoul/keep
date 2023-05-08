@@ -139,19 +139,52 @@ public class MvmnPrgrmController {
         //if(mvmnPrgrmVo.getEduIntrcnFileid() != 0 && result.getEduIntrcnFileIdntfcKey() != null) {
         if(result.getEduIntrcnFileIdntfcKey() != null) {
             StringBuffer eduIntrcnFileBtn = new StringBuffer();
-            eduIntrcnFileBtn.append("<div class ='label label-inverse text-white' id='" + result.getEduIntrcnFileid() + "'>");
-            eduIntrcnFileBtn.append("<a href=javascript:downloadFileByFileid('" + result.getEduIntrcnFileid() + "','" + result.getEduIntrcnFileIdntfcKey() + "') class='text-white'>" + result.getEduIntrcnOrginlFileNm() + "&nbsp;&nbsp;</a>");
-            eduIntrcnFileBtn.append("<a href=javascript:fn_deleteFileList('" + result.getEduIntrcnFileid() + "','" + result.getEduIntrcnFileIdntfcKey() + "') class='text-white'>X</a></div>");
-            model.addAttribute("eduIntrcnFileBtn", eduIntrcnFileBtn);
+            eduIntrcnFileBtn.append("<div class ='label label-inverse text-white' id='");
+            eduIntrcnFileBtn.append(mvmnPrgrmVo.getEduIntrcnFileid());
+            eduIntrcnFileBtn.append("'>");
+            
+            eduIntrcnFileBtn.append("<a href=javascript:downloadFileByFileid('");
+            eduIntrcnFileBtn.append(mvmnPrgrmVo.getEduIntrcnFileid());
+            eduIntrcnFileBtn.append("','");
+            eduIntrcnFileBtn.append(result.getEduIntrcnFileIdntfcKey());
+            eduIntrcnFileBtn.append("') class='text-white'>");
+            eduIntrcnFileBtn.append(result.getEduIntrcnOrginlFileNm());
+            eduIntrcnFileBtn.append("&nbsp;&nbsp;</a>");
+            
+            eduIntrcnFileBtn.append("<a href=javascript:fn_deleteFileList('");
+            eduIntrcnFileBtn.append(mvmnPrgrmVo.getEduIntrcnFileid());
+            eduIntrcnFileBtn.append("','");
+            eduIntrcnFileBtn.append(result.getEduIntrcnFileIdntfcKey());
+            eduIntrcnFileBtn.append("') class='text-white'>X</a></div>");
+            
+            model.addAttribute("eduIntrcnFileBtn", eduIntrcnFileBtn.toString());
+            
         }
         //교육사진 첨부파일
         //if(mvmnPrgrmVo.getEduPhotoFileid() != 0 && result.getEduPhotoFileIdntfcKey() != null) {
         if(result.getEduPhotoFileIdntfcKey() != null) {
             StringBuffer eduPhotoFileBtn = new StringBuffer();
-            eduPhotoFileBtn.append("<div class ='label label-inverse text-white' id='" + result.getEduPhotoFileid() + "'>");
-            eduPhotoFileBtn.append("<a href=javascript:downloadFileByFileid('" + result.getEduPhotoFileid() + "','" + result.getEduPhotoFileIdntfcKey() + "') class='text-white'>" + result.getEduPhotoOrginlFileNm() + "&nbsp;&nbsp;</a>");
-            eduPhotoFileBtn.append("<a href=javascript:fn_deleteFileList('" + result.getEduPhotoFileid() + "','" + result.getEduPhotoFileIdntfcKey() + "') class='text-white'>X</a></div>");
-            model.addAttribute("eduPhotoFileBtn", eduPhotoFileBtn);
+            
+            eduPhotoFileBtn.append("<div class ='label label-inverse text-white' id='");
+            eduPhotoFileBtn.append(mvmnPrgrmVo.getEduPhotoFileid());
+            eduPhotoFileBtn.append("'>");
+            
+            eduPhotoFileBtn.append("<a href=javascript:downloadFileByFileid('");
+            eduPhotoFileBtn.append(mvmnPrgrmVo.getEduPhotoFileid());
+            eduPhotoFileBtn.append("','");
+            eduPhotoFileBtn.append(result.getEduPhotoFileIdntfcKey());
+            eduPhotoFileBtn.append("') class='text-white'>");
+            eduPhotoFileBtn.append(result.getEduPhotoOrginlFileNm());
+            eduPhotoFileBtn.append("&nbsp;&nbsp;</a>");
+            
+            eduPhotoFileBtn.append("<a href=javascript:fn_deleteFileList('");
+            eduPhotoFileBtn.append(mvmnPrgrmVo.getEduPhotoFileid());
+            eduPhotoFileBtn.append("','");
+            eduPhotoFileBtn.append(result.getEduPhotoFileIdntfcKey());
+            eduPhotoFileBtn.append("') class='text-white'>X</a></div>");
+            
+            model.addAttribute("eduPhotoFileBtn", eduPhotoFileBtn.toString());
+            
         }
         model.addAttribute("mvmnPrgrm", result);
         model.addAttribute("resultTmeList", resultTmeList);
