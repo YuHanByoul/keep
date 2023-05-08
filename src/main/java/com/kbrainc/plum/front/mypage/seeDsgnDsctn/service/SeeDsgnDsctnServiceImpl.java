@@ -164,18 +164,18 @@ public class SeeDsgnDsctnServiceImpl extends PlumAbstractServiceImpl implements 
 	}
 
 	/**
-	* 지정프로그램 목록 조회
+	* 지정신청 목록 조회
 	*
-	* @Title : dsgnPrgrmList
-	* @Description : 지정프로그램 목록 조회
+	* @Title : dsgnAplyList
+	* @Description : 지정신청 목록 조회
 	* @param seeDsgnDsctnVo
 	* @return
 	* @throws Exception
 	* @return List<SeeDsgnDsctnVo>
 	*/
 	@Override
-	public List<SeeDsgnDsctnVo> dsgnPrgrmList(SeeDsgnDsctnVo seeDsgnDsctnVo) throws Exception {
-		return seeDsgnDsctnDao.dsgnPrgrmList(seeDsgnDsctnVo);
+	public List<SeeDsgnDsctnVo> dsgnAplyList(SeeDsgnDsctnVo seeDsgnDsctnVo) throws Exception {
+		return seeDsgnDsctnDao.dsgnAplyList(seeDsgnDsctnVo);
 	}
 
 	/**
