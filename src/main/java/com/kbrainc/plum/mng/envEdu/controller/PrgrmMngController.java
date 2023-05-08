@@ -132,11 +132,11 @@ public class PrgrmMngController {
               }
               
               if(detailPrgrmMngVo.getRprsImgFileid() != 0 && detailPrgrmMngVo.getFileIdntfcKey() != null) {
-                  StringBuffer fileBtn = new StringBuffer();
-                  fileBtn.append("<div class ='label label-inverse text-white' id='" +detailPrgrmMngVo.getRprsImgFileid() + "'>");
-                  fileBtn.append("<a href=javascript:downloadFileByFileid('" + detailPrgrmMngVo.getRprsImgFileid() + "','" + detailPrgrmMngVo.getFileIdntfcKey() + "') class='text-white'>" + detailPrgrmMngVo.getOrginlFileNm() + "&nbsp;&nbsp;</a>");
-                  fileBtn.append("<a href=javascript:fn_deleteMainFile('" + detailPrgrmMngVo.getRprsImgFileid() + "','" + detailPrgrmMngVo.getFileIdntfcKey() + "') class='text-white'>X</a></div>");
-                  model.addAttribute("fileBtn", fileBtn.toString());
+                  String fileBtn = "";
+                  fileBtn += "<div class ='label label-inverse text-white' id='" +detailPrgrmMngVo.getRprsImgFileid() + "'>";
+                  fileBtn += "<a href=javascript:downloadFileByFileid('" + detailPrgrmMngVo.getRprsImgFileid() + "','" + detailPrgrmMngVo.getFileIdntfcKey() + "') class='text-white'>" + detailPrgrmMngVo.getOrginlFileNm() + "&nbsp;&nbsp;</a>";
+                  fileBtn += "<a href=javascript:fn_deleteMainFile('" + detailPrgrmMngVo.getRprsImgFileid() + "','" + detailPrgrmMngVo.getFileIdntfcKey() + "') class='text-white'>X</a></div>";
+                  model.addAttribute("fileBtn", fileBtn);
               }
           }
           
