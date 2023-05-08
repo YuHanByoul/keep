@@ -922,19 +922,16 @@ public class DsgnPrgrmController {
     public String dsgnInfoChgPopup(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
     	DsgnPrgrmVo dsgnPrgrmInfo = new DsgnPrgrmVo();
 
-
         model.addAttribute("callSe", dsgnPrgrmVo.getCallSe());
 
         //지정내역 조회
     	List<DsgnPrgrmVo> dsgnHstryList =  dsgnPrgrmServiceImpl.selectDsgnHstry(dsgnPrgrmVo);
 
-
     	//최초 지정승인
     	if(dsgnHstryList.size() == 0) {
     		//지정번호 조회
 
-    		dsgnPrgrmVo = dsgnPrgrmServiceImpl.selectDsgnNo(dsgnPrgrmVo);
-    		BeanUtils.copyProperties(dsgnPrgrmVo, dsgnPrgrmInfo);
+    		dsgnPrgrmInfo = dsgnPrgrmServiceImpl.selectDsgnNo(dsgnPrgrmVo);
 
     	}else {
     		//결과보고 지정승인 클릭시 Hstryid 세팅
