@@ -225,4 +225,16 @@ public class envEduPlcyAndBizIntroController {
         return VIEW_PATH + "/intro14";
     }
 
+    /**
+     * 환경교육도시
+     *
+     * @return string
+     * @throws Exception
+     * @Title : intro14
+     * @Description : 환경교육도시
+     */
+    @GetMapping("/intro15.html")
+    public String intro15() throws Exception {
+        return VIEW_PATH + "/intro15";
+    }
 }
