@@ -5,25 +5,18 @@
     layout:decorator="layout/front/subLayout" >
 <body>
     <div layout:fragment="content">
-        <form id="chgAplyDtlForm" name="chgAplyDtlForm" method="post">
-            <input type="hidden" id="aplyid" name="aplyid" th:value="${chgAplyInfo.aplyid}">
-            <input type="hidden" id="chgRsn" name="chgRsn" th:value="${chgAplyInfo.chgRsn}">
-
-            <input type="hidden" id="aplcntid" name="aplcntid" th:value="${chgAplyInfo.aplcntid}">
-            <input type="hidden" id="aplySttsCd" name="aplySttsCd" th:value="${chgAplyInfo.aplySttsCd}">
-            <input type="hidden" id="splmntDmndCn" name="splmntDmndCn" th:value="${chgAplyInfo.splmntDmndCn}">
-<!--             <input type="hidden" id="sttsMdfcnDt" name="sttsMdfcnDt" th:value="${chgAplyInfo.sttsMdfcnDt}"> -->
+        <form id="chgSeeDsgnAplyDtlForm" name="chgSeeDsgnAplyDtlForm" method="post">
+            <input type="hidden" id="dmndid" name="dmndid" th:value="${chgSeeDsgnAplyInfo.dmndid}">
+            <input type="hidden" id="sttsCd" name="sttsCd" th:value="${chgSeeDsgnAplyInfo.sttsCd}">        
+            <input type="hidden" id="aplcntid" name="aplcntid" th:value="${chgSeeDsgnAplyInfo.aplcntid}">
 
             <!-- content -->
 
             <div class="tab-content tab-sub dropDown">
                 <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">변경내역</button>
                 <ul class="tab-list tab-list-pc target" role="tablist">
-                    <li class="tab"><a th:href="@{/front/dsgnMng/dsgnMngDetailForm.html?aplcntid=}+${aplcntid}" role="tab">지정내역</a></li>
-                    <li class="tab active"><a id="chgDsctnTab" th:href="@{/front/dsgnMng/chgDsctnForm.html?aplcntid=}+${aplcntid}" role="tab" >변경내역</a></li>
-                    <li class="tab"><a th:href="@{/front/dsgnMng/operRsltForm.html?aplcntid=}+${aplcntid}" role="tab" >운영결과</a></li>
-                    <li class="tab"><a th:href="@{/front/dsgnMng/implmntIdntyForm.html?aplcntid=}+${aplcntid}" role="tab" >이행확인</a></li>
-                    <li class="tab"><a th:href="@{/front/dsgnMng/objcAplyForm.html?aplcntid=}+${aplcntid}" role="tab" >이의신청</a></li>
+                    <li class="tab"><a th:href="@{/front/mypage/seeDsgnDsctn/seeDsgnDsctnDetailForm.html}" role="tab">지정내역</a></li>
+                    <li class="tab active"><a id="chgDsctnTab" th:href="@{/front/mypage/seeDsgnDsctn/chgSeeDsgnDsctnForm.html}" role="tab" >변경내역</a></li>
                 </ul>
             </div>
             <div class="table-caption">
@@ -34,7 +27,7 @@
 
             <div class="table-row">
                 <table>
-                    <caption>기본정보  - 지정프로그램명, 지정번호, 기관명, 지정기간</caption>
+                    <caption>기본정보  - 시도, 지정번호, 기관명, 지정획득일</caption>
                     <colgroup>
                         <col style="width:140px;">
                         <col>
@@ -43,17 +36,21 @@
                     </colgroup>
                     <tbody>
                         <tr>
-                            <th scope="row">지정프로그램명</th>
-                            <td><th:block th:text="${chgAplyInfo.prgrmNm}" /></td>
+                            <th scope="row">접수번호</th>
+                            <td colspan="3"><th:block th:text="${chgSeeDsgnAplyInfo.rcptno}" /></td>
+                        </tr>                        
+                        <tr>
+                            <th scope="row">시도</th>
+                            <td><th:block th:text="${chgSeeDsgnAplyInfo.ctprvnNm}" /></td>
                             <th scope="row">지정번호</th>
-                            <td><th:block th:text="${chgAplyInfo.dsgnNo}" /></td>
+                            <td><th:block th:text="${chgSeeDsgnAplyInfo.dsgnno}" /></td>
                         </tr>
                         <tr>
                             <th scope="row">기관명</th>
-                            <td><th:block th:text="${chgAplyInfo.instNm}" /></td>
-                            <th scope="row">지정기간</th>
-                            <td><th:block th:text="${chgAplyInfo.dsgnPrd}" /></td>
-                        </tr>
+                            <td><th:block th:text="${chgSeeDsgnAplyInfo.instNm}" /></td>
+                            <th scope="row">지정획득일</th>
+                            <td><th:block th:text="${chgSeeDsgnAplyInfo.dsgnDe}" /></td>
+                        </tr>          
                     </tbody>
                 </table>
             </div>
@@ -65,117 +62,21 @@
                 </div>
             </div>
 
-            <div class="table-combi table-layout-auto table-combi-scroll">
+            <div class="table-row table-row-mo">
                 <table>
-                    <caption>변경내용 - 변경사항(변경시, 1.프로그램영역 (활동프로그램 세부 내용의 일부 변경,20% 이내의 예산 변경),2. 지도자 영역: 동일 경력 및 유사 자격자로 변경, 3. 교육활동환경영역: 동일조건의 장소와 인력으로 변경, 변경사유), 여부, 추가제출서류, 변경내용</caption>
-                    <colgroup>
-                        <col style="width:10%;">
-                        <col style="width:15%;">
-                        <col>
-                        <col>
-                        <col>
-                        <col>
-                    </colgroup>
-                    <thead>
-                        <tr>
-                            <th scope="colgroup" colspan="2">변경사항</th>
-                            <th scope="col">여부</th>
-                            <th scope="col">추가제출서류</th>
-                            <th scope="col">변경내용</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th scope="row" colspan="2">변경 시</th>
-                            <td>
-                                <div class="form-check-list j-center">
-                                    <span kattr:radio_yn="samenssYn" label1="O" label2="X" th:attr="defaultVal=${chgAplyInfo.samenssYn}"></span>
-                                </div>
-                            </td>
-                            <td>O</td>
-                            <td>
-                                <textarea maxlength="1000" title="변경 내용" id="samenssCn" name="samenssCn"><th:block th:text="${chgAplyInfo.samenssCn}" /></textarea>
-                                <div class="desc ar size"><span>0</span> / 1,000자</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="rowgroup" rowspan="2">1. 프로그램 영역</th>
-                            <th scope="row">황동프로그램 세부 내용의 일부 변경</th>
-                            <td>
-                                <div class="form-check-list j-center">
-                                    <span kattr:radio_yn="prgrmChgYn" label1="O" label2="X" th:attr="defaultVal=${chgAplyInfo.prgrmChgYn}"></span>
-                                </div>
-                            </td>
-                            <td>지정 기준 1</td>
-                            <td>
-                                <textarea maxlength="1000" title="변경 내용" id="prgrmChgCn" name="prgrmChgCn"><th:block th:text="${chgAplyInfo.prgrmChgCn}" /></textarea>
-                                <div class="desc ar size"><span>0</span> / 1,000자</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">20%  이내의 예산 변경</th>
-                            <td>
-                                <div class="form-check-list j-center">
-                                    <span kattr:radio_yn="bgtChgYn" label1="O" label2="X" th:attr="defaultVal=${chgAplyInfo.bgtChgYn}"></span>
-                                </div>
-                            </td>
-                            <td>지정 기준 2</td>
-                            <td>
-                                <textarea maxlength="1000" title="변경 내용" id="bgtChgCn" name="bgtChgCn"><th:block th:text="${chgAplyInfo.bgtChgCn}" /></textarea>
-                                <div class="desc ar size"><span>0</span> / 1,000자</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row" colspan="2"> 2.지도자 영역 : 동일 경력 및 유사 자격자로 변경</th>
-                            <td>
-                                <div class="form-check-list j-center">
-                                    <span kattr:radio_yn="ldrChgYn" label1="O" label2="X" th:attr="defaultVal=${chgAplyInfo.ldrChgYn}"></span>
-                                </div>
-                            </td>
-                            <td>지정 기준 1,4</td>
-                            <td>
-                                <textarea maxlength="1000" title="변경 내용" id="ldrChgCn" name="ldrChgCn"><th:block th:text="${chgAplyInfo.ldrChgCn}" /></textarea>
-                                <div class="desc ar size"><span>0</span> / 1,000자</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row" colspan="2"> 3.교육활동환경영역 : 동일조건의 장소와 인력으로 변경</th>
-                            <td>
-                                <div class="form-check-list j-center">
-                                    <span kattr:radio_yn="eduEnvChgYn" label1="O" label2="X" th:attr="defaultVal=${chgAplyInfo.eduEnvChgYn}"></span>
-                                </div>
-                            </td>
-                            <td>지정 기준 5</td>
-                            <td>
-                                <textarea maxlength="1000" title="변경 내용" id="eduEnvChgCn" name="eduEnvChgCn"><th:block th:text="${chgAplyInfo.eduEnvChgCn}" /></textarea>
-                                <div class="desc ar size"><span>0</span> / 1,000자</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row" colspan="2">변경사유</th>
-                            <td colspan="3">
-                                <textarea maxlength="1000" title="변경 내용" id="samenssCn" name="samenssCn"><th:block th:text="${chgAplyInfo.chgRsn}" /></textarea>
-                                <div class="desc ar size"><span>0</span> / 1,000자</div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="table-caption">
-                <div class="left">
-                    <h3 class="sub-title">증빙자료</h3>
-                </div>
-            </div>
-
-            <div class="table-row">
-                <table>
-                    <caption>증빙자료  - 첨부파일</caption>
+                    <caption>변경내용 - 변경사유, 첨부파일</caption>
                     <colgroup>
                         <col style="width:140px;">
                         <col>
                     </colgroup>
                     <tbody>
+                        <tr>
+                            <th scope="row">변경사유</th>
+                            <td>
+                                <textarea maxlength="500" title="변경 사유" id="dmndCn" name="dmndCn"><th:block th:text="${chgSeeDsgnAplyInfo.dmndCn}" /></textarea>
+                                <div class="desc ar size"><span>0</span> / 500자</div>
+                            </td>
+                        </tr>
                         <tr>
                             <th scope="row">첨부파일</th>
                             <td>
@@ -200,24 +101,25 @@
                                                         <th:block th:text="X"></th:block></a>
                                                     </li>
                                                 </ul>
-                                                <p>등록 가능 확장자 : jpg, jpeg, png, gif, hwp, doc, docx, xls, xlsx, pdf, txt, zip</p>
-
                                             </div>
                                         </th:block>
-                                        <input type="hidden" id="filegrpid" name="filegrpid" th:value="${(chgAplyInfo.filegrpid == '' or chgAplyInfo.filegrpid == null) ? 0 : chgAplyInfo.filegrpid}"/>
+                                        <input type="hidden" id="filegrpid" name="filegrpid" th:value="${(chgSeeDsgnAplyInfo.filegrpid == '' or chgSeeDsgnAplyInfo.filegrpid == null) ? 0 : chgSeeDsgnAplyInfo.filegrpid}"/>
                                         </div>
                                     </div>
                                 </div>
                             </td>
                         </tr>
+                        <tr>
+                            <th scope="row">진행상태</th>
+                            <td>[[${chgSeeDsgnAplyInfo.sttsNm}]]</td>
+                        </tr>                        
                     </tbody>
                 </table>
             </div>
-
             <div class="btn-wrap">
                 <div class="center">
-                    <button type="button" class="btn-medium btn-gray" onclick="aplyUpdate.cancle()">취소</button>
-                    <button type="button" class="btn-medium btn-green" onclick="aplyUpdate.save()">저장</button>
+                    <button type="button" class="btn-medium btn-gray" onclick="chgSeeDsgnAplyUpdate.cancel()">취소</button>
+                    <button type="button" class="btn-medium btn-green" onclick="chgSeeDsgnAplyUpdate.save()">저장</button>
                 </div>
             </div>
             <!-- //content -->
@@ -227,69 +129,59 @@
             var atchfileCnt = 5;
             var uploadFileCnt = 0;
 
-            var aplyUpdate = {
-        		updateUrl:"/front/dsgnMng/updateChgAply.do",
+            var chgSeeDsgnAplyUpdate = {
+                updateUrl:"/front/mypage/seeDsgnDsctn/updateChgSeeDsgnAply.do",
 
-            	cancle(){
-            		if(!confirm("취소 하시겠습니까?")){return;}
-            		$("#chgDsctnTab").get(0).click();
-            	},
+                cancel(){
+                    if(!confirm("취소 하시겠습니까?")){return;}
+                    $("#chgDsctnTab").get(0).click();
+                },
 
-            	save(){
-            		if(!$("#chgAplyDtlForm").valid()) return false;
+                save(){
+                    if(!$("#chgSeeDsgnAplyDtlForm").valid()) return false;
 
-            		if(!confirm("저장 하시겠습니까?")){return;}
+                    if(!confirm("저장 하시겠습니까?")){return;}
 
-            		let data = $('#chgAplyDtlForm').serialize();
+                    let data = $('#chgSeeDsgnAplyDtlForm').serialize();
 //                     $('input[name=tmplatIds]').each(function (){
 //                         if($(this).siblings().find('input[name=useYn'+$(this).val()+']:checked').val() === 'Y'){
 //                             data += '&tmplatIds='+$(this).val();
 //                         }
                     $.ajax({
-                    	 url: aplyUpdate.updateUrl,
+                         url: chgSeeDsgnAplyUpdate.updateUrl,
                         type: 'POST',
                         cache : false,
                         dataType: 'json',
                         data : data,
                         success : function (data){
                             if(data.result=="success"){
-                            	alert(data.msg);
+                                alert(data.msg);
                                 $("#chgDsctnTab").get(0).click();
                             }
                             closeWorkProgress();
                         }
                     });
-            	}
+                }
             }
 
             $(function () {
 
-                $("textArea").keyup(function (e) {
+                $("textarea").keyup(function (e) {
                     var inTxt = $(this).val();
                     if($("#"+this.id).next().prop("class")=="desc ar size"){
                         $("#"+this.id).next().children().prop("innerHTML",inTxt.length);
                     }
                 });
 
-                $("textArea").trigger("keyup");
+                $("textarea").trigger("keyup");
 
-                validator = $("#chgAplyDtlForm").validate({
+                validator = $("#chgSeeDsgnAplyDtlForm").validate({
                     ignore: [],
                     rules: {
-                        splmntDmndCn: { maxlength:1000 }
-                      , prgrmChgCn  : { maxlength:1000 }
-                      , bgtChgCn    : { maxlength:1000 }
-                      , ldrChgCn    : { maxlength:1000 }
-                      , eduEnvChgCn : { maxlength:1000 }
-                      , aplcntid    : { maxlength:1000 }
+                        dmndCn: { maxlength:500 }
                     } ,
                     messages: {
-                    	splmntDmndCn: { maxlength:"변경시 : 변경내용 은 1000자를 넘을 수 없습니다."  }
-                      , bgtChgCn    : { maxlength:"활동프로그램 세부내용 : 변경내용 은 1000자를 넘을 수 없습니다."  }
-                      , ldrChgCn    : { maxlength:"예산변경 : 변경내용 은 1000자를 넘을 수 없습니다."  }
-                      , eduEnvChgCn : { maxlength:"지도자영역 : 변경내용 은 1000자를 넘을 수 없습니다."  }
-                      , aplcntid    : { maxlength:"교육활동환경 : 변경내용 은 1000자를 넘을 수 없습니다."  }
-                      , prgrmChgCn  : { maxlength:"변경사유 : 변경내용 은 1000자를 넘을 수 없습니다."  }
+                        dmndCn: { maxlength:"변경시 : 변경내용은 500자를 넘을 수 없습니다."  }
                     }
 
                 });
@@ -311,7 +203,7 @@
                     }
 
                     formData.append("filegrpid", $("#filegrpid").val());
-                    formData.append("filegrpNm", "asgsysSrng_file");
+                    formData.append("filegrpNm", "eduInst_file");
 
                     if(uploadFileCnt > 0){
                         $.ajax({
