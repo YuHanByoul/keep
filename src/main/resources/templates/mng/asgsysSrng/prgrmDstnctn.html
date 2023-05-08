@@ -2,10 +2,7 @@
 <input type="hidden" id="prgrmKey" name="prgrmKey" th:value="${prgrmDstnctnInfo.prgrmKey}"><!-- 우수성key -->
 <input type="hidden" id="prgrmid" name="prgrmid" th:value="${prgrmDstnctnInfo.prgrmid}"><!-- 프로그램id -->
 <input type="hidden" id="aplcntid" name="aplcntid" th:value="${prgrmDstnctnInfo.aplcntid}"><!-- 신청자 -->
-<!-- <input type="hidden" id="eduSbjctCdLst" name="eduSbjctCdLst" th:value="${prgrmDstnctnInfo.eduSbjctCdLst}">교육주제코드 -->
 <input type="hidden" id="eduPhotoFilegrpid" name="eduPhotoFilegrpid" th:value="${prgrmDstnctnInfo.eduPhotoFilegrpid}"> <!-- 교육사진파일그룹코드 -->
-
-
 
     <div class="card-header p-t-0 p-b-0">
         <h3 class="sub-title"><strong>프로그램 개요</strong></h3>
@@ -26,8 +23,6 @@
                     </div>
                 </div>
                 <div class="col-12 col-lg-auto">
-<!--                     <span kattr:select_code="cnsltngKndCd" th:attr="grpCd=130,selectedCd=${prgrmDstnctnInfo.cnsltngKndCd},disabled=${prgrmDstnctnInfo.cnsltngPrgrsYn != 'Y'?'disabled':''}" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true"> -->
-
                     <select title="컨설팅 진행"  id="cnsltngid" name="cnsltngid" th:attr="disabled=${prgrmDstnctnInfo.cnsltngPrgrsYn != Y ? 'disabled':''}" class="form-select form-select-sm form-control-sm">
                         <option value=""> - 선택 - </option>
                         <th:block th:if="${#lists.size(csltngList) > 0}" th:each="list, i: ${csltngList}">
@@ -127,58 +122,42 @@
             </div>
         </div>
 
-
          <div class="row">
             <div class="col-lg-6 mb-3">
                 <div id="eduSbjctDiv" class="mb-0 form-group required">
                     <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육주제</strong></div>
-                    <div id="dynamicDiv" class="dynamicDiv">
 
-                        <div class="dynamicDiv" th:if="${#lists.size(eduSbjctCdLst) > 0}" th:each="cd, i : ${eduSbjctCdLst}">
-                            <div class="row subjectCode mt-1" >
-                                <div class="col-sm-3">
-                                    <span kattr:select_code="eduSbjctCd1" th:attr="selectedCd=${cd.substring(0,6)}" grpcd="155" firstOptTxt="- 선택 -" addClass="input-sm" isAdmin="true"></span>
-                                </div>
-                                <div class="col-sm-3 mt-1 mt-sm-0">
-                                    <select name="eduSbjctCds" th:id="'eduSbjctCd_'+${i.index+1}" class="form-select form-select-sm"></select>
-                                </div>
-                                <div class="col-sm-3 mt-2 mt-sm-0 btnList">
-                                    <button type="button" onclick="addCode();" class="input-group-text btn btn-primary btn-sm">+</button>
-                                    <button type="button" th:onclick="removeCode(${i.count});" class="input-group-text btn btn-primary btn-sm" th:if="${i.index > 0}">-</button>
-                                </div>
+                    <div th:id='dynamicDiv+${n.count}' class="dynamicDiv" th:if="${#lists.size(eduSbjctCdLst) > 0}" th:each="list, n : ${eduSbjctCdLst}">
+                        <div class="row subjectCode mt-1" >
+                            <div class="col-sm-3">
+                                <select name="searchEduSbjctCd" th:id='searchEduSbjctCd_+${n.count}' class="form-select form-select-sm">
+                                    <option value="" >- 전체 -</option>
+
+                                    <option th:each="item:${sbjctCdLsit}" th:value="${item.CD}" th:selected="${item.CD==#strings.toString(list)}">[[${item.CD_NM}]]</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3 mt-2 mt-sm-0 btnList">
+                                <button type="button" class="input-group-text btn btn-primary btn-sm"  onclick="addSbjctCd()" >+</button>
+                                <button type="button" class="input-group-text btn btn-primary btn-sm"  th:if="${n.count>1}" onclick="delSbjctCd()">-</button>
                             </div>
                         </div>
-                        <div class="dynamicDiv" th:unless="${#lists.size(eduSbjctCdLst) > 0}">
-                            <div class="row subjectCode mt-1" >
-                                <div class="col-sm-3 mt-1 mt-sm-0">
-                                    <span kattr:select_code="eduSbjctCd1" grpcd="155" selectedCd='155101' firstOptTxt="- 선택 -" addClass="input-sm" isAdmin="true"></span>
-                                </div>
-                                <div class="col-sm-3 mt-1 mt-sm-0">
-                                    <select name="eduSbjctCds" id="eduSbjctCd_1" class="form-select form-select-sm"></select>
-                                </div>
-                                <div class="col-sm-3 mt-2 mt-sm-0 btnList">
-                                    <button type="button" onclick="addCode();" class="input-group-text btn btn-primary btn-sm">+</button>
-                                </div>
-                            </div>
-                        </div>
-
-
-<!--                         <div class="row subjectCode" id="eduSbjctCdDiv" th:each="cd :${eduSbjctCdLst}"> -->
-<!--                             <div class="col-sm-3"> -->
-<!--                                 <select name="eduSbjctCd" id="eduSbjctCd" class="form-select form-select-sm"> -->
-<!--                                     <option value='' selected>- 선택 -</option> -->
-<!--                                 </select> -->
-<!--                             </div> -->
-<!--                             <div class="col-sm-3 mt-1 mt-sm-0"> -->
-<!--                                 <select name="sub_eduSbjctCd" id="sub_eduSbjctCd" class="form-select form-select-sm"> -->
-<!--                                     <option value='' selected>- 선택 -</option> -->
-<!--                                 </select> -->
-<!--                             </div> -->
-<!--                             <div class="col-sm-3 mt-2 mt-sm-0 btnList"> -->
-<!--                                 <button type="button" onclick="addCode();" class="input-group-text btn btn-primary btn-sm">+</button> -->
-<!--                             </div> -->
-<!--                         </div> -->
                     </div>
+
+                    <div id="dynamicDiv1" class="dynamicDiv" th:if="${#lists.size(eduSbjctCdLst) == 0}">
+                        <div class="row subjectCode mt-1" >
+                            <div class="col-sm-3">
+                                <select name="searchEduSbjctCd" id='searchEduSbjctCd_1' class="form-select form-select-sm">
+                                    <option value="" >- 전체 -</option>
+                                    <option th:each="item:${sbjctCdLsit}" th:value="${item.CD}">[[${item.CD_NM}]]</option>
+                                </select>
+                            </div>
+
+                            <div class="col-sm-3 mt-2 mt-sm-0 btnList">
+                                <button type="button" class="input-group-text btn btn-primary btn-sm"  onclick="addSbjctCd()" >+</button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -286,7 +265,7 @@
         <h3 class="sub-title"><strong>교육사진</strong></h3>
     </div>
     <div class="card-block-small p-t-0">
-        <p>권장 사진 크기(가로 800 X 세로 600px)</p>
+        <p class="text-warning m-b-0">* 10MB 미만의 JPG, PNG, GIF파일만 업로드 가능(권장사이즈 : 가로 398px, 세로 223px)</p>
         <!-- [230125] 교육사진 항목에 수정 시 - 이미지 등록, 삭제 버튼 추가 -->
         <div class="col-12 row" >
             <div id="fileDiv1" class="col-12 col-lg-6 col-xl-4 mb-3">
@@ -483,7 +462,7 @@
         </div>
     </div>
     <div class="card-block-small">
-        <button type="button" id="btnLstDstnctn"  class="btn btn-inverse m-r-5" onclick="gridHelper1.resetListContent()">목록</button>
+        <button type="button" id="btnLstDstnctn"  class="btn btn-inverse m-r-5" onclick="gridHelper1.toggleContent()">목록</button>
         <button type="button" id="btnSaveDstnctn" class="btn btn-primary m-r-5" onclick="prgrmDstnctnSaveBtn()">저장</button>
         <button type="button" id="btnNextDstnctn" class="btn btn-primary" onclick="fn_dstnctnNextbtn()">다음</button>
     </div>
@@ -528,6 +507,37 @@ function setPhotoFileClass(file){
     }
 }
 
+function addSbjctCd(){
+
+	var lastRow = $('div[id^=dynamicDiv]:last');
+    var idx = lastRow.index() + 2;
+
+    if ($('div[id^=dynamicDiv]').length >= 20) {
+        alert("최대 20행까지만 추가 가능합니다.");
+        return;
+    }
+
+    var newRow = lastRow.clone().attr('id', 'dynamicDiv' + idx);
+
+    newRow.find('select').attr('id', 'searchEduSbjctCd_' + idx);
+    newRow.find('select').val('');
+
+    lastRow.after(newRow);
+
+    if ($('div[id^=dynamicDiv]').length == 2) {
+
+    	$('div[id^=dynamicDiv] button:last')
+            .after(`<button type="button" class="input-group-text btn btn-primary btn-sm"  onclick="delSbjctCd()">-</button>`);
+
+    }
+}
+
+function delSbjctCd(){
+
+	var lastRow = $('div[id^=dynamicDiv]:last');
+    if(lastRow.index() > 0) lastRow.remove();
+}
+
 $('[id^=eduPhotoFileInpu]').on('change', function(event) {
 
 	var trgtId = event.currentTarget.id;
@@ -543,8 +553,6 @@ $('[id^=eduPhotoFileInpu]').on('change', function(event) {
 
     var formData = new FormData();
     var content = "";
-
-
 
     formData.append("files", objFile.files[0]);
 
@@ -566,7 +574,6 @@ $('[id^=eduPhotoFileInpu]').on('change', function(event) {
 
                 if(response.result == 'fail'){
                     alert(response.msg);
-
                 }else{
                 	if($("#eduPhotoFilegrpid").val()=='0' || $("#eduPhotoFilegrpid").val()==''  || $("#eduPhotoFilegrpid").val()==null){
                         $("#eduPhotoFilegrpid").val(response[0].filegrpid );
@@ -578,15 +585,11 @@ $('[id^=eduPhotoFileInpu]').on('change', function(event) {
                     $("#eduPhotoFile"+trgtIdx).attr('src', "/downloadFileByFileid.do?fileid=" + response[0].fileid + "&file_idntfc_key=" + response[0].fileIdntfcKey);
                     $("#eduPhotoFileRegBtn"+trgtIdx).hide();
                     $("#eduPhotoFileDelBtn"+trgtIdx).show();
-
                 }
                 closeWorkProgress();
             }
         });
-
     }
-
-    //if(bEduFilegrpid)fn_eduImgFileUpdate();
 
 });
 
@@ -784,10 +787,16 @@ function prgrmDstnctnSaveBtn() {
         param["cnsltngid"] = '';
     }
 
+//     //교육주제
+//     $("select[id^=eduSbjctCd_").each(function(index, item) {
+//        if(index==0) param["eduSbjctCdLst"] = ""+item.value;
+//        if(index!=0) param["eduSbjctCdLst"] += ","+item.value;
+//     });
+
     //교육주제
-    $("select[id^=eduSbjctCd_").each(function(index, item) {
-       if(index==0) param["eduSbjctCdLst"] = ""+item.value;
-       if(index!=0) param["eduSbjctCdLst"] += ","+item.value;
+    $("select[name^=searchEduSbjctCd").each(function(index, item) {
+         if(index==0) param["eduSbjctCdLst"] = ""+item.value;
+         if(index!=0) param["eduSbjctCdLst"] += ","+item.value;
     });
 
     //프로그램 일정
@@ -857,7 +866,7 @@ function prgrmDstnctnSaveBtn() {
         vUrl = "/mng/asgsysSrng/insertPrgrmDstnctn.do";
     }
 
-    debugger;
+
     if(!confirm("저장 하시겠습니까?")){return;}
 
     $.ajax({
@@ -868,9 +877,8 @@ function prgrmDstnctnSaveBtn() {
         data : param,
         success : function (data){
             if(data.result=="success"){
-
                 alert("저장이 완료 되었습니다.");
-                gridHelper1.resetPageContent();
+                selectJdsgTab("jdsgTab1Link");
             }else{
                 alert("저장중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
             }
@@ -978,27 +986,14 @@ function setEduCdList(){
 	var idx =1;
 
 	for( var i=1; i < arr.length; i++) {
-		  addCode();
-		  var cd = arr[i];
-		  if ($("#eduSbjctCd" + idx).length == 0) addCode();
+	  addCode();
+	  var cd = arr[i];
+	  if ($("#eduSbjctCd" + idx).length == 0) addCode();
 
-		  $("#eduSbjctCd" + idx).val(cd.substring(0, 6));
-		  setNextDepth('155', cd.substring(0, 6), "sub_eduSbjctCd" + (idx));
-		  $("#sub_eduSbjctCd" + idx).val(Number(cd));
-		}
-
-// 	for( var i=1; i < arr.length; i++) {
-// 		addCode();
-// 	};
-
-// 	for( cd of arr) {
-// 		if($("#eduSbjctCd"+idx).length==0) addCode();
-// 		debugger;
-// 		$("#eduSbjctCd" + idx).val(cd.substring(0, 6));
-// 		setNextDepth('155', cd.substring(0, 6), "sub_eduSbjctCd"+(idx));
-// 	    $("#sub_eduSbjctCd" + idx).val(Number(cd));
-// 	}
-
+	  $("#eduSbjctCd" + idx).val(cd.substring(0, 6));
+	  setNextDepth('155', cd.substring(0, 6), "sub_eduSbjctCd" + (idx));
+	  $("#sub_eduSbjctCd" + idx).val(Number(cd));
+	}
 }
 
 function initPrgrmDstnctn(){
@@ -1006,6 +1001,7 @@ function initPrgrmDstnctn(){
 	//교육사진 set
 	readImage();
 
+	/*
 	$("select[name='eduSbjctCd1']").each(function(i){
 		var cd = $(this).val()
 
@@ -1029,7 +1025,7 @@ function initPrgrmDstnctn(){
         });
     });
 
-
+	*/
     $('#jdsgTab1Link').addClass("active");
 
     if( $("#styNight").val() == "" ) $("#styNight").val(0);
@@ -1060,8 +1056,6 @@ $(function(){
                 $("#cnsltngid").prop("disabled", "disabled")
             }
     });
-
-
 });
 
 </script>

@@ -98,19 +98,6 @@ public class CntntsController {
         
         CntntsVo result = null;
         result =  cntntsService.selectCntntsInfo(cntntsVo);
-        
-        if(result.getPlySecnd() != null) {
-            if(result.getPlySecnd() >= 3600) {
-                result.setPlyHour((result.getPlySecnd() - (result.getPlySecnd() % 3600)) / 3600);
-                result.setPlyMinute((result.getPlySecnd() - (result.getPlySecnd() % 60)) / 60 - (result.getPlyHour() * 60));
-                result.setPlySecnd(result.getPlySecnd() - (result.getPlyMinute() * 60) - (result.getPlyHour() * 3600));
-            }else {
-                result.setPlyHour(0);
-                result.setPlyMinute((result.getPlySecnd() - (result.getPlySecnd() % 60)) / 60);
-                result.setPlySecnd(result.getPlySecnd() - (result.getPlyMinute() * 60));
-            }
-        }
-        
         model.addAttribute("cntnts", result);
         
         List<CntntsVo> file = cntntsService.selectCntntsFileList(cntntsVo);
@@ -142,7 +129,7 @@ public class CntntsController {
         
         if (result.size() > 0) {
             resultMap.put("totalCount", (result.get(0).getTotalCount()));
-            resultMap.put("pagination", PaginationUtil.getFrontPaginationHtml(result.get(0).getTotalPage(), result.get(0).getPageNumber(), 12));
+            resultMap.put("pagination", PaginationUtil.getFrontPaginationHtml(result.get(0).getTotalPage(), result.get(0).getPageNumber(), 10));
         } else {
             resultMap.put("totalCount", 0);
         }

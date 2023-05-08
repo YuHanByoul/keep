@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : SeeEnvDelvryDaoImpl.xml
+	Description : 사회환경교육기관 지정 > 교부관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.seeEnvDelvry.model.SeeEnvDelvryDao">
+    
+    <!-- 교부관리 목록 조회 -->
+    <select id="selectDelvryList" parameterType="SeeEnvDelvryVo" resultType="SeeEnvDelvryVo">
+        /* SeeEnvDelvryDao.selectDelvryList */
+        <if test="excelYn != 'Y'.toString">
+        <include refid="PaginationMapper.header"/>
+        </if>
+        SELECT T.*
+        FROM (
+            SELECT
+                APLYID              -- 신청아이디
+                , RCPTNO            -- 접수번호
+                , TSEEI.INSTID          -- 기관아이디
+                , APLCNTID          -- 신청자아이디
+                , APLCNT_NM         -- 신청자_이름
+                , TCU.ACNT 
+                , APLCNT_EML        -- 신청자_이메일
+                , APLCNT_MOBLPHON   -- 신청자_휴대폰
+                , TSEEI.INST_NM         -- 기관명
+                , TCI.INST_TYPE_CD 
+                , TCC2.CD_NM AS INST_TYPE_NM
+                , TCI.BRNO 
+                , TCI.ZIP 
+                , TCI.ADDR
+                , TCI.ADDR_DTL 
+                , INST_EML          -- 기관 이메일
+                , INST_CNTCT        -- 기관_연락처
+                , TSEEI.CTPRVN_CD           -- 시도_코드
+                , TCAC.CTPRVN_NM 
+                , TCI.RPRSV_NM
+                , RPRSV_BRDT        -- 대표자_생년월일
+                , TSEEI.ATCH_FILEGRPID  -- 첨부파일 아이디
+                , DSGNNO            -- 지정번호
+                , DSGN_DE           -- 지정_일자
+                , AUTZRID           -- 승인자아이디
+                , ISSU_DE           -- 발급_일자
+                , ISGN_DE           -- 재발급_일자
+                , TSEEI.STTS_CD         -- 상태코드
+                , TCC.CD_NM AS STTS_NM  -- 상태코드명
+                , CASE WHEN IFNULL(ISSU_DE, '') = '' THEN '발급전'
+                    WHEN IFNULL(ISSU_DE, '') != '' AND IFNULL(ISGN_DE, '') = '' THEN '발급완료'
+                    WHEN IFNULL(ISGN_DE, '') != '' THEN '재발급'
+                    ELSE '' END AS DELVRY_STTS_NM
+                , TSEEI.MDFCN_DT
+                , TSEEI.MDFRID
+                , TSEEI.REG_DT
+                , TSEEI.RGTRID
+            FROM
+                TB_SEE_ENV_EDU_INST TSEEI
+                INNER JOIN TB_CMM_USER TCU ON TSEEI.APLCNTID = TCU.USERID
+                LEFT OUTER JOIN TB_CMM_INST TCI ON TSEEI.INSTID = TCI.INSTID
+                LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN TCAC ON TCAC.CTPRVN_CD = TSEEI.CTPRVN_CD 
+                LEFT OUTER JOIN TB_CMM_CD TCC ON TSEEI.STTS_CD = TCC.CD
+                LEFT OUTER JOIN (SELECT A.CD, CONCAT(B.CD_NM, ' > ', A.CD_NM) AS CD_NM FROM TB_CMM_CD A INNER JOIN TB_CMM_CD B ON A.UPPR_CD = B.CD WHERE A.CDGRPID = '108') TCC2 ON TCI.INST_TYPE_CD = TCC2.CD  
+            --  LEFT OUTER JOIN TB_CMM_CD TCC2 ON TCI.INST_TYPE_CD = TCC2.CD
+            WHERE TSEEI.STTS_CD = '248104'
+        ) T
+        WHERE 1 = 1
+        <if test="aplyid != null and aplyid != ''">
+        AND APLYID = #{aplyid}
+        </if>
+        <if test="searchCtprvnCd != null and searchCtprvnCd != ''">
+        AND CTPRVN_CD = #{searchCtprvnCd}
+        </if>
+        <if test="searchKeyword != null and searchKeyword != '' and searchKeywordType == 'searchInstNm'">
+        AND INST_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+        </if>
+        <if test="searchSttsCd != null and searchSttsCd != ''">
+        AND DELVRY_STTS_NM = #{searchSttsCd}
+        </if>
+        <if test="excelYn != 'Y'.toString">
+        <include refid="PaginationMapper.footer"/>
+        </if>
+        <if test="excelYn == 'Y'.toString">
+        ORDER BY REG_DT DESC
+        </if>
+    </select>
+    
+    <!-- 발급 / 재발급 -->
+    <update id="updateIssue" parameterType="SeeEnvDelvryVo">
+        /* SeeEnvDelvryDao.updateIssue */
+        UPDATE TB_SEE_ENV_EDU_INST SET
+            MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+            <if test="issueType == '1'.toString()">
+            , ISSU_DE = DATE_FORMAT(NOW(), '%Y-%m-%d')
+            </if>
+            <if test="issueType == '2'.toString()">
+            , ISGN_DE = DATE_FORMAT(NOW(), '%Y-%m-%d')
+            </if>
+        WHERE APLYID = #{aplyid}
+    </update>
+</mapper>

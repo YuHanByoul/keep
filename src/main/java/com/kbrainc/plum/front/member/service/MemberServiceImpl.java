@@ -41,8 +41,10 @@ import com.kbrainc.plum.front.member.model.MemberInstVo;
 import com.kbrainc.plum.front.member.model.MemberVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+import com.kbrainc.plum.rte.util.CommonUtil;
 import com.kbrainc.plum.rte.util.CookieUtil;
 import com.kbrainc.plum.rte.util.StringUtil;
+import com.penta.scpdb.ScpDbAgent;
 
 import WiseAccess.SSO;
 
@@ -94,9 +96,6 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     
     @Value("${server.servlet.session.cookie.domain}")
     private String serverCookieDomain;
-    
-    @Value("${crypto.key}")
-    private String encryptKey;
     
     /**
     * 회원 탈퇴 처리.
@@ -286,16 +285,23 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
         if (memberVo.getUserid() == null) {
             String password = null;
             if (memberVo.getPswd() != null) {
-                password = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(memberVo.getPswd().getBytes("UTF-8")));
+                if (System.getenv("PC_KIND") == null) {
+                    ScpDbAgent agt = new ScpDbAgent();
+                    password = agt.ScpHashStr(CommonUtil.damoScpIniFilePath, 73, new String(memberVo.getPswd().getBytes(), "UTF-8")).toLowerCase();
+                } else {
+                    password = Hex.encodeHexString(MessageDigest.getInstance("SHA-512").digest(memberVo.getPswd().getBytes("UTF-8")));
+                }
                 memberVo.setPswd(password);
             }
             
             if (memberVo.getGndr() != null) {
-                StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
-                encryptor.setSaltGenerator(new RandomSaltGenerator());
-                encryptor.setPassword(encryptKey);
-                encryptor.setAlgorithm("PBEWithMD5AndDES");
-                String encStr = encryptor.encrypt(memberVo.getGndr());
+                ScpDbAgent agt = new ScpDbAgent();
+                String encStr = "";
+                if (System.getenv("PC_KIND") == null) {
+                    encStr = agt.ScpEncStr(CommonUtil.damoScpIniFilePath, "KEY1", new String(memberVo.getGndr().getBytes(), "UTF-8"));
+                } else {
+                    encStr = "5D960651E824637099A116BB4A6BA665A6BA3C25"; // 암호화 모듈을 사용할수 없는 MAC인경우 무조건 남자로 설정.
+                }
                 
                 memberVo.setGndr(encStr);
             }
@@ -492,7 +498,12 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     */
     public int updatePassword(MemberAcntPswdFindVo memberAcntPswdFindVo) throws Exception {
         String password = null;
-        password = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(memberAcntPswdFindVo.getPswd().getBytes("UTF-8")));
+        if (System.getenv("PC_KIND") == null) {
+            ScpDbAgent agt = new ScpDbAgent();
+            password = agt.ScpHashStr(CommonUtil.damoScpIniFilePath, 73, new String(memberAcntPswdFindVo.getPswd().getBytes(), "UTF-8")).toLowerCase();
+        } else {
+            password = Hex.encodeHexString(MessageDigest.getInstance("SHA-512").digest(memberAcntPswdFindVo.getPswd().getBytes("UTF-8")));
+        }
         memberAcntPswdFindVo.setPswd(password);
         
         return memberDao.updatePassword(memberAcntPswdFindVo);

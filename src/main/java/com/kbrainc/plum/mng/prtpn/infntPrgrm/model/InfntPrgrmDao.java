@@ -83,6 +83,18 @@ public interface InfntPrgrmDao {
     public int insertInfntPrgrmTrgtMapngCopy(InfntPrgrmVo infntPrgrmVo) throws Exception;
     
     /**
+    * 교육프로그램관리 게시글 프로그램_회차 복사 등록
+    **
+    @Title : insertInfntPrgrmTmeCopy
+    * @Description : 교육프로그램관리 게시글 프로그램_회차 복사 등록
+    * @param infntPrgrmVo 교육프로그램관리 객체
+    * @return
+    * @throws Exception
+    * @return int
+    */
+    public int insertInfntPrgrmTmeCopy(InfntPrgrmVo infntPrgrmVo) throws Exception;
+    
+    /**
     * 교육프로그램관리 게시글 상세조회
     *
     * @Title : selectInfntPrgrmInfo

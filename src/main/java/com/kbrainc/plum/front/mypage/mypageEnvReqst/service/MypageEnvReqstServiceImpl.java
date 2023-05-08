@@ -1,14 +1,17 @@
 package com.kbrainc.plum.front.mypage.mypageEnvReqst.service;
 
-import com.kbrainc.plum.front.mypage.mypageEnvReqst.model.MypageEnvReqstDao;
-import com.kbrainc.plum.front.mypage.mypageEnvReqst.model.MypageEnvReqstVo;
-import com.kbrainc.plum.mng.rcpmnyBfe.model.RcpmnyBfeVo;
-import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.kbrainc.plum.front.envReqst.model.EnvReqstVo;
+import com.kbrainc.plum.front.mypage.mypageEnvReqst.model.MypageEnvReqstDao;
+import com.kbrainc.plum.mng.resveReqst.model.ResveReqstDao;
+import com.kbrainc.plum.mng.resveReqst.model.ResveReqstVo;
+import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
  * 지역 환경교육센처 Service
@@ -31,6 +34,9 @@ public class MypageEnvReqstServiceImpl extends PlumAbstractServiceImpl implement
 
     @Autowired
     private MypageEnvReqstDao mypageEnvReqstDao;
+    
+    @Autowired
+    private ResveReqstDao resveReqstDao;
 
     /**
      * 지역 환경교육센터 목록 조회
@@ -41,8 +47,8 @@ public class MypageEnvReqstServiceImpl extends PlumAbstractServiceImpl implement
      * @return list
      */
     @Override
-    public List<MypageEnvReqstVo> selectMypageEnvReqstList(MypageEnvReqstVo mypageEnvReqstVo) {
-        return mypageEnvReqstDao.selectMypageEnvReqstList(mypageEnvReqstVo);
+    public List<EnvReqstVo> selectMypageEnvReqstList(EnvReqstVo envReqstVo) {
+        return mypageEnvReqstDao.selectMypageEnvReqstList(envReqstVo);
     }
 
     /**
@@ -55,8 +61,8 @@ public class MypageEnvReqstServiceImpl extends PlumAbstractServiceImpl implement
      * @return MypageEnvReqstVo
      */
     @Override
-    public MypageEnvReqstVo selectResveEnvInfo(MypageEnvReqstVo mypageEnvReqstVo) throws Exception {
-        return mypageEnvReqstDao.selectResveEnvInfo(mypageEnvReqstVo);
+    public EnvReqstVo selectResveEnvInfo(EnvReqstVo envReqstVo) throws Exception {
+        return mypageEnvReqstDao.selectResveEnvInfo(envReqstVo);
     }
 
     /**
@@ -69,8 +75,8 @@ public class MypageEnvReqstServiceImpl extends PlumAbstractServiceImpl implement
      * @return MypageEnvReqstVo
      */
     @Override
-    public MypageEnvReqstVo selectSpceInfo(MypageEnvReqstVo mypageEnvReqstVo) throws Exception {
-        return mypageEnvReqstDao.selectSpceInfo(mypageEnvReqstVo);
+    public EnvReqstVo selectSpceInfo(EnvReqstVo envReqstVo) throws Exception {
+        return mypageEnvReqstDao.selectSpceInfo(envReqstVo);
     }
 
     /**
@@ -83,8 +89,8 @@ public class MypageEnvReqstServiceImpl extends PlumAbstractServiceImpl implement
      * @return MypageEnvReqstVo
      */
     @Override
-    public MypageEnvReqstVo selectRsnInfo(MypageEnvReqstVo mypageEnvReqstVo) throws Exception {
-        return mypageEnvReqstDao.selectRsnInfo(mypageEnvReqstVo);
+    public EnvReqstVo selectRsnInfo(EnvReqstVo envReqstVo) throws Exception {
+        return mypageEnvReqstDao.selectRsnInfo(envReqstVo);
     }
 
     /**
@@ -97,8 +103,8 @@ public class MypageEnvReqstServiceImpl extends PlumAbstractServiceImpl implement
      * @return MypageEnvReqstVo
      */
     @Override
-    public MypageEnvReqstVo selectDpstInfo(MypageEnvReqstVo mypageEnvReqstVo) throws Exception {
-        return mypageEnvReqstDao.selectDpstInfo(mypageEnvReqstVo);
+    public EnvReqstVo selectDpstInfo(EnvReqstVo envReqstVo) throws Exception {
+        return mypageEnvReqstDao.selectDpstInfo(envReqstVo);
     }
 
     /**
@@ -111,64 +117,8 @@ public class MypageEnvReqstServiceImpl extends PlumAbstractServiceImpl implement
      * @return MypageEnvReqstVo
      */
     @Override
-    public MypageEnvReqstVo selectRwvInfo(MypageEnvReqstVo mypageEnvReqstVo) throws Exception {
-        return mypageEnvReqstDao.selectRwvInfo(mypageEnvReqstVo);
-    }
-
-    /**
-     * 환경교육시설 예약 등록(시설 예약)
-     *
-     * @Title : insertResveEnvFclSpceAply
-     * @Description : 환경교육시설 예약 등록(시설 예약)
-     * @param mypageEnvReqstVo 환경교육시설 예약 객체
-     * @throws Exception 예외
-     * @return MypageEnvReqstVo
-     */
-    @Override
-    public int insertResveEnvFclSpceAply(MypageEnvReqstVo mypageEnvReqstVo) throws Exception {
-        return mypageEnvReqstDao.insertResveEnvFclSpceAply(mypageEnvReqstVo);
-    }
-
-    /**
-     * 환경교육시설 예약 등록(시설 예약)
-     *
-     * @Title : insertResveEnvFclAply
-     * @Description : 환경교육시설 예약 등록(시설 예약)
-     * @param mypageEnvReqstVo 환경교육시설 예약 객체
-     * @throws Exception 예외
-     * @return MypageEnvReqstVo
-     */
-    @Override
-    public int insertResveEnvFclAply(MypageEnvReqstVo mypageEnvReqstVo) throws Exception {
-        return mypageEnvReqstDao.insertResveEnvFclAply(mypageEnvReqstVo);
-    }
-
-    /**
-     * 환경교육시설 예약 등록(시설 예약)
-     *
-     * @Title : insertResveEnvFclAplyHstry
-     * @Description : 환경교육시설 예약 등록(시설 예약)
-     * @param mypageEnvReqstVo 환경교육시설 예약 객체
-     * @throws Exception 예외
-     * @return MypageEnvReqstVo
-     */
-    @Override
-    public int insertResveEnvFclAplyHstry(MypageEnvReqstVo mypageEnvReqstVo) throws Exception {
-        return mypageEnvReqstDao.insertResveEnvFclAplyHstry(mypageEnvReqstVo);
-    }
-
-    /**
-     * 환경교육시설 예약 등록(공간 예약)
-     *
-     * @Title : insertResveEnvSpceAply
-     * @Description : 환경교육시설 예약 등록(공간 예약)
-     * @param mypageEnvReqstVo 환경교육시설 예약 객체
-     * @throws Exception 예외
-     * @return MypageEnvReqstVo
-     */
-    @Override
-    public int insertResveEnvSpceAply(MypageEnvReqstVo mypageEnvReqstVo) throws Exception {
-        return mypageEnvReqstDao.insertResveEnvSpceAply(mypageEnvReqstVo);
+    public EnvReqstVo selectRwvInfo(EnvReqstVo envReqstVo) throws Exception {
+        return mypageEnvReqstDao.selectRwvInfo(envReqstVo);
     }
 
     /**
@@ -181,8 +131,8 @@ public class MypageEnvReqstServiceImpl extends PlumAbstractServiceImpl implement
      * @return MypageEnvReqstVo
      */
     @Override
-    public List<Map<String,Object>> selectFclRsvtdeList(MypageEnvReqstVo mypageEnvReqstVo) throws Exception {
-        return mypageEnvReqstDao.selectFclRsvtdeList(mypageEnvReqstVo);
+    public List<Map<String,Object>> selectFclRsvtdeList(EnvReqstVo envReqstVo) throws Exception {
+        return mypageEnvReqstDao.selectFclRsvtdeList(envReqstVo);
     }
 
     /**
@@ -195,8 +145,17 @@ public class MypageEnvReqstServiceImpl extends PlumAbstractServiceImpl implement
      * @return int
      */
     @Override
-    public int insertRsn(MypageEnvReqstVo mypageEnvReqstVo) throws Exception {
-        return mypageEnvReqstDao.insertRsn(mypageEnvReqstVo);
+    @Transactional
+    public int insertRsn(EnvReqstVo envReqstVo) throws Exception {
+        
+        int resInt = 0;
+        resInt += mypageEnvReqstDao.insertRsn(envReqstVo);
+        ResveReqstVo paramVo = new ResveReqstVo();
+        // 상태변경이력 추가
+        paramVo.setAplyid(envReqstVo.getAplyid());
+        paramVo.setUser(envReqstVo.getUser());
+        resInt += resveReqstDao.insertHstry(paramVo);
+        return resInt;
     }
 
     /**
@@ -209,8 +168,8 @@ public class MypageEnvReqstServiceImpl extends PlumAbstractServiceImpl implement
      * @return int
      */
     @Override
-    public int insertRvw(MypageEnvReqstVo mypageEnvReqstVo) throws Exception {
-        return mypageEnvReqstDao.insertRvw(mypageEnvReqstVo);
+    public int insertRvw(EnvReqstVo envReqstVo) throws Exception {
+        return mypageEnvReqstDao.insertRvw(envReqstVo);
     }
 
     /**
@@ -223,21 +182,7 @@ public class MypageEnvReqstServiceImpl extends PlumAbstractServiceImpl implement
      * @return int
      */
     @Override
-    public int deleteRvw(MypageEnvReqstVo mypageEnvReqstVo) throws Exception {
-        return mypageEnvReqstDao.deleteRvw(mypageEnvReqstVo);
-    }
-
-    /**
-     * 예약 신청 취소 처리
-     *
-     * @Title : insertHstry
-     * @Description : 예약 신청 취소 처리
-     * @param mypageEnvReqstVo 입금 전 객체
-     * @throws Exception 예외
-     * @return int
-     */
-    @Override
-    public int insertHstry(MypageEnvReqstVo mypageEnvReqstVo) throws Exception {
-        return mypageEnvReqstDao.insertHstry(mypageEnvReqstVo);
+    public int deleteRvw(EnvReqstVo envReqstVo) throws Exception {
+        return mypageEnvReqstDao.deleteRvw(envReqstVo);
     }
 }

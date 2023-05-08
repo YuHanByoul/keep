@@ -1,0 +1,161 @@
+<form id="changeFrm">
+	<input type="hidden" name="aplyid" id="aplyid" th:value="${detail.aplyid}" /> 
+    <div class="card">
+	    <div class="card-header p-b-0">
+	        <h3 class="sub-title"><strong>기본정보</strong></h3>
+	    </div>
+	    <div class="card-block-small p-t-0">
+	        <div class="row">
+	            <div class="col-12 col-sm-6 col-lg-3 mb-3">
+	                <div class="mb-0 form-group">
+	                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>시도</strong></label>
+	                    <div class="col-sm-12">
+	                        <input type="text" class="form-control form-control-sm" id="" placeholder="" th:value="${detail.ctprvnNm}" readonly>
+	                    </div>
+	                </div>
+	            </div>
+	            <div class="col-12 col-sm-6 col-lg-3 mb-3">
+	                <div class="mb-0 form-group">
+	                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>지정번호</strong></label>
+	                    <div class="col-sm-12">
+	                        <input type="text" class="form-control form-control-sm" id="" placeholder="" th:value="${detail.dsgnno}" readonly>
+	                    </div>
+	                </div>
+	            </div>
+	            <div class="col-12 col-sm-6 col-lg-3 mb-3">
+	                <div class="mb-0 form-group">
+	                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>기관명</strong></label>
+	                    <div class="col-sm-12">
+	                        <input type="text" class="form-control form-control-sm" id="" placeholder="" th:value="${detail.instNm}" readonly>
+	                    </div>
+	                </div>
+	            </div>
+	            <div class="col-12 col-sm-6 col-lg-3 mb-3">
+	                <div class="mb-0 form-group">
+	                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>지정획득일</strong></label>
+	                    <div class="col-sm-12">
+	                        <input type="text" class="form-control form-control-sm" id="" placeholder="" th:value="${detail.dsgnDe}" readonly>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+    
+    <!-- 지정 내역 -->
+    <div class="card">
+        <div class="row p-20 p-b-0">
+            <div class="col-12 col-md-8 mb-2 mb-md-0">
+                <h5><strong>변경신청 내역</strong></h5>
+            </div>
+        </div>
+        <div class="card-block-small">
+	        <div class="dt-responsive table-responsive">
+	            <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
+	                <table id="jsGrid2" class="table-responsive"></table>
+	                <div id="listPager2" class="text-center"></div>
+	            </div>
+	        </div>
+	    </div>
+    </div>
+    <!-- //지정 내역 -->
+</form>
+
+<!-- 변경신청 상세 팝업 -->
+<div class="modal fade" id="changePopup" aria-hidden="true" data-bs-backdrop="static"></div>
+
+<script th:inline="javascript">
+	/*<![CDATA[*/
+	var aplyid = /*[[${detail.aplyid}]]*/null;
+	/*]]>*/
+	var chngListUrl = "/mng/seeEnvOperation/selectChangeList.do";
+	var chngUrl = "/mng/seeEnvOperation/updateChange.do";
+	
+	$(function(){
+        $("#jsGrid2").jsGrid({
+            height: "auto",
+            width: "100%",
+            autoload: true,
+            sorting: false,
+            paging: true,
+            pagerContainer: "#listPager2",
+            pagerFormat: "{first} {prev} {pages} {next} {last}",
+            pagePrevText: "이전",
+            pageNextText: "다음",
+            pageFirstText: "< 처음ㅣ",
+            pageLastText: "ㅣ 마지막 >",
+            pageSize: 10,
+            pageButtonCount: 10,
+            pageLoading: true,
+            pageIndex: 1,
+            noDataContent: "데이터가 없습니다.",
+            
+            controller: {
+                loadData: function (filter) {
+                    var data = $.Deferred();
+                    var formData = $('#changeFrm').serializeArray();
+                    var params = [
+                        {name: "pageNumber", value: filter.pageIndex},
+                        {name: "rowPerPage", value: filter.pageSize},
+                    ]
+
+                    if(filter.sortField != undefined) {
+                        params.push({name: "orderField", value: filter.sortField});
+                        params.push({name: "orderDirection", value: filter.sortOrder});
+                    } else {
+                        params.push({name: "orderField", value: 'DMNDID'});
+
+                    }
+                    formData = formData.concat(params);
+
+                    $.ajax({
+                        type: "GET",
+                        contentType: "application/json; charset=utf-8",
+                        url: chngListUrl,
+                        dataType: "json",
+                        data: formData
+                    }).done(function(response){
+                        var da = {
+                            data : escapeGridData(response.list)
+                            , itemsCount : response.totalCount
+                        };
+                        data.resolve(da);
+                    });
+                    
+                    return data.promise();
+                }
+            },
+            fields: [ 
+            	{ name : 'dmndid', css : 'hide' }
+                , { title: '번호'      ,name: 'rowNumber' ,type: "number", width: "80" , align:"center", sorting :false }
+                , { title: '상태'   ,name: 'sttsNm'    ,type: "text"  , width: "100" , align:"center"}
+                , { title: '변경사유' ,name: 'dmndCn'     ,type: "text"  , width: "350" , align:"left"}
+                , { title: '등록일시'   ,name: 'regDt'   ,type: "text"  , width: "150" , align:"center"}
+                , { title: '완료처리일'   ,name: 'ansDt'        ,type: "text"  , width: "150", align:"center",
+                    itemTemplate: function(value, item) { 
+                        return value == null || value == '' ? '-' : value;
+                    }
+                }
+            ],
+            /*[# sec:authorize-url="/mng/seeEnvOperation/changePopup.html"]*/
+            rowClick: function (args) {
+                if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+                openChangeModal(args.item.dmndid);
+            },
+            /*[/]*/
+        });
+    });
+	
+    //변경신청 상세 팝업
+    var changeModal;
+    var openChangeModal = (dmndid) => {
+        var url = "/mng/seeEnvOperation/changePopup.html?aplyid="+aplyid+"&dmndid="+dmndid;
+
+        $("#changePopup").load(url, function(response, status, xhr) {
+            if (status == "success") {
+            	changeModal = new bootstrap.Modal($('#changePopup'));
+            	changeModal.show();
+            }
+        });
+    }
+</script>

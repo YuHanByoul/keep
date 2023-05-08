@@ -132,4 +132,14 @@ public interface EnvReqstDao {
      * @throws Exception 예외
      */
     public List<EnvReqstVo> selectSpceRsvtdeList(EnvReqstVo envReqstVo) throws Exception;
+    /**
+     * 신청 예약중 실시간 예약 및 운영중지 상태 유무 확인 목록 
+     *
+     * @Title       : selectReservedRsvtdeList
+     * @Description : 신청 예약중 실시간 예약 및 운영중지 상태 유무 확인 목록 
+     * @param envReqstVo EnvReqstVo EnvReqstVo 객체
+     * @return List<AplyRsvtdeVo> 
+     * @throws Exception 예외
+     */
+    public List<AplyRsvtdeVo> selectReservedRsvtdeList(EnvReqstVo envReqstVo) throws Exception;
 }

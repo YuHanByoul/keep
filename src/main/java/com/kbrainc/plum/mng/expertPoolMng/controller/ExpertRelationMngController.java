@@ -6,6 +6,9 @@ import com.kbrainc.plum.mng.expertPoolMng.service.ExpertPoolMngService;
 import com.kbrainc.plum.mng.expertPoolMng.service.ExpertRelationMngService;
 import com.kbrainc.plum.mng.member.model.MemberVo;
 import com.kbrainc.plum.mng.member.service.MemberService;
+import com.kbrainc.plum.rte.util.CommonUtil;
+import com.penta.scpdb.ScpDbAgent;
+
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.salt.RandomSaltGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,9 +48,6 @@ public class ExpertRelationMngController {
 
     @Autowired
     private MemberService memberService;
-
-    @Value("${crypto.key}")
-    private String encryptKey;
 
     /**
      * 전문가 섭외 목록 화면
@@ -123,11 +123,14 @@ public class ExpertRelationMngController {
         expertVo.setUserid(expertRelationInfo.getExprtid());
         ExpertVo expertInfo = expertPoolMngService.selectExpertApplyInfo(expertVo);
 
-        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
-        encryptor.setSaltGenerator(new RandomSaltGenerator());
-        encryptor.setPassword(encryptKey);
-        encryptor.setAlgorithm("PBEWithMD5AndDES");
-        String decStr = encryptor.decrypt(expertInfo.getGndr());
+        ScpDbAgent agt = new ScpDbAgent();
+        String decStr = "";
+        if (System.getenv("PC_KIND") == null) {
+            decStr = agt.ScpDecStr(CommonUtil.damoScpIniFilePath, "KEY1", expertInfo.getGndr());
+        } else {
+            decStr = "M"; // 암호화 모듈을 사용할수 없는 MAC인경우 무조건 남자로 설정.
+        }
+
         expertInfo.setGndr(decStr);
 
 

@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.error.controller.CustomErrorController;
 import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.cmm.file.service.FileServiceImpl;
+import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.asgsysSrng.service.AsgsysSrngServiceImpl;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmObjcVo;
@@ -66,7 +68,13 @@ public class DsgnPrgrmController {
     private AsgsysSrngServiceImpl asgsysSrngServiceImpl;
 
 	@Autowired
+    private CommonService commonService;
+
+	@Autowired
 	private InstServiceImpl instService;
+
+	@Autowired
+	private FileServiceImpl fileService;
 
     /**********************************************************************************
      * 지정프로그램
@@ -211,7 +219,7 @@ public class DsgnPrgrmController {
     public String dsgnInfoForm(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
     	InstVo instVo = new InstVo();
         model.addAttribute("typeCdList", instService.selectInstTypeCdList(instVo));
-    	model.addAttribute("dsgnAplyInfo",dsgnPrgrmServiceImpl.selectDsgnPrgrm(dsgnPrgrmVo));
+    	model.addAttribute("dsgnInfo",dsgnPrgrmServiceImpl.selectDsgnPrgrm(dsgnPrgrmVo));
     	return "mng/dsgnPrgrm/dsgnInfoForm";
     }
 
@@ -243,12 +251,65 @@ public class DsgnPrgrmController {
     }
 
     /**
-     * @Title : chgAplyForm
-     * @Description : 변경신청(탭) 화면이동
+     * @Title : mbrSrchPopup
+     * @Description : 담당자 변경 팝업
      * @throws Exception :
      * @return String 이동화면경로
      * @throws Exception 예외
      */
+    @RequestMapping(value = "/mng/dsgnPrgrm/mbrSrchPopup.html")
+    public String mbrSrchPopup(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
+    	model.addAttribute("instid", asgsysSrngVo.getInstid());
+    	model.addAttribute("prgrmid", asgsysSrngVo.getPrgrmid());
+    	return "mng/dsgnPrgrm/mbrSrchPopup";
+    }
+
+    /**
+    * 담당자 변경
+    *
+    * @Title : updateMbr
+    * @Description : 담당자 변경
+    * @param dsgnPrgrmVo
+    * @param user
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/mng/dsgnPrgrm/updateMbr.do")
+    @ResponseBody
+    public Map<String, Object> updateMbr(AsgsysSrngVo asgsSrngVo, @UserInfo UserVo user) throws Exception {
+
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+    	int retVal = 0;
+
+    	asgsSrngVo.setUser(user);
+
+    	retVal = asgsysSrngServiceImpl.updateMbr(asgsSrngVo);
+
+    	if (retVal > 0) {
+    		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+    		resultMap.put("msg", "수정에 성공하였습니다.");
+    	} else {
+    		resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+    		resultMap.put("msg", "수정에 실패했습니다.");
+    	}
+
+    	return resultMap;
+    }
+
+
+    /**
+    * 변경신청 화면 이동
+    *
+    * @Title : chgAplyForm
+    * @Description : 변경신청 화면 이동
+    * @param asgsysSrngVo
+    * @param model
+    * @return
+    * @throws Exception
+    * @return String
+    */
     @RequestMapping(value = "/mng/dsgnPrgrm/chgAplyForm.html")
     public String chgAplyForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
     	model.addAttribute("chgAplyPrgrmInfo", asgsysSrngServiceImpl.selectDsgnAplyDtlInfo(asgsysSrngVo));
@@ -293,9 +354,6 @@ public class DsgnPrgrmController {
     public String chgAplyDtlPopup(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
 
     	DsgnPrgrmVo chgAplyInfo = dsgnPrgrmServiceImpl.selectChgAplyDtl(dsgnPrgrmVo);
-
-    	logger.info("@@@@@@@@@@@@@@@@@@@ filegrpid : " + chgAplyInfo.toString());
-    	logger.info("@@@@@@@@@@@@@@@@@@@ filegrpid : " + chgAplyInfo.getFilegrpid());
 
     	if (!StringUtil.nvl(chgAplyInfo.getFilegrpid()).equals("") && !StringUtil.nvl(chgAplyInfo.getFilegrpid()).equals(0)) {
             FileVo fileVo = new FileVo();
@@ -417,7 +475,8 @@ public class DsgnPrgrmController {
 
     	asgsysSrngVo.setPrgrmid(dsgnPrgrmVo.getPrgrmid());
 
-    	model.addAttribute("prgrmBscInfo", asgsysSrngServiceImpl.selectDsgnAplyDtlInfo(asgsysSrngVo));    //프로그램 기본 정보
+    	model.addAttribute("sidoList", commonService.selectCtprvnList());
+    	model.addAttribute("dsgnInfo",dsgnPrgrmServiceImpl.selectDsgnPrgrm(dsgnPrgrmVo));
 
     	return "mng/dsgnPrgrm/operRsltForm";
     }
@@ -459,7 +518,25 @@ public class DsgnPrgrmController {
     @RequestMapping(value = "/mng/dsgnPrgrm/selectOperRsltDetail.html")
     public String selectOperRsltDetail(DsgnPrgrmVo dsgnPrgrmVo ,Model model) throws Exception {
 
-    	model.addAttribute("operRsltInfo", dsgnPrgrmServiceImpl.selectOperRsltDetail(dsgnPrgrmVo));
+    	DsgnPrgrmVo operRsltInfo = null;
+    	operRsltInfo = dsgnPrgrmServiceImpl.selectOperRsltDetail(dsgnPrgrmVo);
+
+    	model.addAttribute("operRsltInfo", operRsltInfo);
+    	model.addAttribute("prfmncList",   dsgnPrgrmServiceImpl.selectOperRsltPrfmncList(dsgnPrgrmVo));
+
+    	InstVo instVo = new InstVo();
+    	model.addAttribute("typeCdList", instService.selectInstTypeCdList(instVo));
+    	model.addAttribute("sidoList"  , commonService.selectCtprvnList());
+
+    	if (!StringUtil.nvl(operRsltInfo.getFilegrpid()).equals("") && !StringUtil.nvl(operRsltInfo.getFilegrpid()).equals(0)) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(operRsltInfo.getFilegrpid());
+
+            model.addAttribute("fileList", fileService.getFileList(fileVo));
+
+        } else {
+            model.addAttribute("fileList", Collections.emptyList());
+        }
 
         return "mng/dsgnPrgrm/operRsltDetail";
     }
@@ -472,14 +549,95 @@ public class DsgnPrgrmController {
      */
     @RequestMapping(value = "/mng/dsgnPrgrm/sbmsnSttsChgPopup.html")
     public String sbmsnSttsChgPopup(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
+
+    	model.addAttribute("popInfo", dsgnPrgrmVo);
     	//model.addAttribute("sbmsnPrdChgInfo", dsgnPrgrmServiceImpl.selectOperRsltCycl(dsgnPrgrmVo));
     	return "mng/dsgnPrgrm/sbmsnSttsChgPopup";
     }
 
     /**
+     * @Title : sbmsnPrdChgPopup
+     * @Description : (운영결과)제출상태 변경 담당자검색 팝업
+     * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/dsgnPrgrm/searchPicPopup.html")
+    public String searchPicPopup(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
+    	model.addAttribute("sidoList", commonService.selectCtprvnList());
+    	model.addAttribute("picPopInfo", dsgnPrgrmVo);
+    	return "mng/dsgnPrgrm/searchPicPopup";
+    }
+
+    /**
+    * 담당자 목록 조회
+    *
+    * @Title : selectPicList
+    * @Description : 담당자 목록 조회
+    * @param dsgnPrgrmVo
+    * @param model
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/mng/dsgnPrgrm/selectPicList.do")
+    @ResponseBody
+    public Map<String, Object> selectPicList(DsgnPrgrmVo dsgnPrgrmVo ,Model model) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        List<DsgnPrgrmVo> result = null;
+
+        //담당자 목록 조회
+        result = dsgnPrgrmServiceImpl.selectPicList(dsgnPrgrmVo);
+
+        if (result.size() > 0) {
+            resultMap.put("totalCount", (result.get(0).getTotalCount()));
+        } else {
+            resultMap.put("totalCount", 0);
+        }
+
+        resultMap.put("list", result);
+
+        return resultMap;
+    }
+
+
+    /**
+    * 운영결과 제출상태 상태변경
+    *
+    * @Title : updateSbmsnStts
+    * @Description : 운영결과 제출상태 상태변경
+    * @param dsgnPrgrmVo
+    * @param bindingResult1
+    * @param user
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/mng/dsgnPrgrm/updateSbmsnStts.do")
+    @ResponseBody
+    public Map<String, Object> updateSbmsnStts(DsgnPrgrmVo dsgnPrgrmVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
+
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+    	int retVal = 0;
+
+    	dsgnPrgrmVo.setUser(user);
+    	retVal = dsgnPrgrmServiceImpl.updateSbmsnStts(dsgnPrgrmVo);
+
+    	if (retVal > 0) {
+    		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+    		resultMap.put("msg", "저장에 성공하였습니다.");
+    	} else {
+    		resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+    		resultMap.put("msg", "저장에 실패했습니다.");
+    	}
+
+    	return resultMap;
+    }
+
+    /**
      * 운영결과 수정
      *
-     * @Title       : updateDsgnHstry
+     * @Title       : updateOperRslt
      * @Description : 운영결과 수정
      * @param DsgnPrgrmVo 객체
      * @param bindingResult 유효성검증결과
@@ -731,6 +889,7 @@ public class DsgnPrgrmController {
     public String dsgnPrgrmOutlPopup(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
     	//지정프로그램 개요 조회
     	model.addAttribute("dsgnPrgrmOutl", dsgnPrgrmServiceImpl.selectDsgnOutl(dsgnPrgrmVo));
+    	model.addAttribute("chkList", dsgnPrgrmServiceImpl.selectDsgnOutlChkList(dsgnPrgrmVo));
     	return "mng/dsgnPrgrm/dsgnPrgrmOutlPopup";
     }
 
@@ -810,18 +969,17 @@ public class DsgnPrgrmController {
     	int retVal = 0;
 
     	dsgnPrgrmVo.setUser(user);
+    	retVal = 0;
+    	if("132101".equals(dsgnPrgrmVo.getSttsCd()) && !"".equals(dsgnPrgrmVo.getChkVal()) ){
 
+    		retVal = dsgnPrgrmServiceImpl.selectDsgnNoDupChk(dsgnPrgrmVo);
 
-    	if("".equalsIgnoreCase(dsgnPrgrmVo.getChkVal()) )
-        {
-        }
+    		if(retVal > 0) {
 
-		retVal = dsgnPrgrmServiceImpl.selectDsgnNoDupChk(dsgnPrgrmVo);
-		if(retVal > 0) {
-
-			resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-			resultMap.put("msg", "중복되는 지정번호가 존재합니다. 지정번호를 변경 후 다시 시도(저장)하시기 바랍니다.");
-			return resultMap;
+    			resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+    			resultMap.put("msg", "중복되는 지정번호가 존재합니다. 지정번호를 변경 후 다시 시도(저장)하시기 바랍니다.");
+    			return resultMap;
+    		}
 		}
 
     	retVal = dsgnPrgrmServiceImpl.insertDsgnHstry(dsgnPrgrmVo);
@@ -864,8 +1022,7 @@ public class DsgnPrgrmController {
         }
 
         retVal = 0;
-
-    	if(!"".equals(dsgnPrgrmVo.getChkVal()) ){
+    	if("132101".equals(dsgnPrgrmVo.getSttsCd()) && !"".equals(dsgnPrgrmVo.getChkVal()) ){
 
     		retVal = dsgnPrgrmServiceImpl.selectDsgnNoDupChk(dsgnPrgrmVo);
 
@@ -954,7 +1111,21 @@ public class DsgnPrgrmController {
      */
     @RequestMapping(value = "/mng/dsgnPrgrm/splmntImprvForm.html")
     public String splmntImprvForm(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
-    	model.addAttribute("splmntDmndInfo", dsgnPrgrmServiceImpl.selectSplmntDmnd(dsgnPrgrmVo));
+
+    	DsgnPrgrmVo  splmntDmndInfo = dsgnPrgrmServiceImpl.selectSplmntDmnd(dsgnPrgrmVo);
+    	splmntDmndInfo.setSrngid(dsgnPrgrmVo.getSrngid());
+    	model.addAttribute("splmntDmndInfo", splmntDmndInfo);
+
+    	if (!StringUtil.nvl(splmntDmndInfo.getFilegrpid()).equals("") && !StringUtil.nvl(splmntDmndInfo.getFilegrpid()).equals(0)) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(splmntDmndInfo.getFilegrpid());
+
+            model.addAttribute("fileList", fileService.getFileList(fileVo));
+
+        } else {
+            model.addAttribute("fileList", Collections.emptyList());
+        }
+
     	return "mng/dsgnPrgrm/splmntImprvForm";
     }
 
@@ -1019,9 +1190,60 @@ public class DsgnPrgrmController {
     	}
     	model.addAttribute("scrtyImprvPlanln", scrtyImprvPlanln);
 
+    	if (!StringUtil.nvl(scrtyImprvPlanln.getFilegrpid()).equals("") && !StringUtil.nvl(scrtyImprvPlanln.getFilegrpid()).equals(0)) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(scrtyImprvPlanln.getFilegrpid());
+
+            model.addAttribute("fileList", fileService.getFileList(fileVo));
+
+        } else {
+            model.addAttribute("fileList", Collections.emptyList());
+        }
+
     	return "mng/dsgnPrgrm/scrtyImprvPlanlnForm";
     }
 
+    /**
+     * 보완개선계획 등록
+     *
+     * @Title : insertSplmntImprv
+     * @Description : 보완요청 등록
+     * @param DsgnPrgrmVo 객체
+     * @param bindingResult 유효성검증결과
+     * @param user 사용자세션정보
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/dsgnPrgrm/insertScrtyImprvPlanln.do")
+    @ResponseBody
+    public Map<String, Object> insertScrtyImprvPlanln(@Valid DsgnPrgrmVo dsgnPrgrmVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
+
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+    	if (bindingResult1.hasErrors()) {
+    		FieldError fieldError = bindingResult1.getFieldError();
+    		if (fieldError != null) {
+    			resultMap.put("msg", fieldError.getDefaultMessage());
+    		}
+    		return resultMap;
+    	}
+
+    	int retVal = 0;
+
+    	dsgnPrgrmVo.setUser(user);
+
+    	retVal = dsgnPrgrmServiceImpl.insertScrtyImprvPlanln(dsgnPrgrmVo);
+
+    	if (retVal > 0) {
+    		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+    		resultMap.put("msg", "등록에 성공하였습니다.");
+    	} else {
+    		resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+    		resultMap.put("msg", "등록에 실패했습니다.");
+    	}
+
+    	return resultMap;
+    }
 
     /**
 	 * 보완계획서 수정
@@ -1084,6 +1306,16 @@ public class DsgnPrgrmController {
     		rsltRptln = dsgnPrgrmVo;
     	}
     	model.addAttribute("rsltRptln", rsltRptln);
+
+    	if (!StringUtil.nvl(rsltRptln.getFilegrpid()).equals("") && !StringUtil.nvl(rsltRptln.getFilegrpid()).equals(0)) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(rsltRptln.getFilegrpid());
+
+            model.addAttribute("fileList", fileService.getFileList(fileVo));
+
+        } else {
+            model.addAttribute("fileList", Collections.emptyList());
+        }
 
     	return "mng/dsgnPrgrm/rsltRptlnForm";
     }

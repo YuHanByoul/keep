@@ -1,0 +1,67 @@
+<div class="col-12">
+    <ul class="nav nav-tabs tabs gray-tabs" role="tablist">
+        <th:block sec:authorize-url="/mng/seeEnvOperation/seeEnvOperationDetailForm.html">
+            <li class="nav-item"><a th:class="${seeEnvOperationVo.changeTab == 'Y' ? 'nav-link' : 'nav-link active'}" data-bs-toggle="tab" href="#tab_01" role="tab" id="tabCon1Link"><strong>지정정보</strong></a></li>
+        </th:block>
+        <th:block sec:authorize-url="/mng/seeEnvOperation/seeEnvOperationChangeForm.html">
+            <li class="nav-item"><a th:class="${seeEnvOperationVo.changeTab == 'Y' ? 'nav-link active' : 'nav-link'}" data-bs-toggle="tab" href="#tab_02" role="tab" id="tabCon2Link"><strong>변경신청</strong></a></li>
+        </th:block>
+    </ul>
+</div>
+
+<div class="col-12">
+    <div id="myTabContent" class="tab-content tabs"></div>
+</div>
+
+<script th:inline="javascript">
+
+    /*<![CDATA[*/
+    var aplyid = /*[[${seeEnvOperationVo.aplyid}]]*/null;
+    var changeTab = /*[[${seeEnvOperationVo.changeTab}]]*/null;
+    /*]]>*/
+
+    $('.nav-tabs a').on('show.bs.tab', function(event) {
+    	//tab set
+        var tabId = event.currentTarget.attributes.id.value;
+        selectTab(tabId);
+    });
+
+    function selectTab(tabId) {
+        if(tabId == "tabCon1Link") {
+            loadTabContent("/mng/seeEnvOperation/seeEnvOperationDetailForm.html?aplyid=" + aplyid);
+        } else if(tabId == "tabCon2Link") {
+            loadTabContent("/mng/seeEnvOperation/seeEnvOperationChangeForm.html?aplyid=" + aplyid);
+        }
+        $("#" + tabId).parent().addClass("active");
+    }
+
+    function loadTabContent(uri){
+        $.ajax({
+            cache   : false
+          , url     : uri
+          , type    : 'GET'
+          , async   : 'false'
+          , dataType: 'html'
+          , success : function(result){ //요청이 성공했을때 실행되는 콜백 함수
+              $('#myTabContent').html(result);
+              scrollIntoView('contentPanel');
+          }
+        });
+        showContent();
+    }
+
+    function initTab() {
+        var tabFlag = false;
+        if(tabFlag == false && changeTab != "Y") {
+            selectTab("tabCon1Link");
+            tabFlag = true;
+        }
+        if(tabFlag == false && changeTab == "Y") {
+            selectTab("tabCon2Link");
+            tabFlag = true;
+        }
+    }
+
+    initTab();
+
+</script>

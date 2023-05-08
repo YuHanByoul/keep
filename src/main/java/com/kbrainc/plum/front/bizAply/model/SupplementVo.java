@@ -101,4 +101,8 @@ public class SupplementVo extends ParentRequestVo {
     
     /** 정산첨부파일 */
     private Integer excclcAtchFilegrpid;
+    
+    /** 상태 코드 */
+    private String sttsCd;
+    
 }

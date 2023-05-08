@@ -2,6 +2,7 @@ package com.kbrainc.plum.front.mypage.mypageEnvReqst.controller;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
+import com.kbrainc.plum.front.envReqst.model.EnvReqstVo;
 import com.kbrainc.plum.front.mypage.mypageEnvReqst.model.MypageEnvReqstVo;
 import com.kbrainc.plum.front.mypage.mypageEnvReqst.service.MypageEnvReqstService;
 import com.kbrainc.plum.mng.inst.model.InstVo;
@@ -71,20 +72,19 @@ public class MypageEnvReqstController {
      * @throws Exception
      */
     @RequestMapping(value = "/front/mypage/mypageEnvReqst/mypageEnvReqstList.html")
-    public String mypageEnvReqstList(MypageEnvReqstVo mypageEnvReqstVo, Model model) throws Exception {
+    public String mypageEnvReqstList(EnvReqstVo envReqstVo, Model model) throws Exception {
+        model.addAttribute("params",envReqstVo);
         Map<String,List<MypageEnvReqstVo>> listMap = new HashMap<>();
-        List<MypageEnvReqstVo> list = mypageEnvReqstService.selectMypageEnvReqstList(mypageEnvReqstVo);
-        model.addAttribute("list",listMap);
         return "front/mypage/mypageEnvReqst/mypageEnvReqstList";
     }
 
     @RequestMapping("/front/mypage/mypageEnvReqst/selectMypageEnvReqstList.do")
     @ResponseBody
-    public Map<String, Object> selectMypageEnvReqstList(MypageEnvReqstVo mypageEnvReqstVo, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> selectMypageEnvReqstList(EnvReqstVo envReqstVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> response = new HashMap<>();
 
-        mypageEnvReqstVo.setUser(user);
-        List<MypageEnvReqstVo> list = mypageEnvReqstService.selectMypageEnvReqstList(mypageEnvReqstVo);
+        envReqstVo.setUser(user);
+        List<EnvReqstVo> list = mypageEnvReqstService.selectMypageEnvReqstList(envReqstVo);
         if (list.size() > 0) {
             response.put("totalCount", (list.get(0).getTotalCount()));
             response.put("pagination", PaginationUtil.getFrontPaginationHtml(list.get(0).getTotalPage(), list.get(0).getPageNumber(), 10));
@@ -108,52 +108,11 @@ public class MypageEnvReqstController {
      * @return String
      */
     @RequestMapping(value = "/front/mypage/mypageEnvReqst/mypageResveEnvView.html")
-    public String mypageResveEnvView(MypageEnvReqstVo mypageEnvReqstVo, Model model, @UserInfo UserVo user, SpceVo spceVo) throws Exception {
-
-        model.addAttribute("param", mypageEnvReqstVo);
-
-        mypageEnvReqstVo.setUser(user);
-        MypageEnvReqstVo resultVo = mypageEnvReqstService.selectResveEnvInfo(mypageEnvReqstVo);
-
+    public String mypageResveEnvView(EnvReqstVo envReqstVo, Model model, @UserInfo UserVo user, SpceVo spceVo) throws Exception {
+        model.addAttribute("params",envReqstVo);
+        envReqstVo.setUser(user);
+        EnvReqstVo resultVo = mypageEnvReqstService.selectResveEnvInfo(envReqstVo);
         model.addAttribute("mypageEnvReqst", resultVo);
-
-
-        FileVo fileVo = new FileVo();
-        fileVo.setUser(user);
-
-        // 대표 이미지
-        if (resultVo.getRprsImgFileid() != null && !resultVo.getRprsImgFileid().equals(0)) {
-            fileVo.setFilegrpid(Integer.parseInt(resultVo.getRprsImgFileid().toString()));
-            ArrayList<FileVo> fileList= fileService.getFileList(fileVo);
-            model.addAttribute("rprsImgFileMap",fileList );
-            model.addAttribute("rprsCurrentFileCnt", fileList.size());
-        } else {
-            model.addAttribute("rprsImgFileMap", null);
-            model.addAttribute("rprsCurrentFileCnt", 0);
-        }
-
-        // 상세 이미지
-        if (resultVo.getDtlImgFilegrpid() != null && !resultVo.getDtlImgFilegrpid().equals(0)) {
-            fileVo.setFilegrpid(Integer.parseInt(resultVo.getDtlImgFilegrpid().toString()));
-            ArrayList<FileVo> fileList= fileService.getFileList(fileVo);
-            model.addAttribute("dtlImgFileMap",fileList );
-            model.addAttribute("dtlCurrentFileCnt", fileList.size());
-        } else {
-            model.addAttribute("dtlImgFileMap", null);
-            model.addAttribute("dtlCurrentFileCnt", 0);
-        }
-
-        // 안내자료
-        if (resultVo.getGdncFileid() != null && !resultVo.getGdncFileid().equals(0)) {
-            fileVo.setFilegrpid(Integer.parseInt(resultVo.getGdncFileid().toString()));
-            ArrayList<FileVo> fileList= fileService.getFileList(fileVo);
-            model.addAttribute("gdncFileMap",fileList );
-            model.addAttribute("gdncCurrentFileCnt", fileList.size());
-        } else {
-            model.addAttribute("gdncFileMap", null);
-            model.addAttribute("gdncCurrentFileCnt", 0);
-        }
-
         return "front/mypage/mypageEnvReqst/mypageResveEnvView";
     }
 
@@ -168,8 +127,8 @@ public class MypageEnvReqstController {
      * @throws Exception
      */
     @RequestMapping(value = "/front/mypage/mypageEnvReqst/rsnPopup.html")
-    public String rsnPopup(MypageEnvReqstVo mypageEnvReqstVo, Model model) throws Exception {
-        MypageEnvReqstVo data = mypageEnvReqstService.selectRsnInfo(mypageEnvReqstVo);
+    public String rsnPopup(EnvReqstVo envReqstVo, Model model) throws Exception {
+        EnvReqstVo data = mypageEnvReqstService.selectRsnInfo(envReqstVo);
         model.addAttribute("mypageEnvReqst",data);
         return "front/mypage/mypageEnvReqst/rsnPopup";
     }
@@ -185,8 +144,8 @@ public class MypageEnvReqstController {
      * @throws Exception
      */
     @RequestMapping(value = "/front/mypage/mypageEnvReqst/dpstInfoPopup.html")
-    public String dpstInfoPopup(MypageEnvReqstVo mypageEnvReqstVo, Model model) throws Exception {
-        MypageEnvReqstVo data = mypageEnvReqstService.selectDpstInfo(mypageEnvReqstVo);
+    public String dpstInfoPopup(EnvReqstVo envReqstVo, Model model) throws Exception {
+        EnvReqstVo data = mypageEnvReqstService.selectDpstInfo(envReqstVo);
         model.addAttribute("mypageEnvReqst",data);
         return "front/mypage/mypageEnvReqst/dpstInfoPopup";
     }
@@ -200,8 +159,8 @@ public class MypageEnvReqstController {
      * @throws Exception
      */
     @RequestMapping(value = "/front/mypage/mypageEnvReqst/insertRsnPopup.html")
-    public String insertRsnPopup(MypageEnvReqstVo mypageEnvReqstVo, Model model) throws Exception {
-        model.addAttribute("aplyid",mypageEnvReqstVo.getAplyid());
+    public String insertRsnPopup(EnvReqstVo envReqstVo, Model model) throws Exception {
+        model.addAttribute("aplyid",envReqstVo.getAplyid());
         return "front/mypage/mypageEnvReqst/insertRsnPopup";
     }
 
@@ -214,8 +173,8 @@ public class MypageEnvReqstController {
      * @throws Exception
      */
     @RequestMapping(value = "/front/mypage/mypageEnvReqst/insertRvwPopup.html")
-    public String insertRvwPopup(MypageEnvReqstVo mypageEnvReqstVo, Model model) throws Exception {
-        model.addAttribute("aplyid",mypageEnvReqstVo.getAplyid());
+    public String insertRvwPopup(EnvReqstVo envReqstVo, Model model) throws Exception {
+        model.addAttribute("aplyid",envReqstVo.getAplyid());
         return "front/mypage/mypageEnvReqst/insertRvwPopup";
     }
 
@@ -228,9 +187,9 @@ public class MypageEnvReqstController {
      * @throws Exception
      */
     @RequestMapping(value = "/front/mypage/mypageEnvReqst/selectRvwPopup.html")
-    public String selectRvwPopup(MypageEnvReqstVo mypageEnvReqstVo, Model model) throws Exception {
-        model.addAttribute("aplyid",mypageEnvReqstVo.getAplyid());
-        MypageEnvReqstVo data = mypageEnvReqstService.selectRwvInfo(mypageEnvReqstVo);
+    public String selectRvwPopup(EnvReqstVo envReqstVo, Model model) throws Exception {
+        model.addAttribute("aplyid",envReqstVo.getAplyid());
+        EnvReqstVo data = mypageEnvReqstService.selectRwvInfo(envReqstVo);
         model.addAttribute("mypageEnvReqst",data);
         return "front/mypage/mypageEnvReqst/selectRvwPopup";
     }
@@ -248,7 +207,7 @@ public class MypageEnvReqstController {
      */
     @RequestMapping(value = "/front/mypage/mypageEnvReqst/insertRsn.do")
     @ResponseBody
-    public Map<String, Object> insertRsn(@Valid MypageEnvReqstVo mypageEnvReqstVo, BindingResult bindingResult, @UserInfo UserVo user, ResveReqstVo resveReqstVo) throws Exception {
+    public Map<String, Object> insertRsn(@Valid EnvReqstVo envReqstVo, BindingResult bindingResult, @UserInfo UserVo user, ResveReqstVo resveReqstVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
         if (bindingResult.hasErrors()) {
@@ -258,25 +217,17 @@ public class MypageEnvReqstController {
             }
             return resultMap;
         }
-
-        mypageEnvReqstVo.setUser(user);
-
+        envReqstVo.setUser(user);
+        
         int retVal = 0;
-
-        retVal = mypageEnvReqstService.insertRsn(mypageEnvReqstVo);
-
-        // 상태변경 데이터 세팅
-        resveReqstVo.setAplyid(mypageEnvReqstVo.getAplyid());
-        resveReqstVo.setUser(user);
-        // 상태변경이력 추가
-        resveReqstService.insertHstry(resveReqstVo);
-
+        retVal = mypageEnvReqstService.insertRsn(envReqstVo);
+        
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "예약신청 취소에 성공하였습니다.");
+            resultMap.put("msg", "예약 취소에 성공하였습니다.");
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-            resultMap.put("msg", "예약신청 취소에 실패했습니다.");
+            resultMap.put("msg", "예약 취소에 실패했습니다.");
         }
 
         return resultMap;
@@ -295,7 +246,7 @@ public class MypageEnvReqstController {
      */
     @RequestMapping(value = "/front/mypage/mypageEnvReqst/insertRvw.do")
     @ResponseBody
-    public Map<String, Object> insertRvw(@Valid MypageEnvReqstVo mypageEnvReqstVo, BindingResult bindingResult, @UserInfo UserVo user, ResveReqstVo resveReqstVo) throws Exception {
+    public Map<String, Object> insertRvw(@Valid EnvReqstVo envReqstVo, BindingResult bindingResult, @UserInfo UserVo user, ResveReqstVo resveReqstVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
         if (bindingResult.hasErrors()) {
@@ -306,11 +257,11 @@ public class MypageEnvReqstController {
             return resultMap;
         }
 
-        mypageEnvReqstVo.setUser(user);
+        envReqstVo.setUser(user);
 
         int retVal = 0;
 
-        retVal = mypageEnvReqstService.insertRvw(mypageEnvReqstVo);
+        retVal = mypageEnvReqstService.insertRvw(envReqstVo);
 
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -336,7 +287,7 @@ public class MypageEnvReqstController {
      */
     @RequestMapping(value = "/front/mypage/mypageEnvReqst/deleteRvw.do")
     @ResponseBody
-    public Map<String, Object> deleteRvw(@Valid MypageEnvReqstVo mypageEnvReqstVo, BindingResult bindingResult, @UserInfo UserVo user, ResveReqstVo resveReqstVo) throws Exception {
+    public Map<String, Object> deleteRvw(@Valid EnvReqstVo envReqstVo, BindingResult bindingResult, @UserInfo UserVo user, ResveReqstVo resveReqstVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
         if (bindingResult.hasErrors()) {
@@ -347,11 +298,11 @@ public class MypageEnvReqstController {
             return resultMap;
         }
 
-        mypageEnvReqstVo.setUser(user);
+        envReqstVo.setUser(user);
 
         int retVal = 0;
 
-        retVal = mypageEnvReqstService.deleteRvw(mypageEnvReqstVo);
+        retVal = mypageEnvReqstService.deleteRvw(envReqstVo);
 
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);

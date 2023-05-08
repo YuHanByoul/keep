@@ -112,17 +112,18 @@ public class CntntsController {
         CntntsVo result = null;
         result =  cntntsService.selectCntntsInfo(cntntsVo);
         
-        if(result.getPlySecnd() != null) {
-            if(result.getPlySecnd() >= 3600) {
-                result.setPlyHour((result.getPlySecnd() - (result.getPlySecnd() % 3600)) / 3600);
-                result.setPlyMinute((result.getPlySecnd() - (result.getPlySecnd() % 60)) / 60 - (result.getPlyHour() * 60));
-                result.setPlySecnd(result.getPlySecnd() - (result.getPlyMinute() * 60) - (result.getPlyHour() * 3600));
-            }else {
-                result.setPlyHour(0);
-                result.setPlyMinute((result.getPlySecnd() - (result.getPlySecnd() % 60)) / 60);
-                result.setPlySecnd(result.getPlySecnd() - (result.getPlyMinute() * 60));
-            }
-        }
+          // result.getPlySecnd() Integer => String 변경
+//        if(result.getPlySecnd() != null) {
+//            if(Integer.parseInt(result.getPlySecnd()) >= 3600) {
+//                result.setPlyHour((Integer.parseInt(result.getPlySecnd()) - (Integer.parseInt(result.getPlySecnd()) % 3600)) / 3600);
+//                result.setPlyMinute((Integer.parseInt(result.getPlySecnd()) - (Integer.parseInt(result.getPlySecnd()) % 60)) / 60 - (result.getPlyHour() * 60));
+//                result.setPlySecnd(Integer.toString(Integer.parseInt(result.getPlySecnd()) - (result.getPlyMinute() * 60) - (result.getPlyHour() * 3600)));
+//            }else {
+//                result.setPlyHour(0);
+//                result.setPlyMinute((Integer.parseInt(result.getPlySecnd()) - (Integer.parseInt(result.getPlySecnd()) % 60)) / 60);
+//                result.setPlySecnd(Integer.toString(Integer.parseInt(result.getPlySecnd()) - (result.getPlyMinute() * 60)));
+//            }
+//        }
         
         FileVo fileVo = new FileVo();
         fileVo.setUser(user);
@@ -215,16 +216,17 @@ public class CntntsController {
         
         cntntsVo.setUser(user);
         
-        if(cntntsVo.getPlyHour() != null && cntntsVo.getPlyMinute() != null && cntntsVo.getPlySecnd() != null) {
-            int playTime = cntntsVo.getPlyHour() * 3600 + cntntsVo.getPlyMinute() * 60 + cntntsVo.getPlySecnd();
-            cntntsVo.setPlySecnd(playTime);
-        }else if(cntntsVo.getPlyMinute() != null && cntntsVo.getPlySecnd() != null) {
-            int playTime = cntntsVo.getPlyMinute() * 60 + cntntsVo.getPlySecnd();
-            cntntsVo.setPlySecnd(playTime);
-        }else if(cntntsVo.getPlyMinute() != null && cntntsVo.getPlySecnd() == null) {
-            int playTime = cntntsVo.getPlyMinute() * 60;
-            cntntsVo.setPlySecnd(playTime);
-        }
+        // result.getPlySecnd() Integer => String 변경        
+//        if(cntntsVo.getPlyHour() != null && cntntsVo.getPlyMinute() != null && cntntsVo.getPlySecnd() != null) {
+//            int playTime = cntntsVo.getPlyHour() * 3600 + cntntsVo.getPlyMinute() * 60 + Integer.parseInt(cntntsVo.getPlySecnd());
+//            cntntsVo.setPlySecnd(Integer.toString(playTime));
+//        }else if(cntntsVo.getPlyMinute() != null && cntntsVo.getPlySecnd() != null) {
+//            int playTime = cntntsVo.getPlyMinute() * 60 + Integer.parseInt(cntntsVo.getPlySecnd());
+//            cntntsVo.setPlySecnd(Integer.toString(playTime));
+//        }else if(cntntsVo.getPlyMinute() != null && cntntsVo.getPlySecnd() == null) {
+//            int playTime = cntntsVo.getPlyMinute() * 60;
+//            cntntsVo.setPlySecnd(Integer.toString(playTime));
+//        }
         
         int retVal = 0;
                 
@@ -266,16 +268,17 @@ public class CntntsController {
         
         cntntsVo.setUser(user);
         
-        if(cntntsVo.getPlyHour() != null && cntntsVo.getPlyMinute() != null && cntntsVo.getPlySecnd() != null) {
-            int playTime = cntntsVo.getPlyHour() * 3600 + cntntsVo.getPlyMinute() * 60 + cntntsVo.getPlySecnd();
-            cntntsVo.setPlySecnd(playTime);
-        }else if(cntntsVo.getPlyMinute() != null && cntntsVo.getPlySecnd() != null) {
-            int playTime = cntntsVo.getPlyMinute() * 60 + cntntsVo.getPlySecnd();
-            cntntsVo.setPlySecnd(playTime);
-        }else if(cntntsVo.getPlyMinute() != null && cntntsVo.getPlySecnd() == null) {
-            int playTime = cntntsVo.getPlyMinute() * 60;
-            cntntsVo.setPlySecnd(playTime);
-        }
+        // result.getPlySecnd() Integer => String 변경
+//        if(cntntsVo.getPlyHour() != null && cntntsVo.getPlyMinute() != null && cntntsVo.getPlySecnd() != null) {
+//            int playTime = cntntsVo.getPlyHour() * 3600 + cntntsVo.getPlyMinute() * 60 + Integer.parseInt(cntntsVo.getPlySecnd());
+//            cntntsVo.setPlySecnd(Integer.toString(playTime));
+//        }else if(cntntsVo.getPlyMinute() != null && cntntsVo.getPlySecnd() != null) {
+//            int playTime = cntntsVo.getPlyMinute() * 60 + Integer.parseInt(cntntsVo.getPlySecnd());
+//            cntntsVo.setPlySecnd(Integer.toString(playTime));
+//        }else if(cntntsVo.getPlyMinute() != null && cntntsVo.getPlySecnd() == null) {
+//            int playTime = cntntsVo.getPlyMinute() * 60;
+//            cntntsVo.setPlySecnd(Integer.toString(playTime));
+//        }
 
         int retVal = 0;
                 

@@ -3,6 +3,9 @@ package com.kbrainc.plum.front.mypage.exprtPool.service;
 import com.kbrainc.plum.front.exprtPool.lctrDmnd.model.ExprtVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+import com.kbrainc.plum.rte.util.CommonUtil;
+import com.penta.scpdb.ScpDbAgent;
+
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.salt.RandomSaltGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,19 +36,6 @@ public class MyItrstExprtServiceImpl extends PlumAbstractServiceImpl implements 
     @Autowired
     private MyItrstExprtDao myItrstExprtDao;
 
-    @Value("${crypto.key}")
-    private String encryptKey;
-
-    StandardPBEStringEncryptor encryptor;
-
-    @PostConstruct
-    public void init() throws Exception {
-        encryptor = new StandardPBEStringEncryptor();
-        encryptor.setSaltGenerator(new RandomSaltGenerator());
-        encryptor.setPassword(encryptKey);
-        encryptor.setAlgorithm("PBEWithMD5AndDES");
-    }
-
     /**
      * 관심 전문가 목록 조회
      *
@@ -62,9 +52,18 @@ public class MyItrstExprtServiceImpl extends PlumAbstractServiceImpl implements 
         exprtVo.setUser(searchVo.getUser());
 
         List<ExprtVo> exprts = myItrstExprtDao.selectItrstExprtList(exprtVo);
-        for (ExprtVo exprt : exprts) {
-            String decStr = encryptor.decrypt(exprt.getGndr());
-            exprt.setGndr(decStr);
+        ScpDbAgent agt = new ScpDbAgent();
+        String decStr = "";
+        if (System.getenv("PC_KIND") == null) {
+            for (ExprtVo exprt : exprts) {
+                decStr = agt.ScpDecStr(CommonUtil.damoScpIniFilePath, "KEY1", exprt.getGndr());
+                exprt.setGndr(decStr);
+            }
+        } else {
+            for (ExprtVo exprt : exprts) {
+                decStr = "M"; // 암호화 모듈을 사용할수 없는 MAC인경우 무조건 남자로 설정.
+                exprt.setGndr(decStr);
+            }
         }
 
         return exprts;

@@ -25,6 +25,8 @@ import com.kbrainc.plum.front.myInfo.service.MyInfoService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.util.CommonUtil;
+import com.penta.scpdb.ScpDbAgent;
 
 /**
 * 내 정보 수정 Controller 클래스
@@ -48,9 +50,6 @@ public class MyInfoController {
     @Resource(name = "front.myInfoServiceImpl")
     private MyInfoService myInfoService;
     
-    @Value("${crypto.key}")
-    private String encryptKey;
-    
     /**
     * 내 정보 수정 페이지
     *
@@ -69,11 +68,13 @@ public class MyInfoController {
         memberVo.setUser(userVo);
         MemberVo resultVo = myInfoService.selectMemberInfo(memberVo);
         
-        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
-        encryptor.setSaltGenerator(new RandomSaltGenerator());
-        encryptor.setPassword(encryptKey);
-        encryptor.setAlgorithm("PBEWithMD5AndDES");
-        String decStr = encryptor.decrypt(resultVo.getGndr());
+        ScpDbAgent agt = new ScpDbAgent();
+        String decStr = "";
+        if (System.getenv("PC_KIND") == null) {
+            decStr = agt.ScpDecStr(CommonUtil.damoScpIniFilePath, "KEY1", resultVo.getGndr());
+        } else {
+            decStr = "M"; // 암호화 모듈을 사용할수 없는 MAC인경우 무조건 남자로 설정.
+        }
         
         resultVo.setGndr(decStr);
         
@@ -182,7 +183,13 @@ public class MyInfoController {
         memberVo.setUser(user);
         
         String password = memberVo.getPswd();
-        String hashPassword = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(password.getBytes("UTF-8")));
+        String hashPassword = "";
+        if (System.getenv("PC_KIND") == null) {
+            ScpDbAgent agt = new ScpDbAgent();
+            hashPassword = agt.ScpHashStr(CommonUtil.damoScpIniFilePath, 73, new String(password.getBytes(), "UTF-8")).toLowerCase();
+        } else {
+            hashPassword = Hex.encodeHexString(MessageDigest.getInstance("SHA-512").digest(password.getBytes("UTF-8")));
+        }
         
         MemberVo resultVo = myInfoService.selectMemberInfo(memberVo);
         
@@ -198,7 +205,13 @@ public class MyInfoController {
                 return resultMap;
             }else {
                 String changePassword = chgPswdIdnty;
-                String hashChangePassword = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(changePassword.getBytes("UTF-8")));
+                String hashChangePassword = "";
+                if (System.getenv("PC_KIND") == null) {
+                    ScpDbAgent agt = new ScpDbAgent();
+                    hashChangePassword = agt.ScpHashStr(CommonUtil.damoScpIniFilePath, 73, new String(changePassword.getBytes(), "UTF-8")).toLowerCase();
+                } else {
+                    hashChangePassword = Hex.encodeHexString(MessageDigest.getInstance("SHA-512").digest(changePassword.getBytes("UTF-8")));
+                }
                 memberVo.setPswd(hashChangePassword);
                 retVal = myInfoService.updatePswd(memberVo);   
             }            

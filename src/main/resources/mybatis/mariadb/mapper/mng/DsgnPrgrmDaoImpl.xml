@@ -60,6 +60,45 @@
             PRGRMID = #{prgrmid}
     </select>
 
+    <!-- 지정 프로그램 조회-->
+    <select id="selectPrgrm" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
+        SELECT
+            PRGRMID              /*프로그램아이디*/
+          , INSTID              /*기관아이디*/
+          , APLCNTID            /*신청자아이디*/
+          , APLCNT_NM           /*신청자_이름*/
+          , APLCNT_EML          /*신청자_이메일*/
+          , APLCNT_MOBLPHON     /*신청자_휴대폰*/
+          , INST_NM             /*기관_이름*/
+          , INST_EML            /*기관_이메일*/
+          , INST_CNTCT          /*기관_연락처*/
+          , INST_HMPG           /*기관_홈페이지*/
+          , INST_TYPE_CD        /*기관_유형_코드*/
+          , INST_RGN_CD         /*기관_지역_코드*/
+          , INST_ZIP            /*기관_우편번호*/
+          , INST_ADDR           /*기관_주소*/
+          , INST_DTLADDR        /*기관_상세주소*/
+          , PRGRM_NM            /*프로그램_이름*/
+          , FILEGRPID           /*파일그룹아이디*/
+          , STTS_CD             /*상태_코드*/
+          , DSGN_CYCL           /*지정_차수*/
+          , DSGN_NO             /*지정_번호*/
+          , DSGN_DE             /*지정_일자*/
+          , DSGN_BGNG_DE        /*지정_시작_일자*/
+          , DSGN_END_DE         /*지정_종료_일자*/
+          , AUTZRID             /*승인자아이디*/
+          , CHKLSTID            /*체크리스트아이디*/
+          , CNSLTNG_PRGRS_YN    /*컨설팅__진행_여부*/
+          , CNSLTNGID           /*컨설텅아이디*/
+          , APLY_DT             /*신청_일시*/
+          , MDFCN_DT            /*수정_일시*/
+          , MDFRID              /*수정자아이디*/
+          , REG_DT              /*등록_일시*/
+          , RGTRID              /*등록자아이디*/
+        FROM TB_ASS_PRGRM
+        WHERE PRGRMID = #{prgrmid}
+    </select>
+
     <!-- 지정프로그램 목록 조회. -->
     <select id="selectDsgnPrgrmList" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
         /* DsgnPrgrmDao.selectDsgnPrgrmList */
@@ -73,28 +112,19 @@
           , A.PRGRM_NM
           , A.INST_NM
           , Z.STTS_CD
-          , B.CHG_APLY_CNT
-          , C.OPER_RSLT_CNT
-          , D.IMPLMNT_IDNTY_CNT
-          , E.OBJC_INFO_CNT
+          , IFNULL(B.CHG_APLY_CNT      ,'0/0')    AS CHG_APLY_CNT
+          , IFNULL(C.OPER_RSLT_CNT     ,'0/0')    AS OPER_RSLT_CNT
+          , IFNULL(D.IMPLMNT_IDNTY_CNT ,'0/0')    AS IMPLMNT_IDNTY_CNT
+          , IFNULL(E.OBJC_INFO_CNT     ,'0/0')    AS OBJC_INFO_CNT
           , A.DSGN_BGNG_DE
           , A.DSGN_END_DE
           , CONCAT(A.DSGN_BGNG_DE, " ~ ", A.DSGN_END_DE )   AS DSGN_PRD
         FROM
             TB_ASS_PRGRM A
         INNER JOIN /*지정 이력*/
-        (
-            SELECT
-                ZZ.PRGRMID
-              , MAX(ZZ.HSTRYID) AS HSTRYID
-              , ZZ.STTS_CD
-              , ZZ.DSGN_CYCL
-              , ZZ.DSGN_NO
-            FROM TB_ASS_DSGN_HSTRY ZZ
-            WHERE 1=1
-            GROUP BY ZZ.PRGRMID
-        ) Z ON A.PRGRMID = Z.PRGRMID
-        LEFT OUTER JOIN    /*운영결과차수*/
+            TB_ASS_DSGN_HSTRY Z  ON A.PRGRMID = Z.PRGRMID
+                                AND Z.HSTRYID =(SELECT MAX(ZZ.HSTRYID) FROM TB_ASS_DSGN_HSTRY ZZ WHERE   Z.PRGRMID = ZZ.PRGRMID )
+        LEFT OUTER JOIN
             (
                 SELECT
                     BB.PRGRMID
@@ -105,7 +135,7 @@
                 GROUP BY
                     BB.PRGRMID
             ) B ON A.PRGRMID = B.PRGRMID
-        LEFT OUTER JOIN    /*운영결과차수*/
+        LEFT OUTER JOIN
             (
                 SELECT
                     CC.PRGRMID
@@ -122,13 +152,20 @@
                     AA.PRGRMID
                   , AA.CYCLID
                   , CC.SRNGID
-                  , CONCAT(COUNT(CASE WHEN CC.FILEGRPID IS NOT NULL THEN 0 END), "/", COUNT(BB.CYCLID))    AS IMPLMNT_IDNTY_CNT
+                  , CONCAT(COUNT(CASE WHEN FILE.FILEID IS NOT NULL THEN 0 END), "/", COUNT(BB.CYCLID))    AS IMPLMNT_IDNTY_CNT
                 FROM
                     TB_ASS_OPER_RSLT_CYCL AA
                 LEFT OUTER JOIN
                     TB_ASS_OPER_RSLT BB ON AA.CYCLID = BB.CYCLID
                 LEFT OUTER JOIN
                     TB_ASS_IMPLMNT_IDNTY_SRNG CC ON AA.CYCLID =CC.CYCLID
+                LEFT OUTER JOIN
+                (
+                    SELECT MAX(FILEID) AS FILEID ,FILEGRPID FROM TB_CMM_FILE GROUP BY FILEGRPID
+                ) FILE ON CC.FILEGRPID = FILE.FILEGRPID
+                WHERE 1=1
+                AND NOW() BETWEEN AA.SBMSN_BGNG_DE AND AA.SBMSN_END_DE
+                GROUP BY AA.PRGRMID
             ) D ON A.PRGRMID = D.PRGRMID
         LEFT OUTER JOIN
             (
@@ -183,7 +220,7 @@
           , Z.DSGN_NO
           , A.PRGRM_NM
           , A.INST_NM
-          , ( SELECT STTS_CD FROM TB_ASS_DSGN_HSTRY WHERE PRGRMID = A.PRGRMID AND HSTRYID = Z.HSTRYID) AS STTS_CD
+          , Z.STTS_CD
           , B.CHG_APLY_CNT
           , C.OPER_RSLT_CNT
           , D.IMPLMNT_IDNTY_CNT
@@ -194,18 +231,9 @@
         FROM
             TB_ASS_PRGRM A
         INNER JOIN /*지정 이력*/
-        (
-            SELECT
-                ZZ.PRGRMID
-              , MAX(ZZ.HSTRYID) AS HSTRYID
-              , ZZ.STTS_CD    AS STTS_CD
-              , ZZ.DSGN_CYCL
-              , ZZ.DSGN_NO
-            FROM TB_ASS_DSGN_HSTRY ZZ
-            WHERE 1=1
-            GROUP BY ZZ.PRGRMID
-        ) Z ON A.PRGRMID = Z.PRGRMID
-        LEFT OUTER JOIN    /*운영결과차수*/
+            TB_ASS_DSGN_HSTRY Z  ON A.PRGRMID = Z.PRGRMID
+                                AND Z.HSTRYID =(SELECT MAX(ZZ.HSTRYID) FROM TB_ASS_DSGN_HSTRY ZZ WHERE   Z.PRGRMID = ZZ.PRGRMID )
+        LEFT OUTER JOIN
             (
                 SELECT
                     BB.PRGRMID
@@ -216,7 +244,7 @@
                 GROUP BY
                     BB.PRGRMID
             ) B ON A.PRGRMID = B.PRGRMID
-        LEFT OUTER JOIN    /*운영결과차수*/
+        LEFT OUTER JOIN
             (
                 SELECT
                     CC.PRGRMID
@@ -240,6 +268,9 @@
                     TB_ASS_OPER_RSLT BB ON AA.CYCLID = BB.CYCLID
                 LEFT OUTER JOIN
                     TB_ASS_IMPLMNT_IDNTY_SRNG CC ON AA.CYCLID =CC.CYCLID
+                WHERE 1=1
+                AND NOW() BETWEEN AA.SBMSN_BGNG_DE AND AA.SBMSN_END_DE
+                GROUP BY AA.PRGRMID
             ) D ON A.PRGRMID = D.PRGRMID
         LEFT OUTER JOIN
             (
@@ -287,7 +318,7 @@
     <select id="selectDsgnPrgrm" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
         SELECT
             A.PRGRMID             /* 프로그램_아이디 */
-          , B.HSTRYID
+          , Z.HSTRYID
           , A.INSTID              /* 기관아이디 */
           , A.APLCNTID            /* 신청자아이디 */
           , A.APLCNT_NM           /* 신청자_이름 */
@@ -299,29 +330,34 @@
           , A.INST_HMPG           /* 기관_홈페이지 */
           , A.INST_TYPE_CD        /* 기관_유형_코드 */
           , A.INST_RGN_CD         /* 기관_지역_코드 */
+          , CTPRVN.CTPRVN_NM    AS INST_RGN_CD_NM         /* 기관_지역_코드 */
+          , INST.RPRSV_NM
           , A.INST_ZIP            /* 기관_우편번호 */
           , A.INST_ADDR           /* 기관_주소 */
           , A.INST_DTLADDR        /* 기관_상세주소 */
           , A.PRGRM_NM            /* 프로그램_이름 */
           , A.FILEGRPID           /* 파일그룹아이디 */
           , A.DSGN_DE             /* 지정_일자 */
-          , B.DSGN_CYCL           /* 지정_차수 */
-          , B.DSGN_NO             /* 지정_번호 */
-          , B.DSGN_BGNG_DE        /* 지정_시작_일자 */
-          , B.DSGN_END_DE         /* 지정_종료_일자 */
-          , B.DSGN_CNCL_DE        /* 지정_취소_일자 */
-          , CONCAT(B.DSGN_CYCL, "/", B.DSGN_NO)    AS CYCL_NO
-          , CONCAT(B.DSGN_BGNG_DE, " ~ ", B.DSGN_END_DE )   AS DSGN_PRD
-          , B.DSGN_OBTAIN_DE      /* 지정획득일자*/
-          , B.STTS_CD             /* 지정_상태_코드 */
+          , Z.DSGN_CYCL           /* 지정_차수 */
+          , Z.DSGN_NO             /* 지정_번호 */
+          , Z.DSGN_BGNG_DE        /* 지정_시작_일자 */
+          , Z.DSGN_END_DE         /* 지정_종료_일자 */
+          , Z.DSGN_CNCL_DE        /* 지정_취소_일자 */
+          , CONCAT(Z.DSGN_CYCL, "/", Z.DSGN_NO)    AS CYCL_NO
+          , CONCAT(Z.DSGN_BGNG_DE, " ~ ", Z.DSGN_END_DE )   AS DSGN_PRD
+          , Z.DSGN_OBTAIN_DE      /* 지정획득일자*/
+          , Z.STTS_CD             /* 지정_상태_코드 */
           , (SELECT BRNO FROM TB_CMM_INST WHERE A.INSTID= INSTID) AS BRNO
         FROM
             TB_ASS_PRGRM A
         INNER JOIN /*지정 이력*/
-            TB_ASS_DSGN_HSTRY B ON A.PRGRMID = B.PRGRMID
+            TB_ASS_DSGN_HSTRY Z  ON A.PRGRMID = Z.PRGRMID
+                                AND Z.HSTRYID =(SELECT MAX(ZZ.HSTRYID) FROM TB_ASS_DSGN_HSTRY ZZ WHERE   Z.PRGRMID = ZZ.PRGRMID )
+        LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN CTPRVN ON SUBSTR(A.INST_RGN_CD,1,2) = CTPRVN.CTPRVN_CD
+        LEFT OUTER JOIN TB_CMM_INST INST ON A.INSTID = INST.INSTID
         WHERE 1=1
         AND A.PRGRMID = #{prgrmid}
-        AND B.HSTRYID = #{hstryid}
+
     </select>
 
     <!-- 지정내역 목록 조회 -->
@@ -405,6 +441,7 @@
                   FROM TB_ASS_DSGN_HSTRY
                  WHERE 1=1
                    AND STTS_CD = 132101
+                   AND PRGRMID = #{prgrmid}
                  ORDER BY DSGN_CYCL DESC
             ) C ON A.PRGRMID = C.PRGRMID
             LEFT OUTER JOIN
@@ -429,6 +466,25 @@
         WHERE 1=1
         AND   A.PRGRMID = #{prgrmid}
         GROUP BY A.PRGRMID
+    </select>
+
+    <!-- 지정프로그램 개요 체크리스트 목록 조회 -->
+    <select id="selectDsgnOutlChkList" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
+         SELECT
+             A.PRGRMID
+           , B.USERID
+           , B.SBMSN_SE_CD
+           , C.ORDR
+           , C.SE_CD
+           , CD.CD_NM
+           , SUM(D.SCR)    AS SCR
+         FROM TB_ASS_PRGRM A
+         LEFT OUTER JOIN TB_ASS_CHKLST_SBMSN B ON A.PRGRMID = B.PRGRMID
+         LEFT OUTER JOIN TB_ASS_CHKLST_SE_ORDR_ANS C ON B.SBMSNID =C.SBMSNID
+         LEFT OUTER JOIN TB_ASS_CHKLST_ANS D ON B.SBMSNID = D.SBMSNID AND C.SE_CD = D.SE_CD
+         LEFT OUTER JOIN TB_CMM_CD CD ON C.SE_CD =CD.CD
+         WHERE A.PRGRMID = #{prgrmid}
+         GROUP BY B.USERID, C.SE_CD
     </select>
 
     <!-- 이의신청 목록 조회 -->
@@ -697,32 +753,41 @@
     <!-- 운영결과서 목록 조회 -->
     <select id="selectOperRsltList" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
         <include refid="PaginationMapper.header"/>
-        SELECT
-            A.CYCLID
-          , A.PRGRMID
-          , A.CYCL
-          , A.SBMSN_BGNG_DE
-          , A.SBMSN_END_DE
-          , CONCAT(A.SBMSN_BGNG_DE, " ~ ", A.SBMSN_END_DE) AS SBMSN_PRD    /* 제출기간 */
-          , A.STTS_CD    AS SBMSN_STTS_CD    /*제출상태코드*/
-          , CASE WHEN B.CYCLID IS NOT NULL
-                 THEN '내용확인'
-                 WHEN A.STTS_CD = '128101'
-                 THEN '-'
-                 WHEN B.CYCLID IS NULL
-                 THEN '대기중'
-            END    AS SBMSN_IDNTY    /*제출 확인*/
-          , A.MDFCN_DT
-          , A.MDFRID
-          , A.REG_DT
-          , A.RGTRID
-          , B.MDFCN_DT AS LAST_SBMSN_DT
-        FROM    /* 운영결과 차수*/
-            TB_ASS_OPER_RSLT_CYCL A
-        LEFT OUTER JOIN
-            TB_ASS_OPER_RSLT B ON A.CYCLID =B.CYCLID
-        WHERE
-            PRGRMID = #{prgrmid}
+            SELECT
+                B.CYCLID
+              , A.PRGRMID
+              , C.CYCLID RPT_CYCLID
+              , A.STTS_CD
+              , B.CYCL
+              , A.DSGN_DE
+              , B.SBMSN_BGNG_DE
+              , B.SBMSN_END_DE
+              , CONCAT(B.SBMSN_BGNG_DE, " ~ ", B.SBMSN_END_DE) AS SBMSN_PRD    /* 제출기간 */
+              , CASE WHEN NOW() BETWEEN B.SBMSN_BGNG_DE AND B.SBMSN_END_DE
+                      THEN CASE WHEN C.CYCLID IS NOT NULL THEN '제출'
+                                 ELSE CASE WHEN DATE_ADD(DATE_FORMAT(A.DSGN_DE  - INTERVAL 1 YEAR, '%Y-12-31'), INTERVAL 6 MONTH) >= NOW() THEN '제외' END
+                            END
+                      ELSE '-'
+                END    AS SBMSN_STTS_CD_NM    /*제출상태코드*/
+              , CASE WHEN C.CYCLID IS NOT NULL THEN '내용확인'
+                      ELSE CASE WHEN NOW() BETWEEN B.SBMSN_BGNG_DE AND B.SBMSN_END_DE
+                                 THEN CASE WHEN DATE_ADD(DATE_FORMAT(A.DSGN_DE  - INTERVAL 1 YEAR, '%Y-12-31'), INTERVAL 6 MONTH) >= NOW() THEN '-' END
+                                 ELSE '대기중'
+                            END
+                END    AS SBMSN_IDNTY    /*제출 확인*/
+              , B.MDFCN_DT
+              , B.MDFRID
+              , B.REG_DT
+              , B.RGTRID
+              , B.MDFCN_DT AS LAST_SBMSN_DT
+            FROM
+                TB_ASS_PRGRM A
+            LEFT OUTER JOIN
+                TB_ASS_OPER_RSLT_CYCL B ON A.PRGRMID = B.PRGRMID
+            LEFT OUTER JOIN
+                TB_ASS_OPER_RSLT C ON B.CYCLID =C.CYCLID
+            WHERE A.STTS_CD = '111111'
+            AND A.PRGRMID = #{prgrmid}
         <include refid="PaginationMapper.footer"/>
     </select>
 
@@ -745,19 +810,63 @@
         AND CYCLID = #{cyclid}
     </select>
 
+    <!-- 운영결과 등록 -->
+    <insert id="insertOperRsltCyCl" parameterType="DsgnPrgrmVo">
+        /* DsgnPrgrmDao.insertOperRsltCycl*/
+        INSERT INTO TB_ASS_OPER_RSLT_CYCL
+        (
+            PRGRMID
+          , CYCL
+          , SBMSN_BGNG_DE
+          , SBMSN_END_DE
+          , STTS_CD
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        ) VALUES
+        (
+            #{prgrmid    }
+          , #{cycl       }
+          , #{sbmsnBgngDe}
+          , #{sbmsnEndDe }
+          , #{sttsCd     }
+          , NOW()
+          , #{user.userid}
+          , NOW()
+          , #{user.userid}
+        )
+    </insert>
+
+    <!-- 운영결과차수목록 조회 -->
+    <select id="selectOperRsltCyclList" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
+        SELECT
+            CYCLID
+          , PRGRMID
+          , CYCL
+          , SBMSN_BGNG_DE
+          , SBMSN_END_DE
+          , STTS_CD
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        FROM
+            TB_ASS_OPER_RSLT_CYCL
+        WHERE 1=1
+        AND PRGRMID = #{prgrmid}
+    </select>
+
     <!-- 이행확인심사 조회 -->
     <select id="selectImplmntIdntySrng" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
-        SELECT
+  SELECT
             A.PRGRMID
-          , B.CYCLID              /* 차수ID */
+          , A.PRGRM_NM            /* 프로그램_이름 */
           , A.INSTID              /* 기관아이디 */
           , A.INST_NM             /* 기관_이름 */
-          , A.APLCNTID            /* 신청자아이디 */
-          , A.APLCNT_NM           /* 신청자_이름 */
           , A.INST_TYPE_CD        /* 기관_유형_코드 */
           , A.INST_RGN_CD         /* 기관_지역_코드 */
           , CTPRVN.CTPRVN_NM    AS INST_RGN_CD_NM
-          , A.PRGRM_NM            /* 프로그램_이름 */
           , A.STTS_CD             /* 상태_코드 */
           , A.DSGN_CYCL           /* 지정_차수 */
           , A.DSGN_NO             /* 지정_번호 */
@@ -769,48 +878,47 @@
           , (SELECT ACNT FROM TB_CMM_USER WHERE USERID = A.APLCNTID) AS ACNT
         FROM
             TB_ASS_PRGRM A
-        LEFT OUTER JOIN
-        (
-            SELECT
-                PRGRMID
-              , MAX(CYCLID) AS CYCLID
-            FROM
-                TB_ASS_OPER_RSLT_CYCL
-        ) B ON A.PRGRMID = B.PRGRMID
-        LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN CTPRVN ON  A.INST_RGN_CD = CTPRVN.CTPRVN_CD
+        INNER JOIN /*지정 이력*/
+            TB_ASS_DSGN_HSTRY Z  ON A.PRGRMID = Z.PRGRMID
+                                AND Z.HSTRYID =(SELECT MAX(ZZ.HSTRYID) FROM TB_ASS_DSGN_HSTRY ZZ WHERE   Z.PRGRMID = ZZ.PRGRMID )
+        LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN CTPRVN ON SUBSTR(A.INST_RGN_CD,1,2) = CTPRVN.CTPRVN_CD
         WHERE 1=1
         AND   A.PRGRMID = #{prgrmid}
-
     </select>
 
     <!-- 이행확인심사 목록 조회 -->
     <select id="selectImplmntIdntySrngList" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
         <include refid="PaginationMapper.header"/>
-            SELECT
-                A.SRNGID       /* 심사아이디 */
-              , A.CYCLID       /* 차수아이디 */
-              , A.PICID        /* 담당자아이디 */
-              , (SELECT CONCAT(NM,"(",ACNT,")") FROM TB_CMM_USER WHERE USERID = A.PICID) AS PIC_NM
-              , D.CYCL         /* 차수 */
-              , A.VST_DE       /* 방문_일자 */
-              , A.VST_HR       /* 방문_시간 */
-              , A.VST_MNT      /* 방문_분 */
-              , IFNULL(DATE_FORMAT(B.REG_DT, '%Y-%m-%d'),'-') AS SPLMNT_IMPRV_DMNDLN
-              , B.DMND_CMPTN_DE /*보완요청 완료일 */
-              , IFNULL(DATE_FORMAT(C.REG_DT, '%Y-%m-%d'),'-') AS SPLMNT_IMPRV_WRTPLN
-              , IFNULL(DATE_FORMAT(D.REG_DT, '%Y-%m-%d'),'-') AS RSLTLN
-              , A.REG_DT       /* 등록_일시 */
-              , A.RGTRID       /* 등록자아이디 */
-              , B.DMNDID
-            FROM
-                TB_ASS_IMPLMNT_IDNTY_SRNG A
-            LEFT OUTER JOIN    /* 보완 요청 */
-                TB_ASS_SPLMNT_DMND B ON A.SRNGID = B.SRNGID
-            LEFT OUTER JOIN
-                TB_ASS_SPLMNT_PLAN C ON B.DMNDID = C.DMNDID
-            LEFT OUTER JOIN
-                TB_ASS_OPER_RSLT_CYCL D ON A.CYCLID = D.CYCLID
-            WHERE A.CYCLID = #{cyclid}
+         SELECT
+            Z.PRGRMID
+          , A.SRNGID       /* 심사아이디 */
+          , A.CYCLID       /* 차수아이디 */
+          , A.PICID        /* 담당자아이디 */
+          , (SELECT CONCAT(NM,"(",ACNT,")") FROM TB_CMM_USER WHERE USERID = A.PICID) AS PIC_NM
+          , D.CYCL         /* 차수 */
+          , A.VST_DE       /* 방문_일자 */
+          , A.VST_HR       /* 방문_시간 */
+          , A.VST_MNT      /* 방문_분 */
+          , IFNULL(DATE_FORMAT(B.REG_DT, '%Y-%m-%d'),'-') AS SPLMNT_IMPRV_DMNDLN
+          , B.DMND_CMPTN_DE /*보완요청 완료일 */
+          , IFNULL(DATE_FORMAT(C.REG_DT, '%Y-%m-%d'),'-') AS SPLMNT_IMPRV_WRTPLN
+          , IFNULL(DATE_FORMAT(D.REG_DT, '%Y-%m-%d'),'-') AS RSLTLN
+          , A.REG_DT       /* 등록_일시 */
+          , A.RGTRID       /* 등록자아이디 */
+          , B.DMNDID
+        FROM
+            TB_ASS_OPER_RSLT_CYCL Z
+        LEFT OUTER JOIN
+            TB_ASS_IMPLMNT_IDNTY_SRNG A ON Z.CYCLID = A.CYCLID
+        LEFT OUTER JOIN    /* 보완 요청 */
+            TB_ASS_SPLMNT_DMND B ON A.SRNGID = B.SRNGID
+        LEFT OUTER JOIN
+            TB_ASS_SPLMNT_PLAN C ON B.DMNDID = C.DMNDID
+        LEFT OUTER JOIN
+            TB_ASS_OPER_RSLT_CYCL D ON A.CYCLID = D.CYCLID
+        WHERE Z.PRGRMID= #{prgrmid}
+        AND NOW() BETWEEN Z.SBMSN_BGNG_DE AND Z.SBMSN_END_DE
+        AND B.SRNGID IS NOT NULL
         <include refid="PaginationMapper.footer"/>
     </select>
 
@@ -842,7 +950,7 @@
             TB_ASS_SPLMNT_PLAN C ON B.DMNDID =C.DMNDID
         WHERE 1=1
         AND A.SRNGID = #{srngid}
-        AND B.DMNDID = #{dmndid}
+<!--         AND B.DMNDID = #{dmndid} -->
     </select>
 
     <!-- 보완 요청 조회 -->
@@ -881,6 +989,7 @@
     <select id="selectSplmntPlan" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
         SELECT
             A.PLANID
+          , B.SRNGID
           , A.DMNDID
           , A.SMRIZE_OPNN
           , A.CN
@@ -898,6 +1007,92 @@
         AND A.DMNDID = #{dmndid}
     </select>
 
+    <insert id="insertImplmntIdntySrng" parameterType="DsgnPrgrmVo" >
+        INSERT INTO TB_ASS_IMPLMNT_IDNTY_SRNG
+        (
+            CYCLID
+          , PICID
+          , VST_DE
+          , VST_HR
+          , VST_MNT
+          , GNRLZ_OPNN
+          , GRD_CD
+          , FILEGRPID
+          , WRTRID
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        )VALUES
+        (
+            #{cyclid   }
+          , #{picid    }
+          , #{vstDe    }
+          , #{vstHr    }
+          , #{vstMnt   }
+          , #{gnrlzOpnn}
+          , #{grdCd    }
+          , #{filegrpid}
+          , #{user.userid}
+          , NOW()
+          , #{user.userid}
+          , NOW()
+          , #{user.userid}
+        )
+
+    </insert>
+
+    <!-- 이행확인심사 수정 -->
+    <update id="updateImplmntIdntySrng" parameterType="DsgnPrgrmVo" >
+        UPDATE TB_ASS_IMPLMNT_IDNTY_SRNG SET
+            PICID        = #{picid     }
+          , VST_DE       = #{vstDe     }
+          , VST_HR       = #{vstHr     }
+          , VST_MNT      = #{vstMnt    }
+          , GNRLZ_OPNN   = #{gnrlzOpnn }
+          , GRD_CD       = #{grdCd     }
+          , FILEGRPID    = #{filegrpid }
+          , WRTRID       = #{user.userid}
+          , MDFCN_DT     = NOW()
+          , MDFRID       = #{user.userid}
+        WHERE SRNGID = #{srngid}
+    </update>
+
+    <update id="updateCyClSttsCd" parameterType="DsgnPrgrmVo" >
+        UPDATE
+            TB_ASS_OPER_RSLT_CYCL
+        SET
+            STTS_CD  = #{sttsCd}
+          , MDFRID   = #{user.userid}
+          , MDFCN_DT = NOW()
+        WHERE CYCLID = #{cyclid}
+
+    </update>
+
+    <!-- 보완계획서 (이행확인심사) 등록 -->
+    <insert id="insertSplmntPlan" parameterType="DsgnPrgrmVo" >
+        INSERT INTO TB_ASS_SPLMNT_PLAN
+        (
+            DMNDID
+          , SMRIZE_OPNN
+          , CN
+          , FILEGRPID
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        ) VALUES
+        (
+            #{dmndid    }
+          , #{smrizeOpnn}
+          , #{cn        }
+          , #{filegrpid }
+          , NOW()            /*수정일시*/
+          , #{user.userid}   /*수정자아이디*/
+          , NOW()            /*등록일시*/
+          , #{user.userid}   /*등록자아이디*/
+        )
+    </insert>
 
     <!-- 보완계획서 (이행확인심사) 수정 -->
     <update id="updateScrtyImprvPlanln" parameterType="DsgnPrgrmVo" >
@@ -922,18 +1117,6 @@
             A.CYCLID = #{cyclid}
     </select>
 
-    <!-- 결과보고서(이행확인심사) 수정 -->
-    <update id="updateRsltRptln" parameterType="DsgnPrgrmVo" >
-        UPDATE
-            TB_ASS_IMPLMNT_IDNTY_SRNG
-        SET GNRLZ_OPNN = #{gnrlzOpnn}
-          , GRD_CD     = #{grdCd}
-          , FILEGRPID  = #{filegrpid}
-          , MDFRID     = #{user.userid}
-          , MDFCN_DT   = NOW()
-        WHERE SRNGID   = #{srngid}
-    </update>
-
     <update id="updateSbmsnPrd" parameterType="DsgnPrgrmVo" >
         UPDATE
             TB_ASS_OPER_RSLT_CYCL
@@ -951,8 +1134,10 @@
             A.CYCLID
           , C.INSTID
           , ( SELECT INST_TYPE_CD  FROM TB_CMM_INST WHERE INSTID = C.INSTID ) AS INST_TYPE_CD   /* 기업 유형 코드*/
+          , D.SRNGID
           , C.PRGRMID
           , C.INST_NM
+          , C.INST_RGN_CD
           , C.PRGRM_NM
           , A.SNRSTFDVLPR_NM
           , A.SNRSTFDVLPR_EML
@@ -1010,12 +1195,20 @@
           , A.REG_DT
           , A.RGTRID
           , B.STTS_CD
+          , D.PICID
+          , D.SRNGID
+          , USR.NM
+          , USR.ACNT
+          , USR.MOBLPHON
+          , USR.EML
         FROM
             TB_ASS_OPER_RSLT A
         INNER JOIN
             TB_ASS_OPER_RSLT_CYCL B ON A.CYCLID = B.CYCLID
         INNER JOIN
             TB_ASS_PRGRM C ON B.PRGRMID = C.PRGRMID
+        LEFT OUTER JOIN TB_ASS_IMPLMNT_IDNTY_SRNG D  ON A.CYCLID = D.CYCLID
+        LEFT OUTER JOIN TB_CMM_USER USR ON D.PICID = USR.USERID
         WHERE A.CYCLID = #{cyclid}
     </select>
 
@@ -1035,8 +1228,8 @@
             , PIC_MOBLPHON
             , PRGRM_TYPE_CD
             , STY_YN
-            , D.STY_NIGHT
-            , D.STY_DAYTM
+            , STY_NIGHT
+            , STY_DAYTM
             , INSRNC_JOIN_YN
             , INSRNC_RSN
             , CHG_YN
@@ -1219,7 +1412,7 @@
     </delete>
 
     <!-- 운영결과 운영실적 목록조회 -->
-    <select id="selectOperRsltPrfmncList" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
+    <select id="selectOperRsltPrfmncList" parameterType="DsgnPrgrmVo" resultType="OperPrfmncVo">
         SELECT
             B.PRFMNCID
           , A.CYCLID
@@ -1314,5 +1507,107 @@
         ORDER BY VST_DE, VST_HR, VST_MNT
     </select>
 
+
+    <!-- 담당자(지원단)배정 목록 조회-->
+    <select id="selectPicList" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
+        <include refid="PaginationMapper.header"/>
+                SELECT
+                    A.USERID
+                  , B.ACNT
+                  , B.NM
+                  , B.EML
+                  , B.MOBLPHON
+                  , C.CRTFCT_NM
+                  , D.RGN_CD
+                  , D.RGN_NM
+                  , E.SBJCT_CD
+                  , E.SBJCT_NM
+                FROM
+                   TB_ASS_EXPRT A
+                   INNER JOIN TB_CMM_USER B
+                   ON A.USERID = B.USERID
+                   LEFT OUTER JOIN (
+                       SELECT
+                           A.USERID
+                           ,GROUP_CONCAT(CRTFCT_NM) AS CRTFCT_NM
+                        FROM
+                           TB_ASS_EXPRT_CRTFCT A
+                       GROUP BY A.USERID
+                   ) C
+                   ON A.USERID = C.USERID
+                   LEFT OUTER JOIN (
+                       SELECT
+                          A.USERID
+                          ,GROUP_CONCAT(B.SIGNGU_NM) AS RGN_NM
+                          ,GROUP_CONCAT(DISTINCT B.CTPRVN_CD)AS RGN_CD
+                         FROM
+                          TB_ASS_EXPRT_ACTVT_SCOPE A
+                          INNER JOIN TB_CMM_ADDR_SIGNGU B
+                          ON A.RGN_CD  = B.SIGNGU_CD
+                          GROUP BY A.USERID
+                   )D ON A.USERID = D.USERID
+                   LEFT OUTER JOIN (
+                        SELECT
+                           A.USERID
+                          ,GROUP_CONCAT(B.CD_NM) AS SBJCT_NM
+                          ,GROUP_CONCAT(B.CD) AS SBJCT_CD
+                         FROM
+                          TB_ASS_EXPRT_SBJCT A
+                          INNER JOIN TB_CMM_CD B
+                          ON A.SBJCT_CD  =B.CD
+                         GROUP BY A.USERID
+                   )E ON A.USERID = E.USERID
+                 WHERE 1=1
+                <if test="searchNm != null and searchNm != '' ">
+                   AND (ACNT LIKE CONCAT('%',#{searchNm},'%') OR NM LIKE CONCAT('%',#{searchNm},'%'))
+                </if>
+                <if test="searchCrtfctNm != null and searchCrtfctNm != '' ">
+                   AND CRTFCT_NM LIKE CONCAT('%',#{searchCrtfctNm},'%')
+                </if>
+                <if test="searchSbjctCd != null and searchSbjctCd != '' ">
+                   AND SBJCT_CD LIKE CONCAT('%',#{searchSbjctCd},'%')
+                </if>
+                <if test="searchRgnCd != null and searchRgnCd != '' ">
+                   AND RGN_CD LIKE CONCAT('%',#{searchRgnCd},'%')
+                </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <update id="updatePrgrm" parameterType="DsgnPrgrmVo">
+        UPDATE
+            TB_ASS_PRGRM
+        SET
+            INSTID            = #{instid        }
+          , APLCNTID          = #{aplcntid      }
+          , APLCNT_NM         = #{aplcntNm      }
+          , APLCNT_EML        = #{aplcntEml     }
+          , APLCNT_MOBLPHON   = #{aplcntMoblphon}
+          , INST_NM           = #{instNm        }
+          , INST_EML          = #{instEml       }
+          , INST_CNTCT        = #{instCntct     }
+          , INST_HMPG         = #{instHmpg      }
+          , INST_TYPE_CD      = #{instTypeCd    }
+          , INST_RGN_CD       = #{instRgnCd     }
+          , INST_ZIP          = #{instZip       }
+          , INST_ADDR         = #{instAddr      }
+          , INST_DTLADDR      = #{instDtladdr   }
+          , PRGRM_NM          = #{prgrmNm       }
+          , FILEGRPID         = #{filegrpid     }
+          , STTS_CD           = #{sttsCd        }
+          , DSGN_CYCL         = #{dsgnCycl      }
+          , DSGN_NO           = #{dsgnNo        }
+          , DSGN_DE           = #{dsgnDe        }
+          , DSGN_BGNG_DE      = #{dsgnBgngDe    }
+          , DSGN_END_DE       = #{dsgnEndDe     }
+          , AUTZRID           = #{autzrid       }
+          , CHKLSTID          = #{chklstid      }
+          , CNSLTNG_PRGRS_YN  = #{cnsltngPrgrsYn}
+          , CNSLTNGID         = #{cnsltngid     }
+          , APLY_DT           = #{aplyDt        }
+          , MDFCN_DT          = NOW()
+          , MDFRID            = #{user.userid}
+        WHERE
+            PRGRMID = #{prgrmid}
+    </update>
 
 </mapper>

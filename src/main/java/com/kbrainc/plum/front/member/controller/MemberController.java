@@ -55,8 +55,10 @@ import com.kbrainc.plum.front.member.service.MemberService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.util.CommonUtil;
 import com.kbrainc.plum.rte.util.StringUtil;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
+import com.penta.scpdb.ScpDbAgent;
 
 /**
 * 회원정보 컨트롤러 클래스.
@@ -853,7 +855,13 @@ public class MemberController {
                     return resultMap;
                 }
                 
-                String encryptPassword = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(memberAcntPswdFindVo.getPswd().getBytes("UTF-8")));
+                String encryptPassword = "";
+                if (System.getenv("PC_KIND") == null) {
+                    ScpDbAgent agt = new ScpDbAgent();
+                    encryptPassword = agt.ScpHashStr(CommonUtil.damoScpIniFilePath, 73, new String(memberAcntPswdFindVo.getPswd().getBytes(), "UTF-8")).toLowerCase();
+                } else {                    
+                    encryptPassword = Hex.encodeHexString(MessageDigest.getInstance("SHA-512").digest(memberAcntPswdFindVo.getPswd().getBytes("UTF-8")));
+                }
                 if (memberInfo.getPswd().equals(encryptPassword)) {
                     resultMap.put("msg", "변경 비밀번호가 현재 비밀번호와 동일합니다.\n다른 비밀번호를 입력해 주십시오.");
                     return resultMap;
@@ -913,7 +921,13 @@ public class MemberController {
         memberVo.setUser(user);
         MemberVo memberInfo = memberService.selectMemberInfo(memberVo);
         
-        String encryptPassword = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(memberVo.getPswd().getBytes("UTF-8")));
+        String encryptPassword = "";
+        if (System.getenv("PC_KIND") == null) {
+            ScpDbAgent agt = new ScpDbAgent();
+            encryptPassword = agt.ScpHashStr(CommonUtil.damoScpIniFilePath, 73, new String(memberVo.getPswd().getBytes(), "UTF-8")).toLowerCase();
+        } else {
+            encryptPassword = Hex.encodeHexString(MessageDigest.getInstance("SHA-512").digest(memberVo.getPswd().getBytes("UTF-8")));
+        }
         
         if (!memberInfo.getPswd().equals(encryptPassword)) {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);

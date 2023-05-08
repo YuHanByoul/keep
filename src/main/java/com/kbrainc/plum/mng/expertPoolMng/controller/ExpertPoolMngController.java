@@ -10,6 +10,9 @@ import com.kbrainc.plum.mng.expertPoolMng.service.ExpertPoolMngService;
 import com.kbrainc.plum.rte.exception.FiledownloadCheckerException;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.util.CommonUtil;
+import com.penta.scpdb.ScpDbAgent;
+
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.salt.RandomSaltGenerator;
 import org.slf4j.Logger;
@@ -58,9 +61,6 @@ public class ExpertPoolMngController {
     private FileService fileService;
     @Autowired
     FileStorageService fileStorageService;
-
-    @Value("${crypto.key}")
-    private String encryptKey;
 
     /**
      * 전문가 목록 화면
@@ -154,11 +154,13 @@ public class ExpertPoolMngController {
 
         ExpertVo expertInfo = expertPoolMngService.selectExpertInfo(expertVo);
 
-        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
-        encryptor.setSaltGenerator(new RandomSaltGenerator());
-        encryptor.setPassword(encryptKey);
-        encryptor.setAlgorithm("PBEWithMD5AndDES");
-        String decStr = encryptor.decrypt(expertInfo.getGndr());
+        ScpDbAgent agt = new ScpDbAgent();
+        String decStr = "";
+        if (System.getenv("PC_KIND") == null) {
+            decStr = agt.ScpDecStr(CommonUtil.damoScpIniFilePath, "KEY1", expertInfo.getGndr());
+        } else {
+            decStr = "M"; // 암호화 모듈을 사용할수 없는 MAC인경우 무조건 남자로 설정.
+        }
 
         expertInfo.setGndr(decStr);
         model.addAttribute("expertInfo", expertInfo);

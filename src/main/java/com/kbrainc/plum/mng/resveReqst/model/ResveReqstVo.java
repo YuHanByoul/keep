@@ -285,6 +285,9 @@ public class ResveReqstVo extends ParentRequestVo {
     /** 대표 이미지 파일아이디 */
     private Integer rprsImgFileid;
     
+    /** 대표 이미지 파일아이디 */
+    private Integer rprsImgFileKey;
+    
     /** 상세 이미지 파일그룹아이디 */
     private Integer dtlImgFilegrpid;
     

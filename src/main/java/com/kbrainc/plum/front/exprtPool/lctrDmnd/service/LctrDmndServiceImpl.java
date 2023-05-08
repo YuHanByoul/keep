@@ -2,6 +2,9 @@ package com.kbrainc.plum.front.exprtPool.lctrDmnd.service;
 
 import com.kbrainc.plum.front.exprtPool.lctrDmnd.model.*;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+import com.kbrainc.plum.rte.util.CommonUtil;
+import com.penta.scpdb.ScpDbAgent;
+
 import org.apache.ibatis.type.Alias;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.salt.RandomSaltGenerator;
@@ -35,20 +38,6 @@ public class LctrDmndServiceImpl extends PlumAbstractServiceImpl implements Lctr
     @Resource(name = "front.lctrDmndDao")
     private LctrDmndDao lctrDmndDao;
 
-    @Value("${crypto.key}")
-    private String encryptKey;
-
-    StandardPBEStringEncryptor encryptor;
-
-    @PostConstruct
-    public void init() throws Exception {
-        encryptor = new StandardPBEStringEncryptor();
-        encryptor.setSaltGenerator(new RandomSaltGenerator());
-        encryptor.setPassword(encryptKey);
-        encryptor.setAlgorithm("PBEWithMD5AndDES");
-    }
-
-
     /**
      * 전문가 목록 조회
      *
@@ -61,9 +50,19 @@ public class LctrDmndServiceImpl extends PlumAbstractServiceImpl implements Lctr
     @Override
     public List<ExprtVo> selectExprtList(ExprtVo searchVo) throws Exception {
         List<ExprtVo> exprts = lctrDmndDao.selectExprtList(searchVo);
-        for (ExprtVo exprt : exprts) {
-            String decStr = encryptor.decrypt(exprt.getGndr());
-            exprt.setGndr(decStr);
+        ScpDbAgent agt = new ScpDbAgent();
+        String decStr = "";
+        
+        if (System.getenv("PC_KIND") == null) {
+            for (ExprtVo exprt : exprts) {
+                decStr = agt.ScpDecStr(CommonUtil.damoScpIniFilePath, "KEY1", exprt.getGndr());
+                exprt.setGndr(decStr);
+            }
+        } else {
+            for (ExprtVo exprt : exprts) {
+                decStr = "M"; // 암호화 모듈을 사용할수 없는 MAC인경우 무조건 남자로 설정.
+                exprt.setGndr(decStr);
+            }
         }
 
         return exprts;
@@ -82,7 +81,14 @@ public class LctrDmndServiceImpl extends PlumAbstractServiceImpl implements Lctr
     public ExprtVo selectExprt(ExprtVo exprtVo) throws Exception {
         ExprtVo exprt = lctrDmndDao.selectExprt(exprtVo);
 
-        String decStr = encryptor.decrypt(exprt.getGndr());
+        ScpDbAgent agt = new ScpDbAgent();
+        String decStr = "";
+        if (System.getenv("PC_KIND") == null) {
+            decStr = agt.ScpDecStr(CommonUtil.damoScpIniFilePath, "KEY1", exprt.getGndr());
+        } else {
+            decStr = "M"; // 암호화 모듈을 사용할수 없는 MAC인경우 무조건 남자로 설정.
+        }
+        
         exprt.setGndr(decStr);
 
         if(exprt.getQlfcRlsYn().equals("Y")) {

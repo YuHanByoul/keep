@@ -4,11 +4,13 @@ import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngDao;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
+import com.kbrainc.plum.mng.dsgnPrgrm.controller.DsgnPrgrmController;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmDao;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmObjcVo;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmVo;
@@ -30,6 +33,8 @@ import com.kbrainc.plum.mng.dsgnPrgrm.model.OperPrfmncVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import com.kbrainc.plum.rte.util.StringUtil;
 import com.kbrainc.plum.rte.util.excel.ExcelUtils;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
@@ -48,6 +53,7 @@ import com.kbrainc.plum.rte.util.excel.ExcelUtils;
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Service
+@Slf4j
 public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements DsgnPrgrmService {
 
     @Autowired
@@ -169,23 +175,105 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 
 		int ret=0;
 
-		AsgsysSrngVo asgsysSrngVo = new AsgsysSrngVo();
+		//차수 조회
+		List<DsgnPrgrmVo> rsltCyclList = dsgnPrgrmDao.selectOperRsltCyclList(dsgnPrgrmVo);
+		if( rsltCyclList.size() == 0) {
+			//운영결과 차수 생성
+			DsgnPrgrmVo prgrmInfo =  dsgnPrgrmDao.selectPrgrm(dsgnPrgrmVo);
 
-		//지정 이력 insert
-		ret += dsgnPrgrmDao.insertDsgnHstry(dsgnPrgrmVo);
+			String dateFormatYear= "yyyy";
+			String dateFormatday= "yyyy-MM-dd";
+			String cyclBangDe = "";
+			String cyclEndDe ="";
+			String today ="";
+			DateFormat sdfDay = new SimpleDateFormat(dateFormatYear);
+			Calendar cal = Calendar.getInstance();  // 현재 시간정보 가지고오기
 
-		//지정 프로그램 update
-		asgsysSrngVo.setPrgrmid(dsgnPrgrmVo.getPrgrmid());
-		//지정상태코드 - 지정승인
+			today = sdfDay.format(cal.getTime());
+
+			//지정일자
+			dsgnPrgrmVo.setDsgnDe(today);
+
+			sdfDay.format(cal.getTime());
+
+			DateFormat sdfYear = new SimpleDateFormat(dateFormatYear);
+			sdfYear.format(cal.getTime());
+
+			//1차
+			cyclBangDe = sdfYear.format(cal.getTime())+"-01-01" ;
+			cyclEndDe = sdfYear.format(cal.getTime())+"-12-31" ;
+
+			prgrmInfo.setUser(dsgnPrgrmVo.getUser());
+
+			prgrmInfo.setCycl("1");
+			prgrmInfo.setSbmsnBgngDe(cyclBangDe);
+			prgrmInfo.setSbmsnEndDe(cyclEndDe);
+			prgrmInfo.setCycl("1");
+			prgrmInfo.setSttsCd("");
+			cyclEndDe = sdfYear.format(cal.getTime()) ;
+			ret+=dsgnPrgrmDao.insertOperRsltCyCl(prgrmInfo);
+
+			//2차
+			cal.add(Calendar.YEAR, 1);  //현재 시간에 + 1년
+
+			cyclBangDe = sdfYear.format(cal.getTime())+"-01-01" ;
+			cyclEndDe = sdfYear.format(cal.getTime())+"-12-31" ;
+
+			prgrmInfo.setSbmsnBgngDe(cyclBangDe);
+			prgrmInfo.setSbmsnEndDe(cyclEndDe);
+			prgrmInfo.setCycl("2");
+			ret+=dsgnPrgrmDao.insertOperRsltCyCl(prgrmInfo);
+
+			//3차
+			cal.add(Calendar.YEAR, 1);  //현재 시간에 + 1년
+			cyclBangDe = sdfYear.format(cal.getTime())+"-01-01" ;
+			cyclEndDe = sdfYear.format(cal.getTime())+"-12-31" ;
+
+			prgrmInfo.setSbmsnBgngDe(cyclBangDe);
+			prgrmInfo.setSbmsnEndDe(cyclEndDe);
+			prgrmInfo.setCycl("3");
+			ret+=dsgnPrgrmDao.insertOperRsltCyCl(prgrmInfo);
+		}
+
+
+	    //신청 프로그램 정보 수정
+		DsgnPrgrmVo assPrgrm = dsgnPrgrmDao.selectPrgrm(dsgnPrgrmVo);
+		assPrgrm.setUser(dsgnPrgrmVo.getUser());
+		assPrgrm.setDsgnNo(dsgnPrgrmVo.getDsgnNo());
+		assPrgrm.setDsgnCycl(dsgnPrgrmVo.getDsgnCycl());
+		assPrgrm.setDsgnBgngDe(dsgnPrgrmVo.getDsgnBgngDe());
+		assPrgrm.setDsgnEndDe(dsgnPrgrmVo.getDsgnEndDe());
+		assPrgrm.setDsgnDe(dsgnPrgrmVo.getDsgnDe());
+		assPrgrm.setDsgnObtainDe(dsgnPrgrmVo.getDsgnObtainDe());
+
 		if("132101".equals(dsgnPrgrmVo.getSttsCd())){
-			asgsysSrngVo.setSttsCd("111111");  //상태코드 지정승인
+			assPrgrm.setSttsCd("111111");  //상태코드 지정승인
 		}
 		//지정상태코드 - 지정탈락
 		else if("132102".equals(dsgnPrgrmVo.getSttsCd())){
-			asgsysSrngVo.setSttsCd("111112");  //상태코드 지정탈락
+			assPrgrm.setSttsCd("111112");  //상태코드 지정탈락
 		}
 
-		ret += asgSrngDao.updatePrgrSttsCd(asgsysSrngVo);
+		dsgnPrgrmDao.updatePrgrm(assPrgrm);
+
+		//지정이력 생성
+		ret += dsgnPrgrmDao.insertDsgnHstry(dsgnPrgrmVo);
+
+//		AsgsysSrngVo asgsysSrngVo = new AsgsysSrngVo();
+//		//지정 이력 insert
+//
+//		//지정 프로그램 update
+//		asgsysSrngVo.setPrgrmid(dsgnPrgrmVo.getPrgrmid());
+//		//지정상태코드 - 지정승인
+//		if("132101".equals(dsgnPrgrmVo.getSttsCd())){
+//			asgsysSrngVo.setSttsCd("111111");  //상태코드 지정승인
+//		}
+//		//지정상태코드 - 지정탈락
+//		else if("132102".equals(dsgnPrgrmVo.getSttsCd())){
+//			asgsysSrngVo.setSttsCd("111112");  //상태코드 지정탈락
+//		}
+//
+//		ret += asgSrngDao.updatePrgrSttsCd(asgsysSrngVo);
 
 		return ret;
 	}
@@ -218,23 +306,91 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	public int updateDsgnHstry(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
 		int ret=0;
 
-		AsgsysSrngVo asgsysSrngVo = new AsgsysSrngVo();
+		//차수 조회
+		List<DsgnPrgrmVo> rsltCyclList = dsgnPrgrmDao.selectOperRsltCyclList(dsgnPrgrmVo);
+		if( rsltCyclList == null) {
+			//운영결과 차수 생성
+			DsgnPrgrmVo prgrmInfo =  dsgnPrgrmDao.selectPrgrm(dsgnPrgrmVo);
 
-		//지정 이력 update
-		ret += dsgnPrgrmDao.updateDsgnHstry(dsgnPrgrmVo);
-		//지정 프로그램 update
-		asgsysSrngVo.setPrgrmid(dsgnPrgrmVo.getPrgrmid());
+			String dateFormat = "yyyy-MM-dd";
+			String cyclBangDe = "";
+			String cyclEndDe ="";
+			DateFormat sdf = new SimpleDateFormat(dateFormat);
+			Calendar cal = Calendar.getInstance();  // 현재 시간정보 가지고오기
+			sdf.format(cal.getTime());
 
-		//지정상태코드 - 지정승인
+			//1차
+			prgrmInfo.setCycl("1");
+			cal.getActualMinimum(Calendar.DAY_OF_YEAR);  //초일
+			cyclBangDe = sdf.format(cal.getTime()) ;
+
+			cal.getActualMaximum(Calendar.DAY_OF_YEAR);  //말일
+			cyclEndDe = sdf.format(cal.getTime()) ;
+			ret+=dsgnPrgrmDao.insertOperRsltCyCl(prgrmInfo);
+
+			//2차
+			cal.add(Calendar.YEAR, 1);  //현재 시간에 + 1년
+			cal.getActualMinimum(Calendar.DAY_OF_YEAR);  //초일
+			cyclBangDe = sdf.format(cal.getTime()) ;
+
+			cal.getActualMaximum(Calendar.DAY_OF_YEAR);  //말일
+			cyclEndDe = sdf.format(cal.getTime()) ;
+
+			prgrmInfo.setCycl("2");
+			ret+=dsgnPrgrmDao.insertOperRsltCyCl(prgrmInfo);
+
+			//3차
+			cal.add(Calendar.YEAR, 1);  //현재 시간에 + 1년
+			cal.getActualMinimum(Calendar.DAY_OF_YEAR);  //초일
+			cyclBangDe = sdf.format(cal.getTime()) ;
+
+			cal.getActualMaximum(Calendar.DAY_OF_YEAR);  //말일
+			cyclEndDe = sdf.format(cal.getTime()) ;
+			prgrmInfo.setCycl("3");
+			ret+=dsgnPrgrmDao.insertOperRsltCyCl(prgrmInfo);
+		}
+
+		//신청 프로그램 정보 수정
+		DsgnPrgrmVo assPrgrm = dsgnPrgrmDao.selectPrgrm(dsgnPrgrmVo);
+		assPrgrm.setUser(dsgnPrgrmVo.getUser());
+		assPrgrm.setDsgnNo(dsgnPrgrmVo.getDsgnNo());
+		assPrgrm.setDsgnCycl(dsgnPrgrmVo.getDsgnCycl());
+		assPrgrm.setDsgnBgngDe(dsgnPrgrmVo.getDsgnBgngDe());
+		assPrgrm.setDsgnEndDe(dsgnPrgrmVo.getDsgnEndDe());
+		assPrgrm.setDsgnDe(dsgnPrgrmVo.getDsgnDe());
+		assPrgrm.setDsgnObtainDe(dsgnPrgrmVo.getDsgnObtainDe());
+
 		if("132101".equals(dsgnPrgrmVo.getSttsCd())){
-			asgsysSrngVo.setSttsCd("111111");  //상태코드 지정승인
+			assPrgrm.setSttsCd("111111");  //상태코드 지정승인
 		}
 		//지정상태코드 - 지정탈락
 		else if("132102".equals(dsgnPrgrmVo.getSttsCd())){
-			asgsysSrngVo.setSttsCd("111112");  //상태코드 지정탈락
+			assPrgrm.setSttsCd("111112");  //상태코드 지정탈락
 		}
 
-		ret += asgSrngDao.updatePrgrSttsCd(asgsysSrngVo);
+		dsgnPrgrmDao.updatePrgrm(assPrgrm);
+
+		//지정이력 생성
+		ret += dsgnPrgrmDao.insertDsgnHstry(dsgnPrgrmVo);
+
+
+//		AsgsysSrngVo asgsysSrngVo = new AsgsysSrngVo();
+//
+//		//지정 이력 update
+//		ret += dsgnPrgrmDao.updateDsgnHstry(dsgnPrgrmVo);
+//		//지정 프로그램 update
+//		asgsysSrngVo.setPrgrmid(dsgnPrgrmVo.getPrgrmid());
+//
+//		//지정상태코드 - 지정승인
+//		if("132101".equals(dsgnPrgrmVo.getSttsCd())){
+//			asgsysSrngVo.setSttsCd("111111");  //상태코드 지정승인
+//		}
+//		//지정상태코드 - 지정탈락
+//		else if("132102".equals(dsgnPrgrmVo.getSttsCd())){
+//			asgsysSrngVo.setSttsCd("111112");  //상태코드 지정탈락
+//		}
+//
+//		ret += asgSrngDao.updatePrgrSttsCd(asgsysSrngVo);
 		return ret;
 	}
 
@@ -380,12 +536,16 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	@Transactional
 	public int updateOperRslt(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
 		int ret=0;
+
 		if(dsgnPrgrmVo.getRsltCyclid() != null && dsgnPrgrmVo.getRsltCyclid() !=0 ) {
 			ret+=dsgnPrgrmDao.updateOperRslt(dsgnPrgrmVo);
 		}else {
 			ret+=dsgnPrgrmDao.insertOperRslt(dsgnPrgrmVo);
 		}
 
+		//updateCyclStts();
+
+		//운영실적 등록
 		List<OperPrfmncVo> prfmncLst = dsgnPrgrmVo.getOperPrfmncLst();
 		dsgnPrgrmDao.deleteOperPrfmnc(dsgnPrgrmVo);
 
@@ -488,21 +648,6 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	}
 
 	/**
-	* 보완계획서 수정
-	*
-	* @Title : updateScrtyImprvPlanln
-	* @Description : 보완계획서 수정
-	* @param dsgnPrgrmVo
-	* @return int
-	* @throws Exception
-	*/
-	@Override
-	@Transactional
-	public int updateScrtyImprvPlanln(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
-		return dsgnPrgrmDao.updateScrtyImprvPlanln(dsgnPrgrmVo);
-	}
-
-	/**
 	 * 결과보고서 조회
 	 *
 	 * @Title : selectRsltRptln
@@ -517,7 +662,7 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	}
 
 	/**
-	* 보완요청 수정
+	* 보완개선요청 수정
 	*
 	* @Title : updateSplmntImprv
 	* @Description : 보완요청 수정
@@ -528,7 +673,20 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	@Override
 	@Transactional
 	public int updateSplmntImprv(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
-		return dsgnPrgrmDao.updateSplmntImprv (dsgnPrgrmVo);
+		int ret=0;
+
+		DsgnPrgrmVo srngDtl = dsgnPrgrmDao.selectImplmntIdntySrngDtl(dsgnPrgrmVo);
+		dsgnPrgrmDao.selectImplmntIdntySrngDtl(dsgnPrgrmVo);
+		srngDtl.setVstDe(dsgnPrgrmVo.getVstDe());
+		srngDtl.setVstHr(dsgnPrgrmVo.getVstHr());
+		srngDtl.setVstMnt(dsgnPrgrmVo.getVstMnt());
+		srngDtl.setUser(dsgnPrgrmVo.getUser());
+		//이행확인심사 수정
+		ret+=dsgnPrgrmDao.updateImplmntIdntySrng(srngDtl);
+		//보완요청 수정
+		ret+=dsgnPrgrmDao.updateSplmntImprv(dsgnPrgrmVo);
+
+		return ret;
 	}
 
 	/**
@@ -544,7 +702,23 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	@Override
 	@Transactional
 	public int updateRsltRptln(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
-		return dsgnPrgrmDao.updateRsltRptln (dsgnPrgrmVo);
+		int ret=0;
+
+		//이행확인심사 조회
+		DsgnPrgrmVo srngInfo = null;
+		srngInfo = dsgnPrgrmDao.selectImplmntIdntySrngDtl(dsgnPrgrmVo);
+		srngInfo.setVstDe(dsgnPrgrmVo.getVstDe());
+		srngInfo.setVstHr(dsgnPrgrmVo.getVstHr());
+		srngInfo.setVstMnt(dsgnPrgrmVo.getVstMnt());
+		srngInfo.setGrdCd(dsgnPrgrmVo.getGrdCd());
+		srngInfo.setGnrlzOpnn(dsgnPrgrmVo.getGnrlzOpnn());
+		srngInfo.setFilegrpid(dsgnPrgrmVo.getFilegrpid());
+		srngInfo.setUser(dsgnPrgrmVo.getUser());
+
+		//이행확인심사 수정
+		ret+=dsgnPrgrmDao.updateImplmntIdntySrng(srngInfo);
+
+		return ret;
 	}
 
 	/**
@@ -575,6 +749,21 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	@Override
 	public DsgnPrgrmVo selectDsgnOutl(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
 		return dsgnPrgrmDao.selectDsgnOutl(dsgnPrgrmVo);
+	}
+
+	/**
+	* 지정프로그램 개요 체크리스트 목록 조회
+	*
+	* @Title : selectDsgnOutlChkList
+	* @Description : 지정프로그램 개요 체크리스트 목록 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnPrgrmVo>
+	*/
+	@Override
+	public List<DsgnPrgrmVo> selectDsgnOutlChkList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
+		return dsgnPrgrmDao.selectDsgnOutlChkList(dsgnPrgrmVo);
 	}
 
 	/**
@@ -736,6 +925,134 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 		workbook.write(fileOutput);
 		fileOutput.flush();
 		fileOutput.close();
+	}
+
+	/**
+	* 운영결과 실적 목록 조회
+	*
+	* @Title : selectOperRsltPrfmncList
+	* @Description : 운영결과 실적 목록 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @return List<OperPrfmncVo>
+	*/
+	@Override
+	public List<OperPrfmncVo> selectOperRsltPrfmncList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		return dsgnPrgrmDao.selectOperRsltPrfmncList(dsgnPrgrmVo);
+	}
+
+	/**
+	* 담당자 목록검색
+	*
+	* @Title : selectPicList
+	* @Description : 담당자 목록검색
+	* @param dsgnPrgrmVo
+	* @return
+	* @return List<DsgnPrgrmVo>
+	*/
+	@Override
+	public List<DsgnPrgrmVo> selectPicList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		return dsgnPrgrmDao.selectPicList(dsgnPrgrmVo);
+	}
+
+	/**
+	* 운영결과 제출 상태 변경
+	*
+	* @Title : updateSbmsnStts
+	* @Description : 운영결과 제출 상태 변경
+	* @param dsgnPrgrmVo
+	* @return
+	* @return int
+	*/
+	@Override
+	@Transactional
+	public int updateSbmsnStts(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		int ret = 0;
+
+		if(dsgnPrgrmVo.getSttsCd().equals("128104")) {
+			//이행확인심사 등록
+			if(dsgnPrgrmVo.getSrngid()!=null && !dsgnPrgrmVo.getSrngid().equals("")) {
+				ret+=dsgnPrgrmDao.updateImplmntIdntySrng(dsgnPrgrmVo);
+			}else {
+				ret+=dsgnPrgrmDao.insertImplmntIdntySrng(dsgnPrgrmVo);
+			}
+		}
+
+		ret+=dsgnPrgrmDao.updateCyClSttsCd(dsgnPrgrmVo);
+
+		//제출상태변경
+		return ret;
+	}
+
+	/**
+	* 보완개선계획 등록
+	*
+	* @Title : insertScrtyImprvPlanln
+	* @Description : 보완개선계획 등록
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	@Override
+	@Transactional
+	public int insertScrtyImprvPlanln(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
+		int ret = 0;
+
+		//이행확인심사 조회
+		DsgnPrgrmVo srngInfo = null;
+		srngInfo = dsgnPrgrmDao.selectImplmntIdntySrngDtl(dsgnPrgrmVo);
+		srngInfo.setVstDe(dsgnPrgrmVo.getVstDe());
+		srngInfo.setVstHr(dsgnPrgrmVo.getVstHr());
+		srngInfo.setVstMnt(dsgnPrgrmVo.getVstMnt());
+		srngInfo.setUser(dsgnPrgrmVo.getUser());
+
+		//이행확인심사 수정
+		ret+=dsgnPrgrmDao.updateImplmntIdntySrng(srngInfo);
+
+		//보완개선 계획 조회
+		//DsgnPrgrmVo plan = null;
+		ret+=dsgnPrgrmDao.insertSplmntPlan(dsgnPrgrmVo);
+
+		return ret;
+	}
+
+	/**
+	* 보완개선계획 수정
+	*
+	* @Title : updateScrtyImprvPlanln
+	* @Description : 보완개선계획 수정
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	@Override
+	@Transactional
+	public int updateScrtyImprvPlanln(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		int ret = 0;
+
+		//이행확인심사 조회
+		DsgnPrgrmVo srngInfo = null;
+		srngInfo = dsgnPrgrmDao.selectImplmntIdntySrngDtl(dsgnPrgrmVo);
+		srngInfo.setVstDe(dsgnPrgrmVo.getVstDe());
+		srngInfo.setVstHr(dsgnPrgrmVo.getVstHr());
+		srngInfo.setVstMnt(dsgnPrgrmVo.getVstMnt());
+		srngInfo.setUser(dsgnPrgrmVo.getUser());
+
+		//이행확인심사 수정
+		ret+=dsgnPrgrmDao.updateImplmntIdntySrng(srngInfo);
+
+		//보완개선 계획 조회
+		DsgnPrgrmVo plan = null;
+		plan = dsgnPrgrmDao.selectSplmntPlan(dsgnPrgrmVo);
+		plan.setSmrizeOpnn(dsgnPrgrmVo.getCn());
+		plan.setFilegrpid(dsgnPrgrmVo.getFilegrpid());
+		plan.setUser(dsgnPrgrmVo.getUser());
+
+		ret+=dsgnPrgrmDao.updateScrtyImprvPlanln(plan);
+
+		return ret;
 	}
 
 }

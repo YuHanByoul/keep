@@ -27,12 +27,13 @@ import com.google.api.services.analyticsreporting.v4.model.MetricHeaderEntry;
 import com.google.api.services.analyticsreporting.v4.model.Report;
 import com.google.api.services.analyticsreporting.v4.model.ReportRequest;
 import com.google.api.services.analyticsreporting.v4.model.ReportRow;
+import com.kbrainc.plum.rte.util.CommonUtil;
 
 public class HelloAnalyticsReporting {
   private static final String APPLICATION_NAME = "Hello Analytics Reporting";
   private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-  private static final String KEY_FILE_LOCATION = "/keep/src/main/resources/static/cmmFile/analytics/semiproject-266005-c74a290905e9.json";
-  private static final String VIEW_ID = "G-6LH7RDF32T";
+  private static final String KEY_FILE_LOCATION = CommonUtil.anayticsKeyFilePath;
+  private static final String VIEW_ID = "G-Q8G232E9CL";
   public static void main(String[] args) {
     try {
       AnalyticsReporting service = initializeAnalyticsReporting();

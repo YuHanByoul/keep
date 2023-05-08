@@ -1,0 +1,65 @@
+<form id="cancelFrm">
+<input type="hidden" id="aplyid" name="aplyid" th:value="${aplyid}">
+<input type="hidden" id="sttsCd" name="sttsCd" value="248105">
+
+<!-- [팝업] 지정취소 -->
+<div class="modal-dialog modal-md" role="document">
+    <div class="modal-content type_2">
+        <div class="modal-header">
+            <h4 class="modal-title">지정취소</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"></span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="card m-b-10">
+                <div class="card-block-small">
+                    <div class="mb-0 form-group row required">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="popInput01"><strong>지정 취소일</strong></label>
+                        <div class="col-12">
+                            <input type="date" class="form-control form-control-sm" id="dsgnCnclDe" name="dsgnCnclDe" th:value="${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd')}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary waves-effect waves-light" onclick="saveCancel(); return false;">저장</button>
+        </div>
+    </div>
+</div>
+<!-- //[팝업] 지정취소 -->
+</form>
+
+
+<script th:inline="javascript">
+function saveCancel() {
+	if($("#dsgnCnclDe").val() == "" || $("#dsgnCnclDe").val() == null) {
+		alert("지정 취소일을 선택하십시오.");
+		return;
+	}
+    if(!confirm("지정취소 하시겠습니까?")) return;
+    var data =  $("#cancelFrm").serialize();
+    if(displayWorkProgress()){
+        $.ajax({
+            url : saveUrl,
+            type: 'POST',
+            cache : false,
+            dataType: 'json',
+            data : data,
+            success : function (data){
+                if(data.result=="success"){
+                    alert(data.msg);
+                    gridHelper1.resetListContent();                         
+                }else{
+                    alert(data.msg);
+                }
+                cancelModal.hide();
+                closeWorkProgress();
+            }
+        });
+    }
+}
+</script>
+</body>
+</html>

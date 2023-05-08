@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+    layout:decorator="layout/front/subLayout" >
+<body>
+    <div layout:fragment="content">
+
+            <!-- content -->
+            <div class="table-caption">
+                <div class="left">
+                    <h3 class="sub-title">지정관리 주의사항</h3>
+                </div>
+            </div>
+            <form id="searchForm">
+
+                <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+                <input type="hidden" id="dsctnid" name="dsctnid" value="">
+                <input type="hidden" id="aplyid" name="aplyid" value="">
+                <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
+                <input type="hidden" id="orderField" name="orderField" value="DSGN_DE">
+            </form>
+
+            <div class="box-desc-list bg7">
+                <ul>
+	                <li>사회환경교육기관 지정 변경 및 진행상태는 변경내역에서 확인할 수 있습니다.</li>
+	                <li>사회환경교육기관 지정 승인 후 운영세칙에 따라 지정취소(지정탈락) 처리될 수 있습니다.</li>
+                </ul>
+            </div>
+
+            <div class="tab-content tab-sub dropDown">
+                <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true"></button>
+                <ul class="tab-list tab-list-pc target" role="tablist">
+                    <li class="tab active"><a th:href="@{/front/mypage/seeDsgnDsctn/seeDsgnDsctnDetailForm.html}" role="tab">지정내역</a></li>
+                    <li class="tab"><a th:href="@{/front/mypage/seeDsgnDsctn/chgSeeDsgnDsctnForm.html}" role="tab" >변경내역</a></li>
+                </ul>
+            </div>
+
+            <div class="pc-only">
+                <div class="table-col table-layout-auto">
+                    <table>
+                        <caption>지정내역 - 번호, 시도, 지정번호, 지정상태, 신청자, 지정(탈락)일</caption>
+                        <colgroup>
+                            <col style="width:6%;">
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th scope="col">번호</th>
+                                <th scope="col">시도</th>
+                                <th scope="col">지정번호</th>
+                                <th scope="col">지정상태</th>
+                                <th scope="col">신청자</th>
+                                <th scope="col">지정(탈락)일</th>
+                            </tr>
+                        </thead>
+                        <tbody id="list-area"/>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mo-only">
+                <div class="table-list">
+                    <ul id="list-mobile-area"/>
+                </div>
+            </div>
+
+            <div id="pagination" class="pagination" aria-label="pagination"/>
+
+            <!-- //content -->
+
+        <script th:inline="javascript">
+
+            var seeDsgnDsctn = {
+                listUrl:"/front/mypage/seeDsgnDsctn/selectSeeDsgnDsctnList.do",
+
+                selectList() {
+
+                    if (displayWorkProgress(true)) {
+                        let formData = $('#searchForm').serializeArray();
+
+                        $.ajax({
+                            url: seeDsgnDsctn.listUrl,
+                            cache: false,
+                            dataType: 'json',
+                            data: formData,
+                            type: 'GET',
+                            success: function (response) {
+                                let data = response;
+                                $("#pagination").html(data.pagination);
+
+                                data = escapeData(response.list);
+                                seeDsgnDsctn.makeListHtml(data);
+                                closeWorkProgress();
+                            }
+                        });
+                    }
+                },
+
+                makeListHtml(data) {
+                    var html = "";
+                    var list = data;
+                    var mobileHtml = "";
+                    if (list == null || list.length <= 0) {
+                        html += `<tr>
+                                     <td class="nodata" colspan="6">
+                                         <p><span class="icon icon-notice bg-black9"></span>지정내용이 없습니다.</p>
+                                     </td>
+                                </tr>`;
+                        mobileHtml += `
+                            <div class="nodata">
+                                <p><span class="icon icon-notice bg-black9"></span>지정내용이 없습니다.</p>
+                            </div>
+                            `;
+                    } else {
+                        list.forEach(function (item) {
+                        	var ctprvnNm   = item?.ctprvnNm ?? '' ;
+                        	var dsgnno   = item?.dsgnno     ?? '' ;
+                            var sttsCd   = item?.sttsCd     ?? '' ;
+                            var sttsNm = item?.sttsNm   ?? '' ;                        	
+                        	var aplcntNm  = item?.aplcntNm  ?? '' ;
+                        	var dsgnDe  = item?.dsgnDe    ?? '' ;
+
+                            html +=
+                                `
+                                <tr>
+                                <td>${item.rowNumber}</td>
+                                <td>${ctprvnNm}</td>
+                                <td>${dsgnno}</td>
+                                <td>${sttsNm}</td>
+                                <td>${aplcntNm}</td>                                
+                                <td>${dsgnDe}</td>
+                                </tr>
+                                `;
+                            mobileHtml += `
+                            <li>
+                                <div class="tbody">
+                                    <dl>
+                                        <div class="list">
+                                            <dt>번호</dt>
+                                            <dd>${item.rowNumber}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>시도</dt>
+                                            <dd>${ctprvnNm}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>지정번호</dt>
+                                            <dd>${dsgnno}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>지정상태</dt>
+                                            <dd>${sttsNm}</dd>
+                                        </div>
+                                        <div class="list">
+	                                        <dt>신청자</dt>
+	                                        <dd>${aplcntNm}</a></dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>지정(탈락)일</dt>
+                                            <dd>${dsgnDe}</dd>
+                                        </div>
+                                    </dl>
+                                </div>
+                            </li>
+                                    `;
+                        });
+
+                    }
+
+                    $('#list-area').html(html);
+                    $('#list-mobile-area').html(mobileHtml);
+                }
+            }
+
+            function goPage(page) {
+                $("#pageNumber").val(page);
+                seeDsgnDsctn.selectList();
+            }
+
+            $(function () {
+            	seeDsgnDsctn.selectList();
+            });
+
+        </script>
+    </div>
+</body>
+</html>

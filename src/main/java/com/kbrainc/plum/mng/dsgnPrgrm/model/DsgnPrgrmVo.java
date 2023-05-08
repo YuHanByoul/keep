@@ -53,6 +53,44 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     /** 검색.차수*/
     private String searchDsgnCycl;
 
+    /** 등록자아이디 */
+    private String searchNm;
+
+    /** 등록자아이디 */
+    private String searchCrtfctNm;
+
+    /** 등록자아이디 */
+    private String searchSbjctCd;
+
+    /** 등록자아이디 */
+    private String searchRgnCd;;
+
+    /** 전문가 아이디 */
+    private int userid;
+
+    /** 전문가 계정 */
+    private String acnt;
+
+    /** 전문가 이메일 */
+    private String eml;
+
+    /** 전문가 핸드폰 번호 */
+    private String moblphon;
+
+    /** 전문가 자격증 명 */
+    private String crtfctNm;
+
+    /** 전문가 분야 코드 */
+    private String sbjctCd;
+
+    /** 전문가 분야 명*/
+    private String sbjctNm;
+
+    /** 전문가 활동 지역코드 */
+    private String rgnCd;
+
+    /** 전문가 활동 지역명 */
+    private String rgnNm;
     /** 호출구분*/
     private String callSe;
 
@@ -131,6 +169,12 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 
     /** cell idx */
     private String cidx;
+
+    /** 시도 코드*/
+    private String ctprvnCd;
+
+    /** 시도 코드 명*/
+    private String ctprvnNm;
 
     /** 신청 ID*/
     private String aplyid;
@@ -654,10 +698,10 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     private String vstDe;
 
     /** 방문_시간 */
-    private String vstHr;
+    private Integer vstHr;
 
     /** 방문_분 */
-    private String vstMnt;
+    private Integer vstMnt;
 
     /** 종합_의견 */
     @Size(max = 2000, message = "종합의견은 2000자를 넘을 수 없습니다.")
@@ -683,7 +727,7 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     private String splmntImprvWrtpln;
 
     /** 보완요청 결과보고서 */
-    private String splmntImprvltRptp;
+    private String rsltln;
 
     /** 보안개선계획 */
     @Size(max = 2000, message = "내용은 2000자를 넘을 수 없습니다.")
@@ -714,6 +758,15 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 
     /** 체크 값 */
     private String chkVal;
+
+    /** 코드명 */
+    private String cdNm;
+
+    /** 구분 코드 */
+    private String sbmsnSeCd;
+
+    /** 점수 */
+    private String scr;
 
     /** 운영실적 목록*/
     private List<OperPrfmncVo> operPrfmncLst;

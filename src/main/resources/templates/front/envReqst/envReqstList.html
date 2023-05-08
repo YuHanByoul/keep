@@ -9,13 +9,13 @@
             <div class="form-row">
                 <div class="form-header"><strong class="label">운영기관</strong></div>
                 <div class="form-body">
-                    <input type="search" title="운영기관" name="instNm" placeholder="검색어를 입력해주세요.">
+                    <input type="search" title="운영기관" name="instNm" placeholder="검색어를 입력해주세요." th:value="${params.instNm}">
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-header"><strong class="label">환경교육시설</strong></div>
                 <div class="form-body">
-                    <input type="search" title="환경교육시설" name="fcltNm" placeholder="검색어를 입력해주세요.">
+                    <input type="search" title="환경교육시설" name="fcltNm" placeholder="검색어를 입력해주세요." th:value="${params.fcltNm}">
                 </div>
             </div>
             <div class="form-row">
@@ -23,21 +23,21 @@
                 <div class="form-body">
                     <select name="searchRgnCd" id="searchRgnCd">
                         <option value="">전체</option>
-                        <option th:each="item:${sidoList}" th:value="${item.CTPRVN_CD}" th:text="${item.CTPRVN_NM}" ></option>
+                        <option th:each="item:${sidoList}" th:value="${item.CTPRVN_CD}" th:text="${item.CTPRVN_NM}"  th:selected="${params.searchRgnCd eq item.CTPRVN_CD} "></option>
                     </select>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-header"><strong class="label">예약신청방법</strong></div>
                 <div class="form-body">
-                    <span kattr:select_code="searchAplyMthdCd" name="searchAplyMthdCd" id="searchAplyMthdCd" grpCd="153" firstOptTxt="전체" addClass="input-sm" isAdmin="true">
+                    <span kattr:select_code="searchAplyMthdCd" th:attr="selectedCd=${params.searchAplyMthdCd}" grpCd="153" firstOptTxt="전체" addClass="input-sm" ></span>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-header"><strong class="label">인원</strong></div>
                 <div class="form-body">
                     <div class="form-input form-input-number">
-                        <input type="number" value="" name="maxNope" min="0" max="10" title="인원" class="mr0">
+                        <input type="number" value="" name="maxNope" min="0"  title="인원" class="mr0" th:value="${params.maxNope}">
                         <div class="btn-number"><button type="button" class="num-up" title="숫자 증가"></button><button type="button" class="num-down" title="숫자 감소"></button></div>
                         <div class="bul">이상</div>
                     </div>
@@ -47,21 +47,21 @@
                 <div class="form-header"><strong class="label">기간</strong></div>
                 <div class="form-body">
                     <div class="form-input">
-                        <input type="date" title="시작일" name="searchBgngDt" id="searchBgngDt">
+                        <input type="date" title="시작일" name="searchBgngDt" id="searchBgngDt" th:value="${params.searchBgngDt}"/>
                         <div class="bul">~</div>
-                        <input type="date" title="종료일" name="searchEndDt" id="searchEndDt">
+                        <input type="date" title="종료일" name="searchEndDt" id="searchEndDt"   th:value="${params.searchEndDt}"/>
                     </div>
                 </div>
             </div>
-
         </div>
+        
         <div class="search-filter-submit">
-            <button type="reset" class="btn-medium btn-gray btn-before-refresh" onclick="searchInit();">초기화</button>
+            <button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="searchInit();">초기화</button>
             <button type="submit" class="btn-medium btn-green btn-before-search" onclick="search();">검색</button>
         </div>
 
         <input type="hidden" id="pageNumber" name="pageNumber" value="1">
-        <input type="hidden" id="rowPerPage" name="rowPerPage" value="10"/>
+        <input type="hidden" id="rowPerPage" name="rowPerPage" value="12"/>
         <input type="hidden" id="orderField" name="orderField" value="SPCEID">
         <input type="hidden" id="ORDER_DIRECTION" name="orderDirection" value="desc">
         <input type="hidden" id="fcltid" name="fcltid" value="0">
@@ -69,40 +69,56 @@
 
     <div class="table-caption flex-nowrap">
         <div class="left">
-            <p>총 <b id="total-count">0</b> 개</p>
+            <p>총 <b id="totalCount">0</b> 개</p>
         </div>
     </div>
-    <div id="list-area">
-    </div>
-
-    <div class="pagination" aria-label="pagination" id="pagination">
-    </div>
-
+    <div class="card-section" id="listArea"></div>
+    <div class="pagination" aria-label="pagination" id="pagination"></div>
+    
+    <script src="/js/common/handlebars/handlebars-v4.7.7.js"></script>   
+    <script src="/js/common/handlebars/handlebars.helper.js"></script>
+    <script id="listTemplate" type="text/x-handlebars-template">
+    <ul class="n3" >
+    {{#each aplyList}}
+      <li>
+          <div class="thumb">
+              <img src="/downloadFileByFileid.do?fileid={{rprsImgFileid}}&file_idntfc_key={{rprsImgFileKey}}" alt="" >
+              <div class="tag {{tagStr}}">{{aplyMthdCdNm}} 신청</div>
+          </div>
+          <div class="cont mt0">
+              <div class="part ellipsis">{{instNm}}</div>
+              <a href="javascript:moveToView('{{fcltid}}')" class="title ellipsis" data-ellipsis="2">{{fcltNm}}</a>
+              <div class="fs-14 fc-black6">{{addr}} {{addrDtl}}</div>
+          </div>
+      </li>
+    {{/each}}
+    </ul>
+    </script>
     <script th:inline="javascript">
         var listUrl = "/front/envReqst/selectEnvReqstList.do";
         var viewUrl = '/front/envReqst/resveEnvView.html';
-        var formUrl = '/front/envReqst/envReqstForm.html';
-        var loginUserid = /*[[${loginUserid}]]*/null;
-
+        var searchBgngDt = /*[[${params.searchBgngDt}]]*/null;
+        var searchEndDt = /*[[${params.searchEndDt}]]*/null;
+        var listTemplet = Handlebars.compile($("#listTemplate").html());
+        var noDataMsg = '<div class="nodata" style="border:none;" ><p><span class="icon icon-notice bg-black9"></span>등록된 교육시설이 없습니다.</p></div>';
+        
         $(function () {
             selectEnvReqstList();
         });
-
         function search() {
             $('#pageNumber').val(1);
             selectEnvReqstList();
         }
-
         function searchInit() {
             $('input[name="instNm"]').val('');
             $('input[name="fcltNm"]').val('');
             $('select[name="searchRgnCd"]').val('');
             $('select[name="searchAplyMthdCd"]').val('');
             $('input[name="maxNope"]').val(0);
-            $('input[name="searchBgngDt"]').val('');
-            $('input[name="searchEndDt"]').val('');
+            $('#searchBgngDt').attr("required",false);
+            $('#searchBgngDt').val(null);
+            $('#searchEndDt').val(null);
         }
-
         function selectEnvReqstList() {
 
             if (displayWorkProgress(true)) {
@@ -110,69 +126,39 @@
                     url: listUrl,
                     cache: false,
                     dataType: 'json',
-                    data: formData = $('#searchForm').serializeArray(),
+                    data: $('#searchForm').serialize(),
                     type: 'GET',
                     success: function (data) {
-                        $("#list-area").html(makeListHtml(data.list));
-                        $("#pagination").html(data.pagination);
-                        $("#total-count").html(data.totalCount);
+                    	renderingListData(data.list);
+                        $("#totalCount").text(data.totalCount);
+                        if(data.totalCount == 0) {
+                            $("#listArea").html(noDataMsg);
+                            $("#pagination").html('');
+                        }else{
+                            $("#pagination").html(data.pagination);
+                        }
                         closeWorkProgress();
                     }
                 });
             }
         }
+        function renderingListData(list){
 
-        function makeListHtml(list) {
-            var html = "";
-            if (list == null || list.length <= 0) {
-                html += `<div class="nodata"><p><span class="icon icon-notice bg-black9"></span>등록된 환경교육시설이 없습니다.</p></div>`;
-            } else {
-                html +='<div class="card-list card-list-n3">\n' +
-                    '            <ul>';
-                list.forEach(function (item) {
-                    html += '<li>\n' +
-                        '                <a href="/front/envReqst/resveEnvView.html?fcltid='+item.fcltid+'">\n' +
-                        '                    <div class="thumb" style="height:163px;"><img src="/downloadFileByFileid.do?fileid='+item.rprsImgFileMap.fileid+'&file_idntfc_key='+item.rprsImgFileMap.fileIdntfcKey+'" alt="'+item.fcltNm+'"></div>\n' +
-                        '                    <dl class="card-cate-list">\n' +
-                        '                        <dt>\n' +
-                        '                            <div class="tag tag-blue">'+item.aplyMthdNm+'</div>'+item.instNm+'\n' +
-                        '                        </dt>\n' +
-                        '                        <dd>\n' +
-                        '                            <p class="ellipsis" data-ellipsis="2">'+item.fcltNm+'</p>\n' +
-                        '                            <p class="fw-400">'+item.addr+ ' '+item.addrDtl+'</p>\n' +
-                        '                        </dd>\n' +
-                        '                    </dl>\n' +
-                        '                </a>\n' +
-                        '            </li>';
-                    /*html += `<tr>
-                                    <td>${item.rowNumber}</td>
-                                    <td>${item.prcsSttsCdNm}</td>
-                                    <td class="al article"><a href="javascript:void(0)" class="link ellipsis" onclick="moveToView(${item.prpslid}, ${canGoToDetail})">${item.ttl}</a></td>
-                                    <td>${item.clsfCdNm}</td>
-                                    <td>${item.acnt}</td>
-                                    <td>${item.rlsYn == 'Y' ? '공개' : '비공개'}</td>
-                                    <td>${item.regDt}</td>
-                                </tr>`;*/
-                })
-                html += '</ul>' +
-                    '</div>';
-            }
-            return html;
+            list.forEach(function(item){
+                if(item.aplyMthdCd == '153101'){
+                    item.tagStr = ' tag-green';
+                }else{
+                    item.tagStr = ' tag-blue ';
+                }
+            })
+            $("#listArea").html(listTemplet({aplyList:list}));
         }
-
-        function moveToInsertForm() {
-            var f = document.forms.searchForm;
-            f.action = formUrl;
-            f.submit();
-        }
-
         function moveToView(fcltid) {
             var f = document.forms.searchForm;
             f.fcltid.value = fcltid;
             f.action = viewUrl;
             f.submit();
         }
-
         function goPage(num) {
             $("#pageNumber").val(num);
             selectEnvReqstList();

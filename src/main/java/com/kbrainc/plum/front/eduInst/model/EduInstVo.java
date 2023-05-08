@@ -79,6 +79,4 @@ public class EduInstVo extends ParentRequestVo {
     private List<LctrumVo> lctrumList;
     private List<EqpVo> eqpList;
 
-
-
 }

@@ -768,6 +768,18 @@ public interface AsgsysSrngService {
 	*/
 	public List<DsgnPrgrmVo> selectCsltngList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
+	/**
+	* 심사점수 목록 조회
+	*
+	* @Title : selectSrngAnsList
+	* @Description : 심사점수 목록 조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<AsgsysSrngVo>
+	*/
+	public List<AsgsysSrngVo> selectSrngAnsList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
 
 
 

@@ -29,7 +29,7 @@ public class CachingConfig implements CachingConfigurer {
     @Bean
     public EhCacheManagerFactoryBean ehCacheManagerFactoryBean() {
         EhCacheManagerFactoryBean ehCacheManagerFactoryBean = new EhCacheManagerFactoryBean();
-        ehCacheManagerFactoryBean.setConfigLocation(new ClassPathResource("/cache/ehcache_udp.xml"));
+        ehCacheManagerFactoryBean.setConfigLocation(new ClassPathResource("/cache/ehcache.xml"));
         ehCacheManagerFactoryBean.setShared(true);
         
         return ehCacheManagerFactoryBean;

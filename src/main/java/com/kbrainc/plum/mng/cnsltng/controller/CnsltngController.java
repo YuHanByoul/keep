@@ -280,7 +280,6 @@ public class CnsltngController {
      */
     @RequestMapping(value = "/mng/cnsltng/updateCnsltng.do")
     @ResponseBody
-    @Transactional
     public Map<String, Object> updateCnsltng(CnsltngVo cnsltngVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>();
         
@@ -288,8 +287,7 @@ public class CnsltngController {
         
         cnsltngVo.setUser(user);
         
-        retVal = cnsltngService.insertCnsltntALL(cnsltngVo);
-        retVal += cnsltngService.updateCnsltng(cnsltngVo);
+        retVal = cnsltngService.updateCnsltngInfo(cnsltngVo);
         
         if (retVal > 0) {
             map.put("result", Constant.REST_API_RESULT_SUCCESS);

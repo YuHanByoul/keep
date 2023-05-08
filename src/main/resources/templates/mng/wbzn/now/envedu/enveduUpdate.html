@@ -51,6 +51,7 @@
 		        <div class="mb-2 form-group row required">
 		            <div class="mb-0 form-group">
 		                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="environmentEduThumbnailImg"><strong>썸네일이미지</strong></label>
+		                <p class="text-warning m-b-0">* 10MB 미만의 JPG, PNG, GIF파일만 업로드 가능(권장사이즈 : 가로 296px, 세로 167px)</p>
 		                <div class="col-sm-12">
 		                    <input type="file" class="form-control form-control-sm" id="thmbnFile" name="thmbnFile"/>
                             <input type="hidden" name="thmbnFilegrpid" id="thmbnFilegrpid" th:value="${envedu.filegrpid}">
@@ -70,25 +71,46 @@
 		                </div>
 		            </div>
 		        </div>
-		        <div class="mb-2 form-group row">
-		            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>유형</strong></div>
-		            <div class="col-12">
-		                <div class="form-radio">
-		                    <div class="radio radio-inline">
-		                        <label class="mb-0 form-label">
-		                            <input type="radio" name="typeCd" id="typeCd1" value="html" th:checked="${envedu.typeCd eq 'html'}"/>
-		                            <i class="helper"></i>HTML
-		                        </label>
-		                    </div>
-		                    <div class="radio radio-inline">
-		                        <label class="mb-0 form-label">
-		                            <input type="radio" name="typeCd" id="typeCd2" value="url" th:checked="${envedu.typeCd eq 'url'}"/>
-		                            <i class="helper"></i>URL
-		                        </label>
-		                    </div>
-		                </div>
+		        <div class="mb-2 row">
+		        	<div class="col-12 col-lg-6 mb-2 mb-lg-0">
+			            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>유형</strong></div>
+			            <div class="col-12">
+			                <div class="form-radio">
+			                    <div class="radio radio-inline">
+			                        <label class="mb-0 form-label">
+			                            <input type="radio" name="typeCd" id="typeCd1" value="html" th:checked="${envedu.typeCd eq 'html'}"/>
+			                            <i class="helper"></i>HTML
+			                        </label>
+			                    </div>
+			                    <div class="radio radio-inline">
+			                        <label class="mb-0 form-label">
+			                            <input type="radio" name="typeCd" id="typeCd2" value="url" th:checked="${envedu.typeCd eq 'url'}"/>
+			                            <i class="helper"></i>URL
+			                        </label>
+			                    </div>
+			                </div>
+			            </div>
 		            </div>
-		        </div>
+		            <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+			            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>메인노출 여부</strong> (현재 노출상태 : <span id="count"></span> / 8)</div>
+			            <div class="col-12">
+			                <div class="form-radio">
+			                    <div class="radio radio-inline">
+			                        <label class="mb-0 form-label">
+			                            <input type="radio" name="expsrYn" id="expsrYn1" value="Y" th:checked="${envedu.expsrYn.toString().equals('Y')}"/>
+			                            <i class="helper"></i>노출
+			                        </label>
+			                    </div>
+			                    <div class="radio radio-inline">
+			                        <label class="mb-0 form-label">
+			                            <input type="radio" name="expsrYn" id="expsrYn2" value="N" th:checked="${envedu.expsrYn.toString().equals('N')}"/>
+			                            <i class="helper"></i>미노출
+			                        </label>
+			                    </div>
+			                </div>
+			            </div>
+		            </div>
+		        </div>		        
 		        <div class="mb-2 form-group row url">
 		            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="url"><strong>URL</strong></label>
 		            <div class="col-12">
@@ -149,6 +171,20 @@
 			$(".url").show();
 			$(".cnStyle").hide();
 			$(".cn").hide();
+		}
+	});
+	
+	$("input[name='expsrYn']").change(function(){
+		if($("input[name='expsrYn']:checked").val() == 'Y') {
+			$("#count").text(parseInt($("#count").text()) + 1)
+			if(parseInt($("#count").text()) > 8) {
+				$("#count").text(parseInt($("#count").text()) - 1)
+				alert("메인노출은 최대 8개까지 가능합니다.");
+				$("#expsrYn2").prop('checked', true);
+				return false;
+			}
+		}else{
+			$("#count").text(parseInt($("#count").text()) - 1)			
 		}
 	});
  	
@@ -231,6 +267,27 @@
 			$(".cnStyle").hide();
 			$(".cn").hide();
 		}
+		
+        var formData = new FormData();
+        formData.append("pageNumber", '2');
+        formData.append("rowPerPage", '9999');
+	    
+		$.ajax({
+			url : "/mng/wbzn/now/envedu/selectEnveduList.do",
+			type: 'POST',
+			cache : false,
+			dataType: 'json',
+			data: JSON.stringify(formData),
+			success : function (data){
+				var cnt = 0;
+				data.list.forEach(function(item){
+					if(item.expsrYn == 'Y') {
+						cnt++
+					}
+				});
+				$("#count").html(cnt);
+			}
+		});
  	}
  	
  	function fn_updateEnvedu(){

@@ -21,18 +21,32 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
+import com.kbrainc.plum.cmm.service.AlimtalkNhnService;
+import com.kbrainc.plum.cmm.service.MailNhnServiceImpl;
+import com.kbrainc.plum.cmm.service.SmsNhnServiceImpl;
 import com.kbrainc.plum.mng.cnsltng.model.CnsltngDao;
 import com.kbrainc.plum.mng.cnsltng.model.CnsltngExprtGrpVo;
 import com.kbrainc.plum.mng.cnsltng.model.CnsltngExprtVo;
 import com.kbrainc.plum.mng.cnsltng.model.CnsltngResultVo;
 import com.kbrainc.plum.mng.cnsltng.model.CnsltngVo;
+import com.kbrainc.plum.mng.member.model.MemberDao;
+import com.kbrainc.plum.mng.member.model.MemberVo;
+import com.kbrainc.plum.mng.ntcn.model.NtcnDao;
+import com.kbrainc.plum.mng.ntcn.model.NtcnVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+import com.kbrainc.plum.rte.util.CommonUtil;
 import com.kbrainc.plum.rte.util.StringUtil;
 import com.kbrainc.plum.rte.util.excel.ExcelUtils;
+import com.kbrainc.plum.rte.util.mail.model.MailVo;
+import com.kbrainc.plum.rte.util.mail.service.MailService;
 
 /**
  * 
@@ -55,7 +69,25 @@ public class CnsltngServiceImpl extends PlumAbstractServiceImpl implements Cnslt
     
     @Autowired
     private CnsltngDao cnsltngDao;
+    
+    @Autowired
+    private MemberDao memberDao;
+    
+    @Autowired
+    private NtcnDao ntcnDao;
+    
+    @Autowired @Qualifier("MailNhnService")
+    private MailService mailService;
+    
+    @Autowired
+    private TemplateEngine templateEngine;
 
+    @Autowired
+    private SmsNhnServiceImpl smsNhnService;
+    
+    @Autowired
+    private AlimtalkNhnService alimtalkService;
+    
     /**
     * 컨설팅 리스트 호출 
     *
@@ -65,8 +97,8 @@ public class CnsltngServiceImpl extends PlumAbstractServiceImpl implements Cnslt
     * @return List<ConsultVo>
     * @throws Exception 예외
     */
-    public List<CnsltngVo> selectCnsltngList(CnsltngVo consultVo) throws Exception{
-        return cnsltngDao.selectCnsltngList(consultVo);
+    public List<CnsltngVo> selectCnsltngList(CnsltngVo cnsltngVo) throws Exception{
+        return cnsltngDao.selectCnsltngList(cnsltngVo);
     }
     
     /**
@@ -78,8 +110,8 @@ public class CnsltngServiceImpl extends PlumAbstractServiceImpl implements Cnslt
      * @return ConsultVo
      * @throws Exception 예외
      */
-    public CnsltngVo selectCnsltngtInfo(CnsltngVo consultVo) throws Exception{
-        return cnsltngDao.selectCnsltngtInfo(consultVo);
+    public CnsltngVo selectCnsltngtInfo(CnsltngVo cnsltngVo) throws Exception{
+        return cnsltngDao.selectCnsltngtInfo(cnsltngVo);
     }
     /**
      * 컨설팅 신청 상태 수정 
@@ -216,13 +248,45 @@ public class CnsltngServiceImpl extends PlumAbstractServiceImpl implements Cnslt
      */
     @Transactional
     public int insertCnsltntALL(CnsltngVo cnsltngVo) throws Exception{
+        
+        int resInt = 0;
         //중복제거
         List<String> list = cnsltngVo.getCnstntids();
         Set<String> set = new HashSet<String>(list);
         List<String> newList =new ArrayList<String>(set);
         cnsltngVo.setCnstntids(newList);
-        cnsltngDao.deleteCnsltntAll(cnsltngVo);
-        return cnsltngDao.insertCnsltnt(cnsltngVo);
+        resInt +=cnsltngDao.deleteCnsltntAll(cnsltngVo);
+        resInt += cnsltngDao.insertCnsltnt(cnsltngVo);
+        return resInt;
+    }
+    /**
+     *  컨설팅 담당자 배정 메일 발송 
+     *
+     * @Title       : sendEmailForCnsltng 
+     * @Description : 컨설팅 담당자 배정 메일 발송
+     * @param MemberVo MemberVo객체
+     * @return int insert로우수
+     * @throws Exception 예외
+     */
+    @Async
+    public int sendEmailForCnsltng(MemberVo memberVo,String prgrmNm) throws Exception{
+            StringBuilder contents = new StringBuilder();
+            contents.append("<tr><td align=\"center\" style=\"font-family:'맑은 고딕','Malgun Gothic','돋움',dotum,sans-serif;font-size:16px;font-weight:400;font-stretch:normal;font-style:normal;line-height:1.5;letter-spacing:-1px;color:#333333;padding:0 10px;\">");
+            contents.append(memberVo.getNm());
+            contents.append("님  " );
+            contents.append(prgrmNm);
+            contents.append("  의 지정단으로 배정되셨습니다." );
+            contents.append("<br /><br />자세한 내용은 관리자 페이지에서 확인해주십시오.<br /><br />");
+            contents.append("&nbsp;</td></tr><tr><td style=\"height:30px;font-size:0px;mso-line-height-rule:exactly;line-height:0px;\">&nbsp;</td></tr>");
+            Context context = new Context();
+            context.setVariable("title", "[환경보전협회] "+prgrmNm+"의 지정단으로 배정되셨습니다.");
+            context.setVariable("content", contents.toString());
+            context.setVariable("portalUrl", CommonUtil.adminUrl);
+            String mailContents = templateEngine.process("mail/mail_basic_template", context);
+            String mailTitle = "[환경보전협회] "+prgrmNm+"의 지정단으로 배정되셨습니다.";
+            MailVo mailVo = new MailVo(null, memberVo.getEml(), mailTitle, mailContents, Integer.valueOf(memberVo.getUser().getUserid()), "U", memberVo.getUserid());
+            mailService.sendMail(mailVo); // 이메일 발송
+        return 1;
     }
     
     /**
@@ -248,6 +312,66 @@ public class CnsltngServiceImpl extends PlumAbstractServiceImpl implements Cnslt
      */
     public int updateCnsltng(CnsltngVo cnsltngVo) throws Exception{
         return cnsltngDao.updateCnsltng(cnsltngVo);   
+    }
+    /**
+     * 컨설팅 상태 정보 수정(알림등 발송 추가 )  
+     *
+     * @Title       : updateCnsltngInfo 
+     * @Description : 컨설팅 상태 정보 수정
+     * @param CnsltngVo CnsltngVo객체
+     * @return int
+     * @throws Exception 예외
+     */
+    @Override
+    @Transactional
+    public int updateCnsltngInfo(CnsltngVo cnsltngVo) throws Exception{
+        int resInt = 0;
+        //중복제거
+        List<String> list = cnsltngVo.getCnstntids();
+        Set<String> set = new HashSet<String>(list);
+        List<String> newList =new ArrayList<String>(set);
+        cnsltngVo.setCnstntids(newList);
+        resInt +=cnsltngDao.deleteCnsltntAll(cnsltngVo);
+        resInt += cnsltngDao.insertCnsltnt(cnsltngVo);
+        resInt +=cnsltngDao.updateCnsltng(cnsltngVo);
+        
+        //알림 발송
+        CnsltngVo resVo = cnsltngDao.selectCnsltngtInfo(cnsltngVo);
+        
+        for(String id : newList) {
+            //알림 발송
+            NtcnVo ntcnVo = new NtcnVo();
+            ntcnVo.setUserid(Integer.parseInt(id));
+            ntcnVo.setTtl("지정단으로 배정 완료");
+            ntcnVo.setCn(
+                    resVo.getPrgrmNm() +"의 지정단으로 배정 되셨습니다.\r\n"
+                    + "자세한 내용은 관리자 사이트에서 확인해주세요.");
+            ntcnVo.setInqYn("N");
+            ntcnVo.setKndCd("156102");
+            ntcnDao.insertNtcn(ntcnVo);
+            //메일 발송
+            MemberVo member = new MemberVo();
+            member.setUser(cnsltngVo.getUser());
+            member.setUserid(Integer.parseInt(id));
+            MemberVo parmaVo = memberDao.selectMemberInfo(member);
+            parmaVo.setUser(cnsltngVo.getUser());
+            if(StringUtil.isNotNull(parmaVo.getEml())){
+                sendEmailForCnsltng(parmaVo,resVo.getPrgrmNm());
+            }
+            //SMS 발송 
+            String phone = parmaVo.getMoblphon();
+            if(!"".equals(StringUtil.nvl(phone))) {
+                String[] phonlist = new String[]{phone};
+                String msg = "[환경보전협회] '"+resVo.getPrgrmNm()+"'우수 프로그램 지정제사업 지정단으로 배정되셨습니다.";
+                Map<String, Object> resMap = smsNhnService.sendSms(msg,phonlist,""); // sms 발송
+                String result = (String)((Map<String, Object>)(resMap.get("header"))).get("resultMessage");
+            }
+            //알림톡 발송
+            String recipientList =  "[{\"recipientNo\": \""+phone+"\",\"templateParameter\": {\"nm\":\""+parmaVo.getNm()+"\", \"prgrmNm\":\""+resVo.getPrgrmNm()+"\"} }]"; 
+            alimtalkService.sendAlimtalk("keep-030","",recipientList);
+        }
+        
+        return resInt;   
     }
     /**
      * 컨설턴트 결과 정보 조회 

@@ -120,6 +120,7 @@ public class InfntPrgrmServiceImpl extends PlumAbstractServiceImpl implements In
           retVal += infntPrgrmDao.insertInfntPrgrmCopy(infntPrgrmVo);
           retVal += infntPrgrmDao.insertInfntPrgrmClsfMapngCopy(infntPrgrmVo);
           retVal += infntPrgrmDao.insertInfntPrgrmTrgtMapngCopy(infntPrgrmVo);
+          retVal += infntPrgrmDao.insertInfntPrgrmTmeCopy(infntPrgrmVo);
         }
         
         

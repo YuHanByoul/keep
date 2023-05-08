@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.error.controller.CustomErrorController;
 import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.cmm.file.service.FileServiceImpl;
 import com.kbrainc.plum.front.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.DsgnSrngFormVo;
@@ -38,6 +39,7 @@ import com.kbrainc.plum.mng.code.service.CodeServiceImpl;
 import com.kbrainc.plum.mng.inst.model.InstVo;
 import com.kbrainc.plum.mng.inst.service.InstServiceImpl;
 import com.kbrainc.plum.mng.member.model.MemberVo;
+import com.kbrainc.plum.mng.tchaid.service.TchaidService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
@@ -76,6 +78,12 @@ public class AsgsysSrngController {
 
 	@Autowired
 	private InstServiceImpl instService;
+
+	@Autowired
+    private TchaidService tchaidService;
+
+	@Autowired
+    private FileServiceImpl fileService;
 
 	/**********************************************************************************
      * 지정신청
@@ -582,7 +590,36 @@ public class AsgsysSrngController {
     	return "mng/asgsysSrng/rsltRpt";
     }
 
-    //지정탈락
+    //지정프로그램 등록 (승인처리)
+    @RequestMapping(value = "/mng/asgsysSrng/insertDsgnPrgrm.do")
+    @ResponseBody
+    public Map<String, Object> insertDsgnPrgrm(@Valid AsgsysSrngVo asgsysSrngVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+
+        if (bindingResult1.hasErrors()) {
+            FieldError fieldError = bindingResult1.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+
+        asgsysSrngVo.setUser(user);
+
+        int retVal = 0;
+
+        //retVal = asgsysSrngService.insertDsgnPrgrm(asgsysSrngVo);
+
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "등록에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "등록에 실패했습니다.");
+        }
+
+        return resultMap;
+    }
 
     /**
     * @Title : prgrmDstnctn
@@ -605,6 +642,10 @@ public class AsgsysSrngController {
     	//컨설팅목록
     	List<DsgnPrgrmVo> csltngList = asgsysSrngService.selectCsltngList(prgrmDstnctnInfo);
     	model.addAttribute("csltngList", csltngList );
+
+    	Map<String,String> map = new HashMap();
+        map.put("cdgrpid", "155");
+        model.addAttribute("sbjctCdLsit", tchaidService.selectTchaidCdList(map)  );
 
     	//교육주제코드목록
     	List<String> eduSbjctCdLst = new ArrayList<>();
@@ -1029,7 +1070,8 @@ public class AsgsysSrngController {
             FileVo fileVo = new FileVo();
             fileVo.setFilegrpid(sftyMngInfo.getFilegrpid());
 
-            model.addAttribute("mnlFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
+            //model.addAttribute("mnlFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
+            model.addAttribute("fileList", fileService.getFileList(fileVo));
 
         } else {
             model.addAttribute("mnlFileList", Collections.emptyList());
@@ -1494,6 +1536,8 @@ public class AsgsysSrngController {
     	model.addAttribute("loginUserid", user.getUserid());
     	model.addAttribute("jdgsSrngInfo", jdgsSrngInfo);
 
+    	model.addAttribute("ansList", asgsysSrngService.selectSrngAnsList(jdgsSrngInfo));
+
     	//신청 첨부파일
     	if (!StringUtil.nvl(jdgsSrngInfo.getAplyFilegrpid()).equals("") && !StringUtil.nvl(jdgsSrngInfo.getAplyFilegrpid()).equals(0)) {
             FileVo fileVo = new FileVo();
@@ -1518,7 +1562,7 @@ public class AsgsysSrngController {
 
     	BeanUtils.copyProperties(jdgsSrngInfo, dsgnSrngFormVo);
     	logger.info(dsgnSrngFormVo.toString());
-//    	model.addAttribute("dsgnSrgnFormList", asgsysSrngService.selectDsgnSrgnFormList(dsgnSrngFormVo));
+
 
     	//심사양식 목록 조회
     	model.addAttribute("srngFormList",asgsysSrngService.selectSrngFormQitemList(dsgnSrngFormVo));
@@ -1631,7 +1675,7 @@ public class AsgsysSrngController {
 
         return resultMap;
     }
-    
+
     /**
     * 지원단심사 목록 엑셀 다운
     *
@@ -1691,6 +1735,8 @@ public class AsgsysSrngController {
 
         return "mng/asgsysSrng/sprtgrpSrngInsertForm";
     }
+
+
 
 
 }

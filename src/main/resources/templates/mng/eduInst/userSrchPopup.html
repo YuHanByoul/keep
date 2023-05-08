@@ -1,0 +1,185 @@
+<form id="mbrSrchPopupFrm">
+<input type="hidden" id="instid" name="instid" th:value="${instid}">
+
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content type_2">
+            <div class="modal-header">
+                <h4 class="modal-title">회원검색</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-block-small">
+                        <div class="row">
+                            <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+                                <div class="mb-0 form-group">
+                                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
+                                    <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                        <select name="searchKeywordType" id="searchKeywordType" class="form-select form-control form-control-sm ">
+                                            <option value="userNm">이름</option>
+                                            <option value="instNm">기관명</option>
+                                        </select>
+                                        <input type="text" class="form-control" aria-label="Text input with dropdown button" name="searchCondition" id="searchCondition"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-1 p-t-20 text-center border-top">
+                            <button type="button" class="btn btn-disabled m-r-5" onclick="reset();">초기화</button>
+                            <button type="submit" class="btn btn-primary" onclick="searchUserList(); return false;">검색</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card m-b-10">
+                    <div class="card-block-small">
+                        <div class="row">
+                            <div class="col-12">
+                                <table id="mbrGrid" class="table-responsive"></table>
+                                <div id="userListPager" class="text-center"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-disabled m-r-5" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary" onclick="selectMbrBtn()">선택</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<script th:inline="javascript">
+
+
+var selectedItem;
+
+initMbrSrchPopup();
+
+function initMbrSrchPopup(){
+	writeMbrGridData();
+}
+
+searchUserList = () =>{
+    $("#mbrGrid").jsGrid("reset");
+}
+
+function writeMbrGridData(){
+    $("#mbrGrid").jsGrid({
+        height: "auto",
+        width: "100%",
+        autoload: true,
+        sorting: true,
+        paging: true,
+        pagerContainer: "#userListPager",
+        pagerFormat: "{first} {prev} {pages} {next} {last}",
+        pagePrevText: "이전",
+        pageNextText: "다음",
+        pageFirstText: "< 처음ㅣ",
+        pageLastText: "ㅣ 마지막 >",
+        pageSize: 10,
+        pageButtonCount: 10,
+        pageLoading: true,
+        pageIndex: 1,
+        noDataContent: "데이터가 없습니다.",
+
+        controller: {
+            loadData: function (filter) {
+                var data = $.Deferred();
+
+                var formData = $('#mbrSrchPopupFrm').serializeArray();
+                var params = [
+                        {name: "pageNumber", value: filter.pageIndex},
+                        {name: "rowPerPage", value: filter.pageSize},
+                        {name: "instid", value: instid},
+                ]
+
+                if(filter.sortField != undefined){
+                    params.push({name: "orderField", value: filter.sortField});
+                    params.push({name: "orderDirection", value: filter.sortOrder});
+                }else{
+                    params.push({name: "orderField", value: 'instid'});
+                }
+
+                formData = formData.concat(params);
+
+                $.ajax({
+                  type: "GET",
+                  contentType: "application/json; charset=utf-8",
+                  url: "/mng/bizAply/req/selectUserList.do",
+                  dataType: "json",
+                  data: formData
+                }).done(function(response){
+                    var da = {
+                            data : escapeGridData(response.userList)
+                            ,itemsCount : response.totalCount
+                        };
+                  data.resolve(da);
+                });
+                return data.promise();
+            },
+        },
+        fields: [
+            {
+        		headerTemplate: function() {},
+                itemTemplate : function(_, item) {
+                	return item.aplyCnt > 0 ? $("<input>").attr("type", "checkbox").attr("disabled", true) 
+                			: $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox").attr("id","userid-"+item.userid).on("change" , function () {
+		                		$(this).is(":checked") ? selectItem(item) : unselectItem()
+		                	});
+                },
+                align: "center",
+                width: "30",
+                sorting: false
+            }
+            , { title: 'No.'    ,name: 'rowNumber', type: "number", width : "80",  align:"center",  sorting :false }
+            , { title: '이름'   ,name: 'userNm'       , type: "text",   width : "50",  align:"center" }
+            , { title: '휴대폰' ,name: 'aplcntTelno' , type: "text",   width : "80",  align:"center" }
+            , { title: '이메일' ,name: 'aplcntEml'      , type: "text",   width : "100", align:"center" }
+            , { title: '기관명' ,name: 'instNm'   , type: "text",   width : "100", align:"center" }
+        ],
+        rowClick: function(args) {
+            if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+        },
+    });
+    var selectItem = function(item) {
+        selectedItem = item;
+    	$(".singleCheckbox:checked").prop("checked",false);
+    	$("#userid-"+item.userid).prop("checked",true);
+    };
+
+    var unselectItem = function() {
+        selectedItem = "";
+        $('#selectAllCheckbox').attr('checked', false);
+    };
+}
+
+function selectMbrBtn(){
+	if (selectedItem == "" || selectedItem == null) {
+		alert("담당자를 선택하십시요.");
+		return;
+	}
+	console.log(selectedItem);
+    $("#userid").val(selectedItem.userid);
+    $("#userNm").val(selectedItem.userNm + "(" + selectedItem.acnt + ")");
+    $("#aplcntid").val(selectedItem.userid);
+    $("#aplcntNm").val(selectedItem.userNm);
+    $("#aplcntMoblphon").val(selectedItem.aplcntTelno);
+    $("#aplcntEml").val(selectedItem.aplcntEml);
+    
+    selectedItem = "";
+    chgAltmntModal.hide();
+    closeWorkProgress();
+}
+
+function reset() {
+	$("#popupFilterKeywordSelect").val("opt1");
+	$("#popupFilterKeywordInput").val("");
+}
+
+</script>
+</body>
+</html>

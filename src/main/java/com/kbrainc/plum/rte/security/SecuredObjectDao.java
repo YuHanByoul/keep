@@ -154,6 +154,11 @@ public class SecuredObjectDao {
 
             presentResourceStr = (String) tempMap.get(resourceType);
             String bbsId = StringUtil.nvl(tempMap.get("bbsid"));
+            String pageId = StringUtil.nvl(tempMap.get("pageid"));
+            
+            if (!"".equals(pageId)) {
+                presentResourceStr = presentResourceStr.replaceAll("\\{pageid\\}", pageId);
+            }
 
             if (!"".equals(bbsId)) {
                 presentResource = new CustomRegexRequestMatcher(presentResourceStr, null);
@@ -211,7 +216,12 @@ public class SecuredObjectDao {
 
             presentResourceStr = (String) tempMap.get(resourceType);
             String bbsId = StringUtil.nvl(tempMap.get("bbsid"));
-
+            String pageId = StringUtil.nvl(tempMap.get("pageid"));
+            
+            if (!"".equals(pageId)) {
+                presentResourceStr = presentResourceStr.replaceAll("\\{pageid\\}", pageId);
+            }
+            
             if (!"".equals(bbsId)) {
                 presentResource = new CustomRegexRequestMatcher(presentResourceStr, null);
             } else {

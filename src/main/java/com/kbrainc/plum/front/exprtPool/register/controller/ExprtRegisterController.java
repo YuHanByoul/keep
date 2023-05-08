@@ -7,6 +7,9 @@ import com.kbrainc.plum.front.exprtPool.register.model.MmbrQlfcVo;
 import com.kbrainc.plum.front.exprtPool.register.service.ExprtRegisterService;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.util.CommonUtil;
+import com.penta.scpdb.ScpDbAgent;
+
 import org.apache.ibatis.type.Alias;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.salt.RandomSaltGenerator;
@@ -49,11 +52,6 @@ public class ExprtRegisterController {
 
     @Autowired
     private ExprtRegisterService exprtRegisterService;
-
-    @Value("${crypto.key}")
-    private String encryptKey;
-
-    StandardPBEStringEncryptor encryptor;
 
     @Autowired
     private FileServiceImpl fileService;
@@ -196,11 +194,14 @@ public class ExprtRegisterController {
 
         DefaultMemberInfoVo defaultMemberInfo = exprtRegisterService.selectDefaultMemberInfo(exprtRegisterVo);
 
-        encryptor = new StandardPBEStringEncryptor();
-        encryptor.setSaltGenerator(new RandomSaltGenerator());
-        encryptor.setPassword(encryptKey);
-        encryptor.setAlgorithm("PBEWithMD5AndDES");
-        String decStr = encryptor.decrypt(defaultMemberInfo.getGndr());
+        ScpDbAgent agt = new ScpDbAgent();
+        String decStr = "";
+        
+        if (System.getenv("PC_KIND") == null) {
+            decStr = agt.ScpDecStr(CommonUtil.damoScpIniFilePath, "KEY1", defaultMemberInfo.getGndr());
+        } else {
+            decStr = "M"; // 암호화 모듈을 사용할수 없는 MAC인경우 무조건 남자로 설정.
+        }
         defaultMemberInfo.setGndr(decStr);
 
         Map<String, Object> fileConfiguration = fileService.getConfigurationByFilegrpName("expert_file");

@@ -58,6 +58,8 @@ public class CommonUtil {
     
     public static String portalUrl = applicationConfig.getString("system.portal.url");
     
+    public static String adminUrl = applicationConfig.getString("system.admin.url");
+    
     public static String kakaoJavascriptKey = applicationConfig.getString("kakao.javascript.key"); 
     
     public static String serverCookieDomain = applicationConfig.getString("server.servlet.session.cookie.domain");
@@ -65,6 +67,10 @@ public class CommonUtil {
     public static String chatbotUrl = applicationConfig.getString("chatbot.host");
     
     public static String reportingUrl = applicationConfig.getString("reporting.host");
+    
+    public static final String damoScpIniFilePath = applicationConfig.getString("damo.scp.iniFilePath");
+    
+    public static final String anayticsKeyFilePath = applicationConfig.getString("analytics.keyFilePath");
     
     /**
      * @Title : getBean

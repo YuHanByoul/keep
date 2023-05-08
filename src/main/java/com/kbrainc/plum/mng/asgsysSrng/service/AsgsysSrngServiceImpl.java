@@ -10,6 +10,7 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -368,7 +369,9 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 			cell.setCellStyle(titlestyle);
 		}
 
-		list = asgsysSrngDao.selectSprtgrpSrngListExcelDown(asgsysSrngVo);    //지원단심사 엑셀 다운 조회
+		//list = asgsysSrngDao.selectSprtgrpSrngListExcelDown(asgsysSrngVo);
+		list = asgsysSrngDao.gnrlrvwExcelDownList(asgsysSrngVo);    //지원단 총평 엑셀 다운 조회
+
 
 		if(list != null && list.size() > 0){
 			int cellnum = 0;
@@ -1622,7 +1625,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	assPrgrmVo = asgsysSrngDao.selectPrgrm(asgsysSrngVo);
 
     	//숙박여부,운영형태코드로 체크리스트 가 정해진경우
-    	if(null != asgsysSrngVo.getChkOperFrmCd() && "".equals(asgsysSrngVo.getChkOperFrmCd())){
+    	if(null != asgsysSrngVo.getChkOperFrmCd()){
     		chklstid = asgsysSrngDao.getCheckListId(asgsysSrngVo);
     	}
     	if(null != chklstid ) {
@@ -1704,7 +1707,6 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	int ret=0;
     	Integer chklstid=null;
     	AsgsysSrngVo assPrgrmVo = null;
-
     	//프로그램_일정 저장*/
     	List<PrgrmSchdlVo> schdLst = asgsysSrngVo.getPrgrmSchdlLst();
 
@@ -1713,7 +1715,8 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	assPrgrmVo = asgsysSrngDao.selectPrgrm(asgsysSrngVo);
 
     	//숙박여부,운영형태코드로 체크리스트 가 정해진경우
-    	if(null != asgsysSrngVo.getChkOperFrmCd() && "".equals(asgsysSrngVo.getChkOperFrmCd())){
+
+    	if(null != asgsysSrngVo.getChkOperFrmCd()){
     		chklstid = asgsysSrngDao.getCheckListId(asgsysSrngVo);
     	}
     	if(null != chklstid ) {
@@ -1736,7 +1739,6 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     			ret += asgsysSrngDao.insertPrgrmSchdl(prgrmSchdlVo);
     		}
     	}
-
 
     	List<EmrgcyActnPlanVo> planLst = asgsysSrngVo.getEmrgcyActnPlanLst();
 
@@ -1965,6 +1967,29 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     @Override
 	public List<DsgnPrgrmVo> selectCsltngList(AsgsysSrngVo asgsysSrngVo) throws Exception{
 		return asgsysSrngDao.selectCsltngList(asgsysSrngVo);
+	}
+
+	public int insertDsgnPrgrm(@Valid AsgsysSrngVo asgsysSrngVo) {
+		//지정이력생성
+		//운영결과 차수 생성 3년치
+		//지정프로그램 상태 업데이트
+
+		return 0;
+	}
+
+	/**
+	* 심사점수 목록 조회
+	*
+	* @Title : selectSrngAnsList
+	* @Description : 심사점수 목록 조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<AsgsysSrngVo>
+	*/
+	@Override
+	public List<AsgsysSrngVo> selectSrngAnsList(AsgsysSrngVo asgsysSrngVo) throws Exception{
+		return asgsysSrngDao.selectSrngAnsList(asgsysSrngVo);
 	}
 
 }

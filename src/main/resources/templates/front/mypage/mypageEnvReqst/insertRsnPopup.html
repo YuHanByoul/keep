@@ -2,10 +2,11 @@
     <strong class="tit">예약취소 사유</strong>
     <button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close=""></button>
 </div>
+<form id="rsnFrm">
 <div class="layer-content">
-    <textarea title="예약취소 사유" placeholder="예약취소 사유" class="areaResize" name="rsvtCnclRsn" style="height: 70px;"></textarea>
+    <textarea title="예약취소 사유" placeholder="예약취소 사유" class="areaResize" name="rsvtCnclRsn" id="rsvtCnclRsn" style="height: 70px;"></textarea>
 </div>
-
+</form>
 <div class="layer-footer">
     <div class="btn-wrap">
         <div class="center">
@@ -16,8 +17,24 @@
 </div>
 
 <script th:inline="javascript">
+
     function fn_insertRsn(){
-        var param = {aplyid : /*[[${aplyid}]]*/null, rsvtCnclRsn : $('#insertRsnPopup textarea[name="rsvtCnclRsn"]').val()};
+        
+    	let rsvtCnclRsn = $('#rsvtCnclRsn').val();
+    	
+        if (rsvtCnclRsn == null || rsvtCnclRsn == "" || rsvtCnclRsn.trim() == ""){
+            alert("취소사유를 입력해주십시오.");
+            showErrorMark("#rsvtCnclRsn")
+        	return;  
+        }
+
+        if(!confirm("예약을 취소 하시겠습니까?"))return;
+          
+        var param = {
+                aplyid : /*[[${aplyid}]]*/null
+                , rsvtCnclRsn : $('#rsvtCnclRsn').val()
+        }
+        
         if (displayWorkProgress(true)) {
             $.ajax({
                 url: '/front/mypage/mypageEnvReqst/insertRsn.do',
@@ -27,8 +44,8 @@
                 type: 'GET',
                 success: function (data) {
                     alert(data.msg);
-                    layerPopup.close({target:'insertRsnPopup'});
-                    selectEnvReqstList();
+                    layerPopup.close({target:'lendHistoryPopup'});
+                    returnToList();
                     closeWorkProgress();
                 }
             });
