@@ -1,18 +1,16 @@
 package com.kbrainc.plum.front.exprtPool.lctrDmnd.service;
 
 import com.kbrainc.plum.front.exprtPool.lctrDmnd.model.*;
+import com.kbrainc.plum.mng.ntcn.model.NtcnDao;
+import com.kbrainc.plum.mng.ntcn.model.NtcnVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import com.kbrainc.plum.rte.util.CommonUtil;
 import com.penta.scpdb.ScpDbAgent;
-
 import org.apache.ibatis.type.Alias;
-import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
-import org.jasypt.salt.RandomSaltGenerator;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.List;
 
@@ -37,6 +35,9 @@ public class LctrDmndServiceImpl extends PlumAbstractServiceImpl implements Lctr
 
     @Resource(name = "front.lctrDmndDao")
     private LctrDmndDao lctrDmndDao;
+
+    @Autowired
+    private NtcnDao ntcnDao;
 
     /**
      * 전문가 목록 조회
@@ -112,7 +113,20 @@ public class LctrDmndServiceImpl extends PlumAbstractServiceImpl implements Lctr
     @Override
     @Transactional
     public int insertLctrDmnd(LctrDmndVo lctrDmndVo) throws Exception {
-        return lctrDmndDao.insertLctrDmnd(lctrDmndVo);
+        int retVal = 0;
+        NtcnVo ntcnVo = new NtcnVo();
+        ntcnVo.setUserid(Integer.valueOf(lctrDmndVo.getUser().getUserid()));
+        ntcnVo.setTtl("환경교육 전문가 섭외 요청 완료");
+        ntcnVo.setCn("환경교육 전문가 섭외 요청이 있습니다.\r\n"
+                + "자세한 내용은 전문가 요청 관리 메뉴를 확인해 주십시오.");
+        ntcnVo.setInqYn("N");
+        ntcnVo.setKndCd("245101");
+        ntcnVo.setMvmnurl("/front/mypage/exprtPool/lctrDmndList.html");
+
+        retVal += ntcnDao.insertNtcn(ntcnVo);
+        retVal += lctrDmndDao.insertLctrDmnd(lctrDmndVo);
+
+        return retVal;
     }
 
     /**
