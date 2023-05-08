@@ -1013,7 +1013,7 @@ public class DsgnPrgrmController {
     	if (bindingResult1.hasErrors()) {
             FieldError fieldError = bindingResult1.getFieldError();
             if (fieldError != null) {
-                resultMap.put("msg", fieldError.getDefaultMessage());
+                resultMap.put("msg", "errorMsg: " + fieldError.getDefaultMessage());
             }
             return resultMap;
         }
@@ -1024,12 +1024,10 @@ public class DsgnPrgrmController {
     		retVal = dsgnPrgrmServiceImpl.selectDsgnNoDupChk(dsgnPrgrmVo);
 
     		if(retVal > 0) {
-
     			resultMap.put("result", Constant.REST_API_RESULT_FAIL);
     			resultMap.put("msg", "중복되는 지정번호가 존재합니다. 지정번호를 변경 후 다시 시도(저장)하시기 바랍니다.");
+    			return resultMap;
     		}
-
-    		return resultMap;
     	}
 
     	dsgnPrgrmVo.setUser(user);

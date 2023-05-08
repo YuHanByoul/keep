@@ -5,6 +5,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -302,6 +303,7 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	@Transactional
 	public int updateDsgnHstry(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
 		int ret=0;
+
 
 		//차수 조회
 		List<DsgnPrgrmVo> rsltCyclList = dsgnPrgrmDao.selectOperRsltCyclList(dsgnPrgrmVo);

@@ -248,7 +248,7 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     private String aplcntNm;
 
     /** 체크리스트아이디 */
-    private int chklstid;
+    private Integer chklstid;
 
     /** 기관연락처 */
     private String instCntct;
