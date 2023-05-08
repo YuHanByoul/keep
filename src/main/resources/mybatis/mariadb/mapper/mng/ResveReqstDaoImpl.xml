@@ -133,13 +133,13 @@
              ,C.INSTID
              ,C.INST_NM
              ,B.RESVE_DT
+             ,B.BGNG_DT
+             ,B.END_DT
+             ,B.DT AS DE
              ,E.SPCE_NM
              ,F.FCLT_NM
              ,F.BACNT_NO
              ,F.DPSTR_NM
-             ,G.CD_NM AS INST_TYPE_CD_NM
-             ,'예약신청' AS PAY_STTUS
-             ,'입금대기' AS REQST_STTUS
              ,CASE WHEN IFNULL(I.ROLECD,'U') = 'U' AND H.INSTID IS NOT NULL THEN '기업회원'
                    WHEN IFNULL(I.ROLECD,'U') = 'U' AND H.INSTID IS NULL THEN '개인회원'
                    ELSE '관리자'
@@ -158,7 +158,14 @@
                        ,B.SPCEID
                        ,GROUP_CONCAT(
                          CONCAT(B.DE,' ',(CASE WHEN B.ALLDAY_YN ='N' THEN CONCAT (DATE_FORMAT(B.BGNG_DT,'%H시%i분'),' ~ ',DATE_FORMAT(B.END_DT,'%H시%i분')) ELSE '숙박'END),' (',FORMAT(B.AMT,0),'원)')
-                       SEPARATOR  '/' ) AS RESVE_DT  
+                       SEPARATOR  '/' ) AS RESVE_DT
+                      ,CASE WHEN B.ALLDAY_YN = 'Y' AND COUNT(A.APLYID) = 1  THEN B.DE 
+                             WHEN B.ALLDAY_YN = 'Y' AND COUNT(A.APLYID) > 1  THEN CONCAT(MIN(B.DE), '~',MAX(B.DE) )
+                             ELSE CONCAT(B.DE,' ',DATE_FORMAT(B.BGNG_DT,'%H시%i분'),'~',DATE_FORMAT(B.END_DT,'%H시%i분'))
+                        END DT
+                      ,MIN(B.BGNG_DT) BGNG_DT 
+                      ,MAX(B.END_DT) END_DT
+                      ,B.ALLDAY_YN  
                      FROM 
                        TB_FCL_APLY_RSVTDE A
                        LEFT JOIN TB_FCL_SPCE_RSVTDE B 
@@ -172,7 +179,6 @@
             ON E.FCLTID = F.FCLTID
             INNER JOIN TB_CMM_INST C
             ON F.INSTID = C.INSTID
-            LEFT OUTER JOIN TB_CMM_CD G ON C.INST_TYPE_CD = G.CD
             LEFT OUTER JOIN TB_CMM_USER H ON A.APLCNTID = H.USERID
             LEFT OUTER JOIN (
                 SELECT
