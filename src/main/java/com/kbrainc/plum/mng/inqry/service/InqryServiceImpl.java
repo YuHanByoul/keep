@@ -197,7 +197,7 @@ public class InqryServiceImpl extends PlumAbstractServiceImpl implements InqrySe
             return inqryDao.selectTelInqryManagerList((TelInqryVo)inqryVo);
         }
     }
-
+    /*
     private int insertNtcn(InqryAnswrVo inqryAnswrVo) throws Exception {
         NtcnVo ntcnVo = new NtcnVo();
         ntcnVo.setUserid(inqryAnswrVo.getUserid());
@@ -211,6 +211,6 @@ public class InqryServiceImpl extends PlumAbstractServiceImpl implements InqrySe
         ntcnDao.insertNtcn(ntcnVo);
 
         return 1;
-    }
+    }*/
 }
 

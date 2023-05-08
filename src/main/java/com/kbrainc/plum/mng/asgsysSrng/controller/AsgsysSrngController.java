@@ -450,8 +450,8 @@ public class AsgsysSrngController {
     	model.addAttribute("scrHeader", asgsysSrngService.selectSrngScrHeader(asgsysSrngVo));
     	model.addAttribute("srngScrList", srngScrList);
 
-    	if(srngScrList.size() > 0) {
-    	}
+    	//if(srngScrList.size() > 0) {
+    	//}
 
     	//심사점수 목록 헤더 조회
     	model.addAttribute("srngFormList", asgsysSrngService.selectSrngFormList(asgsysSrngVo));

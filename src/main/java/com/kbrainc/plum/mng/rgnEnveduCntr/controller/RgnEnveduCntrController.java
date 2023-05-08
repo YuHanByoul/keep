@@ -235,21 +235,21 @@ public class RgnEnveduCntrController {
     *
     * @Title : deleteEnveduCntr
     * @Description : 지역환경교육센터 삭제 기능
-    * @param RgnEnveduCntrVo 지역환경교육센터 객체
+    * @param rgnEnveduCntrVo 지역환경교육센터 객체
     * @param user 유저 세션정보
     * @throws Exception 예외
     * @return Map<String,Object>
     */
     @RequestMapping(value = "/mng/rgnEnveduCntr/deleteRgnEnveduCntr.do")
     @ResponseBody
-    public Map<String, Object> deleteEnveduCntr(RgnEnveduCntrVo RgnEnveduCntrVo, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> deleteEnveduCntr(RgnEnveduCntrVo rgnEnveduCntrVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         
-        RgnEnveduCntrVo.setUser(user);
+        rgnEnveduCntrVo.setUser(user);
 
         int retVal = 0;
                 
-        retVal = rgnEnveduCntrService.deleteRgnEnveduCntr(RgnEnveduCntrVo);
+        retVal = rgnEnveduCntrService.deleteRgnEnveduCntr(rgnEnveduCntrVo);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);

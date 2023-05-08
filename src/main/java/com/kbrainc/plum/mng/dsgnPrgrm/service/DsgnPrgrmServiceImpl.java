@@ -186,7 +186,7 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 			String cyclBangDe = "";
 			String cyclEndDe ="";
 			String today ="";
-			DateFormat sdfDay = new SimpleDateFormat(dateFormatYear);
+			DateFormat sdfDay = new SimpleDateFormat(dateFormatYear, Locale.KOREA);
 			Calendar cal = Calendar.getInstance();  // 현재 시간정보 가지고오기
 
 			today = sdfDay.format(cal.getTime());
@@ -196,7 +196,7 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 
 			sdfDay.format(cal.getTime());
 
-			DateFormat sdfYear = new SimpleDateFormat(dateFormatYear);
+			DateFormat sdfYear = new SimpleDateFormat(dateFormatYear, Locale.KOREA);
 			sdfYear.format(cal.getTime());
 
 			//1차
@@ -315,7 +315,7 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 			String dateFormat = "yyyy-MM-dd";
 			String cyclBangDe = "";
 			String cyclEndDe ="";
-			DateFormat sdf = new SimpleDateFormat(dateFormat);
+			DateFormat sdf = new SimpleDateFormat(dateFormat, Locale.KOREA);
 			Calendar cal = Calendar.getInstance();  // 현재 시간정보 가지고오기
 			sdf.format(cal.getTime());
 
