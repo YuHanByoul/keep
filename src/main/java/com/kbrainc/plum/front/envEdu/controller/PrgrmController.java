@@ -45,7 +45,7 @@ import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 public class PrgrmController {
 
     @Resource(name = "front.prgrmServiceImpl")
-    private PrgrmService PrgrmService;
+    private PrgrmService prgrmService;
     
     @Autowired
     private CodeService codeService;

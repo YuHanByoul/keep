@@ -34,7 +34,7 @@ import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 public class PrgrmServiceImpl extends PlumAbstractServiceImpl implements PrgrmService {
 
     @Resource(name = "front.prgrmDao")
-    private PrgrmDao PrgrmDao;
+    private PrgrmDao prgrmDao;
 
     /**
     * 프로그램 게시글 목록 조회
