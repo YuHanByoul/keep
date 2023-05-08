@@ -36,7 +36,7 @@ public class LendVo extends ParentRequestVo {
     /** 로그인사용자정보 */
     private UserVo user;
     
-    /** 꾸러미 아이디 */
+    /** 모집 아이디 */
     private int rcritid;
     
     /** 꾸러미 아이디 */
@@ -170,6 +170,9 @@ public class LendVo extends ParentRequestVo {
     
     /** 삭제용   */
     private List<Integer> deleteIds ;
+    
+    /** 차시 수정 제힌용  */
+    private String isThereReservation ;
     
     /** 등록용 대여 차시 꾸러미개체  */
     //private List<LendRndPackageindvdVo> lendRndPackageindvdList ;

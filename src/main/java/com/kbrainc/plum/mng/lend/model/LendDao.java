@@ -391,5 +391,13 @@ public interface LendDao {
      * @param lendAplyVo
      * @return int
      */
-    int deleteLendAplyDlivy(LendAplyVo lendAplyVo);
+    public int deleteLendAplyDlivy(LendAplyVo lendAplyVo)throws Exception;
+    /**
+     * 대여 수정 전 대여 예약 신청건 갯수 확인
+     * Title : selectLendRcritRndCnt
+     * Description : 대여 수정 전 대여 예약 신청건 갯수 확인
+     * @param lendVo
+     * @return int
+     */
+    public int selectLendRcritRndCnt(LendVo lendVo)throws Exception;
 }

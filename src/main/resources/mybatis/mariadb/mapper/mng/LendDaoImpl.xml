@@ -408,7 +408,9 @@
                 ON A.RNDID = B.RNDID 
                 INNER JOIN TB_THA_PACKAGE_LEND_RCRIT C
                 ON B.RCRITID = C.RCRITID
-                WHERE C.RCRITID  IN(
+                WHERE 1=1
+                  AND C.OPER_YN ='Y' 
+                  AND C.RCRITID  IN(
                     <foreach item="rcritid" collection="deleteIds" separator=",">
                        #{rcritid}
                     </foreach>
@@ -908,7 +910,7 @@
              HDRY_INST_CD   = #{hdryInstCd   },
           </if>
           <if test="invcnoDlivy != null and invcnoDlivy != ''">
-            INVCNO_DLIVY = #{invcnoDlivy   },  
+            INVCNO_DLIVY    = #{invcnoDlivy   },  
           </if>  
           <if test="invcnoWrhousng != null and invcnoWrhousng != ''">
             INVCNO_WRHOUSNG = #{invcnoWrhousng},  
@@ -925,11 +927,24 @@
           <if test="rvwCn != null and rvwCn != ''">
             RVW_REG_DT = NOW(),  
           </if>  
-            MDFCN_DT = NOW()            ,  
-            MDFRID  = #{user.userid   }     
-        WHERE APLYID = #{aplyid}     
+            MDFCN_DT   = NOW(),  
+            MDFRID     = #{user.userid   }     
+        WHERE APLYID   = #{aplyid}     
     </update>
-    
+    <!-- 대여 수정 전 대여 예약 신청건 갯수 확인-->
+    <select id="selectLendRcritRndCnt" parameterType="LendVo" resultType="int">
+          /* LendDao.selectLendRcritRndCnt */
+          SELECT 
+               COUNT(A.APLYID)
+             FROM 
+               TB_THA_PACKAGE_LEND_APLY A
+               INNER JOIN TB_THA_PACKAGE_LEND_RND B
+               ON A.RNDID = B.RNDID 
+               INNER JOIN TB_THA_PACKAGE_LEND_RCRIT C
+               ON B.RCRITID = C.RCRITID  AND C.OPER_YN ='Y'
+           WHERE 1=1 
+             AND C.RCRITID = #{rcritid}
+    </select>
     <!--************* 모바일 출고 관리****************-->
     <!-- 대여 모집 차시 목록 호출 (검색용)-->
     <select id="selectLendRcritRndList" parameterType="LendVo" resultType="LendVo">

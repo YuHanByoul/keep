@@ -119,20 +119,22 @@ public class LendServiceImpl extends PlumAbstractServiceImpl implements LendServ
         
         int resInt = 0;
         resInt +=lendDao.udateLend(lendVo);
-        LendRndVo lendRndVo = new LendRndVo();
         
-        List<Integer> delIds = new ArrayList();
-        delIds.add(lendVo.getRcritid());
-        lendRndVo.setDeleteIds(delIds);
-        //resInt +=lendDao.deleteLendRndPackageindvd(lendRndVo);
-        resInt +=lendDao.deleteLendRnd(lendRndVo);
-        
-        List<LendRndVo> list = lendVo.getLendRndList();
-        for(LendRndVo vo :list ) {
-            vo.setUser(lendVo.getUser());
-            vo.setRcritid(lendVo.getRcritid());
-            resInt +=lendDao.insertLendRnd(vo);
-            //resInt +=lendDao.insertRndPackageindvd(vo); 
+        if(lendVo.getIsThereReservation().equals("N")) {
+            LendRndVo lendRndVo = new LendRndVo();
+            List<Integer> delIds = new ArrayList();
+            delIds.add(lendVo.getRcritid());
+            lendRndVo.setDeleteIds(delIds);
+            //resInt +=lendDao.deleteLendRndPackageindvd(lendRndVo);
+            resInt +=lendDao.deleteLendRnd(lendRndVo);
+            
+            List<LendRndVo> list = lendVo.getLendRndList();
+            for(LendRndVo vo :list ) {
+                vo.setUser(lendVo.getUser());
+                vo.setRcritid(lendVo.getRcritid());
+                resInt +=lendDao.insertLendRnd(vo);
+                //resInt +=lendDao.insertRndPackageindvd(vo); 
+            }
         }
         return resInt;
     }
@@ -140,7 +142,7 @@ public class LendServiceImpl extends PlumAbstractServiceImpl implements LendServ
      * 교구 대여 모집 삭제
      *
      * @Title       : deleteLend 
-     * @Description : 교구 대여 수정 
+     * @Description : 교구 대여 모집 삭제 
      * @param LendVo 객체
      * @return int
      * @throws Exception 예외
@@ -701,5 +703,15 @@ public class LendServiceImpl extends PlumAbstractServiceImpl implements LendServ
      */
     public List<PackageindvdVo> selectPackageindvdListForHealthChck(PackageindvdVo packageindvdVo) throws Exception{
         return lendDao.selectPackageindvdListForHealthChck(packageindvdVo);
+    }
+    /**
+     * 대여 수정 전 대여 예약 신청건 갯수 확인
+     * Title : selectLendRcritRndCnt
+     * Description : 대여 수정 전 대여 예약 신청건 갯수 확인
+     * @param lendVo
+     * @return int
+     */
+    public int selectLendRcritRndCnt(LendVo lendVo)throws Exception{
+        return lendDao.selectLendRcritRndCnt(lendVo);
     }
 }
