@@ -22,7 +22,7 @@
 			CKEDITOR.dialog.add('youtube', function (instance) {
 				var video,
 					disabled = editor.config.youtube_disabled_fields || [];
-
+					
 				function handleLinkChange(el, api) {
 					var video = ytVidId(el.getValue());
 					var time = ytVidTime(el.getValue());
@@ -115,7 +115,6 @@
 													}
 													else{
 														video = ytVidId(this.getValue());
-
 														if (this.getValue().length === 0 ||  video === false)
 														{
 															alert(editor.lang.youtube.invalidUrl);
@@ -261,7 +260,6 @@
 					{
 						var content = '';
 						var responsiveStyle = '';
-
 						if (this.getContentElement('youtubePlugin', 'txtEmbed').isEnabled()) {
 							content = this.getValueOf('youtubePlugin', 'txtEmbed');
 						}
@@ -269,6 +267,8 @@
 							var url = 'https://', params = [], startSecs, paramAutoplay='';
 							var width = this.getValueOf('youtubePlugin', 'txtWidth');
 							var height = this.getValueOf('youtubePlugin', 'txtHeight');
+							
+							
 
 							if (this.getContentElement('youtubePlugin', 'chkPrivacy').getValue() === true) {
 								url += 'www.youtube-nocookie.com/';
@@ -336,13 +336,19 @@
 								content += '<a href="' + url + '" ><img width="' + width + '" height="' + height + '" src="' + imgSrc + '" '  + responsiveStyle + '/></a>';
 							}
 							else {
+								console.log("::url::" + url);
+								var _vid = url.split("/embed/")[1];
+								var _title = getTitle(_vid); 
+								console.log("::_title::" + _title);
+								
 								content += '<iframe ' + (paramAutoplay ? 'allow="' + paramAutoplay + ';" ' : '') + 'width="' + width + '" height="' + height + '" src="' + url + '" ' + responsiveStyle;
-								content += 'frameborder="0" allowfullscreen></iframe>';
+								content += 'frameborder="0" allowfullscreen title="'+_title+'"></iframe>';
 							}
 
 							if (this.getContentElement('youtubePlugin', 'chkResponsive').getValue() === true) {
 								content += '</div>';
 							}
+							
 						}
 
 						var element = CKEDITOR.dom.element.createFromHtml(content);
@@ -445,4 +451,13 @@ function secondsToTimeParam(seconds) {
 	}
 
 	return param;
+}
+
+
+function getTitle() {
+    var youtubeXhr = new XMLHttpRequest();
+    youtubeXhr.open('GET', 'https://noembed.com/embed?url=https://www.youtube.com/watch?v=' + arguments[0], 0);
+    youtubeXhr.send();
+    
+    return youtubeXhr.responseText.split('"title":"')[1].split('"')[0];
 }

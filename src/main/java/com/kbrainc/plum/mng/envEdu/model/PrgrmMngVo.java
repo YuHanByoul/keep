@@ -38,9 +38,9 @@ public class PrgrmMngVo extends ParentRequestVo {
     /** 키워드 */
     private String searchKeyword;
     /** 교육주제(대분류) */
-    private String searchSbjctCd_1;
+    private String searchSbjctCd1;
     /** 교육주제(중분류) */
-    private String searchSbjctCd_2;
+    private String searchSbjctCd2;
     /** 대상 */
     private String searchTrgtCd;
     /** 검색기간_시작일 */

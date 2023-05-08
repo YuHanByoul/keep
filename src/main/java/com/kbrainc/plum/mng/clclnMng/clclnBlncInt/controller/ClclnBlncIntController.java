@@ -148,10 +148,26 @@ public class ClclnBlncIntController {
 
         if(result.getAtchFileIdntfcKey() != null) {
             StringBuffer atchFileBtn = new StringBuffer();
-            atchFileBtn.append("<div class ='label label-inverse text-white' id='" + clclnBlncIntVo.getAtchFileid() + "'>");
-            atchFileBtn.append("<a href=javascript:downloadFileByFileid('" + clclnBlncIntVo.getAtchFileid() + "','" + result.getAtchFileIdntfcKey() + "') class='text-white'>" + result.getAtchOrginlFileNm() + "&nbsp;&nbsp;</a>");
-            atchFileBtn.append("<a href=javascript:fn_deleteFileList('" + clclnBlncIntVo.getAtchFileid() + "','" + result.getAtchFileIdntfcKey() + "') class='text-white'>X</a></div>");
-            model.addAttribute("atchFileBtn", atchFileBtn);
+            
+            atchFileBtn.append("<div class ='label label-inverse text-white' id='");
+            atchFileBtn.append(clclnBlncIntVo.getAtchFileid());
+            atchFileBtn.append("'>");
+            
+            atchFileBtn.append("<a href=javascript:downloadFileByFileid('");
+            atchFileBtn.append(clclnBlncIntVo.getAtchFileid());
+            atchFileBtn.append("','");
+            atchFileBtn.append(result.getAtchFileIdntfcKey());
+            atchFileBtn.append("') class='text-white'>");
+            atchFileBtn.append(result.getAtchOrginlFileNm());
+            atchFileBtn.append("&nbsp;&nbsp;</a>");
+            
+            atchFileBtn.append("<a href=javascript:fn_deleteFileList('");
+            atchFileBtn.append(clclnBlncIntVo.getAtchFileid());
+            atchFileBtn.append("','");
+            atchFileBtn.append(result.getAtchFileIdntfcKey());
+            atchFileBtn.append("') class='text-white'>X</a></div>");
+            
+            model.addAttribute("atchFileBtn", atchFileBtn.toString());
         }
 
         model.addAttribute("clclnBlncInt", result);

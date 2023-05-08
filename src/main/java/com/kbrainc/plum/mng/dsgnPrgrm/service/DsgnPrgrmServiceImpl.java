@@ -10,7 +10,6 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -24,8 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngDao;
-import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
-import com.kbrainc.plum.mng.dsgnPrgrm.controller.DsgnPrgrmController;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmDao;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmObjcVo;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmVo;
@@ -308,7 +305,7 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 
 		//차수 조회
 		List<DsgnPrgrmVo> rsltCyclList = dsgnPrgrmDao.selectOperRsltCyclList(dsgnPrgrmVo);
-		if( rsltCyclList == null) {
+		if( rsltCyclList == null || rsltCyclList.size()==0) {
 			//운영결과 차수 생성
 			DsgnPrgrmVo prgrmInfo =  dsgnPrgrmDao.selectPrgrm(dsgnPrgrmVo);
 
