@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -83,7 +84,7 @@ public class CntntsController {
     @RequestMapping(value = "/mng/cntnts/cntntsInsertForm.html")
     public String cntntsInsertForm(Model model, @UserInfo UserVo user) throws Exception {
         Date date = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyy-MM-dd");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREAN);
         model.addAttribute("regDate", formatter.format(date));
         
         model.addAttribute("userid", user.getUserid());
@@ -142,9 +143,25 @@ public class CntntsController {
         
         if(cntntsVo.getRprsImgFileid() != 0 && result.getFileIdntfcKey() != null) {
             StringBuffer fileBtn = new StringBuffer();
-            fileBtn.append("<div class ='label label-inverse text-white' id='" + cntntsVo.getRprsImgFileid() + "'>");
-            fileBtn.append("<a href=javascript:downloadFileByFileid('" + cntntsVo.getRprsImgFileid() + "','" + result.getFileIdntfcKey() + "') class='text-white'>" + result.getOrginlFileNm() + "&nbsp;&nbsp;</a>");
-            fileBtn.append("<a href=javascript:fn_deleteFileList('" + cntntsVo.getRprsImgFileid() + "','" + result.getFileIdntfcKey() + "') class='text-white'>X</a></div>");
+            
+            fileBtn.append("<div class ='label label-inverse text-white' id='");
+            fileBtn.append(cntntsVo.getRprsImgFileid());
+            fileBtn.append("'>");
+            
+            fileBtn.append("<a href=javascript:downloadFileByFileid('");
+            fileBtn.append(cntntsVo.getRprsImgFileid());
+            fileBtn.append("','");
+            fileBtn.append(result.getFileIdntfcKey());
+            fileBtn.append("') class='text-white'>");
+            fileBtn.append(result.getOrginlFileNm());
+            fileBtn.append("&nbsp;&nbsp;</a>");
+            
+            fileBtn.append("<a href=javascript:fn_deleteFileList('");
+            fileBtn.append(cntntsVo.getRprsImgFileid());
+            fileBtn.append("','");
+            fileBtn.append(result.getFileIdntfcKey());
+            fileBtn.append("') class='text-white'>X</a></div>");
+            
             model.addAttribute("fileBtn", fileBtn);
         }
         

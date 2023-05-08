@@ -132,9 +132,24 @@ public class BannerController {
         
         if(result.getBannerFileid() != 0 && result.getFileIdntfcKey() != null) {
             StringBuffer fileBtn = new StringBuffer();
-            fileBtn.append("<div class ='label label-inverse text-white' id='" + result.getBannerFileid() + "'>");
-            fileBtn.append("<a href=javascript:downloadFileByFileid('" + result.getBannerFileid() + "','" + result.getFileIdntfcKey() + "') class='text-white'>" + result.getOrginlFileNm() + "&nbsp;&nbsp;</a>");
-            fileBtn.append("<a href=javascript:fn_deleteFileList('" + result.getBannerFileid() + "','" + result.getFileIdntfcKey() + "') class='text-white'>X</a></div>");
+            fileBtn.append("<div class ='label label-inverse text-white' id='");
+            fileBtn.append(result.getBannerFileid());
+            fileBtn.append("'>");
+            
+            fileBtn.append("<a href=javascript:downloadFileByFileid('");
+            fileBtn.append(result.getBannerFileid());
+            fileBtn.append("','");
+            fileBtn.append(result.getFileIdntfcKey());
+            fileBtn.append("') class='text-white'>");
+            fileBtn.append(result.getOrginlFileNm());
+            fileBtn.append("&nbsp;&nbsp;</a>");
+            
+            fileBtn.append("<a href=javascript:fn_deleteFileList('");
+            fileBtn.append(result.getBannerFileid());
+            fileBtn.append("','");
+            fileBtn.append(result.getFileIdntfcKey());
+            fileBtn.append("') class='text-white'>X</a></div>");
+            
             model.addAttribute("fileBtn", fileBtn);
         }
         

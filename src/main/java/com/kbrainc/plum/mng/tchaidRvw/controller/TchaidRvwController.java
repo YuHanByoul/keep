@@ -92,9 +92,25 @@ public class TchaidRvwController {
         
         if(tchaidRvwVo.getRvwFilegrpid() != null && result.getFileIdntfcKey() != null) {
             StringBuffer fileBtn = new StringBuffer();
-            fileBtn.append("<div class ='label label-inverse text-white' id='" + tchaidRvwVo.getRvwFilegrpid() + "'>");
-            fileBtn.append("<a href=javascript:downloadFileByFileid('" + tchaidRvwVo.getRvwFilegrpid() + "','" + result.getFileIdntfcKey() + "') class='text-white'>" + result.getOrginlFileNm() + "&nbsp;&nbsp;</a>");
-            fileBtn.append("<a href=javascript:fn_deleteFileList('" + tchaidRvwVo.getRvwFilegrpid() + "','" + result.getFileIdntfcKey() + "') class='text-white'>X</a></div>");
+            
+            fileBtn.append("<div class ='label label-inverse text-white' id='");
+            fileBtn.append(tchaidRvwVo.getRvwFilegrpid());
+            fileBtn.append("'>");
+            
+            fileBtn.append("<a href=javascript:downloadFileByFileid('");
+            fileBtn.append(tchaidRvwVo.getRvwFilegrpid());
+            fileBtn.append("','");
+            fileBtn.append(result.getFileIdntfcKey());
+            fileBtn.append("') class='text-white'>");
+            fileBtn.append(result.getOrginlFileNm());
+            fileBtn.append("&nbsp;&nbsp;</a>");
+            
+            fileBtn.append("<a href=javascript:fn_deleteFileList('");
+            fileBtn.append(tchaidRvwVo.getRvwFilegrpid());
+            fileBtn.append("','");
+            fileBtn.append(result.getFileIdntfcKey());
+            fileBtn.append("') class='text-white'>X</a></div>");
+            
             model.addAttribute("fileBtn", fileBtn);
         }
         
