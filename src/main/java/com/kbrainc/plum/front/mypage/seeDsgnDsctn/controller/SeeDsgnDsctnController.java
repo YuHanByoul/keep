@@ -109,7 +109,7 @@ public class SeeDsgnDsctnController {
     	 model.addAttribute("aplcntid", user.getUserid());
     	 seeDsgnDsctnVo.setAplcntid(user.getUserid());
 
-    	 model.addAttribute("dsgnPrgrmList", seeDsgnDsctnService.dsgnPrgrmList(seeDsgnDsctnVo));
+    	 model.addAttribute("dsgnAplyList", seeDsgnDsctnService.dsgnAplyList(seeDsgnDsctnVo));
          return "front/mypage/seeDsgnDsctn/chgSeeDsgnDsctnForm";
      }
 
@@ -160,7 +160,7 @@ public class SeeDsgnDsctnController {
     	chgSeeDsgnAplyInfo = seeDsgnDsctnService.selectChgSeeDsgnAply(seeDsgnDsctnVo);
     	seeDsgnDsctnVo.setAplcntid(user.getUserid());
     	model.addAttribute("aplcntid", user.getUserid());
-    	model.addAttribute("dsgnPrgrmList", seeDsgnDsctnService.dsgnPrgrmList(seeDsgnDsctnVo));
+    	model.addAttribute("dsgnAplyList", seeDsgnDsctnService.dsgnAplyList(seeDsgnDsctnVo));
     	model.addAttribute("chgSeeDsgnAplyInfo" ,chgSeeDsgnAplyInfo);
 
         if(chgSeeDsgnAplyInfo.getFilegrpid() != null && chgSeeDsgnAplyInfo.getFilegrpid() != 0) {
@@ -190,7 +190,7 @@ public class SeeDsgnDsctnController {
     	chgSeeDsgnAplyInfo = seeDsgnDsctnService.selectChgSeeDsgnAply(seeDsgnDsctnVo);
     	seeDsgnDsctnVo.setAplcntid(user.getUserid());
     	model.addAttribute("aplcntid", user.getUserid());
-    	model.addAttribute("dsgnPrgrmList", seeDsgnDsctnService.dsgnPrgrmList(seeDsgnDsctnVo));
+    	model.addAttribute("dsgnAplyList", seeDsgnDsctnService.dsgnAplyList(seeDsgnDsctnVo));
     	model.addAttribute("chgSeeDsgnAplyInfo" ,chgSeeDsgnAplyInfo);
 
         if(chgSeeDsgnAplyInfo.getFilegrpid() != null && chgSeeDsgnAplyInfo.getFilegrpid() != 0) {
@@ -253,9 +253,9 @@ public class SeeDsgnDsctnController {
     public String chgSeeDsgnAplyInsertForm(SeeDsgnDsctnVo seeDsgnDsctnVo, Model model, @UserInfo UserVo user) throws Exception {
     	seeDsgnDsctnVo.setAplcntid(user.getUserid());
     	model.addAttribute("aplcntid", user.getUserid());
-    	model.addAttribute("dsgnPrgrmList", seeDsgnDsctnService.dsgnPrgrmList(seeDsgnDsctnVo));
+    	model.addAttribute("dsgnAplyList", seeDsgnDsctnService.dsgnAplyList(seeDsgnDsctnVo));
 
-    	return "front/mypage/seeDsgnDsctn/chgAplyInsert";
+    	return "front/mypage/seeDsgnDsctn/chgSeeDsgnAplyInsert";
     }
 
     /**
