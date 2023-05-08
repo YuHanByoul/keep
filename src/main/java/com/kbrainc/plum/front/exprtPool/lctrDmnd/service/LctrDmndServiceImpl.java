@@ -121,7 +121,7 @@ public class LctrDmndServiceImpl extends PlumAbstractServiceImpl implements Lctr
                 + "자세한 내용은 전문가 요청 관리 메뉴를 확인해 주십시오.");
         ntcnVo.setInqYn("N");
         ntcnVo.setKndCd("245101");
-        ntcnVo.setMvmnurl("/front/mypage/exprtPool/lctrDmndList.html");
+        ntcnVo.setMvmnurl("/front/mypage/exprtPool/relationList.html");
 
         retVal += ntcnDao.insertNtcn(ntcnVo);
         retVal += lctrDmndDao.insertLctrDmnd(lctrDmndVo);
