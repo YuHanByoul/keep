@@ -62,12 +62,12 @@ public class EnveduController {
         }
         model.addAttribute("years", years);
         
-        String[] Month = new String[12];
+        String[] month = new String[12];
         
         for(int i = 1, j = 0; i <= 12 && j < 12; i++, j++) {
-            Month[j] = String.format( "%1$02d" , i );
+            month[j] = String.format( "%1$02d" , i );
         }
-        model.addAttribute("month", Month);
+        model.addAttribute("month", month);
         
         return "mng/wbzn/now/envedu/enveduList";
     }
@@ -91,15 +91,15 @@ public class EnveduController {
         }
         model.addAttribute("years", years);
         
-        String[] Month = new String[12];
+        String[] month = new String[12];
         
         int curMonth = Integer.valueOf(DateTimeUtil.getMonth());
         model.addAttribute("curMonth", curMonth);
         
         for(int i = 1, j = 0; i <= 12 && j < 12; i++, j++) {
-            Month[j] = String.format( "%1$02d" , i );
+            month[j] = String.format( "%1$02d" , i );
         }
-        model.addAttribute("month", Month);
+        model.addAttribute("month", month);
         
         return "mng/wbzn/now/envedu/enveduInsertForm";
     }
@@ -128,12 +128,12 @@ public class EnveduController {
         }
         model.addAttribute("years", years);
         
-        String[] Month = new String[12];
+        String[] month = new String[12];
         
         for(int i = 1, j = 0; i <= 12 && j < 12; i++, j++) {
-            Month[j] = String.format( "%1$02d" , i );
+            month[j] = String.format( "%1$02d" , i );
         }
-        model.addAttribute("month", Month);
+        model.addAttribute("month", month);
         
         if(enveduVo.getThmbnFileid() != 0 && result.getFileIdntfcKey() != null) {
             StringBuffer fileBtn = new StringBuffer();
