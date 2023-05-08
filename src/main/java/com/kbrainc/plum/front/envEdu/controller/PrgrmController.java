@@ -106,17 +106,17 @@ public class PrgrmController {
     @RequestMapping(value="/front/envEdu/prgrmDetailForm.html")                      
     public String prgrmDetailForm(PrgrmVo prgrmVo, Model model, @RequestParam(value="eduSbjctCd", required=false)  String eduSbjctCd) throws Exception {
         PrgrmVo prgrm = null;
-        prgrm = PrgrmService.selectPrgrmInfo(prgrmVo);
+        prgrm = prgrmService.selectPrgrmInfo(prgrmVo);
         model.addAttribute("prgrm", prgrm);
         prgrmVo.setInstid(prgrm.getInstid());
         prgrmVo.setPrgrmid(prgrm.getPrgrmid());
         
         List<PrgrmVo> eduPhotoFileList = null;
-        eduPhotoFileList = PrgrmService.selectEduPhotoFileList(prgrmVo);
+        eduPhotoFileList = prgrmService.selectEduPhotoFileList(prgrmVo);
         model.addAttribute("eduPhotoFileList", eduPhotoFileList);
         
         List<PrgrmVo> prgrmList = null;
-        prgrmList = PrgrmService.selectInstPrgrmList(prgrmVo);
+        prgrmList = prgrmService.selectInstPrgrmList(prgrmVo);
         if(prgrmList.size() <= 0) {
             model.addAttribute("prgrmList", "null");
         }else {
@@ -145,7 +145,7 @@ public class PrgrmController {
         Map<String, Object> resultMap = new HashMap<>();
         List<PrgrmVo> result = null;
         
-        result =  PrgrmService.selectPrgrmList(prgrmVo);
+        result =  prgrmService.selectPrgrmList(prgrmVo);
         
         if (result.size() > 0) {
             resultMap.put("totalCount", (result.get(0).getTotalCount()));

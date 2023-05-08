@@ -48,7 +48,7 @@ public class PrgrmServiceImpl extends PlumAbstractServiceImpl implements PrgrmSe
     */
     @Override
     public List<PrgrmVo> selectPrgrmList(PrgrmVo prgrmVo) throws Exception {
-        return PrgrmDao.selectPrgrmList(prgrmVo);
+        return prgrmDao.selectPrgrmList(prgrmVo);
     }
     
     /**
@@ -63,7 +63,7 @@ public class PrgrmServiceImpl extends PlumAbstractServiceImpl implements PrgrmSe
     */
     @Override
     public PrgrmVo selectPrgrmInfo(PrgrmVo prgrmVo) throws Exception {
-        return PrgrmDao.selectPrgrmInfo(prgrmVo);
+        return prgrmDao.selectPrgrmInfo(prgrmVo);
     }
     
     /**
@@ -78,7 +78,7 @@ public class PrgrmServiceImpl extends PlumAbstractServiceImpl implements PrgrmSe
     */
     @Override
     public List<PrgrmVo> selectInstPrgrmList(PrgrmVo prgrmVo) throws Exception {
-        return PrgrmDao.selectInstPrgrmList(prgrmVo);
+        return prgrmDao.selectInstPrgrmList(prgrmVo);
     }
 
     /**
@@ -93,6 +93,6 @@ public class PrgrmServiceImpl extends PlumAbstractServiceImpl implements PrgrmSe
     */
     @Override
     public List<PrgrmVo> selectEduPhotoFileList(PrgrmVo prgrmVo) throws Exception {
-        return PrgrmDao.selectEduPhotoFileList(prgrmVo);
+        return prgrmDao.selectEduPhotoFileList(prgrmVo);
     }
 }
