@@ -114,14 +114,15 @@ public class LctrDmndServiceImpl extends PlumAbstractServiceImpl implements Lctr
     @Transactional
     public int insertLctrDmnd(LctrDmndVo lctrDmndVo) throws Exception {
         int retVal = 0;
+        // 대상: 강의요청 수신한 전문가 가입자
         NtcnVo ntcnVo = new NtcnVo();
-        ntcnVo.setUserid(Integer.valueOf(lctrDmndVo.getUser().getUserid()));
+        ntcnVo.setUserid(lctrDmndVo.getExprtid());
         ntcnVo.setTtl("환경교육 전문가 섭외 요청 완료");
         ntcnVo.setCn("환경교육 전문가 섭외 요청이 있습니다.\r\n"
                 + "자세한 내용은 전문가 요청 관리 메뉴를 확인해 주십시오.");
         ntcnVo.setInqYn("N");
         ntcnVo.setKndCd("245101");
-        ntcnVo.setMvmnurl("/front/mypage/exprtPool/relationList.html");
+        ntcnVo.setMvmnurl("/front/mypage/exprtPool/lctrDmndList.html");
 
         retVal += ntcnDao.insertNtcn(ntcnVo);
         retVal += lctrDmndDao.insertLctrDmnd(lctrDmndVo);
