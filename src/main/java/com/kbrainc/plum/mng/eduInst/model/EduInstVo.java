@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.kbrainc.plum.mng.eduInst.model;
 
@@ -13,12 +13,12 @@ import com.kbrainc.plum.rte.model.UserVo;
 import lombok.Data;
 
 /**
-* 사회환경교육기관 지정 > 신청/결과관리 VO 클래스. 
+* 사회환경교육기관 지정 > 신청/결과관리 VO 클래스.
 *
 * <pre>
 * com.kbrainc.plum.mng.eduInst.model
 * - EduInstVo.java
-* </pre> 
+* </pre>
 *
 * @ClassName : EduInstVo
 * @Description : TODO
@@ -31,7 +31,7 @@ import lombok.Data;
 public class EduInstVo extends ParentRequestVo {
 
     private UserVo user;
-    
+
     /** 신청 아이디 */
     private Integer aplyid;
     /** 지정내역 아이디 */
@@ -49,11 +49,11 @@ public class EduInstVo extends ParentRequestVo {
     private String searchSttsCd;
     /** 검색 신청일 */
     private String searchRegDt;
-    
+
     private String searchPrgrmNm;  /** 검색.프로그램아이디 */
     private String searchDsgnNo;   /** 검색.지정번호 */
-    
-    
+
+
     private String cd;                /** 코드 */
     private String cdNm;              /** 코드명 */
     private String idx;
@@ -93,11 +93,11 @@ public class EduInstVo extends ParentRequestVo {
     /** 기관상세주소 */
     private String instAddrDtl;
     private String callSe;
-    
+
     private String dsgnCnclDe;
     private String dsgnNo;
     private String chkVal;
-    
+
     private Integer planKey;          /** 운영계획KEY */
     private String aplcntEml;         /** 신청자 이메일 */
     private String aplyTelno;         /** 신청자 전화번호 */
@@ -113,7 +113,7 @@ public class EduInstVo extends ParentRequestVo {
     private String brno;              /** 사업자등록번호 */
     private Integer autzrid;          /** 승인자아이디 */
     private String issuDe;            /** 발급일자*/
-    private String IsgnDe;            /** 재발급일자*/
+    private String isgnDe;            /** 재발급일자*/
 
     private String mainBsns;          /** 주요 사업 */
     private String operMthd;          /** 운영 방법 */
@@ -143,8 +143,8 @@ public class EduInstVo extends ParentRequestVo {
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date regDt;
     /** 등록자아이디 */
-    private int rgtrid;    
-    
+    private int rgtrid;
+
     /** 파일그룹아이디 */
     private Integer filegrpid;
 
@@ -152,104 +152,104 @@ public class EduInstVo extends ParentRequestVo {
     private List<EduExprtVo> eduExprtList;
     private List<SeePrgrmVo> seePrgrmList;
     private List<LctrumVo> lctrumList;
-    private List<EqpVo> eqpList;    
-    
-    
-    
-    
-    
-    
+    private List<EqpVo> eqpList;
+
+
+
+
+
+
     /** 신청기간 검색 종료일 */
     private String searchAplyEndDe;
 
     /** 심사기간 검색 시작일 */
     private String searchSrngBgngDe;
-    
+
     /** 심사기간 검색 종료일 */
     private String searchSrngEndDe;
-    
+
     /** 신청상태 */
     private String searchAplyStts;
-    
+
     /** 심사상태 */
     private String searchSrngStts;
     // 검색조건 end
-    
+
     /** 심사위원 아이디 */
     private Integer jdgsid;
-    
+
     /**  공모아이디 */
     private Integer pcntstid;
-    
+
     /** 분야_코드 */
     private String fldCd;
-    
+
     /** 분야_코드명 */
     private String fldNm;
-    
+
     /** 공모_이름 */
     private String pcntstNm;
 
     /** 신청상태 */
     private String aplySttsNm;
-    
+
     /** 심사상태 */
     private String srngSttsNm;
-    
+
     /** 신청_기간 */
     private String aplyDt;
 
     /** 심사_기간 */
     private String srngDt;
-    
+
     /** 신청건수 */
     private String aplynoCnt;
-    
+
     /** 1차심사 건수 */
     private String frtSrngCnt;
-    
+
     /** 2차심사 건수 */
     private String scdSrngCnt;
-    
+
     /** 선정완료 건수 */
     private String slctnYCnt;
-    
+
     /** 선정탈락 건수 */
     private String slctnNCnt;
-    
+
     /** 엑셀다운로드 여부 */
     private String excelYn;
-    
+
     /** 1차 심사양식 */
     private Integer srngFormidFirst;
-    
+
     /** 2차 심사양식 */
     private Integer srngFormidScnd;
-    
+
     /** 온라인 심사유형 코드 */
     private String onlnSrngTypeCd;
-    
+
     /** 심사위원 이름 */
     private String nm;
-    
+
     /** 프로그램명 */
     private String prgrmNm;
-    
+
     /** 심사 시작일자 */
     private String srngBgngDt;
-    
+
     /** 심사 종료일자 */
     private String srngEndDt;
-    
+
     /** 심사 시작시간 */
     private String srngBgngTm;
-    
+
     /** 심사 종료시간 */
     private String srngEndTm;
-    
+
     /** 심사 종료 여부 */
     private String srngEndYn;
-    
+
     /** 2차 심사 종료 여부 */
     private String scndSrngEndYn;
 }
