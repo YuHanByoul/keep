@@ -29,7 +29,6 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.kbrainc.plum.cmm.service.AlimtalkNhnService;
-import com.kbrainc.plum.cmm.service.MailNhnServiceImpl;
 import com.kbrainc.plum.cmm.service.SmsNhnServiceImpl;
 import com.kbrainc.plum.mng.cnsltng.model.CnsltngDao;
 import com.kbrainc.plum.mng.cnsltng.model.CnsltngExprtGrpVo;
@@ -48,6 +47,8 @@ import com.kbrainc.plum.rte.util.excel.ExcelUtils;
 import com.kbrainc.plum.rte.util.mail.model.MailVo;
 import com.kbrainc.plum.rte.util.mail.service.MailService;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * 
  * 컨설팅 관리를 위한 서비스 구현.
@@ -64,6 +65,7 @@ import com.kbrainc.plum.rte.util.mail.service.MailService;
  * @Version : 
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
+@Slf4j
 @Service
 public class CnsltngServiceImpl extends PlumAbstractServiceImpl implements CnsltngService {
     
@@ -335,42 +337,47 @@ public class CnsltngServiceImpl extends PlumAbstractServiceImpl implements Cnslt
         resInt += cnsltngDao.insertCnsltnt(cnsltngVo);
         resInt +=cnsltngDao.updateCnsltng(cnsltngVo);
         
-        //알림 발송
-        CnsltngVo resVo = cnsltngDao.selectCnsltngtInfo(cnsltngVo);
-        
-        for(String id : newList) {
+        try {
             //알림 발송
-            NtcnVo ntcnVo = new NtcnVo();
-            ntcnVo.setUserid(Integer.parseInt(id));
-            ntcnVo.setTtl("지정단으로 배정 완료");
-            ntcnVo.setCn(
-                    resVo.getPrgrmNm() +"의 지정단으로 배정 되셨습니다.\r\n"
-                    + "자세한 내용은 관리자 사이트에서 확인해주세요.");
-            ntcnVo.setInqYn("N");
-            ntcnVo.setKndCd("156102");
-            ntcnDao.insertNtcn(ntcnVo);
-            //메일 발송
-            MemberVo member = new MemberVo();
-            member.setUser(cnsltngVo.getUser());
-            member.setUserid(Integer.parseInt(id));
-            MemberVo parmaVo = memberDao.selectMemberInfo(member);
-            parmaVo.setUser(cnsltngVo.getUser());
-            if(StringUtil.isNotNull(parmaVo.getEml())){
-                sendEmailForCnsltng(parmaVo,resVo.getPrgrmNm());
+            CnsltngVo resVo = cnsltngDao.selectCnsltngtInfo(cnsltngVo);
+            
+            for(String id : newList) {
+                //알림 발송
+                NtcnVo ntcnVo = new NtcnVo();
+                ntcnVo.setUserid(Integer.parseInt(id));
+                ntcnVo.setTtl("지정단으로 배정 완료");
+                ntcnVo.setCn(
+                        resVo.getPrgrmNm() +"의 지정단으로 배정 되셨습니다.\r\n"
+                                + "자세한 내용은 관리자 사이트에서 확인해주세요.");
+                ntcnVo.setInqYn("N");
+                ntcnVo.setKndCd("156102");
+                ntcnDao.insertNtcn(ntcnVo);
+                //메일 발송
+                MemberVo member = new MemberVo();
+                member.setUser(cnsltngVo.getUser());
+                member.setUserid(Integer.parseInt(id));
+                MemberVo parmaVo = memberDao.selectMemberInfo(member);
+                parmaVo.setUser(cnsltngVo.getUser());
+                if(StringUtil.isNotNull(parmaVo.getEml())){
+                    sendEmailForCnsltng(parmaVo,resVo.getPrgrmNm());
+                }
+                //SMS 발송 
+                String phone = parmaVo.getMoblphon();
+                if(!"".equals(StringUtil.nvl(phone))) {
+                    String[] phonlist = new String[]{phone};
+                    String msg = "[환경보전협회] '"+resVo.getPrgrmNm()+"'우수 프로그램 지정제사업 지정단으로 배정되셨습니다.";
+                    Map<String, Object> resMap = smsNhnService.sendSms(msg,phonlist,""); // sms 발송
+                    String result = (String)((Map<String, Object>)(resMap.get("header"))).get("resultMessage");
+                }
+                //알림톡 발송
+                String recipientList =  "[{\"recipientNo\": \""+phone+"\",\"templateParameter\": {\"nm\":\""+parmaVo.getNm()+"\", \"prgrmNm\":\""+resVo.getPrgrmNm()+"\"} }]"; 
+                alimtalkService.sendAlimtalk("keep-030","",recipientList);
             }
-            //SMS 발송 
-            String phone = parmaVo.getMoblphon();
-            if(!"".equals(StringUtil.nvl(phone))) {
-                String[] phonlist = new String[]{phone};
-                String msg = "[환경보전협회] '"+resVo.getPrgrmNm()+"'우수 프로그램 지정제사업 지정단으로 배정되셨습니다.";
-                Map<String, Object> resMap = smsNhnService.sendSms(msg,phonlist,""); // sms 발송
-                String result = (String)((Map<String, Object>)(resMap.get("header"))).get("resultMessage");
-            }
-            //알림톡 발송
-            String recipientList =  "[{\"recipientNo\": \""+phone+"\",\"templateParameter\": {\"nm\":\""+parmaVo.getNm()+"\", \"prgrmNm\":\""+resVo.getPrgrmNm()+"\"} }]"; 
-            alimtalkService.sendAlimtalk("keep-030","",recipientList);
+        }catch (RuntimeException e) {
+            log.error("sendMsgForRefnd");
+        }catch (Exception e) {
+            log.error("sendMsgForRefnd");
         }
-        
         return resInt;   
     }
     /**

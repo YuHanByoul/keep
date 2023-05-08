@@ -43,7 +43,7 @@ public class EduInstVo extends ParentRequestVo {
     private String brno;              /** 사업자등록번호 */
     private Integer autzrid;          /** 승인자아이디 */
     private String issuDe;            /** 발급일자*/
-    private String IsgnDe;            /** 재발급일자*/
+    private String isgnDe;            /** 재발급일자*/
     private String sttsCd;            /** 상태 코드 */
     private Date mdfcnDt;             /** 수정 일시 */
     private Integer mdfrid;           /** 수정자아이디 */

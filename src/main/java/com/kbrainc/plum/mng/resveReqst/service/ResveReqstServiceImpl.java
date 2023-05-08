@@ -1,15 +1,35 @@
 package com.kbrainc.plum.mng.resveReqst.service;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+
+import com.kbrainc.plum.cmm.service.AlimtalkNhnService;
+import com.kbrainc.plum.cmm.service.SmsNhnServiceImpl;
+import com.kbrainc.plum.mng.cnsltng.model.CnsltngVo;
+import com.kbrainc.plum.mng.member.model.MemberVo;
+import com.kbrainc.plum.mng.ntcn.model.NtcnDao;
+import com.kbrainc.plum.mng.ntcn.model.NtcnVo;
 import com.kbrainc.plum.mng.resveReqst.model.ResveReqstDao;
 import com.kbrainc.plum.mng.resveReqst.model.ResveReqstVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
+import com.kbrainc.plum.rte.util.CommonUtil;
+import com.kbrainc.plum.rte.util.StringUtil;
+import com.kbrainc.plum.rte.util.mail.model.MailVo;
+import com.kbrainc.plum.rte.util.mail.service.MailService;
 
 /**
-* 언론보도관리 서비스 구현 클래스
+* 시설대여 관리  서비스 구현 클래스
 *
 * <pre>
 * com.kbrainc.plum.mng.resveReqst.service
@@ -17,7 +37,7 @@ import java.util.List;
 * </pre>
 *
 * @ClassName : ResveReqstServiceImpl
-* @Description : 언론보도관리 서비스 구현 클래스
+* @Description : 시설대여 관리 서비스 구현 클래스
 * @author : NTK
 * @date : 2023. 01. 09.
 * @Version :
@@ -169,4 +189,5 @@ public class ResveReqstServiceImpl extends PlumAbstractServiceImpl implements Re
     public int insertHstry(ResveReqstVo resveReqstVo) throws Exception {
         return resveReqstDao.insertHstry(resveReqstVo);
     }
+    
 }

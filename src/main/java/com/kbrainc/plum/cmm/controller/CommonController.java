@@ -157,7 +157,8 @@ public class CommonController {
             mav.setViewName("mng/login");
         } else { // 사용자 사이트
             if (timeout) {
-                if (CommonUtil.portalUrl.equals(request.getRequestURL().toString())) {
+                //if (CommonUtil.portalUrl.equals(request.getRequestURL().toString())) {
+                if (CommonUtil.portalUrl.indexOf(request.getServerName()) > 0) {
                     mav.addObject("timeout", "true");
                     mav.setViewName("front/login");  
                 } else {
