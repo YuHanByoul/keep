@@ -251,12 +251,65 @@ public class DsgnPrgrmController {
     }
 
     /**
-     * @Title : chgAplyForm
-     * @Description : 변경신청(탭) 화면이동
+     * @Title : mbrSrchPopup
+     * @Description : 담당자 변경 팝업
      * @throws Exception :
      * @return String 이동화면경로
      * @throws Exception 예외
      */
+    @RequestMapping(value = "/mng/dsgnPrgrm/mbrSrchPopup.html")
+    public String mbrSrchPopup(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
+    	model.addAttribute("instid", asgsysSrngVo.getInstid());
+    	model.addAttribute("prgrmid", asgsysSrngVo.getPrgrmid());
+    	return "mng/dsgnPrgrm/mbrSrchPopup";
+    }
+
+    /**
+    * 담당자 변경
+    *
+    * @Title : updateMbr
+    * @Description : 담당자 변경
+    * @param dsgnPrgrmVo
+    * @param user
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/mng/dsgnPrgrm/updateMbr.do")
+    @ResponseBody
+    public Map<String, Object> updateMbr(AsgsysSrngVo asgsSrngVo, @UserInfo UserVo user) throws Exception {
+
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+    	int retVal = 0;
+
+    	asgsSrngVo.setUser(user);
+
+    	retVal = asgsysSrngServiceImpl.updateMbr(asgsSrngVo);
+
+    	if (retVal > 0) {
+    		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+    		resultMap.put("msg", "수정에 성공하였습니다.");
+    	} else {
+    		resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+    		resultMap.put("msg", "수정에 실패했습니다.");
+    	}
+
+    	return resultMap;
+    }
+
+
+    /**
+    * 변경신청 화면 이동
+    *
+    * @Title : chgAplyForm
+    * @Description : 변경신청 화면 이동
+    * @param asgsysSrngVo
+    * @param model
+    * @return
+    * @throws Exception
+    * @return String
+    */
     @RequestMapping(value = "/mng/dsgnPrgrm/chgAplyForm.html")
     public String chgAplyForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
     	model.addAttribute("chgAplyPrgrmInfo", asgsysSrngServiceImpl.selectDsgnAplyDtlInfo(asgsysSrngVo));

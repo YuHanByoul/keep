@@ -7,6 +7,7 @@
 <input type="hidden" id="dsgnCnclDe"   name="dsgnCnclDe"   th:value="${dsgnInfo.dsgnCnclDe}">
 <input type="hidden" id="hstryid"      name="hstryid"      th:value="${dsgnInfo.hstryid}">
 <input type="hidden" id="prgrmid"      name="prgrmid"      th:value="${dsgnInfo.prgrmid}">
+<input type="hidden" id="instid"      name="instid"      th:value="${dsgnInfo.instid}">
 
     <div class="tab-pane active" id="assignInfo" role="tabpanel">
         <div class="card-header p-t-0 p-b-0">
@@ -16,7 +17,7 @@
             <div class="mb-2 row">
                 <div class="col-12 col-lg-6 mb-2 mb-lg-0">
                     <div class="mb-0 form-group">
-                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="assignInfoProgramName"><strong>프로그램명</strong></label>
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="prgrmNm"><strong>프로그램명</strong></label>
                         <div class="col-sm-12">
                             <input type="text" class="form-control form-control-sm" name="prgrmNm" id="prgrmNm" placeholder="" th:value="${dsgnInfo.prgrmNm}" readonly/>
                         </div>
@@ -24,9 +25,9 @@
                 </div>
                 <div class="col-12 col-lg-6">
                     <div class="mb-0 form-group">
-                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="assignInfoAgencyName"><strong>기관명</strong></label>
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="instNm"><strong>기관명</strong></label>
                         <div class="col-sm-12">
-                            <input type="text" class="form-control form-control-sm" name="applyInfoAgencyName" id="applyInfoAgencyName" placeholder="" th:value="${dsgnInfo.instNm}"  readonly/>
+                            <input type="text" class="form-control form-control-sm" name="instNm" id="instNm" placeholder="" th:value="${dsgnInfo.instNm}"  readonly/>
                         </div>
                     </div>
                 </div>
@@ -48,7 +49,7 @@
                     <div class="mb-0 form-group">
                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="prgrmNm"><strong>대표자명</strong></label>
                         <div class="col-sm-12">
-                            <input type="text" class="form-control form-control-sm" name="prgrmNm" id="applyInfoRepresentativeName" placeholder="" th:value="${dsgnInfo.prgrmNm}"  readonly/>
+                            <input type="text" class="form-control form-control-sm" name="prgrmNm" id="prgrmNm" placeholder="" th:value="${dsgnInfo.prgrmNm}"  readonly/>
                         </div>
                     </div>
                 </div>
@@ -56,13 +57,13 @@
             <div class="mb-2 row">
                 <div class="col-12 col-lg-6 mb-2 mb-lg-0">
                     <div class="mb-0 form-group">
-                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="assignInfoApplicant"><strong>신청자</strong></label>
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="aplcntNm"><strong>신청자</strong></label>
                         <div class="col-12 row">
                             <div class="col-8">
-                                <input type="text" class="form-control form-control-sm" name="applyInfoApplicant" id="applyInfoApplicant" placeholder="" th:value="${dsgnInfo.aplcntNm}" readonly/>
+                                <input type="text" class="form-control form-control-sm" name="aplcntNm" id="applyInfoApplicant" placeholder="" th:value="${dsgnInfo.aplcntNm}" readonly/>
                             </div>
                             <div class="col-4 btn-group-sm">
-                                <button type="button" class="btn btn-inverse" data-bs-toggle="modal" onclick="">담당자 변경</button>
+                                <button type="button" class="btn btn-inverse" onclick="openChgAltmntModal()">담당자 변경</button>
                             </div>
                         </div>
                     </div>
@@ -243,6 +244,9 @@
     </div>
 </form>
 
+<!-- 담당자변경 회원검색 팝업 -->
+<div class="modal fade" id="chgAltmntPopup" aria-hidden="true" data-bs-backdrop="static"></div>
+
 <!-- 지정취소 팝업 -->
 <div class="modal fade" id="dsgnRtrcnPopup" aria-hidden="true" data-bs-backdrop="static"></div>
 <!-- 지정프로그램 개요보기 팝업 -->
@@ -325,6 +329,23 @@ function writeSplmntDmndGridData(){
             selectedItems = [];
         }
     });
+}
+
+//담당자 변경
+var chgAltmntModal;
+var openChgAltmntModal = () => {
+
+    var vInstid = $("#instid").val();
+
+    var url = "/mng/dsgnPrgrm/mbrSrchPopup.html?prgrmid="+prgrmid+"&instid="+vInstid;    //회원검색
+
+    $("#chgAltmntPopup").load(url, function(response, status, xhr) {
+        if (status == "success") {
+            chgAltmntModal = new bootstrap.Modal($('#chgAltmntPopup'));
+            chgAltmntModal.show();
+        }
+    });
+
 }
 
 //지정취소
