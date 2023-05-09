@@ -482,6 +482,11 @@ public class ClclnDsctnController {
         ZipOutputStream zout = null;
         String zipName = "증빙자료 다운로드.zip";     //ZIP 압축 파일명
         String tempPath = "";
+        InputStream in = null;
+        FileInputStream fis = null;
+        BufferedInputStream bis = null;
+        ServletOutputStream so = null;
+        BufferedOutputStream bos = null;
 
         if (resultDtlList.size() > 0) {
               try{
@@ -489,7 +494,6 @@ public class ClclnDsctnController {
                  //ZIP파일 압축 START
                  zout = new ZipOutputStream(new FileOutputStream(new File(uploadZipPath+"/"+zipName)));
                  byte[] buffer = new byte[1024];
-                 InputStream in = null;
                  
                  for ( int k=0; k<resultDtlList.size(); k++){
                      FileVo fileVo = new FileVo();
@@ -525,10 +529,10 @@ public class ClclnDsctnController {
                  response.setContentType("application/zip");
                  response.addHeader("Content-Disposition", "attachment;filename=" + zipName);
                  
-                 FileInputStream fis = new FileInputStream(tempPath + zipName);
-                 BufferedInputStream bis = new BufferedInputStream(fis);
-                 ServletOutputStream so = response.getOutputStream();
-                 BufferedOutputStream bos = new BufferedOutputStream(so);
+                 fis = new FileInputStream(tempPath + zipName);
+                 bis = new BufferedInputStream(fis);
+                 so = response.getOutputStream();
+                 bos = new BufferedOutputStream(so);
                  
                  int n = 0;
                  while(true){
@@ -539,18 +543,21 @@ public class ClclnDsctnController {
                     bos.write(buffer, 0, n);
                     bos.flush();
                  }
-                 if(bos != null) bos.close();
-                 if(bis != null) bis.close();
-                 if(so != null) so.close();
-                 if(fis != null) fis.close();
-                 
+                                  
                  //파일다운로드 END
               }catch(IOException e){
                  log.error("fileCompressZIP.IOException");
               }finally{
-                 if (zout != null){
-                    zout = null;
-                 }
+                  if (in != null) {
+                      in.close();
+                  }
+                  if (zout != null){
+                    zout.close();
+                  }
+                  if(bos != null) bos.close();
+                  if(bis != null) bis.close();
+                  if(so != null) so.close();
+                  if(fis != null) fis.close();
               }
         }
     }    
