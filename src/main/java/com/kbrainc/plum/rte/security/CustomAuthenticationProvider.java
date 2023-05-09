@@ -38,6 +38,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import com.kbrainc.plum.cmm.idntyVrfctn.model.IdntyVrfctnSuccessVo;
 import com.kbrainc.plum.cmm.idntyVrfctn.service.IdntyVrfctnService;
 import com.kbrainc.plum.cmm.service.CommonService;
+import com.kbrainc.plum.rte.exception.CustomRuntimeException;
 import com.kbrainc.plum.rte.model.DrmncyInfoVo;
 import com.kbrainc.plum.rte.model.RoleInfoVo;
 import com.kbrainc.plum.rte.model.SiteInfoVo;
@@ -159,7 +160,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                         IdntyVrfctnSuccessVo result = null;
                         try {
                             result = idntyVrfctnService.decodeIdntyVrfctnSuccessData(null, request.getParameter("encodeData"));
-                        } catch (Exception e) {
+                        } catch (CustomRuntimeException e) {
                             request.setAttribute("message", "본인인증 인코딩 실패. 고객센터에 문의 해주십시오.");
                             throw new InternalAuthenticationServiceException("Login Error !!");
                         }
