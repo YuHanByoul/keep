@@ -36,7 +36,7 @@ public class envEduPlcyAndBizIntroController {
      * @Description : 목록 화면
      */
     @GetMapping("/main.html")
-    public String main() throws Exception {
+    public String envEduPlcyAndBizMain() throws Exception {
         return VIEW_PATH + "/main";
     }
 
