@@ -30,6 +30,8 @@ import com.kbrainc.plum.mng.map.model.MapVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
 * 지도기반데이터 관리 서비스 구현 클래스
 *
@@ -46,6 +48,7 @@ import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
 @Service
+@Slf4j
 public class MapServiceImple extends PlumAbstractServiceImpl implements MapService {
 
 	@Autowired
@@ -276,11 +279,11 @@ logger.info("@@@@@@@@@@@@@@@@@@@@ " + data.size());
 	                    return objectDoc;
 	                }
 	            } catch (ParseException e) {
-	                e.printStackTrace();
+	                log.error("getAddrDocWithaddress.ParseException");
 	            }
 	        }
 	        catch(RestClientException e) {
-	            e.printStackTrace();
+	            log.error("getAddrDocWithaddress.RestClientException");
 	        }
 
 	        return null;

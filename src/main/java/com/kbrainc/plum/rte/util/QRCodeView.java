@@ -20,8 +20,11 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Configuration
 @ComponentScan(basePackages = "com.kbrainc.plum.rte.util")
+@Slf4j
 public class QRCodeView extends AbstractView {
 
     public QRCodeView() {
@@ -74,7 +77,7 @@ public class QRCodeView extends AbstractView {
 
             bos.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("encodeToString.IOException");
         }
         return imageString;
     }

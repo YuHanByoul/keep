@@ -256,7 +256,7 @@ public class FileStorageServiceImpl extends PlumAbstractServiceImpl implements F
 
             bos.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("encodeToString.IOException");
         }
         return imageString;
     }
