@@ -49,10 +49,10 @@ public class JntpurchsOrderVo extends ParentRequestVo {
     private String jntpurchsNm;
     
     /** 공동구매모집 상태 코드 */
-    private String JntpurchsSttsCd;
+    private String jntpurchsSttsCd;
     
     /** 공동구매모집 상태 코드명 */
-    private String JntpurchsSttsCdNm;
+    private String jntpurchsSttsCdNm;
     
     /** 신청자 계정 */
     private String acnt;
