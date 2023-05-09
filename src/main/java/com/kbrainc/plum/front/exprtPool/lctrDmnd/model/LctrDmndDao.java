@@ -1,5 +1,6 @@
 package com.kbrainc.plum.front.exprtPool.lctrDmnd.model;
 
+import com.kbrainc.plum.front.member.model.MemberVo;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import java.util.List;
@@ -119,4 +120,15 @@ public interface LctrDmndDao {
      * @Description : 관심인력 삭제
      */
     public int deleteItrstExprt(ExprtVo exprtVo) throws Exception;
+
+    /**
+     * 메시지 수신 대상 조회
+     *
+     * @param lctrDmndVo
+     * @return member vo
+     * @throws Exception
+     * @Title : selectMember
+     * @Description : 메시지 수신 대상 조회
+     */
+    public MemberVo selectMember(LctrDmndVo lctrDmndVo) throws Exception;
 }
