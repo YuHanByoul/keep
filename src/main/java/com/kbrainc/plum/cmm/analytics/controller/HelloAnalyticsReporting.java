@@ -39,14 +39,17 @@ public class HelloAnalyticsReporting {
   private static final String KEY_FILE_LOCATION = CommonUtil.anayticsKeyFilePath;
   private static final String VIEW_ID = "G-Q8G232E9CL";
   public static void main(String[] args) {
-    try {
-      AnalyticsReporting service = initializeAnalyticsReporting();
-
-      GetReportsResponse response = getReport(service);
-      printResponse(response);
-    } catch (Exception e) {
-      log.error("main.Exception");
-    }
+    
+      try {
+          AnalyticsReporting service = initializeAnalyticsReporting();
+          GetReportsResponse response = getReport(service);
+          printResponse(response);
+      } catch(GeneralSecurityException e) {
+          log.error("main.GeneralSecurityException");
+      } catch(IOException e) {
+          log.error("main.IOException");
+      }
+    
   }
 
   /**
