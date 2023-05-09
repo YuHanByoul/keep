@@ -17,6 +17,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -442,6 +443,8 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
         try {
             commonService.insertLoginSuccess(attr.getRequest(), user.getUserid());
+        } catch (DataAccessException e) {
+            throw new InternalAuthenticationServiceException("Login Error !!");
         } catch (Exception e) {
             throw new InternalAuthenticationServiceException("Login Error !!");
         }
