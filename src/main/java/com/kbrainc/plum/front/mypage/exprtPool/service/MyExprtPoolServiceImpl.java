@@ -11,6 +11,7 @@ import com.kbrainc.plum.rte.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -140,9 +141,9 @@ public class MyExprtPoolServiceImpl extends PlumAbstractServiceImpl implements M
         retVal += myExprtDao.insertActvtRgnCds(myExprtMdfcnVo.getMdfcnDmndId(), actvtRgnCds, myExprtMdfcnVo.getUser());
         retVal += myExprtDao.insertActvtScopeCds(myExprtMdfcnVo.getMdfcnDmndId(), actvtScopeCds, myExprtMdfcnVo.getUser());
 
-        retVal += myExprtMdfcnVo.getCareers() != null ? myExprtDao.insertCareer(myExprtMdfcnVo) : 0;
-        retVal += myExprtMdfcnVo.getHdofs() != null ? myExprtDao.insertHdof(myExprtMdfcnVo) : 0;
-        retVal += myExprtMdfcnVo.getCrtfcts() != null ? myExprtDao.insertCrtfct(myExprtMdfcnVo) : 0;
+        retVal += !CollectionUtils.isEmpty(myExprtMdfcnVo.getCareers()) ? myExprtDao.insertCareer(myExprtMdfcnVo) : 0;
+        retVal += !CollectionUtils.isEmpty(myExprtMdfcnVo.getHdofs()) ? myExprtDao.insertHdof(myExprtMdfcnVo) : 0;
+        retVal += !CollectionUtils.isEmpty(myExprtMdfcnVo.getCrtfcts()) ? myExprtDao.insertCrtfct(myExprtMdfcnVo) : 0;
 
         return retVal;
     }
