@@ -74,10 +74,14 @@ public class QRCodeView extends AbstractView {
 
             Base64.Encoder encoder = Base64.getEncoder();
             imageString = encoder.encodeToString(imageBytes);
-
-            bos.close();
         } catch (IOException e) {
             log.error("encodeToString.IOException");
+        } finally {
+            try {
+                bos.close();
+            } catch (IOException e) {
+                log.error("encodeToString.IOException");
+            }
         }
         return imageString;
     }
