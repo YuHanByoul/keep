@@ -131,7 +131,7 @@ public class LctrDmndServiceImpl extends PlumAbstractServiceImpl implements Lctr
     public int insertLctrDmnd(LctrDmndVo lctrDmndVo) throws Exception {
         int retVal = 0;
         // 대상: 강의요청 수신한 전문가 가입자
-        MemberVo member = lctrDmndDao.selectMember(lctrDmndVo);
+        Map<String, Object> member = lctrDmndDao.selectMember(lctrDmndVo);
 
         // 알림 발송
         retVal += sendNtcn(member);
@@ -144,14 +144,14 @@ public class LctrDmndServiceImpl extends PlumAbstractServiceImpl implements Lctr
         return retVal;
     }
 
-    private void sendAlimtalk(MemberVo member) throws Exception {
-        String recipientList =  "[{\"recipientNo\": \""+ member.getMoblphon()+"\",\"templateParameter\": {\"nm\":\""+ member.getNm()+"\"} }]";
+    private void sendAlimtalk(Map<String,Object> member) throws Exception {
+        String recipientList =  "[{\"recipientNo\": \""+ (String)member.get("MOBLPHON")+"\",\"templateParameter\": {\"nm\":\""+ (String)member.get("NM")+"\"} }]";
         alimtalkService.sendAlimtalk("keep-008","", recipientList);
     }
 
-    private int sendNtcn(MemberVo member) throws Exception {
+    private int sendNtcn(Map<String,Object> member) throws Exception {
         NtcnVo ntcnVo = new NtcnVo();
-        ntcnVo.setUserid(member.getUserid());
+        ntcnVo.setUserid((Integer)member.get("USERID"));
         ntcnVo.setTtl("환경교육 전문가 섭외 요청 완료");
         ntcnVo.setCn("환경교육 전문가 섭외 요청이 있습니다.\r\n"
                 + "자세한 내용은 전문가 요청 관리 메뉴를 확인해 주십시오.");
@@ -163,13 +163,13 @@ public class LctrDmndServiceImpl extends PlumAbstractServiceImpl implements Lctr
         return retVal;
     }
 
-    private void sendEmail(MemberVo member) throws Exception {
+    private void sendEmail(Map<String,Object> member) throws Exception {
         StringBuilder contents = new StringBuilder();
         contents.append("<tr><td align=\"center\" style=\"font-family:'맑은 고딕','Malgun Gothic','돋움',dotum,sans-serif font-size:16px;font-weight:400;font-stretch:normal;font-style:normal;line-height:1.5;letter-spacing:-1px;color:#333333;padding:0 10px;\">");
-        contents.append(member.getNm());
+        contents.append((String)member.get("EML"));
         contents.append("님, " );
         contents.append("새로운 환경교육 전문가 섭외 요청이 있습니다.<br/> <br/>" );
-        contents.append("자세한 내용은 국가환경교육 통합플랫폼의 마이페이지를 확인해 주십시오.<br/> <br/>" );
+        contents.append("자세한 내용은 국가환경교육 통합플랫폼의 마이페이지를 확인해 주십시오." );
         contents.append("&nbsp;</td></tr><tr><td style=\"height:30px;font-size:0px;mso-line-height-rule:exactly;line-height:0px;\">&nbsp;</td></tr>");
 
         Context context = new Context();
@@ -180,10 +180,10 @@ public class LctrDmndServiceImpl extends PlumAbstractServiceImpl implements Lctr
         String mailTitle = "[환경보전협회] 환경교육 전문가 섭외 요청이 있습니다.";
 
         MailVo mailVo = new MailVo();
-        mailVo.setRcptnEmail(member.getEml());
+        mailVo.setRcptnEmail((String)member.get("EML"));
         mailVo.setTitle(mailTitle);
         mailVo.setCntnts(mailContents);
-        mailVo.setRcptnUserid(member.getUserid());
+        mailVo.setRcptnUserid((Integer)member.get("USERID"));
         mailVo.setSndngSeCd("U");
 
         mailService.sendMail(mailVo); // 이메일 발송

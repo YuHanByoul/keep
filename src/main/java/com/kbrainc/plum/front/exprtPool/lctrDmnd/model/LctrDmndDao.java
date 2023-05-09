@@ -1,9 +1,9 @@
 package com.kbrainc.plum.front.exprtPool.lctrDmnd.model;
 
-import com.kbrainc.plum.front.member.model.MemberVo;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 환경교육 전문가 풀 > 섭외 요청 Dao 클래스
@@ -130,5 +130,5 @@ public interface LctrDmndDao {
      * @Title : selectMember
      * @Description : 메시지 수신 대상 조회
      */
-    public MemberVo selectMember(LctrDmndVo lctrDmndVo) throws Exception;
+    public Map<String,Object> selectMember(LctrDmndVo lctrDmndVo) throws Exception;
 }

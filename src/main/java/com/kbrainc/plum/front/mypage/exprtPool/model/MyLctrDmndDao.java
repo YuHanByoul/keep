@@ -3,6 +3,7 @@ package com.kbrainc.plum.front.mypage.exprtPool.model;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 마이페이지 > 전문가 요청 관리 Dao 인터페이스
@@ -53,5 +54,7 @@ public interface MyLctrDmndDao {
      * @Description : 강의 요청서 상태 변경
      */
     public int updateStatus(MyLctrDmndVo myLctrDmndVo) throws Exception;
+
+    public Map<String,Object> selectMember(Integer userid) throws Exception;
 
 }
