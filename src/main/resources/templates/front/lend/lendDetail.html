@@ -83,15 +83,6 @@
                         <dt>모집 기간 :</dt>
                         <dd><th:block th:text="${#dates.format(lendInfo.bgngDt, 'yyyy-MM-dd HH:mm')+' ~ '+#dates.format(lendInfo.endDt, 'yyyy-MM-dd HH:mm')}"/></dd>
                     </div>
-                    <!-- <div class="list">
-                        <dt>대여 제한  :</dt>
-                        <dd>
-                            <th:block th:if="${lendInfo.lmtCd == '225101'}" th:text="'한개의 차시에서 1개까지 신청 가능합니다.'"/>
-                            <th:block th:if="${lendInfo.lmtCd == '225102'}" th:text="'한개의 차시에서 2개까지 신청 가능합니다.'"/>
-                            <th:block th:if="${lendInfo.lmtCd == '225103'}" th:text="'두개의 차시에서 차시당 1개까지 신청 가능합니다.'"/>
-                            <th:block th:if="${lendInfo.lmtCd == '225104'}" th:text="'두개의 차시에서 차시당 2개까지 신청 가능합니다.'"/>
-                        </dd>
-                    </div> -->
                 </dl>
             </div>
             <div class="btn-wrap">
@@ -107,75 +98,44 @@
             </div>
         </div>
     </div>
-    
-    <div class="" >
-        <div class="table-col table-layout-auto">
-            <table>
-                <caption>환경교육 교구 대여 - 차수, 대여기간, 재고수량, 선택, 대여수량, 상태</caption>
-                <colgroup>
-                    <col style="width:10%;">
-                    <col>
-                    <col style="width:12%;">
-                    <col style="width:14%;">
-                    <col style="width:12%;">
-                    <col style="width:12%;">
-                </colgroup>
-                <thead>
-                    <tr>
-                        <th scope="col">차수</th>
-                        <th scope="col">대여기간</th>
-                        <th scope="col">재고</th>
-                        <th scope="col">대여수량</th>
-                        <th scope="col">상태</th>
-                        <th scope="col">신청</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each ="item:${rndList}"  th:id="'rnd'+${item.rndid}"  class="chasi-frm"  th:data-totalCnt="${item.totalCnt}" >
-                        <td><th:block th:text="${item.ordr}"/>차</td>
-                        <td><th:block th:text="${item.bgngDe +' ~ '+item.endDe}"/></td>
-                        <td><th:block th:text="${item.totalCnt}"/> </td>
-                        
-                        <!-- <td>
-                            <label class="inp vm">
-                               <input type="checkbox" th:id="chasi_chk+${item.rndid}" name="chasi_chk" th:disabled="${lendInfo.periodStts eq 'E' or item.sttsCd =='L' or item.sttsCd =='S'}" >
-                            </label>
-                        </td> -->
-                        
-                        <td>
-                           <div class="form-input form-input-number j-center"  th:if="${lendInfo.periodStts ne 'E' and item.sttsCd eq'O'}">
-                                <input type="number" value="" min="0" title="꾸러미 대여 갯수" data-width="50" class="ac" th:id="requestQnty" readonly
-                                  th:max="${ (lendInfo.lmtCd =='225101' or lendInfo.lmtCd =='225103')? 1:2 }"  style="background-color:white;">
-                                <div class="btn-number">
-                                    <button type="button" th:class="'num-up   chasi-btn-'+${item.rndid}"   title="숫자 증가" th:data-rndid="${item.rndid}" th:onclick="increaseQnty(this.getAttribute('data-rndid'))" />
-                                    <button type="button" th:class="'num-down chasi-btn-'+${item.rndid}"   title="숫자 감소" th:data-rndid="${item.rndid}" th:onclick="decreaseQnty(this.getAttribute('data-rndid'))" />
-                               </div>
-                           </div>
-                        </td>
-                        <td>
-                        
-                           <th:block  th:if ="${lendInfo.periodStts eq 'E'}" >
-                               <span class="" >모집 기간 종료</span>
-                           </th:block>  
-                           <th:block  th:unless ="${lendInfo.periodStts eq 'E'}" >
-	                           <span class=""        th:if ="${item.sttsCd eq 'L'}" >대여기간 종료</span>  
-	                           <span class="fc-red"  th:if ="${item.sttsCd eq 'S'}" >재고 소진</span>
-	                           <span class="fc-blue" th:if ="${item.sttsCd eq 'O'}" >신청 가능</span>
-                           </th:block>
-                        </td>
-                        
-                        <td>
-                           <!-- <th:block sec:authorize-url="/front/lend/lendAply.html"> -->
-                           <th:block th:if="${lendInfo.periodStts == 'E' or item.sttsCd =='O'}"> 
-                           <button type="button" class="btn-medium btn-green" th:rndid ="${item.rndid}" onclick="requestAply(this.getAttribute('rndid'))" disabled>신청</button>
-                           </th:block>
-                           <th:block th:unless="${lendInfo.periodStts == 'E' or item.sttsCd =='O'}">-</th:block> 
-                           <!-- </th:block> -->
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+  
+    <div class="box-form-list">
+     <ul>
+         <li th:each ="item:${rndList}"  th:id="'rnd'+${item.rndid}"  class="chasi-frm"  th:data-totalCnt="${item.totalCnt}" >
+             <div class="left">
+                 <div class="num">
+                     <strong>[[${item.ordr}]]차</strong>
+                     <th:block  th:if ="${lendInfo.periodStts eq 'E'}" >
+                         <div class="tag tag-disabled" >모집 기간 종료</div>
+                     </th:block>  
+                     <th:block  th:unless ="${lendInfo.periodStts eq 'E'}" >
+                         <div class="tag tag-green tag-disabled" th:if ="${item.sttsCd eq 'L'}" >대여기간종료</div>  
+                         <div class="tag tag-red"    th:if ="${item.sttsCd eq 'S'}" >재고 소진</div>
+                         <div class="tag tag-green"    th:if ="${item.sttsCd eq 'O'}" >신청 가능</div>
+                     </th:block>
+                 </div>
+                 <div class="detail">
+                     <span class="fc-black6">대여기간</span>
+                     <span class="fc-black3"><th:block th:text="${item.bgngDe +' ~ '+item.endDe}"/></span>
+                     <span class="fc-black6">(재고 <i class="fc-blue"> <th:block th:text="${item.totalCnt}"/> </i>개)</span>
+                 </div>
+             </div>
+             <div class="right">
+                 <select title="수량선택" style="width:120px;" th:disabled="${lendInfo.periodStts eq 'E' or item.sttsCd ne'O'}"  th:id="requestQnty"
+                         th:rndid ="${item.rndid}" th:onchange="onchangeEventCheck(this.getAttribute('rndid'))" >
+                     <option value="0">수량선택</option>
+                     <th:block th:if="${ lendInfo.lmtCd =='225101' or lendInfo.lmtCd =='225103'}">
+                     <option value="1">1</option>
+                     </th:block>
+                     <th:block th:unless="${ lendInfo.lmtCd =='225101' or lendInfo.lmtCd =='225103'}">
+                     <option value="1">1</option>
+                     <option value="2">2</option>
+                     </th:block> 
+                 </select>
+                 <button type="button" class="btn-medium btn-green" th:rndid ="${item.rndid}" onclick="requestAply(this.getAttribute('rndid'))" disabled>신청</button>
+             </div>
+         </li>
+       </ul>
     </div>
     
     <div class="tab-content tab-sub dropDown">
@@ -283,7 +243,6 @@
         
         $(function(){
             selectReplyList();
-            $("input[name=chasi_chk]").change(function(){checkChasiValidation(this)});
         })
         function onDownloadEduPhoto() {
             for(var i = 0, len = eduPhotoFileList.length; i < len; i++) {
@@ -351,43 +310,13 @@
            $("#replyFrom #pageNumber").val(page);
            selectReplyList();
        }
-       function increaseQnty(rndid){
-           var qnty     = Number($("#rnd"+rndid+" #requestQnty").val());
-           var totalCnt = $("#rnd"+rndid).attr("data-totalCnt");
-           var plusedQnty =  (qnty == null || qnty == "")? 1:Number(qnty)+1;
-           let limitCnt  = (lendInfo.lmtCd =='225101' || lendInfo.lmtCd =='225103')? 1:2;
-           if(limitCnt < plusedQnty){alert("한 개차시에 "+limitCnt+"개 까지 신청 할 수 있습니다."); $("#rnd"+rndid+" #requestQnty").val(qnty-1); return;}
-           if(totalCnt < plusedQnty){alert("재고 이상으로 입력 할수 없습니다."); $("#rnd"+rndid+" #requestQnty").val(qnty-1); return;}
-    	   $("#rnd"+rndid+" .btn-green").attr("disabled",(plusedQnty>0)? false:true);
-       }
-       function decreaseQnty(rndid){
-    	   var qnty     = Number($("#rnd"+rndid+" #requestQnty").val());
-           var totalCnt = $("#rnd"+rndid).attr("data-totalCnt");
-           var plusedQnty =  (qnty == null || qnty == "")? 0:Number(qnty)-1;
-    	   $("#rnd"+rndid+" .btn-green").attr("disabled",(plusedQnty>0)? false:true);
-       }
-       function checkChasiValidation($el){
-           let limitChasiCnt  = (lendInfo.lmtCd =='225101' || lendInfo.lmtCd =='225102')? 1:2;
-           let checkCnt = 0 ;
-           var rndid  = ($($el).attr("id")).replace("chasi_chk","");
-           var isChecked  = $($el).is(":checked");
-           
-           if(!isChecked){
-               $("#rnd"+rndid+" #qnty").val("");
-               $(".chasi-btn-"+rndid).prop("disabled",true);
-               return;
-           }else{
-        	   $(".chasi-btn-"+rndid).prop("disabled",false);
-           }
-           
-           $("input[name=chasi_chk]").each(function(){
-               if( $(this).is(":checked") )checkCnt++;
-           })
-           if( checkCnt > limitChasiCnt ){
-               alert(limitChasiCnt+"개 차시만 신청 할 수 있습니다.");
-               $($el).prop("checked",false);
-               $("#rnd"+rndid+" #requestQnty").val("");
-           }
+       function onchangeEventCheck(rndid){
+           let plusedQnty = Number($("#rnd"+rndid+" #requestQnty").val()); 
+    	   let limitCnt  = (lendInfo.lmtCd =='225101' || lendInfo.lmtCd =='225103')? 1:2;
+    	   var totalCnt = $("#rnd"+rndid).attr("data-totalCnt");
+    	   if(limitCnt < plusedQnty){alert("한 개차시에 "+limitCnt+"개 까지 신청 할 수 있습니다."); $("#rnd"+rndid+" #requestQnty").val(0); return;}
+           if(totalCnt < plusedQnty){alert("재고 이상으로 입력 할수 없습니다."); $("#rnd"+rndid+" #requestQnty").val(0); return;}
+           $("#rnd"+rndid+" .btn-green").attr("disabled",(plusedQnty>0)? false:true);
        }
        function requestAply(rndid){
     	   if(currentUser ==null){

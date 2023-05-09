@@ -289,8 +289,8 @@ public class InstServiceImpl extends PlumAbstractServiceImpl implements InstServ
              NtcnVo ntcnVo = new NtcnVo();
              ntcnVo.setUserid(memberVo.getUserid());
              ntcnVo.setTtl("기관회원 승인 완료");
-             ntcnVo.setCn("기관회원 신청이 승인되었습니다.\r\n"
-                     + "기관회원 권한으로 사이트를 이용할 수 있습니다.\r\n"
+             ntcnVo.setCn("기관회원 신청이 승인되었습니다.<br/>"
+                     + "기관회원 권한으로 사이트를 이용할 수 있습니다.<br/>"
                      + "지금 바로 국가환경교육 통합플랫폼을 이용해보세요.");
              ntcnVo.setInqYn("N");
              ntcnVo.setKndCd("156102");

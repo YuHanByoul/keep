@@ -197,14 +197,14 @@ public class RcpmnyBfeServiceImpl extends PlumAbstractServiceImpl implements Rcp
                 NtcnVo ntcnVo = new NtcnVo();
                 ntcnVo.setUserid(Integer.parseInt(resultVo.getAplcntid()));
                 ntcnVo.setTtl("환경교육 시설 예약 신청 승인");
-                
                 ntcnVo.setCn(
-                        "다음 시설의 예약 신청이 승인되었습니다.\r\n"
-                                +"이용일시 : "+resultVo.getDe()
-                                +"\\r\\n시설명 : "+ resultVo.getFcltNm()
-                                +"\\r\\n문의사항은 1:1문의 게시판에 남겨주시거나, 관리자에게 문의를 부탁드립니다." );
+                        "다음 시설의 예약 신청이 승인되었습니다."
+                                +"<br/>이용일시 : "+resultVo.getDe()
+                                +"<br/>시설명 : "+ resultVo.getFcltNm()
+                                +"<br/>문의사항은 1:1문의 게시판에 남겨주시거나, 관리자에게 문의를 부탁드립니다." );
                 ntcnVo.setInqYn("N");
                 ntcnVo.setKndCd("156102");
+                ntcnVo.setMvmnurl("/front/mypage/mypageEnvReqst/mypageEnvReqstList.html");
                 ntcnDao.insertNtcn(ntcnVo);
             }
             

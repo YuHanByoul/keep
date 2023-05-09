@@ -347,7 +347,7 @@ public class CnsltngServiceImpl extends PlumAbstractServiceImpl implements Cnslt
                 ntcnVo.setUserid(Integer.parseInt(id));
                 ntcnVo.setTtl("지정단으로 배정 완료");
                 ntcnVo.setCn(
-                        resVo.getPrgrmNm() +"의 지정단으로 배정 되셨습니다.\r\n"
+                        resVo.getPrgrmNm() +"의 지정단으로 배정 되셨습니다.<br/>"
                                 + "자세한 내용은 관리자 사이트에서 확인해주세요.");
                 ntcnVo.setInqYn("N");
                 ntcnVo.setKndCd("156102");

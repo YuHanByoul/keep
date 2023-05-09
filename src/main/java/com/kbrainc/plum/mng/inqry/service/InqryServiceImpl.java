@@ -203,8 +203,8 @@ public class InqryServiceImpl extends PlumAbstractServiceImpl implements InqrySe
         ntcnVo.setUserid(inqryAnswrVo.getUserid());
 
         ntcnVo.setTtl("1:1문의 게시글에 답변 등록");
-        ntcnVo.setCn("1:1문의에 남겨주신 글에 답변이 등록되었습니다.\r\n"
-                + "자세한 내용은 내 문의 내역에서 확인해 주십시오.\r\n");
+        ntcnVo.setCn("1:1문의에 남겨주신 글에 답변이 등록되었습니다.<br/>"
+                + "자세한 내용은 내 문의 내역에서 확인해 주십시오.<br/>");
         ntcnVo.setMvmnurl("/front/mypage/inqry/inqryDetail.html?inqryid=" + inqryAnswrVo.getInqryid());
         ntcnVo.setKndCd("245102");
         ntcnVo.setInqYn("N");

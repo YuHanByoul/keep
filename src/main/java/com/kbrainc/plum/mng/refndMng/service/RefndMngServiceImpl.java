@@ -197,11 +197,12 @@ public class RefndMngServiceImpl extends PlumAbstractServiceImpl implements Refn
                 ntcnVo.setTtl("환경교육 시설 이용료 환불 처리 완료");
                 
                 ntcnVo.setCn(
-                        "다음 시설의 이용료가 환불처리되었습니다.\r\n"
-                                +"\\r\\n시설명 : "+ resultVo.getFcltNm()
-                                +"\\r\\n문의사항은 1:1문의 게시판에 남겨주시거나, 관리자에게 문의를 부탁드립니다." );
+                        "다음 시설의 이용료가 환불처리되었습니다."
+                                +"<br/>시설명 : "+ resultVo.getFcltNm()
+                                +"<br/>문의사항은 1:1문의 게시판에 남겨주시거나, 관리자에게 문의를 부탁드립니다." );
                 ntcnVo.setInqYn("N");
                 ntcnVo.setKndCd("156102");
+                ntcnVo.setMvmnurl("/front/mypage/mypageEnvReqst/mypageEnvReqstList.html");
                 ntcnDao.insertNtcn(ntcnVo);
             }
             
