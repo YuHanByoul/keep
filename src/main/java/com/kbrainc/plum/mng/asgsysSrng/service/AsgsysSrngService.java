@@ -66,6 +66,18 @@ public interface AsgsysSrngService {
 	public AsgsysSrngVo selectAplyInfo(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
+	* 기관정보 조회
+	*
+	* @Title : selectInstInfo
+	* @Description : 기관정보 조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return AsgsysSrngVo
+	*/
+	public AsgsysSrngVo selectInstInfo(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
 	* 프로그램상태코드 조회
 	*
 	* @Title : selectPrgrmSttsCd
@@ -639,7 +651,7 @@ public interface AsgsysSrngService {
 	* @return List<MemberVo>
 	* @throws Exception
 	*/
-	public List<MemberVo> selectMbrList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+	public List<AsgsysSrngVo> selectMbrList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
 	* 담당자 변경

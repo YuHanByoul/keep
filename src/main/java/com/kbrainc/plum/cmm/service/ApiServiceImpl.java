@@ -1,8 +1,10 @@
 package com.kbrainc.plum.cmm.service;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
@@ -20,6 +22,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kbrainc.plum.front.member.model.MemberVo;
 import com.kbrainc.plum.front.myInfo.model.MyInfoDao;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+
+import lombok.extern.slf4j.Slf4j;
 /**
  * 
  * API 서비스 구현 클래스.
@@ -37,6 +41,7 @@ import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Service
+@Slf4j
 public class ApiServiceImpl extends PlumAbstractServiceImpl implements ApiService {
     
     @Value("${data.go.kr.enc.serviceKey}")
@@ -194,6 +199,7 @@ public class ApiServiceImpl extends PlumAbstractServiceImpl implements ApiServic
     * @Description : 농업기상 관측지점 정보 조회
     * @param doSeCode 도 구분코드
     * @return Map<String,Object> 조회결과
+     * @throws MalformedURLException 
     * @throws Exception 예외
     */
     @Override
@@ -205,23 +211,36 @@ public class ApiServiceImpl extends PlumAbstractServiceImpl implements ApiServic
         urlBuilder.append("&Page_No=1");
         urlBuilder.append("&Do_Se_Code=");
         urlBuilder.append(doSeCode);
-        URL url = new URL(urlBuilder.toString());
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        conn.setRequestProperty("Content-type", "application/json");
-        BufferedReader rd;
-        if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
-            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        } else {
-            rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
-        }
+        
+        HttpURLConnection conn = null;
+        BufferedReader rd = null;
         StringBuilder sb = new StringBuilder();
-        String line = rd.readLine();
-        while(line != null) {
-            sb.append(line);
+        try {
+            URL url = new URL(urlBuilder.toString());
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Content-type", "application/json");
+            if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+                rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            } else {
+                rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+            }
+            String line = rd.readLine();
+            while(line != null) {
+                sb.append(line);
+            }
+        } catch (MalformedURLException e) {
+            log.error("getObsrSpotList.MalformedURLException");
+        } catch (IOException e) {
+            log.error("getObsrSpotList.IOException");
+        } finally {
+            if (rd != null) {
+                rd.close();
+            }
+            if (conn != null) {
+                conn.disconnect();
+            }
         }
-        rd.close();
-        conn.disconnect();
         
         JSONObject jsonObject = XML.toJSONObject(sb.toString());
         Map<String, Object> response = new ObjectMapper().readValue(jsonObject.toString(), Map.class);
@@ -250,23 +269,36 @@ public class ApiServiceImpl extends PlumAbstractServiceImpl implements ApiServic
         urlBuilder.append(dateTime);
         urlBuilder.append("&obsr_Spot_Code=");
         urlBuilder.append(obsrSpotCode);
-        URL url = new URL(urlBuilder.toString());
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        conn.setRequestProperty("Content-type", "application/json");
-        BufferedReader rd;
-        if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
-            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        } else {
-            rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
-        }
+        
+        HttpURLConnection conn = null;
+        BufferedReader rd = null;
         StringBuilder sb = new StringBuilder();
-        String line = rd.readLine();
-        while(line != null) {
-            sb.append(line);
+        try {
+            URL url = new URL(urlBuilder.toString());
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Content-type", "application/json");
+            if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+                rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            } else {
+                rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+            }
+            String line = rd.readLine();
+            while(line != null) {
+                sb.append(line);
+            }
+        } catch (MalformedURLException e) {
+            log.error("getWeatherTimeList.MalformedURLException");
+        } catch (IOException e) {
+            log.error("getWeatherTimeList.IOException");
+        } finally {
+            if (rd != null) {
+                rd.close();
+            }
+            if (conn != null) {
+                conn.disconnect();
+            }
         }
-        rd.close();
-        conn.disconnect();
         
         JSONObject jsonObject = XML.toJSONObject(sb.toString());
         Map<String, Object> response = new ObjectMapper().readValue(jsonObject.toString(), Map.class);
@@ -298,23 +330,35 @@ public class ApiServiceImpl extends PlumAbstractServiceImpl implements ApiServic
         urlBuilder.append(searchMonth);
         urlBuilder.append("&obsr_Spot_Code=");
         urlBuilder.append(obsrSpotCode);
-        URL url = new URL(urlBuilder.toString());
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        conn.setRequestProperty("Content-type", "application/json");
-        BufferedReader rd;
-        if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
-            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        } else {
-            rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
-        }
+        HttpURLConnection conn = null;
+        BufferedReader rd = null;
         StringBuilder sb = new StringBuilder();
-        String line = rd.readLine();
-        while(line != null) {
-            sb.append(line);
+        try {
+            URL url = new URL(urlBuilder.toString());
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Content-type", "application/json");
+            if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+                rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            } else {
+                rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+            }
+            String line = rd.readLine();
+            while(line != null) {
+                sb.append(line);
+            }
+        } catch (MalformedURLException e) {
+            log.error("getWeatherMonDayList.MalformedURLException");
+        } catch (IOException e) {
+            log.error("getWeatherMonDayList.IOException");
+        } finally {
+            if (rd != null) {
+                rd.close();
+            }
+            if (conn != null) {
+                conn.disconnect();
+            }
         }
-        rd.close();
-        conn.disconnect();
         
         JSONObject jsonObject = XML.toJSONObject(sb.toString());
         Map<String, Object> response = new ObjectMapper().readValue(jsonObject.toString(), Map.class);

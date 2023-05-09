@@ -1,5 +1,6 @@
 package com.kbrainc.plum.cmm.analytics.controller;
 
+
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
@@ -29,20 +30,26 @@ import com.google.api.services.analyticsreporting.v4.model.ReportRequest;
 import com.google.api.services.analyticsreporting.v4.model.ReportRow;
 import com.kbrainc.plum.rte.util.CommonUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class HelloAnalyticsReporting {
   private static final String APPLICATION_NAME = "Hello Analytics Reporting";
   private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
   private static final String KEY_FILE_LOCATION = CommonUtil.anayticsKeyFilePath;
   private static final String VIEW_ID = "G-Q8G232E9CL";
   public static void main(String[] args) {
-    try {
-      AnalyticsReporting service = initializeAnalyticsReporting();
-
-      GetReportsResponse response = getReport(service);
-      printResponse(response);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+    
+      try {
+          AnalyticsReporting service = initializeAnalyticsReporting();
+          GetReportsResponse response = getReport(service);
+          printResponse(response);
+      } catch(GeneralSecurityException e) {
+          log.error("main.GeneralSecurityException");
+      } catch(IOException e) {
+          log.error("main.IOException");
+      }
+    
   }
 
   /**
@@ -119,7 +126,7 @@ public class HelloAnalyticsReporting {
       List<ReportRow> rows = report.getData().getRows();
 
       if (rows == null) {
-         //System.out.println("No data found for " + VIEW_ID);
+         System.out.println("No data found for " + VIEW_ID);
          return;
       }
 
@@ -128,14 +135,14 @@ public class HelloAnalyticsReporting {
         List<DateRangeValues> metrics = row.getMetrics();
 
         for (int i = 0; i < dimensionHeaders.size() && i < dimensions.size(); i++) {
-          //System.out.println(dimensionHeaders.get(i) + ": " + dimensions.get(i));
+          System.out.println(dimensionHeaders.get(i) + ": " + dimensions.get(i));
         }
 
         for (int j = 0; j < metrics.size(); j++) {
-          //System.out.print("Date Range (" + j + "): ");
+          System.out.print("Date Range (" + j + "): ");
           DateRangeValues values = metrics.get(j);
           for (int k = 0; k < values.getValues().size() && k < metricHeaders.size(); k++) {
-            //System.out.println(metricHeaders.get(k).getName() + ": " + values.getValues().get(k));
+            System.out.println(metricHeaders.get(k).getName() + ": " + values.getValues().get(k));
           }
         }
       }

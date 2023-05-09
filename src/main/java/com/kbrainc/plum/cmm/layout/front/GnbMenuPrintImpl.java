@@ -481,7 +481,6 @@ public class GnbMenuPrintImpl {
                                     menuTag.append("                            </a>\n");
                                     menuTag.append("                        </li>\n");
                                     break;
-                            default: break;
                         }
                         
                         menuTag.append("                    </ul>\n");

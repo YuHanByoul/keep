@@ -235,21 +235,21 @@ public class RgnEnveduCntrController {
     *
     * @Title : deleteEnveduCntr
     * @Description : 지역환경교육센터 삭제 기능
-    * @param rgnEnveduCntrVo 지역환경교육센터 객체
+    * @param RgnEnveduCntrVo 지역환경교육센터 객체
     * @param user 유저 세션정보
     * @throws Exception 예외
     * @return Map<String,Object>
     */
     @RequestMapping(value = "/mng/rgnEnveduCntr/deleteRgnEnveduCntr.do")
     @ResponseBody
-    public Map<String, Object> deleteEnveduCntr(RgnEnveduCntrVo rgnEnveduCntrVo, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> deleteEnveduCntr(RgnEnveduCntrVo RgnEnveduCntrVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         
-        rgnEnveduCntrVo.setUser(user);
+        RgnEnveduCntrVo.setUser(user);
 
         int retVal = 0;
                 
-        retVal = rgnEnveduCntrService.deleteRgnEnveduCntr(rgnEnveduCntrVo);
+        retVal = rgnEnveduCntrService.deleteRgnEnveduCntr(RgnEnveduCntrVo);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -267,7 +267,7 @@ public class RgnEnveduCntrController {
     *
     * @Title : updateEnveduCntr
     * @Description : 지역환경교육센터 수정 기능
-    * @param rgnEnveduCntrVo 지역환경교육센터 객체
+    * @param RgnEnveduCntrVo 지역환경교육센터 객체
     * @param bindingResult 지역환경교육센터 유효성 검증결과
     * @param user 유저 세션정보
     * @throws Exception 예외
@@ -275,7 +275,7 @@ public class RgnEnveduCntrController {
     */
     @RequestMapping(value = "/mng/rgnEnveduCntr/updateRgnEnveduCntr.do")
     @ResponseBody
-    public Map<String, Object> updateRgnEnveduCntr(@Valid RgnEnveduCntrVo rgnEnveduCntrVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> updateRgnEnveduCntr(@Valid RgnEnveduCntrVo RgnEnveduCntrVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         
         if (bindingResult.hasErrors()) {
@@ -286,11 +286,11 @@ public class RgnEnveduCntrController {
             return resultMap;
         }
         
-        rgnEnveduCntrVo.setUser(user);
+        RgnEnveduCntrVo.setUser(user);
 
         int retVal = 0;
                 
-        retVal = rgnEnveduCntrService.updateRgnEnveduCntr(rgnEnveduCntrVo);
+        retVal = rgnEnveduCntrService.updateRgnEnveduCntr(RgnEnveduCntrVo);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);

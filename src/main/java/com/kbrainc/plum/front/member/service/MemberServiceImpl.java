@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import com.kbrainc.plum.cmm.bbs.controller.CmmBbsController;
 import com.kbrainc.plum.cmm.esylgn.model.EsylgnDao;
 import com.kbrainc.plum.cmm.model.CommonDao;
 import com.kbrainc.plum.front.member.model.MemberAcntPswdFindVo;
@@ -47,6 +48,7 @@ import com.kbrainc.plum.rte.util.StringUtil;
 import com.penta.scpdb.ScpDbAgent;
 
 import WiseAccess.SSO;
+import lombok.extern.slf4j.Slf4j;
 
 /**
 * 회원정보 서비스 구현 클래스.
@@ -65,6 +67,7 @@ import WiseAccess.SSO;
 */
 @Service("front.memberServiceImpl")
 @Alias("front.memberServiceImpl")
+@Slf4j
 public class MemberServiceImpl extends PlumAbstractServiceImpl implements MemberService {
 
     @Resource(name = "front.memberDao")
@@ -438,11 +441,11 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
                     return objectDoc.get("h_code").toString().substring(0, 5);
                 } 
             } catch (ParseException e) { 
-                e.printStackTrace(); 
+                log.error("getSignguCdWithaddress.ParseException"); 
             } 
         }
         catch(RestClientException e) { 
-            e.printStackTrace(); 
+            log.error("getSignguCdWithaddress.RestClientException"); 
         } 
         
         return "";

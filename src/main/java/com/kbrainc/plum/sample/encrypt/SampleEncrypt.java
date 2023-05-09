@@ -65,10 +65,9 @@ public class SampleEncrypt {
 		logger.info("Hashed : {}", digested.toString());
 		
 		// crypto.hashed.password 생성시작
-		//String password = cryptoKey;
     	//EgovPasswordEncoder passwordEncoder = new EgovPasswordEncoder();
     	//passwordEncoder.setAlgorithm("SHA-256");
-    	//String hashed = passwordEncoder.encryptPassword(password);
+    	//String hashed = passwordEncoder.encryptPassword(cryptoKey);
     	//logger.info("Hashed : {}", hashed);
     	// crypto.hashed.password 생성끝
 	}

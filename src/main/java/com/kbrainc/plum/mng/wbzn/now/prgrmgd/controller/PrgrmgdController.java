@@ -65,12 +65,12 @@ public class PrgrmgdController {
         int curMonth = Integer.valueOf(DateTimeUtil.getMonth());
         model.addAttribute("curMonth", curMonth);
         
-        String[] month = new String[12];
+        String[] Month = new String[12];
         
         for(int i = 1, j = 0; i <= 12 && j < 12; i++, j++) {
-            month[j] = String.format( "%1$02d" , i );
+            Month[j] = String.format( "%1$02d" , i );
         }
-        model.addAttribute("month", month);
+        model.addAttribute("month", Month);
         
         return "mng/wbzn/now/prgrmgd/prgrmgdList";
     }
@@ -94,12 +94,12 @@ public class PrgrmgdController {
         }
         model.addAttribute("years", years);
         
-        String[] month = new String[12];
+        String[] Month = new String[12];
         
         for(int i = 1, j = 0; i <= 12 && j < 12; i++, j++) {
-            month[j] = String.format( "%1$02d" , i );
+            Month[j] = String.format( "%1$02d" , i );
         }
-        model.addAttribute("month", month);
+        model.addAttribute("month", Month);
         
         return "mng/wbzn/now/prgrmgd/prgrmgdInsertForm";
     }
@@ -128,12 +128,12 @@ public class PrgrmgdController {
         }
         model.addAttribute("years", years);
         
-        String[] month = new String[12];
+        String[] Month = new String[12];
         
         for(int i = 1, j = 0; i <= 12 && j < 12; i++, j++) {
-            month[j] = String.format( "%1$02d" , i );
+            Month[j] = String.format( "%1$02d" , i );
         }
-        model.addAttribute("month", month);
+        model.addAttribute("month", Month);
         
         if(prgrmgdVo.getThmbnFileid() != 0 && result.getFileIdntfcKey() != null) {
             StringBuffer fileBtn = new StringBuffer();

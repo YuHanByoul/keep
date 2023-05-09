@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.kbrainc.plum.cmm.error.controller.CustomErrorController;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileServiceImpl;
+import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.front.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.DsgnSrngFormVo;
@@ -38,7 +39,6 @@ import com.kbrainc.plum.mng.code.model.CodeVo;
 import com.kbrainc.plum.mng.code.service.CodeServiceImpl;
 import com.kbrainc.plum.mng.inst.model.InstVo;
 import com.kbrainc.plum.mng.inst.service.InstServiceImpl;
-import com.kbrainc.plum.mng.member.model.MemberVo;
 import com.kbrainc.plum.mng.tchaid.service.TchaidService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -72,6 +72,9 @@ public class AsgsysSrngController {
 
 	@Autowired
     private AsgsysSrngServiceImpl asgsysSrngService;
+
+	@Autowired
+    private CommonService commonService;
 
 	@Autowired
     private CodeServiceImpl codeService;
@@ -125,6 +128,34 @@ public class AsgsysSrngController {
         resultMap.put("list", result);
 
         return resultMap;
+    }
+
+    /**
+    * 지정신청 등록 화면 이동
+    *
+    * @Title : dsgnAplyDetailForm
+    * @Description : 지정신청 등록 화면 이동
+    * @param asgsysSrngVo
+    * @param model
+    * @return
+    * @throws Exception
+    * @return String
+    */
+    @RequestMapping(value = "/mng/asgsysSrng/dsgnAplyForm.html")
+    public String dsgnAplyForm(AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user, Model model) throws Exception {
+
+    	user.getInstid();
+    	user.getName();
+    	user.getNm();
+    	user.getUserid();
+
+    	asgsysSrngVo.setUserid(user.getUserid());
+    	model.addAttribute("instInfo"   , asgsysSrngService.selectInstInfo(asgsysSrngVo));
+
+    	InstVo instVo = new InstVo();
+    	model.addAttribute("typeCdList" , instService.selectInstTypeCdList(instVo));
+    	model.addAttribute("sidoList"   , commonService.selectCtprvnList());
+    	return "mng/asgsysSrng/dsgnAplyForm";
     }
 
     /**
@@ -226,8 +257,8 @@ public class AsgsysSrngController {
      */
     @RequestMapping(value = "/mng/asgsysSrng/mbrSrchPopup.html")
     public String mbrSrchPopup(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
-    	model.addAttribute("instid", asgsysSrngVo.getInstid());
-    	model.addAttribute("prgrmid", asgsysSrngVo.getPrgrmid());
+    	//model.addAttribute("instid", asgsysSrngVo.getInstid());
+    	//model.addAttribute("prgrmid", asgsysSrngVo.getPrgrmid());
 
     	return "mng/asgsysSrng/mbrSrchPopup";
     }
@@ -243,7 +274,7 @@ public class AsgsysSrngController {
     @ResponseBody
     public Map<String, Object> selectMbrList(AsgsysSrngVo asgsysSrngVo) throws Exception {
   	   Map<String, Object> resultMap = new HashMap<>();
-        List<MemberVo> result = null;
+        List<AsgsysSrngVo> result = null;
 
         result = asgsysSrngService.selectMbrList(asgsysSrngVo);
 
@@ -256,6 +287,13 @@ public class AsgsysSrngController {
         resultMap.put("mbrList", result);
 
         return resultMap;
+    }
+
+    @RequestMapping(value = "/mng/asgsysSrng/prgrmDstnctnForm.html")
+    public String prgrmDstnctnForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
+    	//model.addAttribute("instid", asgsysSrngVo.getInstid());
+    	//model.addAttribute("prgrmid", asgsysSrngVo.getPrgrmid());
+    	return "mng/asgsysSrng/prgrmDstnctnForm";
     }
 
     /**
@@ -450,6 +488,7 @@ public class AsgsysSrngController {
     	model.addAttribute("scrHeader", asgsysSrngService.selectSrngScrHeader(asgsysSrngVo));
     	model.addAttribute("srngScrList", srngScrList);
 
+
     	//if(srngScrList.size() > 0) {
     	//}
 
@@ -622,15 +661,15 @@ public class AsgsysSrngController {
     }
 
     /**
-    * @Title : prgrmDstnctn
+    * @Title : prgrmDstnctnUpdate
     * @Description : 지정신청-프로그램우수성 탭
     * @param AsgsysSrngVo객체
     * @param model 모델객체
     * @return String 이동화면경로
     * @throws Exception 예외
     */
-    @RequestMapping(value = "/mng/asgsysSrng/prgrmDstnctn.html")
-    public String prgrmDstnctnForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
+    @RequestMapping(value = "/mng/asgsysSrng/prgrmDstnctnUpdate.html")
+    public String prgrmDstnctnUpdate(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
 
     	PrgrmSchdlVo prgrmSchdlVo = new PrgrmSchdlVo();
     	EmrgcyActnPlanVo emrgcyActnPlanVo = new EmrgcyActnPlanVo();
@@ -699,7 +738,7 @@ public class AsgsysSrngController {
     	}
     	model.addAttribute("eduPhotoFileList", eduPhotoFileList);
 
-    	return "mng/asgsysSrng/prgrmDstnctn";
+    	return "mng/asgsysSrng/prgrmDstnctnUpdate";
     }
 
     /**

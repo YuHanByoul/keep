@@ -32,7 +32,7 @@ import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 public class CarbonOpnnController {
     
     @Autowired
-    private CarbonOpnnService opnnService;
+    private CarbonOpnnService OpnnService;
     
     /**
     * 독자소리 리스트화면으로 이동
@@ -62,7 +62,7 @@ public class CarbonOpnnController {
         Map<String, Object> resultMap = new HashMap<>();
         List<CarbonOpnnVo> result = null;
         
-        result =  opnnService.selectOpnnList(opnnVo);
+        result =  OpnnService.selectOpnnList(opnnVo);
         
         if (result.size() > 0) {
             resultMap.put("totalCount", (result.get(0).getTotalCount()));

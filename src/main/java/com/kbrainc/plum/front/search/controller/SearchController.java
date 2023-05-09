@@ -44,7 +44,7 @@ public class SearchController {
     SearchService searchService;
         
     /** 한글초성 */
-    private final String [] INITIAL_STRING = {
+    private String [] INITIAL_STRING = {
             "ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", 
             "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", 
             "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", 

@@ -118,6 +118,22 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     }
 
 	/**
+	* 기관정보 조회
+	*
+	* @Title : selectInstInfo
+	* @Description : 기관정보 조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return AsgsysSrngVo
+	*/
+    @Override
+	public AsgsysSrngVo selectInstInfo(AsgsysSrngVo asgsysSrngVo) throws Exception{
+    	return asgsysSrngDao.selectInstInfo(asgsysSrngVo);
+    }
+
+
+	/**
 	* 프로그램상태코드 조회
 	*
 	* @Title : selectPrgrmSttsCd
@@ -1793,7 +1809,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     * @throws Exception
     */
     @Override
-	public List<MemberVo> selectMbrList(AsgsysSrngVo asgsysSrngVo) throws Exception {
+	public List<AsgsysSrngVo> selectMbrList(AsgsysSrngVo asgsysSrngVo) throws Exception {
 		return asgsysSrngDao.selectMbrList(asgsysSrngVo);
 
 	}

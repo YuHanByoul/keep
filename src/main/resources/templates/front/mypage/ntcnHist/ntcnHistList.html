@@ -5,7 +5,7 @@
 
 <div layout:fragment="content">
 	<div class="alarm-wrap">
-	    <div class="table-caption flex-nowrap">
+	    <div class="table-caption flex-nowrap" style="display:none;">
 	        <div class="right"><button type="button" class="btn-small btn-outline-black" onclick="ntcnHist.delNtcn()">알림 모두 삭제</button></div>
 	    </div>
 	    <dl id="ntcnAlarmDl">
@@ -68,6 +68,12 @@
                         type: 'GET',
                         success: function (data) {
                         	//var data = escapeData(data);
+                        	if (data.list == null || data.list.length <= 0) {
+                        		$(".flex-nowrap").hide(); // 알림 없을 경우 숨김	
+                        	}else{
+                        		$(".flex-nowrap").show(); // 알림 있을 경우 표시
+                        	}
+                        	
                             $("#ntcnAlarmDl").html(ntcnHist.makeListHtml(data.list));
                             closeWorkProgress();
                         }
@@ -78,7 +84,7 @@
             makeListHtml(list) {
                 let html = "";
                 if (list == null || list.length <= 0) {
-                	html += `<div class="nodata">
+                	html += `<div class="nodata noborder">
                         <p><span class="icon icon-notice bg-black9"></span>알림 내역이 없습니다.</p>
                         </div>`;
                 } else {

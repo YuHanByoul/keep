@@ -8,6 +8,9 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 
 import com.kbrainc.plum.rte.configuration.ConfigurationFactory;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class ServletInitializer extends SpringBootServletInitializer {
 
     @Override
@@ -19,7 +22,7 @@ public class ServletInitializer extends SpringBootServletInitializer {
             profile = (String) initialContext.lookup("java:comp/env/spring.profiles.active");
         } catch (NamingException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("configure.NamingException");
         }  
         ConfigurationFactory.profile = profile;
         return application.sources(PlumApplication.class);

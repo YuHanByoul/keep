@@ -45,6 +45,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	/** 호출화면 */
 	private String opner;
 
+	/** 핸드폰번호 */
+	private String moblphon;
+
 	/** RANK */
 	private String rnk;
 
@@ -223,6 +226,12 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	/** 사업자_등록번호 */
 	private String rprsvNm;
 
+	/** 주소 */
+	private String addr;
+
+	/** 상세주소 */
+	private String addrDtl;
+
     /** 기관_이메일 */
 	private String instEml;
 
@@ -240,6 +249,12 @@ public class AsgsysSrngVo extends ParentRequestVo {
 
 	/** 기관_지역_코드 명*/
 	private String instRgnCdNm;
+
+	/** 지역_코드*/
+	private String ctprvnCd;
+
+	/** 지역_코드 명*/
+	private String ctprvnNm;
 
     /** 기관_우편번호 */
 	private String instZip;
@@ -734,6 +749,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
 
     /** 전화번호 */
     private String telno;
+
+    /** 기관 전화번호 */
+    private String instTelno;
 
     /** 자격증명 */
     private String crtfctNm;

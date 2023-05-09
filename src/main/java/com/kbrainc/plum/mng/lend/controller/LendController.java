@@ -255,22 +255,32 @@ public class LendController {
         }
         lendVo.setUser(user);
         
+        String isThereReservation = "N";
+        
         if(lendService.checkPackageDuplicationYn(lendVo).equals("Y")) {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
             resultMap.put("msg", "같은 기간에 꾸러미가 중복된 대여 모집이 있습니다.");
             return resultMap;
         }
         
+        List<Integer> deleteIds =  new ArrayList();
+        deleteIds.add(lendVo.getRcritid());
+        lendVo.setDeleteIds(deleteIds);
+        //대여 신청건이 존재 하는지 여부에 일정(차시)수정 가능 여부 판단   
+        if(lendService.selectLendApplyYn(lendVo).equals("Y")){
+            isThereReservation = "Y";
+        }
+        
+        lendVo.setIsThereReservation(isThereReservation);
         retVal = lendService.udateLend(lendVo);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "저장에 성공하였습니다.");
+            resultMap.put("msg", (isThereReservation.equals("N"))?"저장에 성공하였습니다.":"이미 대여 신청한 이력이 있어 차시 일정을 제외한 정보만 저장되었습니다. ");
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
             resultMap.put("msg", "저장에 실패했습니다.");
         }
-        
         return resultMap;
     }
     /**

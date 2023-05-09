@@ -26,7 +26,7 @@ import com.kbrainc.plum.cmm.kogl.model.LicenseTypeVo;
 public class KoglLicense {
 
         /** 라이센스 정보 map */
-        private final Map<String, LicenseTypeVo> info = new HashMap<String, LicenseTypeVo>();
+        private Map<String, LicenseTypeVo> info = new HashMap<String, LicenseTypeVo>();
     
         /**
         * Desc : license정보 셋팅

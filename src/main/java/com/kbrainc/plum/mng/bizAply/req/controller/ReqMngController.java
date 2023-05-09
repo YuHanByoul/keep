@@ -961,25 +961,25 @@ public class ReqMngController {
     @RequestMapping(value="/mng/bizAply/req/detailSrng.html")
     public String detailSrng(SrngTabVo srngTabVo, Model model) throws Exception {
         
-        List<SrngTabVo> list1 = null;
-        List<SrngTabVo> list2 = null;
+        List<SrngTabVo> list_1 = null;
+        List<SrngTabVo> list_2 = null;
         if (srngTabVo != null) {
             if (srngTabVo.getAplyid() > 0) {
                 srngTabVo.setCycl(1);
-                list1 = this.reqMngService.selectSrngList(srngTabVo);                
+                list_1 = this.reqMngService.selectSrngList(srngTabVo);                
                 srngTabVo.setCycl(2);
-                list2 = this.reqMngService.selectSrngList(srngTabVo);                
+                list_2 = this.reqMngService.selectSrngList(srngTabVo);                
             }
         }
         
-        if (CollectionUtils.isEmpty(list1))
-            list1 = new ArrayList<SrngTabVo>();
-        if (CollectionUtils.isEmpty(list2))
-            list2 = new ArrayList<SrngTabVo>();
+        if (CollectionUtils.isEmpty(list_1))
+            list_1 = new ArrayList<SrngTabVo>();
+        if (CollectionUtils.isEmpty(list_2))
+            list_2 = new ArrayList<SrngTabVo>();
         
         model.addAttribute("aplyid", srngTabVo == null ? "" : srngTabVo.getAplyid());
-        model.addAttribute("list_1", list1);
-        model.addAttribute("list_2", list2);
+        model.addAttribute("list_1", list_1);
+        model.addAttribute("list_2", list_2);
         
         return "mng/bizAply/req/detailSrng";
     }
@@ -998,29 +998,29 @@ public class ReqMngController {
     @RequestMapping(value="/mng/bizAply/req/detailSrngDtl.html")
     public String detailSrngDtl(SrngTabVo srngTabVo, Model model) throws Exception {
         
-        List<SrngTabVo> list1 = null;
-        List<SrngTabVo> list2 = null;
-        List<SrngTabVo> list3 = null;
+        List<SrngTabVo> list_1 = null;
+        List<SrngTabVo> list_2 = null;
+        List<SrngTabVo> list_3 = null;
         if (srngTabVo != null) {
             if (srngTabVo.getAplyid() > 0) {
-                list1 = this.reqMngService.selectSrngList(srngTabVo);
-                list2 = this.reqMngService.detailSrngList(srngTabVo);
-                list3 = this.reqMngService.selectSrngUserList(srngTabVo);
+                list_1 = this.reqMngService.selectSrngList(srngTabVo);
+                list_2 = this.reqMngService.detailSrngList(srngTabVo);
+                list_3 = this.reqMngService.selectSrngUserList(srngTabVo);
             }
         }
         
-        if (CollectionUtils.isEmpty(list1))
-            list1 = new ArrayList<SrngTabVo>();
-        if (CollectionUtils.isEmpty(list2))
-            list2 = new ArrayList<SrngTabVo>();
-        if (CollectionUtils.isEmpty(list3))
-            list3 = new ArrayList<SrngTabVo>();
+        if (CollectionUtils.isEmpty(list_1))
+            list_1 = new ArrayList<SrngTabVo>();
+        if (CollectionUtils.isEmpty(list_2))
+            list_2 = new ArrayList<SrngTabVo>();
+        if (CollectionUtils.isEmpty(list_3))
+            list_3 = new ArrayList<SrngTabVo>();
         
         model.addAttribute("aplyid", srngTabVo == null ? "" : srngTabVo.getAplyid());
         model.addAttribute("cycl", srngTabVo == null ? "" : srngTabVo.getCycl());
-        model.addAttribute("list_1", list1);
-        model.addAttribute("list_2", list2);
-        model.addAttribute("list_3", list3);
+        model.addAttribute("list_1", list_1);
+        model.addAttribute("list_2", list_2);
+        model.addAttribute("list_3", list_3);
         
         return "mng/bizAply/req/detailSrngDtl";
     }

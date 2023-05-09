@@ -16,6 +16,8 @@ import com.kbrainc.plum.rte.exception.MyFileNotFoundException;
 import com.kbrainc.plum.rte.exception.ParameterNotFoundException;
 import com.kbrainc.plum.rte.exception.RestfulException;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * 
  * 처리하고자 하는 Exception을 등록하고 처리한다. 
@@ -47,8 +49,8 @@ public class ExceptionHandlingController {
      */
     @ExceptionHandler({ Exception.class })
     public String getCommonException(Exception e) {
-        //logger.error("getCommonException.Exception.50L");
-        e.printStackTrace();
+        logger.error("getCommonException.Exception.53L");
+        //e.printStackTrace();
         return "error/error_500";
     }
     
