@@ -188,10 +188,25 @@ public class ClclnDsctnController {
         }
         if(result.getAtchFileIdntfcKey() != null) {
             StringBuffer atchFileBtn = new StringBuffer();
-            atchFileBtn.append("<div class ='label label-inverse text-white' id='" + result.getAtchFileid() + "'>");
-            atchFileBtn.append("<a href=javascript:downloadFileByFileid('" + result.getAtchFileid() + "','" + result.getAtchFileIdntfcKey() + "') class='text-white'>" + result.getAtchOrginlFileNm() + "&nbsp;&nbsp;</a>");
-            atchFileBtn.append("<a href=javascript:fn_deleteAtchFileList('" + result.getAtchFileid() + "','" + result.getAtchFileIdntfcKey() + "') class='text-white'>X</a></div>");
-            model.addAttribute("atchFileBtn", atchFileBtn);
+            atchFileBtn.append("<div class ='label label-inverse text-white' id='");
+            atchFileBtn.append(result.getAtchFileid());
+            atchFileBtn.append("'>");
+            
+            atchFileBtn.append("<a href=javascript:downloadFileByFileid('");
+            atchFileBtn.append(result.getAtchFileid());
+            atchFileBtn.append("','");
+            atchFileBtn.append(result.getAtchFileIdntfcKey());
+            atchFileBtn.append("') class='text-white'>");
+            atchFileBtn.append(result.getAtchOrginlFileNm());
+            atchFileBtn.append("&nbsp;&nbsp;</a>");
+            
+            atchFileBtn.append("<a href=javascript:fn_deleteFileList('");
+            atchFileBtn.append(result.getAtchFileid());
+            atchFileBtn.append("','");
+            atchFileBtn.append(result.getAtchFileIdntfcKey());
+            atchFileBtn.append("') class='text-white'>X</a></div>");
+            
+            model.addAttribute("atchFileBtn", atchFileBtn.toString());
         }
         if (!StringUtil.nvl(result.getBnkbFileid()).equals("") && !StringUtil.nvl(result.getBnkbFileid()).equals(0)) {
             FileVo fileVo = new FileVo();
@@ -201,10 +216,26 @@ public class ClclnDsctnController {
             
             if(bnkbFileRsltList.get(0).getFileIdntfcKey() != null) {
                 StringBuffer bnkbFileBtn = new StringBuffer();
-                bnkbFileBtn.append("<div class ='label label-inverse text-white' id='" + bnkbFileRsltList.get(0).getFileid() + "'>");
-                bnkbFileBtn.append("<a href=javascript:downloadFileByFileid('" + bnkbFileRsltList.get(0).getFileid() + "','" + bnkbFileRsltList.get(0).getFileIdntfcKey() + "') class='text-white'>" + bnkbFileRsltList.get(0).getOrginlFileNm() + "&nbsp;&nbsp;</a>");
-                bnkbFileBtn.append("<a href=javascript:fn_deleteBnkbFileList('" + bnkbFileRsltList.get(0).getFileid() + "','" + bnkbFileRsltList.get(0).getFileIdntfcKey() + "') class='text-white'>X</a></div>");
-                model.addAttribute("bnkbFileBtn", bnkbFileBtn);
+                
+                bnkbFileBtn.append("<div class ='label label-inverse text-white' id='");
+                bnkbFileBtn.append(bnkbFileRsltList.get(0).getFileid());
+                bnkbFileBtn.append("'>");
+                
+                bnkbFileBtn.append("<a href=javascript:downloadFileByFileid('");
+                bnkbFileBtn.append(bnkbFileRsltList.get(0).getFileid());
+                bnkbFileBtn.append("','");
+                bnkbFileBtn.append(bnkbFileRsltList.get(0).getFileIdntfcKey());
+                bnkbFileBtn.append("') class='text-white'>");
+                bnkbFileBtn.append(bnkbFileRsltList.get(0).getOrginlFileNm());
+                bnkbFileBtn.append("&nbsp;&nbsp;</a>");
+                
+                bnkbFileBtn.append("<a href=javascript:fn_deleteFileList('");
+                bnkbFileBtn.append(bnkbFileRsltList.get(0).getFileid());
+                bnkbFileBtn.append("','");
+                bnkbFileBtn.append(bnkbFileRsltList.get(0).getFileIdntfcKey());
+                bnkbFileBtn.append("') class='text-white'>X</a></div>");
+                
+                model.addAttribute("bnkbFileBtn", bnkbFileBtn.toString());
             }
             model.addAttribute("bankFile", fileService.getFileList(fileVo).get(0));
         } else {
