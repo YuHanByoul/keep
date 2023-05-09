@@ -199,7 +199,6 @@ public class ApiServiceImpl extends PlumAbstractServiceImpl implements ApiServic
     * @Description : 농업기상 관측지점 정보 조회
     * @param doSeCode 도 구분코드
     * @return Map<String,Object> 조회결과
-     * @throws MalformedURLException 
     * @throws Exception 예외
     */
     @Override
@@ -229,15 +228,15 @@ public class ApiServiceImpl extends PlumAbstractServiceImpl implements ApiServic
             while(line != null) {
                 sb.append(line);
             }
-        } catch (MalformedURLException e) {
+        } catch(MalformedURLException e) {
             log.error("getObsrSpotList.MalformedURLException");
-        } catch (IOException e) {
+        } catch(IOException e) {
             log.error("getObsrSpotList.IOException");
         } finally {
-            if (rd != null) {
+            if(rd != null) {
                 rd.close();
             }
-            if (conn != null) {
+            if(conn != null) {
                 conn.disconnect();
             }
         }
@@ -283,19 +282,19 @@ public class ApiServiceImpl extends PlumAbstractServiceImpl implements ApiServic
             } else {
                 rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
             }
-            String line = rd.readLine();
-            while(line != null) {
+            String line = null;
+            while((line = rd.readLine()) != null) {
                 sb.append(line);
             }
-        } catch (MalformedURLException e) {
-            log.error("getWeatherTimeList.MalformedURLException");
-        } catch (IOException e) {
-            log.error("getWeatherTimeList.IOException");
+        } catch(MalformedURLException e) {
+            log.error("getObsrSpotList.MalformedURLException");
+        } catch(IOException e) {
+            log.error("getObsrSpotList.IOException");
         } finally {
-            if (rd != null) {
+            if(rd != null) {
                 rd.close();
             }
-            if (conn != null) {
+            if(conn != null) {
                 conn.disconnect();
             }
         }
@@ -343,19 +342,19 @@ public class ApiServiceImpl extends PlumAbstractServiceImpl implements ApiServic
             } else {
                 rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
             }
-            String line = rd.readLine();
-            while(line != null) {
+            String line = null;
+            while((line = rd.readLine()) != null) {
                 sb.append(line);
             }
-        } catch (MalformedURLException e) {
+        } catch(MalformedURLException e) {
             log.error("getWeatherMonDayList.MalformedURLException");
-        } catch (IOException e) {
+        } catch(IOException e) {
             log.error("getWeatherMonDayList.IOException");
         } finally {
-            if (rd != null) {
+            if(rd != null) {
                 rd.close();
             }
-            if (conn != null) {
+            if(conn != null) {
                 conn.disconnect();
             }
         }

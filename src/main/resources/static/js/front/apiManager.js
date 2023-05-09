@@ -466,7 +466,7 @@ var apiManager = {
                 try {
                     if(main.envfldCd != "104105") return false;
                 } catch {
-                    //console.log("서비스 제공상태가 원할하지 않습니다.");
+                    main.setWidgetStatus("error", null, "서비스 제공상태가 원할하지 않습니다.<br/>잠시후 다시 시도해주세요.");
                 }
             }
         });
@@ -480,6 +480,7 @@ var apiManager = {
             , data: {dateTime: $.datepicker.formatDate("yy-mm-dd", new Date()), obsrSpotCode: obsrSpotCode} 
             , cache: false
             , success: function(result) {
+                console.log(result);
                 try {
                     if(result.response) {
                         if(main.envfldCd != "104105") return false;
