@@ -147,7 +147,8 @@ public class EduInstController {
         if(null != eduInstVo.getAplyid() && 0 != eduInstVo.getAplyid()) {
             instDsgnInfoVo = eduInstService.selectInstDsgnInfo(eduInstVo);
             //첨부파일
-            if (!StringUtil.nvl(instDsgnInfoVo.getFilegrpid()).equals("") && !StringUtil.nvl(instDsgnInfoVo.getFilegrpid()).equals(0)) {
+            //if (!StringUtil.nvl(instDsgnInfoVo.getFilegrpid()).equals("") && !StringUtil.nvl(instDsgnInfoVo.getFilegrpid()).equals(0)) {
+            if (instDsgnInfoVo.getFilegrpid() != null && instDsgnInfoVo.getFilegrpid() != 0) {
                 FileVo fileVo = new FileVo();
                 fileVo.setFilegrpid(instDsgnInfoVo.getFilegrpid());
                 model.addAttribute("fileList", fileService.getFileList(fileVo));
@@ -207,7 +208,7 @@ public class EduInstController {
     @RequestMapping(value = "/mng/eduInst/instDsgnInfoChgPopup.html")
     public String dsgnInfoChgPopup(EduInstVo eduInstVo, Model model) throws Exception {
         EduInstVo dsgnDsctnInfo = new EduInstVo();
-
+        EduInstVo eduInstSelectVo = new EduInstVo();
         model.addAttribute("callSe", eduInstVo.getCallSe());
         //지정내역 조회
         List<EduInstVo> dsgnDsctnList =  this.eduInstService.selectDsgnDsctn(eduInstVo);
@@ -216,13 +217,13 @@ public class EduInstController {
         //최초 지정승인
         if(dsgnDsctnList.size() == 0) {
             //지정번호 조회
-            eduInstVo = this.eduInstService.selectDsgnNo(eduInstVo);
+            eduInstSelectVo = this.eduInstService.selectDsgnNo(eduInstVo);
             //BeanUtils.copyProperties(eduInstVo, dsgnDsctnInfo);
-            dsgnDsctnInfo.setAplyid(eduInstVo.getAplyid());
-            dsgnDsctnInfo.setDsgnNo(eduInstVo.getDsgnNo());
-            dsgnDsctnInfo.setDsgnDe(eduInstVo.getDsgnDe());
-            dsgnDsctnInfo.setDsctnid(eduInstVo.getDsctnid());
-            dsgnDsctnInfo.setDsgnCnclDe(eduInstVo.getDsgnCnclDe());
+            dsgnDsctnInfo.setAplyid(eduInstSelectVo.getAplyid());
+            dsgnDsctnInfo.setDsgnNo(eduInstSelectVo.getDsgnNo());
+            dsgnDsctnInfo.setDsgnDe(eduInstSelectVo.getDsgnDe());
+            dsgnDsctnInfo.setDsctnid(eduInstSelectVo.getDsctnid());
+            dsgnDsctnInfo.setDsgnCnclDe(eduInstSelectVo.getDsgnCnclDe());
 
         }else {
             eduInstVo.setDsctnid(dsgnDsctnList.get(dsgnDsctnList.size() -1).getDsctnid());
@@ -380,7 +381,8 @@ public class EduInstController {
             planOutlInfo = eduInstService.selectOperPlan(eduInstVo);
 
             // 운영계획 첨부파일
-            if (!StringUtil.nvl(planOutlInfo.getAtchFilegrpid()).equals("") && !StringUtil.nvl(planOutlInfo.getAtchFilegrpid()).equals(0)) {
+            //if (!StringUtil.nvl(planOutlInfo.getAtchFilegrpid()).equals("") && !StringUtil.nvl(planOutlInfo.getAtchFilegrpid()).equals(0)) {
+            if (planOutlInfo.getAtchFilegrpid() != null && planOutlInfo.getAtchFilegrpid() != 0) {                
                 FileVo fileVo = new FileVo();
                 fileVo.setFilegrpid(planOutlInfo.getAtchFilegrpid());
                 model.addAttribute("fileList", fileService.getFileList(fileVo));
@@ -553,7 +555,8 @@ public class EduInstController {
         eduExprtList = eduInstService.selectEduExprtList(eduInstVo);
 
         for (EduExprtVo eduExprt : eduExprtList) {
-            if (!StringUtil.nvl(eduExprt.getAtchFilegrpid()).equals("") && !StringUtil.nvl(eduExprt.getAtchFilegrpid()).equals(0)) {
+            //if (!StringUtil.nvl(eduExprt.getAtchFilegrpid()).equals("") && !StringUtil.nvl(eduExprt.getAtchFilegrpid()).equals(0)) {
+            if (eduExprt.getAtchFilegrpid() != null && eduExprt.getAtchFilegrpid() != 0) {
                 FileVo fileVo = new FileVo();
                 fileVo.setFilegrpid(eduExprt.getAtchFilegrpid());
                 eduExprt.setFileList(fileService.getFileList(fileVo));
