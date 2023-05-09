@@ -62,12 +62,12 @@ public class EnveduController {
         }
         model.addAttribute("years", years);
         
-        String[] Month = new String[12];
+        String[] month = new String[12];
         
         for(int i = 1, j = 0; i <= 12 && j < 12; i++, j++) {
-            Month[j] = String.format( "%1$02d" , i );
+            month[j] = String.format( "%1$02d" , i );
         }
-        model.addAttribute("month", Month);
+        model.addAttribute("month", month);
         
         return "mng/wbzn/now/envedu/enveduList";
     }
@@ -91,15 +91,15 @@ public class EnveduController {
         }
         model.addAttribute("years", years);
         
-        String[] Month = new String[12];
+        String[] month = new String[12];
         
         int curMonth = Integer.valueOf(DateTimeUtil.getMonth());
         model.addAttribute("curMonth", curMonth);
         
         for(int i = 1, j = 0; i <= 12 && j < 12; i++, j++) {
-            Month[j] = String.format( "%1$02d" , i );
+            month[j] = String.format( "%1$02d" , i );
         }
-        model.addAttribute("month", Month);
+        model.addAttribute("month", month);
         
         return "mng/wbzn/now/envedu/enveduInsertForm";
     }
@@ -128,18 +128,34 @@ public class EnveduController {
         }
         model.addAttribute("years", years);
         
-        String[] Month = new String[12];
+        String[] month = new String[12];
         
         for(int i = 1, j = 0; i <= 12 && j < 12; i++, j++) {
-            Month[j] = String.format( "%1$02d" , i );
+            month[j] = String.format( "%1$02d" , i );
         }
-        model.addAttribute("month", Month);
+        model.addAttribute("month", month);
         
         if(enveduVo.getThmbnFileid() != 0 && result.getFileIdntfcKey() != null) {
             StringBuffer fileBtn = new StringBuffer();
-            fileBtn.append("<div class ='label label-inverse text-white' id='" + enveduVo.getThmbnFileid() + "'>");
-            fileBtn.append("<a href=javascript:downloadFileByFileid('" + enveduVo.getThmbnFileid() + "','" + result.getFileIdntfcKey() + "') class='text-white'>" + result.getOrginlFileNm() + "&nbsp;&nbsp;</a>");
-            fileBtn.append("<a href=javascript:fn_deleteFileList('" + enveduVo.getThmbnFileid() + "','" + result.getFileIdntfcKey() + "') class='text-white'>X</a></div>");
+            
+            fileBtn.append("<div class ='label label-inverse text-white' id='");
+            fileBtn.append(enveduVo.getThmbnFileid());
+            fileBtn.append("'>");
+            
+            fileBtn.append("<a href=javascript:downloadFileByFileid('");
+            fileBtn.append(enveduVo.getThmbnFileid());
+            fileBtn.append("','");
+            fileBtn.append(result.getFileIdntfcKey());
+            fileBtn.append("') class='text-white'>");
+            fileBtn.append(result.getOrginlFileNm());
+            fileBtn.append("&nbsp;&nbsp;</a>");
+            
+            fileBtn.append("<a href=javascript:fn_deleteFileList('");
+            fileBtn.append(enveduVo.getThmbnFileid());
+            fileBtn.append("','");
+            fileBtn.append(result.getFileIdntfcKey());
+            fileBtn.append("') class='text-white'>X</a></div>");
+            
             model.addAttribute("fileBtn", fileBtn);
         }
         
