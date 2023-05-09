@@ -3,6 +3,7 @@ package com.kbrainc.plum.front.cntnts.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.Resource;
 
@@ -101,7 +102,10 @@ public class CntntsController {
         model.addAttribute("cntnts", result);
         
         List<CntntsVo> file = cntntsService.selectCntntsFileList(cntntsVo);
-        model.addAttribute("file", file);
+        System.out.println(Objects.isNull(file.get(0)));
+        if(!Objects.isNull(file.get(0))) {
+            model.addAttribute("file", file);            
+        }
         
         model.addAttribute("eduSbjctCd", eduSbjctCd);
         model.addAttribute("menuPrgrmCntntsCd", eduSbjctCd);
