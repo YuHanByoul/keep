@@ -1,5 +1,6 @@
 package com.kbrainc.plum.cmm.analytics.controller;
 
+
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
@@ -29,6 +30,9 @@ import com.google.api.services.analyticsreporting.v4.model.ReportRequest;
 import com.google.api.services.analyticsreporting.v4.model.ReportRow;
 import com.kbrainc.plum.rte.util.CommonUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class HelloAnalyticsReporting {
   private static final String APPLICATION_NAME = "Hello Analytics Reporting";
   private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
@@ -41,7 +45,7 @@ public class HelloAnalyticsReporting {
       GetReportsResponse response = getReport(service);
       printResponse(response);
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error("main.Exception");
     }
   }
 
