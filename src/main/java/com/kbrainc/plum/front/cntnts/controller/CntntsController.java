@@ -102,7 +102,7 @@ public class CntntsController {
         model.addAttribute("cntnts", result);
         
         List<CntntsVo> file = cntntsService.selectCntntsFileList(cntntsVo);
-        System.out.println(Objects.isNull(file.get(0)));
+        //System.out.println(Objects.isNull(file.get(0)));
         if(!Objects.isNull(file.get(0))) {
             model.addAttribute("file", file);            
         }

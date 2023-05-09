@@ -41,6 +41,8 @@ import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.StringUtil;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
 * 체험환경교육 지원사업 -> 정산관리 -> 정산내역관리 컨트롤러 클래스
 **
@@ -57,6 +59,7 @@ import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
 @Controller
+@Slf4j
 public class ClclnDsctnController {
     
     @Autowired
@@ -505,7 +508,11 @@ public class ClclnDsctnController {
                     in = new FileInputStream(file);      //압축 대상 파일
                     zout.putNextEntry(new ZipEntry(fileName));  //압축파일에 저장될 파일명
                     int len;
-                    while((len = in.read(buffer)) > 0){
+                    while(true){
+                       len = in.read(buffer);
+                       if (len <= 0) {
+                           break;
+                       }
                        zout.write(buffer, 0, len);          //읽은 파일을 ZipOutputStream에 Write
                     }
                     zout.closeEntry();
@@ -524,7 +531,11 @@ public class ClclnDsctnController {
                  BufferedOutputStream bos = new BufferedOutputStream(so);
                  
                  int n = 0;
-                 while((n = bis.read(buffer)) > 0){
+                 while(true){
+                    n = bis.read(buffer);
+                    if (n <= 0) {
+                        break;
+                    }
                     bos.write(buffer, 0, n);
                     bos.flush();
                  }
@@ -535,7 +546,7 @@ public class ClclnDsctnController {
                  
                  //파일다운로드 END
               }catch(IOException e){
-                 //Exception
+                 log.error("fileCompressZIP.IOException");
               }finally{
                  if (zout != null){
                     zout = null;
