@@ -229,7 +229,7 @@ public class DsgnPrgrmController {
 
 		if(instInfo.getFilegrpid() !=null && instInfo.getFilegrpid() !=  "") {
 			FileVo fileVo = new FileVo();
-            fileVo.setFilegrpid(Integer.parseInt(instInfo.getFilegrpid().toString()));
+            fileVo.setFilegrpid(Integer.parseInt(instInfo.getFilegrpid()));
             ArrayList<FileVo> fileList= fileService.getFileList(fileVo);
             model.addAttribute("fileList", fileList);
             model.addAttribute("fileListCnt", fileList.size());

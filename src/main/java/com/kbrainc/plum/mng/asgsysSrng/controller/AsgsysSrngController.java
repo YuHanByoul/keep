@@ -159,6 +159,29 @@ public class AsgsysSrngController {
     }
 
     /**
+    * 기관정보 조회
+    *
+    * @Title : selectInstInfo
+    * @Description : 기관정보 조회
+    * @param asgsysSrngVo
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/mng/asgsysSrng/selectInstInfo.do")
+    @ResponseBody
+    public Map<String, Object> selectInstInfo(AsgsysSrngVo asgsysSrngVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        AsgsysSrngVo result = null;
+
+        result = asgsysSrngService.selectInstInfo(asgsysSrngVo);
+
+        resultMap.put("instInfo", result);
+
+        return resultMap;
+    }
+
+    /**
      * @Title : dsgnSrngDetailForm
      * @Description : 지정신청상세 화면이동
      * @return String 이동화면경로
@@ -287,13 +310,6 @@ public class AsgsysSrngController {
         resultMap.put("mbrList", result);
 
         return resultMap;
-    }
-
-    @RequestMapping(value = "/mng/asgsysSrng/prgrmDstnctnForm.html")
-    public String prgrmDstnctnForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
-    	//model.addAttribute("instid", asgsysSrngVo.getInstid());
-    	//model.addAttribute("prgrmid", asgsysSrngVo.getPrgrmid());
-    	return "mng/asgsysSrng/prgrmDstnctnForm";
     }
 
     /**
@@ -661,12 +677,40 @@ public class AsgsysSrngController {
     }
 
     /**
+    * 프로그램우수성 등록 화면 이동
+    *
+    * @Title : prgrmDstnctnForm
+    * @Description : 프로그램우수성 등록 화면 이동
+    * @param asgsysSrngVo
+    * @param model
+    * @return
+    * @throws Exception
+    * @return String
+    */
+    @RequestMapping(value = "/mng/asgsysSrng/prgrmDstnctnForm.html")
+    public String prgrmDstnctnForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
+
+    	//컨설팅목록
+    	List<DsgnPrgrmVo> csltngList = asgsysSrngService.selectCsltngList(asgsysSrngVo);
+    	model.addAttribute("csltngList", csltngList );
+
+    	Map<String,String> map = new HashMap();
+        map.put("cdgrpid", "155");
+        model.addAttribute("sbjctCdLsit", tchaidService.selectTchaidCdList(map)  );
+
+    	return "mng/asgsysSrng/prgrmDstnctnForm";
+    }
+
+    /**
+    * 프로그램우수성 수정화면 이동
+    *
     * @Title : prgrmDstnctnUpdate
-    * @Description : 지정신청-프로그램우수성 탭
-    * @param AsgsysSrngVo객체
-    * @param model 모델객체
-    * @return String 이동화면경로
-    * @throws Exception 예외
+    * @Description : 프로그램우수성 수정화면 이동
+    * @param asgsysSrngVo
+    * @param model
+    * @return
+    * @throws Exception
+    * @return String
     */
     @RequestMapping(value = "/mng/asgsysSrng/prgrmDstnctnUpdate.html")
     public String prgrmDstnctnUpdate(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
@@ -857,6 +901,8 @@ public class AsgsysSrngController {
 
     	return resultMap;
     }
+
+
 
     /**
     * @Title : prgrmOperMngForm
