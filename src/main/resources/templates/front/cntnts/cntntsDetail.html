@@ -119,18 +119,10 @@
 		<!-- //content -->
 	
 		<script th:inline="javascript">
+			var mvpid = /*[[${cntnts.mvpid}]]*/null;
+		
 			var beforeCntntsid = /*[[${cntnts.beforeCntntsid}]]*/ null;
 			var nextCntntsid = /*[[${cntnts.nextCntntsid}]]*/  null;
-			
-			var hh = /*[[${cntnts.plyHour}]]*/ null;
-			var mm = /*[[${cntnts.plyMinute}]]*/ null;
-			var ss = /*[[${cntnts.plySecnd}]]*/ null;
-			
-			var strHh = String(hh);
-			var strMm = String(mm);
-			var strSs = String(ss);
-			
-			$("#playTime").text(strHh.padStart(2,'0')+":"+strMm.padStart(2,'0')+":"+strSs.padStart(2,'0'));
 			
 			function beforePage() {
 				location.href = "/front/cntnts/cntntsDetailForm.html?cntntsid="+beforeCntntsid
@@ -144,9 +136,27 @@
 	        	history.back();
 	        }
 	        
+	        function getTitle() {
+	            var youtubeXhr = new XMLHttpRequest();
+	            youtubeXhr.open('GET', 'https://noembed.com/embed?url=https://www.youtube.com/watch?v=' + arguments[0], 0);
+	            youtubeXhr.send();
+	            
+	            return youtubeXhr.responseText.split('"title":"')[1].split('"')[0];
+	        }
+	        
 	        $(function() {
 	        	// 에디터 영역 이미지 비율 깨짐 방지
 	        	//$("#editorArea img").css({width: "initial", height: "initial"});
+	        	
+	        	if(mvpid != null && $($("#editorArea").find("iframe")).length == 0) {
+			    	var title = getTitle(mvpid);
+				    var youTubeTag = `
+						<iframe id="player" type="text/html" width="640" height="480"
+						src="http://www.youtube.com/embed/${mvpid}?enablejsapi=1&origin=http://example.com"
+						title="${title}"		
+				    	frameborder="0"></iframe>`;				    
+				    $("#editorArea").html(youTubeTag + $("#editorArea").html());	    	
+			    }
 	        });
 		</script>
 	</div>
