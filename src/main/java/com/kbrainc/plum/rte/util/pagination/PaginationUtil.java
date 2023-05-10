@@ -27,7 +27,7 @@ public class PaginationUtil {
             cntPageNumber = totalPage;
         }
 
-        int firstPageNum = ((cntPageNumber - 1) / cntPageNumber) * pageCount + 1;
+        int firstPageNum = ((cntPageNumber - 1) / pageCount) * pageCount + 1;
         int lastPageNum = firstPageNum + pageCount - 1;
 
         if (Math.floorMod(cntPageNumber, pageCount) > 0) {
@@ -91,7 +91,7 @@ public class PaginationUtil {
             tmpPageNumber = totalPage;
         }
 
-        int firstPageNum = ((tmpPageNumber - 1) / tmpPageNumber) * pageCount + 1;
+        int firstPageNum = ((tmpPageNumber - 1) / pageCount) * pageCount + 1;
         int lastPageNum = firstPageNum + pageCount - 1;
 
         if (Math.floorMod(tmpPageNumber, pageCount) > 0) {
