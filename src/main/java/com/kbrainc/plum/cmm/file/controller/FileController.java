@@ -191,7 +191,7 @@ public class FileController {
             for (MultipartFile file : files) {
                 try {
                     uploadFileList.add(uploadFile(request, file, fileGrpVo, user, true));
-                } catch (CustomRuntimeException e) {
+                } catch (FileStorageException e) {
                     for (FileVo uploadFile : uploadFileList) {
                         fileVo = fileService.selectFile(uploadFile);   
                         fileStorageService.deleteFile(fileVo);
