@@ -99,8 +99,8 @@
                         <span kattr:select_code="cpyrhtCd" grpCd="241" firstOptTxt="- 선택 -" isAdmin="true"></span>
                     </div>
                 </div>
-                <div class="col-lg-6 mb-3">
-                    <div class="mb-0 form-group required">
+                <div class="col-lg-6 mb-3 youtube">
+                    <div class="mb-0 form-group">
                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="mvpid"><strong>유튜브 동영상 아이디</strong></label>
                         <div class="col-12 position-relative" >
                             <input type="text" class="form-control form-control-sm" name="mvpid" id="youtubeid" style="padding-left:157px;">
@@ -226,6 +226,7 @@
 </script>
 <script th:inline="javascript">
 	$("#palyTime").hide();
+	$(".youtube").hide();
 	
 	setInsertFormSelectBox.fn_getNextDepthList(164 , 0, 'typeCd_1');	
 	
@@ -243,14 +244,36 @@
   	 	editor.setData();
   	 	
 	    $("#youtubeid").change(function() {
-	    	var youtubeid = $("#youtubeid").val();
-	    	var title = getTitle(youtubeid);
-		    var youTubeTag = `
-				<iframe id="player" type="text/html" width="840" height="480"
-				src="http://www.youtube.com/embed/${youtubeid}?enablejsapi=1&origin=http://example.com"
-		    	title="${title}"
-				frameborder="0"></iframe>`;
-		    editor.setData(youTubeTag + editor.getData());	    	
+	  	 	if(editor.getData().indexOf("iframe") < 0) {
+		    	var youtubeid = $("#youtubeid").val();
+		    	var title = getTitle(youtubeid);
+		    	if(title != false) {
+				    var youTubeTag = `
+						<iframe id="player" type="text/html" width="640" height="480"
+						src="http://www.youtube.com/embed/${youtubeid}?enablejsapi=1&origin=http://example.com"
+				    	title="${title}"
+						frameborder="0"></iframe>`;
+				    editor.setData(youTubeTag + editor.getData().replace("유튜브 동영상 아이디를 확인해주십시오.",''));		    		
+		    	}else{
+		    		editor.setData("유튜브 동영상 아이디를 확인해주십시오." + editor.getData());
+		    	}
+	  	 	}else{
+	  	 		console.log(editor.getData())
+	  	 		var cnYoutubeTag = editor.getData().substring(editor.getData().indexOf("iframe")-1,editor.getData().lastIndexOf("iframe")+7)
+	  	 		
+		    	var youtubeid = $("#youtubeid").val();
+		    	var title = getTitle(youtubeid);
+		    	if(title != false) {
+				    var youTubeTag = `
+						<iframe id="player" type="text/html" width="640" height="480"
+						src="http://www.youtube.com/embed/${youtubeid}?enablejsapi=1&origin=http://example.com"
+				    	title="${title}"
+						frameborder="0"></iframe>`;
+			    	editor.setData(youTubeTag + editor.getData().replace(cnYoutubeTag,''))		    		
+		    	}else{
+		    		editor.setData("유튜브 동영상 아이디를 확인해주십시오." + editor.getData().replace(cnYoutubeTag,''));
+		    	}
+	  	 	}
 	    });
   	 	
     	if(sbjctCdLsit!= null && sbjctCdLsit.length > 0 ){
@@ -291,8 +314,10 @@
 	$('#typeCd_1').change(function() {
 		if($("#typeCd_1 option:checked").text() == '영상자료' || $("#typeCd_1 option:checked").val() == '164102') {
 			$("#palyTime").show();
+			$(".youtube").show();
 		}else {
 			$("#palyTime").hide();
+			$(".youtube").hide();
 		}
 	})	
 	
@@ -495,6 +520,12 @@
         youtubeXhr.open('GET', 'https://noembed.com/embed?url=https://www.youtube.com/watch?v=' + arguments[0], 0);
         youtubeXhr.send();
         
-        return youtubeXhr.responseText.split('"title":"')[1].split('"')[0];
+        var isError = youtubeXhr.responseText.indexOf("error");
+        if(isError != -1) {
+        	return false;
+        }else {
+        	return youtubeXhr.responseText.split('"title":"')[1].split('"')[0];
+        }
+        
     }
 </script>

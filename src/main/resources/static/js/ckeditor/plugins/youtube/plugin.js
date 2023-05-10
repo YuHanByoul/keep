@@ -459,5 +459,10 @@ function getTitle() {
     youtubeXhr.open('GET', 'https://noembed.com/embed?url=https://www.youtube.com/watch?v=' + arguments[0], 0);
     youtubeXhr.send();
     
-    return youtubeXhr.responseText.split('"title":"')[1].split('"')[0];
+    var isError = youtubeXhr.responseText.indexOf("error");
+    if(isError != -1) {
+    	return false;
+    }else {
+    	return youtubeXhr.responseText.split('"title":"')[1].split('"')[0];
+    }
 }
