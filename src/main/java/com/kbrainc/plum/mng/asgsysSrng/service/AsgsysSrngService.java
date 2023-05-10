@@ -776,9 +776,9 @@ public interface AsgsysSrngService {
 	* @param asgsysSrngVo
 	* @return
 	* @throws Exception
-	* @return List<DsgnPrgrmVo>
+	* @return List<AsgsysSrngVo>
 	*/
-	public List<DsgnPrgrmVo> selectCsltngList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+	public List<AsgsysSrngVo> selectCsltngList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
 	* 심사점수 목록 조회

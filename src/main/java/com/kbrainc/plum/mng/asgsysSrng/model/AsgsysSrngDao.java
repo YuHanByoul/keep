@@ -1244,9 +1244,9 @@ public interface AsgsysSrngDao {
 	* @param asgsysSrngVo
 	* @return
 	* @throws Exception
-	* @return List<DsgnPrgrmVo>
+	* @return List<AsgsysSrngVo>
 	*/
-	public List<DsgnPrgrmVo> selectCsltngList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+	public List<AsgsysSrngVo> selectCsltngList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
 	* 지원단총평 엑셀 목록 조회

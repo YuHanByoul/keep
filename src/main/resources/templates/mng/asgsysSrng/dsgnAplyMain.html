@@ -24,6 +24,7 @@
                     <input type="hidden" id="searchAplyEndDt"       name="searchAplyEndDt"       value="" />
                     <input type="hidden" id="searchChckDsgnStartDt" name="searchChckDsgnStartDt" value="" />
                     <input type="hidden" id="searchChckDsgnEndDt"   name="searchChckDsgnEndDt"   value="" />
+                    <input type="hidden" id="regPrgrmid" name="regPrgrmid"   value="" />
 
                 <!-- 필터 부분 -->
                     <div class="card-block-small">
@@ -146,6 +147,8 @@
     var gridHelper1;
     var gridArgs;
 
+    var dtlUrl = "/mng/asgsysSrng/dsgnAplyDetailForm.html";
+
     $(function(){
         gridHelper1 = new GridHelper('jsGrid','contentPanel');
         writeJsGridData();
@@ -172,9 +175,7 @@
 
     function fn_goRegForm(){
     	var url = "/mng/asgsysSrng/dsgnAplyForm.html";
-
         gridHelper1.loadContent(url);
-        //gridHelper1.rowClick(args);
     }
 
     //초기화 버튼
@@ -260,7 +261,7 @@
                         params.push({name: "orderField", value: filter.sortField});
                         params.push({name: "orderDirection", value: "desc"});
                     }else{
-                        params.push({name: "orderField", value: 'APLY_DE'});
+                        params.push({name: "orderField", value: 'APLY_DT'});
                     }
 
                     formData = formData.concat(params);
@@ -272,12 +273,12 @@
                       dataType: "json",
                       data: formData
                     }).done(function(response){
-
                         var da = {
                                 data : escapeGridData(response.list)
                                 ,itemsCount : response.totalCount
                             };
                       data.resolve(da);
+
                     });
                     return data.promise();
                 },
@@ -298,9 +299,8 @@
 
                 if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
 
-                var detailUrl = "/mng/asgsysSrng/dsgnAplyDetailForm.html?prgrmid=" + args.item.prgrmid;
-
-                gridHelper1.loadContent(detailUrl);
+                var url = dtlUrl+"?prgrmid=" + args.item.prgrmid;
+                gridHelper1.loadContent(url);
                 gridHelper1.rowClick(args);
             },
             onPageChanged: function(args) {

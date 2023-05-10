@@ -105,6 +105,16 @@
                         <span kattr:select_code="cpyrhtCd" grpCd="241" firstOptTxt="- 선택 -" th:attr="selectedCd=${cntnts.cpyrhtCd}" isAdmin="true"></span>
                     </div>
                 </div>
+                <div class="col-lg-6 mb-3">
+                    <div class="mb-0 form-group required">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="mvpid"><strong>유튜브 동영상 아이디</strong></label>
+                        <div class="col-12 position-relative" >
+                            <input type="text" class="form-control form-control-sm" name="mvpid" id="youtubeid"  th:value="${cntnts.mvpid}" style="padding-left:157px;">
+                            <label for="youtubeid" style="position:absolute;left:0;top:1px;padding: 0.25rem 0.5rem;
+                            font-size: .875rem;">youtube.com/watch?v=</label>
+                        </div>
+                    </div>
+                </div>                  
             </div> 		    
 		    <div class="row">
 		        <div class="col-12 mb-3">
@@ -124,7 +134,7 @@
                             <textarea class="form-control form-control-sm" name="cn" id="cn" th:value="${cntnts.cn}"><th:block th:text="${cntnts.cn}"></th:block></textarea>
                         </div>
 		            </div>
-		        </div>
+		        </div>	        
 		    </div>
 		    <div class="row">
 		        <div class="col-12 col-lg-6 mb-3">
@@ -253,6 +263,8 @@
 	
 	var typeCd = /*[[${cntnts.typeCd}]]*/null;		
 	var mainTypeCd = /*[[${cntnts.mainTypeCd}]]*/null;
+	
+	var mvpid = /*[[${cntnts.mvpid}]]*/null;
 	/*]]>*/
 	
 	setUpdateSelectBox.fn_getNextDepthList(164 , 0, 'typeCd_1', mainTypeCd);
@@ -265,6 +277,27 @@
 	
 	$(function () {
 	    editor = CKEDITOR.replace('cn');
+	    
+	    if(mvpid != null) {
+	    	var title = getTitle(mvpid);
+		    var youTubeTag = `
+				<iframe id="player" type="text/html" width="640" height="480"
+				src="http://www.youtube.com/embed/${mvpid}?enablejsapi=1&origin=http://example.com"
+				title="${title}"		
+		    	frameborder="0"></iframe>`;
+		    editor.setData(youTubeTag + editor.getData());	    	
+	    }
+	    
+	    $("#youtubeid").change(function() {
+	    	var youtubeid = $("#youtubeid").val();
+	    	var title = getTitle(youtubeid);
+		    var youTubeTag = `
+				<iframe id="player" type="text/html" width="640" height="480"
+				src="http://www.youtube.com/embed/${youtubeid}?enablejsapi=1&origin=http://example.com"
+		    	title="${title}"
+				frameborder="0"></iframe>`;
+		    editor.setData(youTubeTag + editor.getData());	    	
+	    });
 	    
 	    if(sbjctCdLsit!= null && sbjctCdLsit.length > 0 ){
 	         subjectLength = sbjctCdLsit.length 
@@ -550,5 +583,13 @@
     				}
     			});
 	    	}
+    }
+    
+    function getTitle() {
+        var youtubeXhr = new XMLHttpRequest();
+        youtubeXhr.open('GET', 'https://noembed.com/embed?url=https://www.youtube.com/watch?v=' + arguments[0], 0);
+        youtubeXhr.send();
+        
+        return youtubeXhr.responseText.split('"title":"')[1].split('"')[0];
     }
 </script>

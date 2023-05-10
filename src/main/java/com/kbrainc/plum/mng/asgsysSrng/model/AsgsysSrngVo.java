@@ -501,7 +501,7 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	private String pchrgYn;
 
     /**참가비 */
-	private String etrfee;
+	private Integer etrfee;
 
     /**교육_목적 */
 	private String eduPrps;

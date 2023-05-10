@@ -9,10 +9,11 @@
                 </div>
 
                 <form id='instFrm' name='instFrm'>
-                    <input type="hidden" id="instid" name="instid" value="" />
-                    <input type="hidden" id="userid" name="userid" value="" />
-                    <input type="hidden" id="aplcntid" name="aplcntid" value="" />
+                    <input type="hidden" id="instid"    name="instid" value="" />
+                    <input type="hidden" id="userid"    name="userid" value="" />
+                    <input type="hidden" id="aplcntid"  name="aplcntid" value="" />
                     <input type="hidden" id="instRgnCd" name="instRgnCd" value="" />
+                    <input type="hidden" id="instZip" name="instZip" value="" />
 
                     <div class="card-block-small p-t-0 p-b-0">
                         <div class="mb-3 row">
@@ -53,7 +54,7 @@
                                             <input type="text" class="form-control form-control-sm" name="aplcntNm" id="aplcntNm" placeholder="신청자" value="" readonly="">
                                         </div>
                                         <div class="col-4 btn-group-sm">
-                                            <button type="button" class="btn btn-inverse" onclick="dsgnAply.openMbrPopup();" >담당자 변경</button>
+                                            <button type="button" class="btn btn-inverse" id="mbrPopBtn" onclick="dsgnAply.openMbrPopup();" >담당자 변경</button>
                                         </div>
                                     </div>
                                 </div>
@@ -212,11 +213,15 @@
 
     var dsgnAply = {
 
+    	prgrmDstnctnUrl: "/mng/asgsysSrng/prgrmDstnctnForm.html",
     	popupUrl: "/mng/asgsysSrng/mbrSrchPopup.html",
     	selectInstUrl: "/mng/asgsysSrng/selectInstInfo.do",
 
     	init(){
-    		dsgnAply.initJdsgTab();
+    		//dsgnAply.initJdsgTab();
+
+    		dsgnAply.loadJdsgTabContent(dsgnAply.prgrmDstnctnUrl);
+    		//$("#jdsgTab1Link").parent().addClass("active");
     		dsgnAply.setValid();
     	},
 
@@ -256,7 +261,7 @@
             });
     	},
     	selectInstInfo(){
-    		debugger;
+
     		if (displayWorkProgress(true)) {
                 $.ajax({
                     url: dsgnAply.selectInstUrl,
@@ -273,33 +278,47 @@
                     			$(this).val(instInfo[item.id]!=null ? instInfo[item.id]:'');
                     		}
                     	});
-
-
+                    	var csltngList = escapeGridData(data.csltngList)
+                    	if(csltngList!=null && csltngList.length > 0);{
+                    	    dsgnAply.setCsltngList(csltngList);
+                    	}
 
                         closeWorkProgress();
                     }
                 });
             }
     	},
+    	//우수성컨설팅목록 set
+    	setCsltngList(list){
+    		var html =``;
 
-    	selectJdsgTab(tabId){
+            for(idx in list){
 
-    	    if(tabId == "jdsgTab1Link") {
-    	    	dsgnAply.loadJdsgTabContent("/mng/asgsysSrng/prgrmDstnctnForm.html");
-    	    } else if(tabId == "jdsgTab2Link") {
-    	    	dsgnAply.loadJdsgTabContent("/mng/asgsysSrng/prgrmOperMngForm.html");
-    	    } else if(tabId == "jdsgTab3Link") {
-    	    	dsgnAply.loadJdsgTabContent("/mng/asgsysSrng/prgrmEvl.html");
-    	    } else if(tabId == "jdsgTab4Link") {
-    	    	dsgnAply.loadJdsgTabContent("/mng/asgsysSrng/ldrQlfcForm.html");
-    	    } else if(tabId == "jdsgTab5Link") {
-    	    	dsgnAply.loadJdsgTabContent("/mng/asgsysSrng/sftyMngForm.html");
-    	    } else if(tabId == "jdsgTab6Link") {
-    	    	dsgnAply.loadJdsgTabContent("/mng/asgsysSrng/assChklstForm.html");
-    	    }
+                html+=`<option value='${list[idx].cnsltngid}'>${list[idx].prgrmNm}</option>`;
+            }
 
-    	    $("#" + tabId).parent().addClass("active");
+            $('#cnsltngid').append(html);
+
     	},
+
+//     	selectJdsgTab(tabId){
+
+//     	    if(tabId == "jdsgTab1Link") {
+//     	    	dsgnAply.loadJdsgTabContent("/mng/asgsysSrng/prgrmDstnctnForm.html");
+//     	    } else if(tabId == "jdsgTab2Link") {
+//     	    	dsgnAply.loadJdsgTabContent("/mng/asgsysSrng/prgrmOperMngForm.html");
+//     	    } else if(tabId == "jdsgTab3Link") {
+//     	    	dsgnAply.loadJdsgTabContent("/mng/asgsysSrng/prgrmEvl.html");
+//     	    } else if(tabId == "jdsgTab4Link") {
+//     	    	dsgnAply.loadJdsgTabContent("/mng/asgsysSrng/ldrQlfcForm.html");
+//     	    } else if(tabId == "jdsgTab5Link") {
+//     	    	dsgnAply.loadJdsgTabContent("/mng/asgsysSrng/sftyMngForm.html");
+//     	    } else if(tabId == "jdsgTab6Link") {
+//     	    	dsgnAply.loadJdsgTabContent("/mng/asgsysSrng/assChklstForm.html");
+//     	    }
+
+//     	    $("#" + tabId).parent().addClass("active");
+//     	},
 
     	loadJdsgTabContent(uri) {
 
@@ -316,14 +335,14 @@
     	    showContent();
     	},
 
-    	initJdsgTab() {
+//     	initJdsgTab() {
 
-    	    var tabFlag = false;
+//     	    var tabFlag = false;
 
-    	    if(tabFlag == false) {
-    	        dsgnAply.selectJdsgTab("jdsgTab1Link");
-    	        tabFlag = true;
-    	    }
+//     	    if(tabFlag == false) {
+//     	        dsgnAply.selectJdsgTab("jdsgTab1Link");
+//     	        tabFlag = true;
+//     	    }
 
 //     	    if(tabFlag == false) {
 //     	        dsgnAply.selectJdsgTab("jdsgTab2Link");
@@ -349,7 +368,7 @@
 //     	        dsgnAply.selectJdsgTab("jdsgTab6Link");
 //     	        tabFlag = true;
 //     	    }
-    	}
+//     	}
     }
 
     $(function() {
@@ -357,7 +376,7 @@
 
         //tabEvent
         $('.nav-item a').on('show.bs.tab', function(event) {
-        	return;
+        	debugger;
             var tabId = event.currentTarget.attributes.id.value;
             dsgnAply.selectJdsgTab(tabId);
 

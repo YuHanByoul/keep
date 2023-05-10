@@ -1633,6 +1633,15 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	Integer chklstid =null;
     	AsgsysSrngVo assPrgrmVo =null;
 
+    	//숙박여부,운영형태코드로 체크리스트 가 정해진경우
+    	if(null != asgsysSrngVo.getChkOperFrmCd()){
+    		chklstid = asgsysSrngDao.getCheckListId(asgsysSrngVo);
+    	}
+    	if(null != chklstid ) {
+    		asgsysSrngVo.setChklstid(chklstid);
+    		assPrgrmVo.setChklstid(chklstid);
+    	}
+
     	//PRGRMID 없는 경우
     	if(asgsysSrngVo.getPrgrmid()==null || asgsysSrngVo.getPrgrmid()==0) {
     		//ASS프로그램 등록
@@ -1640,14 +1649,6 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	}else {
         	//ASS프로그램 수정
         	assPrgrmVo = asgsysSrngDao.selectPrgrm(asgsysSrngVo);
-
-        	//숙박여부,운영형태코드로 체크리스트 가 정해진경우
-        	if(null != asgsysSrngVo.getChkOperFrmCd()){
-        		chklstid = asgsysSrngDao.getCheckListId(asgsysSrngVo);
-        	}
-        	if(null != chklstid ) {
-        		assPrgrmVo.setChklstid(chklstid);
-        	}
 
         	assPrgrmVo.setPrgrmNm(asgsysSrngVo.getPrgrmNm());
         	assPrgrmVo.setCnsltngPrgrsYn(asgsysSrngVo.getCnsltngPrgrsYn());
@@ -1669,6 +1670,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     		for(PrgrmSchdlVo prgrmSchdlVo : schdLst) {
 
     			prgrmSchdlVo.setUser(asgsysSrngVo.getUser());
+    			prgrmSchdlVo.setPrgrmid(asgsysSrngVo.getPrgrmid());
     			ret += asgsysSrngDao.insertPrgrmSchdl(prgrmSchdlVo);
     		}
     	}
@@ -1677,12 +1679,12 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	List<EmrgcyActnPlanVo> planLst = asgsysSrngVo.getEmrgcyActnPlanLst();
 
     	if( planLst != null && 0 < planLst.size()) {
-
     		asgsysSrngDao.deleteEmrgcyActnPlan(planLst.get(0));
 
     		for(EmrgcyActnPlanVo emrgcyActnPlanVo : planLst) {
 
     			emrgcyActnPlanVo.setUser(asgsysSrngVo.getUser());
+    			emrgcyActnPlanVo.setPrgrmid(asgsysSrngVo.getPrgrmid());
     			ret += asgsysSrngDao.insertEmrgcyActnPlan(emrgcyActnPlanVo);
     		}
     	}
@@ -1987,7 +1989,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     * @return List<DsgnPrgrmVo>
     */
     @Override
-	public List<DsgnPrgrmVo> selectCsltngList(AsgsysSrngVo asgsysSrngVo) throws Exception{
+	public List<AsgsysSrngVo> selectCsltngList(AsgsysSrngVo asgsysSrngVo) throws Exception{
 		return asgsysSrngDao.selectCsltngList(asgsysSrngVo);
 	}
 
