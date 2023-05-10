@@ -100,7 +100,8 @@ public class AsgsysSrngController {
      * @throws Exception 예외
      */
     @RequestMapping(value = "/mng/asgsysSrng/dsgnAplyMainForm.html")
-    public String dsgnAplyMainForm() throws Exception {
+    public String dsgnAplyMainForm(AsgsysSrngVo asgsysSrngVo,Model model) throws Exception {
+
         return "mng/asgsysSrng/dsgnAplyMain";
     }
 
@@ -176,7 +177,12 @@ public class AsgsysSrngController {
 
         result = asgsysSrngService.selectInstInfo(asgsysSrngVo);
 
+        //컨설팅목록 조회
+        asgsysSrngVo.setAplcntid(result.getAplcntid());
+    	List<AsgsysSrngVo> csltngList = asgsysSrngService.selectCsltngList(asgsysSrngVo);
+
         resultMap.put("instInfo", result);
+        resultMap.put("csltngList", csltngList);
 
         return resultMap;
     }
@@ -690,9 +696,9 @@ public class AsgsysSrngController {
     @RequestMapping(value = "/mng/asgsysSrng/prgrmDstnctnForm.html")
     public String prgrmDstnctnForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
 
-    	//컨설팅목록
-    	List<DsgnPrgrmVo> csltngList = asgsysSrngService.selectCsltngList(asgsysSrngVo);
-    	model.addAttribute("csltngList", csltngList );
+//    	//컨설팅목록
+//    	List<AsgsysSrngVo> csltngList = asgsysSrngService.selectCsltngList(asgsysSrngVo);
+//    	model.addAttribute("csltngList", csltngList );
 
     	Map<String,String> map = new HashMap();
         map.put("cdgrpid", "155");
@@ -720,10 +726,11 @@ public class AsgsysSrngController {
 
     	//프로그램 우수성 상세 조회 tb_ass_prgrm_dstnctn
     	AsgsysSrngVo prgrmDstnctnInfo = asgsysSrngService.selectPrgrmDstnctn(asgsysSrngVo);
+    	prgrmDstnctnInfo.setMode(asgsysSrngVo.getMode());
     	model.addAttribute("prgrmDstnctnInfo", prgrmDstnctnInfo);
 
     	//컨설팅목록
-    	List<DsgnPrgrmVo> csltngList = asgsysSrngService.selectCsltngList(prgrmDstnctnInfo);
+    	List<AsgsysSrngVo> csltngList = asgsysSrngService.selectCsltngList(prgrmDstnctnInfo);
     	model.addAttribute("csltngList", csltngList );
 
     	Map<String,String> map = new HashMap();
@@ -851,6 +858,7 @@ public class AsgsysSrngController {
 
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("prgrmid", asgsysSrngVo.getPrgrmid());
             resultMap.put("msg", "등록에 성공하였습니다.");
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
