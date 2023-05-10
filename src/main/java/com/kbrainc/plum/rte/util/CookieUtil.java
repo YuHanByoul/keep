@@ -61,7 +61,8 @@ public class CookieUtil {
         if (cookies != null) {
             for (int i=0; i < cookies.length; i++){
                 String name = cookies[i].getName();
-                if (name != null && name.equals(sName)) {
+                //if (name != null && name.equals(sName)) {
+                if (name != null && name.equals("ssotoken")) {
                     return cookies[i].getValue();
                 }
             }
