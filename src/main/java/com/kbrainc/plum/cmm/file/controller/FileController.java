@@ -46,6 +46,7 @@ import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.cmm.file.service.FileStorageService;
 import com.kbrainc.plum.rte.constant.Constant;
+import com.kbrainc.plum.rte.exception.CustomRuntimeException;
 import com.kbrainc.plum.rte.exception.FileStorageException;
 import com.kbrainc.plum.rte.exception.FiledownloadCheckerException;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -190,7 +191,7 @@ public class FileController {
             for (MultipartFile file : files) {
                 try {
                     uploadFileList.add(uploadFile(request, file, fileGrpVo, user, true));
-                } catch (Exception e) {
+                } catch (CustomRuntimeException e) {
                     for (FileVo uploadFile : uploadFileList) {
                         fileVo = fileService.selectFile(uploadFile);   
                         fileStorageService.deleteFile(fileVo);

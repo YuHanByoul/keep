@@ -1,6 +1,7 @@
 package com.kbrainc.plum.rte.customattr;
 
 import com.kbrainc.plum.cmm.service.CommonService;
+import com.kbrainc.plum.rte.exception.CustomRuntimeException;
 import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.util.CommonUtil;
 import org.thymeleaf.context.ITemplateContext;
@@ -124,6 +125,8 @@ public class ExprtCheckCtprvnAttr extends AbstractAttributeTagProcessor {
             }
 
 
+        } catch (CustomRuntimeException e) {
+            result.append("<p>시도 목록 조회중 에러 발생 Error 발생 </p>");
         } catch (Exception e) {
             result.append("<p>시도 목록 조회중 에러 발생 Error 발생 </p>");
         }
