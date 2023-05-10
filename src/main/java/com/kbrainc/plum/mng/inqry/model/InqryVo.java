@@ -40,6 +40,9 @@ public class InqryVo extends ParentRequestVo {
 	
 	/** 제목 */
 	private String title;
+
+	/** 휴대번호 */
+	private String moblphon;
 	
 	/** 내용 */
 	private String cntnts;
