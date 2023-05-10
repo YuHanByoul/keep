@@ -1633,25 +1633,31 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	Integer chklstid =null;
     	AsgsysSrngVo assPrgrmVo =null;
 
+    	//PRGRMID 없는 경우
+    	if(asgsysSrngVo.getPrgrmid()==null || asgsysSrngVo.getPrgrmid()==0) {
+    		//ASS프로그램 등록
+    		ret+=asgsysSrngDao.insertAssPrgrm(asgsysSrngVo);
+    	}else {
+        	//ASS프로그램 수정
+        	assPrgrmVo = asgsysSrngDao.selectPrgrm(asgsysSrngVo);
+
+        	//숙박여부,운영형태코드로 체크리스트 가 정해진경우
+        	if(null != asgsysSrngVo.getChkOperFrmCd()){
+        		chklstid = asgsysSrngDao.getCheckListId(asgsysSrngVo);
+        	}
+        	if(null != chklstid ) {
+        		assPrgrmVo.setChklstid(chklstid);
+        	}
+
+        	assPrgrmVo.setPrgrmNm(asgsysSrngVo.getPrgrmNm());
+        	assPrgrmVo.setCnsltngPrgrsYn(asgsysSrngVo.getCnsltngPrgrsYn());
+        	assPrgrmVo.setCnsltngid(asgsysSrngVo.getCnsltngid());
+        	ret += asgsysSrngDao.updatePrgrm(assPrgrmVo);
+    	}
+
+
     	//프로그램 우수성 등록
     	ret += asgsysSrngDao.insertPrgrmDstnctn(asgsysSrngVo);
-
-    	//지정프로그램 수정
-
-    	assPrgrmVo = asgsysSrngDao.selectPrgrm(asgsysSrngVo);
-
-    	//숙박여부,운영형태코드로 체크리스트 가 정해진경우
-    	if(null != asgsysSrngVo.getChkOperFrmCd()){
-    		chklstid = asgsysSrngDao.getCheckListId(asgsysSrngVo);
-    	}
-    	if(null != chklstid ) {
-    		assPrgrmVo.setChklstid(chklstid);
-    	}
-
-    	assPrgrmVo.setPrgrmNm(asgsysSrngVo.getPrgrmNm());
-    	assPrgrmVo.setCnsltngPrgrsYn(asgsysSrngVo.getCnsltngPrgrsYn());
-    	assPrgrmVo.setCnsltngid(asgsysSrngVo.getCnsltngid());
-    	ret += asgsysSrngDao.updatePrgrm(assPrgrmVo);
 
     	//프로그램_일정 저장*/
     	List<PrgrmSchdlVo> schdLst = asgsysSrngVo.getPrgrmSchdlLst();

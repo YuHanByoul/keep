@@ -259,6 +259,80 @@
         AND A.PRGRMID = #{prgrmid}
     </select>
 
+<!--     /mng/asgsysSrng/selectInstInfo.do -->
+
+    <!-- ASS 프로그램 등록 -->
+    <insert id="insertAssPrgrm" parameterType="AsgsysSrngVo" useGeneratedKeys="true" keyProperty="prgrmid">
+        /* AsgsysSrngDaoImpl.insertAssPrgrm*/
+        INSERT INTO TB_ASS_PRGRM
+        (
+            INSTID
+          , APLCNTID
+          , APLCNT_NM
+          , APLCNT_EML
+          , APLCNT_MOBLPHON
+          , INST_NM
+          , INST_EML
+          , INST_CNTCT
+          , INST_HMPG
+          , INST_TYPE_CD
+          , INST_RGN_CD
+          , INST_ZIP
+          , INST_ADDR
+          , INST_DTLADDR
+          , PRGRM_NM
+          , FILEGRPID
+          , STTS_CD
+          , DSGN_CYCL
+          , DSGN_NO
+          , DSGN_DE
+          , DSGN_BGNG_DE
+          , DSGN_END_DE
+          , AUTZRID
+          , CHKLSTID
+          , CNSLTNG_PRGRS_YN
+          , CNSLTNGID
+          , APLY_DT
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        ) VALUES
+        (
+            #{instid}
+          , #{aplcntid}
+          , #{aplcntNm}
+          , #{aplcntEml}
+          , #{aplcntMoblphon}
+          , #{instNm}
+          , #{instEml}
+          , #{instCntct}
+          , #{instHmpg}
+          , #{instTypeCd}
+          , #{instRgnCd}
+          , #{instZip}
+          , #{instAddr}
+          , #{instDtladdr}
+          , #{prgrmNm}
+          , #{filegrpid}
+          , #{sttsCd}
+          , #{dsgnCycl}
+          , #{dsgnNo}
+          , #{dsgnDe}
+          , #{dsgnBgngDe}
+          , #{dsgnEndDe}
+          , #{autzrid}
+          , #{chklstid}
+          , #{cnsltngPrgrsYn}
+          , #{cnsltngid}
+          , NOW()
+          , NOW()
+          , #{user.userid}
+          , NOW()
+          , #{user.userid}
+        )
+    </insert>
+
     <!-- 프로그램 우수성 조회. -->
     <select id="selectPrgrmDstnctn" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
         SELECT
@@ -322,24 +396,24 @@
 
     <select id="selectInstInfo" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
          SELECT
-             A.USERID
+             A.USERID    AS APLCNTID
            , A.ACNT
-           , A.NM
-           , A.MOBLPHON
+           , A.NM        AS APLCNT_NM
+           , A.MOBLPHON  AS APLCNT_MOBLPHON
+           , A.EML       AS APLCNT_EML
            , A.TELNO
-           , A.EML
            , B.INSTID
            , B.INST_NM
            , B.INST_CD
            , B.INST_TYPE_CD
-           , B.RGN_CD
+           , B.RGN_CD   AS INST_RGN_CD
            , B.BRNO
            , B.RPRSV_NM
-           , B.TELNO    AS INST_TELNO
+           , B.TELNO    AS INST_CNTCT
            , B.FXNO
-           , B.ZIP
-           , B.ADDR
-           , B.ADDR_DTL
+           , B.ZIP      AS INST_ZIP
+           , B.ADDR     AS INST_ADDR
+           , B.ADDR_DTL AS INST_DTLADDR
            , B.HMPG     AS INST_HMPG
            , B.USE_YN
            , CTPRVN.CTPRVN_NM
@@ -350,7 +424,7 @@
             TB_CMM_INST B ON A.INSTID = B.INSTID
          LEFT OUTER JOIN
             TB_CMM_ADDR_CTPRVN CTPRVN ON SUBSTRING( B.RGN_CD,1,2) = CTPRVN.CTPRVN_CD
-         WHERE A.USERID = #{userid}
+         WHERE A.USERID = #{aplcntid}
     </select>
 
     <!-- 프로그램 운영일정 목록 조회 -->
@@ -2961,7 +3035,7 @@
             TB_CMM_USER B ON A.INSTID = B.INSTID
         WHERE 1=1
         <if test="instid != null and instid != '' ">
-<!--             AND A.INSTID= #{instid} -->
+            AND A.INSTID= #{instid}
         </if>
         <!-- 키워드.사용자 명 -->
         <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchUserNm'">
@@ -3297,7 +3371,10 @@
           , A.REG_DT               /*등록_일시*/
           , A.RGTRID               /*등록자아이디*/
         FROM TB_ASS_CNSLTNG A
-        WHERE A.USERID = #{aplcntid}
+        WHERE 1=1
+        <if test="aplcntid != null and aplcntid != '' ">
+            AND A.USERID = #{aplcntid}
+        </if>
     </select>
 
 

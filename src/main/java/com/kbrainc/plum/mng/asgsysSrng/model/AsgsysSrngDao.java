@@ -100,6 +100,18 @@ public interface AsgsysSrngDao {
 	public String selectPrgrmSttsCd(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
+	* ASS 프로그램 등록
+	*
+	* @Title : insertAssPrgrm
+	* @Description : ASS 프로그램 등록
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertAssPrgrm(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
 	* 프로그램상태코드 변경
 	*
 	* @Title : updateSttsCd
