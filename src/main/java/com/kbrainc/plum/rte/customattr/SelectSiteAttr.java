@@ -12,6 +12,7 @@ import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.templatemode.TemplateMode;
 
 import com.kbrainc.plum.cmm.service.CommonService;
+import com.kbrainc.plum.rte.exception.CustomRuntimeException;
 import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.util.CommonUtil;
 
@@ -175,6 +176,8 @@ public class SelectSiteAttr extends AbstractAttributeTagProcessor {
             
             result.append("</script>\n");
 
+        } catch (CustomRuntimeException e) {
+            result.append("<p>사이트 목록 조회중 에러 발생 Error 발생 </p>");
         } catch (Exception e) {
             result.append("<p>사이트 목록 조회중 에러 발생 Error 발생 </p>");
         }

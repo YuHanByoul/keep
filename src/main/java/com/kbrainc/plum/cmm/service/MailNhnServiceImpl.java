@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kbrainc.plum.rte.constant.Constant;
+import com.kbrainc.plum.rte.exception.CustomRuntimeException;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import com.kbrainc.plum.rte.util.CommonUtil;
 import com.kbrainc.plum.rte.util.mail.model.MailDao;
@@ -147,7 +148,7 @@ public class MailNhnServiceImpl extends PlumAbstractServiceImpl implements MailS
                 response.put("resultMsg", null);
             }
 
-        } catch (Exception e) {
+        } catch (CustomRuntimeException e) {
         	mailVo.setSndngSttsCd(MAIL_ERROR_UNKNOWN);
         	response.put("result", Constant.REST_API_RESULT_FAIL);
         	response.put("resultCode", mailVo.getSndngSttsCd());

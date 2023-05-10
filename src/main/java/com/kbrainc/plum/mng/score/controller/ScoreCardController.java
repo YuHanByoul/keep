@@ -254,7 +254,9 @@ public class ScoreCardController {
             list = new ArrayList<QuestionVo>();
             model.addAttribute("totalAltm", 0);
         } else {
-            model.addAttribute("totalAltm", list.get(0).getTotalAltm());
+            if (list != null && list.get(0) != null) {
+                model.addAttribute("totalAltm", list.get(0).getTotalAltm());
+            }
         }
         
         model.addAttribute("formid", qqestionVo.getFormid());
