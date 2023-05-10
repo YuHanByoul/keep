@@ -283,7 +283,11 @@ public class ApiServiceImpl extends PlumAbstractServiceImpl implements ApiServic
                 rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
             }
             String line = null;
-            while((line = rd.readLine()) != null) {
+            while(true) {
+                line = rd.readLine();
+                if (line == null) {
+                    break;
+                }
                 sb.append(line);
             }
         } catch(MalformedURLException e) {
@@ -343,7 +347,11 @@ public class ApiServiceImpl extends PlumAbstractServiceImpl implements ApiServic
                 rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
             }
             String line = null;
-            while((line = rd.readLine()) != null) {
+            while(true) {
+                line = rd.readLine();
+                if (line == null) {
+                    break;
+                }
                 sb.append(line);
             }
         } catch(MalformedURLException e) {
