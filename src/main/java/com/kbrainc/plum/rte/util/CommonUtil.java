@@ -68,9 +68,9 @@ public class CommonUtil {
     
     public static String reportingUrl = applicationConfig.getString("reporting.host");
     
-    public static final String damoScpIniFilePath = applicationConfig.getString("damo.scp.iniFilePath");
+    public static String damoScpIniFilePath = applicationConfig.getString("damo.scp.iniFilePath");
     
-    public static final String anayticsKeyFilePath = applicationConfig.getString("analytics.keyFilePath");
+    public static String anayticsKeyFilePath = applicationConfig.getString("analytics.keyFilePath");
     
     /**
      * @Title : getBean

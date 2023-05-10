@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -68,7 +69,7 @@ public class EnvWordController {
     @RequestMapping(value = "/mng/envWord/envWordInsertForm.html")
     public String envWordInsertForm(Model model, @UserInfo UserVo user) throws Exception {
         Date date = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyy-MM-dd");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyy-MM-dd", Locale.KOREA);
         model.addAttribute("regDate", formatter.format(date));
         
         model.addAttribute("userid", user.getUserid());

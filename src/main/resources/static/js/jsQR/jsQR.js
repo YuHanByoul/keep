@@ -925,7 +925,7 @@ function decodeByte(stream, size) {
         text += decodeURIComponent(bytes.map(function (b) { return "%" + ("0" + b.toString(16)).substr(-2); }).join(""));
     }
     catch (_a) {
-        // failed to decode
+        cosole.log("failed to decode");
     }
     return { bytes: bytes, text: text };
 }

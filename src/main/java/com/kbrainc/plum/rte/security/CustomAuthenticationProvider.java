@@ -17,6 +17,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -37,6 +38,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import com.kbrainc.plum.cmm.idntyVrfctn.model.IdntyVrfctnSuccessVo;
 import com.kbrainc.plum.cmm.idntyVrfctn.service.IdntyVrfctnService;
 import com.kbrainc.plum.cmm.service.CommonService;
+import com.kbrainc.plum.rte.exception.CustomRuntimeException;
 import com.kbrainc.plum.rte.model.DrmncyInfoVo;
 import com.kbrainc.plum.rte.model.RoleInfoVo;
 import com.kbrainc.plum.rte.model.SiteInfoVo;
@@ -158,7 +160,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                         IdntyVrfctnSuccessVo result = null;
                         try {
                             result = idntyVrfctnService.decodeIdntyVrfctnSuccessData(null, request.getParameter("encodeData"));
-                        } catch (Exception e) {
+                        } catch (CustomRuntimeException e) {
                             request.setAttribute("message", "본인인증 인코딩 실패. 고객센터에 문의 해주십시오.");
                             throw new InternalAuthenticationServiceException("Login Error !!");
                         }
@@ -442,6 +444,8 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
         try {
             commonService.insertLoginSuccess(attr.getRequest(), user.getUserid());
+        } catch (DataAccessException e) {
+            throw new InternalAuthenticationServiceException("Login Error !!");
         } catch (Exception e) {
             throw new InternalAuthenticationServiceException("Login Error !!");
         }

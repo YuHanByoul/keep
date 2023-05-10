@@ -46,10 +46,10 @@ public class TestJasypt {
         String username = "";
         String password = "";
 
-        System.out.println(jasyptEncoding(key));
-        System.out.println(jasyptEncoding(url));
-        System.out.println(jasyptEncoding(username));
-        System.out.println(jasyptEncoding(password));
+        //System.out.println(jasyptEncoding(key));
+        //System.out.println(jasyptEncoding(url));
+        //System.out.println(jasyptEncoding(username));
+        //System.out.println(jasyptEncoding(password));
     }
 
     public String jasyptEncoding(String value) {
