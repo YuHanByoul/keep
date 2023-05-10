@@ -123,7 +123,7 @@ public class EnveduController {
         int curYear = Integer.valueOf(DateTimeUtil.getYear());
         Integer[] years = new Integer[4];
         
-        for(int i = curYear, j = 0; i <= i+3 && j <= 3; i++, j++) {
+        for(int i = 0; i <= result; i++) {
             years[j] = i;
         }
         model.addAttribute("years", years);
