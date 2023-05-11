@@ -41,7 +41,7 @@ public class CmmCntntsServiceImpl extends PlumAbstractServiceImpl implements Cmm
     * @return int
     */
     @Override
-    public int selectCmmCntntsQlityChkId(CmmCntntsVo cmmCntnts) throws Exception{
+    public Integer selectCmmCntntsQlityChkId(CmmCntntsVo cmmCntnts) throws Exception{
         return cmmCntntsDao.selectCmmCntntsQlityChkId(cmmCntnts);
     }
     
