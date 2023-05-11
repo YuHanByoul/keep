@@ -466,14 +466,15 @@
     <!-- 현재 폴더의 하위메뉴 목록 조회 -->
     <select id="selectChildMenuList" parameterType="MenuVo" resultType="MenuVo">
         /* MenuDao.selectChildMenuList */
-        WITH RECURSIVE MENU_CTE(MENUID, SITEID, NM, TYPE_CD, ORD)
+        WITH RECURSIVE MENU_CTE(MENUID, SITEID, NM, TYPE_CD, ORD, PTYPE_CD)
         AS (
             SELECT              
                 MENUID,
                 SITEID,
                 NM,
                 TYPE_CD,
-                ORD
+                CAST(LPAD(ORD, 2, '0') AS CHAR(100)) AS ORD,
+                '00' PTYPE_CD
              FROM TB_CMM_MENU
             WHERE MENUID = #{menuid}
               AND TYPE_CD = 'D'
@@ -481,14 +482,13 @@
             SELECT              
                 M.MENUID,
                 M.SITEID,
-                M.NM,
+                CONCAT(C.NM, ' > ', M.NM) AS NM,
                 M.TYPE_CD,
-                M.ORD
+                CONCAT(C.ORD, LPAD(M.ORD, 2, '0')) AS ORD,
+                P.TYPE_CD AS PTYPE_CD
              FROM MENU_CTE C, TB_CMM_MENU M
              LEFT OUTER JOIN TB_CMM_PRGRM P ON M.PRGRMID = P.PRGRMID
             WHERE M.UPPR_MENUID = C.MENUID
-                AND M.TYPE_CD = 'P'
-                AND P.TYPE_CD = '02'
         )
         SELECT 
             MENUID, 
@@ -499,6 +499,8 @@
         WHERE 
             MENUID <![CDATA[<>]]> #{menuid}
         AND SITEID = #{siteid}
+        AND TYPE_CD = 'P'
+        AND PTYPE_CD = '02'
         ORDER BY ORD
     </select>
     

@@ -156,7 +156,11 @@ public class GnbMenuPrintImpl {
                     if (StringUtil.isNumber(menuItem1.getUrl()) || "".equals(StringUtil.nvl(menuItem1.getUrl(), "")) || mkey == null) {
                         menuTag.append("        <a href=\"javascript:void(0)\"").append(ariaCurrentL1Attr).append(">");
                     } else {
-                        menuTag.append("        <a href=\"javascript:goMenu('").append(menuItem1.getUrl()).append("','").append(mkey).append("','").append(menuItem1.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(ariaCurrentL1Attr).append(">");
+                        if ("N".equals(menuItem1.getPopupTrgtCd())) { // 새창
+                            menuTag.append("        <a href=\"").append(menuItem1.getUrl()).append("\" target=\"_blank\" title=\"새 창\"").append(ariaCurrentL1Attr).append(">");
+                        } else { // 현재창
+                            menuTag.append("        <a href=\"javascript:goMenu('").append(menuItem1.getUrl()).append("','").append(mkey).append("','").append(menuItem1.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(ariaCurrentL1Attr).append(">");
+                        }
                     }
                 } else {
                     if ("".equals(StringUtil.nvl(menuItem1.getUrl(), ""))) {
@@ -224,7 +228,11 @@ public class GnbMenuPrintImpl {
                                 if (StringUtil.isNumber(menuItem2.getUrl()) || "".equals(StringUtil.nvl(menuItem2.getUrl(), "")) || mkey == null) {
                                     menuTag.append("<a href=\"javascript:void(0)\"").append(ariaCurrentL2Attr).append(">");
                                 } else {
-                                    menuTag.append("<a href=\"javascript:goMenu('").append(menuItem2.getUrl()).append("','").append(mkey).append("','").append(menuItem2.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(ariaCurrentL2Attr).append(">\n");
+                                    if ("N".equals(menuItem2.getPopupTrgtCd())) { // 새창
+                                        menuTag.append("<a href=\"").append(menuItem2.getUrl()).append("\" target=\"_blank\" title=\"새 창\"").append(ariaCurrentL2Attr).append(">");
+                                    } else { // 현재창
+                                        menuTag.append("<a href=\"javascript:goMenu('").append(menuItem2.getUrl()).append("','").append(mkey).append("','").append(menuItem2.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(ariaCurrentL2Attr).append(">\n");
+                                    }
                                 }
                             } else {
                                 if ("".equals(StringUtil.nvl(menuItem2.getUrl(), ""))) {
@@ -281,7 +289,11 @@ public class GnbMenuPrintImpl {
                                             if (StringUtil.isNumber(menuItem3.getUrl()) || "".equals(StringUtil.nvl(menuItem3.getUrl(), "")) || mkey == null) {
                                                 menuTag.append("<a href=\"javascript:void(0)\"").append(ariaCurrentL3Attr).append(">");
                                             } else {
-                                                menuTag.append("<a href=\"javascript:goMenu('").append(menuItem3.getUrl()).append("','").append(mkey).append("','").append(menuItem3.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(ariaCurrentL3Attr).append(">");
+                                                if ("N".equals(menuItem3.getPopupTrgtCd())) { // 새창
+                                                    menuTag.append("<a href=\"").append(menuItem3.getUrl()).append("\" target=\"_blank\" title=\"새 창\"").append(ariaCurrentL3Attr).append(">");
+                                                } else { // 현재창
+                                                    menuTag.append("<a href=\"javascript:goMenu('").append(menuItem3.getUrl()).append("','").append(mkey).append("','").append(menuItem3.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(ariaCurrentL3Attr).append(">");
+                                                }
                                             }
                                         } else {
                                             if ("".equals(StringUtil.nvl(menuItem3.getUrl(), ""))) {

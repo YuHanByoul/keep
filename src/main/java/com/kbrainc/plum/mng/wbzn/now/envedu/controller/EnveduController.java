@@ -1,5 +1,6 @@
 package com.kbrainc.plum.mng.wbzn.now.envedu.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,10 +56,14 @@ public class EnveduController {
     @RequestMapping(value = "/mng/wbzn/now/envedu/enveduListForm.html")
     public String enveduListForm(Model model, HttpServletRequest request) throws Exception {
         int curYear = Integer.valueOf(DateTimeUtil.getYear());
-        Integer[] years = new Integer[4];
         
-        for(int i = curYear, j = 0; i <= i+3 && j <= 3; i++, j++) {
-            years[j] = i;
+        int startYear = 2020;
+        int endYear = curYear + 3;
+        
+        ArrayList<Integer> years = new ArrayList<Integer>();
+        
+        for (int year = startYear; year <= endYear; year++) {
+            years.add(year);
         }
         model.addAttribute("years", years);
         
@@ -121,11 +126,16 @@ public class EnveduController {
         model.addAttribute("envedu", result);
         
         int curYear = Integer.valueOf(DateTimeUtil.getYear());
-        Integer[] years = new Integer[4];
+    
+        int startYear = 2020;
+        int endYear = curYear + 3;
         
-        for(int i = curYear, j = 0; i <= i+3 && j <= 3; i++, j++) {
-            years[j] = i;
+        ArrayList<Integer> years = new ArrayList<Integer>();
+        
+        for (int year = startYear; year <= endYear; year++) {
+            years.add(year);
         }
+        
         model.addAttribute("years", years);
         
         String[] month = new String[12];

@@ -1,5 +1,6 @@
 package com.kbrainc.plum.mng.wbzn.now.prgrmgd.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,10 +56,14 @@ public class PrgrmgdController {
     @RequestMapping(value = "/mng/wbzn/now/prgrmgd/prgrmgdListForm.html")
     public String prgrmgdListForm(Model model, HttpServletRequest request) throws Exception {
         int curYear = Integer.valueOf(DateTimeUtil.getYear());
-        Integer[] years = new Integer[4];
         
-        for(int i = curYear, j = 0; i <= i+3 && j <= 3; i++, j++) {
-            years[j] = i;
+        int startYear = 2020;
+        int endYear = curYear + 3;
+        
+        ArrayList<Integer> years = new ArrayList<Integer>();
+        
+        for (int year = startYear; year <= endYear; year++) {
+            years.add(year);
         }
         model.addAttribute("years", years);
         
@@ -121,10 +126,14 @@ public class PrgrmgdController {
         model.addAttribute("prgrmgd", result);
         
         int curYear = Integer.valueOf(DateTimeUtil.getYear());
-        Integer[] years = new Integer[4];
         
-        for(int i = curYear, j = 0; i <= i+3 && j <= 3; i++, j++) {
-            years[j] = i;
+        int startYear = 2020;
+        int endYear = curYear + 3;
+        
+        ArrayList<Integer> years = new ArrayList<Integer>();
+        
+        for (int year = startYear; year <= endYear; year++) {
+            years.add(year);
         }
         model.addAttribute("years", years);
         
