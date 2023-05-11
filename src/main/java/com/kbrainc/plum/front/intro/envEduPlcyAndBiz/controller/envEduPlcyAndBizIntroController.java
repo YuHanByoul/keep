@@ -40,6 +40,21 @@ public class envEduPlcyAndBizIntroController {
         return VIEW_PATH + "/main";
     }
 
+    @GetMapping("/main1.html")
+    public String main1() throws Exception {
+        return VIEW_PATH + "/main1";
+    }
+
+    @GetMapping("/main2.html")
+    public String main2() throws Exception {
+        return VIEW_PATH + "/main2";
+    }
+
+    @GetMapping("/main3.html")
+    public String main3() throws Exception {
+        return VIEW_PATH + "/main3";
+    }
+
     /**
      * 유아환경교육관 화면
      *
