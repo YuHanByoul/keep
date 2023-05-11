@@ -163,7 +163,8 @@ public class JntpurchsController {
      */
     @RequestMapping(value = "/mng/jntpurchs/jntpurchsOrderUpdateForm.html")
     public String jntpurchsOrderUpdateForm(JntpurchsOrderVo jntpurchsOrderVo, Model model) throws Exception {
-        model.addAttribute("orderInfo", jntpurchsService.selectJntpurchsOrderInfo(jntpurchsOrderVo));
+        JntpurchsOrderVo info = jntpurchsService.selectJntpurchsOrderInfo(jntpurchsOrderVo);
+        model.addAttribute("orderInfo", info);
         return "mng/jntpurchs/jntpurchsOrderUpdate";
     }
     

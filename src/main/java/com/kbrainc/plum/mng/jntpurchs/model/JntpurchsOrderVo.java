@@ -54,6 +54,15 @@ public class JntpurchsOrderVo extends ParentRequestVo {
     /** 공동구매모집 상태 코드명 */
     private String jntpurchsSttsCdNm;
     
+    /** 교구유형 코드명 */
+    private String tchaidTypeCdNm;
+    
+    /** 교육유형 코드명 */
+    private String eduTypeCdNm;
+    
+    /** 모듬구성 코드명 */
+    private String teamCmpstnCdNm;
+    
     /** 신청자 계정 */
     private String acnt;
     

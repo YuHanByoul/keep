@@ -408,6 +408,7 @@
             , E.ACNT
             , E.NM
             , IFNULL(F.INST_NM, "-") AS INST_NM
+            , A.ORDERID
             , A.ORDERNO
             , GROUP_CONCAT(C.TCHAID_NM SEPARATOR ', ') AS TCHAID_NM
             , B.QNTY
@@ -472,6 +473,9 @@
             , A.ORDERNO
             , A.STTS_CD
             , GROUP_CONCAT(CONCAT(C.TCHAID_NM, CONCAT('(TA-', LPAD(B.TCHAIDID, 3, '0'), ')')) SEPARATOR ', ') AS TCHAID_NM
+            , GROUP_CONCAT(CONCAT(G.CD_NM, CONCAT('(TA-', LPAD(B.TCHAIDID, 3, '0'), ')')) SEPARATOR ', ') AS TCHAID_TYPE_CD_NM
+            , GROUP_CONCAT(CONCAT(H.CD_NM, CONCAT('(TA-', LPAD(B.TCHAIDID, 3, '0'), ')')) SEPARATOR ', ') AS EDU_TYPE_CD_NM
+            , GROUP_CONCAT(CONCAT(I.CD_NM, CONCAT('(TA-', LPAD(B.TCHAIDID, 3, '0'), ')')) SEPARATOR ', ') AS TEAM_CMPSTN_CD_NM
             , B.QNTY
             , B.AMT
             , E.ACNT
@@ -491,6 +495,33 @@
             TB_THA_TCHAID_JNTPURCHS_ORDER_GOODS B ON (B.ORDERID = A.ORDERID)
         LEFT OUTER JOIN
             TB_THA_TCHAID C ON (C.TCHAIDID = B.TCHAIDID)
+        LEFT OUTER JOIN (
+            SELECT
+                CD
+                , CD_NM
+            FROM
+            TB_CMM_CD
+            WHERE
+            CDGRPID = 184
+        ) G ON (G.CD = C.TCHAID_TYPE_CD)
+        LEFT OUTER JOIN (
+            SELECT
+                CD
+                , CD_NM
+            FROM
+            TB_CMM_CD
+            WHERE
+            CDGRPID = 187
+        ) H ON (H.CD = C.EDU_TYPE_CD)
+        LEFT OUTER JOIN (
+            SELECT
+                CD
+                , CD_NM
+            FROM
+            TB_CMM_CD
+            WHERE
+            CDGRPID = 186
+        ) I ON (I.CD = C.TEAM_CMPSTN_CD)
         LEFT OUTER JOIN
             TB_THA_TCHAID_JNTPURCHS D ON (D.JNTPURCHSID = B.JNTPURCHSID)
         INNER JOIN (
@@ -505,9 +536,9 @@
         LEFT OUTER JOIN
             TB_CMM_INST F ON (F.INSTID = A.INSTID)
         WHERE
-            B.JNTPURCHSID = #{jntpurchsid}
+            A.ORDERID = #{orderid}
         GROUP BY
-            B.JNTPURCHSID
+            A.ORDERID
     </select>
     
     <!-- 공동구매신청 정보 업데이트 -->
