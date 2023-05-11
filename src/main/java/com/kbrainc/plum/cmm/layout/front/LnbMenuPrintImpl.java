@@ -136,7 +136,11 @@ public class LnbMenuPrintImpl {
 		                    if (StringUtil.isNumber(menuItem1.getUrl()) || "".equals(StringUtil.nvl(menuItem1.getUrl(), "")) || mkey == null) {
 		                        menuTag.append("<a href=\"javascript:void(0)\">");
 		                    } else {
-		                        menuTag.append("<a href=\"javascript:goMenu('").append(menuItem1.getUrl()).append("','").append(mkey).append("','").append(menuItem1.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\">");
+		                        if ("N".equals(menuItem1.getPopupTrgtCd())) { // 새창
+                                    menuTag.append("<a href=\"").append(menuItem1.getUrl()).append("\" target=\"_blank\" title=\"새 창\">");
+                                } else { // 현재창
+                                    menuTag.append("<a href=\"javascript:goMenu('").append(menuItem1.getUrl()).append("','").append(mkey).append("','").append(menuItem1.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\">");
+                                }
 		                    }
 		                } else {
 		                    if ("".equals(StringUtil.nvl(menuItem1.getUrl(), ""))) {
@@ -201,7 +205,11 @@ public class LnbMenuPrintImpl {
 		                                if (StringUtil.isNumber(menuItem2.getUrl()) || "".equals(StringUtil.nvl(menuItem2.getUrl(), "")) || mkey == null) {
 		                                    menuTag.append("<a href=\"javascript:void(0)\">");
 		                                } else {
-											menuTag.append("<a href=\"javascript:goMenu('").append(menuItem2.getUrl()).append("','").append(mkey).append("','").append(menuItem2.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\">");
+		                                    if ("N".equals(menuItem2.getPopupTrgtCd())) { // 새창
+                                                menuTag.append("<a href=\"").append(menuItem2.getUrl()).append("\" target=\"_blank\" title=\"새 창\">");
+                                            } else { // 현재창
+                                                menuTag.append("<a href=\"javascript:goMenu('").append(menuItem2.getUrl()).append("','").append(mkey).append("','").append(menuItem2.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\">");
+                                            }
 		                                }
 		                            } else {
 		                                if ("".equals(StringUtil.nvl(menuItem2.getUrl(), ""))) {
