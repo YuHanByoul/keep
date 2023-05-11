@@ -178,7 +178,11 @@ public class IdntyVrfctnController {
                     } else {
                         response.setContentType("text/html;charset=UTF-8");
                         PrintWriter writer = response.getWriter();
-                        writer.print("<script>alert('회원정보가 존재합니다.\\n아이디 찾기로 확인해주시기 바랍니다.');window.close();</script>");
+                        if (memberInfo.getAcnt() != null) {
+                            writer.print("<script>alert('회원정보가 존재합니다.\\n아이디 찾기로 확인해주시기 바랍니다.');window.close();</script>");
+                        } else {
+                            writer.print("<script>alert('디지털원패스로 연동한 회원입니다.\\n디지털원패스 로그인 이용해주세요.');window.close();</script>");
+                        }
                         return null;
                     }
                 }
