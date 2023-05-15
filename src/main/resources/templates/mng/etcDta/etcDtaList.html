@@ -5,8 +5,12 @@
       layout:decorator="layout/mng/mainLayout">
 <body>
 <div layout:fragment="content">
+	<style>
+		.hide {
+			display: none;
+		}
+	</style>
     <!-- Page-body start -->
-    <script src="/js/ckeditor/ckeditor.js"></script>
     <div class="page-body">
         <div class="row">
             <div class="col-12">
@@ -35,26 +39,20 @@
 	                                    </div>
 	                                </div>
 	                            </div>
-	                            <div class="col-lg-3 col-md-6 mb-3">
-	                                <div class="mb-0 form-group row">
-	                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchBgngDt"><strong>등록일-검색시작일</strong></label>
-	                                    <div class="col-sm-12">
-	                                        <input class="form-control form-control-sm" type="date" name="searchBgngDt" id="searchBgngDt">
-	                                    </div>
-	                                </div>
-	                            </div>
-	                            <div class="col-lg-3 col-md-6 mb-3">
-	                                <div class="mb-0 form-group row">
-	                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchEndDt"><strong>등록일 -검색종료일</strong></label>
-	                                    <div class="col-sm-12">
-	                                        <input class="form-control form-control-sm" name="searchEndDt" id="searchEndDt" type="date">
-	                                    </div>
-	                                </div>
-	                            </div>
+								<div class="col-lg-3 col-md-6 mb-3">
+									<div class="mb-0 form-group row">
+										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchPeriod"><strong>등록기간</strong></label>
+										<div class="col-sm-12">
+											<input type="text" name="searchPeriod" class="form-control form-control-sm" value="" id="searchPeriod">
+											<input type="hidden" id="searchBgngDt" name="searchBgngDt">
+											<input type="hidden" id="searchEndDt" name="searchEndDt">
+										</div>
+									</div>
+								</div>
 	                        </div>
 	                        <div class="mt-1 p-t-20 text-center border-top">
-	                            <button class="btn btn-disabled m-r-5" onclick="searchInit()">초기화</button>
-	                            <button class="btn btn-primary" onclick="search()">검색</button>
+	                            <button type="button" class="btn btn-disabled m-r-5" onclick="searchInit()">초기화</button>
+	                            <button type="submit" class="btn btn-primary" onclick="search()">검색</button>
 	                        </div>
                         </form>
                     </div>
@@ -93,6 +91,9 @@
     <!-- Page-body end -->
 
     <script src="/js/ckeditor/ckeditor.js"></script>
+	<script type="text/javascript" src="/files/bower_components/moment/min/moment.min.js"></script>
+	<script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
+	<link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
     <script th:inline="javascript">
         var etcDtaGridHelper;
         var selectedItems = [];
@@ -102,7 +103,7 @@
         }
 
         var searchInit = () => {
-            $(' #searchType, #searchKeyword, #searchNationCd, #searchBgngDt, #searchEndDt').val('');
+            $(' #searchType, #searchKeyword, #searchNationCd, #searchPeriod, #searchBgngDt, #searchEndDt').val('');
         }
 
         var deleteEtcLstDta = () => {
@@ -136,13 +137,15 @@
 
         $(function () {
             etcDtaGridHelper = new GridHelper('etcDtaGridTable', 'contentPanel');
-            $('#etcDtaGridTable').jsGrid({
+			initDateRangePicker("searchPeriod", "searchBgngDt", "searchEndDt");
+
+			$('#etcDtaGridTable').jsGrid({
                 height: "auto",
                 width: "100%",
                 autoload: true,
                 sorting: false,
                 paging: true,
-                pagerContainer: "#pagerContainer",
+                pagerContainer: "#etcDtaListPager",
                 pagerFormat: "{first} {prev} {pages} {next} {last}",
                 pagePrevText: "이전",
                 pageNextText: "다음",
@@ -203,6 +206,7 @@
                         align: "center",
                         width: "50"
                     },
+					{name: 'dtaid', css: 'hide'},
                     {title: 'No.', name: 'rowNumber', type: "number", width: "80", align: "center"},
                     {title: '국가', name: 'nationNm', type: "text", width: "120", align: "center"},
                     {title: '제목', name: 'ttl', type: "text", width: "350", align: "left"},
@@ -218,7 +222,6 @@
                 },
                 /*[/]*/
                 onPageChanged: function (args) {
-                	debugger;
                 	$("#selectAllCheckbox").prop("checked", false);
                     selectedItems = [];
                 }

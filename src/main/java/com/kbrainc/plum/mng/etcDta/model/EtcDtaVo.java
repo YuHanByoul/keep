@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.cmm.file.model.FileVo;
@@ -34,11 +35,19 @@ public class EtcDtaVo extends ParentRequestVo {
     private UserVo user;
     /** 자료아이디 */
     private Integer dtaid;
-    /** 제목 */
+    /**
+     * 제목
+     */
+    @NotEmpty(message = "제목을 입력해 주십시오.")
+    @Size(max = 200, message = "제목은 200자를 넘을 수 없습니다.")
     private String ttl;
+    
     /** 내용 */
+    @NotEmpty(message = "내용을 입력해 주십시오.")
     private String cn;
+    
     /** 국가_코드 */
+    @NotEmpty(message = "국가를 선택해 주십시오.")
     private String nationCd;
     /** 국가_코드명 */
     private String nationNm;
@@ -55,6 +64,7 @@ public class EtcDtaVo extends ParentRequestVo {
     /** 체험_프로그램 */
     private String exprnPrgrm;
     /** 저작권_코드 */
+    @NotEmpty(message = "저작권 종류를 선택해 주십시오.")
     private String cpyrhtCd;
     /** 삭제여부 */
     private String delYn;
@@ -74,6 +84,10 @@ public class EtcDtaVo extends ParentRequestVo {
     
     private List<FileVo> atchFileList;
     private Integer[] deleteDtaids;
+
+    private String evntCd;
+
+    private String trgtCd;
     
     /** 검색 관련 */
     private String searchKeyword;
