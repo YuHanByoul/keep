@@ -13,6 +13,7 @@ import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.front.envReqst.model.AplyRsvtdeVo;
 import com.kbrainc.plum.front.envReqst.model.EnvReqstDao;
 import com.kbrainc.plum.front.envReqst.model.EnvReqstVo;
+import com.kbrainc.plum.mng.spce.model.SpceVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
@@ -216,6 +217,18 @@ public class EnvReqstServiceImpl extends PlumAbstractServiceImpl implements EnvR
      */
     public List<AplyRsvtdeVo> selectReservedRsvtdeList(EnvReqstVo envReqstVo) throws Exception{
         return envReqstDao.selectReservedRsvtdeList(envReqstVo);
+    }
+    /**
+     * 시설 공간 목록 호출  
+     *
+     * @Title       : selectSpceListByFcltid
+     * @Description : 시설 공간 목록 호출 
+     * @param SpceVo EnvReqstVo EnvReqstVo 객체
+     * @return List<SpceVo> 
+     * @throws Exception 예외
+     */
+    public List<SpceVo> selectSpceListByFcltid(SpceVo spceVo) throws Exception{
+        return envReqstDao.selectSpceListByFcltid(spceVo);
     }
     
 }

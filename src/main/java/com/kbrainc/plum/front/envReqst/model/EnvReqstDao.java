@@ -1,10 +1,11 @@
 package com.kbrainc.plum.front.envReqst.model;
 
-import com.kbrainc.plum.mng.spce.model.SpceRsvtdeVo;
-import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
-
 import java.util.List;
 import java.util.Map;
+
+import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
+
+import com.kbrainc.plum.mng.spce.model.SpceVo;
 
 /**
  * 지역 환경교육센처 Dao
@@ -142,4 +143,14 @@ public interface EnvReqstDao {
      * @throws Exception 예외
      */
     public List<AplyRsvtdeVo> selectReservedRsvtdeList(EnvReqstVo envReqstVo) throws Exception;
+    /**
+     * 시설 공간 목록 호출  
+     *
+     * @Title       : selectSpceListByFcltid
+     * @Description : 시설 공간 목록 호출 
+     * @param SpceVo EnvReqstVo EnvReqstVo 객체
+     * @return List<SpceVo> 
+     * @throws Exception 예외
+     */
+    public List<SpceVo> selectSpceListByFcltid(SpceVo spceVo) throws Exception;
 }

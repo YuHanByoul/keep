@@ -168,8 +168,7 @@ public class EnvReqstController {
         // 공간 보유개수 조회
         spceVo.setFcltid(envReqstVo.getFcltid());
         spceVo.setUser(user);
-        spceVo.setSearchMode("A");
-        model.addAttribute("spceList", spceService.selectSpceList(spceVo));
+        model.addAttribute("spceList", envReqstService.selectSpceListByFcltid(spceVo));
 
         return "front/envReqst/resveEnvView";
     }

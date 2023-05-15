@@ -454,8 +454,43 @@
                     #{item}
                 </foreach>
                 )
+  </select>
+  
+  <!-- 공간 정보 목록 조회 -->
+  <select id="selectSpceListByFcltid" parameterType="SpceVo" resultType="SpceVo">
+        /* EnvReqstDao.selectSpceListByFcltid */
+               SELECT
+                  A.FCLTID
+                  , A.SPCEID
+                  , A.SPCE_NM
+                  , A.SPCE_NO
+                  , A.MAX_NOPE
+                  , A.SIZE
+                  , A.CHKIN_HR
+                  , A.CHCKT_HR
+                  , A.NXTY_CHCKT_YN
+                  , A.RSVT_PSBLTY_DAYCNT
+                  , A.TODAY_RSVT_PSBLTY_YN
+                  , A.USE_YN
+                  , A.MDFCN_DT
+                  , A.MDFRID
+                  , A.REG_DT
+                  , A.RGTRID
+                  , B.FCLT_NM
+                  , B.RGN_CD
+                  , B.APLY_MTHD_CD 
+                  , C.INST_NM 
+                  , C.INSTID 
+                  , D.CTPRVN_NM 
+                FROM   
+                 TB_FCL_SPCE A
+                 INNER JOIN TB_FCL_FCLT B
+                 ON A.FCLTID = B.FCLTID 
+                 INNER JOIN TB_CMM_INST C
+                 ON B.INSTID = C.INSTID
+                 LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN D
+                 ON SUBSTRING( B.RGN_CD,1,2) = D.CTPRVN_CD 
+                WHERE 1=1
+                   AND A.FCLTID = #{fcltid}
     </select>
-    
-    
-    
 </mapper>
