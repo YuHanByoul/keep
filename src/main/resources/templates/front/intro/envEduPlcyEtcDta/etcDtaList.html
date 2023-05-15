@@ -36,6 +36,7 @@
         <input type="hidden" id="orderField" name="orderField" value="reg_dt">
         <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
         <input type="hidden" id="dtaid" name="dtaid">
+        <input type="hidden" id="pageNumber" name="pageNumber">
     </form>
 
     <div class="table-caption flex-nowrap">
@@ -43,7 +44,7 @@
             <p>총 <b id="totalCount" name="totalCount">0</b> 건</p>
         </div>
         <div class="right">
-            <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage">
+            <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage" onchange="onChangePageSize($(this).val(), selectList);">
                 <option value="10">10개씩 보기</option>
                 <option value="50">50개씩 보기</option>
                 <option value="100">100개씩 보기</option>
@@ -92,18 +93,17 @@
             $('#searchType').val(searchVo.searchType);
             $('#searchKeyword').val(searchVo.searchKeyword);
             $('#rowPerPage').val(searchVo.rowPerPage);
+            $('#selectRowPerPage').val(searchVo.rowPerPage);
+            $('#searchNationCd').val(searchVo.searchNationCd);
+            $('#pageNumber').val(searchVo.pageNumber);
 
             selectList();
 
             $('#searchForm').on('submit', function (e) {
                 e.preventDefault();
+                $('#pageNumber').val(1);
                 selectList();
             });
-
-            $('#selectRowPerPage').on('change', function (e) {
-                $('#rowPerPage').val($(this).val());
-            });
-
         });
 
         let selectList = () => {
@@ -123,6 +123,11 @@
                     }
                 });
             }
+        }
+
+        let goPage = (num) => {
+            $("#pageNumber").val(num);
+            selectList();
         }
 
         let goToDetail = (dtaid) => {

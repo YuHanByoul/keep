@@ -165,22 +165,53 @@
             </th:block>
             <button type='button' class="btn btn-disabled m-r-5" onclick="spcltyDtaGridHelper.removeHighlight(); spcltyDtaGridHelper.toggleContent()">취소</button>
             <th:block sec:authorize-url="/mng/spcltyDta/insertSpcltyDta.do">
-                <button type='button' class="btn btn-primary" onclick="insertSpcltyDta()">저장</button>
+                <button type='button' class="btn btn-primary" onclick="showPopup()">저장</button>
             </th:block>
         </div>
 
         <input type="hidden" name="dtaid" id="dtaid" th:value="${spcltyDta.dtaid}"/>
     </form>
 
+    <div class="modal fade" id="cmmCntntsQlityPopup" aria-hidden="true" data-bs-backdrop="static"/>
+
     <script th:inline="javascript">
         var spcltyDta = /*[[${spcltyDta}]]*/null;
         var editor = CKEDITOR.replace('cn', {enterMode: CKEDITOR.ENTER_BR});
+        var cntntsQlityFormData;
+        var cmmCntntsQlityModal;
 
         $(function () {
             pdfFileEvent();
             atchFileEvent();
             validateForm();
         })
+
+        var showPopup = () => {
+            if ($('input[name=clsfCds]:checked').length == 0) {
+                alert('분류를 선택해 주십시오.');
+                return;
+            }
+
+            var editorData = editor.getData()
+            $("#cn").val(editorData);
+
+            if (!$('#registerForm').valid()) {
+                return;
+            }
+
+            var trgtCd = '246004';
+            var evntCd = $('#dtaid').val() == '' ? '247001' : '247002';
+            var cntntsid = $('#dtaid').val() == '' ? '0' : $('#dtaid').val();
+            var functionName = 'insertSpcltyDta';
+            var cmmCntntsQlityPopupUrl = "/mng/cmmCntnts/cmmCntntsQlityPopup.html?trgtCd=" + trgtCd + "&evntCd="+ evntCd+ "&functionName="+functionName + "&cntntsid="+ cntntsid;
+
+            $("#cmmCntntsQlityPopup").load(cmmCntntsQlityPopupUrl, function(response, status, xhr) {
+                if (status == "success") {
+                    cmmCntntsQlityModal = new bootstrap.Modal($('#cmmCntntsQlityPopup'));
+                    cmmCntntsQlityModal.show();
+                }
+            });
+        }
 
         var deleteSpcltyDta = (dtaid) => {
             var deleteDtaids = dtaid;
@@ -205,18 +236,6 @@
         }
 
         var insertSpcltyDta = () => {
-            if ($('input[name=clsfCds]:checked').length == 0) {
-                alert('분류를 선택해 주십시오.');
-                return;
-            }
-
-            var editorData = editor.getData()
-            $("#cn").val(editorData);
-
-            if (!$('#registerForm').valid()) {
-                return;
-            }
-
             let url = '/mng/spcltyDta/insertSpcltyDta.do';
 
             if (!!$('#dtaid').val()) {
@@ -243,12 +262,15 @@
                 }
             }
 
+            var formData = $('#registerForm').serializeArray()
+            formData = formData.concat(cntntsQlityFormData);
+
             if (displayWorkProgress()) {
                 $.ajax({
                     method: 'post',
                     url: url,
                     dataType: 'json',
-                    data: $('#registerForm').serializeArray(),
+                    data: formData,
                     success: function (response) {
                         alert(response.msg);
                         closeWorkProgress();

@@ -3,6 +3,8 @@ package com.kbrainc.plum.mng.etcDta.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.kbrainc.plum.mng.cmmCntnts.model.CmmCntntsVo;
+import com.kbrainc.plum.mng.cmmCntnts.service.CmmCntntsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +37,9 @@ public class EtcDtaServiceImpl extends PlumAbstractServiceImpl implements EtcDta
 
     @Autowired
     private FileDao fileDao;
+
+    @Autowired
+    private CmmCntntsService cmmCntntsService;
 
     /**
      * 기타자료 목록 조회
@@ -88,6 +93,14 @@ public class EtcDtaServiceImpl extends PlumAbstractServiceImpl implements EtcDta
     public int insertEtcDta(EtcDtaVo etcDtaVo) throws Exception {
         int retVal = 0;
         retVal += etcDtaDao.insertEtcDta(etcDtaVo);
+
+        CmmCntntsVo cmmCntntsVo = new CmmCntntsVo();
+        cmmCntntsVo.setUser(etcDtaVo.getUser());
+        cmmCntntsVo.setEvntCd(etcDtaVo.getEvntCd());
+        cmmCntntsVo.setTrgtCd(etcDtaVo.getTrgtCd());
+        cmmCntntsVo.setCntntsid(etcDtaVo.getDtaid());
+        retVal += cmmCntntsService.insertCmmCntnts(cmmCntntsVo);
+
         return retVal;
     }
 
@@ -106,6 +119,14 @@ public class EtcDtaServiceImpl extends PlumAbstractServiceImpl implements EtcDta
         int retVal = 0;
 
         retVal += etcDtaDao.updateEtcDta(etcDtaVo);
+
+        CmmCntntsVo cmmCntntsVo = new CmmCntntsVo();
+        cmmCntntsVo.setUser(etcDtaVo.getUser());
+        cmmCntntsVo.setEvntCd(etcDtaVo.getEvntCd());
+        cmmCntntsVo.setTrgtCd(etcDtaVo.getTrgtCd());
+        cmmCntntsVo.setCntntsid(etcDtaVo.getDtaid());
+        retVal += cmmCntntsService.insertCmmCntnts(cmmCntntsVo);
+
         return retVal;
     }
 

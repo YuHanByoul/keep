@@ -154,7 +154,7 @@
                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>최종수정일</strong></label>
                         <div class="col-12">
                             <input type="text" class="form-control form-control-sm" readonly
-                                   th:value="${bsnsOperDta.mdfcnDt != null? #dates.format(bsnsOperDta.mdfcnDt,'yyyy-MM-dd') : ''}"/>
+                                   th:value="${bsnsOperDta.mdfcnDt != null ? #dates.format(bsnsOperDta.mdfcnDt,'yyyy-MM-dd') : ''}"/>
                         </div>
                     </div>
                 </div>
@@ -176,7 +176,7 @@
             </th:block>
             <button type='button' class="btn btn-disabled m-r-5" onclick="bsnsOperDtaGridHelper.removeHighlight();bsnsOperDtaGridHelper.toggleContent()">취소</button>
             <th:block sec:authorize-url="/mng/bsnsOperDta/insertBsnsOperDta.do">
-                <button type='button' class="btn btn-primary" onclick="insertBsnsOperDta()">저장</button>
+                <button type='button' class="btn btn-primary" onclick="showPopup()">저장</button>
             </th:block>
 
         </div>
@@ -186,9 +186,14 @@
         <input type="hidden" name="dtaid" id="dtaid" th:value="${bsnsOperDta.dtaid != null ? bsnsOperDta.dtaid : ''}"/>
     </form>
 
+    <div class="modal fade" id="cmmCntntsQlityPopup" aria-hidden="true" data-bs-backdrop="static">
+
+
     <script th:inline="javascript">
         var bsnsOperDta = /*[[${bsnsOperDta}]]*/null;
         var editor = CKEDITOR.replace('cn', {enterMode: CKEDITOR.ENTER_BR});
+        var cmmCntntsQlityModal;
+        var cntntsQlityFormData;
 
         var deleteBsnsOperDta = (dtaid) => {
             var deleteDtaids = dtaid;
@@ -212,7 +217,8 @@
             }
         }
 
-        var insertBsnsOperDta = () => {
+        var showPopup = () => {
+
             if ($('input[name=clsfCds]:checked').length == 0) {
                 alert('분류를 선택해 주십시오.');
                 return;
@@ -225,6 +231,21 @@
                 return;
             }
 
+            var trgtCd = '246003';
+            var evntCd = $('#dtaid').val() == '' ? '247001' : '247002';
+            var cntntsid = $('#dtaid').val() == '' ? '0' : $('#dtaid').val();
+            var functionName = 'insertBsnsOperDta';
+            var cmmCntntsQlityPopupUrl = "/mng/cmmCntnts/cmmCntntsQlityPopup.html?trgtCd=" + trgtCd + "&evntCd="+ evntCd+ "&functionName="+functionName + "&cntntsid="+ cntntsid;
+
+            $("#cmmCntntsQlityPopup").load(cmmCntntsQlityPopupUrl, function(response, status, xhr) {
+                if (status == "success") {
+                    cmmCntntsQlityModal = new bootstrap.Modal($('#cmmCntntsQlityPopup'));
+                    cmmCntntsQlityModal.show();
+                }
+            });
+        }
+
+        var insertBsnsOperDta = () => {
             var url = '/mng/bsnsOperDta/insertBsnsOperDta.do';
 
             if (!!$('#dtaid').val()) {
@@ -251,12 +272,15 @@
                 }
             }
 
+            var formData = $('#registerForm').serializeArray();
+            formData = formData.concat(cntntsQlityFormData);
+
             if (displayWorkProgress()) {
                 $.ajax({
                     method: 'post',
                     url: url,
                     dataType: 'json',
-                    data: $('#registerForm').serializeArray(),
+                    data: formData,
                     success: function (response) {
                         alert(response.msg);
                         closeWorkProgress();

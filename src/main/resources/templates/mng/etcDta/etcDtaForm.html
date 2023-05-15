@@ -142,19 +142,47 @@
             </th:block>
             <button type='button' class="btn btn-disabled m-r-5" onclick="etcDtaGridHelper.toggleContent()">취소</button>
             <th:block sec:authorize-url="/mng/etcDta/insertEtcDta.do">
-                <button type='button' class="btn btn-primary" onclick="insertEtcDta()">저장</button>
+                <button type='button' class="btn btn-primary" onclick="showPopup()">저장</button>
             </th:block>
         </div>
         <input type="hidden" name="rgtrid" id="rgtrid" th:value="${etcDta.rgtrid}"/>
         <input type="hidden" name="dtaid" id="dtaid" th:value="${etcDta.dtaid}"/>
     </form>
 
+	<div class="modal fade" id="cmmCntntsQlityPopup" aria-hidden="true" data-bs-backdrop="static"/>
+
     <script th:inline="javascript">
         var editor = CKEDITOR.replace('cn', {enterMode: CKEDITOR.ENTER_BR});
+		var cntntsQlityFormData;
+		var cmmCntntsQlityModal;
+
         $(function () {
             atchFileEvent();
             validateForm();
         })
+
+		var showPopup = () => {
+			let editorData = editor.getData();
+
+			$("#cn").val(editorData);
+
+			if (!$('#registerForm').valid()) {
+				return;
+			}
+
+			var trgtCd = '246005';
+			var evntCd = $('#dtaid').val() == '' ? '247001' : '247002';
+			var cntntsid = $('#dtaid').val() == '' ? '0' : $('#dtaid').val();
+			var functionName = 'insertEtcDta';
+			var cmmCntntsQlityPopupUrl = "/mng/cmmCntnts/cmmCntntsQlityPopup.html?trgtCd=" + trgtCd + "&evntCd="+ evntCd+ "&functionName="+functionName + "&cntntsid="+ cntntsid;
+
+			$("#cmmCntntsQlityPopup").load(cmmCntntsQlityPopupUrl, function(response, status, xhr) {
+				if (status == "success") {
+					cmmCntntsQlityModal = new bootstrap.Modal($('#cmmCntntsQlityPopup'));
+					cmmCntntsQlityModal.show();
+				}
+			});
+		}
         
         var deleteEtcDta = (dtaid) => {
             var deleteDtaids = dtaid;
@@ -177,16 +205,8 @@
                 }
             }
         }
-        
-        let insertEtcDta = () => {
-            let editorData = editor.getData();
-            debugger;
-            $("#cn").val(editorData);
 
-            if (!$('#registerForm').valid()) {
-                return;
-            }
-
+		var insertEtcDta = () => {
             let url = '/mng/etcDta/insertEtcDta.do';
 
             if(!!$('#dtaid').val()) {
@@ -231,25 +251,26 @@
             }
         }
 
-        let validateForm = () => {
+		var validateForm = () => {
             $('#registerForm').validate({
                 ignore: [],
                 rules: {
                     ttl: {required: true, maxlength: 100},
                     cn: {required: true},
-                    ntnNm: {required: true},
-                    ntnNm: {required: true}
+					nationCd: {required: true},
+					cpyrhtCd: {required: true}
+
                 },
                 messages: {
                     ttl: {required: '제목을 입력해 주십시오.', maxlength: '제목은 100자를 넘을 수 없습니다.'},
                     cn: {required: '내용을 입력해 주십시오.'},
-                    ntnNm: {required: '국가를 선택해 주십시오.'},
-                    ntnNm: {required: '국가를 선택해 주십시오.'}
-                }
+					nationCd: {required: '국가를 선택해 주십시오.'},
+					cpyrhtCd: {required: '저작권 종류를 선택해 주십시오.'}
+				}
             });
         }
 
-        let atchFileEvent = () => {
+		var atchFileEvent = () => {
             $('#atchFile').on("change", function (event) {
 
                 var objFile = document.querySelector('#atchFile');

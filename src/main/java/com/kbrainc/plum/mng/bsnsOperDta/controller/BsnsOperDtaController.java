@@ -129,7 +129,6 @@ public class BsnsOperDtaController {
     public Map<String, Object> insertBsnsOperDta(@Valid BsnsOperDtaVo bsnsOperDtaVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> result = new HashMap<>();
 
-
         if (bindingResult.hasErrors()) {
             FieldError fieldError = bindingResult.getFieldError();
             if (fieldError != null) {
@@ -137,6 +136,7 @@ public class BsnsOperDtaController {
             }
             return result;
         }
+
         bsnsOperDtaVo.setUser(user);
 
         int retVal = 0;
