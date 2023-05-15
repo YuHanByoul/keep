@@ -279,13 +279,25 @@
 	    editor = CKEDITOR.replace('cn');
 	    
 	    if(mvpid != null) {
-	    	var title = getTitle(mvpid);
-		    var youTubeTag = `
-				<iframe id="player" type="text/html" width="640" height="480"
-				src="https://www.youtube.com/embed/${mvpid}"
-				title="${title}"		
-		    	frameborder="0"></iframe>`;
-		    editor.setData(youTubeTag + editor.getData());	    	
+	    	if(editor.getData().indexOf("iframe") < 0) {
+		    	var title = getTitle(mvpid);
+			    var youTubeTag = `
+					<iframe id="player" type="text/html" width="640" height="480"
+					src="https://www.youtube.com/embed/${mvpid}"
+					title="${title}"		
+			    	frameborder="0"></iframe>`;
+			    editor.setData(youTubeTag + editor.getData());	    		    		
+	    	}else {
+	    		var cnYoutubeTag = editor.getData().substring(editor.getData().indexOf("iframe")-1,editor.getData().lastIndexOf("iframe")+7)
+	    		
+		    	var title = getTitle(mvpid);
+			    var youTubeTag = `
+					<iframe id="player" type="text/html" width="640" height="480"
+					src="https://www.youtube.com/embed/${mvpid}"
+					title="${title}"		
+			    	frameborder="0"></iframe>`;
+			    editor.setData(youTubeTag + editor.getData().replace(cnYoutubeTag,''))		    
+	    	}
 	    }
 	    
 	    $("#youtubeid").change(function() {
