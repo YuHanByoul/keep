@@ -1,119 +1,121 @@
-<form id="operPlanOutlForm" >
-	<input type="hidden"  id="aplyid" name="aplyid" th:value="${planOutlInfo.aplyid}" />
-	<input type="hidden"  id="planKey" name="planKey" th:value="${planOutlInfo.planKey}" />
-	<div class="card-header p-b-0">
-	    <h3 class="sub-title"><strong>기관·단체의 설립목적 및 주요사업</strong></h3>
-	</div>
-	<div class="card-block-small p-t-0">
-	    <div class="form-group mb-3 required">
-	        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>기관·단체의 설립목적 및 주요사업</strong></label>
-	        <div class="col-sm-12">
-	            <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="500자 이하의 기관·단체의 설립목적 및 주요사업 표시" id="mainBsns" name="mainBsns">[[${planOutlInfo.mainBsns}]]</textarea>
-	            <p class="feedback"></p>
-	        </div>
-	    </div>
-	    <div class="form-group mb-3 required">
-	        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>증빙서류</strong></label>
-            <div class="col-sm-12">
-                <input id="multiFileInput" type="file" name="files" multiple="multiple" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" class="form-control form-control-sm" />
-                <input type="hidden" id="atchFilegrpid" name="atchFilegrpid" th:value="${(planOutlInfo.atchFilegrpid == '' or planOutlInfo.atchFilegrpid == null) ? 0 : planOutlInfo.atchFilegrpid}"/>
-            </div>
-            <div class="mt-2 row">
-                <div class="col-auto">
-                    <th:block th:if="${fileList != null}">
-                        <div class="row">
-                            <th:block th:if="${fileList != null}">
-                                <div th:each="item : ${fileList}" th:id="${item.fileid}"
-                                    class="col-auto">
-                                    <th:block th:if="${item.orginlFileNm != null}">
+<div class="card">
+	<form id="operPlanOutlForm" >
+		<input type="hidden"  id="aplyid" name="aplyid" th:value="${planOutlInfo.aplyid}" />
+		<input type="hidden"  id="planKey" name="planKey" th:value="${planOutlInfo.planKey}" />
+		<div class="card-header p-b-0">
+			<h3 class="sub-title"><strong>기관·단체의 설립목적 및 주요사업</strong></h3>
+		</div>
+		<div class="card-block-small p-t-0">
+			<div class="form-group mb-3 required">
+				<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>기관·단체의 설립목적 및 주요사업</strong></label>
+				<div class="col-sm-12">
+					<textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="500자 이하의 기관·단체의 설립목적 및 주요사업 표시" id="mainBsns" name="mainBsns">[[${planOutlInfo.mainBsns}]]</textarea>
+					<p class="feedback"></p>
+				</div>
+			</div>
+			<div class="form-group mb-3 required">
+				<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>증빙서류</strong></label>
+				<div class="col-sm-12">
+					<input id="multiFileInput" type="file" name="files" multiple="multiple" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" class="form-control form-control-sm" />
+					<input type="hidden" id="atchFilegrpid" name="atchFilegrpid" th:value="${(planOutlInfo.atchFilegrpid == '' or planOutlInfo.atchFilegrpid == null) ? 0 : planOutlInfo.atchFilegrpid}"/>
+				</div>
+				<div class="mt-2 row">
+					<div class="col-auto">
+						<th:block th:if="${fileList != null}">
+							<div class="row">
+								<th:block th:if="${fileList != null}">
+									<div th:each="item : ${fileList}" th:id="${item.fileid}"
+										 class="col-auto">
+										<th:block th:if="${item.orginlFileNm != null}">
                                         <span th:fileid='${item.fileid}'
-                                            th:fileIdntfcKey="${item.fileIdntfcKey}"
-                                            th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))"
-                                            href="javascript:void(0)" class='label label-inverse'>
+											  th:fileIdntfcKey="${item.fileIdntfcKey}"
+											  th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))"
+											  href="javascript:void(0)" class='label label-inverse'>
                                             <th:block th:text="${item.orginlFileNm}" /> <a
-                                            th:name="${item.fileid}"
-                                            th:attr="data-idntfc-key=${item.fileIdntfcKey}"
-                                            th:onclick="fn_deleteFileList(this.name, this.dataset.idntfcKey)"
-                                            class='text-white'> <th:block th:text="X"></th:block></a>
+												th:name="${item.fileid}"
+												th:attr="data-idntfc-key=${item.fileIdntfcKey}"
+												th:onclick="fn_deleteFileList(this.name, this.dataset.idntfcKey)"
+												class='text-white'> <th:block th:text="X"></th:block></a>
                                         </span>
-                                    </th:block>
-                                </div>
-                            </th:block>
-                        </div>
-                    </th:block>
-                    <div id="multipleFileUploadError"></div>
-                    <div id="multipleFileUploadSuccess"></div>
-                </div>
-            </div>
-	    </div>
-	</div>
-	<div class="card-header p-t-0 p-b-0">
-	    <h3 class="sub-title"><strong>운영계획</strong></h3>
-	</div>
-	<div class="card-block-small p-t-0">
-	    <div class="form-group mb-3 required">
-	        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>교육 운영방안</strong></label>
-	        <div class="col-sm-12">
-	            <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="500자 이하의 교육 운영방안 표시" id="operMthd" name="operMthd">[[${planOutlInfo.operMthd}]]</textarea>
-	            <p class="feedback"></p>
-	        </div>
-	    </div>
-	    <div class="form-group mb-3">
-	        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>세부 운영계획</strong></label>
-	        <div class="col-sm-12">
-	            <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="500자 이하의 세부 운영계획을 입력해 주세요." id="operPlan" name="operPlan" >[[${planOutlInfo.operPlan}]]</textarea>
-	            <p class="feedback"></p>
-	        </div>
-	    </div>
-	    <div class="form-group mb-3">
-	        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>참가자 모집 및 홍보, 관리 계획</strong></label>
-	        <div class="col-sm-12">
-	            <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="500자 이하의 참가자 모집 및 홍보, 관리 계획 표시" id="mngPlan" name="mngPlan" >[[${planOutlInfo.mngPlan}]]</textarea>
-	            <p class="feedback"></p>
-	        </div>
-	    </div>
-	</div>
-	<div class="card-header p-t-0 p-b-0">
-	    <h3 class="sub-title"><strong>소요예산 확보 방안 및 집행계획</strong></h3>
-	</div>
-	<div class="card-block-small p-t-0">
-	    <div class="form-group mb-3 required">
-	        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>소요예산 확보 방안 및 집행계획</strong></label>
-	        <div class="col-sm-12">
-	            <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="500자 이하의 소요예산 확보 방안 및 집행계획 표시" id="bgtPlan" name="bgtPlan" >[[${planOutlInfo.bgtPlan}]]</textarea>
-	            <p class="feedback"></p>
-	        </div>
-	    </div>
-	</div>
-	<div class="card-header p-t-0 p-b-0">
-	    <h3 class="sub-title"><strong>기대효과</strong></h3>
-	</div>
-	<div class="card-block-small p-t-0">
-	    <div class="form-group mb-3 required">
-	        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>기대효과</strong></label>
-	        <div class="col-sm-12">
-	            <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="500자 이하의 기대효과 표시" id="expcEffect" name="expcEffect" >[[${planOutlInfo.expcEffect}]]</textarea>
-	            <p class="feedback"></p>
-	        </div>
-	    </div>
-	</div>
-	<div class="card-header p-t-0 p-b-0">
-	    <h3 class="sub-title"><strong>기타자료</strong></h3>
-	</div>
-	<div class="card-block-small p-t-0">
-	    <div class="form-group mb-3">
-	        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>기타자료</strong></label>
-	        <div class="col-sm-12">
-	            <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="500자 이하의 기타자료 표시" id="etcDta" name="etcDta" >[[${planOutlInfo.etcDta}]]</textarea>
-	            <p class="feedback"></p>
-	        </div>
-	    </div>
-	</div>
-	<div class="card-block-small">
-	    <button type="button" class="btn btn-disabled" onclick="gridHelper1.toggleContent();">취소</button>
-	    <button type="button" class="btn btn-primary" onclick="fn_insertOperPlanOutlInfo()" id="saveBtn">저장</button>
-	</div>
-</form>
+										</th:block>
+									</div>
+								</th:block>
+							</div>
+						</th:block>
+						<div id="multipleFileUploadError"></div>
+						<div id="multipleFileUploadSuccess"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="card-header p-t-0 p-b-0">
+			<h3 class="sub-title"><strong>운영계획</strong></h3>
+		</div>
+		<div class="card-block-small p-t-0">
+			<div class="form-group mb-3 required">
+				<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>교육 운영방안</strong></label>
+				<div class="col-sm-12">
+					<textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="500자 이하의 교육 운영방안 표시" id="operMthd" name="operMthd">[[${planOutlInfo.operMthd}]]</textarea>
+					<p class="feedback"></p>
+				</div>
+			</div>
+			<div class="form-group mb-3">
+				<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>세부 운영계획</strong></label>
+				<div class="col-sm-12">
+					<textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="500자 이하의 세부 운영계획을 입력해 주세요." id="operPlan" name="operPlan" >[[${planOutlInfo.operPlan}]]</textarea>
+					<p class="feedback"></p>
+				</div>
+			</div>
+			<div class="form-group mb-3">
+				<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>참가자 모집 및 홍보, 관리 계획</strong></label>
+				<div class="col-sm-12">
+					<textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="500자 이하의 참가자 모집 및 홍보, 관리 계획 표시" id="mngPlan" name="mngPlan" >[[${planOutlInfo.mngPlan}]]</textarea>
+					<p class="feedback"></p>
+				</div>
+			</div>
+		</div>
+		<div class="card-header p-t-0 p-b-0">
+			<h3 class="sub-title"><strong>소요예산 확보 방안 및 집행계획</strong></h3>
+		</div>
+		<div class="card-block-small p-t-0">
+			<div class="form-group mb-3 required">
+				<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>소요예산 확보 방안 및 집행계획</strong></label>
+				<div class="col-sm-12">
+					<textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="500자 이하의 소요예산 확보 방안 및 집행계획 표시" id="bgtPlan" name="bgtPlan" >[[${planOutlInfo.bgtPlan}]]</textarea>
+					<p class="feedback"></p>
+				</div>
+			</div>
+		</div>
+		<div class="card-header p-t-0 p-b-0">
+			<h3 class="sub-title"><strong>기대효과</strong></h3>
+		</div>
+		<div class="card-block-small p-t-0">
+			<div class="form-group mb-3 required">
+				<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>기대효과</strong></label>
+				<div class="col-sm-12">
+					<textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="500자 이하의 기대효과 표시" id="expcEffect" name="expcEffect" >[[${planOutlInfo.expcEffect}]]</textarea>
+					<p class="feedback"></p>
+				</div>
+			</div>
+		</div>
+		<div class="card-header p-t-0 p-b-0">
+			<h3 class="sub-title"><strong>기타자료</strong></h3>
+		</div>
+		<div class="card-block-small p-t-0">
+			<div class="form-group mb-3">
+				<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>기타자료</strong></label>
+				<div class="col-sm-12">
+					<textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="500자 이하의 기타자료 표시" id="etcDta" name="etcDta" >[[${planOutlInfo.etcDta}]]</textarea>
+					<p class="feedback"></p>
+				</div>
+			</div>
+		</div>
+		<div class="card-block-small">
+			<button type="button" class="btn btn-disabled" onclick="gridHelper1.toggleContent();">취소</button>
+			<button type="button" class="btn btn-primary" onclick="fn_insertOperPlanOutlInfo()" id="saveBtn">저장</button>
+		</div>
+	</form>
+</div>
 <script type="text/javascript">
 var insertUrl="/mng/eduInst/insertOperPlan.do";
 var updateUrl="/mng/eduInst/updateOperPlan.do";
