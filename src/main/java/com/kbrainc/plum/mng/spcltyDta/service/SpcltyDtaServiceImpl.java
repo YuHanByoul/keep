@@ -2,6 +2,8 @@ package com.kbrainc.plum.mng.spcltyDta.service;
 
 import com.kbrainc.plum.cmm.file.model.FileDao;
 import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.mng.cmmCntnts.model.CmmCntntsVo;
+import com.kbrainc.plum.mng.cmmCntnts.service.CmmCntntsService;
 import com.kbrainc.plum.mng.spcltyDta.model.SpcltyDtaDao;
 import com.kbrainc.plum.mng.spcltyDta.model.SpcltyDtaVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
@@ -34,6 +36,10 @@ public class SpcltyDtaServiceImpl extends PlumAbstractServiceImpl implements Spc
 
     @Autowired
     private FileDao fileDao;
+
+    @Autowired
+    private CmmCntntsService cmmCntntsService;
+
 
     /**
      * 전문자료 목록 조회
@@ -97,6 +103,13 @@ public class SpcltyDtaServiceImpl extends PlumAbstractServiceImpl implements Spc
         retVal += spcltyDtaDao.insertSpcltyDta(spcltyDtaVo);
         retVal += spcltyDtaDao.insertSpcltyDtaClsfMapping(spcltyDtaVo);
 
+        CmmCntntsVo cmmCntntsVo = new CmmCntntsVo();
+        cmmCntntsVo.setUser(spcltyDtaVo.getUser());
+        cmmCntntsVo.setEvntCd(spcltyDtaVo.getEvntCd());
+        cmmCntntsVo.setTrgtCd(spcltyDtaVo.getTrgtCd());
+        cmmCntntsVo.setCntntsid(spcltyDtaVo.getDtaid());
+        retVal += cmmCntntsService.insertCmmCntnts(cmmCntntsVo);
+
         return retVal;
     }
 
@@ -117,6 +130,13 @@ public class SpcltyDtaServiceImpl extends PlumAbstractServiceImpl implements Spc
         retVal += spcltyDtaDao.updateSpcltyDta(spcltyDtaVo);
         retVal += spcltyDtaDao.deleteSpcltyDtaClsfMapping(spcltyDtaVo);
         retVal += spcltyDtaDao.insertSpcltyDtaClsfMapping(spcltyDtaVo);
+
+        CmmCntntsVo cmmCntntsVo = new CmmCntntsVo();
+        cmmCntntsVo.setUser(spcltyDtaVo.getUser());
+        cmmCntntsVo.setEvntCd(spcltyDtaVo.getEvntCd());
+        cmmCntntsVo.setTrgtCd(spcltyDtaVo.getTrgtCd());
+        cmmCntntsVo.setCntntsid(spcltyDtaVo.getDtaid());
+        retVal += cmmCntntsService.insertCmmCntnts(cmmCntntsVo);
 
         return retVal;
     }

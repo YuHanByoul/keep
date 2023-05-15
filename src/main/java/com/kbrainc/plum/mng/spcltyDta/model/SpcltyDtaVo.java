@@ -97,6 +97,10 @@ public class SpcltyDtaVo extends ParentRequestVo {
     /*삭제용 파라미터 */
     private Integer[] deleteDtaids;
 
+    private String evntCd;
+
+    private String trgtCd;
+
     public void setSearchClsfCd(String searchClsfCd) {
         this.searchClsfCd = searchClsfCd;
 
