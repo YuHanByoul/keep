@@ -127,6 +127,10 @@ public class EnvReqstController {
     @RequestMapping(value = "/front/envReqst/resveEnvView.html")
     public String resveEnvView(EnvReqstVo envReqstVo, Model model, @UserInfo UserVo user, SpceVo spceVo) throws Exception {
         
+        if(envReqstVo.getFcltid()== null || envReqstVo.getFcltid()==0) {
+            return "redirect:/front/envReqst/envReqstList.html";
+        }
+        
         model.addAttribute("params", envReqstVo);
         envReqstVo.setUser(user);
         EnvReqstVo resultVo = envReqstService.selectResveEnvInfo(envReqstVo);
@@ -186,14 +190,14 @@ public class EnvReqstController {
     @RequestMapping(value = "/front/envReqst/updateEnvReqst.html")
     public String updateEnvReqst(EnvReqstVo envReqstVo, Model model, @UserInfo UserVo user, SpceVo spceVo) throws Exception {
 
+        if(envReqstVo.getFcltid()== null || envReqstVo.getFcltid()==0) {
+            return "redirect:/front/envReqst/envReqstList.html";
+        }
+        
         model.addAttribute("params", envReqstVo);
         
         JSONParser parser = new JSONParser();
-        //Object obj = parser.parse(envReqstVo.getRsvtdeid().toString());
-        // 공간 보유개수 조회
         envReqstVo.setSpceid(envReqstVo.getSpceid());
-        //envReqstVo.setRsvtdeid(obj);
-
         model.addAttribute("user", user);
         model.addAttribute("param", spceVo);
         model.addAttribute("spceInfo", envReqstService.selectSpceInfo(envReqstVo));
