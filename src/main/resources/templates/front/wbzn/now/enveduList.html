@@ -52,15 +52,13 @@
 					<div class="form-input mo-flex-wrap">
 						<strong class="label">지난호 보기</strong>
 						<div class="form-input">
-							<select title="지난호 보기 년 선택" name="enveduSearchYr" id="enveduSearchYr">
+							<select title="지난호 보기 년 선택" name="enveduSearchYr" id="enveduSearchYr" onchange="envedu.selectSearchMonth(this.value);">
 								<th:block th:each="item : ${enveduYr}">
 									<option th:value="${item.yr}"><th:block th:text="${item.yr}"></th:block>년</option>
 								</th:block>
 							</select>
 							<select title="지난호 보기 월 선택" name="enveduSearchMm" id="enveduSearchMm">
-								<th:block th:each="item : ${enveduMm}">
-									<option th:value="${item.mm}"><th:block th:text="${item.mm}"></th:block>월</option>
-								</th:block>
+								<option value="">- 선택 -</option>
 							</select>
 						</div>
 						<div class="search-filter-submit">
@@ -102,15 +100,13 @@
 					<div class="form-input mo-flex-wrap">
 						<strong class="label">지난호 보기</strong>
 						<div class="form-input">
-							<select title="지난호 보기 년 선택" name="prgrmgdSearchYr" id="prgrmgdSearchYr">
+							<select title="지난호 보기 년 선택" name="prgrmgdSearchYr" id="prgrmgdSearchYr" onchange="prgrmgd.selectSearchMonth(this.value);">
 								<th:block th:each="item : ${prgrmgdYr}">
 									<option th:value="${item.yr}"><th:block th:text="${item.yr}"></th:block>년</option>
 								</th:block>
 							</select>
 							<select title="지난호 보기 월 선택" name="prgrmgdSearchMm" id="prgrmgdSearchMm">
-								<th:block th:if="${not #strings.isEmpty(prgrmgdMm)}" th:each="item : ${prgrmgdMm}">
-									<option th:value="${item.mm}"><th:block th:text="${item.mm}"></th:block>월</option>
-								</th:block>
+								<option value="">- 선택 -</option>
 							</select>
 						</div>
 						<div class="search-filter-submit">
@@ -229,8 +225,8 @@
 			},
 			
 			search() {
-				if($("#enveduSearchYr").val() == "" && $("#enveduSearchMm").val() != "") {
-					alert("년도를 선택해 주십시오.");
+				if($("#enveduSearchMm").val() == "") {
+					alert("검색할 월을 선택해 주십시오.");
 					return false;
 				}
 				
@@ -259,17 +255,15 @@
 				month = now.getMonth() + 1;
 				
 				$("#enveduSearchYr").val(year);
-				$("#enveduSearchMm").val(String(month).padStart(2, '0'));				
+				$("#enveduSearchMm").val("");				
 				
 				transformMonth();
+				
+				envedu.selectSearchMonth(year, month);
+				
 				$("#beforeMonth").val("");
 				$("#nextMonth").val("");
 				$("#compareDate").val("");
-				if(month != "") {
-					$("#enveduNowDate").text(year + "년 " + month + "월호 환경교육");
-				}else {
-					$("#enveduNowDate").text("환경교육");
-				}
 			},
 			
 			selectEnveduList(type) {
@@ -399,6 +393,48 @@
 					});
 				}
 				$('#envedu-list-area').html(enveduListHtml);
+			},
+			
+			selectSearchMonth(val, month) {
+				if (displayWorkProgress(true)) {
+					$.ajax({
+						url: "/front/wbzn/now/selectSearchMonth.do",
+						cache: false,
+						dataType: 'json',
+						data: {yr : val},
+						type: 'GET',
+						success: function (result) {
+							envedu.makeSelectBox(result, month);
+							closeWorkProgress();
+						}
+					});
+				}			
+			},
+			
+			makeSelectBox(list, month) {
+				var isSelect = false;
+				
+				var select = document.getElementById("enveduSearchMm");
+				var options = select.options;
+				select.innerHTML = "";
+				var newOption = document.createElement("option");
+				newOption.value = "";
+				newOption.text = "- 선택 -";
+				select.add(newOption);
+				list.enveduMm.forEach(function(item) {
+					var newOption = document.createElement("option");
+					newOption.value = item.mm;
+					newOption.text = item.mm;
+					select.add(newOption);
+					if(month == item.mm) {
+						isSelect = true;
+					}
+				})
+				if(month != undefined && isSelect) {
+					select.value = month;				
+				}else {
+					select.value = "";
+				}
 			}
 		};
         	
@@ -415,16 +451,12 @@
 			},
 			
 			moveToDetail() {
-				if (this.userid == null) {
-					alert('로그인 후 이용하실 수 있습니다.');
-					return;
-				}
 				location.href = '/front/wbzn/now/prgrmgdDetailForm.html';
 			},
 			
 			search() {
-				if($("#prgrmgdSearchYr").val() == "" && $("#prgrmgdSearchMm").val() != "") {
-					alert("년도를 선택해 주십시오.");
+				if($("#prgrmgdSearchMm").val() == "") {
+					alert("검색할 월을 선택해 주십시오.");
 					return false;
 				}
 				
@@ -453,17 +485,15 @@
 				month = now.getMonth() + 1;
 				
 				$("#prgrmgdSearchYr").val(year);
-				$("#prgrmgdSearchMm").val(String(month).padStart(2, '0'));						
+				$("#prgrmgdSearchMm").val("");						
 				
 				transformMonth();
+				
+				prgrmgd.selectSearchMonth(year, month);
+				
 				$("#prgrmgd-beforeMonth").val("");
 				$("#prgrmgd-nextMonth").val("");
 				$("#prgrmgd-compareDate").val("");
-				if(month != "") {
-					$("#prgrmgdNowDate").text(year + "년 " + month + "월호 환경교육 프로그램");
-				}else {
-					$("#prgrmgdNowDate").text("환경교육 프로그램");
-				}
 			},
 			
 			selectPrgrmgdList(type) {
@@ -593,6 +623,48 @@
 					});
 				}
 				$('#prgrmgd-list-area').html(prgrmgdListHtml);
+			},
+			
+			selectSearchMonth(val, month) {
+				if (displayWorkProgress(true)) {
+					$.ajax({
+						url: "/front/wbzn/now/selectSearchMonth.do",
+						cache: false,
+						dataType: 'json',
+						data: {yr : val},
+						type: 'GET',
+						success: function (result) {
+							prgrmgd.makeSelectBox(result, month);
+							closeWorkProgress();
+						}
+					});
+				}			
+			},
+			
+			makeSelectBox(list, month) {
+				var isSelect = false;
+				
+				var select = document.getElementById("prgrmgdSearchMm");
+				var options = select.options;
+				select.innerHTML = "";
+				var newOption = document.createElement("option");
+				newOption.value = "";
+				newOption.text = "- 선택 -";
+				select.add(newOption);
+				list.prgrmgdMm.forEach(function(item) {
+					var newOption = document.createElement("option");
+					newOption.value = item.mm;
+					newOption.text = item.mm;
+					select.add(newOption);
+					if(month == item.mm) {
+						isSelect = true;
+					}
+				})
+				if(month != undefined && isSelect) {
+					select.value = month;				
+				}else {
+					select.value = "";
+				}
 			}
 		};
 		
@@ -678,8 +750,53 @@
 				prgrmgd.selectPrgrmgdList("next");				
 			}
 		}
+		
+		function selectSearchMonth(val, month) {
+			if (displayWorkProgress(true)) {
+				$.ajax({
+					url: "/front/wbzn/now/selectSearchMonth.do",
+					cache: false,
+					dataType: 'json',
+					data: {yr : val},
+					type: 'GET',
+					success: function (result) {
+						makeSelectBox(result, month);
+						closeWorkProgress();
+					}
+				});
+			}			
+		}
+		
+		function makeSelectBox(list, month) {
+			var isSelect = false;
+			
+			var select = document.getElementById("enveduSearchMm");
+			var options = select.options;
+			select.innerHTML = "";
+			var newOption = document.createElement("option");
+			newOption.value = "";
+			newOption.text = "- 선택 -";
+			select.add(newOption);
+			list.enveduMm.forEach(function(item) {
+				var newOption = document.createElement("option");
+				newOption.value = item.mm;
+				newOption.text = item.mm;
+				select.add(newOption);
+				if(month == item.mm) {
+					isSelect = true;
+				}
+			})
+			if(month != undefined && isSelect) {
+				select.value = month;				
+			}else {
+				select.value = "";
+			}
+		}
 
 		$(function () {
+			envedu.selectSearchMonth(year, month);
+			prgrmgd.selectSearchMonth(year, month);
+			
 			var enveduMm = /*[[${enveduMm}]]*/ null;
 			var prgrmMm = /*[[${prgrmgdMm}]]*/ null;
 			$("#enveduSearchYr").val(year);

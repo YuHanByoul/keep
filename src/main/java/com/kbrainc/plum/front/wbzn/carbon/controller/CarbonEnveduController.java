@@ -16,6 +16,8 @@ import com.kbrainc.plum.front.wbzn.carbon.model.CarbonBannerVo;
 import com.kbrainc.plum.front.wbzn.carbon.model.CarbonEnveduVo;
 import com.kbrainc.plum.front.wbzn.carbon.model.CarbonPrgrmgdVo;
 import com.kbrainc.plum.front.wbzn.carbon.service.CarbonEnveduService;
+import com.kbrainc.plum.front.wbzn.now.model.EnveduVo;
+import com.kbrainc.plum.front.wbzn.now.model.PrgrmgdVo;
 
 /**
 * 웹진 > 탄소중립 환경교육 Controller 클래스
@@ -162,6 +164,24 @@ public class CarbonEnveduController {
             resultMap.put("totalCount", 0);
         }
         resultMap.put("list", result);
+
+        return resultMap;
+    }
+    
+    @RequestMapping(value = "/front/wbzn/carbon/selectSearchMonth.do")
+    @ResponseBody
+    public Map<String, Object> selectSearchMonth(CarbonEnveduVo carbonEnveduVo, CarbonPrgrmgdVo carbonPrgrmgdVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        
+        List<CarbonEnveduVo> enveduMm = null;
+        enveduMm =  carbonEnveduService.selectEnveduMmList(carbonEnveduVo);
+        
+        List<CarbonPrgrmgdVo> prgrmgdMm = null;
+        prgrmgdMm =  carbonEnveduService.selectPrgrmgdMmList(carbonPrgrmgdVo);
+        
+        
+        resultMap.put("enveduMm", enveduMm);
+        resultMap.put("prgrmgdMm", prgrmgdMm);
 
         return resultMap;
     }
