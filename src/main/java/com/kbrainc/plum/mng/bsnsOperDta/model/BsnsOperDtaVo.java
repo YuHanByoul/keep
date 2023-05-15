@@ -102,6 +102,8 @@ public class BsnsOperDtaVo extends ParentRequestVo {
     @NotEmpty(message = "분류를 선택해 주십시오.")
     private String[] clsfCds; /*227*/
 
+    private String trgtCd;
+    private String evntCd;
 
     public void setSearchClsfCd(String searchClsfCd) {
         this.searchClsfCd = searchClsfCd;

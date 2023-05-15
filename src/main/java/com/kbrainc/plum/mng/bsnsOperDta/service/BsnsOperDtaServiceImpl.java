@@ -1,10 +1,11 @@
 package com.kbrainc.plum.mng.bsnsOperDta.service;
 
 import com.kbrainc.plum.cmm.file.model.FileDao;
-import com.kbrainc.plum.cmm.file.model.FileGrpVo;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.bsnsOperDta.model.BsnsOperDtaDao;
 import com.kbrainc.plum.mng.bsnsOperDta.model.BsnsOperDtaVo;
+import com.kbrainc.plum.mng.cmmCntnts.model.CmmCntntsVo;
+import com.kbrainc.plum.mng.cmmCntnts.service.CmmCntntsService;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,9 @@ public class BsnsOperDtaServiceImpl extends PlumAbstractServiceImpl implements B
 
     @Autowired
     private BsnsOperDtaDao bsnsOperDtaDao;
+
+    @Autowired
+    private CmmCntntsService cmmCntntsService;
 
     @Autowired
     private FileDao fileDao;
@@ -98,6 +102,13 @@ public class BsnsOperDtaServiceImpl extends PlumAbstractServiceImpl implements B
         retVal += bsnsOperDtaDao.insertBsnsOperDta(bsnsOperDtaVo);
         retVal += bsnsOperDtaDao.insertBsnsOperDtaClsfMapping(bsnsOperDtaVo);
 
+        CmmCntntsVo cmmCntntsVo = new CmmCntntsVo();
+        cmmCntntsVo.setUser(bsnsOperDtaVo.getUser());
+        cmmCntntsVo.setEvntCd(bsnsOperDtaVo.getEvntCd());
+        cmmCntntsVo.setTrgtCd(bsnsOperDtaVo.getTrgtCd());
+        cmmCntntsVo.setCntntsid(bsnsOperDtaVo.getDtaid());
+        retVal += cmmCntntsService.insertCmmCntnts(cmmCntntsVo);
+
         return retVal;
     }
 
@@ -119,6 +130,12 @@ public class BsnsOperDtaServiceImpl extends PlumAbstractServiceImpl implements B
         retVal += bsnsOperDtaDao.deleteBsnsOperDtaClsfMapping(bsnsOperDtaVo);
         retVal += bsnsOperDtaDao.insertBsnsOperDtaClsfMapping(bsnsOperDtaVo);
 
+        CmmCntntsVo cmmCntntsVo = new CmmCntntsVo();
+        cmmCntntsVo.setUser(bsnsOperDtaVo.getUser());
+        cmmCntntsVo.setEvntCd(bsnsOperDtaVo.getEvntCd());
+        cmmCntntsVo.setTrgtCd(bsnsOperDtaVo.getTrgtCd());
+        cmmCntntsVo.setCntntsid(bsnsOperDtaVo.getDtaid());
+        retVal += cmmCntntsService.insertCmmCntnts(cmmCntntsVo);
         return retVal;
     }
 
