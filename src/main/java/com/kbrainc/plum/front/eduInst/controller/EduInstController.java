@@ -512,7 +512,6 @@ public class EduInstController {
 		eduInstVo.setAplcntid(user.getUserid());
 		model.addAttribute("eduInstVo", eduInstVo);
 
-
 		return "front/eduInst/eduPrgrmPopup";
 	}
 

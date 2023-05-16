@@ -452,19 +452,21 @@
         /* EduInstDao.selectDsgnPrgrmList*/
         <include refid="PaginationMapper.header"/>
         SELECT
-            PRGRMID     AS RFRNC_PRGRMID
-          , PRGRM_NM    AS RFRNC_PRGRM_NM
-          , DSGN_NO
-          , MDFCN_DT
-        FROM TB_ASS_PRGRM
-        WHERE STTS_CD = '111111'
-        AND   APLCNTID = #{aplcntid}
+            A.PRGRMID     AS RFRNC_PRGRMID
+          , A.PRGRM_NM    AS RFRNC_PRGRM_NM
+          , A.DSGN_NO
+          , A.MDFCN_DT
+        FROM TB_ASS_PRGRM A
+        INNER JOIN TB_ASS_DSGN_HSTRY B ON A.PRGRMID = B.PRGRMID
+        INNER JOIN TB_SEE_ENV_EDU_INST C ON A.INSTID = C.INSTID
+        WHERE C.APLCNTID = ${aplcntid}
         <if test="searchPrgrmNm!= null and searchPrgrmNm != '' ">
             AND A.PRGRM_NM LIKE CONCAT('%',#{searchPrgrmNm},'%')
         </if>
         <if test="searchDsgnNo!= null and searchDsgnNo != '' ">
             AND A.DSGN_NO LIKE CONCAT('%',#{searchDsgnNo},'%')
         </if>
+        GROUP BY A.PRGRMID
         <include refid="PaginationMapper.footer"/>
     </select>
 
