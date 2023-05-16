@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kbrainc.plum.mng.book.model.BookDao;
 import com.kbrainc.plum.mng.book.model.BookSbjctVo;
 import com.kbrainc.plum.mng.book.model.BookVo;
+import com.kbrainc.plum.mng.cmmCntnts.model.CmmCntntsVo;
+import com.kbrainc.plum.mng.cmmCntnts.service.CmmCntntsService;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
@@ -31,6 +33,9 @@ public class BookServiceImpl extends PlumAbstractServiceImpl implements BookServ
 
     @Autowired
     private BookDao bookDao;
+    
+    @Autowired
+    private CmmCntntsService cmmCntntsService;
     
     /**
     * 우수환경도서 관리 목록 조회
@@ -72,10 +77,18 @@ public class BookServiceImpl extends PlumAbstractServiceImpl implements BookServ
     @Override
     @Transactional
     public int insertBook(BookVo bookVo) throws Exception {
-        int resInt = 0;
-        resInt +=bookDao.insertBook(bookVo);
-        resInt +=bookDao.insertBookSbjct(bookVo);
-        return resInt;
+        int retVal = 0;
+        retVal += bookDao.insertBook(bookVo);
+        retVal += bookDao.insertBookSbjct(bookVo);
+        
+        CmmCntntsVo cmmCntntsVo = new CmmCntntsVo();
+        cmmCntntsVo.setUser(bookVo.getUser());
+        cmmCntntsVo.setEvntCd(bookVo.getEvntCd());
+        cmmCntntsVo.setTrgtCd(bookVo.getTrgtCd());
+        cmmCntntsVo.setCntntsid(bookVo.getBookid());
+        retVal += cmmCntntsService.insertCmmCntnts(cmmCntntsVo);
+        
+        return retVal;
     }
     
     /**
@@ -90,11 +103,19 @@ public class BookServiceImpl extends PlumAbstractServiceImpl implements BookServ
     @Override
     @Transactional
     public int updateBook(BookVo bookVo) throws Exception {
-        int resInt = 0;
-        resInt +=bookDao.deleteBookSbjct(bookVo);
-        resInt +=bookDao.insertBookSbjct(bookVo);
-        resInt +=bookDao.updateBook(bookVo);
-        return resInt;
+        int retVal = 0;
+        retVal += bookDao.deleteBookSbjct(bookVo);
+        retVal += bookDao.insertBookSbjct(bookVo);
+        retVal += bookDao.updateBook(bookVo);
+        
+        CmmCntntsVo cmmCntntsVo = new CmmCntntsVo();
+        cmmCntntsVo.setUser(bookVo.getUser());
+        cmmCntntsVo.setEvntCd(bookVo.getEvntCd());
+        cmmCntntsVo.setTrgtCd(bookVo.getTrgtCd());
+        cmmCntntsVo.setCntntsid(bookVo.getBookid());
+        retVal += cmmCntntsService.insertCmmCntnts(cmmCntntsVo);
+        
+        return retVal;
     }
     
     /**

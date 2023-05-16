@@ -80,6 +80,9 @@ public class BookVo  extends ParentRequestVo{
     
     private String rgtridNm;
     
+    private String evntCd;
+    private String trgtCd;
+    
     /** 첨부파일 관련 */
     private String filegrpid;
     private String fileIdntfcKey;

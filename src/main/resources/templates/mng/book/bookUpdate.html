@@ -185,11 +185,15 @@
 	    <div class="card-block-small">
 	        <button type="button" class="btn btn-disabled m-r-5" id="cancelInsertRgnEnveduCntr" onclick="gridHelper1.toggleContent()">취소</button>
 	        <th:block sec:authorize-url="/mng/book/updateBook.do">
-	        	<button type="button" class="btn btn-primary" id="updateBook" onclick="fn_updateBook()">저장</button>
+	        	<button type="button" class="btn btn-primary" id="updateBook" onclick="showPopup()">저장</button>
 	        </th:block>
 	    </div>
 		<!-- Tab Container End -->
 </form>
+
+<div class="modal fade" id="cmmCntntsQlityPopup" aria-hidden="true">
+</div>
+
 <script type="text/javascript" src="/files/bower_components/handlebars/handlebars.min.js" charset="utf-8" ></script>
 <script  id="subjectFrm" type="text/x-handlebars-template">
     <div class="row mt-1 subject-form" id="subject{{frmNum}}" name="{{frmNum}}"  > 
@@ -420,8 +424,9 @@
 	   })
 	};
 	
-	/* 수정 */
- 	function fn_updateBook(){ 		
+    var cntntsQlityFormData;
+    var cmmCntntsQlityModal;
+    var showPopup = () => {
   	 	var subjectParamArr=[];
         var errorFrmNum = 0;
         if(subjectNum.length<=0){
@@ -455,8 +460,25 @@
   	 	
   	 	var editorData = editor.getData();
         $("#cn").val(editorData);
-  	 	
-	    var data =  $("#bookUpdateForm").serialize();
+
+        var trgtCd = "246002";
+        var evntCd = "247002";
+        var cntntsid = $("#bookid").val();
+        var functionName = 'fn_updateBook';
+        var cmmCntntsQlityPopupUrl = "/mng/cmmCntnts/cmmCntntsQlityPopup.html?trgtCd=" + trgtCd + "&evntCd="+ evntCd+ "&functionName="+functionName + "&cntntsid="+ cntntsid;
+
+        $("#cmmCntntsQlityPopup").load(cmmCntntsQlityPopupUrl, function(response, status, xhr) {
+            if (status == "success") {
+                cmmCntntsQlityModal = new bootstrap.Modal($('#cmmCntntsQlityPopup'));
+                cmmCntntsQlityModal.show();
+            }
+        });
+    }	
+	
+	/* 수정 */
+ 	function fn_updateBook(){
+	    var data =  $("#bookUpdateForm").serializeArray();
+	    data = data.concat(cntntsQlityFormData);
 
 	    if(displayWorkProgress()){
 			$.ajax({

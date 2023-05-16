@@ -198,7 +198,7 @@
 	    <div class="card-block-small">
 	        <button type="button" class="btn btn-disabled m-r-5" id="cancelInsertRgnEnveduCntr" onclick="gridHelper1.toggleContent()">취소</button>
 	        <th:block sec:authorize-url="/mng/cntnts/insertCntnts.do">
-	        	<button type="button" class="btn btn-primary" id="fn_insertCntnts" onclick="fn_insertCntntsForm()">저장</button>
+	        	<button type="button" class="btn btn-primary" id="fn_insertCntnts" onclick="showPopup()">저장</button>
 	        </th:block>
 	    </div>
 		<!-- Tab Container End -->
@@ -427,8 +427,10 @@
 	     })
 	};
 	
- 	function fn_insertCntntsForm(){
- 		var eduSbjctCheck = document.getElementsByName("eduSbjctCds");
+    var cntntsQlityFormData;
+    var cmmCntntsQlityModal;
+    var showPopup = () => {
+    	var eduSbjctCheck = document.getElementsByName("eduSbjctCds");
  		for(var i=0; i < eduSbjctCheck.length; i++) {
  			if(eduSbjctCheck[i].value == ""){
  	  	  	 	alert("교육 주제를 선택해주십시오.")
@@ -445,10 +447,25 @@
         	alert("대표 이미지를 첨부해주십시오.");
         	return false;
         }
-  	 	
-  	 	if(!confirm("저장하시겠습니까?")) return;
-  	 	
-	    var data =  $("#cntntsInsertForm").serialize();
+
+        var trgtCd = "246001";
+        var evntCd = "247001";
+        var cntntsid = 0;
+        var functionName = 'fn_insertCntntsForm';
+        var cmmCntntsQlityPopupUrl = "/mng/cmmCntnts/cmmCntntsQlityPopup.html?trgtCd=" + trgtCd + "&evntCd="+ evntCd+ "&functionName="+functionName + "&cntntsid="+ cntntsid;
+
+        $("#cmmCntntsQlityPopup").load(cmmCntntsQlityPopupUrl, function(response, status, xhr) {
+            if (status == "success") {
+                cmmCntntsQlityModal = new bootstrap.Modal($('#cmmCntntsQlityPopup'));
+                cmmCntntsQlityModal.show();
+            }
+        });
+    }	
+	
+ 	function fn_insertCntntsForm(){
+	    var data =  $("#cntntsInsertForm").serializeArray();
+	    data = data.concat(cntntsQlityFormData);
+	    
 	    if(displayWorkProgress()){
 			$.ajax({
 				url : "/mng/cntnts/insertCntnts.do",

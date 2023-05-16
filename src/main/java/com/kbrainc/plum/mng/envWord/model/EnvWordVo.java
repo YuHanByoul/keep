@@ -64,6 +64,9 @@ public class EnvWordVo extends ParentRequestVo {
     /** 삭제여부 */
     private char delYn;
     
+    private String evntCd;
+    private String trgtCd;
+    
     private String rgtridNm;
     
     private String searchEngl;

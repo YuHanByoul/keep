@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kbrainc.plum.mng.cmmCntnts.model.CmmCntntsVo;
+import com.kbrainc.plum.mng.cmmCntnts.service.CmmCntntsService;
 import com.kbrainc.plum.mng.envWord.model.EnvWordDao;
 import com.kbrainc.plum.mng.envWord.model.EnvWordVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
@@ -30,6 +32,9 @@ public class EnvWordServiceImpl extends PlumAbstractServiceImpl implements EnvWo
     
     @Autowired
     private EnvWordDao envWordDao;
+    
+    @Autowired
+    private CmmCntntsService cmmCntntsService;
     
     /**
     * 환경교육용어사전 게시글 목록 조회
@@ -57,7 +62,18 @@ public class EnvWordServiceImpl extends PlumAbstractServiceImpl implements EnvWo
     @Override
     @Transactional
     public int insertEnvWord(EnvWordVo envWordVo) throws Exception {
-        return envWordDao.insertEnvWord(envWordVo);
+        int retVal = 0;
+        
+        retVal += envWordDao.insertEnvWord(envWordVo);
+        
+        CmmCntntsVo cmmCntntsVo = new CmmCntntsVo();
+        cmmCntntsVo.setUser(envWordVo.getUser());
+        cmmCntntsVo.setEvntCd(envWordVo.getEvntCd());
+        cmmCntntsVo.setTrgtCd(envWordVo.getTrgtCd());
+        cmmCntntsVo.setCntntsid(envWordVo.getWordid());
+        retVal += cmmCntntsService.insertCmmCntnts(cmmCntntsVo);
+        
+        return retVal;
     }
     
     /**
@@ -86,7 +102,18 @@ public class EnvWordServiceImpl extends PlumAbstractServiceImpl implements EnvWo
     @Override
     @Transactional
     public int updateEnvWord(EnvWordVo envWordVo) throws Exception {
-        return envWordDao.updateEnvWord(envWordVo);
+        int retVal = 0;
+        
+        retVal += envWordDao.updateEnvWord(envWordVo);
+        
+        CmmCntntsVo cmmCntntsVo = new CmmCntntsVo();
+        cmmCntntsVo.setUser(envWordVo.getUser());
+        cmmCntntsVo.setEvntCd(envWordVo.getEvntCd());
+        cmmCntntsVo.setTrgtCd(envWordVo.getTrgtCd());
+        cmmCntntsVo.setCntntsid(envWordVo.getWordid());
+        retVal += cmmCntntsService.insertCmmCntnts(cmmCntntsVo);
+        
+        return retVal;
     }
     
     /**
