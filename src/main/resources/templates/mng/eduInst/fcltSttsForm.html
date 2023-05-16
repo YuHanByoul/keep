@@ -31,7 +31,7 @@
                 </div>
                 <div class="col-12 col-lg-4 mb-3">
                     <div class="mb-0 form-group">
-                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>임대기간</strong></label>
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="rentPrd"><strong>임대기간</strong></label>
                         <div class="col-sm-12">
                             <input type="text" title="임대기간" class="form-control form-control-sm icon-date" placeholder="임대기간를 입력해 주세요" maxlength="100" id="rentPrd" name="rentPrd"
                                    th:value="${eduInstVo.rentPrd}"/>
@@ -39,8 +39,8 @@
                     </div>
                 </div>
                 <div class="col-12 col-lg-4 mb-3">
-                    <div class="mb-0 form-group">
-                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>연건평(m2)</strong></label>
+                    <div class="mb-0 form-group required">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="totar"><strong>연건평(m2)</strong></label>
                         <div class="d-flex align-items-center">
                             <div class="col">
                                 <input type="number" class="form-control form-control-sm" title="연건평(m2)" placeholder="연건평을 입력해 주세요" maxlength="12" id="totar" name="totar"
@@ -142,7 +142,7 @@
                             <td>
                                 <div class="btn-group-sm">
                                     <button onclick="lctrum1AddRow(this);" type="button" class="btn btn-primary m-r-5" th:if="${j.last}">추가</button>
-                                    <button onclick="lctrum1RemoveRow(this);" type="button" class="btn btn-inverse">삭제</button>
+                                    <button onclick="lctrum1DelRow(this);" type="button" class="btn btn-inverse" th:if="${!j.first}">삭제</button>
                                 </div>
                             </td>
                         </tr>
@@ -169,7 +169,6 @@
                             <td>
                                 <div class="btn-group-sm">
                                     <button onclick="lctrum1AddRow(this);" type="button" class="btn btn-primary m-r-5">추가</button>
-                                    <button onclick="lctrum1RemoveRow(this);" type="button" class="btn btn-inverse">삭제</button>
                                 </div>
                             </td>
                         </tr>
@@ -222,7 +221,7 @@
                             <td>
                                 <div class="btn-group-sm">
                                     <button onclick="lctrum2AddRow(this);" type="button" class="btn btn-primary m-r-5" th:if="${k.last}">추가</button>
-                                    <button onclick="lctrum2RemoveRow(this);" type="button" class="btn btn-inverse">삭제</button>
+                                    <button onclick="lctrum2DelRow(this);" type="button" class="btn btn-inverse" th:if="${!k.first}">삭제</button>
                                 </div>
                             </td>
                         </tr>
@@ -251,7 +250,6 @@
                             <td>
                                 <div class="btn-group-sm">
                                     <button onclick="lctrum2AddRow(this);" type="button" class="btn btn-primary m-r-5">추가</button>
-                                    <button onclick="lctrum2RemoveRow(this);" type="button" class="btn btn-inverse">삭제</button>
                                 </div>
                             </td>
                         </tr>
@@ -297,7 +295,7 @@
                             <td>
                                 <div class="btn-group-sm">
                                     <button onclick="eqp1AddRow(this);" type="button" class="btn btn-primary m-r-5" th:if="${n.last}">추가</button>
-                                    <button onclick="eqp1RemoveRow(this);" type="button" class="btn btn-inverse">삭제</button>
+                                    <button onclick="eqp1DelRow(this);" type="button" class="btn btn-inverse" th:if="${!n.first}">삭제</button>
                                 </div>
                             </td>
                         </tr>
@@ -318,7 +316,6 @@
                             <td>
                                 <div class="btn-group-sm">
                                     <button onclick="eqp1AddRow(this);" type="button" class="btn btn-primary m-r-5">추가</button>
-                                    <button onclick="eqp1RemoveRow(this);" type="button" class="btn btn-inverse">삭제</button>
                                 </div>
                             </td>
                         </tr>
@@ -351,26 +348,24 @@
 
     function lctrum1AddRow(obj) {
         var html = '<div class="btn-group-sm"><button onclick="lctrum1AddRow(this);" type="button" class="btn btn-primary m-r-5"">추가</button>';
-        html += '<button onclick="lctrum1RemoveRow(this);" type="button" class="btn btn-inverse">삭제</button></div>';
+        html += '<button onclick="lctrum1DelRow(this);" type="button" class="btn btn-inverse">삭제</button></div>';
+
         var clickedRow = $(obj).parent().parent().parent();
-        $(obj).remove();
         var newrow = clickedRow.clone();
-        var ordr = Number(clickedRow.find("td:first").text()) + 1;
-        newrow.find("td:first").html(ordr);
-        newRow.find('input').not("#seCd").val('');
-        //newrow.find("td > input").val("");
-        //newrow.find("td > textarea").val("");
+        newrow.find('input').not("#seCd").val('');
         newrow.find("td:last").html(html);
         newrow.insertAfter(clickedRow.parent().parent().find("tr:last"));
+
+        $('#lctrum1Tbody > tr').each(function (index, el) {
+            $this = $(this);
+            $(this).find('td:first').html(index + 1)
+        });
     }
 
     function lctrum1DelRow(obj) {
-        var html = '<div class="btn-group-sm"><button onclick="lctrum1AddRow(this);" type="button" class="btn btn-primary m-r-5">추가</button>';
-        html += '<button onclick="lctrum1RemoveRow(this);" type="button" class="btn btn-inverse">삭제</button></div>';
-
         var tableObj = $(obj).parent().parent().parent().parent();
         $(obj).parent().parent().parent().remove();
-        tableObj.find("tr:last").find("td:last").html(html);
+
         tableObj.find("tr").each(function (i) {
             $(this).find("td:first").text(i + 1);
         });
@@ -378,26 +373,25 @@
 
     function lctrum2AddRow(obj) {
         var html = '<div class="btn-group-sm"><button onclick="lctrum2AddRow(this);" type="button" class="btn btn-primary m-r-5"">추가</button>';
-        html += '<button onclick="lctrum2RemoveRow(this);" type="button" class="btn btn-inverse">삭제</button></div>';
+        html += '<button onclick="lctrum2DelRow(this);" type="button" class="btn btn-inverse">삭제</button></div>';
+
         var clickedRow = $(obj).parent().parent().parent();
-        $(obj).remove();
         var newrow = clickedRow.clone();
-        var ordr = Number(clickedRow.find("td:first").text()) + 1;
-        newrow.find("td:first").html(ordr);
-        newRow.find('input').not("#seCd").val('');
-        //newrow.find("td > input").val("");
-        //newrow.find("td > textarea").val("");
+
+        newrow.find('input').not("#seCd").val('');
         newrow.find("td:last").html(html);
         newrow.insertAfter(clickedRow.parent().parent().find("tr:last"));
+
+        $('#lctrum2Tbody > tr').each(function (index, el) {
+            $this = $(this);
+            $(this).find('td:first').html(index + 1)
+        });
     }
 
     function lctrum2DelRow(obj) {
-        var html = '<div class="btn-group-sm"><button onclick="lctrum2AddRow(this);" type="button" class="btn btn-primary m-r-5">추가</button>';
-        html += '<button onclick="lctrum2RemoveRow(this);" type="button" class="btn btn-inverse">삭제</button></div>';
-
         var tableObj = $(obj).parent().parent().parent().parent();
         $(obj).parent().parent().parent().remove();
-        tableObj.find("tr:last").find("td:last").html(html);
+
         tableObj.find("tr").each(function (i) {
             $(this).find("td:first").text(i + 1);
         });
@@ -405,26 +399,26 @@
 
     function eqp1AddRow(obj) {
         var html = '<div class="btn-group-sm"><button onclick="eqp1AddRow(this);" type="button" class="btn btn-primary m-r-5"">추가</button>';
-        html += '<button onclick="eqp1RemoveRow(this);" type="button" class="btn btn-inverse">삭제</button></div>';
+        html += '<button onclick="eqp1DelRow(this);" type="button" class="btn btn-inverse">삭제</button></div>';
+
         var clickedRow = $(obj).parent().parent().parent();
-        $(obj).remove();
         var newrow = clickedRow.clone();
-        var ordr = Number(clickedRow.find("td:first").text()) + 1;
-        newrow.find("td:first").html(ordr);
-        newRow.find('input').val('');
-        //newrow.find("td > input").val("");
-        //newrow.find("td > textarea").val("");
+
+        newrow.find('input').val('');
         newrow.find("td:last").html(html);
         newrow.insertAfter(clickedRow.parent().parent().find("tr:last"));
+
+
+        $('#eqp1Tbody > tr').each(function (index, el) {
+            $this = $(this);
+            $(this).find('td:first').html(index + 1)
+        });
     }
 
-    function eqp1DelRow() {
-        var html = '<div class="btn-group-sm"><button onclick="eqp1AddRow(this);" type="button" class="btn btn-primary m-r-5">추가</button>';
-        html += '<button onclick="eqp1RemoveRow(this);" type="button" class="btn btn-inverse">삭제</button></div>';
-
+    function eqp1DelRow(obj) {
         var tableObj = $(obj).parent().parent().parent().parent();
         $(obj).parent().parent().parent().remove();
-        tableObj.find("tr:last").find("td:last").html(html);
+
         tableObj.find("tr").each(function (i) {
             $(this).find("td:first").text(i + 1);
         });
@@ -541,6 +535,3 @@
 
     });
 </script>
-</div>
-</body>
-</html>
