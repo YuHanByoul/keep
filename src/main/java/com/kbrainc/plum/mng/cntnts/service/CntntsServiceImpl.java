@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kbrainc.plum.mng.cmmCntnts.model.CmmCntntsVo;
+import com.kbrainc.plum.mng.cmmCntnts.service.CmmCntntsService;
 import com.kbrainc.plum.mng.cntnts.model.CntntsDao;
 import com.kbrainc.plum.mng.cntnts.model.CntntsEduSbjctVo;
 import com.kbrainc.plum.mng.cntnts.model.CntntsEduTrgtVo;
@@ -33,6 +35,9 @@ public class CntntsServiceImpl extends PlumAbstractServiceImpl implements Cntnts
 
     @Autowired
     private CntntsDao cntntsDao;
+    
+    @Autowired
+    private CmmCntntsService cmmCntntsService;
     
     /**
     * 컨텐츠 관리 게시글 목록 조회
@@ -75,9 +80,18 @@ public class CntntsServiceImpl extends PlumAbstractServiceImpl implements Cntnts
     @Transactional
     public int insertCntnts(CntntsVo cntntsVo, String[] eduSbjctCds, String[] eduTrgt, String ceckid) throws Exception {
         int retVal = 0;
+        
         retVal += cntntsDao.insertCntnts(cntntsVo);
         retVal += cntntsDao.insertEduSbjct(cntntsVo.getCntntsid(), eduSbjctCds, cntntsVo.getUser());
         retVal += cntntsDao.insertEduTrgt(cntntsVo.getCntntsid(), eduTrgt, cntntsVo.getUser());
+        
+        CmmCntntsVo cmmCntntsVo = new CmmCntntsVo();
+        cmmCntntsVo.setUser(cntntsVo.getUser());
+        cmmCntntsVo.setEvntCd(cntntsVo.getEvntCd());
+        cmmCntntsVo.setTrgtCd(cntntsVo.getTrgtCd());
+        cmmCntntsVo.setCntntsid(cntntsVo.getCntntsid());
+        retVal += cmmCntntsService.insertCmmCntnts(cmmCntntsVo);
+        
         return retVal;
     }
     
@@ -99,6 +113,14 @@ public class CntntsServiceImpl extends PlumAbstractServiceImpl implements Cntnts
         retVal += cntntsDao.updateCntnts(cntntsVo);
         retVal += cntntsDao.insertEduSbjct(cntntsVo.getCntntsid(), eduSbjctCds, cntntsVo.getUser());
         retVal += cntntsDao.insertEduTrgt(cntntsVo.getCntntsid(), eduTrgt, cntntsVo.getUser());
+        
+        CmmCntntsVo cmmCntntsVo = new CmmCntntsVo();
+        cmmCntntsVo.setUser(cntntsVo.getUser());
+        cmmCntntsVo.setEvntCd(cntntsVo.getEvntCd());
+        cmmCntntsVo.setTrgtCd(cntntsVo.getTrgtCd());
+        cmmCntntsVo.setCntntsid(cntntsVo.getCntntsid());
+        retVal += cmmCntntsService.insertCmmCntnts(cmmCntntsVo);
+        
         return retVal;
     }
     
