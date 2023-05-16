@@ -41,7 +41,7 @@
                     </table>
                     </form>                    
                     <div>
-                        <button type="button" class="btn btn-link px-0">[한국형 웹콘텐츠 접근성 지침 다운로드]</button>
+                        <button type="button" class="btn btn-link px-0" onclick="downloadFile();">[한국형 웹콘텐츠 접근성 지침 다운로드]</button>
                     </div>
                 </div>
             </div>
@@ -54,7 +54,7 @@
 <!-- //게시글 품질관리 체크리스트 -->
 <script th:inline="javascript">
     var functionName = /*[[${functionName}]]*/null;
-
+    
     /* 객체를 사용하는 경우 객체명.함수명 형태로 파라미터 전달 */
     function executeFunctionByName( functionName, context /*, args */ ) {
         var args, namespaces, func;
@@ -101,6 +101,30 @@
         cmmCntntsQlityModal.hide();
         executeFunctionByName(functionName);
     }
+    
+	
+	function downloadFile() {
+		var fileUrl = "/cmmFile/webCntntsGuide/한국형_웹_콘텐츠_접근성_지침_2.1.pdf";
+		
+		var xhr = new XMLHttpRequest();
+	
+		xhr.open('GET', fileUrl, true);
+		xhr.responseType = 'blob';
+		 
+		xhr.onload = function() {
+			if (this.status === 200) {
+		        var downloadLink = document.createElement('a');
+		        downloadLink.href = window.URL.createObjectURL(this.response);
+		        downloadLink.download = "한국형_웹_콘텐츠_접근성_지침_2.1.pdf";
+		      
+		        document.body.appendChild(downloadLink);
+		        downloadLink.click();
+		        document.body.removeChild(downloadLink);
+			}
+		};
+		  
+		xhr.send();
+	}
 
 	$(function () {
 		cmmCntntsQlity.selectCmmCntntsQlityChklstList();

@@ -769,8 +769,9 @@
                             END
                       ELSE '-'
                 END    AS SBMSN_STTS_CD_NM    /*제출상태코드*/
-              , CASE WHEN C.CYCLID IS NOT NULL THEN '내용확인'
-                      ELSE CASE WHEN NOW() BETWEEN B.SBMSN_BGNG_DE AND B.SBMSN_END_DE
+              , CASE WHEN C.CYCLID IS NULL THEN '대기중'
+                     WHEN C.CYCLID IS NOT NULL THEN '내용확인'
+                     ELSE CASE WHEN NOW() BETWEEN B.SBMSN_BGNG_DE AND B.SBMSN_END_DE
                                  THEN CASE WHEN DATE_ADD(DATE_FORMAT(A.DSGN_DE  - INTERVAL 1 YEAR, '%Y-12-31'), INTERVAL 6 MONTH) >= NOW() THEN '-' END
                                  ELSE '대기중'
                             END

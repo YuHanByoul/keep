@@ -241,8 +241,9 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 		assPrgrm.setDsgnCycl(dsgnPrgrmVo.getDsgnCycl());
 		assPrgrm.setDsgnBgngDe(dsgnPrgrmVo.getDsgnBgngDe());
 		assPrgrm.setDsgnEndDe(dsgnPrgrmVo.getDsgnEndDe());
-		assPrgrm.setDsgnDe(dsgnPrgrmVo.getDsgnDe());
-		assPrgrm.setDsgnObtainDe(dsgnPrgrmVo.getDsgnObtainDe());
+
+		assPrgrm.setDsgnDe(dsgnPrgrmVo.getDsgnObtainDe());    //지정일자
+		assPrgrm.setDsgnObtainDe(dsgnPrgrmVo.getDsgnObtainDe());    //지정획득일자
 
 		if("132101".equals(dsgnPrgrmVo.getSttsCd())){
 			assPrgrm.setSttsCd("111111");  //상태코드 지정승인
@@ -356,8 +357,8 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 		assPrgrm.setDsgnCycl(dsgnPrgrmVo.getDsgnCycl());
 		assPrgrm.setDsgnBgngDe(dsgnPrgrmVo.getDsgnBgngDe());
 		assPrgrm.setDsgnEndDe(dsgnPrgrmVo.getDsgnEndDe());
-		assPrgrm.setDsgnDe(dsgnPrgrmVo.getDsgnDe());
-		assPrgrm.setDsgnObtainDe(dsgnPrgrmVo.getDsgnObtainDe());
+		assPrgrm.setDsgnDe(dsgnPrgrmVo.getDsgnObtainDe());    //지정일자
+		assPrgrm.setDsgnObtainDe(dsgnPrgrmVo.getDsgnObtainDe());    ////지정획득일자
 
 		if("132101".equals(dsgnPrgrmVo.getSttsCd())){
 			assPrgrm.setSttsCd("111111");  //상태코드 지정승인

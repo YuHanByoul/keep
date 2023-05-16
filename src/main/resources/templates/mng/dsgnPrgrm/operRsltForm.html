@@ -31,7 +31,6 @@
 	                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
 	                    <strong>지역</strong></div>
 	                <div class="col-12">
-                        <!-- <th:block kattr:select_rgn="rgnCd" selectedCd="${dsgnInfo.instRgnCd}" width="50%" firstOptTxt="- 선택 -" firstOptVal="" readonly> -->
                         <input type="text" class="form-control form-control-sm" name="instRgnCdNm" id="instRgnCdNm" th:value="${dsgnInfo.instRgnCdNm}" readonly="">
 	                </div>
 	            </div>
@@ -40,7 +39,6 @@
 	            <div class="mb-0 form-group">
 	                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="operationResultAssignStatus"><strong>지정상태</strong></label>
 	                <div class="col-12">
-                        <!-- <span kattr:select_code="sttsCd" th:attr="grpCd=132,selectedCd=${dsgnInfo.sttsCd}" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true"> -->
                         <input type="text" class="form-control form-control-sm" name="sttsCdNm" id="sttsCdNm" th:value="${dsgnInfo.sttsCdNm}" readonly="">
 	                </div>
 	            </div>
@@ -91,11 +89,6 @@ initOperRsltFrm();
 var operRsltGridHelper;
 
 function initOperRsltFrm() {
-
-
-
-    //$("#rgnCd").val($("#instRgnCd").val());
-    //operRsltGrid = new GridHelper('operRsltGrid','contentPanel');
 
     operRsltGridHelper = new GridHelper('operRsltGrid','operRsltContentPanel');
      writeOperRsltGridData();
@@ -156,6 +149,14 @@ function writeOperRsltGridData(){
             ,{ title: '제출확인'     ,name: 'sbmsnIdnty',    type: "text",   width: "20", align:"center"}
             ,{ title: '최종제출일시' ,name: 'lastSbmsnDt',   type: "text",   width: "40", align:"center" }
             ,{ title: '제출상태'     ,name: 'sbmsnSttsCdNm', type: "text",   width: "20", align:"center" }
+            ,{ title: '-'            ,name: 'regBtn',        type: "control",   width: "20", align:"center"
+            	, itemTemplate : function(_, item) {
+
+            		   //if(item.sbmsnIdnty=='대기중'&&item.sbmsnSttsCdNm=='제출') return `<button type="button" class="col-auto btn btn-primary" onclick="regOperRslt()">등록</button>`
+            		   return `<button type="button" class="col-auto btn btn-primary" onclick="regOperRslt('${item.cyclid}')">등록</button>`
+            	       //return '-';
+            	    },
+            }
             ,{ name: 'cyclid', css:'hide'}
         ],
 
@@ -168,12 +169,8 @@ function writeOperRsltGridData(){
             }
 
             if(args.event.originalEvent.target.cellIndex == 3 && args.item.sbmsnIdnty == "내용확인") {
-
-
-                var detailUrl = "/mng/dsgnPrgrm/selectOperRsltDetail.html?cyclid=" + args.item.cyclid;
-
+                var detailUrl = "/mng/dsgnPrgrm/operRsltUpdateForm.html?cyclid=" + args.item.cyclid;
                 operRsltGridHelper.loadContent(detailUrl);
-                operRsltGridHelper.rowClick(args);
             }
 
         },
@@ -181,6 +178,13 @@ function writeOperRsltGridData(){
             selectedItems = [];
         }
     });
+}
+
+//운영결과 등록
+function regOperRslt(cyclid){
+	var prgrmid = $('#prgrmid').val();
+	var detailUrl = "/mng/dsgnPrgrm/operRsltInsertForm.html?prgrmid="+prgrmid+"&cyclid=" + cyclid;
+	operRsltGridHelper.loadContent(detailUrl);
 }
 
 var sbmsnPrdChgModal;

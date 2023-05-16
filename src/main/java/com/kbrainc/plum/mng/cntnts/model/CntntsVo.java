@@ -84,6 +84,10 @@ public class CntntsVo  extends ParentRequestVo{
     /** 유튜브아이디 */
     private String mvpid;
     
+    private String evntCd;
+    private String trgtCd; 
+    
+    
     /** 저작권_코드 */
     private String cpyrhtCd;
     

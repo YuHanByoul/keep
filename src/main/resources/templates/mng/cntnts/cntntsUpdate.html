@@ -233,11 +233,15 @@
 	    	<button type="button"  class="btn btn-inverse" id="cancelInsertRgnEnveduCntr" th:onclick="fn_deleteCntnts([[${cntnts.cntntsid}]])">삭제</button>
 	        <button type="button" class="btn btn-disabled m-r-5" id="cancelInsertRgnEnveduCntr" onclick="gridHelper1.toggleContent()">취소</button>
 	        <th:block sec:authorize-url="/mng/cntnts/updateCntnts.do">
-	        	<button type="button" class="btn btn-primary" id="updateCntnts" onclick="fn_updateCntnts()">저장</button>
+	        	<button type="button" class="btn btn-primary" id="updateCntnts" onclick="showPopup()">저장</button>
 	        </th:block>
 	    </div>
 		<!-- Tab Container End -->
 </form>
+
+<div class="modal fade" id="cmmCntntsQlityPopup" aria-hidden="true">
+</div>
+
 <script type="text/javascript" src="/files/bower_components/handlebars/handlebars.min.js" charset="utf-8" ></script>
 <script  id="subjectFrm" type="text/x-handlebars-template">
     <div class="row mt-1 subject-form" id="subject{{frmNum}}" name="{{frmNum}}"  > 
@@ -278,7 +282,8 @@
 	$(function () {
 	    editor = CKEDITOR.replace('cn');
 	    
-	    if(mvpid != null) {
+	    console.log(mvpid == "")
+	    if(mvpid != "") {
 	    	if(editor.getData().indexOf("iframe") < 0) {
 		    	var title = getTitle(mvpid);
 			    var youTubeTag = `
@@ -537,7 +542,9 @@
 	     })
 	};
 	
- 	function fn_updateCntnts(){
+    var cntntsQlityFormData;
+    var cmmCntntsQlityModal;
+    var showPopup = () => {
   	 	var subjectParamArr=[];
         var errorFrmNum = 0;
         if(subjectNum.length<=0){
@@ -568,13 +575,24 @@
         	alert("대표 이미지를 첨부해주십시오.");
         	return false;
         }
-        
-  	 	if(!confirm("저장하시겠습니까?")) return;
-  	 	
-  	 	var editorData = editor.getData();
-        $("#cn").val(editorData);
-  	 	
-	    var data =  $("#cntntsUpdateForm").serialize();
+
+        var trgtCd = "246001";
+        var evntCd = "247002";
+        var cntntsid = $("#cntntsid").val();
+        var functionName = 'fn_updateCntnts';
+        var cmmCntntsQlityPopupUrl = "/mng/cmmCntnts/cmmCntntsQlityPopup.html?trgtCd=" + trgtCd + "&evntCd="+ evntCd+ "&functionName="+functionName + "&cntntsid="+ cntntsid;
+
+        $("#cmmCntntsQlityPopup").load(cmmCntntsQlityPopupUrl, function(response, status, xhr) {
+            if (status == "success") {
+                cmmCntntsQlityModal = new bootstrap.Modal($('#cmmCntntsQlityPopup'));
+                cmmCntntsQlityModal.show();
+            }
+        });
+    }	
+	
+ 	function fn_updateCntnts(){
+	    var data =  $("#cntntsUpdateForm").serializeArray();
+	    data = data.concat(cntntsQlityFormData);
 	    if(displayWorkProgress()){
 			$.ajax({
 				url : "/mng/cntnts/updateCntnts.do",
