@@ -145,27 +145,24 @@
 		                </div>
 		                <div class="mt-2 row">
 		                    <div class="col-auto">
-		                        <th:block th:if="${fileList != null}">
-		                            <div class="row">
-		                                <th:block th:if="${fileList != null}">
-		                                    <div th:each="item : ${fileList}" th:id="${item.fileid}"
-		                                        class="col-auto">
-		                                        <th:block th:if="${item.orginlFileNm != null}">
-		                                            <span th:fileid='${item.fileid}'
-		                                                th:fileIdntfcKey="${item.fileIdntfcKey}"
-		                                                th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))"
-		                                                href="javascript:void(0)" class='label label-inverse'>
-		                                                <th:block th:text="${item.orginlFileNm}" /> <a
-		                                                th:name="${item.fileid}"
-		                                                th:attr="data-idntfc-key=${item.fileIdntfcKey}"
-		                                                th:onclick="fn_deleteFileList(this.name, this.dataset.idntfcKey)"
-		                                                class='text-white'> <th:block th:text="X"></th:block></a>
-		                                            </span>
-		                                        </th:block>
-		                                    </div>
-		                                </th:block>
-		                            </div>
-		                        </th:block>
+								<th:block th:if="${fileList != null}">
+										<th:block th:if="${fileList != null}">
+											<th:block th:each="item : ${fileList}" th:id="${item.fileid}">
+												<th:block th:if="${item.orginlFileNm != null}">
+													<span th:fileid='${item.fileid}'
+														th:fileIdntfcKey="${item.fileIdntfcKey}"
+														th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))"
+														href="javascript:void(0)" class='label label-inverse'>
+														<th:block th:text="${item.orginlFileNm}" /> <a
+														th:name="${item.fileid}"
+														th:attr="data-idntfc-key=${item.fileIdntfcKey}"
+														th:onclick="fn_deleteFileList(this.name, this.dataset.idntfcKey)"
+														class='text-white'> <th:block th:text="X"></th:block></a>
+													</span>
+												</th:block>
+											</th:block>
+										</th:block>
+								</th:block>
 		                        <div id="multipleFileUploadError"></div>
 		                        <div id="multipleFileUploadSuccess"></div>
 		                    </div>
@@ -187,7 +184,7 @@
 	                <button type="button" class="btn btn-primary" onclick="fn_save(); return false;">저장</button>
 	                <button type="button" class="btn btn-primary" onclick="fn_chgStts(); return false;">확인중 상태변경</button>
 	                <button type="button" class="btn btn-primary" onclick="fn_dsgnDropOut(); return false;">지정탈락</button>
-	                <button type="button" class="btn btn-primary" onclick="fn_openDsgnAprvModal(); return false;" data-bs-toggle="modal" data-bs-target="#appointedApprovalPopup">지정승인</button>                
+	                <button type="button" class="btn btn-primary" onclick="fn_openDsgnAprvModal(); return false;">지정승인</button>
 	            </div>
 	        </div>
 	        <!-- 보완요청 -->
@@ -252,7 +249,7 @@
 	var aplyid = /*[[${instDsgnInfo.aplyid}]]*/null;
 	/*]]>*/
     var listUrl = "/mng/eduInst/selectInstDsgnList.do";
-    var updateUrl = "/mng/eduInst/updateInstDsgnInfo.do";
+    var updateInstDsgnInfoUrl = "/mng/eduInst/updateInstDsgnInfo.do";
     var suppListUrl = "/mng/eduInst/selectSuppList.do";    
     var atchfileCnt = 5;
     var uploadFileCnt = 0;
@@ -430,15 +427,8 @@
     }
     $(function(){
         gridHelper2 = new GridHelper('suppJsGrid','suppContentPanel');
-        var validator = $("#insertForm").validate({
-            rules: {
-            	rprsvBrdt : { required: true, maxlength: 6 }
-            },
-            messages: {
-            	rprsvBrdt : { required: "대표자 생년월일을 입력해주십시오.", maxlength: "생년월일은 6자를 넘을 수 없습니다." }
-            }
-        });
-           
+		validateForm();
+
 	    $("#suppJsGrid").jsGrid({
 	        height: "auto",
 	        width: "100%",
@@ -583,7 +573,7 @@
             }
         });
     }
-    
+
     // 저장
     function fn_save(){
         if(!($("#instDsgnDetailForm").valid())) return;
@@ -591,10 +581,10 @@
         if(!confirm("저장하시겠습니까?")) return;
         
         var data =  $("#instDsgnDetailForm").serialize();
-        
+
         if(displayWorkProgress()){
             $.ajax({
-                url : updateUrl,
+                url : updateInstDsgnInfoUrl,
                 type: 'POST',
                 cache : false,
                 dataType: 'json',
@@ -611,6 +601,22 @@
             });
         }
     }
+
+	function validateForm() {
+		$('#instDsgnDetailForm').validate({
+			onsubmit:false,
+			rules:{
+				aplcntMoblphon : {required : true},
+				aplcntEml : {required: true},
+				rprsvBrdt : {required: true}
+			},
+			messages:{
+				aplcntMoblphon : {required : '신청자 연락처를 입력해 주십시오.'},
+				aplcntEml : {requried: '신청자 이메일을 입력해 주십시오.'},
+				rprsvBrdt : {required: '대표자 생년월일을 입력해 주십시오.'}
+			}
+		});
+	}
     
     initTab();
 </script>   
