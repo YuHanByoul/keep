@@ -2,6 +2,8 @@
 <input type="hidden" id="aplyFilegrpid" name="aplyFilegrpid" th:value="${aplyInfo.aplyFilegrpid == null or aplyInfo.aplyFilegrpid == ''}? 0: ${aplyInfo.aplyFilegrpid}"/>
 <input type="hidden" id="bfrCertFilegrpid" name="bfrCertFilegrpid" th:value="${aplyInfo.bfrCertFilegrpid == null or aplyInfo.bfrCertFilegrpid == ''}? 0: ${aplyInfo.bfrCertFilegrpid}"/>
 <input type="hidden" id="formid" name="formid" th:value="${aplyInfo.formid}"/>
+<input type="hidden" id="operFrmCd" name="operFrmCd" th:value="${aplyInfo.operFrmCd}"/>
+<input type="hidden" id="prgrmid" name="prgrmid" th:value="${aplyInfo.prgrmid}"/>
     <div class="card-header p-t-0 p-b-0">
         <h3 class="sub-title">
             <strong>신청 정보</strong>
@@ -60,7 +62,7 @@
                         <strong>운영형태</strong>
                     </div>
                     <div class="form-radio bg-form" id="operFrmCdDiv"><!-- [230125] class bg-form 추가 -->
-                        <span kattr:radio_code="operFrmCd" th:attr="grpCd=120, selectedCd=${aplyInfo.operFrmCd}" addStyle="margin-top:4px" addClass="col-sm-3" isAdmin="true" >
+                        <span kattr:radio_code="dstnctnOperFrmCd" th:attr="grpCd=120, selectedCd=${aplyInfo.dstnctnOperFrmCd}" addStyle="margin-top:4px" addClass="col-sm-3" isAdmin="true" >
                     </div>
                 </div>
             </div>
@@ -142,8 +144,7 @@
 
         <div class="mb-3 col-12 table-border-style">
             <div class="col-12 table-responsive">
-<th:block th:unless="${#lists.isEmpty(srngScrList)}" th:if="${scrHeader != null}" >
-<th:block th:unless="${#lists.isEmpty(srngFormList)}" >
+
                 <table class="table table-border-style table-columned">
                     <thead>
                         <tr>
@@ -174,24 +175,24 @@
                                 <td class="text-center v-middle"><th:block th:text="${k.count}"></th:block></td>
                                 <td class="text-center v-middle"><th:block th:text="${item.jdgsNm}"></th:block>
                                     <div class="d-inline-block btn-group-sm">
-                                        <button type="button" class="col-auto btn btn-primary" th:id="${'btnEvlDtl'+item.jdgsid}" onclick="jdgsEvlDtlPopup(this.id)">심사보기</button>
+                                        <button type="button" class="col-auto btn btn-primary" th:id="${'btnEvlDtl'+item.jdgsid}" th:onclick="jdgsEvlDtlPopup([[${item.jdgsid}]])">심사보기</button>
                                     </div>
                                 </td>
                                 <td class="text-center v-middle" th:id="'sbmsnDt'+ ${k.count}" ><th:block th:text="item.sbmsnDt == null ? '' : ${#dates.format(item.sbmsnDt, 'yyyy-MM-dd HH:mm:ss')}"></th:block></td>
-                                <td class="text-center v-middle" th:if="${scrHeader.colVal1  != null }" th:name="${'scr1Col' + k.count}" th:id="${'scr1Col' + k.count}" th:value="${item.colVal1}"><th:block th:text="${item.colVal1  == null ? 0 : item.colVal1 }"></th:block></td>
-                                <td class="text-center v-middle" th:if="${scrHeader.colVal2  != null }" th:name="${'scr2Col' + k.count}" th:id="${'scr2Col' + k.count}" th:value="${item.colVal2}"><th:block th:text="${item.colVal2  == null ? 0 : item.colVal2 }"></th:block></td>
-                                <td class="text-center v-middle" th:if="${scrHeader.colVal3  != null }" th:name="${'scr3Col' + k.count}" th:id="${'scr3Col' + k.count}" th:value="${item.colVal3}"><th:block th:text="${item.colVal3  == null ? 0 : item.colVal3 }"></th:block></td>
-                                <td class="text-center v-middle" th:if="${scrHeader.colVal4  != null }" th:name="${'scr4Col' + k.count}" th:id="${'scr4Col' + k.count}" th:value="${item.colVal4}"><th:block th:text="${item.colVal4  == null ? 0 : item.colVal4 }"></th:block></td>
-                                <td class="text-center v-middle" th:if="${scrHeader.colVal5  != null }" th:name="${'scr5Col' + k.count}" th:id="${'scr5Col' + k.count}" th:value="${item.colVal5}"><th:block th:text="${item.colVal5  == null ? 0 : item.colVal5 }"></th:block></td>
-                                <td class="text-center v-middle" th:if="${scrHeader.colVal6  != null }" th:name="${'scr6Col' + k.count}" th:id="${'scr6Col' + k.count}" th:value="${item.colVal6}"><th:block th:text="${item.colVal6  == null ? 0 : item.colVal6 }"></th:block></td>
-                                <td class="text-center v-middle" th:if="${scrHeader.colVal7  != null }" th:name="${'scr7Col' + k.count}" th:id="${'scr7Col' + k.count}" th:value="${item.colVal7}"><th:block th:text="${item.colVal7  == null ? 0 : item.colVal7 }"></th:block></td>
+                                <th:block th:if='${scrHeader!=null}'>
+                                <td class="text-center v-middle" th:if="${scrHeader.colVal1 != null }" th:name="${'scr1Col' + k.count}" th:id="${'scr1Col' + k.count}" th:value="${item.colVal1}"><th:block th:text="${item.colVal1  == null ? 0 : item.colVal1 }"></th:block></td>
+                                <td class="text-center v-middle" th:if="${scrHeader.colVal2 != null }" th:name="${'scr2Col' + k.count}" th:id="${'scr2Col' + k.count}" th:value="${item.colVal2}"><th:block th:text="${item.colVal2  == null ? 0 : item.colVal2 }"></th:block></td>
+                                <td class="text-center v-middle" th:if="${scrHeader.colVal3 != null }" th:name="${'scr3Col' + k.count}" th:id="${'scr3Col' + k.count}" th:value="${item.colVal3}"><th:block th:text="${item.colVal3  == null ? 0 : item.colVal3 }"></th:block></td>
+                                <td class="text-center v-middle" th:if="${scrHeader.colVal4 != null }" th:name="${'scr4Col' + k.count}" th:id="${'scr4Col' + k.count}" th:value="${item.colVal4}"><th:block th:text="${item.colVal4  == null ? 0 : item.colVal4 }"></th:block></td>
+                                <td class="text-center v-middle" th:if="${scrHeader.colVal5 != null }" th:name="${'scr5Col' + k.count}" th:id="${'scr5Col' + k.count}" th:value="${item.colVal5}"><th:block th:text="${item.colVal5  == null ? 0 : item.colVal5 }"></th:block></td>
+                                <td class="text-center v-middle" th:if="${scrHeader.colVal6 != null }" th:name="${'scr6Col' + k.count}" th:id="${'scr6Col' + k.count}" th:value="${item.colVal6}"><th:block th:text="${item.colVal6  == null ? 0 : item.colVal6 }"></th:block></td>
+                                <td class="text-center v-middle" th:if="${scrHeader.colVal7 != null }" th:name="${'scr7Col' + k.count}" th:id="${'scr7Col' + k.count}" th:value="${item.colVal7}"><th:block th:text="${item.colVal7  == null ? 0 : item.colVal7 }"></th:block></td>
+                                </th:block>
                                 <td class="text-center v-middle"><th:block th:text="${item.sumScr == null ? 0 : item.sumScr }"></th:block></td>
                             </tr>
                         </th:block>
                     </tbody>
                 </table>
-</th:block>
-</th:block>
 
             </div>
         </div>
@@ -219,6 +220,9 @@
         <button type="button" class="btn btn-inverse" onclick="gridHelper1.resetListContent()">목록</button>
     </div>
 </form>
+
+<!-- 심사보기 팝업 -->
+<div class="modal fade" id="jdgsSrngPopup" aria-hidden="true" data-bs-backdrop="static"></div>
 
 <script th:inline="javascript">
 
@@ -258,17 +262,28 @@ function setFormScr(){
 }
 
 function initJdgsSrngForm(){
-	$("#jdgsSrngForm [id^=operFrmCd]").prop("disabled", true);
+	$("#jdgsSrngForm [id^=dstnctnOperFrmCd]").prop("disabled", true);
     $("#jdgsSrngForm [id^=styYn]").prop("disabled", true);
     $("#jdgsSrngForm [id^=sftyMngYn]").prop("disabled", true);
 	setFormScr();
 }
 
+//심사보기 팝업
+var jdgsSrngModal;
+var jdgsEvlDtlPopup = (jdgsid) => {
 
-function jdgsEvlDtlPopup(btnId){
+    var formid = $('#formid').val();
+    var prgrmid = $('#prgrmid').val();
+    var url = "/mng/asgsysSrng/jdgsSrngPopup.html?jdgsid="+jdgsid+"&prgrmid="+prgrmid;
 
-	alert("미정" );
+    $("#jdgsSrngPopup").load(url, function(response, status, xhr) {
+        if (status == "success") {
+        	jdgsSrngModal = new bootstrap.Modal($('#jdgsSrngPopup'));
+        	jdgsSrngModal.show();
+        }
+    });
 }
+
 function btnSrngDtlCrtrChart(){
 	alert("미정");
 }

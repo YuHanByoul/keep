@@ -11,9 +11,9 @@
 	            <table class="table table-framed table-bordered">
 	                <thead>
 	                <tr class="border-bottom-inverse">
-	                    <th class="text-center required">참가비 수입</th>
-	                    <th class="text-center required">기타 (후원)</th>
-	                    <th class="text-center required">자부담</th>
+	                    <th class="text-center">참가비 수입<i class="mark-required">*</i></th>
+	                    <th class="text-center">기타 (후원)<i class="mark-required">*</i></th>
+	                    <th class="text-center">자부담<i class="mark-required">*</i></th>
 	                </tr>
 	                </thead>
 	                <tbody>
@@ -60,8 +60,8 @@
 	            <table class="table table-framed">
 	                <thead>
 	                <tr>
-	                    <th class="text-center">지출항목</th>
-	                    <th class="text-center">금액</th>
+	                    <th class="text-center">지출항목<i class="mark-required">*</i></th>
+	                    <th class="text-center">금액<i class="mark-required">*</i></th>
 	                    <th class="text-center" style="width: 117px;">설정</th>
 	                </tr>
 	                </thead>
@@ -231,7 +231,8 @@
 	<div class="card-block-small">
 	    <button type="button" class="btn btn-inverse m-r-5" onclick="gridHelper1.toggleContent()">목록</button>
         <button type="button" class="btn btn-primary m-r-5" onclick="fn_savePrgrmOperBtn()">저장</button>
-        <button type="button" class="btn btn-primary"       onclick="fn_prgrmOperNextbtn()">다음</button>
+        <button type="button" class="btn btn-primary"       onclick="fn_savePrgrmOperBtn('next')">다음</button>
+<!--         <button type="button" class="btn btn-primary"       onclick="fn_prgrmOperNextbtn()">다음</button> -->
 	</div>
 
 	</div>
@@ -337,19 +338,13 @@
         $("#fcltTr" + btnIdx).remove();
     }
 
-    function fn_savePrgrmOperBtn(){
-
+    function fn_savePrgrmOperBtn(call){
+debugger;
     	var param = {};
-
         var operMngKey = $("#operMngPrgrmid").val();
         var vUrl = "/mng/asgsysSrng/";
 
-
         if(!$("#prgrmOperMngFrm").valid()) return false;
-
-//         $("[id^=fcltTr]").each(function(index, item) {
-
-//         });
 
         if(!confirm("저장 하시겠습니까?")){return;}
 
@@ -360,9 +355,8 @@
         }
 
         $("#prgrmOperMngFrm input").each(function(index, item) {
-
-            if("checkbox" == item.type && "on" == item.value) {
-                param[item.id] = "Y";
+            if("checkbox" == item.type) {
+            	param[item.id] = $(item).prop('checked') ? "Y" : "N";
             }
             else{
                 param[item.id] = item.value;
@@ -370,12 +364,12 @@
         });
 
         //지출항목 목록
-        $("[id^=fcltTr]"    ).each(function(index, item) { param["expndArtclLst[" + index + "].prgrmid"]    = prgrmid; });      //프로그램 id (key)
+        //$("[id^=fcltTr]"    ).each(function(index, item) { param["expndArtclLst[" + index + "].prgrmid"]    = prgrmid; });      //프로그램 id (key)
         $("[id^=expndArtcl]").each(function(index, item) { param["expndArtclLst[" + index + "].expndArtcl"] = item.value; });   //지출 항목
         $("[id^=amt]"       ).each(function(index, item) { param["expndArtclLst[" + index + "].amt"]        = item.value.replaceAll(",",""); });   //지출 항목
 
         //교구 및 시설
-        $("[id^=expndTr]"   ).each(function(index, item) { param["tchaidFcltLst[" + index + "].prgrmid"]    = prgrmid;    });   //프로그램 id (key)
+        //$("[id^=expndTr]"   ).each(function(index, item) { param["tchaidFcltLst[" + index + "].prgrmid"]    = prgrmid;    });   //프로그램 id (key)
         $("[id^=dtlPrgrmNm]").each(function(index, item) { param["tchaidFcltLst[" + index + "].dtlPrgrmNm"] = item.value; });   //세부 프로그램 이름
         $("[id^=eduPlc]"    ).each(function(index, item) { param["tchaidFcltLst[" + index + "].eduPlc"]     = item.value; });   //교육 장소
         $("[id^=tchaid]"    ).each(function(index, item) { param["tchaidFcltLst[" + index + "].tchaid"]     = item.value; });   //교구
@@ -390,7 +384,20 @@
             success : function (data){
                 if(data.result=="success"){
                     alert(data.msg);
-                    selectJdsgTab("jdsgTab2Link");
+                    var url = "";
+                    var prgrmid = $("#prgrmid").val();
+
+                    if(call=='next'){
+
+                    	$('[id^=jdsgTab]').removeClass('active')
+                        $("#jdsgTab3Link").addClass("active");
+
+                        url = "/mng/asgsysSrng/prgrmEvl.html?prgrmid="+prgrmid;
+                    }else{
+                    	url = "/mng/asgsysSrng/prgrmOperMngForm.html?prgrmid="+prgrmid;
+                    }
+                	dsgnAply.loadJdsgTabContent(url);
+
                 }else{
                     alert("수정중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
                 }
@@ -400,14 +407,9 @@
         });
     }
 
-    function fn_prgrmOperNextbtn(){
-    	$("#jdsgTab2Link").removeClass("active");
-        $("#jdsgTab3Link").addClass("active");
-        selectJdsgTab("jdsgTab3Link");
-    }
-
 
     function initPrgrmOperMng(){
+
     }
 
 
@@ -416,9 +418,9 @@
 
     	var validator = $('#prgrmOperMngFrm').validate({
             rules: {
-                  etrfeeIncm        : {maxlength: 12}
-                , etcIncm           : {maxlength: 12}
-                , slfpy             : {maxlength: 12}
+                  etrfeeIncm        : {required: true, maxlength: 12}
+                , etcIncm           : {required: true, maxlength: 12}
+                , slfpy             : {required: true, maxlength: 12}
                 , operBfrPrmtnSess  : {maxlength: 60}
                 , operBfrPrmtnMthd  : {maxlength: 100}
                 , operMdlPrmtnSess  : {maxlength: 60}
@@ -429,9 +431,9 @@
 
             },
             messages: {
-                  etrfeeIncm        : {maxlength: "12"}
-                , etcIncm           : {maxlength: "12"}
-                , slfpy             : {maxlength: "12"}
+                  etrfeeIncm        : {required: "참가비 수입을 입력해 주십시오.", maxlength: "12"}
+                , etcIncm           : {required: "기타(후원)을 입력해 주십시오.", maxlength: "12"}
+                , slfpy             : {required: "자부담을 입력해 주십시오.", maxlength: "12"}
                 , operBfrPrmtnSess  : {maxlength: "운영전 홍보시기는 60자 이하 여야 합니다."}
                 , operBfrPrmtnMthd  : {maxlength: "운영전 홍보방법는 100자 이하 여야 합니다."}
                 , operMdlPrmtnSess  : {maxlength: "운영중 홍보시기는 60자 이하 여야 합니다."}

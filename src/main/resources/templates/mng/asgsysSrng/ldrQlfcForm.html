@@ -124,7 +124,7 @@
     <div class="card-block-small">
         <button type="button" class="btn btn-inverse m-r-5" onclick="gridHelper1.toggleContent()">목록</button>
         <button type="button" class="btn btn-primary m-r-5" onclick="ldrQlfc.doSave()" >저장</button>
-        <button type="button" class="btn btn-primary"       onclick="ldrQlfc.goNext()" >다음</button>
+        <button type="button" class="btn btn-primary"       onclick="ldrQlfc.doSave('next')" >다음</button>
     </div>
 </form>
 <script th:inline="javascript">
@@ -147,10 +147,11 @@
     var ldrQlfc = {
 
         init() {
-          this.setList("ldr");
-          this.setList("acbg");
-          this.setList("qlfc");
-          this.setList("career");
+            this.setList("ldr");
+            this.setList("acbg");
+            this.setList("qlfc");
+            this.setList("career");
+
         },
 
         setList(listNm){
@@ -293,13 +294,7 @@
           $("#careerTr"+idx).remove();
         },
 
-        goNext(){
-            $("#jdsgTab4Link").removeClass("active");
-            $("#jdsgTab5Link").addClass("active");
-            selectJdsgTab("jdsgTab5Link");
-        },
-
-        doSave(){
+        doSave(call){
         	var param={};
 
             if(!confirm("저장하시겠습니까?")) return;
@@ -343,8 +338,20 @@
                 data : param,
                 success : function (data){
                     if(data.result=="success"){
-                        alert("저장이 완료 되었습니다.");
-                        selectJdsgTab("jdsgTab4Link");
+                        alert(data.msg);
+
+                        if(call=='next'){
+
+                        	$('[id^=jdsgTab]').removeClass('active')
+                            $("#jdsgTab5Link").addClass("active");
+                            var prgrmid = $("#prgrmid").val();
+                            var url = "/mng/asgsysSrng/sftyMngForm.html?prgrmid="+prgrmid;
+                            dsgnAply.loadJdsgTabContent(url);
+
+                        }else{
+                        	var url = "/mng/asgsysSrng/ldrQlfcForm.html?prgrmid="+prgrmid;
+                            dsgnAply.loadJdsgTabContent(url);
+                        }
 
                     }else{
                         alert("저장중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
