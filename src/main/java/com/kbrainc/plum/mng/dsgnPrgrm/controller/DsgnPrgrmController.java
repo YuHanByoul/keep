@@ -11,7 +11,6 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -509,14 +508,55 @@ public class DsgnPrgrmController {
     }
 
     /**
-     * @Title : selectOperRsltDetail
-     * @Description : 운영결과 상세 조회
-     * @param DsgnPrgrmVo객체
-     * @return DsgnPrgrmVo 응답결과객체
-     * @throws Exception 예외
-     */
-    @RequestMapping(value = "/mng/dsgnPrgrm/selectOperRsltDetail.html")
-    public String selectOperRsltDetail(DsgnPrgrmVo dsgnPrgrmVo ,Model model) throws Exception {
+    * 운영결과 등록 화면
+    *
+    * @Title : operRsltInsertForm
+    * @Description : 운영결과 등록 화면
+    * @param dsgnPrgrmVo
+    * @param model
+    * @return
+    * @throws Exception
+    * @return String
+    */
+    @RequestMapping(value = "/mng/dsgnPrgrm/operRsltInsertForm.html")
+    public String operRsltInsertForm(DsgnPrgrmVo dsgnPrgrmVo ,Model model) throws Exception {
+
+    	//등록시 초기 정보로 우수성 조회
+    	AsgsysSrngVo srngVo = new AsgsysSrngVo();
+    	srngVo.setPrgrmid(dsgnPrgrmVo.getPrgrmid());
+    	model.addAttribute("dstnctnInfo", asgsysSrngServiceImpl.selectPrgrmDstnctn(srngVo));
+
+    	//운영결과 등록시 지정차수
+    	model.addAttribute("cyclid", dsgnPrgrmVo.getCycl());
+/*
+    	DsgnPrgrmVo operRsltInfo = null;
+
+    	model.addAttribute("operRsltInfo", operRsltInfo);
+    	model.addAttribute("prfmncList",   dsgnPrgrmServiceImpl.selectOperRsltPrfmncList(dsgnPrgrmVo));
+
+ */
+    	InstVo instVo = new InstVo();
+    	model.addAttribute("typeCdList", instService.selectInstTypeCdList(instVo));
+    	model.addAttribute("sidoList"  , commonService.selectCtprvnList());
+
+    	model.addAttribute("fileList", Collections.emptyList());
+
+    	return "mng/dsgnPrgrm/operRsltInsertForm";
+    }
+
+    /**
+    * 운영결과 수정 화면
+    *
+    * @Title : operRsltUpdateForm
+    * @Description : 운영결과 수정 화면
+    * @param dsgnPrgrmVo
+    * @param model
+    * @return
+    * @throws Exception
+    * @return String
+    */
+    @RequestMapping(value = "/mng/dsgnPrgrm/operRsltUpdateForm.html")
+    public String operRsltUpdateForm(DsgnPrgrmVo dsgnPrgrmVo ,Model model) throws Exception {
 
     	DsgnPrgrmVo operRsltInfo = null;
     	operRsltInfo = dsgnPrgrmServiceImpl.selectOperRsltDetail(dsgnPrgrmVo);
@@ -538,7 +578,7 @@ public class DsgnPrgrmController {
             model.addAttribute("fileList", Collections.emptyList());
         }
 
-        return "mng/dsgnPrgrm/operRsltDetail";
+        return "mng/dsgnPrgrm/operRsltUpdateForm";
     }
 
     /**

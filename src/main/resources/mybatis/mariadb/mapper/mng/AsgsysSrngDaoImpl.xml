@@ -338,6 +338,9 @@
     <select id="selectPrgrmDstnctn" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
         SELECT
             A.PRGRMID                /* 프로그램아이디           */
+          , A.INST_NM
+          , A.INST_TYPE_CD
+          , CTPRVN.CTPRVN_CD    AS INST_RGN_CD
           , B.PRGRMID    AS PRGRM_KEY    /* 우수성 아이디        */
           , A.PRGRM_NM               /* 프로그램이름             */
           , A.APLCNTID               /* 신청자                   */
@@ -392,6 +395,7 @@
             TB_ASS_PRGRM_DSTNCTN B ON A.PRGRMID = B.PRGRMID
         LEFT OUTER JOIN    /*컨설팅*/
             TB_ASS_CNSLTNG C ON A.CNSLTNGID = C.CNSLTNGID
+        LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN CTPRVN ON SUBSTRING( A.INST_RGN_CD,1,2) = CTPRVN.CTPRVN_CD
         WHERE A.PRGRMID = #{prgrmid}
     </select>
 
