@@ -115,8 +115,7 @@
                         params.push({name: "orderField", value: 'reg_dt'});
                     }
                     var paramid = {
-//                     	name:"instid" ,value: $("#instFrm #instid").val()
-                    	name:"instid" ,value: ''
+                    	name:"instid" ,value: $("#aplyFrm #instid").val()
                     }
 
                     formData = formData.concat(params);
@@ -154,7 +153,7 @@
                 ,{ name: 'acnt', css: 'hide' }
                 ,{ name: 'nm', css: 'hide' }
                 ,{ title: '사용자'   ,name: 'nm'    ,type: "text" , width: "200"
-                    ,itemTemplate:function(value,item){return item.nm +" ( "+item.eml+" )"                        }
+                    ,itemTemplate:function(value,item){return item.nm +" ( "+item.eml+" )"}
                     }
                 ,{ title: '핸드폰'  ,name: 'moblphon',type: "text" , width: "150" ,align:"center"}
                 ,{ title: '메일'   ,name: 'eml'     ,type: "text" , width: "200" }
@@ -180,11 +179,57 @@
           return;
       }
 
-	  $('#instFrm #aplcntid').val(selectedItems.userid);
-	  dsgnAply.selectInstInfo();
 
-	  $('#instFrm #nm').val(selectedItems.nm);
-	  instManagerSearchModal.hide();
+      if($('#instFrm').length >0){
+    	  $('#instFrm #aplcntid').val(selectedItems.userid);
+    	  dsgnAply.selectInstInfo();
+
+    	  $('#instFrm #nm').val(selectedItems.nm);
+    	  instManagerSearchModal.hide();
+
+      }
+
+
+      if($('#aplyFrm').length>0){
+
+    	  var data = {
+    	         prgrmid  : $('#aplyFrm #prgrmid').val()
+    	       , aplcntid : selectedItems.userid
+    	       , aplcntNm : selectedItems.nm
+    	       , aplcntEml : selectedItems.eml
+    	       , aplcntMoblphon : selectedItems.moblPhon
+    	    }
+    	  debugger;
+    	//담당자 변경시 바로 update
+          $.ajax({
+              url :"/mng/asgsysSrng/updateMbr.do",
+              type: 'POST',
+              cache : false,
+              dataType: 'json',
+              data : data,
+              success : function (data){
+
+                  if(data.result=="success"){
+                      alert("담당자가 변경 되었습니다.");
+debugger;
+                      //gridHelper1.resetPageContent();
+                      //gridHelper1.showContent();
+                      gridHelper1.loadContent("/mng/asgsysSrng/dsgnAplyDetailForm.html?prgrmid="+$("#prgrmid").val());
+                      instManagerSearchModal.hide();
+
+                  }else{
+                      alert("담당자가 변경중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+                  }
+                  closeWorkProgress();
+
+              },
+              error : function (error){
+              }
+          })
+
+
+      }
+
   }
 
 </script>

@@ -1,25 +1,35 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" 
-    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
-    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
-    layout:decorator="layout/front/subLayout" >
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout/front/subLayout">
 <body>
 	<div layout:fragment="content">
 		<!-- content -->
 		<th:block th:if="${not #lists.isEmpty(banner)}">
 			<div class="sub-banner-swiper">
 				<div class="swiper ">
-					<div class="swiper-wrapper">		
+					<div class="swiper-wrapper">
 						<th:block th:each="item : ${banner}">
 							<div class="swiper-slide">
 								<th:block th:if="${not #strings.isEmpty(item.url)}">
 									<a th:href="${item.url}">
-										<div class="thumb" style="height:260px;"><img th:src="${'/downloadFileByFileid.do?fileid=' + item.bannerFileid + '&file_idntfc_key=' + item.fileIdntfcKey}" th:alt="${item.bannerTtl}" onerror="this.src='/images/front/bg/bg-noimage.png'; this.style.objectFit='none';"></div>
+										<div class="thumb" style="height: 260px;">
+											<img
+												th:src="${'/downloadFileByFileid.do?fileid=' + item.bannerFileid + '&file_idntfc_key=' + item.fileIdntfcKey}"
+												th:alt="${item.bannerTtl}"
+												onerror="this.src='/images/front/bg/bg-noimage.png'; this.style.objectFit='none';">
+										</div>
 									</a>
 								</th:block>
 								<th:block th:unless="${not #strings.isEmpty(item.url)}">
 									<!-- <a th:href=""> -->
-										<div class="thumb" style="height:260px;"><img th:src="${'/downloadFileByFileid.do?fileid=' + item.bannerFileid + '&file_idntfc_key=' + item.fileIdntfcKey}" th:alt="${item.bannerTtl}" onerror="this.src='/images/front/bg/bg-noimage.png'; this.style.objectFit='none';"></div>
+									<div class="thumb" style="height: 260px;">
+										<img
+											th:src="${'/downloadFileByFileid.do?fileid=' + item.bannerFileid + '&file_idntfc_key=' + item.fileIdntfcKey}"
+											th:alt="${item.bannerTtl}"
+											onerror="this.src='/images/front/bg/bg-noimage.png'; this.style.objectFit='none';">
+									</div>
 									<!-- </a> -->
 								</th:block>
 							</div>
@@ -37,41 +47,52 @@
 		</th:block>
 
 		<div class="tab-content tab-sub dropDown">
-			<button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">탄소중립 환경교육</button>
+			<button type="button" class="tab-mobile-trigger trigger"
+				aria-haspopup="listbox" aria-expanded="true">탄소중립 환경교육</button>
 			<ul class="tab-list target" role="tablist">
 				<li class="tab active">
-					<button aria-controls="tab-subpanel01" id="tab-sub01" role="tab">탄소중립 환경교육</button>
+					<button aria-controls="tab-subpanel01" id="tab-sub01" role="tab">탄소중립
+						환경교육</button>
 				</li>
 				<li class="tab">
-					<button aria-controls="tab-subpanel02" id="tab-sub02" role="tab">탄소중립 환경교육 프로그램</button>
+					<button aria-controls="tab-subpanel02" id="tab-sub02" role="tab">탄소중립
+						환경교육 프로그램</button>
 				</li>
 			</ul>
-			<div id="tab-subpanel01" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub01">
+			<div id="tab-subpanel01" class="tabpanel" role="tabpanel"
+				aria-labelledby="tab-sub01">
 
-				<form class="search-filter" id="enveduSearchForm" name="enveduSearchForm">
+				<form class="search-filter" id="enveduSearchForm"
+					name="enveduSearchForm">
 					<div class="form-input mo-flex-wrap">
 						<strong class="label">지난호 보기</strong>
 						<div class="form-input">
-							<select title="지난호 보기 년 선택" name="enveduSearchYr" id="enveduSearchYr">
+							<select title="지난호 보기 년 선택" name="enveduSearchYr"
+								id="enveduSearchYr"
+								onchange="envedu.selectSearchMonth(this.value);">
 								<th:block th:each="item : ${enveduYr}">
-									<option th:value="${item.yr}"><th:block th:text="${item.yr}"></th:block>년</option>
+									<option th:value="${item.yr}"><th:block
+											th:text="${item.yr}"></th:block>년
+									</option>
 								</th:block>
-							</select>
-							<select title="지난호 보기 월 선택" name="enveduSearchMm" id="enveduSearchMm">
-								<th:block th:each="item : ${enveduMm}">
-									<option th:value="${item.qu}"><th:block th:text="${item.qu}"></th:block>분기</option>
-								</th:block>
+							</select> <select title="지난호 보기 월 선택" name="enveduSearchMm"
+								id="enveduSearchMm">
+								<option value="">- 선택 -</option>
 							</select>
 						</div>
 						<div class="search-filter-submit">
-							<button type="button" class="btn-medium btn-green btn-before-search" onclick="envedu.search()">검색</button>
-							<button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="envedu.searchInit()">초기화</button>
+							<button type="button"
+								class="btn-medium btn-green btn-before-search"
+								onclick="envedu.search()">검색</button>
+							<button type="button"
+								class="btn-medium btn-gray btn-before-refresh"
+								onclick="envedu.searchInit()">초기화</button>
 						</div>
 					</div>
 					<input type="hidden" id="compareQuarter" name="compareQuarter">
-					<input type="hidden" id="compareYear" name="compareYear">
-					<input type="hidden" id="beforeQuarter" name="beforeQuarter">
-					<input type="hidden" id="nextQuarter" name="nextQuarter">
+					<input type="hidden" id="compareYear" name="compareYear"> <input
+						type="hidden" id="beforeQuarter" name="beforeQuarter"> <input
+						type="hidden" id="nextQuarter" name="nextQuarter">
 				</form>
 
 				<div class="table-caption">
@@ -87,43 +108,51 @@
 
 				<div class="btn-wrap">
 					<div class="center">
-						<button type="button" id="beforeBtn" class="btn-medium btn-gray btn-before-prev" onclick="beforeList('edu')">이전호</button>
-						<button type="button" id="nextBtn" class="btn-medium btn-blue btn-after-next" onclick="nextList('edu')">다음호</button>
+						<button type="button" id="beforeBtn"
+							class="btn-medium btn-gray btn-before-prev"
+							onclick="beforeList('edu')">이전호</button>
+						<button type="button" id="nextBtn"
+							class="btn-medium btn-blue btn-after-next"
+							onclick="nextList('edu')">다음호</button>
 					</div>
 				</div>
 
 
 			</div>
-			<div id="tab-subpanel02" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub02">
-				
-				<form class="search-filter" id="prgrmgdSearchForm" name="prgrmgdSearchForm">
+			<div id="tab-subpanel02" class="tabpanel" role="tabpanel"
+				aria-labelledby="tab-sub02">
+
+				<form class="search-filter" id="prgrmgdSearchForm"
+					name="prgrmgdSearchForm">
 					<div class="form-input mo-flex-wrap">
 						<strong class="label">지난호 보기</strong>
 						<div class="form-input">
-							<select title="지난호 보기 년 선택" name="prgrmgdSearchYr" id="prgrmgdSearchYr">
+							<select title="지난호 보기 년 선택" name="prgrmgdSearchYr"
+								id="prgrmgdSearchYr"
+								onchange="prgrmgd.selectSearchMonth(this.value);">
 								<th:block th:each="item : ${prgrmgdYr}">
-									<option th:value="${item.yr}"><th:block th:text="${item.yr}"></th:block>년</option>
+									<option th:value="${item.yr}"><th:block
+											th:text="${item.yr}"></th:block>년
+									</option>
 								</th:block>
-							</select>
-							<select title="지난호 보기 월 선택" name="prgrmgdSearchMm" id="prgrmgdSearchMm">
-								<th:block th:each="item : ${prgrmgdMm}">
-									<th:block th:if="${item.qu} != '5'">
-										<option th:value="${item.qu}"><th:block th:text="${item.qu}"></th:block>분기</option>
-									</th:block>
-									<th:block th:unless="${item.qu} != '5'">
-										<option th:value="${item.qu}">특별호</option>
-									</th:block>									
-								</th:block>		
+							</select> <select title="지난호 보기 월 선택" name="prgrmgdSearchMm"
+								id="prgrmgdSearchMm">
+								<option value="">- 선택 -</option>
 							</select>
 						</div>
 						<div class="search-filter-submit">
-							<button type="button" class="btn-medium btn-green btn-before-search" onclick="prgrmgd.search()">검색</button>
-							<button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="prgrmgd.searchInit()">초기화</button>
+							<button type="button"
+								class="btn-medium btn-green btn-before-search"
+								onclick="prgrmgd.search()">검색</button>
+							<button type="button"
+								class="btn-medium btn-gray btn-before-refresh"
+								onclick="prgrmgd.searchInit()">초기화</button>
 						</div>
 					</div>
-					<input type="hidden" id="prgrmgd-compareQuarter" name="compareQuarter">
-					<input type="hidden" id="prgrmgd-compareYear" name="compareYear">
-					<input type="hidden" id="prgrmgd-beforeQuarter" name="beforeQuarter">
+					<input type="hidden" id="prgrmgd-compareQuarter"
+						name="compareQuarter"> <input type="hidden"
+						id="prgrmgd-compareYear" name="compareYear"> <input
+						type="hidden" id="prgrmgd-beforeQuarter" name="beforeQuarter">
 					<input type="hidden" id="prgrmgd-nextQuarter" name="nextQuarter">
 				</form>
 
@@ -140,15 +169,19 @@
 
 				<div class="btn-wrap">
 					<div class="center">
-						<button type="button" id="prgrm-beforeBtn"  class="btn-medium btn-gray btn-before-prev" onclick="beforeList('prgrm')">이전호</button>
-						<button type="button" id="prgrm-nextBtn" class="btn-medium btn-blue btn-after-next" onclick="nextList('prgrm')">다음호</button>
+						<button type="button" id="prgrm-beforeBtn"
+							class="btn-medium btn-gray btn-before-prev"
+							onclick="beforeList('prgrm')">이전호</button>
+						<button type="button" id="prgrm-nextBtn"
+							class="btn-medium btn-blue btn-after-next"
+							onclick="nextList('prgrm')">다음호</button>
 					</div>
 				</div>
 
 			</div>
 		</div>
 		<!-- //content -->
-		
+
 		<script th:inline="javascript">
 		var isTrue = true;
 		
@@ -173,21 +206,23 @@
 			},
 			
 			search() {
-				if($("#enveduSearchYr").val() == "" && $("#enveduSearchMm").val() != "") {
-					alert("년도를 선택해 주십시오.");
+				if($("#enveduSearchMm").val() == "") {
+					alert("검색할 월을 선택해 주십시오.");
 					return false;
 				}
 				
 				$('#pageNumber').val('1');
 				
 				if($("#enveduSearchYr").val() != "" && $("#enveduSearchMm").val() != "") {
-					transformMonth("search", "envedu");
 					$("#compareQuarter").val($("#enveduSearchMm").val());
-					$("#compareYear").val($("#enveduSearchYr").val());				
+					$("#compareYear").val($("#enveduSearchYr").val());
+					transformMonth("search", "envedu");
 				}
 				
-				if(quarter != "") {
+				if(quarter != "" && quarter != 5) {
 					$("#enveduNowDate").text(year + "년 " + quarter + "분기 환경교육");	
+				}else if(quarter != "" && quarter == 5) {
+					$("#enveduNowDate").text(year + "년 특별호 환경교육");
 				}else {
 					$("#enveduNowDate").text("환경교육");
 				}
@@ -203,10 +238,13 @@
 				$("#enveduSearchYr").val('');
 				$("#enveduSearchMm").val('');
 				
+				year = now.getFullYear(); 
 				month = now.getMonth() + 1;
 				quarter = null;
 				
 				transformMonth();
+				
+				envedu.selectSearchMonth(year, quarter);
 				
 				$("#enveduSearchYr").val(year);
 				$("#enveduSearchMm").val(quarter);
@@ -215,12 +253,6 @@
 				$("#nextQuarter").val("");
 				$("#compareQuarter").val("");
 				$("#compareYear").val("");
-				
-				if(quarter != "") {
-					$("#enveduNowDate").text(year + "년 " + quarter + "분기 환경교육");	
-				}else {
-					$("#enveduNowDate").text("환경교육");
-				}
 			},
 			
 			selectEnveduList(type) {
@@ -334,7 +366,7 @@
 						
 						datailTag = "";
 						if(item.url == null || item.url == "") {
-							datailTag = `<a href="/front/wbzn/now/enveduDetailForm.html?enveduid=${item.enveduid}" class="title ellipsis" data-ellipsis="2">${item.ttl}</a>`;
+							datailTag = `<a href="/front/wbzn/carbon/carbonEnveduDetailForm.html?enveduid=${item.enveduid}" class="title ellipsis" data-ellipsis="2">${item.ttl}</a>`;
 						}else {
 							datailTag = `<a href="${item.url}" target="_blank" class="title ellipsis" data-ellipsis="2">${item.ttl}</a>`;
 						}
@@ -353,6 +385,56 @@
 					});
 				}
 				$('#envedu-list-area').html(enveduListHtml);
+			},
+			
+			selectSearchMonth(val, quarter) {
+				if (displayWorkProgress(true)) {
+					$.ajax({
+						url: "/front/wbzn/carbon/selectSearchMonth.do",
+						cache: false,
+						dataType: 'json',
+						data: {yr : val},
+						type: 'GET',
+						success: function (result) {
+							console.log(result)
+							envedu.makeSelectBox(result, quarter);
+							closeWorkProgress();
+						}
+					});
+				}			
+			},
+			
+			makeSelectBox(list, quarter) {
+				var isSelect = false;
+				
+				var select = document.getElementById("enveduSearchMm");
+				var options = select.options;
+				select.innerHTML = "";
+				var newOption = document.createElement("option");
+				newOption.value = "";
+				newOption.text = "- 선택 -";
+				select.add(newOption);
+				list.enveduMm.forEach(function(item) {
+					var newOption = document.createElement("option");
+					if(item.qu == 5) {
+						newOption.value = item.qu;
+						newOption.text = "특별호";
+						select.add(newOption);						
+					}else {
+						newOption.value = item.qu;
+						newOption.text = item.qu;
+						select.add(newOption);						
+					}
+					
+					if(quarter == item.qu) {
+						isSelect = true;
+					}
+				})
+				if(quarter != undefined && isSelect) {
+					select.value = quarter;				
+				}else {
+					select.value = "";
+				}
 			}
 		};
         	
@@ -394,7 +476,7 @@
 					if(quarter != "5") {
 						$("#prgrmgdNowDate").text(year + "년 " + quarter + "분기 탄소중립 환경교육 프로그램");						
 					}else {
-						$("#prgrmgdNowDate").text(year + "년 " + quarter + " 탄소중립 환경교육 프로그램");
+						$("#prgrmgdNowDate").text(year + "년 특별호 탄소중립 환경교육 프로그램");
 					}
 				}else {
 					$("#prgrmgdNowDate").text("탄소중립 환경교육 프로그램");
@@ -408,11 +490,16 @@
 			},
 			
 			searchInit() {
+				$("#prgrmgdSearchYr").val("");
+				$("#prgrmgdSearchMm").val("");
+				
 				year = now.getFullYear();
 				month = now.getMonth() + 1;
 				quarter = null;
 				
 				transformMonth();
+				
+				prgrmgd.selectSearchMonth(year, quarter);
 				
 				$("#prgrmgdSearchYr").val(year);
 				$("#prgrmgdSearchMm").val(quarter);
@@ -421,11 +508,6 @@
 				$("#prgrmgd-nextQuarter").val("");
 				$("#prgrmgd-compareQuarter").val("");
 				$("#prgrmgd-compareYear").val("");
-				if(quarter != "") {
-					$("#prgrmgdNowDate").text(year + "년 " + quarter + "분기 탄소중립 환경교육 프로그램");
-				}else {
-					$("#prgrmgdNowDate").text("탄소중립 환경교육 프로그램");
-				}
 			},
 			
 			selectPrgrmgdList(type) {
@@ -555,6 +637,55 @@
 					});
 				}
 				$('#prgrmgd-list-area').html(prgrmgdListHtml);
+			},
+			
+			selectSearchMonth(val, quarter) {
+				if (displayWorkProgress(true)) {
+					$.ajax({
+						url: "/front/wbzn/carbon/selectSearchMonth.do",
+						cache: false,
+						dataType: 'json',
+						data: {yr : val},
+						type: 'GET',
+						success: function (result) {
+							prgrmgd.makeSelectBox(result, quarter);
+							closeWorkProgress();
+						}
+					});
+				}			
+			},
+			
+			makeSelectBox(list, quarter) {
+				var isSelect = false;
+				
+				var select = document.getElementById("prgrmgdSearchMm");
+				var options = select.options;
+				select.innerHTML = "";
+				var newOption = document.createElement("option");
+				newOption.value = "";
+				newOption.text = "- 선택 -";
+				select.add(newOption);
+				list.prgrmgdMm.forEach(function(item) {
+					var newOption = document.createElement("option");
+					if(item.qu == 5) {
+						newOption.value = item.qu;
+						newOption.text = "특별호";
+						select.add(newOption);						
+					}else {
+						newOption.value = item.qu;
+						newOption.text = item.qu;
+						select.add(newOption);						
+					}
+					
+					if(quarter == item.qu) {
+						isSelect = true;
+					}
+				})
+				if(quarter != undefined && isSelect) {
+					select.value = quarter;				
+				}else {
+					select.value = "";
+				}
 			}
 		};
 		
@@ -569,8 +700,6 @@
 				if (month <= 1) {
 				  year--;
 				  month = 12;
-				}else{
-					month -= 3;
 				}
 				
 				if(month == 1 || month == 2 || month == 3) {
@@ -605,9 +734,27 @@
 				if(tab == "envedu" && ($("#enveduSearchYr").val() != '' || $("#enveduSearchMm").val() != '')){
 					year = $("#enveduSearchYr").val();
 					quarter = $("#enveduSearchMm").val();
+					if(quarter == 1) {
+						month = 2
+					}else if(quarter == 2) {
+						month = 5
+					}else if(quarter == 3) {
+						month = 8
+					}else if(quarter == 4) {
+						month = 11
+					}
 				}else if(tab == "prgrmgd" && ($("#prgrmgdSearchYr").val() != '' || $("#prgrmgdSearchMm").val() != '')){
 					year = $("#prgrmgdSearchYr").val();
 					quarter = $("#prgrmgdSearchMm").val();
+					if(quarter == 1) {
+						month = 2
+					}else if(quarter == 2) {
+						month = 5
+					}else if(quarter == 3) {
+						month = 8
+					}else if(quarter == 4) {
+						month = 11
+					}
 				}
 			}else{
 				if(month == 1 || month == 2 || month == 3) {
@@ -630,6 +777,7 @@
 			$("#prgrmgd-beforeQuarter").val("before");
 			$("#prgrmgd-nextQuarter").val("");
 			
+			month -= 3;
 			transformMonth("before");
 			
 			$("#compareQuarter").val(quarter);
@@ -650,7 +798,7 @@
 			}
 		}
 		
-		function nextList(type) {		
+		function nextList(type) {
 			$("#beforeQuarter").val("");
 			$("#nextQuarter").val("next");
 			$("#prgrmgd-beforeQuarter").val("");
@@ -677,10 +825,14 @@
 			}
 		}
 
-		$(function () {
+		$(function () {			
 			var enveduMm = /*[[${enveduMm}]]*/ null;
 			var prgrmMm = /*[[${prgrmgdMm}]]*/ null;
 			transformMonth();
+			
+			envedu.selectSearchMonth(year, quarter);
+			prgrmgd.selectSearchMonth(year, quarter);
+			
 			$("#enveduSearchYr").val(year);
 			$("#enveduSearchMm").val(quarter);
 			$("#prgrmgdSearchYr").val(year);
@@ -719,6 +871,7 @@
 				$(this).parent().find('.swiper-button-stop').show().focus();
 			}
 		});
+		
 		$('.sub-banner-swiper .swiper').find('.swiper-button-stop').bind({
 			'click':function(e){
 				subBannerSwiper.autoplay.stop();

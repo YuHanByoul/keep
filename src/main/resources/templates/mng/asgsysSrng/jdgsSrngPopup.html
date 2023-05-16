@@ -1,0 +1,139 @@
+<form id="jdgsSrngPopFrm">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content type_2" style="width: 1000px;">
+
+            <div class="modal-header">
+                <h4 class="modal-title">심사 보기</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="card m-b-10">
+                    <div class="card-block-small">
+
+                <div class="row">
+                    <div class="col-12">
+
+                        <div class="card-header p-t-0 p-b-0">
+                            <h3 class="sub-title"><strong></strong></h3>
+                        </div>
+                            <div class="card-block-small p-t-0">
+                                <div class="mb-3 col-12 table-border-style">
+                                    <div class="col-12 table-responsive">
+                                        <table class="table table-framed table-bordered">
+                                            <thead>
+                                                <tr class="border-bottom-inverse">
+                                                    <th class="text-center v-middle" style="width: 60px;"><strong>No</strong></th>
+                                                    <th class="text-center v-middle"><strong>지정기준</strong></th>
+                                                    <th class="text-center v-middle"><strong>확인사항</strong></th>
+                                                    <th class="text-center v-middle" style="width: 100px;"><strong>배점</strong></th>
+                                                    <th class="text-center v-middle" style="width: 130px;"><strong>심사점수</strong></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <th:block th:if="${!#lists.isEmpty(dsgnSrgnFormList)}">
+                                                    <th:block th:each="item , i : ${dsgnSrgnFormList}">
+                                                        <tr class="border-bottom">
+                                                            <td class="text-center v-middle">[[${i.count}]]</td>
+                                                            <td th:if="${item.rnk=='1'}" th:rowspan="${item.rowSpan}" class="text-center v-middle">[[${item.cdNm }]]</td>
+                                                            <td class="text-center v-middle">[[${item.idntyMttr}]]</td>
+                                                            <td class="text-center v-middle">[[${item.altm}]]</td>
+                                                            <td class="text-center v-middle">
+<!--                                                                 <input th:if     ="${item.chklstSeCd != ''}" type="number" class="text-center v-middle form-control form-control-sm" th:max="${item.altm}" th:name="${'scr'+ i.count}" th:id="${'scr'+ i.count}" placeholder="0" th:value="${item.chkLstScr}" disabled/> -->
+<!--                                                                 <input th:unless ="${item.chklstSeCd != ''}" type="number" class="text-center v-middle form-control form-control-sm" th:max="${item.altm}"th:name="${'scr'+ i.count}" th:id="${'scr'+ i.count}" placeholder="0" th:value="${item.scr}" /> -->
+                                                                <input th:if     ="${item.chklstSeCd != ''}" type="text" class="text-center v-middle form-control form-control-sm" th:max="${item.altm}" th:name="${'scr'+ i.count}" th:id="${'scr'+ i.count}" placeholder="0" th:value="${item.chkLstScr}" disabled/>
+                                                                <th:block th:unless ="${item.chklstSeCd != ''}" type="text" class="text-center v-middle form-control form-control-sm" th:max="${item.altm}"th:name="${'scr'+ i.count}" th:id="${'scr'+ i.count}" placeholder="0" >[[${item.scr}]]</th:block>
+                                                                <input type="hidden" th:id="${'srngData' + i.count}"
+                                                                                     th:data-formid     = "${item.formid    }"
+                                                                                     th:data-qitemid    = "${item.qitemid   }"
+                                                                                     th:data-dsgncrtrCd = "${item.dsgncrtrCd}"
+                                                                                     th:data-idntyMttr  = "${item.idntyMttr }"
+                                                                                     th:data-chklstSeCd = "${item.chklstSeCd}"
+                                                                                     th:data-scr        = "${item.scr       }"
+                                                                                     th:data-ordr       = "${item.ordr      }"
+                                                                                     th:data-altm       = "${item.altm      }" >
+                                                            </td>
+                                                        </tr>
+                                                    </th:block>
+                                                </th:block>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <th colspan="3" class="table-active text-center">총 총점</th>
+                                                    <th class="table-active text-center" id="sumAltm"><strong>000</th>
+                                                    <th class="table-active text-center" id="sumScr">000</th>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="mb-3 form-group row">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="srngOpnn"><strong>심사의견</strong></label>
+                                    <div class="col-12">
+                                        <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="심사의견 입력(1000자 이내)" id="srngOpnn" name="srngOpnn"><th:block th:text="${jdgsSrngInfo.srngOpnn}"></th:block></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</form>
+<script th:inline="javascript">
+    var ansList = /*[[${ansList}]]*/null;
+
+    var jdgsSrngPopup = {
+
+    	init(){
+    	    if(ansList!=null){
+    	    	this.setAnsList();
+    	    	this.setSumScr();
+    	    }
+    	},
+
+    	setAnsList(){
+    		$("#jdgsSrngPopFrm [id^=srngData]").each(function(index, item){
+
+    	        for(var idx in ansList){
+    	            if(ansList[idx].qitemid == $(this).attr('data-qitemid')) {
+    	                $(item).parent().find('[id^=scr]').val(ansList[idx].scr);
+    	            }
+    	        }
+    	    });
+    	},
+
+    	setSumScr(){
+    	    var vSumScr = 0;
+    	    var vSumAltm = 0;
+
+    	    debugger;
+    	    $("#jdgsSrngPopFrm [id^=srngData]").each(function(index, item){
+
+    	        for(var idx in ansList){
+    	            if(ansList[idx].qitemid == $(this).attr('data-qitemid')) {
+    	                $(item).parent().find('[id^=scr]').val(ansList[idx].scr);
+    	            }
+    	        }
+
+    	        //vSumScr  += Number($(item).parent().find('[id^=scr]').val());
+    	        vSumScr  += Number($(item).attr('data-scr'));
+    	        vSumAltm += Number($("#"+item.id).attr("data-altm"))
+    	    });
+
+    	    $("#sumScr").prop("innerText", vSumScr)
+    	    $("#sumAltm").prop("innerText",vSumAltm)
+    	}
+    };
+
+    $(function(){
+    	jdgsSrngPopup.init();
+    });
+
+</script>
+

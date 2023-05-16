@@ -167,4 +167,22 @@ public class EnveduController {
 
         return resultMap;
     }
+    
+    @RequestMapping(value = "/front/wbzn/now/selectSearchMonth.do")
+    @ResponseBody
+    public Map<String, Object> selectSearchMonth(EnveduVo enveduVo, PrgrmgdVo prgrmgdVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        
+        List<EnveduVo> enveduMm = null;
+        enveduMm =  enveduService.selectEnveduMmList(enveduVo);
+        
+        List<PrgrmgdVo> prgrmgdMm = null;
+        prgrmgdMm =  enveduService.selectPrgrmgdMmList(prgrmgdVo);
+        
+        
+        resultMap.put("enveduMm", enveduMm);
+        resultMap.put("prgrmgdMm", prgrmgdMm);
+
+        return resultMap;
+    }
 }

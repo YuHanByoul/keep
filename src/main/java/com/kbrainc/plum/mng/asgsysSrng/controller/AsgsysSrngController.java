@@ -27,7 +27,6 @@ import com.kbrainc.plum.cmm.error.controller.CustomErrorController;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileServiceImpl;
 import com.kbrainc.plum.cmm.service.CommonService;
-import com.kbrainc.plum.front.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.DsgnSrngFormVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.EmrgcyActnPlanVo;
@@ -39,6 +38,9 @@ import com.kbrainc.plum.mng.code.model.CodeVo;
 import com.kbrainc.plum.mng.code.service.CodeServiceImpl;
 import com.kbrainc.plum.mng.inst.model.InstVo;
 import com.kbrainc.plum.mng.inst.service.InstServiceImpl;
+import com.kbrainc.plum.mng.srng.model.SrngDao;
+import com.kbrainc.plum.mng.srng.model.SrngFormQitemMapngVO;
+import com.kbrainc.plum.mng.srng.service.SrngSerivceImpl;
 import com.kbrainc.plum.mng.tchaid.service.TchaidService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -271,6 +273,7 @@ public class AsgsysSrngController {
 
         InstVo instVo = new InstVo();
         model.addAttribute("typeCdList", instService.selectInstTypeCdList(instVo));
+        model.addAttribute("sidoList"   , commonService.selectCtprvnList());
 
         return "mng/asgsysSrng/aplyInfo";
     }
@@ -491,9 +494,6 @@ public class AsgsysSrngController {
     	//신청정보조회
     	AsgsysSrngVo aplyInfo = asgsysSrngService.selectAplyInfo(asgsysSrngVo);
 
-    	//심사양식 조회
-    	aplyInfo.getOperFrmCd();
-
     	asgsysSrngVo.setFormid(aplyInfo.getFormid());
 
     	//운영형태코드 목록 조회
@@ -544,6 +544,54 @@ public class AsgsysSrngController {
 
     	return "mng/asgsysSrng/jdgsSrng";
     }
+
+    //심사보기 팝업
+    @RequestMapping(value = "/mng/asgsysSrng/jdgsSrngPopup.html")
+    public String jdgsSrngPopup(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
+
+    	DsgnSrngFormVo dsgnSrngFormVo = new DsgnSrngFormVo();
+    	AsgsysSrngVo jdgsSrngInfo = asgsysSrngService.selectJdgsSrngDetail(asgsysSrngVo);
+
+    	model.addAttribute("dsgnSrgnFormList",asgsysSrngService.selectSrngQitemList(jdgsSrngInfo));
+
+    	model.addAttribute("jdgsSrngInfo", jdgsSrngInfo);
+
+    	model.addAttribute("ansList", asgsysSrngService.selectSrngAnsList(jdgsSrngInfo));
+
+    	//신청 첨부파일
+    	if (!StringUtil.nvl(jdgsSrngInfo.getAplyFilegrpid()).equals("") && !StringUtil.nvl(jdgsSrngInfo.getAplyFilegrpid()).equals(0)) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(jdgsSrngInfo.getAplyFilegrpid());
+
+            model.addAttribute("aplyFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
+
+        } else {
+            model.addAttribute("aplyFileList", Collections.emptyList());
+        }
+
+    	//사전인증 첨부파일
+    	if (!StringUtil.nvl(jdgsSrngInfo.getBfrCertFilegrpid()).equals("") && !StringUtil.nvl(jdgsSrngInfo.getBfrCertFilegrpid()).equals(0)) {
+    		FileVo fileVo = new FileVo();
+    		fileVo.setFilegrpid(jdgsSrngInfo.getBfrCertFilegrpid());
+
+    		model.addAttribute("bfrCertFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
+
+    	} else {
+    		model.addAttribute("bfrCertFileList", Collections.emptyList());
+    	}
+
+    	BeanUtils.copyProperties(jdgsSrngInfo, dsgnSrngFormVo);
+    	logger.info(dsgnSrngFormVo.toString());
+
+
+    	//심사양식 목록 조회
+    	model.addAttribute("srngFormList",asgsysSrngService.selectSrngFormQitemList(dsgnSrngFormVo));
+
+
+    	return "mng/asgsysSrng/jdgsSrngPopup";
+    }
+
+
     /**
      * @Title : sprtgrpSrng
      * @Description : 지원단심사 화면이동
@@ -696,6 +744,7 @@ public class AsgsysSrngController {
     @RequestMapping(value = "/mng/asgsysSrng/prgrmDstnctnForm.html")
     public String prgrmDstnctnForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
 
+    	model.addAttribute("prgrmDstnctnInfo", asgsysSrngVo);
 //    	//컨설팅목록
 //    	List<AsgsysSrngVo> csltngList = asgsysSrngService.selectCsltngList(asgsysSrngVo);
 //    	model.addAttribute("csltngList", csltngList );
@@ -726,7 +775,7 @@ public class AsgsysSrngController {
 
     	//프로그램 우수성 상세 조회 tb_ass_prgrm_dstnctn
     	AsgsysSrngVo prgrmDstnctnInfo = asgsysSrngService.selectPrgrmDstnctn(asgsysSrngVo);
-    	prgrmDstnctnInfo.setMode(asgsysSrngVo.getMode());
+
     	model.addAttribute("prgrmDstnctnInfo", prgrmDstnctnInfo);
 
     	//컨설팅목록
@@ -926,16 +975,19 @@ public class AsgsysSrngController {
     	ExpndArtclVo expndArtclVo = new ExpndArtclVo();
     	TchaidFcltVo tchaidFcltVo = new TchaidFcltVo();
 
-    	BeanUtils.copyProperties(asgsysSrngVo, expndArtclVo);
-    	BeanUtils.copyProperties(asgsysSrngVo, tchaidFcltVo);
+    	AsgsysSrngVo prgrmOperMngInfo = null;
+    	prgrmOperMngInfo = asgsysSrngService.selectPrgrmOperMng(asgsysSrngVo);
+
+    	model.addAttribute("prgrmOperMngInfo", prgrmOperMngInfo);
 
     	//프로그램 운영관리 조회
     	model.addAttribute("prgrmOperMngInfo", asgsysSrngService.selectPrgrmOperMng(asgsysSrngVo));
+    	BeanUtils.copyProperties(asgsysSrngVo, expndArtclVo);
+    	BeanUtils.copyProperties(asgsysSrngVo, tchaidFcltVo);
 
     	//지출항목 목록 조회
     	List<ExpndArtclVo> expndArtclList = asgsysSrngService.selectExpndArtclList(expndArtclVo);
     	if(0 == expndArtclList.size()) {
-
     		expndArtclList.add(0, expndArtclVo);
     	}
     	model.addAttribute("expndArtclList", expndArtclList);
@@ -1028,7 +1080,11 @@ public class AsgsysSrngController {
     @RequestMapping(value = "/mng/asgsysSrng/prgrmEvl.html")
     public String prgrmEvlForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
 
-    	AsgsysSrngVo prgrmEvlInfo = asgsysSrngService.selectPrgrmEvl(asgsysSrngVo);
+    	AsgsysSrngVo prgrmEvlInfo = null;
+
+    	prgrmEvlInfo = asgsysSrngService.selectPrgrmEvl(asgsysSrngVo);
+
+
 		if(CommonUtil.isEmpty(prgrmEvlInfo.getPrgrmid())) {
 			prgrmEvlInfo = new AsgsysSrngVo();
 			BeanUtils.copyProperties(asgsysSrngVo, prgrmEvlInfo);
@@ -1087,14 +1143,23 @@ public class AsgsysSrngController {
     @RequestMapping(value = "/mng/asgsysSrng/ldrQlfcForm.html")
     public String prgrmLdrForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
 
+    	AsgsysSrngVo snrstfdvlprHstry = null;
+
 		//책임개발자 목록 조회
 		model.addAttribute("ldrList", asgsysSrngService.selectLdrList(asgsysSrngVo));
+
 		//책임개발자 이력 조회
-		model.addAttribute("snrstfdvlprHstry", asgsysSrngService.selectSnrstfdvlprHstry(asgsysSrngVo));
+		snrstfdvlprHstry = asgsysSrngService.selectSnrstfdvlprHstry(asgsysSrngVo);
+
+
+		model.addAttribute("snrstfdvlprHstry", snrstfdvlprHstry);
+
 		//책임개발자 학력사항 목록 조회
 		model.addAttribute("acbgList", asgsysSrngService.selectSnrstfdvlprAcbgList(asgsysSrngVo));
+
 		//책임개발자 경력사항 목록 조회
 		model.addAttribute("careerList", asgsysSrngService.selectSnrstfdvlprCareerList(asgsysSrngVo));
+
 		//책임개발자 자격사항 목록 조회
 		model.addAttribute("qlfcList", asgsysSrngService.selectSnrstfdvlprQlfcList(asgsysSrngVo));
 
@@ -1149,12 +1214,15 @@ public class AsgsysSrngController {
     public String sftyMngForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
 
     	//안전관리탭 상세 정보 조회
-    	AsgsysSrngVo sftyMngInfo = asgsysSrngService.selectSftyMng(asgsysSrngVo);
+    	AsgsysSrngVo sftyMngInfo = null;
+    	sftyMngInfo = asgsysSrngService.selectSftyMng(asgsysSrngVo);
 
-    	if(null == sftyMngInfo) {
-    		sftyMngInfo = new AsgsysSrngVo();
-    		BeanUtils.copyProperties(asgsysSrngVo, sftyMngInfo);
-    	}
+
+
+//    	if(null == sftyMngInfo) {
+//    		sftyMngInfo = new AsgsysSrngVo();
+//    		BeanUtils.copyProperties(asgsysSrngVo, sftyMngInfo);
+//    	}
 
     	model.addAttribute("sftyMngInfo", sftyMngInfo);
 
@@ -1163,8 +1231,7 @@ public class AsgsysSrngController {
             FileVo fileVo = new FileVo();
             fileVo.setFilegrpid(sftyMngInfo.getFilegrpid());
 
-            //model.addAttribute("mnlFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
-            model.addAttribute("fileList", fileService.getFileList(fileVo));
+            model.addAttribute("mnlFileList", fileService.getFileList(fileVo));
 
         } else {
             model.addAttribute("mnlFileList", Collections.emptyList());
@@ -1227,7 +1294,11 @@ public class AsgsysSrngController {
     public String assChklstForm(AsgsysSrngVo asgsysSrngVo, Model model,@UserInfo UserVo user) throws Exception {
 
     	//지정신청상세정보 조회
-    	AsgsysSrngVo assChklstInfo = asgsysSrngService.selectAssChklstForm(asgsysSrngVo);
+    	AsgsysSrngVo assChklstInfo = null;
+
+    	assChklstInfo = asgsysSrngService.selectAssChklstForm(asgsysSrngVo);
+
+
     	model.addAttribute("loginUserid", user.getUserid());
     	model.addAttribute("assChklstInfo", assChklstInfo);
 
@@ -1235,7 +1306,7 @@ public class AsgsysSrngController {
 
     	return "mng/asgsysSrng/assChklstForm";
     }
-    //updateAssChklst
+
     /**
      * 지원단심사 수정
      *

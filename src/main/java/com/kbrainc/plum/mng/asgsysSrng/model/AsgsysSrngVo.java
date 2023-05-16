@@ -419,7 +419,10 @@ public class AsgsysSrngVo extends ParentRequestVo {
     /**숙박_낮 */
 	private Integer styDaytm;
 
-    /**운영_형태_코드 */
+    /** 우수성 운영_형태_코드 */
+	private String dstnctnOperFrmCd;
+
+	/**운영_형태_코드 */
 	private String operFrmCd;
 
 	/**체크리스트 운영_형태_코드 */

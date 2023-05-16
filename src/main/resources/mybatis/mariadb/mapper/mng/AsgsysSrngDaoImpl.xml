@@ -176,6 +176,7 @@
           , A.INST_TYPE_CD        /* 기관_유형_코드 */
           , A.INST_RGN_CD         /* 기관_지역_코드 */
           , CTPRVN.CTPRVN_NM    AS INST_RGN_CD_NM
+          , CTPRVN.CTPRVN_CD    AS RGN_CD
           , A.INST_ZIP            /* 기관_우편번호 */
           , A.INST_ADDR           /* 기관_주소 */
           , A.INST_DTLADDR        /* 기관_상세주소 */
@@ -254,7 +255,7 @@
                 TB_CMM_USER BB ON AA.SPRTGRPID = BB.USERID
         ) D ON A.PRGRMID = D.PRGRMID
         LEFT OUTER JOIN TB_CMM_INST INST ON A.INSTID = INST.INSTID
-        LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN CTPRVN ON  A.INST_RGN_CD = CTPRVN.CTPRVN_CD
+        LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN CTPRVN ON SUBSTRING( A.INST_RGN_CD,1,2) = CTPRVN.CTPRVN_CD
         WHERE 1=1
         AND A.PRGRMID = #{prgrmid}
     </select>
@@ -1624,6 +1625,8 @@
         /* AsgsysSrngDao.selectSftyMng*/
         SELECT
             A.PRGRMID
+          , A.APLCNTID
+          , A.APLCNTID  AS SPRTGRPID
           , B.PRGRMID   AS SFTY_MNG_ID
           , B.FILEGRPID
           , B.LDR_EDU_SESS
@@ -1646,19 +1649,19 @@
             A.PRGRMID = #{prgrmid}
     </select>
 
-    <!-- 신청정보탭 체크리스트 상세 조회 -->
+    <!-- 체크리스트 제출 조회 -->
     <select id="selectAssChklstForm" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
         /* AsgsysSrngDao.selectAssChklstForm*/
         SELECT
             A.PRGRMID
-          , B.SPRTGRPID
+          , A.APLCNTID    AS SPRTGRPID
+          , A.APLCNTID
           , C.SBMSNID
           , A.CHKLSTID
         FROM TB_ASS_PRGRM A
-        LEFT OUTER JOIN TB_ASS_SPRTGRP_SRNG B ON A.PRGRMID = B.PRGRMID
-        LEFT OUTER JOIN TB_ASS_CHKLST_SBMSN C ON B.PRGRMID = C.PRGRMID
-                                             AND B.SPRTGRPID = C.USERID
-                                             AND C.SBMSN_SE_CD ='242102'
+        LEFT OUTER JOIN TB_ASS_CHKLST_SBMSN C ON A.PRGRMID = C.PRGRMID
+                                             AND A.APLCNTID = C.USERID
+                                             AND C.SBMSN_SE_CD = '242101'
         WHERE A.PRGRMID = #{prgrmid}
     </select>
 
@@ -1888,7 +1891,7 @@
           , B.STY_YN
           , B.STY_NIGHT
           , B.STY_DAYTM
-          , B.OPER_FRM_CD
+          , B.OPER_FRM_CD    AS DSTNCTN_OPER_FRM_CD
           , C.BFR_CERT_YN
           , C.BFR_CERT_FILEGRPID
           , A.FILEGRPID  AS APLY_FILEGRPID
@@ -1899,6 +1902,9 @@
           , D.SPLMNT_DMND_OPNN
           , D.SRNG_OPNN
           , E.SBMSNID
+          , G.FORMID
+          , G.OPER_FRM_CD
+          , G.USE_YN
         FROM
             TB_ASS_PRGRM A
         LEFT OUTER JOIN
@@ -1933,6 +1939,14 @@
                                        AND SRNG.SPRTGRPID = CHK.USERID
                                        AND CHK.SBMSN_SE_CD = '242102'
         ) E ON A.PRGRMID = E.PRGRMID
+        LEFT OUTER JOIN TB_ASS_SRNG_FORM G
+            ON CASE WHEN B.OPER_FRM_CD = 120104 THEN 145103
+                  ELSE CASE WHEN B.STY_YN ='Y' THEN 145102
+                             WHEN B.STY_YN ='N' THEN 145101
+                        ELSE ''
+                 END
+             END = G.OPER_FRM_CD
+             AND G.USE_YN = 'Y'
         WHERE 1=1
         AND A.PRGRMID = #{prgrmid}
     </select>
@@ -2932,6 +2946,8 @@
         AND QITEMID = #{qitemid}
 
     </select>
+
+    <!-- 체크리스트 답변 수정 -->
     <update id="updateChklstAns" parameterType="ChklstAnsVo" >
         UPDATE
             TB_ASS_CHKLST_ANS
@@ -2948,6 +2964,8 @@
         AND QITEMID       = #{qitemid   }
     </update>
 
+
+    <!-- 체크리스트 답변 등록 -->
     <insert id="insertChklstAns" parameterType="ChklstAnsVo" >
     INSERT INTO
         TB_ASS_CHKLST_ANS (
@@ -3057,8 +3075,10 @@
         UPDATE
             TB_ASS_PRGRM
         SET
-            APLCNTID  = #{aplcntid}
-          , APLCNT_NM = #{aplcntNm}
+            APLCNTID        = #{aplcntid}
+          , APLCNT_NM       = #{aplcntNm}
+          , APLCNT_EML      = #{aplcntEml}
+          , APLCNT_MOBLPHON = #{aplcntMoblphon}
         WHERE
             PRGRMID   = #{prgrmid}
     </update>
@@ -3377,6 +3397,9 @@
         WHERE 1=1
         <if test="aplcntid != null and aplcntid != '' ">
             AND A.USERID = #{aplcntid}
+        </if>
+        <if test="instid != null and instid != '' ">
+            AND A.USERID = #{instid}
         </if>
     </select>
 
