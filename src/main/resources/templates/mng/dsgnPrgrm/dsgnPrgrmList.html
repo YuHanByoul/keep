@@ -187,7 +187,7 @@
                         params.push({name: "orderField", value: filter.sortField});
                         params.push({name: "orderDirection", value: filter.sortOrder});
                     }else{
-                        params.push({name: "orderField", value: 'dsgn_bgng_de'});
+                        params.push({name: "orderField", value: 'reg_dt'});
                     }
 
                     formData = formData.concat(params);
@@ -262,6 +262,7 @@
                 }
 
                 ,{ title: '지정기간'      ,name: 'dsgnPrd',          type: "text", align:"center" }
+                ,{ name: 'regDt', css:'hide'}
             ],
 
             rowClick: function(args) {
@@ -271,7 +272,8 @@
 
                 //지정상태 클릭 - 지정정보 변경 모달 팝업
                 if(args.event.originalEvent.target.cellIndex==7){
-                  openDsgnInfoChgModal(args.item);
+
+                  openDsgnInfoChgModal(args.item.prgrmid,args.item.hstryid);
                 }
                 //변경신청 클릭 - 변경신청 tab으로 화면 전환
                 else if(args.event.originalEvent.target.cellIndex==8){
@@ -349,12 +351,10 @@
         });
     }
 
-    //fn_openSrngCalender
-    //담당자 변경 팝업
     var srngCalenderModal;
     var openSrngCalenderModal = () => {
 
-        var url = "/mng/dsgnPrgrm/sprtgrpCalenderPopup.html";    //회원검색
+        var url = "/mng/dsgnPrgrm/sprtgrpCalenderPopup.html";
 
         $("#srngCalenderPopup").load(url, function(response, status, xhr) {
             if (status == "success") {

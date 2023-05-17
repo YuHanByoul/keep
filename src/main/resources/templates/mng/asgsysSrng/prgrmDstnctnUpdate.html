@@ -234,19 +234,7 @@
                     <div class="col-12 row align-items-center">
                         <div class="col-12 col-lg-auto mb-2 mb-lg-0">
                             <div class="form-radio">
-
-                                <div class="radio radio-inline">
-                                    <label class="mb-0 form-label">
-                                        <input type="radio" name="etrfeeStatus" checked/>
-                                        <i class="helper"></i>무료
-                                    </label>
-                                </div>
-                                <div class="radio radio-inline">
-                                    <label class="mb-0 form-label">
-                                        <input type="radio" name="etrfeeStatus"/>
-                                        <i class="helper"></i>유료
-                                    </label>
-                                </div>
+                                <span kattr:radio_yn="pchrgYn" label1="무료" label2="유료" th:attr="defaultVal=${prgrmDstnctnInfo.pchrgYn == 'Y' ? 'Y': 'N'}" addStyle="margin-top:4px" addClass="col-sm-3" isAdmin="true" />
                             </div>
                         </div>
                         <div class="col-12 col-lg-auto row align-items-center">
@@ -841,6 +829,15 @@ function prgrmDstnctnSaveBtn() {
     var param = {};
 
     if($("#prgrmDstnctnFrm").valid()==false) return false;
+
+    //참가비용 유료
+    if($('[name=pchrgYn]:checked').val()=='N'){
+        if( $('#etrfee').val()==''|| $('#etrfee').val()==0 || $('#etrfee').val()=='0'){
+            alert("참가비용을 입력해 주십시오.");
+            return false;
+        }
+    }
+
     //교육주제
     if (!validEduCd()) return false;
     //대처계획
@@ -1126,6 +1123,33 @@ $(function(){
                 $("#cnsltngid").val("");
                 $("#cnsltngid").prop("disabled", "disabled")
             }
+    });
+
+    //숙박 여부
+    $("#prgrmDstnctnFrm input[id^=styYn]").on("change", function(e) {
+        var id = e.originalEvent.target.id;
+
+        if($("#"+id).val() == "Y") {
+            $("#styNight").prop("disabled", false);
+            $("#styDaytm").prop("disabled", false);
+        }else if($("#"+id).val() == "N") {
+            $("#styNight").prop("disabled", true);
+            $("#styDaytm").prop("disabled", true);
+            $("#styNight").val("");
+            $("#styDaytm").val("");
+        }
+    });
+
+    //참가비용
+    $("#prgrmDstnctnFrm input[id^=pchrgYn]").on("change", function(e) {
+        var id = e.originalEvent.target.id;
+
+        if($("#"+id).val() == "Y") {
+            $("#etrfee").prop("disabled", true);
+            $("#etrfee").val(0);
+        }else if($("#"+id).val() == "N") {
+            $("#etrfee").prop("disabled", false);
+        }
     });
 });
 

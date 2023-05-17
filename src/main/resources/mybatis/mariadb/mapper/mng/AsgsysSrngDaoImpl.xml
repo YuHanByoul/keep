@@ -3043,24 +3043,24 @@
     <select id="selectMbrList" resultType="AsgsysSrngVo">
         <include refid="PaginationMapper.header"/>
         SELECT
-            B.USERID
+            A.USERID
           , B.INSTID
           , B.ACNT
           , B.NM
           , B.MOBLPHON
           , B.EML
-          , A.INST_NM
+          , C.INST_NM
           , B.REG_DT
-        FROM
-        TB_CMM_INST A
-        LEFT OUTER JOIN
-            TB_CMM_USER B ON A.INSTID = B.INSTID
+        FROM TB_ASS_EXPRT A
+        INNER JOIN TB_CMM_USER B
+        ON A.USERID = B.USERID
+        INNER JOIN TB_CMM_INST C
+        ON B.INSTID = C.INSTID
         WHERE 1=1
         AND   B.DEL_YN ='N'
         AND   B.BLCKLST_YN ='N'
-        AND   B.INSTPIC_ROLE_CD IS NOT NULL
         <if test="instid != null and instid != '' ">
-            AND A.INSTID= #{instid}
+            AND B.INSTID= #{instid}
         </if>
         <!-- 키워드.사용자 명 -->
         <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchUserNm'">
@@ -3068,7 +3068,7 @@
         </if>
         <!-- 키워드.기관명 -->
         <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchInstNm'">
-            AND A.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+            AND C.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
         </if>
         <include refid="PaginationMapper.footer"/>
     </select>
