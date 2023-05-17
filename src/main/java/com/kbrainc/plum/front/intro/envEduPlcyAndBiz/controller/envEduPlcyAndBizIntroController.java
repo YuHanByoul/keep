@@ -252,4 +252,30 @@ public class envEduPlcyAndBizIntroController {
     public String intro15() throws Exception {
         return VIEW_PATH + "/intro15";
     }
+
+    /**
+     *
+     *
+     * @return string
+     * @throws Exception
+     * @Title : intro16
+     * @Description : TODO [메소드 설명]
+     */
+    @GetMapping("/intro16.html")
+    public String intro16() throws Exception {
+        return VIEW_PATH + "/intro16";
+    }
+
+    /**
+     * TODO [메소드요약]
+     *
+     * @return string
+     * @throws Exception
+     * @Title : intro17
+     * @Description : TODO [메소드 설명]
+     */
+    @GetMapping("/intro17.html")
+    public String intro17() throws Exception {
+        return VIEW_PATH + "/intro17";
+    }
 }
