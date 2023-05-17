@@ -6,6 +6,7 @@ package com.kbrainc.plum.front.envEdu.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.Resource;
 
@@ -113,13 +114,13 @@ public class PrgrmController {
         
         List<PrgrmVo> eduPhotoFileList = null;
         eduPhotoFileList = prgrmService.selectEduPhotoFileList(prgrmVo);
-        model.addAttribute("eduPhotoFileList", eduPhotoFileList);
+        if(!Objects.isNull(eduPhotoFileList.get(0))) {
+            model.addAttribute("eduPhotoFileList", eduPhotoFileList);            
+        }
         
         List<PrgrmVo> prgrmList = null;
         prgrmList = prgrmService.selectInstPrgrmList(prgrmVo);
-        if(prgrmList.size() <= 0) {
-            model.addAttribute("prgrmList", "null");
-        }else {
+        if(!Objects.isNull(prgrmList.get(0))) {
             model.addAttribute("prgrmList", prgrmList);
         }
         

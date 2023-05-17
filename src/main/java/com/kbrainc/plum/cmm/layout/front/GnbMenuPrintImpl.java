@@ -426,7 +426,7 @@ public class GnbMenuPrintImpl {
                                     menuTag.append("                            </a>\n");
                                     menuTag.append("                        </li>\n");
                                     menuTag.append("                        <li>\n");
-                                    menuTag.append("                            <a href=\"#\">\n");
+                                    menuTag.append("                            <a href=\"/front/intro/envEduPlcyAndBiz/intro15.html\">\n");
                                     menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb08.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>");
@@ -452,7 +452,7 @@ public class GnbMenuPrintImpl {
                                     menuTag.append("                            </a>\n");
                                     menuTag.append("                        </li>\n");
                                     menuTag.append("                        <li>\n");
-                                    menuTag.append("                            <a href=\"#\">\n");
+                                    menuTag.append("                            <a href=\"/front/intro/envEduPlcyAndBiz/intro14.html\">\n");
                                     menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb10.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>");
