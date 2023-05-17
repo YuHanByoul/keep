@@ -284,12 +284,25 @@ public class envEduPlcyAndBizIntroController {
      *
      * @return string
      * @throws Exception
-     * @Title : intro17
+     * @Title : intro18
      * @Description : 환경교육실태조사
      */
     @GetMapping("/intro18.html")
     public String intro18() throws Exception {
         return VIEW_PATH + "/intro18";
+    }
+
+    /**
+     * 환경동아리
+     *
+     * @return string
+     * @throws Exception
+     * @Title : intro19
+     * @Description : 환경동아리
+     */
+    @GetMapping("/intro19.html")
+    public String intro19() throws Exception {
+        return VIEW_PATH + "/intro19";
     }
 
 }
