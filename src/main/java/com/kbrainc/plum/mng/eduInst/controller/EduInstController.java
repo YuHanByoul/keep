@@ -765,6 +765,7 @@ public class EduInstController {
     * @return Map<String,Object>
     */
     @RequestMapping(value="/mng/eduInst/insertFcltStts.do")
+    @ResponseBody
     public Map<String, Object> insertFcltStts(@RequestBody EduInstVo eduInstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
@@ -790,7 +791,36 @@ public class EduInstController {
         }
         return resultMap;
     }
-    
+
+    @RequestMapping(value="/mng/eduInst/updateFcltStts.do")
+    @ResponseBody
+    public Map<String, Object> updateFcltStts(@RequestBody EduInstVo eduInstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+
+        if(bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if(fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+
+        int retVal = 0;
+        eduInstVo.setUser(user);
+        retVal = eduInstService.updateFcltStts(eduInstVo);
+
+        if(retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("aplyid", eduInstVo.getAplyid());
+            resultMap.put("msg", "수정에 성공하였습니다");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "수정에 실패하였습니다");
+        }
+        return resultMap;
+    }
+
+
     /**
     * 보완요청 목록 조회. 
     *
