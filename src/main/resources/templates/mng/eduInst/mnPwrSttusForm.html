@@ -98,8 +98,8 @@
                     </div>
                 </div>
                 <div th:id="'buttonDiv'+${i.count}" class="row mx-0 btn-group-sm mb-4">
-                    <button type="button" class="btn btn-inverse col" onclick="delRow()" th:if="${i.count > 1}">삭제</button>
-                    <button type="button" class="btn btn-primary col" onclick="addRow()">추가</button>
+                    <button type="button" class="btn btn-inverse col" onclick="delRow(this)" th:if="${i.count > 1}">삭제</button>
+                    <button type="button" class="btn btn-primary col" onclick="addRow(this)">추가</button>
                 </div>
             </div>
         </div>
@@ -112,6 +112,7 @@
 <script th:inline="javascript">
 
     var insertUrl="/mng/eduInst/insertEduExprt.do";
+    var index = 1;
 
     $("input[name='hdofDe']").daterangepicker({
         autoUpdateInput: false,
@@ -128,15 +129,22 @@
 
     var uploadFileCnt = 0;
 
-    function addRow() {
-        var lastRow = $('#exprtListDiv div[id^="exprtDiv"]:last');
-        var idx = lastRow.index() + 2;
+    function addRow(obj) {
+        index++;
+        var cntRow = $(obj).parent().parent();
 
-        if ($('#exprtListDiv div[id^="exprtDiv"]').length >= 2) {
-            alert("최대 2행까지만 추가 가능합니다.");
+        if ($('#exprtListDiv div[id^="exprtDiv"]').length > 10) {
+            alert("최대 10행까지만 추가 가능합니다.");
             return false;
         }
-        var newRow = lastRow.clone(true).attr('id', 'exprtDiv' + idx);
+
+        var newRow = cntRow.clone(true).attr('id', 'exprtDiv' + index);
+
+        var buttonTag= `
+                <div id="buttonDiv${index}" class="row mx-0 btn-group-sm mb-4">
+                    <button type="button" class="btn btn-inverse col" onclick="delRow(this)">삭제</button>
+                    <button type="button" class="btn btn-primary col" onclick="addRow(this)">추가</button>
+                </div>`;
 
         newRow.find('input').val('');
         newRow.find('[id^=atchFilegrpid]').val(0);
@@ -150,26 +158,14 @@
             $(this).remove();
         });
 
-        newRow.find('[id^=multiFileInput]').attr('id','multiFileInput' + idx);
-        newRow.find('[id^=multiFileInput]').attr('name','files' + idx);
-        newRow.find('[id^=multipleFileUploadSuccess]').attr('id','multipleFileUploadSuccess' + idx);
-        newRow.find('[id^=atchFilegrpid]').attr('id','atchFilegrpid' + idx);
-        newRow.find('[id^=atchFilegrpid]').attr('name','atchFilegrpid' + idx);
+        newRow.find('[id^=multiFileInput]').attr('id','multiFileInput' + index);
+        newRow.find('[id^=multiFileInput]').attr('name','files' + index);
+        newRow.find('[id^=multipleFileUploadSuccess]').attr('id','multipleFileUploadSuccess' + index);
+        newRow.find('[id^=atchFilegrpid]').attr('id','atchFilegrpid' + index);
+        newRow.find('[id^=atchFilegrpid]').attr('name','atchFilegrpid' + index);
+        newRow.append(buttonTag);
 
-        //lastRow.after(newRow);
-        lastRow.after(newRow);
-        //lastRow.parent().append(newRow);
-
-        if ($('#exprtListDiv div[id^="exprtDiv"]').length == 2) {
-            $('#exprtListDiv div[id^="exprtDiv"]:last').after(`<div id="buttonDiv"+ idx class="row mx-0 btn-group-sm mb-4">
-                        <button type="button" class="btn btn-inverse col" onclick="delRow()">삭제</button>
-                        <button type="button" class="btn btn-primary col" onclick="addRow()">추가</button>
-                    </div>`);
-        }else if($('#exprtListDiv div[id^="exprtDiv"]').length < 2){
-            $('#exprtListDiv div[id^="exprtDiv"]:last').after(`<div id="buttonDiv"+ idx class="row mx-0 btn-group-sm mb-4">
-                        <button type="button" class="btn btn-primary col" onclick="addRow()">추가</button>
-                    </div>`);
-        }
+        cntRow.after(newRow);
 
         $(document).find("input[name^=hdofDe]").removeClass('hasDaterangepicker').daterangepicker({
             autoUpdateInput: false,
@@ -183,13 +179,8 @@
 
     }
 
-    function delRow(){
-        var lastRow = $('#exprtListDiv div[id^="exprtDiv"]:last');
-        if(lastRow.index() > 0) {
-            lastRow.remove();
-            $('#buttonDiv').remove();
-        }
-
+    function delRow(obj){
+        $(obj).parent().parent().remove()
     }
 
     function fn_insertMnPwrSttusInfo(){
