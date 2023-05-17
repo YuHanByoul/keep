@@ -252,4 +252,57 @@ public class envEduPlcyAndBizIntroController {
     public String intro15() throws Exception {
         return VIEW_PATH + "/intro15";
     }
+
+    /**
+     * 꿈꾸는 환경학교
+     *
+     * @return string
+     * @throws Exception
+     * @Title : intro16
+     * @Description : 꿈꾸는 환경학교
+     */
+    @GetMapping("/intro16.html")
+    public String intro16() throws Exception {
+        return VIEW_PATH + "/intro16";
+    }
+
+    /**
+     * 환경 동아리
+     *
+     * @return string
+     * @throws Exception
+     * @Title : intro17
+     * @Description : 환경 동아리
+     */
+    @GetMapping("/intro17.html")
+    public String intro17() throws Exception {
+        return VIEW_PATH + "/intro17";
+    }
+
+    /**
+     * 환경교육실태조사
+     *
+     * @return string
+     * @throws Exception
+     * @Title : intro18
+     * @Description : 환경교육실태조사
+     */
+    @GetMapping("/intro18.html")
+    public String intro18() throws Exception {
+        return VIEW_PATH + "/intro18";
+    }
+
+    /**
+     * 환경동아리
+     *
+     * @return string
+     * @throws Exception
+     * @Title : intro19
+     * @Description : 환경동아리
+     */
+    @GetMapping("/intro19.html")
+    public String intro19() throws Exception {
+        return VIEW_PATH + "/intro19";
+    }
+
 }
