@@ -13,11 +13,10 @@
         SELECT
             COUNT(1) AS cnt
         FROM
-            TB_ASS_DSGN_HSTRY
-        WHERE
-            PRGRMID = #{prgrmid}
-        AND
-            DSGN_NO = #{dsgnNo}
+            TB_ASS_PRGRM A
+        WHERE 1=1
+        AND A.DSGN_NO = #{dsgnNo}
+        AND A.PRGRMID <![CDATA[<>]]> #{prgrmid}
     </select>
 
     <!-- 지정번호 조회 -->
@@ -119,6 +118,7 @@
           , A.DSGN_BGNG_DE
           , A.DSGN_END_DE
           , CONCAT(A.DSGN_BGNG_DE, " ~ ", A.DSGN_END_DE )   AS DSGN_PRD
+          , A.REG_DT
         FROM
             TB_ASS_PRGRM A
         INNER JOIN /*지정 이력*/
@@ -228,6 +228,7 @@
           , A.DSGN_BGNG_DE
           , A.DSGN_END_DE
           , CONCAT(A.DSGN_BGNG_DE, " ~ ", A.DSGN_END_DE )   AS DSGN_PRD
+          , A.REG_DT
         FROM
             TB_ASS_PRGRM A
         INNER JOIN /*지정 이력*/
@@ -780,7 +781,7 @@
               , B.MDFRID
               , B.REG_DT
               , B.RGTRID
-              , B.MDFCN_DT AS LAST_SBMSN_DT
+              , C.MDFCN_DT AS LAST_SBMSN_DT
             FROM
                 TB_ASS_PRGRM A
             LEFT OUTER JOIN

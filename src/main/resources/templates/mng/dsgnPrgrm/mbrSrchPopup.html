@@ -39,7 +39,7 @@
                         <div class="row">
                             <div class="col-12">
                                 <table id="mbrGrid" class="table-responsive"></table>
-                                <div id="listPager" class="text-center"></div>
+                                <div id="mbrListPager" class="text-center"></div>
                             </div>
                         </div>
                     </div>
@@ -83,7 +83,7 @@ var mbrSrch = {
 	        sorting      : true,
 	        paging       : false,
 	        pageLoading  : true,
-	        pagerContainer: "#listPager",
+	        pagerContainer: "#mbrListPager",
 	        pageIndex    : 1,
 	        noDataContent: "데이터가 없습니다.",
 
@@ -138,7 +138,9 @@ var mbrSrch = {
 	                                                         $(this).is(":checked") ? selectItem(
 	                                                                                     $(this).parent().next().text()
 	                                                                                   , $(this).parent().next().next().text()
-	                                                                                   , $(this).parent().next().next().next().next().text() )
+	                                                                                   , $(this).parent().next().next().next().next().text()
+	                                                                                   , $(this).parent().next().next().next().next().next().text()
+	                                                                                   , $(this).parent().next().next().next().next().next().next().text() )
 	                                                                                 : unselectItem(
 	                                                                                     $(this).parent().next().text()
 	                                                                                     , $(this).parent().next().next().text()
@@ -167,8 +169,9 @@ var mbrSrch = {
 	        },
 
 	    });
-	    var selectItem = function(id, acnt, name) {
-	        selectedItem= {"userid" : id, "acnt" : acnt, "nm" : name};
+	    var selectItem = function(id, acnt, name, moblphon, eml ) {
+	        selectedItem= {"userid" : id, "acnt" : acnt, "nm" : name, "moblphon":moblphon, "eml":eml};
+
 
 	        $(".singleCheckbox:checked").prop("checked",false);
 	        $("#userid-"+id).prop("checked",true);
@@ -186,11 +189,14 @@ var mbrSrch = {
 	selectMbrBtn(){
 
 	    var data = {
-	            prgrmid  : ""+prgrmid
+	    		prgrmid  : $('#mbrSrchPopupFrm #prgrmid').val()
 	          , aplcntid : selectedItem.userid
 	          , aplcntNm : selectedItem.nm
+	          , aplcntEml : selectedItem.eml
+	          , aplcntMoblphon : selectedItem.moblphon
 	    }
-	  //담당자 변경시 바로 update
+
+	    //담당자 변경시 바로 update
 	    $.ajax({
 	        url :"/mng/dsgnPrgrm/updateMbr.do",
 	        type: 'POST',
@@ -201,8 +207,6 @@ var mbrSrch = {
 
 	            if(data.result=="success"){
 	                alert("담당자가 변경 되었습니다.");
-
-	                //var detailUrl = "/mng/dsgnPrgrm/dsgnInfoForm.html?prgrmid=" + prgrmid;
 
 	                selectTab("tabCon1Link");
 	                chgAltmntModal.hide();

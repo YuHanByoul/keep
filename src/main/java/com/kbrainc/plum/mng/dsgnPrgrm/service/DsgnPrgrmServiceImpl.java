@@ -550,6 +550,8 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 			}
 		}
 
+		//운영차수 수정
+		ret+=dsgnPrgrmDao.updateCyClSttsCd(dsgnPrgrmVo);
 		return ret;
 	}
 

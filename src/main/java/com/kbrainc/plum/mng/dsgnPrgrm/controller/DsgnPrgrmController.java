@@ -903,7 +903,11 @@ public class DsgnPrgrmController {
      */
     @RequestMapping(value = "/mng/dsgnPrgrm/objcInfoPopup.html")
     public String objcInfoPopup(DsgnPrgrmObjcVo dsgnPrgrmObjcVo, Model model) throws Exception {
-        model.addAttribute("objcInfo", dsgnPrgrmServiceImpl.selectObjcInfo(dsgnPrgrmObjcVo));
+    	if(dsgnPrgrmObjcVo.getAplyid()!=null&&dsgnPrgrmObjcVo.getAplyid()!=0) {
+    		model.addAttribute("objcInfo", dsgnPrgrmServiceImpl.selectObjcInfo(dsgnPrgrmObjcVo));
+    	}else {
+    		model.addAttribute("objcInfo", dsgnPrgrmObjcVo);
+    	}
         return "mng/dsgnPrgrm/objcInfoPopup.html";
     }
 
