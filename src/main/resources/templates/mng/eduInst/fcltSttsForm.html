@@ -21,7 +21,7 @@
                                 </div>
                                 <div class="radio radio-inline">
                                     <label class="mb-0 form-label">
-                                        <input type="radio" id="rentYn2" name="rentYn2" value="N" th:checked="${eduInstVo.rentYn eq 'N' or eduInstVo.rentYn eq null}">
+                                        <input type="radio" id="rentYn2" name="rentYn1" value="N" th:checked="${eduInstVo.rentYn eq 'N' or eduInstVo.rentYn eq null}">
                                         <i class="helper"></i>소유
                                     </label>
                                 </div>
@@ -141,7 +141,7 @@
                             </td>
                             <td>
                                 <div class="btn-group-sm">
-                                    <button onclick="lctrum1AddRow(this);" type="button" class="btn btn-primary m-r-5" th:if="${j.last}">추가</button>
+                                    <button onclick="lctrum1AddRow(this);" type="button" class="btn btn-primary m-r-5">추가</button>
                                     <button onclick="lctrum1DelRow(this);" type="button" class="btn btn-inverse" th:if="${!j.first}">삭제</button>
                                 </div>
                             </td>
@@ -220,7 +220,7 @@
                             </td>
                             <td>
                                 <div class="btn-group-sm">
-                                    <button onclick="lctrum2AddRow(this);" type="button" class="btn btn-primary m-r-5" th:if="${k.last}">추가</button>
+                                    <button onclick="lctrum2AddRow(this);" type="button" class="btn btn-primary m-r-5">추가</button>
                                     <button onclick="lctrum2DelRow(this);" type="button" class="btn btn-inverse" th:if="${!k.first}">삭제</button>
                                 </div>
                             </td>
@@ -294,7 +294,7 @@
                             </td>
                             <td>
                                 <div class="btn-group-sm">
-                                    <button onclick="eqp1AddRow(this);" type="button" class="btn btn-primary m-r-5" th:if="${n.last}">추가</button>
+                                    <button onclick="eqp1AddRow(this);" type="button" class="btn btn-primary m-r-5" >추가</button>
                                     <button onclick="eqp1DelRow(this);" type="button" class="btn btn-inverse" th:if="${!n.first}">삭제</button>
                                 </div>
                             </td>
@@ -332,9 +332,8 @@
 </div>
 
 <script th:inline="javascript">
-    var insertUrl = "/mng/eduInst/insertFcltStts.do";
-    var updateUrl = "/mng/eduInst/updateFcltStts.do";
-
+    var insertFcltSttsUrl = "/mng/eduInst/insertFcltStts.do";
+    var updateFcltSttsUrl = "/mng/eduInst/updateFcltStts.do";
     $("input[name='rentPrd']").daterangepicker({
         autoUpdateInput: false,
         locale: {
@@ -347,6 +346,11 @@
     });
 
     function lctrum1AddRow(obj) {
+        if($('#lctrum1Tbody tr').length >= 20) {
+            alert('최대 20행까지만 추가 가능합니다.')
+            return;
+        }
+
         var html = '<div class="btn-group-sm"><button onclick="lctrum1AddRow(this);" type="button" class="btn btn-primary m-r-5"">추가</button>';
         html += '<button onclick="lctrum1DelRow(this);" type="button" class="btn btn-inverse">삭제</button></div>';
 
@@ -354,7 +358,7 @@
         var newrow = clickedRow.clone();
         newrow.find('input').not("#seCd").val('');
         newrow.find("td:last").html(html);
-        newrow.insertAfter(clickedRow.parent().parent().find("tr:last"));
+        clickedRow.after(newrow);
 
         $('#lctrum1Tbody > tr').each(function (index, el) {
             $this = $(this);
@@ -372,6 +376,11 @@
     }
 
     function lctrum2AddRow(obj) {
+        if($('#lctrum2Tbody tr').length >= 20) {
+            alert('최대 20행까지만 추가 가능합니다.')
+            return;
+        }
+
         var html = '<div class="btn-group-sm"><button onclick="lctrum2AddRow(this);" type="button" class="btn btn-primary m-r-5"">추가</button>';
         html += '<button onclick="lctrum2DelRow(this);" type="button" class="btn btn-inverse">삭제</button></div>';
 
@@ -380,7 +389,7 @@
 
         newrow.find('input').not("#seCd").val('');
         newrow.find("td:last").html(html);
-        newrow.insertAfter(clickedRow.parent().parent().find("tr:last"));
+        clickedRow.after(newrow);
 
         $('#lctrum2Tbody > tr').each(function (index, el) {
             $this = $(this);
@@ -398,6 +407,11 @@
     }
 
     function eqp1AddRow(obj) {
+        if($('#eqp1Tbody tr').length >= 20) {
+            alert('최대 20행까지만 추가 가능합니다.')
+            return;
+        }
+
         var html = '<div class="btn-group-sm"><button onclick="eqp1AddRow(this);" type="button" class="btn btn-primary m-r-5"">추가</button>';
         html += '<button onclick="eqp1DelRow(this);" type="button" class="btn btn-inverse">삭제</button></div>';
 
@@ -406,8 +420,7 @@
 
         newrow.find('input').val('');
         newrow.find("td:last").html(html);
-        newrow.insertAfter(clickedRow.parent().parent().find("tr:last"));
-
+        clickedRow.after(newrow);
 
         $('#eqp1Tbody > tr').each(function (index, el) {
             $this = $(this);
@@ -490,10 +503,11 @@
 
         var key = $("#fcltKey").val()
         if (key != null && key != '' && key != 0) {
-            url = updateUrl;
+            url = updateFcltSttsUrl;
         } else {
-            url = insertUrl;
+            url = insertFcltSttsUrl;
         }
+
         if (displayWorkProgress()) {
             $.ajax({
                 url: url,
@@ -515,23 +529,16 @@
         }
     };
     $(function () {
-
-//         	var validator= $("#fclstForm").validate({
-//                 rules: {
-//                      ctprvnCd       : { required: true }
-//                     ,instEml        : { isBlank : true, maxlength: 50 }
-//                     ,aplcntNm       : { isBlank : true ,maxlength: 50 }
-//                     ,aplcntMoblphon : { isBlank : true}
-//                     ,aplcntEml      : { isBlank : true, maxlength: 50 }
-//                 },
-//                 messages: {
-//                     ctprvnCd        : { required: "시도를 선택해 주십시오."}
-//                     ,instEml        : { isBlank : "입력값에 공백이 있습니다.", maxlength: "이메일은 50자 이하여야 합니다." }
-//                     ,aplcntNm       : { isBlank : "입력값에 공백이 있습니다.", maxlength: "신청자명은 20자 이하여야 합니다." }
-//                     ,aplcntMoblphon : { isBlank : "입력값에 공백이 있습니다." }
-//                     ,aplcntEml      : { isBlank : "입력값에 공백이 있습니다.", maxlength: "이메일은 50자 이하여야 합니다." }
-//                 }
-//             })
+        var validator = $("#fcltSttsForm").validate({
+            rules: {
+                totar: {required: true}
+                , rentYn1: {required: true}
+            },
+            messages: {
+                totar: {required: "연건평을 입력해 주십시오."}
+                , rentYn1: {required: "임대 여부를 선택해 주십시오."}
+            }
+        })
 
     });
 </script>
