@@ -15,7 +15,7 @@
                   A.PRGRMID
                 , A.PRGRM_NM
                 , ADDR.CTPRVN_NM
-                , A.INST_NM
+                , NVL(A.INST_NM, "-") AS INST_NM
                 , CONCAT_WS(',',
                      CASE WHEN B.INFNT = 'Y' THEN '유아' END
                    , CASE WHEN B.SCHBOY = 'Y' THEN '초등' END
@@ -99,13 +99,12 @@
                 /* 프로그램 정보 및 기관 정보 */
                 A.PRGRMID
                 , A.PRGRM_NM
-                , C.DSGN_NO
+                , NVL(C.DSGN_NO, "-") AS DSGN_NO
                 , A.INSTID
-                , A.INST_NM
-                , D.RPRSV_NM
-                , A.INST_ADDR
-                , A.INST_DTLADDR
-                , A.DSGN_DE
+                , NVL(A.INST_NM, "-") AS INST_NM
+                , NVL(D.RPRSV_NM, "-") AS RPRSV_NM
+                , NVL(CONCAT(A.INST_ADDR, " ", A.INST_DTLADDR), "-") AS INST_ADDR
+                , NVL(A.DSGN_DE, "-") AS DSGN_DE
                 , A.INST_HMPG
                 , ADDR.CTPRVN_NM
             
@@ -152,7 +151,6 @@
                 , B.EDU_CN
             
                 /* 해당 기관 지정 프로그램 목록 */
-                /* TO-DO 해당 기관 차수?? 물어볼것 */
             FROM
             	TB_ASS_PRGRM A
             	LEFT OUTER JOIN TB_ASS_PRGRM_DSTNCTN B ON A.PRGRMID = B.PRGRMID
@@ -191,15 +189,16 @@
               , A.PRGRM_NM
               , ADDR.CTPRVN_NM
               , A.INST_NM
-              , CONCAT(CASE WHEN B.INFNT = 'Y' THEN '유아, 'ELSE '' END
-                     , CASE WHEN B.SCHBOY = 'Y' THEN '초등학생, 'ELSE '' END
-                     , CASE WHEN B.MSKLSD = 'Y' THEN '중학생, 'ELSE '' END
-                     , CASE WHEN B.HGSCHST = 'Y' THEN '고등학생, 'ELSE '' END
-                     , CASE WHEN B.ADULT = 'Y' THEN '성인'ELSE '' END
-                     ) AS EDU_TARGET
+              , NULLIF (CONCAT_WS(<![CDATA['</br>']]>,
+                  CASE WHEN B.INFNT = 'Y' THEN '유아' END
+                , CASE WHEN B.SCHBOY = 'Y' THEN '초등' END
+                , CASE WHEN B.MSKLSD = 'Y' THEN '중등' END
+                , CASE WHEN B.HGSCHST = 'Y' THEN '고등' END
+                , CASE WHEN B.ADULT = 'Y' THEN '성인' END
+                ),'') AS EDU_TARGET
               , B.WHOL_AGE
-              , GROUP_CONCAT(EDUCD.CD_NM separator ', ') AS EDU_SBJCT_CD_NM
-              , CASE WHEN B.ETRFEE > 0 THEN CONCAT(FORMAT(B.ETRFEE, '0'), '원') ELSE '무료' END ETRFEE
+              , GROUP_CONCAT(EDUCD.CD_NM separator <![CDATA['</br>']]>) AS EDU_SBJCT_CD_NM
+              , CASE WHEN B.ETRFEE > 0 THEN CONCAT(FORMAT(B.ETRFEE, '0'), '원') WHEN B.ETRFEE = 0 THEN '무료' END ETRFEE
               , C.DSGN_NO
               , A.DSGN_DE
               , A.REG_DT
