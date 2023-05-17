@@ -37,7 +37,7 @@
                                                 th:id="'srchBtn'+${i.count}"
                                                 name='srchBtn'
                                                 th:disabled="${prgrm.rfrncPrgrmid!=null && prgrm.rfrncPrgrmid!=0 ? false : true}"
-                                                th:onclick="'openChgAltmntModal('+${i.count}+')'">검색
+                                                th:onclick="'openPrgrmPopup('+${i.count}+')'">검색
                                         </button>
                                         <input type="hidden" th:id="'rfrncPrgrmid'+${i.count}" name="rfrncPrgrmid" th:value="${prgrm.rfrncPrgrmid}">
                                     </div>
@@ -120,8 +120,8 @@
                     </div>
                 </div>
                 <div th:id="'buttonDiv'+${i.count}" class="row mx-0 btn-group-sm mb-4">
-                    <button type="button" class="btn btn-inverse col" onclick="delRow()" th:if="${i.count > 1}">삭제</button>
-                    <button type="button" class="btn btn-primary col" onclick="addRow()">추가</button>
+                    <button type="button" class="btn btn-inverse col" onclick="delRow(this)" th:if="${i.count > 1}">삭제</button>
+                    <button type="button" class="btn btn-primary col" onclick="addRow(this)">추가</button>
                 </div>
             </div>
         </div>
@@ -129,20 +129,19 @@
             <button type="button" class="btn btn-disabled" onclick="gridHelper1.toggleContent();">취소</button>
             <button type="button" class="btn btn-primary" onclick="fn_insertHldngSttsInfo()" id="saveBtn">저장</button>
         </div>
-</div>
-</form>
-
+    </form>
 </div>
 <div class="modal fade" id="eduPrgrmPopup" aria-hidden="true" data-bs-backdrop="static"></div>
 <script th:inline="javascript">
 
     var insertUrl = "/mng/eduInst/insertHldngStts.do";
+    var index = 0;
 
     //담당자 변경 팝업
     var eduPrgrmModal;
-    var openChgAltmntModal = (idx) => {
+    var openPrgrmPopup = (idx) => {
         var aplyid = $('#aplyid').val();
-        var url = "/mng/eduInst/eduPrgrmPopup.html?aplyid=" + aplyid + "&idx=" + idx;    //회원검색
+        var url = "/mng/eduInst/eduPrgrmPopup.html?aplyid=" + aplyid + "&idx=" + idx;
         $("#eduPrgrmPopup").load(url, function (response, status, xhr) {
             if (status == "success") {
                 eduPrgrmModal = new bootstrap.Modal($('#eduPrgrmPopup'));
@@ -152,23 +151,31 @@
 
     }
 
-    function addRow() {
-        var lastRow = $('div[id^="prgrmDiv"]:last');
-        var idx = lastRow.index() + 2;
+    function addRow(obj) {
+        index++;
+        var cntRow = $(obj).parent().parent();
 
         if ($('#exprtListDiv div[id^="prgrmDiv"]').length >= 20) {
             alert("최대 20행까지만 추가 가능합니다.");
             return false;
         }
-        var newRow = lastRow.clone(true).attr('id', 'prgrmDiv' + idx);
 
-        newRow.find('input[name=prgrmNm]').attr('id', 'prgrmNm' + idx);
+        var buttonTag= `
+                <div id="buttonDiv${index}" class="row mx-0 btn-group-sm mb-4">
+                    <button type="button" class="btn btn-inverse col" onclick="delRow(this)">삭제</button>
+                    <button type="button" class="btn btn-primary col" onclick="addRow(this)">추가</button>
+                </div>`;
+
+        var newRow = cntRow.clone(true).attr('id', 'prgrmDiv' + index);
+
+        newRow.find('input[name=prgrmNm]').attr('id', 'prgrmNm' + index);
 
         newRow.find('input[type="radio"]').each(function () {
-            $(this).attr('id', 'selfYn' + idx);
-            $(this).attr('name', 'selfYn' + idx);
+            $(this).attr('id', 'selfYn' + index);
+            $(this).attr('name', 'selfYn' + index);
         });
-        newRow.find('[name=srchBtn]').attr('id', 'srchBtn' + idx)
+
+        newRow.find('[name=srchBtn]').attr('id', 'srchBtn' + index)
 
         newRow.find('input:not([type="radio"])').val('');
         newRow.find('select').val('');
@@ -177,23 +184,15 @@
             $(this).remove();
         });
 
-        lastRow.after(newRow);
+        newRow.append(buttonTag);
 
-        if ($('div[id^="prgrmDiv"]').length == 2) {
-            $('div[id^="prgrmDiv"]:last').after(`<div id="buttonDiv"+ idx class="row mx-0 btn-group-sm mb-4">
-                        <button type="button" class="btn btn-inverse col" onclick="delRow()">삭제</button>
-                        <button type="button" class="btn btn-primary col" onclick="addRow()">추가</button>
-                    </div>`);
-        } else if ($('div[id^="prgrmDiv"]').length < 2) {
-            $('div[id^="prgrmDiv"]:last').after(`<div id="buttonDiv"+ idx class="row mx-0 btn-group-sm mb-4">
-                        <button type="button" class="btn btn-primary col" onclick="addRow()">추가</button>
-                    </div>`);
-        }
+        cntRow.after(newRow);
     }
 
-    function delRow() {
-        var lastRow = $('div[id^="prgrmDiv"]:last');
-        if (lastRow.index() > 0) lastRow.remove();
+    function delRow(obj) {
+        $(obj).parent().parent().remove()
+        /*var lastRow = $('div[id^="prgrmDiv"]:last');
+        if (lastRow.index() > 0) lastRow.remove();*/
     }
 
     function fn_insertHldngSttsInfo() {

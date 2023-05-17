@@ -40,7 +40,7 @@
 							<td>
 								<div class="btn-group-sm">
 									<button onclick="addRow(this);" type="button" class="btn btn-primary m-r-5" th:if="${i.last}">추가</button>
-									<button onclick="removeRow(this);" type="button" class="btn btn-inverse">삭제</button>
+									<button onclick="removeRow(this);" type="button" class="btn btn-inverse" th:if="${!i.first}">삭제</button>
 								</div>
 							</td>
 						</tr>
@@ -63,7 +63,6 @@
 							</td>
 							<td class="btn-group-sm">
 								<button onclick="addRow(this);" type="button" class="btn btn-primary m-r-5">추가</button>
-								<button onclick="removeRow(this);" type="button" class="btn btn-inverse">삭제</button>
 							</td>
 						</tr>
 						</tbody>
@@ -87,7 +86,7 @@ $(function(){
     var validator = $("#propSchdlForm").validate({
         rules: {
         	de: { required: true }
-            , hr: { required: true , number: true, maxlength:10 }
+            , hr: { required: true , maxlength:200 }
             , eduCrs: { required: true , maxlength:100 }
             , dtlCn: { required: true , maxlength:200 }
             , eduTrgt: { required: true , maxlength:100 }
@@ -106,25 +105,25 @@ $(function(){
 function addRow(obj) {
     var html = '<div class="btn-group-sm"><button onclick="addRow(this);" type="button" class="btn btn-primary m-r-5"">추가</button>';
     html += '<button onclick="removeRow(this);" type="button" class="btn btn-inverse">삭제</button></div>';
+
     var clickedRow = $(obj).parent().parent().parent();
-    $(obj).remove();
     var newrow = clickedRow.clone();
-    var ordr = Number(clickedRow.find("td:first").text())+1;
-    newrow.find("td:first").html(ordr);
     newrow.find("td > input").val("");
     newrow.find("td > textarea").val("");
     newrow.find("td:last").html(html);
     newrow.insertAfter(clickedRow.parent().parent().find("tr:last"));
+
+	$('#schldTbody > tr').each(function (index, el) {
+		$this = $(this);
+		$(this).find('td:first').html(index + 1)
+	});
 }
 
 // 테이블 로우 삭제
 function removeRow(obj) {
-    var html = '<div class="btn-group-sm"><button onclick="addRow(this);" type="button" class="btn btn-primary m-r-5">추가</button>';
-    html += '<button onclick="removeRow(this);" type="button" class="btn btn-inverse">삭제</button></div>';
-
     var tableObj = $(obj).parent().parent().parent().parent();
     $(obj).parent().parent().parent().remove();
-    tableObj.find("tr:last").find("td:last").html(html);
+
     tableObj.find("tr").each(function(i){
         $(this).find("td:first").text(i+1);
     });
