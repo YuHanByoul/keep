@@ -293,12 +293,12 @@ public class envEduPlcyAndBizIntroController {
     }
 
     /**
-     * 환경동아리
+     * 환경교육주간
      *
      * @return string
      * @throws Exception
      * @Title : intro19
-     * @Description : 환경동아리
+     * @Description : 환경교육주간
      */
     @GetMapping("/intro19.html")
     public String intro19() throws Exception {
