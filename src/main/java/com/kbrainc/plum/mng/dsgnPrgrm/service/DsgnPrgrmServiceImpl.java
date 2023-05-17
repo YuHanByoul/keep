@@ -11,6 +11,7 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -521,6 +522,35 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	@Override
 	public DsgnPrgrmVo selectOperRsltDetail(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
 		return dsgnPrgrmDao.selectOperRsltDetail(dsgnPrgrmVo);
+	}
+
+	/**
+	* 운영결과 등록
+	*
+	* @Title : insertOperRslt
+	* @Description : 운영결과 등록
+	* @param dsgnPrgrmVo
+	* @return
+	* @return int
+	*/
+	@Override
+	@Transactional
+	public int insertOperRslt(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
+		int ret=0;
+		ret+=dsgnPrgrmDao.insertOperRslt(dsgnPrgrmVo);
+
+		//운영실적 등록
+		List<OperPrfmncVo> prfmncLst = dsgnPrgrmVo.getOperPrfmncLst();
+
+		if(prfmncLst != null && prfmncLst.size() > 0) {
+			for(OperPrfmncVo vo : prfmncLst) {
+				vo.setUser(dsgnPrgrmVo.getUser());
+				vo.setCyclid(dsgnPrgrmVo.getCyclid());
+				ret += dsgnPrgrmDao.insertOperPrfmnc(vo);
+			}
+		}
+
+		return ret;
 	}
 
 	/**
@@ -1054,5 +1084,6 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 
 		return ret;
 	}
+
 
 }
