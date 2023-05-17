@@ -527,7 +527,7 @@ public class DsgnPrgrmController {
     	model.addAttribute("dstnctnInfo", asgsysSrngServiceImpl.selectPrgrmDstnctn(srngVo));
 
     	//운영결과 등록시 지정차수
-    	model.addAttribute("cyclid", dsgnPrgrmVo.getCycl());
+    	model.addAttribute("cyclid", dsgnPrgrmVo.getCyclid());
 /*
     	DsgnPrgrmVo operRsltInfo = null;
 
@@ -539,9 +539,51 @@ public class DsgnPrgrmController {
     	model.addAttribute("typeCdList", instService.selectInstTypeCdList(instVo));
     	model.addAttribute("sidoList"  , commonService.selectCtprvnList());
 
-    	model.addAttribute("fileList", Collections.emptyList());
-
     	return "mng/dsgnPrgrm/operRsltInsertForm";
+    }
+
+
+    /**
+    * 운영결과 등록
+    *
+    * @Title : insertOperRslt
+    * @Description : 운영결과 등록
+    * @param dsgnPrgrmVo
+    * @param bindingResult1
+    * @param user
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/mng/dsgnPrgrm/insertOperRslt.do")
+    @ResponseBody
+    public Map<String, Object> insertOperRslt(@Valid DsgnPrgrmVo dsgnPrgrmVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
+
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+    	if (bindingResult1.hasErrors()) {
+            FieldError fieldError = bindingResult1.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+
+    	int retVal = 0;
+
+    	dsgnPrgrmVo.setUser(user);
+
+    	retVal = dsgnPrgrmServiceImpl.insertOperRslt(dsgnPrgrmVo);
+
+    	if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "등록에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "등록에 실패했습니다.");
+        }
+
+    	return resultMap;
     }
 
     /**

@@ -254,6 +254,17 @@ public interface DsgnPrgrmService {
 	public DsgnPrgrmVo selectOperRsltDetail(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 	/**
+	* 운영결과 등록
+	*
+	* @Title : insertOperRslt
+	* @Description : 운영결과 등록
+	* @param dsgnPrgrmVo
+	* @return
+	* @return int
+	*/
+	public int insertOperRslt(@Valid DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
 	* 운영결과 수정
 	*
 	* @Title : updateOperRslt
@@ -467,7 +478,6 @@ public interface DsgnPrgrmService {
 	* @return int
 	*/
 	public int insertScrtyImprvPlanln(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
-
 
 
 }
