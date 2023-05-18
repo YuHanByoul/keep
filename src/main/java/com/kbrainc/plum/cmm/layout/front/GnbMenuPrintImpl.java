@@ -440,7 +440,7 @@ public class GnbMenuPrintImpl {
                                     menuTag.append("                        </li>\n");
                                     break;
                             case 4: menuTag.append("                        <li>\n");
-                                    menuTag.append("                            <a href=\"javascript:alert('서비스 준비중입니다.');\">\n");
+                                    menuTag.append("                            <a href=\"https://test.keep.go.kr/front/intro/envEduPlcyAndBiz/intro11.html\" target=\"_blank\" title=\"새 창\">\n");
                                     menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb06.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>");
@@ -453,7 +453,7 @@ public class GnbMenuPrintImpl {
                                     menuTag.append("                            </a>\n");
                                     menuTag.append("                        </li>\n");
                                     menuTag.append("                        <li>\n");
-                                    menuTag.append("                            <a href=\"javascript:alert('서비스 준비중입니다.');\">\n");
+                                    menuTag.append("                            <a href=\"https://booking.naver.com/booking/10/bizes/504644/items/3859062\" target=\"_blank\" title=\"새 창\">\n");
                                     menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb05.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>");
