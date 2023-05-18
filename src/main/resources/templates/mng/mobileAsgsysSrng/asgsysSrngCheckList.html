@@ -50,6 +50,7 @@
 	                                            	   th:ordr="${row.ordr}"
 	                                            	   th:altm="${row.altm}"
 	                                            	   th:scr="${row.altm}"
+	                                            	   th:chkYn="${row.aplcntScr > 0 ? true:false}"
 	                                            	   th:checked="${row.aplcntScr > 0 ? true:false}"
 	                                            	   autocomplete="off">
 	                                            <label class="btn btn-disabled d-block" th:for="${'chkY' + row.lv2key + '_'+  row.qitemid}">예</label>
@@ -64,8 +65,10 @@
 	                                            	   th:cn="${row.cn}"
 	                                            	   th:ordr="${row.ordr}"
 	                                            	   th:altm="${row.altm}"
-	                                            	   th:scr="0"	                                            	   
-	                                            	   autocomplete="off">                                                   
+	                                            	   th:scr="0"
+	                                            	   th:chkYn="${row.aplcntScr > 0 ? true:false}"
+	                                            	   th:checked="${row.aplcntScr == 0 ? true:false}"
+	                                            	   autocomplete="off">
 	                                            <label class="btn btn-disabled d-block" th:for="${'chkN' + row.lv2key + '_'+  row.qitemid}">아니오</label>
 	                                        </div>
 	                                    </div>
@@ -256,6 +259,7 @@
        		}
        	});
        	
+    	// 이전 버튼
        	function prevBtn(id) {       		
        		$("#tab"+id).prev().addClass('active');
        		$("#tab"+id).removeClass('active');
@@ -266,7 +270,7 @@
        		$("#tabList"+prevTabid).addClass('active');
        	}
        	
-       	
+       	// 다음버튼
        	function nextBtn(id, stts) {
        		var e = window.event
        		e.preventDefault();
@@ -316,6 +320,7 @@
        		$("#tab"+id).removeClass('active');
        	};
        	
+       	//alert
 		function notify(from, align, icon, type, animIn, animOut,message){
 			$.growl({
 				message: message,
@@ -351,6 +356,8 @@
 			});
 		};	
         
+		// 결과 및 심사평 - 점검 점수
+		// 페이지 진입시 set
         var subTotAltm = 0;
         var subTotScr = 0;
         
@@ -397,12 +404,22 @@
             var lvCd = rdoId.substr(4,6)
             var tail = rdoId.split("_")[1];
 			
+            var yn = $("#"+rdoId).attr('chkYn');
             var altm = $("#"+rdoId).attr('altm');
             var scr = $("#"+rdoId).attr('scr');
-            if(scr == 0) {
-	            $("#scr"+lvCd).text(parseInt($("#scr"+lvCd).text())-parseInt(altm));            	
-            }else if(scr > 0){
-	            $("#scr"+lvCd).text(parseInt($("#scr"+lvCd).text())+parseInt(altm));            	
+            
+            if(yn) {
+	            if(scr == 0) {
+		            $("#scr"+lvCd).text(parseInt($("#scr"+lvCd).text()) - parseInt(altm));            	
+	            }else if(scr > 0){
+		            $("#scr"+lvCd).text(parseInt($("#scr"+lvCd).text()) + parseInt(altm));            	
+	            }            	
+            }else {
+            	if(scr == 0) {
+		            $("#scr"+lvCd).text(parseInt($("#scr"+lvCd).text()) - 0);            	
+	            }else if(scr > 0){
+		            $("#scr"+lvCd).text(parseInt($("#scr"+lvCd).text()) + parseInt(altm));            	
+	            }
             }
             
     		var subTotScr = 0;
@@ -420,6 +437,7 @@
 			
         });
         
+        // 결과 등록
         function insertChkLst() {
        		var e = window.event
        		e.preventDefault();
