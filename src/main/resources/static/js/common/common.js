@@ -5293,3 +5293,17 @@ function escapeData(data){ // 데이터를 escape 처리함.
         return doc.documentElement.textContent;
     }
 	
+	/**
+     *
+     * @param phone
+     * @returns boolean
+     *
+     */
+	function isMobilePhone(phone) {
+        if(!$.trim(phone)) {
+            return false;
+        }
+        var pattern = /^(01[016789]{1})[0-9]{3,4}[0-9]{4}$/;
+        return pattern.test(phone);
+    }
+	
