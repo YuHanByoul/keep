@@ -69,10 +69,13 @@ var resizeWindow = {
 		
 
 	},
-	onResize : function () {
+	onResize : function (callback) {
 		$(window).on('resize', function () {
 			$windowWidth = $(window).outerWidth();
 			resizeWindow.sizeCheck();
+			if (callback !== undefined) {
+				callback();
+			}
 		})
 
 	},
@@ -615,7 +618,9 @@ const toggleActiveClass = {
 		par.addClass(CLASS_TOGGLE_ACTIVE);
 		$(this).find('.on').attr('aria-hidden','true');
 		$(this).find('.off').attr('aria-hidden','false');
-		$('body').css('overflow-x','hidden')
+		if ($WINDOW_MODE === MOBILE) {
+			$('body').css('overflow-x','hidden')
+		}
 	},
 	close : function () {
 		par.removeClass(CLASS_TOGGLE_ACTIVE);
@@ -829,6 +834,7 @@ const tabContent = {
 		tabContent.onClick();
 		tabContent.afterLoadHash();
 		tabContent.afterLoadTab();
+		tabContent.resizeTab();
 	},
 	onClick : function () {
 		$trigger.on('click', function (){
@@ -889,6 +895,13 @@ const tabContent = {
 				}
 			})
 		}
+	},
+	resizeTab : function () {
+		resizeWindow.onResize(function () {
+			if ($WINDOW_MODE === TABLET || $WINDOW_MODE === MOBILE) {
+				tabContent.afterLoadTab();
+			}
+		})
 	}
 }
 
