@@ -2,7 +2,9 @@ package com.kbrainc.plum.front.fclt.controller;
 
 import org.apache.ibatis.type.Alias;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * 
@@ -34,7 +36,12 @@ public class ChildEnvFcltController {
      */
     @RequestMapping(value = "/front/fclt/childEnvFclt.html")
     public String childEnvFclt() throws Exception {
-        return "front/fclt/childEnvFclt";
+         return "front/fclt/childEnvFclt";
     }
-    
+
+    @RequestMapping(value = "/front/fclt/childEnvFclt2.html")
+    public String childEnvFclt2() throws Exception {
+        return "front/fclt/childEnvFclt2";
+    }
+
 }

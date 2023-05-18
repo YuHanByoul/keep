@@ -35,7 +35,11 @@ public class InfntEnveduFlctController {
      */
     @RequestMapping(value = "/front/fclt/infntEnveduFclt.html")
     public String infntEnveduFclt() throws Exception {
-        
         return "front/fclt/infntEnveduFclt";
+    }
+
+    @RequestMapping(value = "/front/fclt/infntEnveduFclt2.html")
+    public String infntEnveduFclt2() throws Exception {
+        return "front/fclt/infntEnveduFclt2";
     }
 }
