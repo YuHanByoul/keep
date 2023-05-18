@@ -258,6 +258,7 @@ public class EduSareaController {
                 dplctCnt++;
             }
         }
+
         if (dplctCnt > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
             resultMap.put("msg", "타 운영권역과 중복되는 지역이 있습니다.");

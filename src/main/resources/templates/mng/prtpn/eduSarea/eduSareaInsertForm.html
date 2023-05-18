@@ -23,7 +23,7 @@
                          <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>운영기관</strong></div>
                          <div class="col-12 row">
                              <div class="col-8">
-                                 <input type="text" class="form-control form-control-sm" name="cnsgnInstNm" id="instNm" placeholder="기관" />
+                                 <input type="text" class="form-control form-control-sm" name="cnsgnInstNm" id="instNm" placeholder="기관" readonly />
                                  <input type="hidden" name="cnsgnInstId" id="instid" />
                              </div>
                              <div class="col-4 btn-group-sm">
@@ -37,11 +37,10 @@
              </div>
              <div class="row">
                  <div class="col-12 mb-3">
-                     <div id="ctprvnDiv" class="mb-0 form-group required">
+                     <div class="mb-0 form-group required">
                          <div class="form-label col-sm-12 col-form-label p-t-0"><strong>지역</strong></div>
                          <div class="row pt-1">
                              <div class="col col-md-6 col-lg-3">
-<!--                                 <th:block kattr:select_code="ctprvnCd" grpCd="143" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 선택 -" isAdmin="true"></th:block> -->
                              <select name="ctprvnCd" id="ctprvnCd" class="form-select form-select-sm form-control-sm">
                                  <option value="">- 선택 -</option>
                                  <th:block th:each="item : ${ctprvnCdList}">
@@ -51,9 +50,8 @@
 
                              </div>
                              <div class="col-auto ps-0">
-                                 <button class="input-group-text btn btn-primary btn-sm" onclick="fn_delRowCtprvnCds((this)">-</button>
                                  <button type="button" id="addRowCtprvnCds" class="input-group-text btn btn-primary btn-sm addRowCtprvn" onclick="fn_addRowCtprvnCds(this)">+</button>
-                             </div>    
+                             </div>
                          </div>
                      </div>
                  </div>
@@ -92,7 +90,8 @@
 <script th:inline="javascript">
 	var instSearchPopupUrl = "/mng/envtcherTrnngInst/instSearchPopup.html";
 	var instSearchAddModal;
-	
+
+    /* 기관 검색 팝업 */
 	fn_openInstSearchModal = () => {
 	    $("#instSearchPopup").load(instSearchPopupUrl, function(response, status, xhr) {
 	        if (status == "success") {
@@ -101,6 +100,8 @@
 	        }
 	    });
 	}
+
+    /* 초기화 함수 */
 	function init() {
         var elemsingleSmallList = document.querySelectorAll('.js-single-small');
         for(var i = 0; i < elemsingleSmallList.length; i++) {
@@ -117,31 +118,24 @@
             $('#eduSareaInsertForm').find('#useYn').val("N");
         }
     }
+
     //지역 행추가
     function fn_addRowCtprvnCds(item){
-        var rowCnt = $("#ctprvnDiv").find('.row').length;
-        //추가버튼 삭제 -> 마지막 행에만 추가한다..
-        $("#ctprvnDiv").find(".row .addRowCtprvn").hide();
-        $("#ctprvnDiv").find('.row').last().after( fn_makeCtprvnCdsListHtml() );
-    }   
+        var $parent = $(item).parent().parent();
+        var delBtn = `<button type="button" class="input-group-text btn btn-primary btn-sm" onclick="fn_delRowCtprvnCds(this)">-</button>`;
+        $(item).parent().append(delBtn);
+        $(item).remove();
+        $parent.last().after( fn_makeCtprvnCdsListHtml() );
+    }
+
     //지역 행삭제
     function fn_delRowCtprvnCds(item){
-        var rowCnt = $("#ctprvnDiv").find('.row').length;
-        if(rowCnt <= 1){
-            return;
-        }else{
-            $(item).parent().parent().remove();
-            //행삭제 후, 행추가 버튼 마지막 행에 동적 생성.
-            $("#ctprvnDiv").find(".row .addRowCtprvn").remove();
-            var btnHtml = '<button type="button" id="addRowCtprvnCds" class="input-group-text btn btn-primary btn-sm addRowCtprvn" onclick="fn_addRowCtprvnCds(this)">+</button>';
-            $("#ctprvnDiv").find('.row :button').last().after( btnHtml );
-        }    	
+        $(item).parent().parent().remove();
     }
     
     function fn_makeCtprvnCdsListHtml() {
         var ctprvnCdsHtml = "";
-        var rowCnt =  $("#ctprvnDiv").find('.row').length;
-        var ctprvnCdsList = /*[[${ctprvnCdList}]]*/;
+        var ctprvnCdsList = /*[[${ctprvnCdList}]]*/null;
         
         ctprvnCdsHtml += '<div class="row pt-1">   '
         ctprvnCdsHtml += '  <div class="col col-md-6 col-lg-3">';                         
@@ -153,7 +147,6 @@
         ctprvnCdsHtml += '      </select>';
         ctprvnCdsHtml += '  </div>';        
         ctprvnCdsHtml += '  <div class="col-auto ps-0">';
-        ctprvnCdsHtml += '      <button type="button" class="input-group-text btn btn-primary btn-sm" onclick="fn_delRowCtprvnCds(this)">-</button>   '
         ctprvnCdsHtml += '      <button type="button" id="addRowCtprvnCds" class="input-group-text btn btn-primary btn-sm addRowCtprvn" onclick="fn_addRowCtprvnCds(this)">+</button>';
         ctprvnCdsHtml += '  </div>';                             
         ctprvnCdsHtml += '</div>';                             
@@ -163,16 +156,18 @@
     
     function fn_insertEduSarea(){
         if(!($("#eduSareaInsertForm").valid())) return;
-        //debugger;
+
         if(!confirm("저장하시겠습니까?")) return;
 
         var ctprvnCds = $('[name=ctprvnCd] option:selected').map(function(){ return $(this).val();}).get().join(",");
         var setCtprvnCd = new Set($('[name=ctprvnCd] option:selected').map(function(){ return $(this).val();}));
         var isDuplicate = setCtprvnCd.size < $('[name=ctprvnCd] option:selected').length;
+
         if(isDuplicate){
             alert("타 운영권역과 중복되는 지역이 있습니다.");
             return;
         }
+
         var data =  $("#eduSareaInsertForm").serialize();
         data = data + "&ctprvnCds="+ctprvnCds;
         

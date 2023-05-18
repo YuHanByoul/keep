@@ -46,7 +46,7 @@
                                     <th:block kattr:select_code="ctprvnCd" grpCd="143" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 선택 -" isAdmin="true"></th:block>
                                  </div>
                                  <div class="col-auto ps-0">
-                                     <button class="input-group-text btn btn-primary btn-sm" onclick="fn_delRowCtprvnCds((this)">-</button>
+                                     <button class="input-group-text btn btn-primary btn-sm" onclick="fn_delRowCtprvnCds(this)">-</button>
                                      <button type="button" id="addRowCtprvnCds" class="input-group-text btn btn-primary btn-sm addRowCtprvn" onclick="fn_addRowCtprvnCds(this)">+</button>
                                  </div>    
                              </div>
@@ -57,7 +57,7 @@
              <div class="row">                 
                  <div class="col-lg-6 mb-3">
                      <div class="mb-0 form-group required">
-                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="input01"><strong>연도별 기관당 신청 횟수 제한</strong></label>
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="aplyLmtCnt"><strong>연도별 기관당 신청 횟수 제한</strong></label>
                          <div class="col-sm-12">
                             <input type="text" class="form-control form-control-sm" name="aplyLmtCnt" id="aplyLmtCnt" th:value="${eduSarea.aplyLmtCnt}" placeholder="신청 가능 횟수를 입력하세요.">
                          </div> 
@@ -71,7 +71,7 @@
                  </div>
              </div>  
              <div class="row form-group mb-3">    
-                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="WorkContents"><strong>사용여부</strong></label>                                
+                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="sareaUseYn"><strong>사용여부</strong></label>
                  <div class="col-12">
                      <input type="hidden" class="js-single"/>
                      <span kattr:switch_yn="sareaUseYn" label="사용여부" th:attr="defaultVal=${eduSarea.useYn}"  onchange="useSwitch()" isAdmin="true"></span>
@@ -90,7 +90,8 @@
     var instSearchPopupUrl = "/mng/envtcherTrnngInst/instSearchPopup.html";
     var instSearchAddModal;
     var ctprvnCdSelectedItems = [];
-    
+
+    /* 기관검색 팝업 load */
     fn_openInstSearchModal = () => {
         $("#instSearchPopup").load(instSearchPopupUrl, function(response, status, xhr) {
             if (status == "success") {
@@ -99,6 +100,8 @@
             }
         });
     }
+
+    /* 초기화 함수: 세부 지역 목록 조회 */
     function init() {
         var elemsingleSmallList = document.querySelectorAll('.js-single-small');
         for(var i = 0; i < elemsingleSmallList.length; i++) {
@@ -126,25 +129,19 @@
             $('#eduSareaUpdateForm').find('#useYn').val("N");
         }
     }
+
     //지역 행추가
     function fn_addRowCtprvnCds(item){
-        var rowCnt = $("#ctprvnDiv").find('.row').length;
-        //추가버튼 삭제 -> 마지막 행에만 추가한다..
-        $("#ctprvnDiv").find(".row .addRowCtprvn").hide();
-        $("#ctprvnDiv").find('.row').last().after( fn_makeCtprvnCdsListHtml() );
-    }    
+        var delBtn = `<button type="button" class="input-group-text btn btn-primary btn-sm" onclick="fn_delRowCtprvnCds(this)">-</button>`;
+        var $parent = $(item).parent().parent();
+        $(item).parent().append(delBtn);
+        $(item).remove();
+        $parent.last().after( fn_makeCtprvnCdsListHtml() );
+    }
+
     //지역 행삭제
     function fn_delRowCtprvnCds(item){
-        var rowCnt = $("#ctprvnDiv").find('.row').length;
-        if(rowCnt <= 1){
-            return;
-        }else{
-            $(item).parent().parent().remove();
-            //행삭제 후, 행추가 버튼 마지막 행에 동적 생성.
-            $("#ctprvnDiv").find(".row .addRowCtprvn").remove();
-            var btnHtml = '<button type="button" id="addRowCtprvnCds" class="input-group-text btn btn-primary btn-sm addRowCtprvn" onclick="fn_addRowCtprvnCds(this)">+</button>';
-            $("#ctprvnDiv").find('.row :button').last().after( btnHtml );
-        }       
+        $(item).parent().parent().remove();
     }
     
     function fn_makeCtprvnCdsListHtml() {
@@ -161,7 +158,6 @@
         ctprvnCdsHtml += '      </select>';
         ctprvnCdsHtml += '  </div>';        
         ctprvnCdsHtml += '  <div class="col-auto ps-0">';
-        ctprvnCdsHtml += '      <button type="button" class="input-group-text btn btn-primary btn-sm" onclick="fn_delRowCtprvnCds(this)">-</button>   '        
         ctprvnCdsHtml += '      <button type="button" id="addRowCtprvnCds" class="input-group-text btn btn-primary btn-sm addRowCtprvn" onclick="fn_addRowCtprvnCds(this)">+</button>';
         ctprvnCdsHtml += '  </div>';                             
         ctprvnCdsHtml += '</div>';                             
@@ -171,15 +167,18 @@
     
     function fn_updateEduSarea(){
         if(!($("#eduSareaUpdateForm").valid())) return;
+
         if(!confirm("수정하시겠습니까?")) return;
 
         var ctprvnCds = $('[name=ctprvnCd] option:selected').map(function(){ return $(this).val();}).get().join(",");
         var setCtprvnCd = new Set($('[name=ctprvnCd] option:selected').map(function(){ return $(this).val();}));
         var isDuplicate = setCtprvnCd.size < $('[name=ctprvnCd] option:selected').length;
-        if(isDuplicate){
+
+        if(isDuplicate === true){
         	alert("타 운영권역과 중복되는 지역이 있습니다.");
         	return;
         }
+
         var data =  $("#eduSareaUpdateForm").serialize();
         data = data + "&ctprvnCds="+ctprvnCds;
         
@@ -202,11 +201,12 @@
             });
         }
     }
+
+    /* 세부 목록 렌더링 */
     function fn_makeCtprvnCdsDivHtml() {
         var ctprvnCdsHtml = "";
-        var rowCnt =  $("#ctprvnDiv").find('.row').length;
+        var ctprvnCdsList = /*[[${ctprvnCdList}]]*/null;
         for(var i=0; i<ctprvnCdSelectedItems.length; i++){
-            var ctprvnCdsList = /*[[${ctprvnCdList}]]*/;
             ctprvnCdsHtml += '<div class="row pt-1">   ';
             ctprvnCdsHtml += '  <div class="col col-md-6 col-lg-3">';                         
             ctprvnCdsHtml += '      <select class="form-select form-select-sm form-control-sm" style="" id="ctprvnCd" name="ctprvnCd">';
@@ -216,11 +216,14 @@
             ctprvnCdsHtml += '      </select>';
             ctprvnCdsHtml += '  </div>';        
             ctprvnCdsHtml += '  <div class="col-auto ps-0">';
-            ctprvnCdsHtml += '      <button type="button" class="input-group-text btn btn-primary btn-sm" onclick="fn_delRowCtprvnCds(this)">-</button>   '
-            if(i == ctprvnCdSelectedItems.length-1){
+
+            if( i == ctprvnCdSelectedItems.length-1) {
                 ctprvnCdsHtml += '      <button type="button" id="addRowCtprvnCds" class="input-group-text btn btn-primary btn-sm addRowCtprvn" onclick="fn_addRowCtprvnCds(this)">+</button>';
+            } else {
+                ctprvnCdsHtml += '      <button type="button" class="input-group-text btn btn-primary btn-sm" onclick="fn_delRowCtprvnCds(this)">-</button>   '
             }
-            ctprvnCdsHtml += '  </div>';                             
+
+            ctprvnCdsHtml += '  </div>';
             ctprvnCdsHtml += '</div>';          
         }
          return ctprvnCdsHtml;
