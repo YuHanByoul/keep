@@ -121,7 +121,6 @@
 <script th:inline="javascript">
 var aplyClosePopupUrl = "/mng/prtpn/mvmnAply/mvmnAplyClosePopup.html";
 var aplyCloseModal;
-var cellEditMode = false;
 var eduYr = /*[[${mvmnAplyParamVo.eduYr}]]*/null;
 var sareaId = /*[[${mvmnAplyParamVo.sareaId}]]*/null;
 var prgrmId = /*[[${mvmnAplyParamVo.prgrmId}]]*/null;
@@ -191,6 +190,7 @@ fn_openAplyCloseModal = () => {
 	//var selectedItems = [];
 	
 	var gridHelper2;
+	var codeList = /*[[${sttCodeList}]]*/;
 	
 	$(function() {
 		gridHelper2 = new GridHelper('jsDetailGrid', 'contentDetailPanel');
@@ -243,9 +243,35 @@ fn_openAplyCloseModal = () => {
 		$("#searchDtlFrm #searchSareaMm").val('');
 		$("#searchDtlFrm #searchRcptMthdCd").val('');
 		$("#searchDtlFrm #searchSttsCd").val('');
-		cellEditMode = false;
-		gridHelper2.resetListContent();
+		//gridHelper2.resetListContent();
 	}
+    
+    function onChangeStts(el) {
+        if(confirm("신청상태를 변경하시겠습니까?")) {
+            var params = {aplyId: $(el).attr("data-aplyid"), sttsCd: $(el).val()};
+            if(displayWorkProgress()) {
+                $.ajax({
+                    url: "/mng/prtpn/mvmnAply/updateSttsCdMvmnAply.do"
+                    , type: "POST"
+                    , cache: false
+                    , dataType: "json"
+                    , data: params
+                    , success: function(response) {
+                        if(response.result=="success") {
+                            alert("신청상태가 변경되었습니다.");
+                            gridHelper2.resetListContent();
+                        } else {
+                            alert(response.msg);
+                            $(el).val($(el).attr("data-stts"));
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+        } else {
+            $(el).val($(el).attr("data-stts"));
+        }
+    }
 
 	function writeJsDetailGridData() {
         $("#jsDetailGrid").jsGrid({
@@ -309,35 +335,20 @@ fn_openAplyCloseModal = () => {
 			  , { title : '접수번호', name : 'aplyId', type : "text", width : "135", align : "center", editing : false }
 			  , { title : '교육일자', name : 'de', type : "text", width : "135", align : "center", editing : false }
 			  , { title : '회차', name : 'tmeNm', type : "text", width : "135", align : "center", editing : false }
-			  , { title : '신청상태', name : 'sttsCd', type : "select", items : /*[[${sttCodeList}]]*/, valueField : "cd", textField : "cdNm", width : "130", sorting : false, editing : true, editTemplate: function (value, item) {
-                  var grid = this._grid;
-                  var selectedAplyId = grid.fields[0]._value;
-                  var $editControl = jsGrid.fields.select.prototype.editTemplate.call(this, value);
-                  $editControl.change(function (value, item) {
-                      var selectedSttsCd = $(this).val();
-                      
-                      var data = "aplyId="+selectedAplyId+"&sttsCd="+selectedSttsCd;
-                      
-                      if(displayWorkProgress()){
-                          $.ajax({
-                              url : "/mng/prtpn/mvmnAply/updateSttsCdMvmnAply.do",
-                              type: 'POST',
-                              cache : false,
-                              dataType: 'json',
-                              data : data,
-                              success : function (data){
-                                  if(data.result=="success"){
-                                      gridHelper2.resetListContent();
-                                  }else{
-                                      alert(data.msg);
-                                  }
-                                  cellEditMode = false;
-                                  closeWorkProgress();
-                              }
-                          });
+			  , { title : '신청상태', name : 'sttsCd', type : "text", width : "135", align : "center", editing : false, itemTemplate: function(value, item) {
+                  var el = '<select onchange="onChangeStts(this);" data-stts="' + value + '" data-aplyid="' + item.aplyId + '">';
+                  for(var i = 0, len = codeList.length; i < len; i++) {
+                      var code = codeList[i].cd;
+                      var codeNm = codeList[i].cdNm;
+                      if(code == value) {
+                          el += '<option value="' + code + '" selected>' + codeNm + '</option>';
+                      } else {
+                          el += '<option value="' + code + '">' + codeNm + '</option>';
                       }
-                  });
-                  return $editControl;
+                  }
+                  el += '</select>';
+                  
+                  return el;
               }}
 			  , { title : '접수일시', name : 'rcptDt', type : "text", width : "160", align : "center", editing : false }
 			  , { title : '신청지역', name : 'signguDesc', type : "text", width : "160", align : "center", editing : false }
@@ -348,13 +359,8 @@ fn_openAplyCloseModal = () => {
 			],
 			
 			rowClick : function(args) {
-				if(cellEditMode) {
-					alert("신청상태 수정중 상태입니다. 먼저 신청상태를 변경해주세요.");
-					return;
-				}
 				if(args.event.originalEvent.target.cellIndex == 5){
 				    jsGrid.Grid.prototype.rowClick.call(this, args);
-				    cellEditMode = true;
 				      //gridHelper2.rowClick(args);
 				}
 				if (args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
