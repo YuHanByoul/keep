@@ -126,6 +126,7 @@
   <!-- 담당자정보 회원검색 팝업 -->
   <script th:inline="javascript">
     var selectedItems = [];
+    var gridItems = [];
     var gridHelper1;
     var checkedMode;
     var cycl = $("#cycl").val();
@@ -244,7 +245,7 @@
             height: "auto",
             width: "100%",
             autoload: true,
-            sorting: true,
+            sorting: false,
             paging: true,
             pagerContainer: "#listPager3",
             pagerFormat: "{first} {prev} {pages} {next} {last}",
@@ -295,6 +296,7 @@
                                 ,itemsCount : response.totalCount
                             };
                       data.resolve(da);
+	                    gridItems = da.data;
                     });
                     return data.promise();
                 },
@@ -331,15 +333,15 @@
        }
        
        var compareId = $('input[name=memchk]:checked').val();
-       
-       $("#searchGrid").jsGrid("search", {}).done(function(data) {
-           data.data.forEach(function(item){
+//        $("#searchGrid").jsGrid("search", {}).done(function(data) {
+//            data.data.forEach(function(item){
+	       gridItems.forEach(function(item){
                if (checkedMode=='P' ) {
                    if(compareId == item.userid){selectedItem = item;}
                } else {
                    if(compareId == item.grpId){selectedItem = item;}
                }
-           })
+           });
            
            if(checkedMode=='P'){
                let introStr = selectedItem.nm+' ( '+selectedItem.acnt+' ) |'+selectedItem.eml+' | '+selectedItem.moblphon;
@@ -373,7 +375,7 @@
                    }
                }
            }
-       });
+//        });
        
        managerSearchModal.hide();
   }
