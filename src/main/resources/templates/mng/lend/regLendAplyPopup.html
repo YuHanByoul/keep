@@ -1,0 +1,318 @@
+    <div class="modal-dialog modal-lg" role="document" id="aplyPopForm">
+        <div class="modal-content type_2">
+            <div class="modal-header">
+                <h4 class="modal-title">교구대여 신청 등록</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            
+            <!-- <form name="searchFrm2" id="searchFrm2" action="" onsubmit="return false;" class="card"> -->
+            <div class="modal-body">
+                <div class="card">
+                
+		        <div class="card-block-small p-t-0">
+		            <div class="mb-0 form-group required">
+                    <label class="form-label col-sm-12 col-form-label p-t-2 pb-2"><strong>신청 차시</strong></label>
+		            <div class="table-responsive">
+		                <table class="table table-framed table-bordered mb-0">
+		                    <thead>
+			                    <tr class="border-bottom-inverse">
+			                        <th class="text-center v-middle">선택</th>
+			                        <th class="text-center v-middle">차시</th>
+			                        <th class="text-center v-middle">차시정보</th>
+			                        <th class="text-center v-middle">신청수량</th>
+			                    </tr>
+		                    </thead>
+		                    <tbody>
+		                        <tr th:each="item,stat : ${aplylendRndList}" >
+		                            
+		                            <form th:id="'aplyFrm_'+${item.rndid}" 
+		                                  th:data-qnty ="${item.qnty}"
+		                                  th:data-totalCnt ="${item.totalCnt}"
+		                                  >
+		                            <th class="text-center v-middle">
+		                               <input type="radio" name="aplyRnd" th:id="'aplyRnd_'+${item.rndid}" th:value="${item.rndid}" >
+		                            </th>
+		                            <td class="text-center v-middle">[[${item.ordr}]] 차</th:block></td>
+		                            <td class="text-center v-middle">[[ ${item.bgngDe}+' ~ '+ ${item.endDe}]] 
+		                                  ( 재고 : <span style="color:blue;">[[${item.totalCnt}]]</span> )
+		                              </th:block></td>
+		                            <td class="text-center v-middle">
+		                               <div class="input-group input-group-sm input-group-dropdown mb-0"> 
+		                               <select class="searchType form-control select-aply-cnt" th:id="'select_'+${item.rndid}" style="line-height:1.0;" disabled >
+                                            <option value="">- 선택 -</option>
+                                            <option value="1">1</option>
+                                            <th:block th:if="${lendVo.lmtCd eq '225102' or lendVo.lmtCd eq '225104'}"> 
+                                            <option value="2">2</option>
+                                            </th:block>
+                                        </select>
+		                                </div>
+		                            </td>
+		                            </form>
+		                        </tr>
+		                    </tbody>
+		                </table>
+		            </div>
+                    </div>
+                </div>
+                
+		        <div class="card-block-small p-t-0">
+		            <div class="mb-0 form-group required">
+                    <label class="form-label col-sm-12 col-form-label "><strong>신청 정보</strong></label>
+                    
+	                <form id="aplyForm" name="aplyForm" >
+	                
+		               <div class="table-responsive">
+			                <table class="table table-framed table-bordered mb-0">
+			                    <colgroup>
+							       <col width="20%" />
+							       <col width="30%" />
+							       <col width="20%" />
+							       <col width="30%" />
+							    </colgroup>
+			                    <thead>
+				                    <tr class="border-bottom-inverse ">
+				                        <th class="text-center v-middle required">꾸러미명</th>
+				                        <td class="text-left v-middle" colspan="3"><span id="packageInfo"></span></td>
+				                    </tr>
+				                    <tr class="border-bottom-inverse ">
+				                        <th class="text-center v-middle required">신청자(기관회원)</th>
+				                        <td class="text-left v-middle">
+				                           <button type="button" class="btn btn-inverse" onclick="openMemberSearchModal()" style="line-height:1.0;">선택</button>
+				                           <span style="margin-left:5px;" id="requestUser"></span>
+				                        </td>
+				                        <th class="text-center v-middle">신청기관(기관유형)</th>
+				                        <td class="text-left v-middle" id="requestInst"></td>
+				                    </tr>
+				                    <tr class="border-bottom-inverse">
+				                        <th class="text-center v-middle">예상교육횟수</th>
+				                        <td class="text-center v-middle">
+				                           <input type="text" class="form-control form-control-sm" name="eduCnt" id="eduCnt"/>
+				                        </td>
+				                        <th class="text-center v-middle">예상교육인원</th>
+				                        <td class="text-center v-middle">
+				                           <input type="text" class="form-control form-control-sm" name="eduNope" id="eduNope"/>
+				                        </td>
+				                    </tr>
+				                    <tr class="border-bottom-inverse">
+				                        <th class="text-center v-middle">단체명</th>
+				                        <td class="text-center v-middle" colspan="3">
+				                           <input type="text" class="form-control form-control-sm" name="grpNm" id="grpNm"/>
+				                        </td>
+				                    </tr>
+			                    </thead>
+			                </table>
+			                </div>
+			                
+                            <label class="form-label col-sm-12 col-form-label "><strong>배송 정보</strong></label>
+			                <div class="table-responsive">
+			                <table class="table table-framed table-bordered mb-0">
+			                    <colgroup>
+                                   <col width="20%" />
+                                   <col width="30%" />
+                                   <col width="20%" />
+                                   <col width="30%" />
+							    </colgroup>
+			                    <thead>
+				                    <tr class="border-bottom-inverse">
+				                        <th class="text-center v-middle">이름 </th>
+				                        <td class="text-center v-middle">
+				                           <input type="text" class="form-control form-control-sm" name="recptr" id="recptr"/>
+				                        </td>
+				                        <th class="text-center v-middle">휴대전화</th>
+				                        <td class="text-center v-middle">
+				                           <input type="text" class="form-control form-control-sm" name="recptrTelno" id="recptrTelno"/>
+				                        </td>
+				                    </tr>
+				                    <tr class="border-bottom-inverse">
+				                        <th class="text-center v-middle">이메일</th>
+				                        <td class="text-center v-middle" colspan="3">
+				                           <input type="text" class="form-control form-control-sm" name="recptrEml" id="recptrEml"/>
+				                        </td>
+				                    </tr>
+				                    <tr class="border-bottom-inverse">
+				                        <th class="text-center v-middle">주소</th>
+				                        <td class="text-center v-middle" colspan="3">
+				                           <input type="text" class="form-control form-control-sm" name="dlvyAddr" id="dlvyAddr" onclick="daumPostCode()" readonly placeholder="클릭 하여 주소 선택"/>
+				                        </td>
+				                    </tr>
+				                    <tr class="border-bottom-inverse">
+				                        <th class="text-center v-middle">상세주소</th>
+				                        <td class="text-center v-middle" colspan="3">
+				                           <input type="text" class="form-control form-control-sm" name="dlvyAddrDtl" id="dlvyAddrDtl"/>
+				                        </td>
+				                    </tr>
+			                    </thead>
+			                </table>
+	                        <input type="hidden" id='aplcntid' name="aplcntid" />     
+	                        <input type="hidden" id='aplcntNm' name="aplcntNm" />     
+	                        <input type="hidden" id='telno'    name="telno" />     
+	                        <input type="hidden" id='dlvyZip'  name="dlvyZip" />     
+	                        <input type="hidden" id='ctprvnCd' name="ctprvnCd" />     
+					        <input type="hidden" id='instNm'   name="instNm"   />
+					        <input type="hidden" id='eml'      name="eml"      />
+					        <input type="hidden" id='instid'   name="instid"   />
+	                        <input type="hidden" id='qnty'     name="qnty" />     
+	                        <input type="hidden" id='rndid'    name="rndid" />     
+					        <input type="hidden" id='sttsCd'   name="sttsCd"   value="231101"/>
+	                        <input type="hidden" id='rcritid'  name="rcritid" th:value="${lendVo.rcritid}"/>     
+                            <input type="hidden" id='packageid'name="packageid" th:value="${lendVo.packageid}"/>
+		               </div>
+	                </form>
+                    </div>
+                  </div>
+               </div>
+            </div>
+            
+            <div class="modal-footer"  >
+                <th:block sec:authorize-url="/mng/lend/insertLendAply.do">
+                   <button type="button" class="btn btn-primary" onclick="save()">신청</button>
+                </th:block>
+            </div>
+            
+        </div>
+    </div>
+    
+<!-- //[팝업] 꾸러미 개체 검색 -->
+<style>
+ .hide{display:none;}
+</style>
+<!--회원검색 팝업  -->
+<div class="modal fade" id="memberSearchModal"  data-bs-backdrop="static" style="z-index:9999;"></div>
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script th:inline="javascript">
+
+   var aplylendRndList = /*[[${aplylendRndList}]]*/null;
+   var memberSearchPopUrl = "/mng/lend/searchMemberPopup.html" ;
+   var insertUrl = "/mng/lend/insertLendAply.do" ;
+   var memberSearchModal = null
+
+   $(function(){
+	   $("#packageInfo").text(resVo.packageNm +" ( "+resVo.typeCdNm+" / "+resVo.eduTypeCdNm+" )");
+   })
+   
+   $(".select-aply-cnt").on("change",function(){
+
+	   let selectedVal = $(this).val();
+	   let rndid = $(this).attr("id").replace("select_","");
+	   let qnty = $("#aplyFrm_"+rndid).attr("data-qnty"); 
+	   let totalCnt = $("#aplyFrm_"+rndid).attr("data-totalCnt");
+	   
+	   if(selectedVal > totalCnt){
+		   alert("재고 수량 이상으로 선택 할 수 없습니다.")
+		   $(this).val("");
+		   return;
+	   }
+   })
+   
+   $("[name=aplyRnd]").on("change",function(){
+
+	   $(".select-aply-cnt").each(function(){ $(this).val('').prop("disabled",true);})
+	   let rndid = $(this).val();
+	   $("#select_"+rndid).prop("disabled",false); 
+	   $("#select_"+rndid).attr("disabled",false); 
+   })
+   
+    openMemberSearchModal=()=>{
+        $("#memberSearchModal").load(memberSearchPopUrl, function(response, status, xhr) {
+            if (status == "success") {
+            	memberSearchModal = new bootstrap.Modal($('#memberSearchModal'));
+            	memberSearchModal.show();
+            }
+        });
+    }
+   
+    function  daumPostCode() {
+          new daum.Postcode({
+              oncomplete: function (data) {
+                  let addr = '';
+                  if (data.userSelectedType === 'R') {
+                      addr = data.roadAddress;
+                  } else {
+                      addr = data.jibunAddress;
+                  }
+                  
+                  $('#aplyForm #dlvyzip').val(data.zonecode);
+                  $('#aplyForm #dlvyAddr').val(addr);
+                  $('#aplyForm #dlvyAddrDtl').focus();
+                  if(data.sigunguCode!=null){
+                      $('#aplyForm #ctprvnCd').val((data.sigunguCode).substring(0,2));
+                  }
+              }
+          }).open();
+       }
+       var validation =  $('#aplyForm').validate({
+                    rules: {
+                        eduCnt      : {required: true, number: true ,maxlength: 10},
+                        eduNope     : {required: true, number: true,maxlength: 10},
+                        grpNm       : {required: true, maxlength: 100},
+                        recptr      : {required: true, maxlength: 100},
+                        recptrTelno : {required: true, number: true,maxlength: 20},
+                        emailLocal  : {required: true, maxlength: 100, isBlank: true},
+                        dlvyAddr    : {required: true, maxlength: 200},
+                        dlvyAddrDtl : {required: true, maxlength: 400},
+                    },
+                    messages: {
+                        eduCnt      : {required: "교육횟수를 입력해주십시오", number: "숫자만 입력 가능합니다." ,maxlength:"10자를 넘을 수 없습니다."},
+                        eduNope     : {required: "교육인원을 입력해주십시오", number: "숫자만 입력 가능합니다." ,maxlength:"10자를 넘을 수 없습니다."},
+                        grpNm       : {required: "단체명을 입력해주십시오", maxlength: "100 자를 넘을수 없습니다."},
+                        recptr      : {required: "이름을 입력해주십시오", maxlength: "100 자를 넘을수 없습니다."},
+                        recptrTelno : {required: "전화번호를 입력해 주십시오.", number: "숫자만 입력 가능합니다.",maxlength:"20 자리를 넘을 수 없습니다." },
+                        email       : {required: "이메일을 입력해 주십시오.", maxlength: "이메일 아이디는 100자를 넘을 수 없습니다.", isBlank: "이메일에 공백이 있습니다."},
+                        dlvyAddr    : {required: "주소를 입력해 주십시오.", maxlength: "주소는 200자를 넘을 수 없습니다."},
+                        dlvyAddrDtl : {required: "상세주소를 입력해 주십시오.", maxlength: "상세주소는 400자를 넘을 수 없습니다."},
+                    }
+        });
+       
+       function save(){
+
+    	   let rndid = $("[name=aplyRnd]:checked").val();
+    	   let selectedCnt = $("#select_"+rndid).val();
+    	   let aplcntid = $("#aplcntid").val();
+    	   
+           if(rndid==null || rndid =="" || rndid=='undefined'){
+               alert("신청차시를 선택해주십시오.");
+               return;
+           }
+           if(selectedCnt==null || selectedCnt =="" || selectedCnt=='undefined' || selectedCnt <= 0){
+               alert("신청수량을 선택해주십시오.");
+               showErrorMark("#select_"+rndid);
+               return;
+           }
+           if(aplcntid == null || aplcntid == "" || aplcntid <=0 ){
+        	   alert("신청자를 선택해주십시오.");
+               showErrorMark("#select_"+rndid);
+               return;
+           }
+            
+           if (!$('#aplyForm').valid()) return;
+           if (!confirm("신청 하시겠습니까?")) return;
+
+           $("#aplyForm #rndid").val(rndid)
+           $("#aplyForm #qnty").val(selectedCnt)
+           
+           var param = $('#aplyForm').serialize();
+           
+           if (displayWorkProgress(true)) {
+               $.ajax({
+                   method: 'post',
+                   cache: false,
+                   url: insertUrl,
+                   data: param,
+                   dataType: 'json',
+                   success: function (response) {
+                       alert(response.msg);
+                       if (response.result == "success") {
+                    	   regLendAplyModal.hide();
+                       }
+                       closeWorkProgress();
+                   }
+               })
+           }
+       }
+   
+   
+   
+
+</script>
