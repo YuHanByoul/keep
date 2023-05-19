@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.mng.prtpn.eduClssRm.model.EduClssRmVo;
 import com.kbrainc.plum.mng.prtpn.eduClssRm.service.EduClssRmService;
+import com.kbrainc.plum.mng.prtpn.eduSarea.service.EduSareaService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
@@ -44,6 +45,9 @@ public class EduClssRmController {
     private EduClssRmService eduClssRmService;
     
     @Autowired
+    private EduSareaService eduSareaService;
+    
+    @Autowired
     private CommonService commonService;
     
     /**
@@ -59,6 +63,7 @@ public class EduClssRmController {
     public String eduClssRmListForm(Model model, HttpServletRequest request) throws Exception {
         List<Map<String, Object>> instList = commonService.selectAlowedInstList();
         model.addAttribute("instList", instList);
+        model.addAttribute("ctprvnCdList", eduSareaService.selectAddrCtprvnList());
         return "mng/prtpn/eduClssRm/eduClssRmList";
     }
     
@@ -73,7 +78,7 @@ public class EduClssRmController {
     */
     @RequestMapping(value = "/mng/prtpn/eduClssRm/eduClssRmInsertForm.html")
     public String eduClssRmInsertForm(Model model) throws Exception {
-        
+        model.addAttribute("ctprvnCdList", eduSareaService.selectAddrCtprvnList());
         return "mng/prtpn/eduClssRm/eduClssRmInsertForm";
     }
     
@@ -92,6 +97,7 @@ public class EduClssRmController {
         EduClssRmVo result = null;
         result = eduClssRmService.selectEduClssRmInfo(eduClssRmVo);
         model.addAttribute("eduClssRm", result);
+        model.addAttribute("ctprvnCdList", eduSareaService.selectAddrCtprvnList());
         return "mng/prtpn/eduClssRm/eduClssRmUpdate";
     }
    
