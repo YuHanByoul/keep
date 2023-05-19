@@ -54,6 +54,9 @@ public class SiteInfoVo extends ParentVo implements Serializable {
     
     /** 도메인 */
     private String dmn = null;
+    
+    /** 컨텍스트 */
+    private String context = null;
 
     /**
      * @Title : getSiteid
@@ -110,5 +113,24 @@ public class SiteInfoVo extends ParentVo implements Serializable {
      */
     public void setDmn(String dmn) {
         this.dmn = dmn;
+    }
+    
+    /**
+     * @Title : getContext
+     * @Description : 컨텍스트를 가져온다.
+     * @return String 컨텍스트
+     */
+    public String getContext() {
+        return context;
+    }
+
+    /**
+     * @Title : setContext
+     * @Description : 컨텍스트를 셋팅한다.
+     * @param context 컨텍스트
+     * @return void
+     */
+    public void setContext(String context) {
+        this.context = context;
     }
 }

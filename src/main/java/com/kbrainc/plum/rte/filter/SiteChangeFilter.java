@@ -74,9 +74,11 @@ public class SiteChangeFilter implements Filter {
                 //String sysSeCd = (siteInfo != null) ? siteInfo.getSysSeCd() : null;
                 //String sysKndCd = (siteInfo != null) ? siteInfo.getSysKndCd() : null;
                 String dmn = request.getServerName();
+                String contextPath = req.getContextPath();
+                String context = contextPath.equals("") ? "/" : contextPath;
                 
-                if (siteInfo != null && !dmn.equals(siteInfo.getDmn())) {
-                    siteInfo = resSiteService.getSiteInfo(dmn);
+                if (siteInfo != null && (!dmn.equals(siteInfo.getDmn()) || !context.equals(siteInfo.getContext()))) {
+                    siteInfo = resSiteService.getSiteInfo(dmn, context);
                     session.setAttribute("site", siteInfo);
                     
                     UserVo user = (UserVo) session.getAttribute("user");

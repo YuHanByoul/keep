@@ -100,9 +100,11 @@ public class HttpInterceptor extends HandlerInterceptorAdapter {
         ////////////////////////////////////////////////////////////////////////////////////
         SiteInfoVo siteInfo = (SiteInfoVo) session.getAttribute("site");
         String dmn = request.getServerName();
+        String contextPath = request.getContextPath();
+        String context = contextPath.equals("") ? "/" : contextPath;
         
-        if (siteInfo == null || !dmn.equals(siteInfo.getDmn())) {
-            siteInfo = resSiteService.getSiteInfo(dmn);
+        if (siteInfo == null || (!dmn.equals(siteInfo.getDmn()) || !context.equals(siteInfo.getContext()))) {
+            siteInfo = resSiteService.getSiteInfo(dmn, context);
             
             if (siteInfo == null) {
                 session.removeAttribute("site");

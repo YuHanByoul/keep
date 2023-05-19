@@ -43,9 +43,24 @@ public class ResSiteServiceImpl extends PlumAbstractServiceImpl implements ResSi
     * @return SiteInfo 사이트정보
     * @throws Exception 예외
     */
-    public SiteInfoVo getSiteInfo(String dmn) throws Exception {
+    /*public SiteInfoVo getSiteInfo(String dmn) throws Exception {
         Map map = new HashMap();
         map.put("p_dmn", dmn);
+        return resSiteDao.selectSiteInfo(map);
+    }*/
+    
+    /**
+    * @Title : getSiteInfo
+    * @Description : url과 context로 현재 사이트정보를 돌려줌
+    * @param dmn 도메인
+    * @param context 컨텍스트
+    * @return SiteInfo 사이트정보
+    * @throws Exception 예외
+    */
+    public SiteInfoVo getSiteInfo(String dmn, String context) throws Exception {
+        Map map = new HashMap();
+        map.put("p_dmn", dmn);
+        map.put("p_context", context);
         return resSiteDao.selectSiteInfo(map);
     }
     

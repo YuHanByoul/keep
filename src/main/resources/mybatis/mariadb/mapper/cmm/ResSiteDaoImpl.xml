@@ -19,11 +19,20 @@
             LOGO_FILEID,
             CPYRHT,				   
 			#{p_dmn} AS DMN,
+            #{p_context} AS CONTEXT,
             (SELECT FILE_IDNTFC_KEY FROM TB_CMM_FILE WHERE FILEID = S.LOGO_FILEID) AS LOGO_FILE_IDNTFC_KEY
         FROM 
             TB_CMM_SITE S
 		WHERE
-            SITEID = (SELECT SITEID FROM TB_CMM_SITE_DMN WHERE DMN = #{p_dmn})
+            SITEID = (
+                SELECT 
+                    SITEID 
+                FROM 
+                    TB_CMM_SITE_DMN 
+                WHERE 
+                    DMN = #{p_dmn}
+                    AND CONTEXT = #{p_context}
+            )
 		AND USE_YN = 'Y'
 	</select>
 	
