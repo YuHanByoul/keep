@@ -421,39 +421,63 @@
     <select id="selectMemberList" parameterType="InfntAplyVo" resultType="InfntAplyVo">
         /* InfntAplyDao.selectMemberList */
         <include refid="PaginationMapper.header"/>
-                  SELECT
-                      A.USERID APLY_USER_ID
-                      ,A.NM APLY_USER_NM
-                      ,A.EML
-                      ,A.INSTID
-                      ,B.INST_NM
-                      ,B.ADDR 
-                      ,B.ADDR_DTL 
-                      ,B.TELNO    
-                      ,A.MOBLPHON                
-                      ,A.MDFCN_DT
-                      ,A.REG_DT
-                    FROM TB_CMM_USER A
-                    LEFT OUTER JOIN TB_CMM_INST B ON A.INSTID = B.INSTID    
-                   WHERE 1=1
-                     AND A.DEL_YN = 'N'
-                     AND A.STTS_CD <![CDATA[<>]]>  '9' 
-                <if test="instid != null and instid != '' ">                     
-                     AND ( A.INSTID IS NULL OR A.INSTID <![CDATA[<>]]> #{instid} )  
-                </if>
-                
-                <if test="searchKeyword != null and searchKeyword != '' and searchType == 'nm'">
-                   AND A.NM LIKE CONCAT('%',#{searchKeyword},'%')
-                </if>
-                <if test="searchKeyword != null and searchKeyword != '' and searchType == 'acnt'">
-                   AND A.ACNT LIKE CONCAT('%',#{searchKeyword},'%')
-                </if>
-                <if test="searchKeyword != null and searchKeyword != '' and searchType == 'moblphon'">
-                   AND A.MOBLPHON LIKE CONCAT('%',#{searchKeyword},'%')
-                </if>
-                <if test="searchKeyword != null and searchKeyword != '' and searchType == 'eml'">
-                   AND A.EML LIKE CONCAT('%',#{searchKeyword},'%')
-                </if>
-        <include refid="PaginationMapper.footer"/>
+            SELECT
+                A.*
+            FROM (
+                SELECT
+                    A.USERID AS APLY_USER_ID
+                    , A.ACNT
+                    , IFNULL(A.NM, '-') AS APLY_USER_NM
+                    , A.EML
+                    , A.INSTID
+                    , A.STTS_CD
+                    , C.INST_NM
+                    , C.ADDR
+                    , C.ADDR_DTL
+                    , C.TELNO
+                    , A.MOBLPHON
+                    , A.MDFCN_DT
+                    , A.REG_DT
+                    , CASE WHEN IFNULL(B.ROLECD,'U') = 'U' AND A.INSTID IS NOT NULL THEN 'C'
+                      WHEN IFNULL(B.ROLECD,'U') = 'U' AND A.INSTID IS NULL THEN 'U'
+                      ELSE B.ROLECD END AS ROLECD
+                FROM
+                    TB_CMM_USER A
+                LEFT OUTER JOIN (
+                    SELECT
+                        A.USERID
+                        ,CASE WHEN INSTR(GROUP_CONCAT(A.ROLEID),'1') > 0 OR INSTR(GROUP_CONCAT(A.ROLEID),'5') > 0 THEN 'A'
+                    ELSE 'U' END AS ROLECD
+                    FROM
+                        TB_CMM_ROLE_USER A
+                        , TB_CMM_ROLE B
+                    WHERE 
+                        1 = 1
+                    AND A.ROLEID = B.ROLEID
+                    GROUP BY 
+                        USERID
+                ) B ON (A.USERID = B.USERID)
+                LEFT OUTER JOIN
+                    TB_CMM_INST C ON (C.INSTID = A.INSTID)
+            ) A
+            WHERE 1 = 1
+            AND A.ROLECD = 'C'
+            AND A.STTS_CD = '1' 
+            <if test="instid != null and instid != '' ">                     
+            AND (A.INSTID IS NULL OR A.INSTID <![CDATA[<>]]> #{instid})  
+            </if>
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'nm'">
+            AND A.APLY_USER_NM LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'acnt'">
+            AND A.ACNT LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'moblphon'">
+            AND A.MOBLPHON LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'eml'">
+            AND A.EML LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+            <include refid="PaginationMapper.footer"/>
     </select>  
 </mapper>
