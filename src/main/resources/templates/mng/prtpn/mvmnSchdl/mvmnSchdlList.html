@@ -68,8 +68,8 @@
                                         </div>
                                     </div>
                                     <div class="col-lg-auto mb-3 text-right">
-                                        <button type="button" class="btn btn-primary m-r-5" data-bs-toggle="modal" onclick="fn_popInsForm();">교육일정등록</button>
-                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#popup02" onclick="fn_popUpdForm();">교육일정수정</button>
+                                        <button type="button" class="btn btn-primary m-r-5" onclick="fn_popInsForm();">교육일정등록</button>
+                                        <button type="button" class="btn btn-primary" onclick="fn_popUpdForm();">교육일정수정</button>
                                     </div>
                                 </div>
                             </div>
@@ -121,12 +121,17 @@
         },
 
         fn_popUpdForm = () => {
-            var prgrmSchdlid = eventClickSelectItem;
+        	console.log($("#searchSchdlId").val() != null)
+        	
+            var prgrmSchdlid = $("#searchSchdlId").val() != "" && $("#searchSchdlId").val() != null ? $("#searchSchdlId").val() : eventClickSelectItem;
+            
             if(prgrmSchdlid == "" || prgrmSchdlid == null){
                 alert("수정할 교육일정을 선택해 주시기 바랍니다.");
                 return;
             }
             var url = "/mng/prtpn/mvmnSchdl/mvmnSchdlUpdatePopup.html?prgrmSchdlid="+prgrmSchdlid;
+            
+            console.log(url)
             
             $("#updatePopupModal").load(url, function(response, status, xhr) {
                 if (status == "success") {
@@ -281,7 +286,6 @@
         
         // 투데이 클릭
         $("button.fc-today-button").click(function() {
-        	debugger;
             var orgDate = $("#calendar").fullCalendar("getDate");
             fn_cnvtDate(orgDate);
         });

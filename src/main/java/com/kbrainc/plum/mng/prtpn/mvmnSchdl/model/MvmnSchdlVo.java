@@ -49,6 +49,7 @@ public class MvmnSchdlVo extends ParentRequestVo {
     /** 접수_방법_코드명 */
     private String rcptMthdNm;
 
+    private String eduSeCd;
     /** 운영_형식_코드 */
     private String operFomCd;
     /** 운영_형식_코드명 */

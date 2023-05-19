@@ -99,17 +99,34 @@
     <!-- 교육일정 관리 상세조회 -->
     <select id="selectMvmnSchdlInfo" parameterType="MvmnSchdlVo" resultType="MvmnSchdlVo"> 
         /* MvmnSchdlDao.selectMvmnSchdlInfo */
-        SELECT 
+        SELECT
             A.PRGRM_SCHDLID
-            , A.YM
-            , A.SCHDL_NM
-            , A.SAREAID
-            , B.SAREA_NM
-            ,(SELECT GROUP_CONCAT(DE SEPARATOR',') FROM TB_EDU_MVMN_PRGRM_SCHDL_DE WHERE PRGRM_SCHDLID = #{prgrmSchdlid} ) AS DE
-            ,(SELECT GROUP_CONCAT(PRGRMID SEPARATOR',') FROM TB_EDU_MVMN_PRGRM_SCHDL_PRGRM WHERE PRGRM_SCHDLID = #{prgrmSchdlid} ) AS PRGRMIDS
-            FROM TB_EDU_MVMN_PRGRM_SCHDL A
-            LEFT OUTER JOIN TB_EDU_SAREA B ON A.SAREAID = B.SAREAID
-       WHERE A.PRGRM_SCHDLID = #{prgrmSchdlid}
+          , A.YM
+          , A.SCHDL_NM
+          , A.SAREAID
+          , B.SAREA_NM
+          , (
+            SELECT GROUP_CONCAT(DE SEPARATOR ',')
+            FROM TB_EDU_MVMN_PRGRM_SCHDL_DE
+            WHERE PRGRM_SCHDLID = #{prgrmSchdlid}
+            ) AS DE
+          , (
+            SELECT GROUP_CONCAT(PRGRMID SEPARATOR ',')
+            FROM TB_EDU_MVMN_PRGRM_SCHDL_PRGRM
+            WHERE PRGRM_SCHDLID = #{prgrmSchdlid}
+            ) AS PRGRMIDS
+          , (
+            SELECT TB2.OPER_FOM_CD
+            FROM TB_EDU_MVMN_PRGRM_SCHDL_PRGRM TB1
+            LEFT OUTER JOIN tb_edu_mvmn_prgrm TB2 ON TB1.PRGRMID = TB2.PRGRMID
+            WHERE PRGRM_SCHDLID = #{prgrmSchdlid}
+            GROUP BY TB2.OPER_FOM_CD
+            ) AS OPER_FOM_CD
+        FROM
+            TB_EDU_MVMN_PRGRM_SCHDL A
+                LEFT OUTER JOIN TB_EDU_SAREA B ON A.SAREAID = B.SAREAID
+        WHERE
+            A.PRGRM_SCHDLID = #{prgrmSchdlid}
     </select>
     
     <!-- 교육일정관리 게시글 수정 -->
