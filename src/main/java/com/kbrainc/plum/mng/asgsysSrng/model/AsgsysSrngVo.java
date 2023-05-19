@@ -123,9 +123,6 @@ public class AsgsysSrngVo extends ParentRequestVo {
     /** 신청일 검색종료일 */
     private String searchAplyEndDt;
 
-    /** 심사위원 심사상태 */
-    private String searchSrngSttsCd;
-
     /** 심사위원 심사 총점평균 */
     private BigDecimal sumAvg;
 
@@ -149,12 +146,6 @@ public class AsgsysSrngVo extends ParentRequestVo {
 
 	/** 기관 명 */
 	private String instNm;
-
-	/** 심사상태코드 */
-	private String srngSttsCd;
-
-	/** 심사상태코드_명 */
-	private String srngSttsCdNm;
 
 	/** 지원단상태코드*/
 	private String srngSttsCd;
@@ -894,27 +885,6 @@ public class AsgsysSrngVo extends ParentRequestVo {
                 return;
              }
         }
-	}
-
-	/** 심사위원 상태코드 */
-	public void setSrngSttsCd(String srngSttsCd) throws Exception{
-
-		this.srngSttsCd = srngSttsCd;
-
-		//이미 코드이름이 있다면, 무시.
-		if(CommonUtil.isEmpty(this.srngSttsCdNm)) {
-			try {
-				ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
-				CodeInfoVo code = resCodeService.getCodeInfo(this.srngSttsCd);
-				this.srngSttsCdNm = code.getCdNm();
-			}catch(NoClassDefFoundError e) {
-				//e.printStackTrace();
-				return;
-			}catch(Exception e) {
-				//e.printStackTrace();
-				return;
-			}
-		}
 	}
 
 	/** 지원단 상태코드 */
