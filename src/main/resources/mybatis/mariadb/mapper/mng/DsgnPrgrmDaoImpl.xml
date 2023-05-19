@@ -520,17 +520,50 @@
         WHERE APLYID = #{aplyid}
     </select>
 
-    <update id="insertObjcAns">
+    <!-- 이의신청 등록-->
+    <insert id="insertObjcAns" >
+        INSERT INTO TB_ASS_OBJC_APLY
+        (
+            PRGRMID
+          , TTL
+          , CN
+          , APLCNTID
+          , ANS
+          , APLY_STTS_CD
+          , PICID
+          , ANS_DT
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        ) VALUES
+        (
+            #{prgrmid}       /*프로그램아이디*/
+          , #{ttl}           /*제목*/
+          , #{cn}            /*내용*/
+          , #{aplyid}        /*신청자아이디*/
+          , #{ans}           /*답변*/
+          , #{aplySttsCd}    /*신청상태코드*/
+          , #{user.userid}         /*담당자아이디*/
+          , DATE_FORMAT(NOW(),'%Y-%m-%d')
+          , NOW()            /*수정일시*/
+          , #{user.userid}   /*수정자아이디*/
+          , NOW()            /*등록일시*/
+          , #{user.userid}   /*등록자아이디*/
+        )
+    </insert>
+
+    <!-- 이의신청 수정-->
+    <update id="updateObjcAns">
         UPDATE TB_ASS_OBJC_APLY
         SET
-        ANS = #{ans}
-        , APLY_STTS_CD = '129102'
+          ANS = #{ans}
+        , APLY_STTS_CD = #{aplySttsCd}
+        , CN = #{cn}
         , PICID = #{user.userid}
         , MDFCN_DT = NOW()
         , MDFRID = #{user.userid}
-        <if test="applySttsCd = '129101'">
-            , ANS_DT = DATE_FORMAT(NOW(),'%Y-%m-%d')
-        </if>
+        , ANS_DT = DATE_FORMAT(NOW(),'%Y-%m-%d')
         WHERE APLYID = #{aplyid}
     </update>
 
@@ -649,6 +682,7 @@
           , APLY_STTS_CD
           , SPLMNT_DMND_CN
           , STTS_MDFCN_DT
+          , DATE_FORMAT( STTS_MDFCN_DT, '%Y-%m-%d')    AS STTS_MDFCN_DE
           , MDFCN_DT
           , MDFRID
           , REG_DT
@@ -667,7 +701,7 @@
         SET
             APLY_STTS_CD   = #{aplySttsCd  }
          ,  SPLMNT_DMND_CN = #{splmntDmndCn}
-         ,  STTS_MDFCN_DT  = #{sttsMdfcnDt }
+         ,  STTS_MDFCN_DT  = #{sttsMdfcnDt}
          ,  MDFCN_DT       = NOW()
          ,  MDFRID         = #{user.userid}
         WHERE
@@ -716,7 +750,7 @@
           , #{aplcntid    }
           , #{aplySttsCd  }
           , #{splmntDmndCn}
-          , #{sttsMdfcnDt }
+          , NOW()
           , NOW()
           , #{user.userid}
           , NOW()
@@ -744,7 +778,7 @@
           , APLCNTID       = #{aplcntid    }
           , APLY_STTS_CD   = #{aplySttsCd  }
           , SPLMNT_DMND_CN = #{splmntDmndCn}
-          , STTS_MDFCN_DT  = NOW()
+          , STTS_MDFCN_DT  = #{sttsMdfcnDt}
           , MDFCN_DT       = NOW()
           , MDFRID         = #{user.userid}
         WHERE

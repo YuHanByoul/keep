@@ -90,7 +90,6 @@ public class DsgnPrgrmObjcVo extends ParentRequestVo {
     /**
      * 답변
      */
-    @NotEmpty(message = "답변을 입력해 주십시오.")
     @Size(max = 2000, message= "답변은 2000자를 넘을 수 없습니다.")
     private String ans;
 

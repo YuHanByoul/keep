@@ -283,7 +283,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 				cell.setCellStyle(style);
 				/*심사위원심사상태*/
 				cell = row.createCell(cellnum++);
-				cell.setCellValue(StringUtil.nvl(modelVo.getSrgnSttsCdNm(), ""));
+				cell.setCellValue(StringUtil.nvl(modelVo.getSrngSttsCdNm(), ""));
 				cell.setCellStyle(style);
 				/*지원단심사상태*/
 				cell = row.createCell(cellnum++);
@@ -1436,7 +1436,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 			    cell.setCellStyle(style);
 				/*심사진행상태*/
 			    cell = row.createCell(cellnum++);
-			    cell.setCellValue(StringUtil.nvl(modelVo.getSrgnSttsCdNm(), ""));
+			    cell.setCellValue(StringUtil.nvl(modelVo.getSrngSttsCdNm(), ""));
 			    cell.setCellStyle(style);
 				/*배정일*/
 			    cell = row.createCell(cellnum++);
@@ -1959,7 +1959,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 
     	if("sprtgrp".equals( asgsysSrngVo.getMode())) {
 
-    		asgsysSrngVo.setSrgnSttsCd("114102");    //배정전->심사전
+    		asgsysSrngVo.setSrngSttsCd("114102");    //배정전->심사전
     		ret = asgsysSrngDao.insertPicSprtgrp(asgsysSrngVo);
 
 

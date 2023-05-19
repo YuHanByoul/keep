@@ -156,8 +156,15 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	 * @Description : 이의신청 답변 등록
 	 */
 	@Override
+	@Transactional
 	public int insertObjcAns(DsgnPrgrmObjcVo dsgnPrgrmObjcVo) throws Exception {
-		return dsgnPrgrmDao.insertObjcAns(dsgnPrgrmObjcVo);
+		int ret=0;
+		if(dsgnPrgrmObjcVo.getAplyid() != null && dsgnPrgrmObjcVo.getAplyid()!=0) {
+			ret+=dsgnPrgrmDao.updateObjcAns(dsgnPrgrmObjcVo);
+		}else {
+			ret+=dsgnPrgrmDao.insertObjcAns(dsgnPrgrmObjcVo);
+		}
+		return ret;
 	}
 	/**
 	* 지정내역 저장
@@ -420,8 +427,7 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	* @throws Exception
 	*/
 	public int insertChgAply(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
-		return dsgnPrgrmDao
-				.insertChgAply(dsgnPrgrmVo);
+		return dsgnPrgrmDao.insertChgAply(dsgnPrgrmVo);
 	}
 
 	/**
@@ -434,7 +440,13 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	* @throws Exception
 	*/
 	public int updateChgAply(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
-		return dsgnPrgrmDao.updateChgAply(dsgnPrgrmVo);
+		int ret=0;
+		if(dsgnPrgrmVo.getAplyid() != null && !dsgnPrgrmVo.getAplyid().equals("")) {
+			ret+=dsgnPrgrmDao.updateChgAply(dsgnPrgrmVo);
+		}else {
+			ret+=dsgnPrgrmDao.insertChgAply(dsgnPrgrmVo);
+		}
+		return ret;
 	}
 
 	/**

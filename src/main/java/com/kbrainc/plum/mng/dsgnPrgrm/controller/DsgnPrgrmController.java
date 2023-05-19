@@ -352,19 +352,24 @@ public class DsgnPrgrmController {
     @RequestMapping(value = "/mng/dsgnPrgrm/chgAplyDtlPopup.html")
     public String chgAplyDtlPopup(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
 
-    	DsgnPrgrmVo chgAplyInfo = dsgnPrgrmServiceImpl.selectChgAplyDtl(dsgnPrgrmVo);
+    	DsgnPrgrmVo chgAplyInfo = null;
+    	chgAplyInfo = dsgnPrgrmServiceImpl.selectChgAplyDtl(dsgnPrgrmVo);
 
-    	if (!StringUtil.nvl(chgAplyInfo.getFilegrpid()).equals("") && !StringUtil.nvl(chgAplyInfo.getFilegrpid()).equals(0)) {
-            FileVo fileVo = new FileVo();
-            fileVo.setFilegrpid(chgAplyInfo.getFilegrpid());
+    	if(chgAplyInfo!=null) {
+    		if (!StringUtil.nvl(chgAplyInfo.getFilegrpid()).equals("") && !StringUtil.nvl(chgAplyInfo.getFilegrpid()).equals(0)) {
+    			FileVo fileVo = new FileVo();
+    			fileVo.setFilegrpid(chgAplyInfo.getFilegrpid());
 
-            model.addAttribute("fileList", asgsysSrngServiceImpl.selectEvdncDcmntFileList(fileVo));
+    			model.addAttribute("fileList", asgsysSrngServiceImpl.selectEvdncDcmntFileList(fileVo));
 
-        } else {
-            model.addAttribute("fileList", Collections.emptyList());
-        }
+    		} else {
+    			model.addAttribute("fileList", Collections.emptyList());
+    		}
 
-    	model.addAttribute("chgAplyInfo", chgAplyInfo);
+    		model.addAttribute("chgAplyInfo", chgAplyInfo);
+    	}else {
+    		model.addAttribute("chgAplyInfo", dsgnPrgrmVo);
+    	}
 
     	return "mng/dsgnPrgrm/chgAplyDtlPopup";
     }
@@ -450,10 +455,10 @@ public class DsgnPrgrmController {
 
     	if (retVal > 0) {
     		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-    		resultMap.put("msg", "수정에 성공하였습니다.");
+    		resultMap.put("msg", "저장에 성공하였습니다.");
     	} else {
     		resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-    		resultMap.put("msg", "수정에 실패했습니다.");
+    		resultMap.put("msg", "저장에 실패했습니다.");
     	}
 
     	return resultMap;

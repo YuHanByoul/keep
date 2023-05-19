@@ -189,8 +189,10 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     private String aplySttsCdNm;
 
     /** 상태수정 일시 */
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date sttsMdfcnDt;
+
+    /** 상태수정일 */
+    private String sttsMdfcnDe;
 
     /** 동일내용 여부 */
     private String samenssYn;

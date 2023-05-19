@@ -116,5 +116,5 @@ public class MobileAsgsysSrngVo extends ParentRequestVo {
     
     /** TB_ASS_SPRTGRP_SRNG(ASS_지원단_심사) */
     private String srngOpnn;                            //심사 의견
-    private String srgnSttsCd;                          //심사 상태 코드
+    private String srngSttsCd;                          //심사 상태 코드
 }

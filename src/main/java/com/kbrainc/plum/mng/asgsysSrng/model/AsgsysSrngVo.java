@@ -130,7 +130,7 @@ public class AsgsysSrngVo extends ParentRequestVo {
     private BigDecimal sumAvg;
 
     /** 지원단 심사상태 */
-    private String searchSrgnSttsCd;
+    private String searchSrngSttsCd;
 
     /** 현장점검지정일 시작일 */
     private String searchChckDsgnStartDt;
@@ -151,10 +151,10 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	private String instNm;
 
 	/** 심사상태코드 */
-	private String srgnSttsCd;
+	private String srngSttsCd;
 
 	/** 심사상태코드_명 */
-	private String srgnSttsCdNm;
+	private String srngSttsCdNm;
 
 	/** 지원단상태코드*/
 	private String srngSttsCd;
@@ -897,16 +897,16 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	}
 
 	/** 심사위원 상태코드 */
-	public void setSrgnSttsCd(String srgnSttsCd) throws Exception{
+	public void setSrngSttsCd(String srngSttsCd) throws Exception{
 
-		this.srgnSttsCd = srgnSttsCd;
+		this.srngSttsCd = srngSttsCd;
 
 		//이미 코드이름이 있다면, 무시.
-		if(CommonUtil.isEmpty(this.srgnSttsCdNm)) {
+		if(CommonUtil.isEmpty(this.srngSttsCdNm)) {
 			try {
 				ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
-				CodeInfoVo code = resCodeService.getCodeInfo(this.srgnSttsCd);
-				this.srgnSttsCdNm = code.getCdNm();
+				CodeInfoVo code = resCodeService.getCodeInfo(this.srngSttsCd);
+				this.srngSttsCdNm = code.getCdNm();
 			}catch(NoClassDefFoundError e) {
 				//e.printStackTrace();
 				return;
