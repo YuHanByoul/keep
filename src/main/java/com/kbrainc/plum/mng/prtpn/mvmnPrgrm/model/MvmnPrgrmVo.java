@@ -37,9 +37,9 @@ public class MvmnPrgrmVo extends ParentRequestVo {
     private List<MvmnPrgrmVo> mvmnPrgrmVoList;
     
     /** 프로그램아이디 */
-    private int prgrmId;
+    private Integer prgrmId;
     /** 권역아이디 */
-    private int sareaId;    
+    private Integer sareaId;
     /** 교육_연도 */
     private String eduYr;
     /** 교육_구분_코드 */
@@ -106,7 +106,7 @@ public class MvmnPrgrmVo extends ParentRequestVo {
     /** 대상_코드명 */
     private String trgtNm;
     /** 회차_아이디 */
-    private String tmeId;
+    private Integer tmeId;
     /** 회차_이름 */
     private String tmeNm;
     /** 시작_일시 */

@@ -326,51 +326,6 @@
             ,#{user.userid}
         )
     </insert>
-    <!-- 교육프로그램 회차 등록 --> 
-    <insert id="insertMvmnPrgrmTme" parameterType="MvmnPrgrmVo" keyProperty="MvmnPrgrmVo">
-        /* MvmnPrgrmDao.insertMvmnPrgrmTme */
-        <foreach collection="mvmnPrgrmVoList" item="item" index="index" separator=";">
-        <if test="item.tmeId == null or item.tmeId == ''">
-        INSERT INTO TB_EDU_MVMN_PRGRM_TME (
-            PRGRMID
-            , TME_NM
-            , MON_YN
-            , TUES_YN
-            , WED_YN
-            , THUR_YN
-            , FRI_YN
-            , SAT_YN
-            , SUN_YN
-            , BGNG_TM
-            , END_TM
-            , ORDR
-            , USE_YN
-            , MDFCN_DT
-            , MDFRID
-            , REG_DT
-            , RGTRID
-        )VALUES(
-            #{item.prgrmId}
-            ,#{item.tmeNm}
-            ,#{item.tmeMonYn}
-            ,#{item.tmeTuesYn}
-            ,#{item.tmeWedYn}
-            ,#{item.tmeThurYn}
-            ,#{item.tmeFriYn}
-            ,#{item.tmeSatYn}
-            ,#{item.tmeSunYn}
-            ,#{item.bgngTm}
-            ,#{item.endTm}
-            ,#{item.ordr}
-            ,#{item.useYn}
-            ,NOW()
-            ,#{user.userid}
-            ,NOW()
-            ,#{user.userid}
-        )
-        </if>    
-        </foreach>            
-    </insert>    
         
     <!-- 교육프로그램 관리 상세조회 -->
     <select id="selectMvmnPrgrmInfo" parameterType="MvmnPrgrmVo" resultType="MvmnPrgrmVo"> 
@@ -449,8 +404,54 @@
                 , MDFCN_DT                      = NOW()
                 , MDFRID                        = #{user.userid}
          WHERE PRGRMID                          = #{prgrmId}
-    </update>    
-    
+    </update>
+
+    <!-- 교육프로그램 회차 등록 -->
+    <insert id="insertMvmnPrgrmTme" parameterType="MvmnPrgrmVo" keyProperty="MvmnPrgrmVo">
+        /* MvmnPrgrmDao.insertMvmnPrgrmTme */
+        <foreach collection="mvmnPrgrmVoList" item="item" index="index" separator=";">
+            <if test="item.tmeId == null or item.tmeId == ''">
+                INSERT INTO TB_EDU_MVMN_PRGRM_TME (
+                PRGRMID
+                , TME_NM
+                , MON_YN
+                , TUES_YN
+                , WED_YN
+                , THUR_YN
+                , FRI_YN
+                , SAT_YN
+                , SUN_YN
+                , BGNG_TM
+                , END_TM
+                , ORDR
+                , USE_YN
+                , MDFCN_DT
+                , MDFRID
+                , REG_DT
+                , RGTRID
+                )VALUES(
+                #{prgrmId}
+                ,#{item.tmeNm}
+                ,#{item.tmeMonYn}
+                ,#{item.tmeTuesYn}
+                ,#{item.tmeWedYn}
+                ,#{item.tmeThurYn}
+                ,#{item.tmeFriYn}
+                ,#{item.tmeSatYn}
+                ,#{item.tmeSunYn}
+                ,#{item.bgngTm}
+                ,#{item.endTm}
+                ,#{item.ordr}
+                ,#{item.useYn}
+                ,NOW()
+                ,#{user.userid}
+                ,NOW()
+                ,#{user.userid}
+                )
+            </if>
+        </foreach>
+    </insert>
+
     <!-- 교육프로그램 회차 수정 -->
     <update id="updateMvmnPrgrmTme" parameterType="MvmnPrgrmVo" keyProperty="MvmnPrgrmVo">
         /* MvmnPrgrmDao.updateMvmnPrgrmTme */
@@ -462,7 +463,7 @@
                     , MON_YN                        = #{item.tmeMonYn}         
                     , TUES_YN                       = #{item.tmeTuesYn}        
                     , WED_YN                        = #{item.tmeWedYn}         
-                    , THUR_YN                       = #{item.tmeThurYn}        
+                    , THUR_YN                       = #{item.tmeThurYn}
                     , FRI_YN                        = #{item.tmeFriYn}         
                     , SAT_YN                        = #{item.tmeSatYn}         
                     , SUN_YN                        = #{item.tmeSunYn}         
@@ -659,8 +660,9 @@
             TB_CMM_SRVY A
         LEFT OUTER JOIN
             TB_CMM_QESTNR B ON (B.QESTNRID = A.QESTNRID)
-        WHERE 
-            B.QESTNR_KND_CD = '110105'
+        WHERE
+            A.USE_YN ='Y'
+            AND B.QESTNR_KND_CD = '110105'
         GROUP BY
             A.SRVYID, A.QESTNRID
     </select>        
@@ -681,9 +683,16 @@
             TB_CMM_SRVY A
         LEFT OUTER JOIN
             TB_CMM_QESTNR B ON (B.QESTNRID = A.QESTNRID)
-        WHERE 
-            B.QESTNR_KND_CD = '110106'
+        WHERE
+            A.USE_YN = 'Y'
+            AND B.QESTNR_KND_CD = '110106'
         GROUP BY
             A.SRVYID, A.QESTNRID
-    </select>       
+    </select>
+
+    <select id="selectEduMvmnPrgrmTmeSchdl" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM TB_EDU_MVMN_PRGRM_TME_SCHDL
+        WHERE TMEID = #{tmeId}
+    </select>
 </mapper>

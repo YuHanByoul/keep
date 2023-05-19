@@ -25,7 +25,7 @@
                      <div class="mb-0 form-group required">
                          <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="eduTypeCd"><strong>교육구분</strong></label>
                          <div class="col-sm-12">
-                             <span id="eduSeCd" name="eduSeCd" kattr:radio_code="eduSeCd" th:attr="grpCd=196,selectedCd=${mvmnPrgrm.eduSeCd}" isAdmin="true">
+                             <span id="eduSeCd" name="eduSeCd" kattr:radio_code="eduSeCd" th:attr="grpCd=196,selectedCd=${mvmnPrgrm.eduSeCd}" isAdmin="true"></span>
                          </div>
                      </div>
                  </div>
@@ -35,7 +35,7 @@
                      <div class="mb-0 form-group required">
                          <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>운영권역</strong></label>
                          <div class="col-sm-12">
-                             <select name="sareaId" id="sareaId" class="form-select form-select-sm form-control-sm">
+                             <select name="sareaId" id="sareaId" class="form-select form-select-sm form-control-sm" th:disabled="${mvmnPrgrm.sareaId == null}">
                                  <option value="">- 선택 -</option>
                                  <th:block th:each="item : ${sareaList}">
                                      <option th:value="${item.sareaId}" th:selected="${mvmnPrgrm.sareaId} == ${item.sareaId}"><th:block th:text="${item.sareaNm}" /></option>
@@ -82,23 +82,13 @@
                              </div>                 
                          </div>                                  
                      </div>                                                                   
-<!--                      <div class="mb-0 form-group required">
-                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="clsfCd"><strong>교육주제</strong></label>
-                         <div class="row">
-                             <div class="col-sm-4">
-                                 <span kattr:select_codes="clsfCds" th:attr="grpCd=155,selectedCd=${mvmnPrgrm.clsfCd}" addClass="clsfCds" addStyle="margin-left:5px;width:150px;" isAdmin="true" selectedCd=""></span>
-                             </div>                                 
-                             <div class="col-sm-4 mt-1 mt-sm-0">
-                                 <div class="input-group-text btn btn-primary btn-sm">+</div>
-                             </div>
-                         </div>                                                   
-                     </div> -->
                  </div>
                  <div class="col-lg-6 mb-3">    
                      <div class="mb-0 form-group required">
                          <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="operFomCd"><strong>운영형식</strong></label>
                          <div class="col-sm-12">
-                             <span id="operFomCd" name="operFomCd" kattr:radio_code="operFomCd" th:attr="grpCd=197,selectedCd=${mvmnPrgrm.operFomCd}" isAdmin="true" onchange="fn_changeOperFomCd(this)">                         
+                             <span id="operFomCd" name="operFomCd" kattr:radio_code="operFomCd" th:attr="grpCd=197,selectedCd=${mvmnPrgrm.operFomCd}" isAdmin="true"
+                                   onchange="fn_changeOperFomCd(this)">
                          </div>
                      </div>
                  </div>  
@@ -168,7 +158,7 @@
              <div class="row form-group mb-3">    
                  <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>접수방법</strong></div>     
                  <div class="col-sm-12">
-                      <span id="rcptMthdCd" name="rcptMthdCd" kattr:radio_code="rcptMthdCd" th:attr="grpCd=156,selectedCd=${mvmnPrgrm.rcptMthdCd}" isAdmin="true">
+                     <span id="rcptMthdCd" name="rcptMthdCd" kattr:radio_code="rcptMthdCd" th:attr="grpCd=156,selectedCd=${mvmnPrgrm.rcptMthdCd}" isAdmin="true"></span>
                   </div>     
              </div>  
              <div class="row form-group mb-3">    
@@ -212,7 +202,6 @@
                      <input type="hidden" name="eduPhotoFileid" id="eduPhotoFileid" th:value="${mvmnPrgrm.eduPhotoFileid}">                         
                  </div>
                  <div class="mt-2 row">
-                     <div class="col-auto">
                      <div class="col-auto">
                          <th:block th:if="${eduPhotoFileBtn}">
                          <div id="eduPhotoFileUploadSuccess" th:utext="${eduPhotoFileBtn}">
@@ -301,13 +290,13 @@
              </div>
          </div>
          <!-- 교육 시간표 -->
-         <div class="card-header p-b-0">
+         <div class="card-header p-b-0 p-t-0">
              <h3 class="sub-title">
-                 <div class="row">
-                     <div class="col-lg-6 d-flex align-items-end"><strong>교육 시간표<i class="mark-required">*</i></strong></div>
-                     <div class="col-lg-6 text-right">
-                         <button type="button" id="delRowBtn" class="btn btn-disabled btn-sm" onclick="fn_delRow();">삭제</button>
-                         <button type="button" id="addRowBtn" class="btn btn-primary btn-sm"  onclick="fn_addRow();">추가</button>
+                 <div class="row align-items-center">
+                     <div class="col"><strong>교육 시간표<i class="mark-required">*</i></strong></div>
+                     <div class="col-auto btn-group-sm">
+                         <button type="button" id="delRowBtn" class="btn btn-inverse" onclick="fn_delRow();">삭제</button>
+                         <button type="button" id="addRowBtn" class="btn btn-primary"  onclick="fn_addRow();">추가</button>
                      </div>
                  </div>
              </h3>
@@ -411,8 +400,10 @@ var prgrmTmeSelectedItems = [];
 var prgrmTmeSelectedTmeIds = [];
 var prgrmTmeDeleteTgtItems = [];
 var eduPssbDayWeekSelectedItems = [];
-    
+var originEduSeCd = /*[[${mvmnPrgrm.sareaId}]]*/null;
+
     function init() {
+        $('input[name=operFomCd]').prop('disabled',true);
         prgrmTmeSelectedItems = [];
         prgrmTmeDeleteTgtItems = [];
         $("#addRowBtn").show();
@@ -422,7 +413,7 @@ var eduPssbDayWeekSelectedItems = [];
         var upprClsfCds = [[${mvmnPrgrm.upprClsfCd}]];
         
         //1depth 교육주제 담기        
-        if(upprClsfCds.indexOf(",") >= 0) {            
+        if(!!upprClsfCds && upprClsfCds.indexOf(",") >= 0) {
             var upprClsfCdsArr = upprClsfCds.split(",");
             for(var i=0; i<upprClsfCdsArr.length;i++) {
                 upprClsfCdSelectedItems.push(upprClsfCdsArr[i]);
@@ -432,7 +423,7 @@ var eduPssbDayWeekSelectedItems = [];
         }
         
         //2depth 교육주제 담기
-        if(clsfCds.indexOf(",") >= 0) {            
+        if(!!clsfCds && clsfCds.indexOf(",") >= 0) {
             var clsfCdsArr = clsfCds.split(",");
             for(var i=0; i<clsfCdsArr.length;i++) {
                 clsfCdSelectedItems.push(clsfCdsArr[i]);
@@ -442,9 +433,29 @@ var eduPssbDayWeekSelectedItems = [];
         }
 
         $("#clsfHtmlDiv").html( fn_makeClsfCdsDivHtml() );
+
+        eduSeCdChangeEvent();
     }
-    
-    function fn_updateMvmnPrgrm(){
+
+    function eduSeCdChangeEvent() {
+        $('input[name=eduSeCd]').on('change', function (e) {
+            $this = $(this);
+            $sareaId = $('#sareaId');
+
+            if ($(this).val() == '196101') {
+                $sareaId.prop('disabled', true);
+                $sareaId.val('');
+                $sareaId.closest('.form-group').removeClass('required');
+            } else {
+                $sareaId.prop('disabled', false);
+                $sareaId.val(originEduSeCd);
+                $sareaId.closest('.form-group').addClass('required');
+            }
+        });
+    }
+
+    function validate() {
+        if(!($("#mvmnPrgrmUpdateForm").valid())) return false;
 
         // 교육가능 요일 등록
         var monYn = ($("#monYn").is(":checked") ? "Y" : "N");
@@ -462,13 +473,12 @@ var eduPssbDayWeekSelectedItems = [];
         $("#friYn").val(friYn);
         $("#satYn").val(satYn);
         $("#sunYn").val(sunYn);
-        
-        if(!($("#mvmnPrgrmUpdateForm").valid())) return;
-        if(!confirm("저장하시겠습니까?")) return;
+
         if(monYn == "N" && tuesYn == "N" && wedYn == "N" && thurYn == "N" && friYn == "N" && satYn == "N" && sunYn == "N"){
             alert("교육가능요일을 선택하세요.");
-            return;
+            return false;
         }
+
         var bgngTmChk = true;
         $('input[name=bgngTm]').each(function() {
             if($(this).parent().parent().is(":visible")){
@@ -476,70 +486,83 @@ var eduPssbDayWeekSelectedItems = [];
                     bgngTmChk = false;
                 }
             }
-        }); 
-        
+        });
+
         var endTmChk = true;
         $('input[name=endTm]').each(function() {
-            if($(this).parent().parent().is(":visible")){           
+            if($(this).parent().parent().is(":visible")){
                 if($(this).val() == ""){
                     endTmChk = false;
                 }
             }
-        }); 
-        
+        });
+
         if(!bgngTmChk || !endTmChk) {
             alert("교육 시간표의 시작시간 또는 종료시간 입력은 필수 입니다.");
-            return;         
+            return false;
         }
-        var trgtCds = $('.trgtCds:checked').map(function(){ return $(this).val();}).get().join(",");
-        var clsfCds = $('[name=clsfCds_2] option:selected').map(function(){ return $(this).val();}).get().join(",");
 
-        var data =  $("#mvmnPrgrmUpdateForm").serialize();
-        data = data+"&trgtCds="+trgtCds+"&clsfCds="+clsfCds;
+        return true;
+    }
+
+    function fn_updateMvmnPrgrm(){
+
+        if(validate() === false) return;
+        
+        if(!confirm("저장하시겠습니까?")) return;
+
+        var jsonObj = {};
+
+        const fd = new FormData(document.querySelector('#mvmnPrgrmUpdateForm'));
+        fd.forEach((value, key) => {
+            jsonObj[key] = value ?? '';
+        })
+
+        var tmpTrgtCds = [];
+        $('.trgtCds:checked').each((index, element) => tmpTrgtCds.push(element.value));
+
+        var tmpClsfCds = [];
+        $('[name=clsfCds_2] option:selected').each((index, element) => tmpClsfCds.push(element.value));
+
+        jsonObj['trgtCds'] = tmpTrgtCds;
+        jsonObj['clsfCds'] = tmpClsfCds;
+        jsonObj['eduTypeCd'] = $('#eduTypeCd').val();
+
+        var mvmnPrgrmVoList = new Array();
+
+        for(var i = 0; i < $("#mvmnPrgrmTmBody").children().length; i++) {
+            var tmpData = new Object();
+            tmpData["prgrmId"] = $("#prgrmId").val();
+            tmpData["tmeId"] = $("#mvmnPrgrmTmBody").find($("input[name=tmeId]")[i]).val();
+            tmpData["tmeNm"]       = $("#mvmnPrgrmTmBody").find($("input[name=tmeNm]")[i]).val();
+            tmpData["tmeSunYn"]    = $("#mvmnPrgrmTmBody").find($("[name=tmeSunYn]")[i]).is(":checked") == true ?  "Y" : "N";
+            tmpData["tmeMonYn"]    = $("#mvmnPrgrmTmBody").find($("[name=tmeMonYn]")[i]).is(":checked") == true ?  "Y" : "N";
+            tmpData["tmeTuesYn"]   = $("#mvmnPrgrmTmBody").find($("[name=tmeTuesYn]")[i]).is(":checked") == true ?  "Y" : "N";
+            tmpData["tmeWedYn"]    = $("#mvmnPrgrmTmBody").find($("[name=tmeWedYn]")[i]).is(":checked") == true ?  "Y" : "N";
+            tmpData["tmeThurYn"]   = $("#mvmnPrgrmTmBody").find($("[name=tmeThurYn]")[i]).is(":checked") == true ?  "Y" : "N";
+            tmpData["tmeFriYn"]    = $("#mvmnPrgrmTmBody").find($("[name=tmeFriYn]")[i]).is(":checked") == true ?  "Y" : "N";
+            tmpData["tmeSatYn"]    = $("#mvmnPrgrmTmBody").find($("[name=tmeSatYn]")[i]).is(":checked") == true ?  "Y" : "N";
+            tmpData["bgngTm"]      = $("#mvmnPrgrmTmBody").find($("input[name=bgngTm]")[i]).val();
+            tmpData["endTm"]       = $("#mvmnPrgrmTmBody").find($("input[name=endTm]")[i]).val();
+            tmpData["delFlag"]     = prgrmTmeDeleteTgtItems.includes($("#mvmnPrgrmTmBody").find($("input[name=tmeId]")[i]).val()) ? "Y" : "N";
+            tmpData["ordr"]        = i+1;
+            mvmnPrgrmVoList.push(tmpData);
+        }
+        jsonObj['mvmnPrgrmVoList'] = mvmnPrgrmVoList;
+        console.log(JSON.stringify(jsonObj, null, 4));
+
         if(displayWorkProgress()){
             $.ajax({
                 url : "/mng/prtpn/mvmnPrgrm/updateMvmnPrgrm.do",
                 type: 'POST',
+                contentType: 'application/json;charset=UTF-8',
                 cache : false,
                 dataType: 'json',
-                data : data,
+                data : JSON.stringify(jsonObj),
                 success : function (data){
+                    alert(data.msg);
                     if(data.result=="success"){
-                        var dataList = new Array();
-                        for(var i = 0; i < $("#mvmnPrgrmTmBody").children().length; i++) {
-                            var data = new Object();
-                            data["prgrmId"]     = $("#prgrmId").val();
-                            data["tmeId"]       = $("#mvmnPrgrmTmBody").find($("input[name=tmeId]")[i]).val();
-                            data["tmeNm"]       = $("#mvmnPrgrmTmBody").find($("input[name=tmeNm]")[i]).val();
-                            data["tmeSunYn"]    = $("#mvmnPrgrmTmBody").find($("[name=tmeSunYn]")[i]).is(":checked") == true ?  "Y" : "N";
-                            data["tmeMonYn"]    = $("#mvmnPrgrmTmBody").find($("[name=tmeMonYn]")[i]).is(":checked") == true ?  "Y" : "N";
-                            data["tmeTuesYn"]   = $("#mvmnPrgrmTmBody").find($("[name=tmeTuesYn]")[i]).is(":checked") == true ?  "Y" : "N";
-                            data["tmeWedYn"]    = $("#mvmnPrgrmTmBody").find($("[name=tmeWedYn]")[i]).is(":checked") == true ?  "Y" : "N";
-                            data["tmeThurYn"]   = $("#mvmnPrgrmTmBody").find($("[name=tmeThurYn]")[i]).is(":checked") == true ?  "Y" : "N";
-                            data["tmeFriYn"]    = $("#mvmnPrgrmTmBody").find($("[name=tmeFriYn]")[i]).is(":checked") == true ?  "Y" : "N";
-                            data["tmeSatYn"]    = $("#mvmnPrgrmTmBody").find($("[name=tmeSatYn]")[i]).is(":checked") == true ?  "Y" : "N";
-                            data["bgngTm"]      = $("#mvmnPrgrmTmBody").find($("input[name=bgngTm]")[i]).val();
-                            data["endTm"]       = $("#mvmnPrgrmTmBody").find($("input[name=endTm]")[i]).val();
-                            data["delFlag"]     = prgrmTmeDeleteTgtItems.includes($("#mvmnPrgrmTmBody").find($("input[name=tmeId]")[i]).val()) ? "Y" : "N";
-                            data["ordr"]        = i+1;
-                            dataList.push(data);
-                        }
-                        var params = new Object();
-                        params["mvmnPrgrmVoList"] = dataList;
-                        $.ajax({
-                            url : "/mng/prtpn/mvmnPrgrm/insertMvmnPrgrmTmeList.do",
-                            cache : false,
-                            dataType : 'json',
-                            data : JSON.stringify(params),
-                            type : 'POST',
-                            contentType: "application/json; charset=utf-8",
-                            success : function(data) {
-                                alert(data.msg);
-                            }
-                        });
                         gridHelper1.resetListContent();
-                    }else{
-                        alert(data.msg);
                     }
                     closeWorkProgress();
                 }
@@ -569,9 +592,6 @@ var eduPssbDayWeekSelectedItems = [];
             }
         }else{
             prgrmTmeUnselectItem($(item));
-/*          prgrmTmeSelectedTmeIds = $.grep(prgrmTmeSelectedTmeIds, function(i) {
-                return i !== $(item).val();
-            });          */
         }
         
     }
@@ -675,6 +695,7 @@ var eduPssbDayWeekSelectedItems = [];
                 }
             });
         });
+
         //삭제대상 COPY
         prgrmTmeDeleteTgtItems = prgrmTmeSelectedTmeIds;
         //넘버링 초기화
@@ -690,7 +711,8 @@ var eduPssbDayWeekSelectedItems = [];
         }
         return true;
     }
-    
+
+    // TODO : 공통코드 변경시 문제 발생할 수 있음
     function fn_makeClsfCdsDivHtml() {
         var clsfCdsDivHtml = "";
         var rowCnt =  $("#clsfCdDiv").find('.row').length;
@@ -744,7 +766,8 @@ var eduPssbDayWeekSelectedItems = [];
         }
         return clsfCdsDivHtml;
     }
-    
+
+    // TODO : 공통코드 변경시 문제 발생할 수 있음
     function fn_makeClsfCdsListHtml() {
         var clsfCdsHtml = "";
         var rowCnt =  $("#clsfCdDiv").find('.row').length;
@@ -908,6 +931,7 @@ var eduPssbDayWeekSelectedItems = [];
         }
         event.preventDefault();
     });
+
     //교육사진
     $('#eduPhotoFile').change(function(event) {
         var formData = new FormData();
@@ -948,9 +972,7 @@ var eduPssbDayWeekSelectedItems = [];
     function fn_deleteEduIntrcnFileList(fileid, fileIdntfcKey){
         if(!confirm("파일을 삭제하시겠습니까?")){return;}
         fn_deleteEduIntrcnFile(fileid, fileIdntfcKey);
-        $("#"+fileid).remove();
-        $('#eduIntrcnFile').val('');
-    } 
+    }
 
     function fn_deleteEduIntrcnFile(fileid, fileIdntfcKey){
         var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey; 
@@ -978,9 +1000,7 @@ var eduPssbDayWeekSelectedItems = [];
     function fn_deleteEduPhotoFileList(fileid, fileIdntfcKey){
         if(!confirm("파일을 삭제하시겠습니까?")){return;}
         fn_deleteEduPhotoFile(fileid, fileIdntfcKey);
-        $("#"+fileid).remove();
-        $('#eduPhotoFile').val('');
-    } 
+    }
 
     function fn_deleteEduPhotoFile(fileid, fileIdntfcKey){
                    
@@ -995,7 +1015,7 @@ var eduPssbDayWeekSelectedItems = [];
                     $("#"+fileid).remove();
                     $('#eduPhotoFileid').val(0);
                     $('#eduPhotoFilegrpid').val(0);
-                    $('#eduPhotoFileFile').val('');
+                    $('#eduPhotoFile').val('');
                     alert("파일삭제가 완료 되었습니다.");
                 }else{
                     alert("파일삭제중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
@@ -1093,7 +1113,7 @@ var eduPssbDayWeekSelectedItems = [];
             onsubmit: false,
             rules: {
                 eduSeCd: {required: true},
-                sareaId: {required: true},
+                sareaId :{required: {depends: () => $('input[name=eduSeCd]:checked').val() == '196102'}},
                 operFomCd: {required: true},
                 eduYr: {required: true},
                 prgrmNm: {required: true},
@@ -1104,16 +1124,16 @@ var eduPssbDayWeekSelectedItems = [];
                 eduTypeCd: {required: true}
             },
             messages: {
-                eduSeCd: {required: "교육구분을 선택해주십시오."},
-                sareaId: {required: "운영권역을 선택해주십시오."},
-                operFomCd: {required: "운영형식을 선택해주십시오."},
-                eduYr: {required: "교육년도를 선택해주십시오."},
-                prgrmNm: {required: "프로그램명을 입력해주십시오."},
-                eduNope: {required: "교육인원을 입력해주십시오."},
-                eduHrMnt: {required: "교육시간을 입력해주십시오."},
-                aplcntDgstfnSrvyid: {required: "신청자 만족도 설문을 선택해주십시오."},
-                stdntDgstfnSrvyid: {required: "학생 만족도 설문을 선택해주십시오."},
-                eduTypeCd: {required: "교육유형을 선택해주십시오."}
+                eduSeCd: {required: "교육구분을 선택해 주십시오."},
+                sareaId: {required: "운영권역을 선택해 주십시오."},
+                operFomCd: {required: "운영형식을 선택해 주십시오."},
+                eduYr: {required: "교육년도를 선택해 주십시오."},
+                prgrmNm: {required: "프로그램명을 입력해 주십시오."},
+                eduNope: {required: "교육인원을 입력해 주십시오."},
+                eduHrMnt: {required: "교육시간을 입력해 주십시오."},
+                aplcntDgstfnSrvyid: {required: "신청자 만족도 설문을 선택해 주십시오."},
+                stdntDgstfnSrvyid: {required: "학생 만족도 설문을 선택해 주십시오."},
+                eduTypeCd: {required: "교육유형을 선택해 주십시오."}
             }
         });
 
