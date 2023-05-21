@@ -229,7 +229,7 @@ public class InfntPrgrmController {
     */
     @RequestMapping(value = "/mng/prtpn/infntPrgrm/insertInfntPrgrm.do")
     @ResponseBody
-    public Map<String, Object> insertInfntPrgrm(@Valid InfntPrgrmVo infntPrgrmVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> insertInfntPrgrm(@Valid @RequestBody InfntPrgrmVo infntPrgrmVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
 
         Map<String, Object> resultMap = new HashMap<String, Object>();
         if (bindingResult.hasErrors()) {
@@ -242,8 +242,6 @@ public class InfntPrgrmController {
         infntPrgrmVo.setUser(user);
         int retVal = 0;
         retVal = infntPrgrmService.insertInfntPrgrm(infntPrgrmVo);
-        
-        //retVal = infntPrgrmService.insertInfntPrgrmTme(infntPrgrmVo);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -301,7 +299,7 @@ public class InfntPrgrmController {
     */
     @RequestMapping(value = "/mng/prtpn/infntPrgrm/updateInfntPrgrm.do")
     @ResponseBody
-    public Map<String, Object> updateInfntPrgrm(@Valid InfntPrgrmVo infntPrgrmVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> updateInfntPrgrm(@Valid @RequestBody InfntPrgrmVo infntPrgrmVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         if (bindingResult.hasErrors()) {
             FieldError fieldError = bindingResult.getFieldError();

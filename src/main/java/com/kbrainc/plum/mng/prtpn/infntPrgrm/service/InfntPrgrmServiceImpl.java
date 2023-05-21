@@ -76,17 +76,15 @@ public class InfntPrgrmServiceImpl extends PlumAbstractServiceImpl implements In
         int retVal = 0;
         retVal += infntPrgrmDao.insertInfntPrgrm(infntPrgrmVo);
         
-        //infntPrgrmDao.deleteTrgtCd(infntPrgrmVo);
-        //infntPrgrmDao.deleteClsfCd(infntPrgrmVo);
-        
         if(infntPrgrmVo.getTrgtCds()!=null & infntPrgrmVo.getTrgtCds().length > 0) {
             retVal += infntPrgrmDao.insertTrgtCd(infntPrgrmVo);
         }
         if(infntPrgrmVo.getClsfCds()!=null & infntPrgrmVo.getClsfCds().length > 0) {
             retVal += infntPrgrmDao.insertClsfCd(infntPrgrmVo);
         }
-        //retVal += infntPrgrmDao.insertInfntPrgrmTme(infntPrgrmVo);
-        
+
+        retVal += infntPrgrmDao.insertInfntPrgrmTme(infntPrgrmVo);
+
         return retVal;
     }
 
@@ -165,8 +163,27 @@ public class InfntPrgrmServiceImpl extends PlumAbstractServiceImpl implements In
         if(infntPrgrmVo.getClsfCds()!=null & infntPrgrmVo.getClsfCds().length > 0) {
             retVal += infntPrgrmDao.insertClsfCd(infntPrgrmVo);
         }
-        //retVal += infntPrgrmDao.insertInfntPrgrmTme(infntPrgrmVo);
-        
+
+        InfntPrgrmVo delInfntPrgrmVo =  new InfntPrgrmVo();
+
+        if(infntPrgrmVo.getInfntPrgrmVoList() != null) {
+            retVal += infntPrgrmDao.insertInfntPrgrmTme(infntPrgrmVo);
+            retVal += infntPrgrmDao.updateInfntPrgrmTme(infntPrgrmVo);
+            for (int i=0; i<infntPrgrmVo.getInfntPrgrmVoList().size();i++){
+                if("Y".equals(infntPrgrmVo.getInfntPrgrmVoList().get(i).getDelFlag())) {
+                    delInfntPrgrmVo.setTmeId(infntPrgrmVo.getInfntPrgrmVoList().get(i).getTmeId());
+
+                    int count = infntPrgrmDao.selectEduInfntPrgrmTmeSchdl(delInfntPrgrmVo.getTmeId());
+                    if( count == 0 )
+                        retVal += infntPrgrmDao.deleteInfntPrgrmTme(delInfntPrgrmVo);
+            /*        retVal += infntPrgrmDao.deleteInfntPrgrmAplyEduTrgt(delInfntPrgrmVo);
+                    retVal += infntPrgrmDao.deleteInfntPrgrmAply(delInfntPrgrmVo);
+                    retVal += infntPrgrmDao.deleteInfntPrgrmTmeSchdl(delInfntPrgrmVo);
+                    retVal += infntPrgrmDao.deleteInfntPrgrmTme(delInfntPrgrmVo);*/
+                }
+            }
+        }
+
         return retVal;        
     }
     
