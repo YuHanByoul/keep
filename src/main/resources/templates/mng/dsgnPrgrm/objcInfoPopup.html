@@ -8,24 +8,29 @@
         </div>
         <form id="objcModalForm" name="objcModalForm">
             <input type="hidden" id="aplyid" name="aplyid" th:value="${objcInfo.aplyid}">
+
             <div class="modal-body">
                 <div class="card m-b-10">
                     <div class="card-header p-b-0">
                         <h3 class="sub-title"><strong>변경사항</strong></h3>
                     </div>
                     <div class="card-block-small p-t-0"><!-- [230125] p-t-0 추가 -->
-                        <div class="mb-2 form-group row">
-                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="ttl"><strong>이의사유</strong></label>
+                        <div class="mb-2 form-group row required">
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="ttl"><strong>제목</strong></label>
                             <div class="col-12">
-                                    <textarea rows="5" cols="5" class="form-control form-control-sm" id="ttl"
-                                              name="ttl" th:text="${objcInfo.ttl}" readonly></textarea>
+                                <input class="form-control form-control-sm" placeholder="제목" id="ttl" name="ttl" th:value="${objcInfo.ttl}">
                             </div>
                         </div>
-                        <div class="mb-0 form-group row required">
+                        <div class="mb-2 form-group row">
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cn"><strong>이의사유</strong></label>
+                            <div class="col-12">
+                                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="이의사유" id="cn" name="cn" th:text="${objcInfo.cn}"></textarea>
+                            </div>
+                        </div>
+                        <div class="mb-0 form-group row">
                             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="ans"><strong>답변</strong></label>
                             <div class="col-12">
-                                    <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="답변" id="ans"
-                                              name="ans" th:text="${objcInfo.ans}"></textarea>
+                                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="답변" id="ans" name="ans" th:text="${objcInfo.ans}"></textarea>
                             </div>
                         </div>
                     </div>
@@ -63,11 +68,28 @@
             if (!$('#objcModalForm').valid()) return;
 
             if(confirm('답변을 등록하시겠습니까?')) {
+
+            	//신청자id
+            	//상태코드
+                var param = $('#objcModalForm').serialize();
+
+            	var aplyid = $('#aplyid').val();
+            	var aplcntid = $('#aplcntid').val();
+            	var prgrmid = $('#prgrmid').val();
+            	var aplySttsCd = '';
+
+            	if($('#ans').val()!=null && $('#ans').val()!=''){
+            		aplySttsCd = '129102';
+            	}else{
+            		aplySttsCd = '129101';
+            	}
+            	param+='&prgrmid='+prgrmid+'&aplcntid='+aplcntid+'&aplySttsCd='+aplySttsCd;
+
                 if (displayWorkProgress()) {
                     $.ajax({
                         type: 'post',
                         url: this.insertObjcAnsUrl,
-                        data: $('#objcModalForm').serialize(),
+                        data: param,
                         dataType: 'json'
                     }).done(function (response) {
                         alert(response.msg);
@@ -85,10 +107,14 @@
             $('#objcModalForm').validate({
                 onsubmit: false,
                 rules: {
-                    ans: {required: true, maxlength: 2000}
+                	ttl : {required  : true, maxlength: 100}
+                  , cn  : {maxlength : 2000}
+                  , ans : {maxlength: 2000}
                 },
                 messages: {
-                    ans: {required: '답변을 입력해 주십시오.', maxlength: '답변은 2000자를 넘을 수 없습니다.'}
+                    ttl : {required  : '제목을 입력해 주십시오.', maxlength: '제목은 100자를 넘을 수 없습니다.'}
+                  , cn  : {maxlength : '이의신청 내용은 2000자를 넘을 수 없습니다.'}
+                  , ans : {maxlength: '답변은 2000자를 넘을 수 없습니다.'}
                 }
             });
         }

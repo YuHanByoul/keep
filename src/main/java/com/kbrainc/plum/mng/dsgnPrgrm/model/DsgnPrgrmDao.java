@@ -128,6 +128,17 @@ public interface DsgnPrgrmDao {
 	public int insertObjcAns(DsgnPrgrmObjcVo dsgnPrgrmObjcVo) throws Exception;
 
 	/**
+	 * 이의신청 답변 수정
+	 *
+	 * @param dsgnPrgrmObjcVo
+	 * @return int
+	 * @throws Exception
+	 * @Title : updateObjcAns
+	 * @Description : 이의신청 답변 수정
+	 */
+	public int updateObjcAns(DsgnPrgrmObjcVo dsgnPrgrmObjcVo) throws Exception;
+
+	/**
 	* 지정내역 저장
 	*
 	* @Title : insertDsgnHstry

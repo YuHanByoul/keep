@@ -228,18 +228,21 @@
                     </div>
                 </div>
             </div>
+
             <div class="col-12 col-lg-6">
                 <div class="mb-0 form-group required">
                     <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>프로그램 참가비용</strong></div>
                     <div class="col-12 row align-items-center">
                         <div class="col-12 col-lg-auto mb-2 mb-lg-0">
                             <div class="form-radio">
-                                <span kattr:radio_yn="pchrgYn" label1="무료" label2="유료" th:attr="defaultVal=${prgrmDstnctnInfo.pchrgYn == 'Y' ? 'Y': 'N'}" addStyle="margin-top:4px" addClass="col-sm-3" isAdmin="true" />
+                                <span kattr:radio_yn="pchrgYn" label1="무료" label2="유료" th:attr="defaultVal=${prgrmDstnctnInfo.pchrgYn}" addStyle="margin-top:4px" addClass="col-sm-3" isAdmin="true" />
                             </div>
                         </div>
                         <div class="col-12 col-lg-auto row align-items-center">
                             <div class="col-auto">
-                                <input type="text" class="form-control form-control-sm text-right" name="etrfee" id="etrfee" th:value="${prgrmDstnctnInfo.etrfee}"/>
+                                <input type="text" class="form-control form-control-sm text-right" name="etrfee" id="etrfee"
+                                th:disabled="${prgrmDstnctnInfo.pchrgYn != 'N'? true:false}"
+                                th:value="${prgrmDstnctnInfo.etrfee}"/>
                             </div>
                             <div class="col-auto p-l-0">원 (1인당 비용)</div>
                         </div>
@@ -823,7 +826,7 @@ function validPlan(){
 }
 
 
-function prgrmDstnctnSaveBtn() {
+function prgrmDstnctnSaveBtn(call) {
 
     var vUrl = "";
     var param = {};
@@ -859,11 +862,8 @@ function prgrmDstnctnSaveBtn() {
         param["cnsltngid"] = '';
     }
 
-//     //교육주제
-//     $("select[id^=eduSbjctCd_").each(function(index, item) {
-//        if(index==0) param["eduSbjctCdLst"] = ""+item.value;
-//        if(index!=0) param["eduSbjctCdLst"] += ","+item.value;
-//     });
+  //유료여부
+    param["pchrgYn"] = $('[name=pchrgYn]:checked').val();
 
     //교육주제
     $("select[name^=searchEduSbjctCd").each(function(index, item) {
@@ -951,18 +951,14 @@ function prgrmDstnctnSaveBtn() {
             if(data.result=="success"){
                 alert(data.msg);
                 if(call=='next'){
-                    var mode = $("#mode").val();
-                    if(mode=='reg'){
-                        var prgrmid = $("#prgrmDstnctnFrm #prgrmid").val();
-                        var url = "/mng/asgsysSrng/prgrmOperMngForm.html?mode=reg&prgrmid="+prgrmid;
-                        dsgnAply.loadJdsgTabContent(url);
-                    }else{
-                        $("#jdsgTab1Link").removeClass("active");
-                        $("#jdsgTab2Link").addClass("active");
-                        selectJdsgTab("jdsgTab2Link");
-                    }
+                	$('[id^=jdsgTab]').removeClass('active')
+                    $("#jdsgTab2Link").addClass("active");
+                    var prgrmid = $("#prgrmDstnctnFrm #prgrmid").val();
+                    var url = "/mng/asgsysSrng/prgrmOperMngForm.html?mode=reg&prgrmid="+prgrmid;
+                    loadJdsgTabContent(url);
                 }else{
-                    selectJdsgTab("jdsgTab1Link");
+                	var url = "/mng/asgsysSrng/prgrmDstnctnUpdate.html?prgrmid="+data.prgrmid;
+                    loadJdsgTabContent(url);
                 }
 
             }else{
@@ -1115,7 +1111,8 @@ $(function(){
 
     //컨설팅 여부
     $("input[id^=cnsltngPrgrsYn]").on("change", function(e) {
-        var id = e.originalEvent.target.id;
+
+    	var id = $(this).attr('id');
 
             if($("#"+id).val() == "Y") {
                 $("#cnsltngid").prop("disabled", "")
@@ -1127,7 +1124,7 @@ $(function(){
 
     //숙박 여부
     $("#prgrmDstnctnFrm input[id^=styYn]").on("change", function(e) {
-        var id = e.originalEvent.target.id;
+    	var id = $(this).attr('id');
 
         if($("#"+id).val() == "Y") {
             $("#styNight").prop("disabled", false);
@@ -1142,7 +1139,8 @@ $(function(){
 
     //참가비용
     $("#prgrmDstnctnFrm input[id^=pchrgYn]").on("change", function(e) {
-        var id = e.originalEvent.target.id;
+
+    	var id = $(this).attr('id');
 
         if($("#"+id).val() == "Y") {
             $("#etrfee").prop("disabled", true);
@@ -1151,6 +1149,7 @@ $(function(){
             $("#etrfee").prop("disabled", false);
         }
     });
+
 });
 
 </script>

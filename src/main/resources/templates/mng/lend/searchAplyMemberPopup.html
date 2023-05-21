@@ -1,9 +1,9 @@
-<!-- 담당자정보 신청인검색 팝업 -->
+<!-- 담당자정보 회원검색 팝업 -->
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content type_2">
             <div class="modal-header">
-                <h4 class="modal-title">신청인검색</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                <h4 class="modal-title">기관회원검색</h4>
+                <button type="button" class="btn-close" onclick ="closeMemberSearchModal()">
                     <span aria-hidden="true"></span>
                 </button>
             </div>
@@ -11,54 +11,32 @@
             <div class="modal-body">
                 <div class="card">
                     <div class="card-block-small">
-			            <form id="searchManagerModalFrm" action="" onsubmit="return false;">
-			               
-<!--                     <th:block th:if="${user}">
-                        기관관리자용
-                        <div class="row">
-                            <div class="col-12 col-lg-6 mb-2 mb-lg-0">
-                                <div class="mb-0 form-group">
-                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterManagerName"><strong>이름</strong></label>
-                                    <div class="col-sm-12">
-                                        <input type="text" class="form-control form-control-sm" name="filterManagerName" id="filterManagerName" placeholder="Text Input Validation"/>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12 col-lg-6">
-                                <div class="mb-0 form-group">
-                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterManagerPhoneNum"><strong>휴대폰</strong></label>
-                                    <div class="col-sm-12">
-                                        <input type="text" class="form-control form-control-sm" name="filterManagerPhoneNum" id="filterManagerPhoneNum" placeholder="Text Input Validation"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                     </th:block> -->
-                        
+                        <form id="searchManagerModalFrm" action="" onsubmit="return false;">
                         <!--협회관리자용-->
                         <div class="row">
                             <div class="col-12 col-lg-6 mb-3">
                                 <div class="mb-0 form-group">
-                                    <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></span>
+                                    <span class="form-label col-sm-12 col-form-label p-t-0 pb-1 mb-2"><strong>키워드</strong></span>
                                     <div class="input-group input-group-sm input-group-dropdown mb-0">
-                                        <select id="searchType" name="searchType" class="form-select form-control form-control-primary form-bg-primary">
+                                        <select id="searchType" name="searchType" class="form-select form-control  ">
                                             <option value="">- 선택 -</option>
                                             <option value="nm">이름</option>
                                             <option value="acnt">아이디</option>
                                             <option value="moblphon">휴대폰</option>
                                             <option value="eml">이메일</option>
+                                            <option value="instNm">기관명</option>
                                         </select>
                                         <input type="text" id="searchKeyword" name="searchKeyword" class="form-control" aria-label="">
                                     </div>
                                 </div>
                             </div>
                         </div>
-                       </form>
-                        
                         <div class="mt-1 p-t-20 text-center border-top">
                             <button type="button" class="btn btn-disabled m-r-5" onclick="initSearchManager()">초기화</button>
-                            <button type="button" class="btn btn-primary" onclick="searchManagerList()">검색</button>
+                            <button type="submit" class="btn btn-primary" onclick="searchManagerList()">검색</button>
                         </div>
+                       </form>
+                        
                         
                     </div>
                 </div>
@@ -69,7 +47,7 @@
                         <div class="dt-responsive table-responsive">
                         
                         <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
-                                <table id="instManagerModalGrid" class="table-responsive"></table>
+                                <table id="searchMemberModalGrid" class="table-responsive"></table>
                                 <div id="listPager3" class="text-center"></div>
                        </div>
                         </div>
@@ -78,7 +56,7 @@
                 <!--//임시 그리드-->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary waves-effect waves-light" onclick="aplyUserSetInfo()">선택</button>
+                <button type="button" class="btn btn-primary waves-effect waves-light" onclick="applyMember()">선택</button>
             </div>
         </div>
   </div>
@@ -86,38 +64,25 @@
   <script th:inline="javascript">
 
     var selectedItems = [];
-    var gridHelper1;     
-    
-    var instNm = '';
-    var instid = '';
-    var userNm = '';    
-    var userid = '';
-    var telno = '';
-    var addr = '';
-    var addrDtl = '';
-    var eml = '';
-    
+    var clickedItem = {};
+    //var searchMemberModalGridHelper1;         
     $(function(){
         //gridHelper1 = new GridHelper('subJsGrid','contentPanel');
-        writeManagerModalGridData();
+        writeSearchMemberModalGridData();
     });
-
     searchManagerList = () =>{
-        $("#instManagerModalGrid").jsGrid("reset");
+        $("#searchMemberModalGrid").jsGrid("reset");
     }
-    
     initSearchManager = () =>{
-    	$("#searchManagerModalFrm #searchType").val("");
-    	$("#searchManagerModalFrm  #searchKeyword").val("");
+        $("#searchManagerModalFrm #searchType").val("");
+        $("#searchManagerModalFrm  #searchKeyword").val("");
     }
-    
-    function writeManagerModalGridData(){
-        
-        $("#instManagerModalGrid").jsGrid({
+    function writeSearchMemberModalGridData(){
+        $("#searchMemberModalGrid").jsGrid({
             height: "auto",
             width: "100%",
             autoload: true,
-            sorting: false,
+            sorting: true,
             paging: true,
             pagerContainer: "#listPager3",
             pagerFormat: "{first} {prev} {pages} {next} {last}",
@@ -148,17 +113,12 @@
                         params.push({name: "orderField", value: 'reg_dt'});
                     }
 
-                    var paramid = {
-                    		name:"instid" ,value: $("#searchManagerFrm #instid").val()
-                    }
-
                     formData = formData.concat(params);
-                    formData = formData.concat(paramid);
 
                     $.ajax({
                       type: "GET",
                       contentType: "application/json; charset=utf-8",
-                      url: "/mng/prtpn/infntAply/selectInfntAplyUser.do",
+                      url: "/mng/lend/searchMemberList.do",
                       dataType: "json",
                       data: formData,
                     }).done(function(response){
@@ -181,39 +141,64 @@
                      width: "30",
                      sorting: false
                  }   
-                ,{ name: 'aplyUserid', css: 'hide' }
-                ,{ title: '사용자'   ,name: 'aplyUserNm'    ,type: "text" , width: "200" 
-                    ,itemTemplate:function(value,item){return item.aplyUserNm +" ( "+item.acnt+" )"                        }
-                    }
-                ,{ title: '핸드폰'  ,name: 'moblphon',type: "text" , width: "150" ,align:"center"}
+                ,{ name: 'userid', css: 'hide' }
+                ,{ name: 'nm', css: 'hide' }
+                ,{ title: '사용자'   ,name: 'nm'    ,type: "text" , width: "150" ,align:"center"
+                	,itemTemplate: function(_, item) {return item.nm+" ("+item.acnt+")"}
+                 } 
+                ,{ title: '기관'   ,name: 'instNm'  ,type: "text" , width: "150" ,align:"center"}
+                ,{ title: '핸드폰'  ,name: 'moblphon',type: "text" , width: "130" ,align:"center"}
                 ,{ title: '메일'   ,name: 'eml'     ,type: "text" , width: "200" }
             ],
             rowClick: function(args) {
-                $("#memchk_"+args.item.aplyUserid).prop("checked",true);
-                instNm = args.item.instNm;
-                instid = args.item.instid;
-                userNm = args.item.aplyUserNm;    
-                userid = args.item.aplyUserid;
-                telno = args.item.telno;
-                addr = args.item.addr;
-                addrDtl = args.item.addrDtl;
-                eml = args.item.eml;                
+                $("#memchk_"+args.item.userid).prop("checked",true);
+                clickedItem = args.item;
+            },
+            onDataLoaded: function(args) {
+            	$("#aplyPopForm").hide();
             }
         });
     }
-  
-  function aplyUserSetInfo() {
 
-      $('#instNm').val(instNm);
-      $('#instid').val(instid);
-      $('#userNm').val(userNm);
-      $('#userid').val(userid);
-      $('#telno').val(telno);
-      $('#addr').val(addr);
-      $('#addrDtl').val(addrDtl);
-      $('#eml').val(eml);
-      userSearchAddModal.hide();
+  var applyMember = () =>{
+	  
+      if($('input[name=memchk]:checked').length <= 0){
+          alert("신청담당자를 선택해주세요");
+          return;
+      }
+      
+      $("#aplyForm #requestUser").text(clickedItem.nm+" ("+clickedItem.acnt+")")
+      $("#aplyForm #requestInst").text(clickedItem.instNm+" ("+clickedItem.instTypeCdNm+")")
+      $("#aplyForm #aplcntid").val(clickedItem.userid);
+      $("#aplyForm #aplcntNm").val(clickedItem.nm);
+      $("#aplyForm #telno").val(clickedItem.moblphon);
+      $("#aplyForm #recptrTelno").val(clickedItem.moblphon);
+      $("#aplyForm #dlvyZip").val(clickedItem.zip);
+      $("#aplyForm #instNm").val(clickedItem.instNm);
+      $("#aplyForm #eml").val(clickedItem.eml);
+      $("#aplyForm #instid").val(clickedItem.instid);
+      $("#aplyForm #recptr").val(clickedItem.nm);
+      $("#aplyForm #instid").val(clickedItem.instid);
+      $("#aplyForm #recptrTelno").val(clickedItem.moblphon);
+      $("#aplyForm #recptrEml").val(clickedItem.eml);
+      $("#aplyForm #dlvyAddr").val(clickedItem.addr);
+      $("#aplyForm #dlvyAddrDtl").val(clickedItem.addrDtl);
+      
+      if( clickedItem.rgnCd != null && clickedItem.rgnCd != "" && clickedItem.rgnCd.length > 2){
+	      $("#ctprvnCd").val((clickedItem.rgnCd).substring(0,2) );
+      }else{
+	      $("#ctprvnCd").val("");
+      }
+      
+      clickedItem = {};
+      closeMemberSearchModal();
   }
+
+  function closeMemberSearchModal(){
+	  $("#aplyPopForm").show();
+	  memberSearchModal.hide();
+  }
+  
 </script>
 </body>
 </html>

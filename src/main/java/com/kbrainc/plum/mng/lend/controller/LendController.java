@@ -18,10 +18,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
+import com.kbrainc.plum.mng.lend.model.LendAplyVo;
 import com.kbrainc.plum.mng.lend.model.LendRndPackageindvdVo;
 import com.kbrainc.plum.mng.lend.model.LendRndVo;
 import com.kbrainc.plum.mng.lend.model.LendVo;
 import com.kbrainc.plum.mng.lend.service.LendService;
+import com.kbrainc.plum.mng.member.model.MemberVo;
 import com.kbrainc.plum.mng.pack.model.PackageVo;
 import com.kbrainc.plum.mng.pack.model.PackageindvdVo;
 import com.kbrainc.plum.mng.tchaid.model.TchaidVo;
@@ -393,6 +395,140 @@ public class LendController {
 
         return resultMap;
     }
+    
+    /******************* 관리자 신청 등록 기능 추가 2023-05-18 *********************************/
+    /**
+     * 신청등록 팝업창 
+     *
+     * @Title : regLendAplyPopup
+     * @Description : 신청등록 팝업창
+     * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/lend/regLendAplyPopup.html")
+    public String regLendAplyPopup(LendVo lendVo , Model model,@UserInfo UserVo user) throws Exception {
+        model.addAttribute("paramVo", lendVo);
+        
+        //lendVo.setUser(user);
+        LendVo resVo =  lendService.selectLend(lendVo);
+        model.addAttribute("lendVo", resVo);
+        
+        List<LendRndVo> lendRndList = lendService.selectLendAplyRndList(resVo);
+        for(LendRndVo vo :lendRndList) {
+            List<LendRndPackageindvdVo> lendRndPackageindvdList = lendService.selectLendRndPackageindvdList(vo);
+            vo.setLendRndPackageindvdVoList(lendRndPackageindvdList);
+        }
+        model.addAttribute("aplylendRndList", lendRndList);
+        
+        
+        return "mng/lend/regLendAplyPopup";
+    }
+    
+    /**
+     * 신청회원조회 팝업창 
+     *
+     * @Title : searchMemberPopup
+     * @Description : 신청회원조회 팝업창 
+     * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/lend/searchMemberPopup.html")
+    public String searchMemberPopup(LendVo lendVo , Model model,@UserInfo UserVo user) throws Exception {
+        model.addAttribute("paramVo", lendVo);
+        return "mng/lend/searchAplyMemberPopup";
+    }
+    /**
+     * 신청 대상 회원 검색
+     *
+     * @Title : searchMemberList
+     * @Description : 신청 대상 회원 검색
+     * @param  MemberVo  memberVo 객체
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/lend/searchMemberList.do")
+    @ResponseBody
+    public Map<String, Object> searchMemberList(MemberVo MemberVo,@UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        
+        List<MemberVo> result = null;
+        MemberVo.setUser(user);
+        
+        result = lendService.selectRegMemberList(MemberVo);
+
+        if (result.size() > 0) {
+            resultMap.put("totalCount", (result.get(0).getTotalCount()));
+        } else {
+            resultMap.put("totalCount", 0);
+        }
+        resultMap.put("list", result);
+
+        return resultMap;
+    }
+    
+    /**
+     * 신청등록 
+     *
+     * @Title : selectMemberInfo
+     * @Description : 신청등록 
+     * @param  LendVo lendVo 객체
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/lend/insertLendAply.do")
+    @ResponseBody
+    public Map<String, Object> insertJntpurchsOrder(@Valid LendAplyVo lendAplyVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+          
+        if(bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if(fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+          
+        int retVal = 0;
+        lendAplyVo.setUser(user);
+        
+        //재고확인 처리 할 것 
+        if(lendService.checkOverStockYn(lendAplyVo).equals("Y")) {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "실시간 재고와 맞지 않는 신청이 있습니다. 다시한번 확인해주십시오.");
+            return resultMap;
+        }
+        
+        Map<String, Object> compareMap = lendService.checkLimitOverYn(lendAplyVo);
+        
+        //차시 제한 확인 
+        if(compareMap.get("isOverRndCntYn").toString().equals("Y")) {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", compareMap.get("rnd_limit")+"개 차시만 신청 할 수 있습니다.\n 이미 신청한 차시를 확인 해주십시오");
+            return resultMap;
+        }
+        //차시당 신청 제한 확인
+        if(compareMap.get("isOverPakcageCntYn").toString().equals("Y")) {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "한 차시에"+compareMap.get("packageindvd_limit")+" 개까지만 신청 할 수 있습니다.\n 이미 신청한 차시의 수량을 확인 해주십시오");
+            return resultMap;
+        }
+        
+        retVal = lendService.insertLendAply(lendAplyVo);
+        
+        if(retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "신청이 완료되었습니다");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "신청에 실패하였습니다");
+        }
+              
+        return resultMap;
+    }
+    
+    
+    
+    
        
        
     

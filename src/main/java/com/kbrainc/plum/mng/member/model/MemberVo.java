@@ -119,8 +119,23 @@ public class MemberVo extends ParentRequestVo {
     @Size(max = 400, message = "상세주소는 400자를 넘을 수 없습니다.")
     private String addrDtl;
     
+    /** 주소_시군구코드 */
+    private String rgnCd;
+    
+    /** 주소_시도코드 */
+    private String ctprvnCd;
+    
     /** 기관 아이디 */
     private Integer instid;
+    
+    /** 기관 명 */
+    private String instNm;
+    
+    /** 기관 타입 코드*/
+    private String instTypeCd;
+    
+    /** 기관 타입  코드명*/
+    private String instTypeCdNm;
     
     /** 기관 역할 코드 */
     @Size(max = 20, message = "기관코드는 20자를 넘을 수 없습니다.")
@@ -257,6 +272,25 @@ public class MemberVo extends ParentRequestVo {
                 //e.printStackTrace();
                 return ;
              }
+        }
+    }
+    
+    public void setInstTypeCd(String instTypeCd) throws Exception{
+        this.instTypeCd = instTypeCd;
+        
+        //이미 코드이름이 있다면, 무시.
+        if(CommonUtil.isEmpty(this.instTypeCdNm)) { 
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.instTypeCd);
+                this.instTypeCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                //e.printStackTrace();
+                return ;
+            }catch(Exception e) {
+                //e.printStackTrace();
+                return ;
+            }
         }
     }
     

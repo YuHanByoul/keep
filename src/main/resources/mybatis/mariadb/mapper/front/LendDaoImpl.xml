@@ -76,32 +76,6 @@
             ,#{user.userid}
           )
     </insert>
-    
-    <!-- 대여 신청 대상 등록   -->    
-    <insert id="insertLendAplyTrgt"  parameterType="front.LendAplyTrgtVo"  useGeneratedKeys="true" keyProperty="aplyid">
-          /* LendDao.selectMainNtcnList */
-          INSERT INTO TB_THA_PACKAGE_LEND_APLY_TRGT(
-              APLYID
-              ,RNDID
-              ,QNTY
-              ,BGNG_DE
-              ,END_DE
-              ,REG_DT
-              ,RGTRID
-          )VALUES
-            <foreach item="item" collection="lendAplyTrgtList" separator=",">
-            (
-              #{aplyid      }  
-              ,#{item.rndid }
-              ,#{item.qnty  }
-              ,#{item.bgngDe}
-              ,#{item.endDe }
-              ,NOW()
-              ,#{user.userid}
-              )
-            </foreach>
-    </insert>
-    
     <!-- 대여 순위 호출   -->
     <select id="selectLendRankList"   resultType="map" >
         /* LendDao.selectLendRankList */
@@ -548,7 +522,7 @@
                LEFT OUTER JOIN TB_CMM_FILE E
                ON C.RPRS_IMG_FILEID = E.FILEID
             WHERE 1=1 
-              AND A.RGTRID = #{user.userid}
+              AND A.APLCNTID = #{user.userid}
                 <if test="rcritNm != null and rcritNm != ''">
                     AND RCRIT_NM LIKE CONCAT('%',#{rcritNm},'%') 
                 </if>

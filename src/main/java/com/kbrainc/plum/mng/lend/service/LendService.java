@@ -9,6 +9,7 @@ import com.kbrainc.plum.mng.lend.model.LendPackageindvdChckVo;
 import com.kbrainc.plum.mng.lend.model.LendRndPackageindvdVo;
 import com.kbrainc.plum.mng.lend.model.LendRndVo;
 import com.kbrainc.plum.mng.lend.model.LendVo;
+import com.kbrainc.plum.mng.member.model.MemberVo;
 import com.kbrainc.plum.mng.pack.model.PackageVo;
 import com.kbrainc.plum.mng.pack.model.PackageindvdVo;
 
@@ -394,4 +395,55 @@ public interface LendService {
      * @return int
      */
     public int selectLendRcritRndCnt(LendVo lendVo)throws Exception;
+    /******************* 관리자 신청 등록 기능 추가 2023-05-18 *********************************/
+    /**
+     * 신청 등록용 회원정보 조회 
+     *
+     * @Title       : selectRegMemberList 
+     * @Description : 신청 등록용 회원정보 조회  
+     * @param MemberVo 객체
+     * @return List<MemberVo>  목록
+     * @throws Exception 예외
+     */
+    public List<MemberVo> selectRegMemberList(MemberVo membervo) throws Exception;
+    /**
+     * 신청 차시 별 재고 이상 여부 확인 
+     *
+     * @Title       : selectRegMemberList 
+     * @Description : 신청 차시 별 재고 이상 여부 확인  
+     * @param LendAplyVo 객체
+     * @return String
+     * @throws Exception 예외
+     */
+    public String checkOverStockYn(LendAplyVo lendAplyVo) throws Exception;
+    /**
+     * 신청 제한(차시 및 수량) 여부 확인 
+     *
+     * @Title       : checkLimitOverYn 
+     * @Description : 신청 제한(차시 및 수량) 여부 확인  
+     * @param LendAplyVo 객체
+     * @return String
+     * @throws Exception 예외
+     */
+    public Map<String,Object> checkLimitOverYn(LendAplyVo lendAplyVo) throws Exception;
+    /**
+     * 대여 신청 등록 
+     *
+     * @Title       : insertLendAply 
+     * @Description : 대여 신청 등록  
+     * @param LendAplyVo 객체
+     * @return int
+     * @throws Exception 예외
+     */
+    public int insertLendAply(LendAplyVo lendAplyVo) throws Exception;
+    /**
+     * 대여 모집 차시 목록 호출 (신청용:제고 사항등 추가) 
+     *
+     * @Title       : selectLendAplyRndList 
+     * @Description : 대여 신청 등록  
+     * @param LendRndVo 객체
+     * @return List<LendRndVo>
+     * @throws Exception 예외
+     */
+    public List<LendRndVo> selectLendAplyRndList(LendVo lendVo) throws Exception;
 }

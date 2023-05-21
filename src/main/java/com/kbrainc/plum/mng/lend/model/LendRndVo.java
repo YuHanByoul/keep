@@ -85,6 +85,8 @@ public class LendRndVo extends ParentRequestVo {
     /** 삭제용   */
     private List<Integer> deleteIds ;
     
+    /** 대여 상태 코드*/
+    private String sttsCd;
     
     
     

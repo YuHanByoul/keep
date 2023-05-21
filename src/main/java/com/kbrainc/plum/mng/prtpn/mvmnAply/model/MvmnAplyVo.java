@@ -40,6 +40,8 @@ public class MvmnAplyVo extends ParentRequestVo {
     private String prgrmSchdlid;
     /** 신청아이디 */
     private int aplyId;
+    /** 신청계정 */
+    private String acnt;
     /** 교육관아이디 */
     private int sareaId;    
     /** 교육_연도 */
