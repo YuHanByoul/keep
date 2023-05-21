@@ -181,5 +181,18 @@ public interface EduSareaDao {
     * @throws Exception 예외
     * @return List<String>
     */
-    public List<String> selectDplctCtprvnCdList(EduSareaVo eduSareaVo) throws Exception;        
+    public List<String> selectDplctCtprvnCdList(EduSareaVo eduSareaVo) throws Exception;
+
+    /**
+     * 세부지역 설정 전부 삭제
+     *
+     * @param eduSareaVo
+     * @return int
+     * @throws Exception
+     * @Title : deleteEduSareaSignguAll
+     * @Description : 세부지역 설정 전부 삭제
+     */
+    public int deleteEduSareaSignguAll(EduSareaVo eduSareaVo) throws Exception;
+
+    public EduSareaVo selectEduSareaSignguById(EduSareaVo eduSareaVo) throws Exception;
 }
