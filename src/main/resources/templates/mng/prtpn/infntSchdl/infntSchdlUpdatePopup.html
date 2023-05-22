@@ -42,7 +42,7 @@
                         <div class="row justify-content-end my-2">
                             <div class="col-auto">
                                 <label class="form-label col-form-label me-2"><strong>접수방법</strong></label>
-                                <th:block kattr:select_code="rcptMthdCd" th:attr="grpCd=156" onchange="fn_changeRcptMthdCd(this)" firstOptTxt="- 선택 -" addClass="form-select form-select-sm d-inline-block" isAdmin="true"></th:block>
+                                <th:block kattr:select_code="rcptMthdCd" th:attr="grpCd=156, selectedCd=${infntSchdl.rcptMthdCd}" onchange="fn_changeRcptMthdCd(this)" firstOptTxt="- 선택 -" addClass="form-select form-select-sm d-inline-block" isAdmin="true"></th:block>
                             </div>
                         </div>
                         <!-- // 접수방법 선택 -->
@@ -107,11 +107,13 @@
     var prgrmSttSelectedItems = [];     
     var infntAplyCnt = /*[[${infntAplyCnt}]]*/ null;
     
+    fn_changeRcptMthdCd($("#rcptMthdCd"));
+    
     $(function() {
         fn_makeListHtml();
         validForm();
         //기존 데이터 일정, 프로그램 담기        
-        var des = [[${infntSchdl.de}]];
+        var des = /*[[${infntSchdl.de}]]*/ null;;
         if(des.indexOf(",") >= 0) {            
             var deArr = des.split(",");
             for(var i=0; i<deArr.length;i++) {
@@ -121,7 +123,7 @@
         	deSttSelectedItems.push(des);
         }
         
-        var prgrmIds = [[${infntSchdl.prgrmIds}]];
+        var prgrmIds = /*[[${infntSchdl.prgrmIds}]]*/ null;
         if(prgrmIds.indexOf(",") >= 0) {
             var prgrmIdArr = prgrmIds.split(",");
             for(var i=0; i<prgrmIdArr.length;i++) {
@@ -134,8 +136,12 @@
     });        
     
     function fn_makeListHtml(){
-        var yyyy = $('#calendar').fullCalendar('getView').intervalStart.format("YYYY");
-        var mm = $('#calendar').fullCalendar('getView').intervalStart.format("MM");
+    	var ym = /*[[${infntSchdl.ym}]]*/ null;
+    	var year = ym.split('-')[0];
+    	var month = ym.split('-')[1];
+    	
+        var yyyy = year != "" ? year : $('#calendar').fullCalendar('getView').intervalStart.format("YYYY");
+        var mm = month != "" ? month : $('#calendar').fullCalendar('getView').intervalStart.format("MM");
         var lastDay = new Date(yyyy, mm, 0);
         var weekDay = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -201,7 +207,7 @@
                 }
             }
             schdlHtml += '<td class="text-center v-middle">';   
-            var des = [[${infntSchdl.de}]];
+            var des = /*[[${infntSchdl.de}]]*/ null;
             if(des.indexOf(",") >= 0) {            
 	            var deArr = des.split(",");
 	            for(var j=0; j<deArr.length;j++) {
@@ -241,7 +247,7 @@
                     var checked = "";
                     prgrmStthtml += '<tr>';
                     prgrmStthtml += '<td class="text-center v-middle">';
-                    var prgrmIds = [[${infntSchdl.prgrmIds}]];
+                    var prgrmIds = /*[[${infntSchdl.prgrmIds}]]*/ null;
                     if(prgrmIds.indexOf(",") >= 0) {
 	                    var prgrmIdArr = prgrmIds.split(",");
 	                    for(var j=0; j<prgrmIdArr.length;j++) {
