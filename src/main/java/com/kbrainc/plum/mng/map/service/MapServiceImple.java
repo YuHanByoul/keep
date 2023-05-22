@@ -173,7 +173,6 @@ public class MapServiceImple extends PlumAbstractServiceImpl implements MapServi
             for(int i = 1; i < list.size(); i++) { // 헤더를 제외하기 위해 1부터 시작
 
             	data = (ArrayList) list.get(i);
-logger.info("@@@@@@@@@@@@@@@@@@@@ " + data.size());
 
             	//자원구분 : 교육 프로그램 size7
             	if(resrceSeCd.equals("238103104")) {

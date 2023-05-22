@@ -58,7 +58,7 @@
                          </div>
                          <div class="col-sm-6 mb-3 form-group required">
                              <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="tme"><strong>회차</strong></label>
-                             <select name="tme" class="form-select form-select-sm form-control-sm" id="tme" onchange="fn_changeSelectTme(this);">
+                             <select name="tme" class="form-select form-select-sm form-control-sm" id="tme" onchange="fn_changeSelectTme(this);" disabled>
                                  <option value="">- 선택 -</option>
                                  <th:block th:each="item : ${tmeSchdlList}">
                                      <option th:value="${item.tmeSchdlid}"><th:block th:text="${item.tmeNm}" /></option>
@@ -69,7 +69,7 @@
                  </div>
                  <div class="col-lg-6 mb-3">
                      <div class="mb-0 form-group required">
-                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="ctprvnCd"><strong>신청인지역</strong></label>
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="ctprvnCd"><strong>신청지역</strong></label>
                          <div class="col-sm-12">
                              <th:block kattr:select_code="ctprvnCd" grpCd="143" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 선택 -" isAdmin="true"></th:block>
                          </div>
@@ -91,7 +91,7 @@
                          <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>신청인</strong></div>
                          <div class="col-12 row">
                              <div class="col-8">
-                                 <input type="text" class="form-control form-control-sm" name="userNm" id="userNm" placeholder="신청인" readonly/>
+                                 <input type="text" class="form-control form-control-sm" name="userNm" id="userNm" placeholder="신청인을 선택하세요" readonly/>
                                  <input type="hidden" name="aplyUserid" id="userid" />
                              </div>
                              <div class="col-4 btn-group-sm">
@@ -243,6 +243,8 @@
 	}
 	
     function fn_insertInfntAply(){
+        // 교육대상확인
+        
         if(!($("#infntAplyInsertForm").valid())) return;
         //debugger;
         if(!confirm("저장하시겠습니까?")) return;
@@ -296,12 +298,35 @@
     
     function fn_changeSelectDe(item){
     	var tmeSchdlid = $(item).val();
+    	if(tmeSchdlid) {
+            $('#tme').prop("disabled", false);
+            setTme(tmeSchdlid);
+        } else {
+            $('#tme').prop("disabled", true).val("");
+        }
+    	
+    	//$('#tme').prop("disabled", tmeSchdlid ? "false", "true");
+    	//if(tmeSchdlid) 
+    	/*
     	$('#tme').val(tmeSchdlid).prop("selected", true);
+    	*/
+    }
+    
+    function setTme(tmeSchdlid) {
+        $('#tme option').each(function() {
+            if($(this).val() != tmeSchdlid) {
+                $(this).addClass("d-none");
+            } else {
+                $(this).removeClass("d-none");                
+            }
+        });
     }
     
     function fn_changeSelectTme(item){
+        /*
     	var tmeSchdlid = $(item).val();
     	$('#tmeSchdlid').val(tmeSchdlid).prop("selected", true);
+    	*/
     }
 
     
@@ -322,7 +347,7 @@
                 ctprvnCd: {required: true},
                 instNm: {required: true},
                 addr: {required: true},
-                moblphon: {required: true, digis: true},
+                moblphon: {required: true, digits: true},
                 eml: {required: true},
                 eduNope: {required: true, number: true},
                 tcherNope: {required: true, number: true},
@@ -337,7 +362,7 @@
                 ctprvnCd: {required: "신청인 지역을 선택해주십시오."},
                 instNm: {required: "신청기관을 입력해주십시오."},
                 addr: {required: "기관주소를 입력해주십시오."},
-                moblphon: {required: "휴대폰번호를 입력해주십시오.", number: "숫자만 입력가능합니다."},
+                moblphon: {required: "휴대폰번호를 입력해주십시오.", digis: "숫자만 입력가능합니다."},
                 eml: {required: "신청자 이메일을 입력해주십시오."},
                 eduNope: {required: "총 교육인원(명)을 입력해주십시오.", number: "숫자만 입력가능합니다."},
                 tcherNope: {required: "인솔교사인원(명)을 입력해주십시오.", number: "숫자만 입력가능합니다."},
