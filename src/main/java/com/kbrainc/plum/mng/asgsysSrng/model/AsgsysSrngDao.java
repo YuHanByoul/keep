@@ -1272,8 +1272,17 @@ public interface AsgsysSrngDao {
 	*/
 	public List<AsgsysSrngVo> selectSrngAnsList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
-
-
+	/**
+	* 자가진단 체크리스트 조회
+	*
+	* @Title : selectSelfChkListAns
+	* @Description : 자가진단 체크리스트 조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<AsgsysSrngVo>
+	*/
+	public List<AsgsysSrngVo> selectSelfChkListAns(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 
 }

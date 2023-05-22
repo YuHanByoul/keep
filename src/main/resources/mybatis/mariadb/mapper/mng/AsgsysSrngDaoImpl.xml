@@ -30,12 +30,12 @@
             AND A.APLY_DT <![CDATA[<]]> CAST(CONCAT(#{searchAplyEndDt},' 23:59:59') AS DATETIME)
         </if>
         <!-- 심사위원 심사상태-->
-        <if test="searchSrngSttsCd != null and searchSrngSttsCd != ''">
-            AND B.SRNG_STTS_CD = #{searchSrngSttsCd}
+        <if test="searchJdgsSrngSttsCd != null and searchJdgsSrngSttsCd != ''">
+            AND B.SRNG_STTS_CD = #{searchJdgsSrngSttsCd}
         </if>
         <!-- 지원단 심사상태-->
-        <if test="searchSrngSttsCd != null and searchSrngSttsCd != ''">
-            AND C.SRNG_STTS_CD = #{searchSrngSttsCd }
+        <if test="searchSprtgrpSrngSttsCd != null and searchSprtgrpSrngSttsCd != ''">
+            AND C.SRNG_STTS_CD = #{searchSprtgrpSrngSttsCd }
         </if>
         <!-- 현장점검지정일 시작일-->
         <if test="searchChckDsgnStartDt != null and searchChckDsgnStartDt != ''">
@@ -59,8 +59,10 @@
           , A.APLY_DT
           , DATE_FORMAT(A.APLY_DT, "%Y-%m-%d")  AS APLY_DE
           , A.REG_DT
-          , IFNULL( B.SRNG_STTS_CD,'114101')    AS SRNG_STTS_CD
-          , IFNULL( C.SRNG_STTS_CD,'114101')    AS SRNG_STTS_CD
+          , IFNULL( B.SRNG_STTS_CD,'114101')    AS JDGS_SRNG_STTS_CD
+          , IFNULL( C.SRNG_STTS_CD,'114101')    AS SPRTGRP_SRNG_STTS_CD
+          , CD1.CD_NM AS JDGS_SRNG_STTS_CD_NM
+          , CD2.CD_NM AS SPRTGRP_SRNG_STTS_CD_NM
           , C.VST_DE
           , C.VST_HR
           , C.VST_MNT
@@ -83,6 +85,8 @@
             TB_ASS_SPRTGRP_SRNG C ON A.PRGRMID  = C.PRGRMID
         LEFT OUTER JOIN
             TB_CMM_INST D ON A.INSTID  = D.INSTID
+        LEFT OUTER JOIN TB_CMM_CD CD1 ON CD1.CD = B.SRNG_STTS_CD
+        LEFT OUTER JOIN TB_CMM_CD CD2 ON CD2.CD = C.SRNG_STTS_CD
         WHERE 1=1
         <include refid="searchCondition1"/>
         <include refid="PaginationMapper.footer"/>
@@ -99,8 +103,10 @@
           , A.APLY_DT
           , DATE_FORMAT(A.APLY_DT, "%Y-%m-%d")  AS APLY_DE
           , A.REG_DT
-          , IFNULL( B.SRNG_STTS_CD,'114101')    AS SRNG_STTS_CD
-          , IFNULL( C.SRNG_STTS_CD,'114101')    AS SRNG_STTS_CD
+          , IFNULL( B.SRNG_STTS_CD,'114101')    AS JDGS_SRNG_STTS_CD
+          , IFNULL( C.SRNG_STTS_CD,'114101')    AS SPRTGRP_SRNG_STTS_CD
+          , CD1.CD_NM AS JDGS_SRNG_STTS_CD_NM
+          , CD2.CD_NM AS SPRTGRP_SRNG_STTS_CD_NM
           , C.VST_DE
           , C.VST_HR
           , C.VST_MNT
@@ -124,6 +130,8 @@
         LEFT OUTER JOIN
             TB_CMM_INST D ON A.INSTID  = D.INSTID
         WHERE 1=1
+        LEFT OUTER JOIN TB_CMM_CD CD1 ON CD1.CD = B.SRNG_STTS_CD
+        LEFT OUTER JOIN TB_CMM_CD CD2 ON CD2.CD = C.SRNG_STTS_CD
         <include refid="searchCondition1"/>
     </select>
 
@@ -2149,6 +2157,22 @@
     </select>
 
     <!-- 심사항목 목록 조회 -->
+    <select id="selectSelfChkListAns" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        SELECT
+            A.SBMSNID
+          , A.PRGRMID
+          , B.SE_CD       AS CHKLST_SE_CD
+          , SUM(B.SCR)    AS SCR
+        FROM TB_ASS_CHKLST_SBMSN A
+        LEFT OUTER JOIN TB_ASS_CHKLST_ANS B ON A.SBMSNID = B.SBMSNID
+        WHERE 1=1
+        AND PRGRMID = #{prgrmid}
+        AND SBMSN_SE_CD = '242101'    /*제출구분 : 자가진단*/
+        GROUP BY B.SE_CD
+    </select>
+
+
+    <!-- 심사항목 목록 조회 -->
     <select id="selectSrngQitemList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
     SELECT
         A.FORMID
@@ -2173,16 +2197,24 @@
 
     <select id="selectSrngAnsList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
         SELECT
-            SBMSNID
-          , QITEMID
-          , DSGNCRTR_CD
-          , IDNTY_MTTR
-          , CHKLST_SE_CD
-          , SCR
-          , ORDR
-        FROM TB_ASS_SRNG_ANS
+            A.SBMSNID
+          , A.QITEMID
+          , CD.CD_NM
+          , A.DSGNCRTR_CD
+          , A.IDNTY_MTTR
+          , A.CHKLST_SE_CD
+          , A.SCR
+          , A.ORDR
+          , C.FORMID
+          , B.ALTM
+          , ROW_NUMBER() OVER(PARTITION BY A.DSGNCRTR_CD ORDER BY A.ORDR ASC) AS RNK
+          , COUNT(1) OVER (PARTITION  BY A.DSGNCRTR_CD ASC) AS ROWSPAN
+        FROM TB_ASS_SRNG_ANS A
+        LEFT OUTER JOIN TB_ASS_SRNG_QITEM B ON A.QITEMID = B.QITEMID
+        LEFT OUTER JOIN TB_ASS_SRNG_SBMSN C ON A.SBMSNID = C.SBMSNID
+        LEFT OUTER JOIN TB_CMM_CD CD ON A.DSGNCRTR_CD = CD.CD
         WHERE 1=1
-        AND SBMSNID = #{sbmsnid}
+        AND A.SBMSNID = #{sbmsnid}
     </select>
 
     <!-- 심사위원심사 등록 -->

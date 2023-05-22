@@ -171,7 +171,7 @@
                                     <td class="text-center v-middle"><th:block th:text="${k.count}"></th:block></td>
                                     <td class="text-center v-middle"><th:block th:text="${item.jdgsNm}"></th:block>
                                         <div class="d-inline-block btn-group-sm">
-                                            <button type="button" class="col-auto btn btn-primary" th:id="${'btnEvlDtl'+item.jdgsid}" onclick="jdgsEvlDtlPopup(this.id)">심사보기</button>
+                                            <button type="button" class="col-auto btn btn-primary" th:id="${'btnEvlDtl'+item.jdgsid}" th:onclick="jdgsEvlDtlPopup([[${item.jdgsid}]])" th:disabled='${item.jdgsid==null ? true:false}'>심사보기</button>
                                         </div>
                                     </td>
                                     <td class="text-center v-middle"><th:block th:text="item.sbmsnDt == null? '' : ${#dates.format(item.sbmsnDt, 'yyyy-MM-dd HH:mm:ss')}"></th:block></td>
@@ -239,8 +239,12 @@
         </div>
     </div>
 </form>
+<!-- 심사보기 팝업 -->
+<div class="modal fade" id="jdgsSrngPopup" aria-hidden="true" data-bs-backdrop="static"></div>
+
 <!-- 지정승인 팝업 -->
 <div class="modal fade" id="dsgnAprvPopup" aria-hidden="true" data-bs-backdrop="static"></div>
+
 
 <script th:inline="javascript">
 
@@ -266,6 +270,22 @@
 
             if(rowCnt>0) $("#scrSumAvg"+i).prop("innerHTML","<strong>"+(colSum/rowCnt).toFixed(2)+"</strong>");
         }
+    }
+
+    //심사보기 팝업
+    var jdgsSrngModal;
+    var jdgsEvlDtlPopup = (jdgsid) => {
+
+        var formid = $('#formid').val();
+        var prgrmid = $('#prgrmid').val();
+        var url = "/mng/asgsysSrng/jdgsSrngPopup.html?jdgsid="+jdgsid+"&prgrmid="+prgrmid;
+
+        $("#jdgsSrngPopup").load(url, function(response, status, xhr) {
+            if (status == "success") {
+                jdgsSrngModal = new bootstrap.Modal($('#jdgsSrngPopup'));
+                jdgsSrngModal.show();
+            }
+        });
     }
 
     function dsgnDropOut(){
