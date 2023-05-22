@@ -259,8 +259,8 @@ public class InfntPrgrmServiceImpl extends PlumAbstractServiceImpl implements In
     * @return List<InfntPrgrmVo>
     */
     @Override
-    public List<InfntPrgrmVo> selectPrgrmSettingList(String rcptMthdCd) throws Exception {
-        return infntPrgrmDao.selectPrgrmSettingList(rcptMthdCd);
+    public List<InfntPrgrmVo> selectPrgrmSettingList(InfntPrgrmVo infntPrgrm) throws Exception {
+        return infntPrgrmDao.selectPrgrmSettingList(infntPrgrm);
     }    
     
     private void copyFile(UserVo userVo, FileVo fileVo, String filegrpNm) throws Exception {

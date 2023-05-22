@@ -248,7 +248,7 @@ public interface InfntPrgrmDao {
     * @throws Exception
     * @return List<InfntPrgrmVo>
     */
-    public List<InfntPrgrmVo> selectPrgrmSettingList(@Param("rcptMthdCd") String rcptMthdCd) throws Exception;
+    public List<InfntPrgrmVo> selectPrgrmSettingList(InfntPrgrmVo infntPrgrmVo) throws Exception;
     
     /**
     * 교육프로그램관리 복사대상 파일 상세조회
