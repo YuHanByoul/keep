@@ -166,5 +166,35 @@ public interface MvmnSchdlDao {
      * @throws Exception 예외
      * @return int
      */
-    public int selectMvmnAplyCnt(MvmnSchdlVo mvmnSchdlVo) throws Exception;            
+    public int selectMvmnAplyCnt(MvmnSchdlVo mvmnSchdlVo) throws Exception;
+
+    /**
+    * 프로그램 일정 일자 삭제
+    *
+    * @Title : deleteMvmnSchdlDe
+    * @param mvmnSchdlVo
+    * @return
+    * @return int
+    */
+    public int deleteMvmnSchdlDe(MvmnSchdlVo mvmnSchdlVo);
+
+    /**
+    * 프로그램 일정 프로그램 삭제
+    *
+    * @Title : deleteMvmnSchdlPrgrm
+    * @param mvmnSchdlVo
+    * @return
+    * @return int
+    */
+    public int deleteMvmnSchdlPrgrm(MvmnSchdlVo mvmnSchdlVo);
+
+    /**
+    * 프로그램 회차 일정 삭제
+    *
+    * @Title : deleteMvmnTmeSchdl
+    * @param mvmnSchdlVo
+    * @return
+    * @return int
+    */
+    public int deleteMvmnTmeSchdl(MvmnSchdlVo mvmnSchdlVo);            
 }
