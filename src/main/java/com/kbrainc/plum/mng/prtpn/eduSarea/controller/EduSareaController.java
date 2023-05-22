@@ -191,18 +191,17 @@ public class EduSareaController {
         }
         
         eduSareaVo.setUser(user);
-        List<String> dplctCtprvnCdList = null;
-        dplctCtprvnCdList = eduSareaService.selectDplctCtprvnCdList(eduSareaVo);
-        String[] dplctCtprvnCdArr = dplctCtprvnCdList.toArray(new String[dplctCtprvnCdList.size()]);
-        
+        List<String> dplctCtprvnCdList = eduSareaService.selectDplctCtprvnCdList(eduSareaVo);
+
         int dplctCnt = 0;
         int retVal = 0;
-        
-        for(String ctprvnCd: eduSareaVo.getCtprvnCds()){
-            if(Arrays.asList(dplctCtprvnCdArr).contains(ctprvnCd)) {
+
+        for (String ctprvnCd : eduSareaVo.getCtprvnCds()) {
+            if (dplctCtprvnCdList.contains(ctprvnCd)) {
                 dplctCnt++;
             }
         }
+
         if (dplctCnt > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
             resultMap.put("msg", "타 운영권역과 중복되는 지역이 있습니다.");
@@ -246,15 +245,13 @@ public class EduSareaController {
         }
         
         eduSareaVo.setUser(user);
-        List<String> dplctCtprvnCdList = null;
-        dplctCtprvnCdList = eduSareaService.selectDplctCtprvnCdList(eduSareaVo);
-        String[] dplctCtprvnCdArr = dplctCtprvnCdList.toArray(new String[dplctCtprvnCdList.size()]);
+        List<String> dplctCtprvnCdList  = eduSareaService.selectDplctCtprvnCdList(eduSareaVo);
 
         int dplctCnt = 0;
         int retVal = 0;
-        
-        for(String ctprvnCd: eduSareaVo.getCtprvnCds()){
-            if(Arrays.asList(dplctCtprvnCdArr).contains(ctprvnCd)) {
+
+        for (String ctprvnCd : eduSareaVo.getCtprvnCds()) {
+            if (dplctCtprvnCdList.contains(ctprvnCd)) {
                 dplctCnt++;
             }
         }

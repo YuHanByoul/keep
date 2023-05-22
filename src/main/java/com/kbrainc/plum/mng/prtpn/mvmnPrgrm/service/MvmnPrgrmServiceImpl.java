@@ -60,43 +60,14 @@ public class MvmnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Mvm
     public List<MvmnPrgrmVo> selectMvmnPrgrmList(MvmnPrgrmVo mvmnPrgrmVo) throws Exception {
         return mvmnPrgrmDao.selectMvmnPrgrmList(mvmnPrgrmVo);
     }
-    
-    /**
-    * 교육프로그램관리 게시글 등록
-    *
-    * @Title : insertMvmnPrgrm
-    * @Description : 교육프로그램관리 게시글 등록
-    * @param mvmnPrgrmVo 교육프로그램관리 객체
-    * @throws Exception 예회
-    * @return int
-    */
-    @Override
-    @Transactional    
-    public int insertMvmnPrgrm(MvmnPrgrmVo mvmnPrgrmVo) throws Exception{
-        int retVal = 0;
-        retVal += mvmnPrgrmDao.insertMvmnPrgrm(mvmnPrgrmVo);
-        
-        //mvmnPrgrmDao.deleteTrgtCd(mvmnPrgrmVo);
-        //mvmnPrgrmDao.deleteClsfCd(mvmnPrgrmVo);
-        
-        if(mvmnPrgrmVo.getTrgtCds()!=null & mvmnPrgrmVo.getTrgtCds().length > 0) {
-            retVal += mvmnPrgrmDao.insertTrgtCd(mvmnPrgrmVo);
-        }
-        if(mvmnPrgrmVo.getClsfCds()!=null & mvmnPrgrmVo.getClsfCds().length > 0) {
-            retVal += mvmnPrgrmDao.insertClsfCd(mvmnPrgrmVo);
-        }
-        //retVal += mvmnPrgrmDao.insertMvmnPrgrmTme(mvmnPrgrmVo);
-        
-        return retVal;
-    }
 
     @Override
     @Transactional
     public int insertMvmnPrgrmCopy(String[] copyPrgrmIds, UserVo userVo) throws Exception {
         int retVal = 0;
         MvmnPrgrmVo mvmnPrgrmVo = new MvmnPrgrmVo();
-//        mvmnPrgrmVo.setCopyPrgrmIds(copyPrgrmIds);
         mvmnPrgrmVo.setUser(userVo);
+
         for(String copyPrgrmId : copyPrgrmIds) {
           mvmnPrgrmVo.setCopyPrgrmId(copyPrgrmId);
           MvmnPrgrmVo mvmnCopyPrgrmFileVo = mvmnPrgrmDao.selectMvmnCopyPrgrmFileInfo(mvmnPrgrmVo);
@@ -119,10 +90,10 @@ public class MvmnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Mvm
               mvmnPrgrmVo.setEduPhotoFileid(eduPhotoFileInfo.getFilegrpid());
           }
           
-          retVal += mvmnPrgrmDao.insertMvmnPrgrmCopy(mvmnPrgrmVo);
-          retVal += mvmnPrgrmDao.insertMvmnPrgrmClsfMapngCopy(mvmnPrgrmVo);
-          retVal += mvmnPrgrmDao.insertMvmnPrgrmTrgtMapngCopy(mvmnPrgrmVo);
-          retVal += mvmnPrgrmDao.insertMvmnPrgrmTmeCopy(mvmnPrgrmVo);
+          retVal += mvmnPrgrmDao.insertMvmnPrgrmCopy(mvmnPrgrmVo); // 이동_프로그램 복사
+          retVal += mvmnPrgrmDao.insertMvmnPrgrmClsfMapngCopy(mvmnPrgrmVo); // 이동 프로그램 분류 복사
+          retVal += mvmnPrgrmDao.insertMvmnPrgrmTrgtMapngCopy(mvmnPrgrmVo); //이동 프로그램 대상 복사
+          retVal += mvmnPrgrmDao.insertMvmnPrgrmTmeCopy(mvmnPrgrmVo); // 이동 프로그램 회차 복사
         }
         
         
@@ -167,13 +138,60 @@ public class MvmnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Mvm
         if(mvmnPrgrmVo.getClsfCds()!=null & mvmnPrgrmVo.getClsfCds().length > 0) {
             retVal += mvmnPrgrmDao.insertClsfCd(mvmnPrgrmVo);
         }
-        //retVal += mvmnPrgrmDao.insertMvmnPrgrmTme(mvmnPrgrmVo);
-        
+
+        MvmnPrgrmVo delMvmnPrgrmVo =  new MvmnPrgrmVo();
+
+        if(mvmnPrgrmVo.getMvmnPrgrmVoList() != null) {
+            retVal += mvmnPrgrmDao.insertMvmnPrgrmTme(mvmnPrgrmVo); // 새로 추가된 회차 INSERT
+            retVal += mvmnPrgrmDao.updateMvmnPrgrmTme(mvmnPrgrmVo); // 기존 회차 UPDATE
+            for (int i=0; i<mvmnPrgrmVo.getMvmnPrgrmVoList().size();i++){
+                if("Y".equals(mvmnPrgrmVo.getMvmnPrgrmVoList().get(i).getDelFlag())) {
+                    // 교육일정에 매핑된 내역 존재 시 삭제 불가
+                    delMvmnPrgrmVo.setTmeId(mvmnPrgrmVo.getMvmnPrgrmVoList().get(i).getTmeId());
+                    int count = mvmnPrgrmDao.selectEduMvmnPrgrmTmeSchdl(delMvmnPrgrmVo.getTmeId());
+                    if( count == 0 )
+                        retVal += mvmnPrgrmDao.deleteMvmnPrgrmTme(delMvmnPrgrmVo);
+//                    retVal += mvmnPrgrmDao.deleteMvmnPrgrmAplyEduTrgt(delMvmnPrgrmVo); // 이동 프로그램 신청 교육 대상
+//                    retVal += mvmnPrgrmDao.deleteMvmnPrgrmAply(delMvmnPrgrmVo); // 이동 프로그램 신청
+//                    retVal += mvmnPrgrmDao.deleteMvmnPrgrmTmeSchdl(delMvmnPrgrmVo); //이동 프로그램 회차 일정
+//                    retVal += mvmnPrgrmDao.deleteMvmnPrgrmTme(delMvmnPrgrmVo); // 이동 프로그램 회차
+                }
+            }
+        }
+
         return retVal;        
     }
-    
+
+
     /**
-    * 교육프로그램관리 회차 등록
+     * 교육프로그램관리 게시글 등록
+     *
+     * @Title : insertMvmnPrgrm
+     * @Description : 교육프로그램관리 게시글 등록
+     * @param mvmnPrgrmVo 교육프로그램관리 객체
+     * @throws Exception 예회
+     * @return int
+     */
+    @Override
+    @Transactional
+    public int insertMvmnPrgrm(MvmnPrgrmVo mvmnPrgrmVo) throws Exception{
+        int retVal = 0;
+        retVal += mvmnPrgrmDao.insertMvmnPrgrm(mvmnPrgrmVo);
+
+        if(mvmnPrgrmVo.getTrgtCds()!=null & mvmnPrgrmVo.getTrgtCds().length > 0) {
+            retVal += mvmnPrgrmDao.insertTrgtCd(mvmnPrgrmVo);
+        }
+        if(mvmnPrgrmVo.getClsfCds()!=null & mvmnPrgrmVo.getClsfCds().length > 0) {
+            retVal += mvmnPrgrmDao.insertClsfCd(mvmnPrgrmVo);
+        }
+
+        retVal += mvmnPrgrmDao.insertMvmnPrgrmTme(mvmnPrgrmVo);
+
+        return retVal;
+    }
+
+    /**
+    * 교육프로그램관리 회차 등록, 사용X. 테스트 후 삭제 필요
     *
     * @Title : insertMvmnPrgrm
     * @Description : 교육프로그램관리 회차 등록
@@ -188,10 +206,12 @@ public class MvmnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Mvm
         MvmnPrgrmVo delMvmnPrgrmVo =  new MvmnPrgrmVo();
         
         if(mvmnPrgrmVo.getMvmnPrgrmVoList() != null) {
-            retVal += mvmnPrgrmDao.insertMvmnPrgrmTme(mvmnPrgrmVo);            
-            retVal += mvmnPrgrmDao.updateMvmnPrgrmTme(mvmnPrgrmVo);
+            retVal += mvmnPrgrmDao.insertMvmnPrgrmTme(mvmnPrgrmVo); // 새로 추가된 회차 INSERT
+            retVal += mvmnPrgrmDao.updateMvmnPrgrmTme(mvmnPrgrmVo); // 기존 회차 UPDATE
             for (int i=0; i<mvmnPrgrmVo.getMvmnPrgrmVoList().size();i++){
                 if("Y".equals(mvmnPrgrmVo.getMvmnPrgrmVoList().get(i).getDelFlag())) {
+                    // 삭제 체크 된 경우
+                    // 교육일정에 매핑된 내역 존재 시 삭제 불가
                     delMvmnPrgrmVo.setTmeId(mvmnPrgrmVo.getMvmnPrgrmVoList().get(i).getTmeId());
                     retVal += mvmnPrgrmDao.deleteMvmnPrgrmAplyEduTrgt(delMvmnPrgrmVo);
                     retVal += mvmnPrgrmDao.deleteMvmnPrgrmAply(delMvmnPrgrmVo);

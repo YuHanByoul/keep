@@ -258,13 +258,13 @@
              </div>
          </div>
          <!-- 교육 시간표 -->
-         <div class="card-header p-b-0">
+         <div class="card-header p-b-0 p-t-0" >
              <h3 class="sub-title">
-                 <div class="row">
-                     <div class="col-lg-6 d-flex align-items-end"><strong>교육 시간표<i class="mark-required">*</i></strong></div>
-                     <div class="col-lg-6 text-right">
-                         <button type="button" class="btn btn-disabled btn-sm" onclick="fn_delRow();">삭제</button>
-                         <button type="button" class="btn btn-primary btn-sm"  onclick="fn_addRow();">추가</button>
+                 <div class="row align-items-center">
+                     <div class="col"><strong>교육 시간표<i class="mark-required">*</i></strong></div>
+                     <div class="col-auto btn-group-sm">
+                         <button type="button" id="delRowBtn" class="btn btn-inverse" onclick="fn_delRow();">삭제</button>
+                         <button type="button" id="addRowBtn" class="btn btn-primary"  onclick="fn_addRow();">추가</button>
                      </div>
                  </div>
              </h3>
@@ -430,9 +430,10 @@ var clssrmViewngMaxAplyNope = 0;
 		clssrmViewngMaxAplyNope = 0;
 	    //setDefaultImage('imgPreview','profile');
 	}
-	
-    function fn_insertInfntPrgrm(){
-        // 교육가능 요일 등록
+
+    function validate() {
+        if(!($("#infntPrgrmInsertForm").valid())) return false;
+
         var monYn = ($("#monYn").is(":checked") ? "Y" : "N");
         var tuesYn = ($("#tuesYn").is(":checked") ? "Y" : "N");
         var wedYn = ($("#wedYn").is(":checked") ? "Y" : "N");
@@ -448,88 +449,90 @@ var clssrmViewngMaxAplyNope = 0;
         $("#friYn").val(friYn);
         $("#satYn").val(satYn);
         $("#sunYn").val(sunYn);
-        
-        if(!($("#infntPrgrmInsertForm").valid())) return;
-        if(!confirm("저장하시겠습니까?")) return;
-        
+
         if(monYn == "N" && tuesYn == "N" && wedYn == "N" && thurYn == "N" && friYn == "N" && satYn == "N" && sunYn == "N"){
-        	alert("교육가능요일을 선택하세요.");
-        	return;
+            alert("교육가능요일을 선택해 주십시오.");
+            return false;
         }
+
         var bgngTmChk = true;
-        $('input[name=bgngTm]').each(function() { 
+        $('input[name=bgngTm]').each(function() {
             if($(this).val() == ""){
-            	bgngTmChk = false;
-            }   
-        }); 
-        
+                bgngTmChk = false;
+            }
+        });
+
         var endTmChk = true;
-        $('input[name=endTm]').each(function() { 
+        $('input[name=endTm]').each(function() {
             if($(this).val() == ""){
-            	endTmChk = false;
-            }   
-        }); 
-        
+                endTmChk = false;
+            }
+        });
+
         if(!bgngTmChk || !endTmChk) {
             alert("교육 시간표의 시작시간 또는 종료시간 입력은 필수 입니다.");
-            return;        	
+            return false;
         }
-        var eduTypeCd = $('#eduTypeCd').val();
-        var trgtCds = $('.trgtCds:checked').map(function(){ return $(this).val();}).get().join(",");
-        var clsfCds = $('[name=clsfCds_2] option:selected').map(function(){ return $(this).val();}).get().join(",");
 
-        var data =  $("#infntPrgrmInsertForm").serialize();
-        data = data+"&eduTypeCd="+eduTypeCd+"&trgtCds="+trgtCds+"&clsfCds="+clsfCds;
+    }
+    function fn_insertInfntPrgrm(){
+        if(validate() === false) return ;
+        if(!confirm("저장하시겠습니까?")) return;
+
+        var jsonObj = {};
+
+        const fd = new FormData(document.querySelector('#infntPrgrmInsertForm'));
+        fd.forEach((value, key) => {
+            jsonObj[key] = value ?? '';
+        })
+
+        var tmpTrgtCds = [];
+        $('.trgtCds:checked').each((index, element) => tmpTrgtCds.push(element.value));
+
+        var tmpClsfCds = [];
+        $('[name=clsfCds_2] option:selected').each((index, element) => tmpClsfCds.push(element.value));
+
+        jsonObj['trgtCds'] = tmpTrgtCds;
+        jsonObj['clsfCds'] = tmpClsfCds;
+
+        var infntPrgrmVoList = new Array();
+        for(var i = 0; i < $("#infntPrgrmTmBody").children().length; i++) {
+            var data = new Object();
+            data["tmeId"]       = "";
+            data["tmeNm"]       = $("#infntPrgrmTmBody").find($("input[name=tmeNm]")[i]).val();
+            data["tmeSunYn"]    = $("#infntPrgrmTmBody").find($("[name=tmeSunYn]")[i]).is(":checked") == true ?  "Y" : "N";
+            data["tmeMonYn"]    = $("#infntPrgrmTmBody").find($("[name=tmeMonYn]")[i]).is(":checked") == true ?  "Y" : "N";
+            data["tmeTuesYn"]   = $("#infntPrgrmTmBody").find($("[name=tmeTuesYn]")[i]).is(":checked") == true ?  "Y" : "N";
+            data["tmeWedYn"]    = $("#infntPrgrmTmBody").find($("[name=tmeWedYn]")[i]).is(":checked") == true ?  "Y" : "N";
+            data["tmeThurYn"]   = $("#infntPrgrmTmBody").find($("[name=tmeThurYn]")[i]).is(":checked") == true ?  "Y" : "N";
+            data["tmeFriYn"]    = $("#infntPrgrmTmBody").find($("[name=tmeFriYn]")[i]).is(":checked") == true ?  "Y" : "N";
+            data["tmeSatYn"]    = $("#infntPrgrmTmBody").find($("[name=tmeSatYn]")[i]).is(":checked") == true ?  "Y" : "N";
+            data["bgngTm"]      = $("#infntPrgrmTmBody").find($("input[name=bgngTm]")[i]).val();
+            data["endTm"]       = $("#infntPrgrmTmBody").find($("input[name=endTm]")[i]).val();
+            data["ordr"]        = i+1;
+            infntPrgrmVoList.push(data);
+        }
+        jsonObj["infntPrgrmVoList"] = infntPrgrmVoList;
+
         if(displayWorkProgress()){
             $.ajax({
                 url : "/mng/prtpn/infntPrgrm/insertInfntPrgrm.do",
                 type: 'POST',
                 cache : false,
                 dataType: 'json',
-                data : data,
+                contentType: 'application/json;charset=UTF-8',
+                data : JSON.stringify(jsonObj),
                 success : function (data){
+                    alert(data.msg);
                     if(data.result=="success"){
-                        var dataList = new Array();
-                        var prgrmId  = data.prgrmId;
-                        for(var i = 0; i < $("#infntPrgrmTmBody").children().length; i++) {
-                            var data = new Object();
-                            data["prgrmId"]     = prgrmId;
-                            data["tmeId"]       = "";
-                            data["tmeNm"]       = $("#infntPrgrmTmBody").find($("input[name=tmeNm]")[i]).val();
-                            data["tmeSunYn"]    = $("#infntPrgrmTmBody").find($("[name=tmeSunYn]")[i]).is(":checked") == true ?  "Y" : "N";
-                            data["tmeMonYn"]    = $("#infntPrgrmTmBody").find($("[name=tmeMonYn]")[i]).is(":checked") == true ?  "Y" : "N";
-                            data["tmeTuesYn"]   = $("#infntPrgrmTmBody").find($("[name=tmeTuesYn]")[i]).is(":checked") == true ?  "Y" : "N";
-                            data["tmeWedYn"]    = $("#infntPrgrmTmBody").find($("[name=tmeWedYn]")[i]).is(":checked") == true ?  "Y" : "N";
-                            data["tmeThurYn"]   = $("#infntPrgrmTmBody").find($("[name=tmeThurYn]")[i]).is(":checked") == true ?  "Y" : "N";
-                            data["tmeFriYn"]    = $("#infntPrgrmTmBody").find($("[name=tmeFriYn]")[i]).is(":checked") == true ?  "Y" : "N";
-                            data["tmeSatYn"]    = $("#infntPrgrmTmBody").find($("[name=tmeSatYn]")[i]).is(":checked") == true ?  "Y" : "N";
-                            data["bgngTm"]      = $("#infntPrgrmTmBody").find($("input[name=bgngTm]")[i]).val();
-                            data["endTm"]       = $("#infntPrgrmTmBody").find($("input[name=endTm]")[i]).val();
-                            data["ordr"]        = i+1;
-                            dataList.push(data);
-                        }
-                        var params = new Object();
-                        params["infntPrgrmVoList"] = dataList;
-                        $.ajax({
-                            url : "/mng/prtpn/infntPrgrm/insertInfntPrgrmTmeList.do",
-                            cache : false,
-                            dataType : 'json',
-                            data : JSON.stringify(params),
-                            type : 'POST',
-                            contentType: "application/json; charset=utf-8",
-                            success : function(data) {
-                                alert(data.msg);
-                            }
-                        });
                         gridHelper1.resetListContent();
-                    }else{
-                        alert(data.msg);
                     }
                     closeWorkProgress();
                 }
             });
         }
     }
+
     function fn_changeClssrmId(item){
     	var getCodeUrl = "/mng/prtpn/eduClssRm/selectClssrmEduTypeCd.do";
         var url = getCodeUrl + "?clssrmId=" + $(item).val();

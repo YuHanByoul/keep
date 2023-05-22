@@ -57,6 +57,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
     /** 검색 진행상태 */
     private String searchSttsCd;
 
+    /** 검색 심사상태코드 */
+    private String searchSrngSttsCd;
+
     /** 검색 사용자아이디 */
     private String searchUserid;
 
@@ -126,8 +129,23 @@ public class AsgsysSrngVo extends ParentRequestVo {
     /** 심사위원 심사 총점평균 */
     private BigDecimal sumAvg;
 
-    /** 지원단 심사상태 */
-    private String searchSrngSttsCd;
+    /** 심사위원 심사상태코드 */
+    private String jdgsSrngSttsCd;
+
+    /** 심사위원 심사상태명 */
+    private String jdgsSrngSttsCdNm;
+
+    /** 지원단 심사상태 코드*/
+    private String sprtgrpSrngSttsCd;
+
+    /** 지원단 심사상태 명 */
+    private String sprtgrpSrngSttsCdNm;
+
+    /** 검색.심사위원 심사상태 */
+    private String searchJdgsSrngSttsCd;
+
+    /** 검색.지원단 심사상태 */
+    private String searchSprtgrpSrngSttsCd;
 
     /** 현장점검지정일 시작일 */
     private String searchChckDsgnStartDt;
@@ -147,7 +165,7 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	/** 기관 명 */
 	private String instNm;
 
-	/** 지원단상태코드*/
+	/** 심사상태코드*/
 	private String srngSttsCd;
 
 	/** 지원단상태코드_명*/
@@ -887,7 +905,7 @@ public class AsgsysSrngVo extends ParentRequestVo {
         }
 	}
 
-	/** 지원단 상태코드 */
+	/** 심사상태코드 */
 	public void setSrngSttsCd(String srngSttsCd) throws Exception{
 
 		this.srngSttsCd = srngSttsCd;

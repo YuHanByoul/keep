@@ -1,9 +1,7 @@
 package com.kbrainc.plum.mng.prtpn.mvmnPrgrm.controller;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -65,17 +63,15 @@ public class MvmnPrgrmController {
         
         EduSareaVo eduSareaVo = new EduSareaVo(); 
         model.addAttribute("sareaList", eduSareaService.selectEduSareaList(eduSareaVo));
-        
-        int curYear = Integer.valueOf(DateTimeUtil.getYear());
-        Integer[] years = new Integer[4];
-        
-        for(int i = curYear, j = 0; i <= i+3 && j <= 3; i++, j++) {
-            years[j] = i;
-        }
+
+        List<Integer> years = getYears();
         model.addAttribute("years", years);
+
         return "mng/prtpn/mvmnPrgrm/mvmnPrgrmList";
     }
-    
+
+
+
     /**
     * 교육프로그램관리 등록화면으로 이동
     *
@@ -92,13 +88,8 @@ public class MvmnPrgrmController {
         model.addAttribute("sareaList", eduSareaService.selectEduSareaList(eduSareaVo));
         model.addAttribute("aplcntDgstfnSrvyList", mvmnPrgrmService.selectAplcntDgstfnSrvyList());
         model.addAttribute("stdntDgstfnSrvyList", mvmnPrgrmService.selectStdntDgstfnSrvyList());
-        
-        int curYear = Integer.valueOf(DateTimeUtil.getYear());
-        Integer[] years = new Integer[4];
-        
-        for(int i = curYear, j = 0; i <= i+3 && j <= 3; i++, j++) {
-            years[j] = i;
-        }
+
+        List<Integer> years = getYears();
         model.addAttribute("years", years);
         
         return "mng/prtpn/mvmnPrgrm/mvmnPrgrmInsertForm";
@@ -117,11 +108,8 @@ public class MvmnPrgrmController {
     @RequestMapping(value = "/mng/prtpn/mvmnPrgrm/mvmnPrgrmUpdateForm.html")
     public String mvmnPrgrmUpdateForm(MvmnPrgrmVo mvmnPrgrmVo, Model model) throws Exception {
         int curYear = Integer.valueOf(DateTimeUtil.getYear());
-        Integer[] years = new Integer[4];
-        
-        for(int i = curYear, j = 0; i <= i+3 && j <= 3; i++, j++) {
-            years[j] = i;
-        }
+
+        List<Integer> years = getYears();
         model.addAttribute("years", years);
 
         EduSareaVo eduSareaVo = new EduSareaVo(); 
@@ -230,7 +218,7 @@ public class MvmnPrgrmController {
     */
     @RequestMapping(value = "/mng/prtpn/mvmnPrgrm/insertMvmnPrgrm.do")
     @ResponseBody
-    public Map<String, Object> insertMvmnPrgrm(@Valid MvmnPrgrmVo mvmnPrgrmVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> insertMvmnPrgrm(@Valid @RequestBody MvmnPrgrmVo mvmnPrgrmVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
 
         Map<String, Object> resultMap = new HashMap<String, Object>();
         if (bindingResult.hasErrors()) {
@@ -244,7 +232,7 @@ public class MvmnPrgrmController {
         int retVal = 0;
         retVal = mvmnPrgrmService.insertMvmnPrgrm(mvmnPrgrmVo);
         
-        //retVal = mvmnPrgrmService.insertMvmnPrgrmTme(mvmnPrgrmVo);
+//        retVal = mvmnPrgrmService.insertMvmnPrgrmTme(mvmnPrgrmVo);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -302,7 +290,7 @@ public class MvmnPrgrmController {
     */
     @RequestMapping(value = "/mng/prtpn/mvmnPrgrm/updateMvmnPrgrm.do")
     @ResponseBody
-    public Map<String, Object> updateMvmnPrgrm(@Valid MvmnPrgrmVo mvmnPrgrmVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> updateMvmnPrgrm(@Valid @RequestBody MvmnPrgrmVo mvmnPrgrmVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         if (bindingResult.hasErrors()) {
             FieldError fieldError = bindingResult.getFieldError();
@@ -427,5 +415,16 @@ public class MvmnPrgrmController {
         resultMap.put("prgrmSttList", result);
         return resultMap;
             
-    }            
+    }
+
+    private static List<Integer> getYears() {
+        int srcYear = 2022;
+        int dstYear = LocalDate.now().getYear() + 3;
+        List<Integer> years = new ArrayList<>();
+
+        for( int i= srcYear; i<= dstYear; i++) {
+            years.add(i);
+        }
+        return years;
+    }
 }

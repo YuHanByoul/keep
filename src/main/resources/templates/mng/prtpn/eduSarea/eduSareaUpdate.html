@@ -87,16 +87,16 @@
 <div class="modal fade" id="instSearchPopup" data-bs-backdrop="static"></div>
 <script th:inline="javascript">
 
-    var instSearchPopupUrl = "/mng/envtcherTrnngInst/instSearchPopup.html";
-    var instSearchAddModal;
+    var instSearchPopupUrl = "/mng/bsnsOperDta/instSearchPopup.html";
+    var instSearchPopup;
     var ctprvnCdSelectedItems = [];
 
     /* 기관검색 팝업 load */
     fn_openInstSearchModal = () => {
         $("#instSearchPopup").load(instSearchPopupUrl, function(response, status, xhr) {
             if (status == "success") {
-                instSearchAddModal = new bootstrap.Modal($('#instSearchPopup'));
-                instSearchAddModal.show();
+                instSearchPopup = new bootstrap.Modal($('#instSearchPopup'));
+                instSearchPopup.show();
             }
         });
     }
@@ -141,13 +141,15 @@
 
     //지역 행삭제
     function fn_delRowCtprvnCds(item){
-        $(item).parent().parent().remove();
+        if(confirm('해당 지역의 세부설정 정보가 지워질 수 있습니다. 삭제하시겠습니까?')) {
+            $(item).parent().parent().remove();
+        }
     }
     
     function fn_makeCtprvnCdsListHtml() {
         var ctprvnCdsHtml = "";
-        var rowCnt =  $("#ctprvnDiv").find('.row').length;
-        var ctprvnCdsList = /*[[${ctprvnCdList}]]*/;
+        var ctprvnCdsList = /*[[${ctprvnCdList}]]*/null;
+
         ctprvnCdsHtml += '<div class="row pt-1">   '
         ctprvnCdsHtml += '  <div class="col col-md-6 col-lg-3">';                         
         ctprvnCdsHtml += '      <select class="form-select form-select-sm form-control-sm" style="" id="ctprvnCd" name="ctprvnCd">';
@@ -169,6 +171,7 @@
         if(!($("#eduSareaUpdateForm").valid())) return;
 
         if(!confirm("수정하시겠습니까?")) return;
+
 
         var ctprvnCds = $('[name=ctprvnCd] option:selected').map(function(){ return $(this).val();}).get().join(",");
         var setCtprvnCd = new Set($('[name=ctprvnCd] option:selected').map(function(){ return $(this).val();}));
@@ -197,6 +200,7 @@
                         alert(data.msg);
                     }
                     closeWorkProgress();
+                    selectedId ="";
                 }
             });
         }
@@ -206,12 +210,14 @@
     function fn_makeCtprvnCdsDivHtml() {
         var ctprvnCdsHtml = "";
         var ctprvnCdsList = /*[[${ctprvnCdList}]]*/null;
+
         for(var i=0; i<ctprvnCdSelectedItems.length; i++){
             ctprvnCdsHtml += '<div class="row pt-1">   ';
             ctprvnCdsHtml += '  <div class="col col-md-6 col-lg-3">';                         
             ctprvnCdsHtml += '      <select class="form-select form-select-sm form-control-sm" style="" id="ctprvnCd" name="ctprvnCd">';
             for(var j=0; j<ctprvnCdsList.length; j++){
-                ctprvnCdsHtml += ctprvnCdSelectedItems[i] == ctprvnCdsList[j].ctprvnCd ? '<option value="'+ctprvnCdsList[j].ctprvnCd+'" selected>'+ctprvnCdsList[j].ctprvnNm+'</option>' : '<option value="'+ctprvnCdsList[i].ctprvnCd+'">'+ctprvnCdsList[j].ctprvnNm+'</option>'; 
+                ctprvnCdsHtml += ctprvnCdSelectedItems[i] == ctprvnCdsList[j].ctprvnCd ?
+                    '<option value="'+ctprvnCdsList[j].ctprvnCd+'" selected>'+ctprvnCdsList[j].ctprvnNm+'</option>' : '<option value="'+ctprvnCdsList[j].ctprvnCd+'">'+ctprvnCdsList[j].ctprvnNm+'</option>';
             }
             ctprvnCdsHtml += '      </select>';
             ctprvnCdsHtml += '  </div>';        

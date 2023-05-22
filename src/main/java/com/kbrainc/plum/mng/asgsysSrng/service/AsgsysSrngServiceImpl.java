@@ -283,11 +283,11 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 				cell.setCellStyle(style);
 				/*심사위원심사상태*/
 				cell = row.createCell(cellnum++);
-				cell.setCellValue(StringUtil.nvl(modelVo.getSrngSttsCdNm(), ""));
+				cell.setCellValue(StringUtil.nvl(modelVo.getJdgsSrngSttsCdNm(), ""));
 				cell.setCellStyle(style);
 				/*지원단심사상태*/
 				cell = row.createCell(cellnum++);
-				cell.setCellValue(StringUtil.nvl(modelVo.getSrngSttsCdNm(), ""));
+				cell.setCellValue(StringUtil.nvl(modelVo.getSprtgrpSrngSttsCdNm(), ""));
 				cell.setCellStyle(style);
 				/*현장점검지정일시*/
 				cell = row.createCell(cellnum++);
@@ -2090,6 +2090,11 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 	@Override
 	public List<AsgsysSrngVo> selectSrngAnsList(AsgsysSrngVo asgsysSrngVo) throws Exception{
 		return asgsysSrngDao.selectSrngAnsList(asgsysSrngVo);
+	}
+
+	@Override
+	public List<AsgsysSrngVo> selectSelfChkListAns(AsgsysSrngVo asgsysSrngVo) throws Exception{
+		return asgsysSrngDao.selectSelfChkListAns(asgsysSrngVo);
 	}
 
 }

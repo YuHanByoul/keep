@@ -93,7 +93,6 @@
 							<strong>첨부파일</strong>
 						</div>
                         <div class="mb-2 col-12">
-<!--                              <input type="file" multiple id="evdncDcmntFile1" name="evdncDcmntFile1" class="form-control form-control-sm" th:if="${#lists.isEmpty(bfrCertFileList)}" disabled/> -->
                             <span th:unless="${!#lists.isEmpty(bfrCertFileList) && bfrCertFileList[0].fileid!=0 && bfrCertFileList[0].fileid!=null}">선택된 파일 없음.</span>
                         </div>
 
@@ -173,8 +172,8 @@
                                         <td class="text-center v-middle">[[${item.idntyMttr}]]</td>
                                         <td class="text-center v-middle">[[${item.altm}]]</td>
                                         <td class="text-center v-middle">
-                                            <input th:if     ="${item.chklstSeCd != ''}" type="number" class="text-center v-middle form-control form-control-sm" th:max="${item.altm}" th:name="${'scr'+ i.count}" th:id="${'scr'+ i.count}" placeholder="0" th:value="${item.chkLstScr}" disabled/>
-                                            <input th:unless ="${item.chklstSeCd != ''}" type="number" class="text-center v-middle form-control form-control-sm" th:max="${item.altm}"th:name="${'scr'+ i.count}" th:id="${'scr'+ i.count}" placeholder="0" th:value="${item.scr}" />
+                                            <input th:if     ="${item.chklstSeCd != '' && item.chklstSeCd != null}" type="number" class="text-center v-middle form-control form-control-sm" th:max="${item.altm}" th:name="${'scr'+ i.count}" th:id="${'scr'+ i.count}" placeholder="0" th:value="${item.scr}" disabled/>
+                                            <input th:unless ="${item.chklstSeCd != '' && item.chklstSeCd != null}" type="number" class="text-center v-middle form-control form-control-sm" th:max="${item.altm}"th:name="${'scr'+ i.count}" th:id="${'scr'+ i.count}" placeholder="0" th:value="${item.scr}" />
                                             <input type="hidden" th:id="${'srngData' + i.count}"
                                                                  th:data-formid     = "${item.formid    }"
                                                                  th:data-qitemid    = "${item.qitemid   }"
@@ -192,8 +191,8 @@
                         <tfoot>
                             <tr>
                                 <th colspan="3" class="table-active text-center">총 총점</th>
-                                <th class="table-active text-center" id="sumAltm"><strong>000</th>
-                                <th class="table-active text-center" id="sumScr">000</th>
+                                <th class="table-active text-center" id="sumAltm"><strong>0</th>
+                                <th class="table-active text-center" id="sumScr">0</th>
                             </tr>
                         </tfoot>
                     </table>
@@ -215,6 +214,7 @@
 <script th:inline="javascript">
 
 var ansList = /*[[${ansList}]]*/null;
+var selfChkListAns = /*[[${selfChkListAns}]]*/null;
 
 function fn_insertJdgsSrngInfo() {
 
@@ -283,11 +283,25 @@ function fn_insertJdgsSrngInfo() {
 }
 
 function setAns(){
+	if(setAns == null) return;
 	$("#jdgsSrngInfoFrm [id^=srngData]").each(function(index, item){
 
         for(var idx in ansList){
             if(ansList[idx].qitemid == $(this).attr('data-qitemid')) {
                 $(item).parent().find('[id^=scr]').val(ansList[idx].scr);
+            }
+        }
+    });
+};
+
+function setSelfChkListAns(){
+
+	if(selfChkListAns == null) return;
+	$("#jdgsSrngInfoFrm [data-chklstSeCd]").each(function(index, item){
+
+        for(var idx in selfChkListAns){
+            if(selfChkListAns[idx].chklstSeCd == $(this).attr('data-chklstSeCd')) {
+                $(item).parent().find('[id^=scr]').val(selfChkListAns[idx].scr);
             }
         }
     });
@@ -313,6 +327,7 @@ function setSumScr(){
 }
 
 function fn_jdgsSrngInfoFrmInit(){
+	debugger;
 	if($("#loginUserid").val() == $("#jdgsid").val()){
 		$("#saveBtn").prop("disabled",false);
 	}else{
@@ -323,6 +338,7 @@ function fn_jdgsSrngInfoFrmInit(){
     $("#jdgsSrngInfoFrm [id^=styYn]").prop("disabled", true);
     $("#jdgsSrngInfoFrm [id^=sftyMngYn]").prop("disabled", true);
 
+    setSelfChkListAns();
 	setAns();
 	setSumScr();
 }
