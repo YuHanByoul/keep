@@ -346,7 +346,7 @@ public class GnbMenuPrintImpl {
                                     menuTag.append("                            </a>\n");
                                     menuTag.append("                        </li>\n");
                                     menuTag.append("                        <li>\n");
-                                    menuTag.append("                            <a href=\"https://ehrd.me.go.kr/kor/edusch/eduschList.do?menuNo=110001\" target=\"_blank\" title=\"새 창\">\n");
+                                    menuTag.append("                            <a href=\"https://ehrd.me.go.kr/kor/index.do\" target=\"_blank\" title=\"새 창\">\n");
                                     menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb14.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>");
