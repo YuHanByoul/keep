@@ -118,6 +118,17 @@ public interface MvmnAplyDao {
     * @return int
     */
     public int updateMvmnAply(MvmnAplyVo mvmnAplyVo) throws Exception;
+    
+    /**
+     * 교육신청관리 교육일정 수정
+     *
+     * @Title : updateMvmnAplySchdl
+     * @Description : 교육신청관리 교육일정 수정
+     * @param mvmnAplyVo 교육신청관리 객체
+     * @throws Exception 예외
+     * @return int
+     */
+     public int updateMvmnAplySchdl(MvmnAplyVo mvmnAplyVo) throws Exception;
 
     /**
      * 교육신청관리 교육신청자 신청상태 수정 기능
