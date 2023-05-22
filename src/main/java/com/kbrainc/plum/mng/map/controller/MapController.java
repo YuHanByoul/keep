@@ -256,13 +256,13 @@ public class MapController {
 			}
 
 			String resrceSeCd = mapVo.getResrceSeCd();
-			Map<String,Object> result = mapService.mapExcelDatalValidationCheck(excelList,resrceSeCd);//엑셀 체크
+ 			Map<String,Object> result = mapService.mapExcelDatalValidationCheck(excelList,resrceSeCd);//엑셀 체크
 
 			map.put("checkList" ,(ArrayList)result.get("checkList"));
 		} catch (IndexOutOfBoundsException e) {
 			map.put("msg" ,"엑셀 정합성 체크중에 에러가 발생하였습니다. 양식을 확인 하여 주십시오");
         } catch (Exception e) {
-        	map.put("msg" ,"엑셀 정합성 체크중에 에러가 발생하였습니다.");
+        	map.put("msg" , e.getMessage());
         }
 		return map;
 	}
