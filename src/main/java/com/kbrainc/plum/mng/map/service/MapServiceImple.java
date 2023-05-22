@@ -158,7 +158,8 @@ public class MapServiceImple extends PlumAbstractServiceImpl implements MapServi
         String hmpg="";
         String telno="";
         String addr="";
-        String chkAddr="";
+        String chkAddr="";     //지번
+        String chkRoadAddr=""; //도로명
         String addrDtl="";
         String ctprvnCd="";
 
@@ -173,10 +174,12 @@ public class MapServiceImple extends PlumAbstractServiceImpl implements MapServi
             for(int i = 1; i < list.size(); i++) { // 헤더를 제외하기 위해 1부터 시작
 
             	data = (ArrayList) list.get(i);
-logger.info("@@@@@@@@@@@@@@@@@@@@ " + data.size());
 
             	//자원구분 : 교육 프로그램 size7
             	if(resrceSeCd.equals("238103104")) {
+            	    if(data.size() == 5) {
+            	        throw new Exception("구분과 맞지 않은 양식입니다.");
+            	    }
             		ctprvnNm = (String) data.get(0);
             		instNm   = (String) data.get(1);
             		eduTrgt  = (String) data.get(2);
@@ -218,7 +221,7 @@ logger.info("@@@@@@@@@@@@@@@@@@@@ " + data.size());
             	}
 
             	if(status.equals("정상")) {
-            		JSONObject addrJson=null;
+            		JSONObject addrJson = null;
             		//주소
             		if(addr == null || addr.equals("")) {
             			status = "주소 항목이 입력되지 않았습니다.";
@@ -227,12 +230,20 @@ logger.info("@@@@@@@@@@@@@@@@@@@@ " + data.size());
             			addrJson = getAddrDocWithaddress(addr);
 
             			if(addrJson!=null) {
-            				chkAddr  = addrJson.get("address_name").toString();
-            				if(chkAddr != null && addr.equals(chkAddr)) {
-            					ctprvnCd = addrJson.get("h_code").toString().substring(0, 2);
+            			    JSONObject jsonChkAddr = null;
+            			    JSONObject jsonChkRoadAddr = null;
+            			    
+            			    jsonChkAddr  = (JSONObject)addrJson.get("address");
+            			    jsonChkRoadAddr  = (JSONObject)addrJson.get("road_address");
+            				
+                            chkAddr  = jsonChkAddr.get("address_name").toString();
+                            chkRoadAddr  = jsonChkRoadAddr.get("address_name").toString();
+            				
+            				if(chkAddr != null && (addr.equals(chkAddr) || addr.equals(chkRoadAddr))) {
+            					ctprvnCd = jsonChkAddr.get("h_code").toString().substring(0, 2);
             					status ="정상";
             				}else {
-            					status ="잘못된 지역(시도)코드 입니다.";
+            					status ="주소정보가 정확하지 않습니다.";
             				}
             			}else {
             				status ="잘못된 지역(시도)코드 입니다.";
@@ -274,7 +285,7 @@ logger.info("@@@@@@@@@@@@@@@@@@@@ " + data.size());
 	                JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody().toString());
 	                JSONArray array = (JSONArray) jsonObject.get("documents");
 	                if(array.size() != 0){
-	                    JSONObject objectDoc = (JSONObject) ((JSONObject) array.get(0)).get("address");
+	                    JSONObject objectDoc = (JSONObject) ((JSONObject) array.get(0)); // 지번주소
 //	                    return objectDoc.get("h_code").toString().substring(0, 2);
 	                    return objectDoc;
 	                }
