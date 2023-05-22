@@ -1,438 +1,453 @@
-<form id ="infntPrgrmInsertForm">
-        <!-- INSERT -->
-        <div class="card-header p-b-0">
-            <h3 class="sub-title"><strong>교육프로그램 정보</strong></h3>
-        </div>
+<form id="infntPrgrmInsertForm">
+    <!-- INSERT -->
+    <div class="card-header p-b-0">
+        <h3 class="sub-title"><strong>교육프로그램 정보</strong></h3>
+    </div>
 
-        <!-- Tab Container Start -->
-         <div class="card-block-small p-t-0">
-             <div class="row">
-                 <div class="col-lg-6 mb-3">                 
-                     <div class="mb-0 form-group required">
-                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="eduYr"><strong>교육년도</strong></label>
-                         <div class="col-sm-12">
-	                         <select name="eduYr" id="eduYr" class="form-select form-select-sm form-control-sm">
-	                             <option value="">- 선택 -</option>
-	                             <th:block th:each="year : ${years}">
-	                                 <option th:value="${year}"><th:block th:text="${year}" /></option>
-	                             </th:block>
-	                         </select>
-                         </div>
-                     </div>
-                 </div>
-             </div>                 
-             <div class="row">
-                 <div class="col-lg-6 mb-3">                 
-                     <div class="mb-0 form-group required">
-                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육관</strong></label>
-                         <div class="col-sm-12">
-	                         <select name="clssrmId" id="clssrmId" class="form-select form-select-sm form-control-sm" onchange="fn_changeClssrmId(this)">
-	                             <option value="">- 선택 -</option>
-	                             <th:block th:each="item : ${clssList}">
-	                                 <option th:value="${item.clssrmId}"><th:block th:text="${item.clssrmNm}" /></option>
-	                             </th:block>
-	                         </select>
-                         </div>
-                     </div>
-                 </div>                     
-                 <div class="col-lg-6 mb-3">    
-                     <div class="mb-0 form-group required">
-                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="eduTypeCd"><strong>교육유형</strong></label>
-                         <div class="col-sm-12">
-                             <th:block kattr:select_code="eduTypeCd" th:attr="grpCd=144" onchange="" firstOptTxt="- 선택 -" isAdmin="true" disabled></th:block>
-                         </div>
-                     </div>
-                 </div>
-             </div>
-             <div class="row">
-                 <div class="col-12 mb-3">                                                                    
-                     <div class="mb-0 form-group required" >
-                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="prgrmNm"><strong>프로그램명</strong></label>
-                         <div class="col-12">
-                             <input type="text" class="form-control form-control-sm" name="prgrmNm" id="prgrmNm" placeholder="" >
-                         </div>
-                     </div>
-                 </div>
-             </div>
-             <div class="row">
-                 <div class="col-6 mb-3">                                                                    
-                     <div id="clsfCdDiv" class="mb-0 form-group required">
-                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육주제</strong></div>
-                         <div class="row">
-	                         <div class="col-sm">
-                                 <th:block kattr:select_code="clsfCds_1" grpCd="155" upprCd="0" selectedCd="" onchange='setNextDepth(155,this.value,"clsfCds_2" )' firstOptTxt="- 선택 -" isAdmin="true"></th:block>	                         
-	                         </div>
-	                         <div class="col-sm mt-1 mt-sm-0">
-	                             <select id="clsfCds_2" name="clsfCds_2" class="form-select form-select-sm form-control-sm">
-	                                 <option value="" disabled selected>대분류를 선택하세요</option>
-	                             </select>
-	                         </div>
-	                         <div id="btnDiv" class="mt-1 mt-sm-0" style="width:100px;">
-	                             <button type="button" class="input-group-text btn btn-primary btn-sm" onclick="fn_delRowClsfCds(this)">-</button>
-	                             <button type="button" id="addRowClsfCds" class="input-group-text btn btn-primary btn-sm" onclick="fn_addRowClsfCds(this)">+</button>
-	                         </div>
-                         </div>	                                                  
-                     </div>
-                 </div>
-                 <div class="col-6 mb-3">                                                                    
-                     <div class="mb-0 form-group required">
-                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육대상</strong></label>
-                         <div class="row">
-                             <div class="col-sm-12">
-                                 <div class="border-checkbox-section">
-                                     <span kattr:check_code="trgtCd" grpCd="162" isAdmin="true" addClass="trgtCds">
-                                 </div>
-                             </div>
-                         </div>                                                   
-                     </div>
-                 </div>  
-             </div>     
-             <div class="row">                                           
-                 <div class="col-lg-6 mb-3">
-                     <div class="mb-0 form-group required">
-                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육정원(명)</strong></label>
-                         <div class="col-sm-12">
-                             <input type="text" class="form-control form-control-sm" name="eduNope" id="eduNope" placeholder="" onchange="fn_changeEduNope(this);" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');">
-                             <span class="messages"></span>
-                         </div>
-                     </div>
-                 </div>                     
-                 <div class="col-lg-6 mb-3">                                  
-                     <div class="mb-0 form-group required">                     
-                          <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육시간(분)</strong></label>
-                         <div class="col-sm-12">
-                             <input type="text" class="form-control form-control-sm" name="eduHrMnt" id="eduHrMnt" placeholder="" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');">
-                             <span class="messages"></span>
-                         </div>
-                     </div>
-                 </div>
-             </div> 
-             <div class="row form-group mb-3">    
-                 <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>접수방법</strong></div>     
-                 <div class="col-sm-12">
-                      <span id="rcptMthdCd" name="rcptMthdCd" kattr:radio_code="rcptMthdCd" grpCd="156" selectedCd="156101" isAdmin="true">
-                  </div>     
-             </div>
-             <div class="row">
-                 <div class="col-lg-6 mb-3">                 
-                     <div class="mb-0 form-group required">
-                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="aplcntDgstfnSrvyid"><strong>신청자 만족도 설문</strong></label>
-                         <div class="col-sm-12">
-                             <select name="aplcntDgstfnSrvyid" id="aplcntDgstfnSrvyid" class="form-select form-select-sm form-control-sm">
-                                 <option value="">- 선택 -</option>
-                                 <th:block th:each="item : ${aplcntDgstfnSrvyList}">
-                                     <option th:value="${item.srvyid}"><th:block th:text="${item.srvyNm}" /></option>
-                                 </th:block>
-                             </select>
-                         </div>
-                     </div>
-                 </div>                     
-                 <div class="col-lg-6 mb-3">    
-                     <div class="mb-0 form-group required">
-                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="stdntDgstfnSrvyid"><strong>학습자 만족도 설문</strong></label>
-                         <div class="col-sm-12">
-                             <select name="stdntDgstfnSrvyid" id="stdntDgstfnSrvyid" class="form-select form-select-sm form-control-sm">
-                                 <option value="">- 선택 -</option>
-                                 <th:block th:each="item : ${stdntDgstfnSrvyList}">
-                                     <option th:value="${item.srvyid}"><th:block th:text="${item.srvyNm}" /></option>
-                                 </th:block>
-                             </select>
-                         </div>
-                     </div>
-                 </div>
-             </div>               
-             <div class="row form-group mb-3">    
-                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="eduExpln"><strong>교육설명</strong></label>
-                 <div class="col-sm-12">
-                     <textarea rows="5" cols="5" name="eduExpln" id="eduExpln" class="form-control form-control-sm" placeholder="내용을 입력해주세요."></textarea>
-                 </div>
-             </div>                                                          
-             <div class="row form-group mb-3">    
-                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="mttrat"><strong>유의사항</strong></label>
-                 <div class="col-sm-12">
-                     <textarea rows="5" cols="5" name="mttrat" id="mttrat" class="form-control form-control-sm" placeholder="내용을 입력해주세요."></textarea>
-                 </div>
-             </div>                
-             <div class="row form-group mb-3">    
-                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="eduIntrcnFileid"><strong>교육소개</strong></label>
-                 <div class="col-sm-12">
-                     <input type="file" class="form-control form-control-sm" id="eduIntrcnFile" name="eduIntrcnFile"/>
-                     <input type="hidden" name="eduIntrcnFilegrpid" id="eduIntrcnFilegrpid" value="0">
-                     <input type="hidden" name="eduIntrcnFileid" id="eduIntrcnFileid" value="0">                         
-                 </div>
-                 <div class="mt-2 row">
-                     <div class="col-auto">
-                         <div id="eduIntrcnFileUploadSuccess">
-                         </div>
-                     </div>
-                 </div>
-             </div>                                                          
-             <div class="row form-group mb-3">    
-                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="eduPhotoFile"><strong>교육사진</strong></label>
-                 <p class="text-warning m-b-0">* 10MB 미만의 JPG, PNG, GIF파일만 업로드 가능(권장사이즈 : 가로 398px, 세로 223px)</p>
-                 <div class="col-sm-12">
-                     <input type="file" class="form-control form-control-sm" id="eduPhotoFile" name="eduPhotoFile"/>
-                     <input type="hidden" name="eduPhotoFilegrpid" id="eduPhotoFilegrpid" value="0">
-                     <input type="hidden" name="eduPhotoFileid" id="eduPhotoFileid" value="0">                         
-                 </div>
-                 <div class="mt-2 row">
-                     <div class="col-auto">
-                         <div id="eduPhotoFileUploadSuccess">
-                         </div>
-                     </div>
-                 </div>
-             </div>                                                          
-             <div class="row">
-                 <div class="col-lg-6 mb-3">
-                     <div class="mb-0 form-group required">
-                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육가능요일</strong></div>
-                         <div class="col-sm-12">
-                             <div class="border-checkbox-section">
-                                 <div class="border-checkbox-group border-checkbox-group-inverse d-inline-block">
-                                     <input class="border-checkbox" type="checkbox" name="sunYn" id="sunYn" onchange="fn_changeEduPssbDayWeekSelectItem(this);">
-                                     <label class="form-label form-label-sm border-checkbox-label text-c-pink" for="sunYn">
-                                         일요일
-                                     </label>
-                                 </div>
-                                 <div class="border-checkbox-group d-inline-block">
-                                     <input class="border-checkbox" type="checkbox" name="monYn" id="monYn" onchange="fn_changeEduPssbDayWeekSelectItem(this);">
-                                     <label class="form-label form-label-sm border-checkbox-label" for="monYn">
-                                         월요일
-                                     </label>
-                                 </div>
-                                 <div class="border-checkbox-group d-inline-block">
-                                     <input class="border-checkbox" type="checkbox" name="tuesYn" id="tuesYn" onchange="fn_changeEduPssbDayWeekSelectItem(this);">
-                                     <label class="form-label form-label-sm border-checkbox-label" for="tuesYn">
-                                         화요일
-                                     </label>
-                                 </div>
-                                 <div class="border-checkbox-group d-inline-block">
-                                     <input class="border-checkbox" type="checkbox" name="wedYn" id="wedYn" onchange="fn_changeEduPssbDayWeekSelectItem(this);">
-                                     <label class="form-label form-label-sm border-checkbox-label" for="wedYn">
-                                         수요일
-                                     </label>
-                                 </div>
-                                 <div class="border-checkbox-group d-inline-block">
-                                     <input class="border-checkbox" type="checkbox" name="thurYn" id="thurYn" onchange="fn_changeEduPssbDayWeekSelectItem(this);">
-                                     <label class="form-label form-label-sm border-checkbox-label" for="thurYn">
-                                         목요일
-                                     </label>
-                                 </div>
-                                 <div class="border-checkbox-group d-inline-block">
-                                     <input class="border-checkbox" type="checkbox" name="friYn" id="friYn" onchange="fn_changeEduPssbDayWeekSelectItem(this);">
-                                     <label class="form-label form-label-sm border-checkbox-label" for="friYn">
-                                         금요일
-                                     </label>
-                                 </div>
-                                 <div class="border-checkbox-group d-inline-block">
-                                     <input class="border-checkbox" type="checkbox" name="satYn" id="satYn" onchange="fn_changeEduPssbDayWeekSelectItem(this);">
-                                     <label class="form-label form-label-sm border-checkbox-label text-c-blue" for="satYn">
-                                         토요일
-                                     </label>
-                                 </div>
-                             </div>
-                         </div>
-                     </div>
-                 </div>
-                 <div class="col-lg-6 mb-3">
-                     <div class="mb-0 form-group">
-                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사용여부</strong></div>
-                         <div class="col-sm-12">
-	                         <div class="form-radio">
-	                             <div class="radio radio-inline">
-	                                 <label class="mb-0 form-label">
-	                                     <input type="radio" name="useYn" value="Y" checked="">
-	                                     <i class="helper"></i>사용
-	                                 </label>
-	                             </div>
-	                             <div class="radio radio-inline">
-	                                 <label class="mb-0 form-label">
-	                                     <input type="radio" name="useYn" value="N">
-	                                     <i class="helper"></i>미사용
-	                                 </label>
-	                             </div>
-	                         </div>
-                         </div>
-                     </div>
-                 </div>
-             </div>
-         </div>
-         <!-- 교육 시간표 -->
-         <div class="card-header p-b-0 p-t-0" >
-             <h3 class="sub-title">
-                 <div class="row align-items-center">
-                     <div class="col"><strong>교육 시간표<i class="mark-required">*</i></strong></div>
-                     <div class="col-auto btn-group-sm">
-                         <button type="button" id="delRowBtn" class="btn btn-inverse" onclick="fn_delRow();">삭제</button>
-                         <button type="button" id="addRowBtn" class="btn btn-primary"  onclick="fn_addRow();">추가</button>
-                     </div>
-                 </div>
-             </h3>
-         </div>
-         <div class="card-block-small p-t-0">
-             <div class="col-12 table-border-style">
-                 <div class="table-responsive">
-                     <table class="table">
-                         <thead>
-	                         <tr>
-	                             <th class="text-center">
-	                                 <input id="prgrmTmeSelectAllCheckbox" class="form-check-input" type="checkbox" value="" aria-label="전체 선택" >
-	                             </th>
-	                             <th class="text-center">No.</th>
-	                             <th class="text-center">회차구분</th>
-	                             <th class="text-center">사용요일</th>
-	                             <th class="text-center">시작시간</th>
-	                             <th class="text-center">종료시간</th>
-	                         </tr>
-                         </thead>
-                         <tbody id="infntPrgrmTmBody">
-	                         <tr>
-	                             <td class="text-center v-middle">
-	                                 <input id="prgrmTmeSingleCheckbox" class="form-check-input" type="checkbox" value="" aria-label="선택" onchange="fn_changeSelectItem(this);">
-	                             </td>
-	                             <td class="text-center v-middle idx">1</td>
-	                             <td class="text-center v-middle">
-	                                 <input type="text" class="form-control form-control-sm d-inline-block" name="tmeNm" placeholder="" value="" style="width:88px;">
-	                             </td>
-	                             <td class="text-center v-middle">
-	                                 <div class="border-checkbox-section">
-	                                     <div class="border-checkbox-group border-checkbox-group-inverse d-inline-block">
-	                                         <input class="border-checkbox" type="checkbox" name="tmeSunYn" id="tmeSunYn1" disabled>
-	                                         <label class="form-label form-label-sm border-checkbox-label text-c-pink" for="tmeSunYn1">
-	                                             일
-	                                         </label>
-	                                     </div>
-	                                     <div class="border-checkbox-group d-inline-block">
-	                                         <input class="border-checkbox" type="checkbox" name="tmeMonYn" id="tmeMonYn1" disabled>
-	                                         <label class="form-label form-label-sm border-checkbox-label" for="tmeMonYn1">
-	                                             월
-	                                         </label>
-	                                     </div>
-	                                     <div class="border-checkbox-group d-inline-block">
-	                                         <input class="border-checkbox" type="checkbox" name="tmeTuesYn" id="tmeTuesYn1" disabled>
-	                                         <label class="form-label form-label-sm border-checkbox-label" for="tmeTuesYn1">
-	                                             화
-	                                         </label>
-	                                     </div>
-	                                     <div class="border-checkbox-group d-inline-block">
-	                                         <input class="border-checkbox" type="checkbox" name="tmeWedYn" id="tmeWedYn1" disabled>
-	                                         <label class="form-label form-label-sm border-checkbox-label" for="tmeWedYn1">
-	                                             수
-	                                         </label>
-	                                     </div>
-	                                     <div class="border-checkbox-group d-inline-block">
-	                                         <input class="border-checkbox" type="checkbox" name="tmeThurYn" id="tmeThurYn1" disabled>
-	                                         <label class="form-label form-label-sm border-checkbox-label" for="tmeThurYn1">
-	                                             목
-	                                         </label>
-	                                     </div>
-	                                     <div class="border-checkbox-group d-inline-block">
-	                                         <input class="border-checkbox" type="checkbox" name="tmeFriYn" id="tmeFriYn1" disabled>
-	                                         <label class="form-label form-label-sm border-checkbox-label" for="tmeFriYn1">
-	                                             금
-	                                         </label>
-	                                     </div>
-	                                     <div class="border-checkbox-group d-inline-block">
-	                                         <input class="border-checkbox" type="checkbox" name="tmeSatYn" id="tmeSatYn1" disabled>
-	                                         <label class="form-label form-label-sm border-checkbox-label text-c-blue" for="tmeSatYn1">
-	                                             토
-	                                         </label>
-	                                     </div>
-	                                 </div>
-	                             </td>
-	                             <td class="text-center v-middle">
-	                                 <input type="time" name="bgngTm" class="form-control form-control-sm" />
-	                             </td>
-	                             <td class="text-center v-middle">
-	                                 <input type="time" name="endTm" class="form-control form-control-sm" />
-	                             </td>
-	                         </tr>
-	                         <tr>
-	                             <td class="text-center v-middle">
-	                                 <input id="prgrmTmeSingleCheckbox" class="form-check-input" type="checkbox" value="" aria-label="선택" onchange="fn_changeSelectItem(this);">
-	                             </td>
-	                             <td class="text-center v-middle idx">2</td>
-	                             <td class="text-center v-middle">
-	                                 <input type="text" class="form-control form-control-sm d-inline-block" name="tmeNm" placeholder="" value="" style="width:88px;">
-	                             </td>
-	                             <td class="text-center v-middle">
-	                                 <div class="border-checkbox-section">
-	                                     <div class="border-checkbox-group border-checkbox-group-inverse d-inline-block">
-	                                         <input class="border-checkbox" type="checkbox" name="tmeSunYn" id="tmeSunYn2" disabled>
-	                                         <label class="form-label form-label-sm border-checkbox-label text-c-pink" for="tmeSunYn2">
-	                                             일
-	                                         </label>
-	                                     </div>
-	                                     <div class="border-checkbox-group d-inline-block">
-	                                         <input class="border-checkbox" type="checkbox" name="tmeMonYn" id="tmeMonYn2" disabled>
-	                                         <label class="form-label form-label-sm border-checkbox-label" for="tmeMonYn2">
-	                                             월
-	                                         </label>
-	                                     </div>
-	                                     <div class="border-checkbox-group d-inline-block">
-	                                         <input class="border-checkbox" type="checkbox" name="tmeTuesYn" id="tmeTuesYn2" disabled>
-	                                         <label class="form-label form-label-sm border-checkbox-label" for="tmeTuesYn2">
-	                                             화
-	                                         </label>
-	                                     </div>
-	                                     <div class="border-checkbox-group d-inline-block">
-	                                         <input class="border-checkbox" type="checkbox" name="tmeWedYn" id="tmeWedYn2" disabled>
-	                                         <label class="form-label form-label-sm border-checkbox-label" for="tmeWedYn2">
-	                                             수
-	                                         </label>
-	                                     </div>
-	                                     <div class="border-checkbox-group d-inline-block">
-	                                         <input class="border-checkbox" type="checkbox" name="tmeThurYn" id="tmeThurYn2" disabled>
-	                                         <label class="form-label form-label-sm border-checkbox-label" for="tmeThurYn2">
-	                                             목
-	                                         </label>
-	                                     </div>
-	                                     <div class="border-checkbox-group d-inline-block">
-	                                         <input class="border-checkbox" type="checkbox" name="tmeFriYn" id="tmeFriYn2" disabled>
-	                                         <label class="form-label form-label-sm border-checkbox-label" for="tmeFriYn2">
-	                                             금
-	                                         </label>
-	                                     </div>
-	                                     <div class="border-checkbox-group d-inline-block">
-	                                         <input class="border-checkbox" type="checkbox" name="tmeSatYn" id="tmeSatYn2" disabled>
-	                                         <label class="form-label form-label-sm border-checkbox-label text-c-blue" for="tmeSatYn2">
-	                                             토
-	                                         </label>
-	                                     </div>
-	                                 </div>
-	                             </td>
-	                             <td class="text-center v-middle">
-	                                 <input type="time" name="bgngTm" class="form-control form-control-sm" />
-	                             </td>
-	                             <td class="text-center v-middle">
-	                                 <input type="time" name="endTm" class="form-control form-control-sm" />
-	                             </td>
-	                         </tr>
-                         </tbody>
-                     </table>
-                 </div>
-             </div>
-         </div>
-        <div class="card-block-small">
-            <button type="button" class="btn btn-disabled m-r-5" id="canceInfntPrgrm" onclick="gridHelper1.toggleContent()">취소</button>
-            <th:block sec:authorize-url="/mng/prtpn/infntPrgrm/insertInfntPrgrm.do"><button type="button" class="btn btn-primary" id="insertInfntPrgrm" onclick="fn_insertInfntPrgrm()">저장</button></th:block>
+    <!-- Tab Container Start -->
+    <div class="card-block-small p-t-0">
+        <div class="row">
+            <div class="col-lg-6 mb-3">
+                <div class="mb-0 form-group required">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="eduYr"><strong>교육년도</strong></label>
+                    <div class="col-sm-12">
+                        <select name="eduYr" id="eduYr" class="form-select form-select-sm form-control-sm">
+                            <option value="">- 선택 -</option>
+                            <th:block th:each="year : ${years}">
+                                <option th:value="${year}">
+                                    <th:block th:text="${year}"/>
+                                </option>
+                            </th:block>
+                        </select>
+                    </div>
+                </div>
+            </div>
         </div>
-        <!-- Tab Container End -->
+        <div class="row">
+            <div class="col-lg-6 mb-3">
+                <div class="mb-0 form-group required">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육관</strong></label>
+                    <div class="col-sm-12">
+                        <select name="clssrmId" id="clssrmId" class="form-select form-select-sm form-control-sm" onchange="fn_changeClssrmId(this)">
+                            <option value="">- 선택 -</option>
+                            <th:block th:each="item : ${clssList}">
+                                <option th:value="${item.clssrmId}">
+                                    <th:block th:text="${item.clssrmNm}"/>
+                                </option>
+                            </th:block>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-3">
+                <div class="mb-0 form-group required">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="eduTypeCd"><strong>교육유형</strong></label>
+                    <div class="col-sm-12">
+                        <th:block kattr:select_code="eduTypeCd" th:attr="grpCd=144" onchange="" firstOptTxt="- 선택 -" isAdmin="true" disabled></th:block>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 mb-3">
+                <div class="mb-0 form-group required">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="prgrmNm"><strong>프로그램명</strong></label>
+                    <div class="col-12">
+                        <input type="text" class="form-control form-control-sm" name="prgrmNm" id="prgrmNm" placeholder="">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6 mb-3">
+                <div id="clsfCdDiv" class="mb-0 form-group required">
+                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육주제</strong></div>
+                    <div class="row">
+                        <div class="col-sm">
+                            <th:block kattr:select_code="clsfCds_1" grpCd="155" upprCd="0" selectedCd="" onchange='setNextDepth(155,this.value,"clsfCds_2" )' firstOptTxt="- 선택 -"
+                                      isAdmin="true"></th:block>
+                        </div>
+                        <div class="col-sm mt-1 mt-sm-0">
+                            <select id="clsfCds_2" name="clsfCds_2" class="form-select form-select-sm form-control-sm">
+                                <option value="" disabled selected>대분류를 선택하세요</option>
+                            </select>
+                        </div>
+                        <div id="btnDiv" class="mt-1 mt-sm-0" style="width:100px;">
+                            <button type="button" class="input-group-text btn btn-primary btn-sm" onclick="fn_delRowClsfCds(this)">-</button>
+                            <button type="button" id="addRowClsfCds" class="input-group-text btn btn-primary btn-sm" onclick="fn_addRowClsfCds(this)">+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 mb-3">
+                <div class="mb-0 form-group required">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육대상</strong></label>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="border-checkbox-section">
+                                     <span kattr:check_code="trgtCd" grpCd="162" isAdmin="true" addClass="trgtCds">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 mb-3">
+                <div class="mb-0 form-group required">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육정원(명)</strong></label>
+                    <div class="col-sm-12">
+                        <input type="text" class="form-control form-control-sm" name="eduNope" id="eduNope" placeholder="" onchange="fn_changeEduNope(this);"
+                               onKeyup="this.value=this.value.replace(/[^0-9]/g,'');">
+                        <span class="messages"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-3">
+                <div class="mb-0 form-group required">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육시간(분)</strong></label>
+                    <div class="col-sm-12">
+                        <input type="text" class="form-control form-control-sm" name="eduHrMnt" id="eduHrMnt" placeholder="" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');">
+                        <span class="messages"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row form-group mb-3">
+            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>접수방법</strong></div>
+            <div class="col-sm-12">
+                <span id="rcptMthdCd" name="rcptMthdCd" kattr:radio_code="rcptMthdCd" grpCd="156" selectedCd="156101" isAdmin="true"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 mb-3">
+                <div class="mb-0 form-group required">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="aplcntDgstfnSrvyid"><strong>신청자 만족도 설문</strong></label>
+                    <div class="col-sm-12">
+                        <select name="aplcntDgstfnSrvyid" id="aplcntDgstfnSrvyid" class="form-select form-select-sm form-control-sm">
+                            <option value="">- 선택 -</option>
+                            <th:block th:each="item : ${aplcntDgstfnSrvyList}">
+                                <option th:value="${item.srvyid}">
+                                    <th:block th:text="${item.srvyNm}"/>
+                                </option>
+                            </th:block>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-3">
+                <div class="mb-0 form-group required">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="stdntDgstfnSrvyid"><strong>학습자 만족도 설문</strong></label>
+                    <div class="col-sm-12">
+                        <select name="stdntDgstfnSrvyid" id="stdntDgstfnSrvyid" class="form-select form-select-sm form-control-sm">
+                            <option value="">- 선택 -</option>
+                            <th:block th:each="item : ${stdntDgstfnSrvyList}">
+                                <option th:value="${item.srvyid}">
+                                    <th:block th:text="${item.srvyNm}"/>
+                                </option>
+                            </th:block>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row form-group mb-3">
+            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="eduExpln"><strong>교육설명</strong></label>
+            <div class="col-sm-12">
+                <textarea rows="5" cols="5" name="eduExpln" id="eduExpln" class="form-control form-control-sm" placeholder="내용을 입력해주세요."></textarea>
+            </div>
+        </div>
+        <div class="row form-group mb-3">
+            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="mttrat"><strong>유의사항</strong></label>
+            <div class="col-sm-12">
+                <textarea rows="5" cols="5" name="mttrat" id="mttrat" class="form-control form-control-sm" placeholder="내용을 입력해주세요."></textarea>
+            </div>
+        </div>
+        <div class="row form-group mb-3">
+            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="eduIntrcnFileid"><strong>교육소개</strong></label>
+            <div class="col-sm-12">
+                <input type="file" class="form-control form-control-sm" id="eduIntrcnFile" name="eduIntrcnFile"/>
+                <input type="hidden" name="eduIntrcnFilegrpid" id="eduIntrcnFilegrpid" value="0">
+                <input type="hidden" name="eduIntrcnFileid" id="eduIntrcnFileid" value="0">
+            </div>
+            <div class="mt-2 row">
+                <div class="col-auto">
+                    <div id="eduIntrcnFileUploadSuccess">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row form-group mb-3">
+            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="eduPhotoFile"><strong>교육사진</strong></label>
+            <p class="text-warning m-b-0">* 10MB 미만의 JPG, PNG, GIF파일만 업로드 가능(권장사이즈 : 가로 398px, 세로 223px)</p>
+            <div class="col-sm-12">
+                <input type="file" class="form-control form-control-sm" id="eduPhotoFile" name="eduPhotoFile"/>
+                <input type="hidden" name="eduPhotoFilegrpid" id="eduPhotoFilegrpid" value="0">
+                <input type="hidden" name="eduPhotoFileid" id="eduPhotoFileid" value="0">
+            </div>
+            <div class="mt-2 row">
+                <div class="col-auto">
+                    <div id="eduPhotoFileUploadSuccess">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 mb-3">
+                <div class="mb-0 form-group required">
+                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육가능요일</strong></div>
+                    <div class="col-sm-12">
+                        <div class="border-checkbox-section">
+                            <div class="border-checkbox-group border-checkbox-group-inverse d-inline-block">
+                                <input class="border-checkbox" type="checkbox" name="sunYn" id="sunYn" onchange="fn_changeEduPssbDayWeekSelectItem(this);">
+                                <label class="form-label form-label-sm border-checkbox-label text-c-pink" for="sunYn">
+                                    일요일
+                                </label>
+                            </div>
+                            <div class="border-checkbox-group d-inline-block">
+                                <input class="border-checkbox" type="checkbox" name="monYn" id="monYn" onchange="fn_changeEduPssbDayWeekSelectItem(this);">
+                                <label class="form-label form-label-sm border-checkbox-label" for="monYn">
+                                    월요일
+                                </label>
+                            </div>
+                            <div class="border-checkbox-group d-inline-block">
+                                <input class="border-checkbox" type="checkbox" name="tuesYn" id="tuesYn" onchange="fn_changeEduPssbDayWeekSelectItem(this);">
+                                <label class="form-label form-label-sm border-checkbox-label" for="tuesYn">
+                                    화요일
+                                </label>
+                            </div>
+                            <div class="border-checkbox-group d-inline-block">
+                                <input class="border-checkbox" type="checkbox" name="wedYn" id="wedYn" onchange="fn_changeEduPssbDayWeekSelectItem(this);">
+                                <label class="form-label form-label-sm border-checkbox-label" for="wedYn">
+                                    수요일
+                                </label>
+                            </div>
+                            <div class="border-checkbox-group d-inline-block">
+                                <input class="border-checkbox" type="checkbox" name="thurYn" id="thurYn" onchange="fn_changeEduPssbDayWeekSelectItem(this);">
+                                <label class="form-label form-label-sm border-checkbox-label" for="thurYn">
+                                    목요일
+                                </label>
+                            </div>
+                            <div class="border-checkbox-group d-inline-block">
+                                <input class="border-checkbox" type="checkbox" name="friYn" id="friYn" onchange="fn_changeEduPssbDayWeekSelectItem(this);">
+                                <label class="form-label form-label-sm border-checkbox-label" for="friYn">
+                                    금요일
+                                </label>
+                            </div>
+                            <div class="border-checkbox-group d-inline-block">
+                                <input class="border-checkbox" type="checkbox" name="satYn" id="satYn" onchange="fn_changeEduPssbDayWeekSelectItem(this);">
+                                <label class="form-label form-label-sm border-checkbox-label text-c-blue" for="satYn">
+                                    토요일
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-3">
+                <div class="mb-0 form-group">
+                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사용여부</strong></div>
+                    <div class="col-sm-12">
+                        <div class="form-radio">
+                            <div class="radio radio-inline">
+                                <label class="mb-0 form-label">
+                                    <input type="radio" name="useYn" value="Y" checked="">
+                                    <i class="helper"></i>사용
+                                </label>
+                            </div>
+                            <div class="radio radio-inline">
+                                <label class="mb-0 form-label">
+                                    <input type="radio" name="useYn" value="N">
+                                    <i class="helper"></i>미사용
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 교육 시간표 -->
+    <div class="card-header p-b-0 p-t-0">
+        <h3 class="sub-title">
+            <div class="row align-items-center">
+                <div class="col"><strong>교육 시간표<i class="mark-required">*</i></strong></div>
+                <div class="col-auto btn-group-sm">
+                    <button type="button" id="delRowBtn" class="btn btn-inverse" onclick="fn_delRow();">삭제</button>
+                    <button type="button" id="addRowBtn" class="btn btn-primary" onclick="fn_addRow();">추가</button>
+                </div>
+            </div>
+        </h3>
+    </div>
+    <div class="card-block-small p-t-0">
+        <div class="col-12 table-border-style">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th class="text-center">
+                            <input id="prgrmTmeSelectAllCheckbox" class="form-check-input" type="checkbox" value="" aria-label="전체 선택">
+                        </th>
+                        <th class="text-center">No.</th>
+                        <th class="text-center">회차구분</th>
+                        <th class="text-center">사용요일</th>
+                        <th class="text-center">시작시간</th>
+                        <th class="text-center">종료시간</th>
+                    </tr>
+                    </thead>
+                    <tbody id="infntPrgrmTmBody">
+                    <tr>
+                        <td class="text-center v-middle">
+                            <input id="prgrmTmeSingleCheckbox" class="form-check-input" type="checkbox" value="" aria-label="선택" onchange="fn_changeSelectItem(this);">
+                        </td>
+                        <td class="text-center v-middle idx">1</td>
+                        <td class="text-center v-middle">
+                            <input type="text" class="form-control form-control-sm d-inline-block" name="tmeNm" placeholder="" value="" style="width:88px;">
+                        </td>
+                        <td class="text-center v-middle">
+                            <div class="border-checkbox-section">
+                                <div class="border-checkbox-group border-checkbox-group-inverse d-inline-block">
+                                    <input class="border-checkbox" type="checkbox" name="tmeSunYn" id="tmeSunYn1" disabled>
+                                    <label class="form-label form-label-sm border-checkbox-label text-c-pink" for="tmeSunYn1">
+                                        일
+                                    </label>
+                                </div>
+                                <div class="border-checkbox-group d-inline-block">
+                                    <input class="border-checkbox" type="checkbox" name="tmeMonYn" id="tmeMonYn1" disabled>
+                                    <label class="form-label form-label-sm border-checkbox-label" for="tmeMonYn1">
+                                        월
+                                    </label>
+                                </div>
+                                <div class="border-checkbox-group d-inline-block">
+                                    <input class="border-checkbox" type="checkbox" name="tmeTuesYn" id="tmeTuesYn1" disabled>
+                                    <label class="form-label form-label-sm border-checkbox-label" for="tmeTuesYn1">
+                                        화
+                                    </label>
+                                </div>
+                                <div class="border-checkbox-group d-inline-block">
+                                    <input class="border-checkbox" type="checkbox" name="tmeWedYn" id="tmeWedYn1" disabled>
+                                    <label class="form-label form-label-sm border-checkbox-label" for="tmeWedYn1">
+                                        수
+                                    </label>
+                                </div>
+                                <div class="border-checkbox-group d-inline-block">
+                                    <input class="border-checkbox" type="checkbox" name="tmeThurYn" id="tmeThurYn1" disabled>
+                                    <label class="form-label form-label-sm border-checkbox-label" for="tmeThurYn1">
+                                        목
+                                    </label>
+                                </div>
+                                <div class="border-checkbox-group d-inline-block">
+                                    <input class="border-checkbox" type="checkbox" name="tmeFriYn" id="tmeFriYn1" disabled>
+                                    <label class="form-label form-label-sm border-checkbox-label" for="tmeFriYn1">
+                                        금
+                                    </label>
+                                </div>
+                                <div class="border-checkbox-group d-inline-block">
+                                    <input class="border-checkbox" type="checkbox" name="tmeSatYn" id="tmeSatYn1" disabled>
+                                    <label class="form-label form-label-sm border-checkbox-label text-c-blue" for="tmeSatYn1">
+                                        토
+                                    </label>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center v-middle">
+                            <input type="time" name="bgngTm" class="form-control form-control-sm"/>
+                        </td>
+                        <td class="text-center v-middle">
+                            <input type="time" name="endTm" class="form-control form-control-sm"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-center v-middle">
+                            <input id="prgrmTmeSingleCheckbox" class="form-check-input" type="checkbox" value="" aria-label="선택" onchange="fn_changeSelectItem(this);">
+                        </td>
+                        <td class="text-center v-middle idx">2</td>
+                        <td class="text-center v-middle">
+                            <input type="text" class="form-control form-control-sm d-inline-block" name="tmeNm" placeholder="" value="" style="width:88px;">
+                        </td>
+                        <td class="text-center v-middle">
+                            <div class="border-checkbox-section">
+                                <div class="border-checkbox-group border-checkbox-group-inverse d-inline-block">
+                                    <input class="border-checkbox" type="checkbox" name="tmeSunYn" id="tmeSunYn2" disabled>
+                                    <label class="form-label form-label-sm border-checkbox-label text-c-pink" for="tmeSunYn2">
+                                        일
+                                    </label>
+                                </div>
+                                <div class="border-checkbox-group d-inline-block">
+                                    <input class="border-checkbox" type="checkbox" name="tmeMonYn" id="tmeMonYn2" disabled>
+                                    <label class="form-label form-label-sm border-checkbox-label" for="tmeMonYn2">
+                                        월
+                                    </label>
+                                </div>
+                                <div class="border-checkbox-group d-inline-block">
+                                    <input class="border-checkbox" type="checkbox" name="tmeTuesYn" id="tmeTuesYn2" disabled>
+                                    <label class="form-label form-label-sm border-checkbox-label" for="tmeTuesYn2">
+                                        화
+                                    </label>
+                                </div>
+                                <div class="border-checkbox-group d-inline-block">
+                                    <input class="border-checkbox" type="checkbox" name="tmeWedYn" id="tmeWedYn2" disabled>
+                                    <label class="form-label form-label-sm border-checkbox-label" for="tmeWedYn2">
+                                        수
+                                    </label>
+                                </div>
+                                <div class="border-checkbox-group d-inline-block">
+                                    <input class="border-checkbox" type="checkbox" name="tmeThurYn" id="tmeThurYn2" disabled>
+                                    <label class="form-label form-label-sm border-checkbox-label" for="tmeThurYn2">
+                                        목
+                                    </label>
+                                </div>
+                                <div class="border-checkbox-group d-inline-block">
+                                    <input class="border-checkbox" type="checkbox" name="tmeFriYn" id="tmeFriYn2" disabled>
+                                    <label class="form-label form-label-sm border-checkbox-label" for="tmeFriYn2">
+                                        금
+                                    </label>
+                                </div>
+                                <div class="border-checkbox-group d-inline-block">
+                                    <input class="border-checkbox" type="checkbox" name="tmeSatYn" id="tmeSatYn2" disabled>
+                                    <label class="form-label form-label-sm border-checkbox-label text-c-blue" for="tmeSatYn2">
+                                        토
+                                    </label>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center v-middle">
+                            <input type="time" name="bgngTm" class="form-control form-control-sm"/>
+                        </td>
+                        <td class="text-center v-middle">
+                            <input type="time" name="endTm" class="form-control form-control-sm"/>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="card-block-small">
+        <button type="button" class="btn btn-disabled m-r-5" id="canceInfntPrgrm" onclick="gridHelper1.toggleContent()">취소</button>
+        <th:block sec:authorize-url="/mng/prtpn/infntPrgrm/insertInfntPrgrm.do">
+            <button type="button" class="btn btn-primary" id="insertInfntPrgrm" onclick="fn_insertInfntPrgrm()">저장</button>
+        </th:block>
+    </div>
+    <!-- Tab Container End -->
 </form>
 
+<script src="/js/ckeditor/ckeditor.js"></script>
 <script th:inline="javascript">
-var prgrmTmeSelectedItems = [];
-var eduPssbDayWeekSelectedItems = [];
-var clssrmViewngMaxAplyNope = 0;
+    var prgrmTmeSelectedItems = [];
+    var eduPssbDayWeekSelectedItems = [];
+    var clssrmViewngMaxAplyNope = 0;
+    var editor;
 
-	function init() {
-		prgrmTmeSelectedItems = [];
-		clssrmViewngMaxAplyNope = 0;
-	    //setDefaultImage('imgPreview','profile');
-	}
+    function init() {
+        prgrmTmeSelectedItems = [];
+        clssrmViewngMaxAplyNope = 0;
+        editor = CKEDITOR.replace('eduExpln', {enterMode: CKEDITOR.ENTER_BR});
+        //setDefaultImage('imgPreview','profile');
+    }
 
     function validate() {
-        if(!($("#infntPrgrmInsertForm").valid())) return false;
+        if (!($("#infntPrgrmInsertForm").valid())) return false;
 
         var monYn = ($("#monYn").is(":checked") ? "Y" : "N");
         var tuesYn = ($("#tuesYn").is(":checked") ? "Y" : "N");
@@ -450,34 +465,38 @@ var clssrmViewngMaxAplyNope = 0;
         $("#satYn").val(satYn);
         $("#sunYn").val(sunYn);
 
-        if(monYn == "N" && tuesYn == "N" && wedYn == "N" && thurYn == "N" && friYn == "N" && satYn == "N" && sunYn == "N"){
+        if (monYn == "N" && tuesYn == "N" && wedYn == "N" && thurYn == "N" && friYn == "N" && satYn == "N" && sunYn == "N") {
             alert("교육가능요일을 선택해 주십시오.");
             return false;
         }
 
         var bgngTmChk = true;
-        $('input[name=bgngTm]').each(function() {
-            if($(this).val() == ""){
+        $('input[name=bgngTm]').each(function () {
+            if ($(this).val() == "") {
                 bgngTmChk = false;
             }
         });
 
         var endTmChk = true;
-        $('input[name=endTm]').each(function() {
-            if($(this).val() == ""){
+        $('input[name=endTm]').each(function () {
+            if ($(this).val() == "") {
                 endTmChk = false;
             }
         });
 
-        if(!bgngTmChk || !endTmChk) {
+        if (!bgngTmChk || !endTmChk) {
             alert("교육 시간표의 시작시간 또는 종료시간 입력은 필수 입니다.");
             return false;
         }
 
     }
-    function fn_insertInfntPrgrm(){
-        if(validate() === false) return ;
-        if(!confirm("저장하시겠습니까?")) return;
+
+    function fn_insertInfntPrgrm() {
+        if (validate() === false) return;
+        if (!confirm("저장하시겠습니까?")) return;
+
+        var editorData = editor.getData();
+        $("#eduExpln").val(editorData);
 
         var jsonObj = {};
 
@@ -496,35 +515,35 @@ var clssrmViewngMaxAplyNope = 0;
         jsonObj['clsfCds'] = tmpClsfCds;
 
         var infntPrgrmVoList = new Array();
-        for(var i = 0; i < $("#infntPrgrmTmBody").children().length; i++) {
+        for (var i = 0; i < $("#infntPrgrmTmBody").children().length; i++) {
             var data = new Object();
-            data["tmeId"]       = "";
-            data["tmeNm"]       = $("#infntPrgrmTmBody").find($("input[name=tmeNm]")[i]).val();
-            data["tmeSunYn"]    = $("#infntPrgrmTmBody").find($("[name=tmeSunYn]")[i]).is(":checked") == true ?  "Y" : "N";
-            data["tmeMonYn"]    = $("#infntPrgrmTmBody").find($("[name=tmeMonYn]")[i]).is(":checked") == true ?  "Y" : "N";
-            data["tmeTuesYn"]   = $("#infntPrgrmTmBody").find($("[name=tmeTuesYn]")[i]).is(":checked") == true ?  "Y" : "N";
-            data["tmeWedYn"]    = $("#infntPrgrmTmBody").find($("[name=tmeWedYn]")[i]).is(":checked") == true ?  "Y" : "N";
-            data["tmeThurYn"]   = $("#infntPrgrmTmBody").find($("[name=tmeThurYn]")[i]).is(":checked") == true ?  "Y" : "N";
-            data["tmeFriYn"]    = $("#infntPrgrmTmBody").find($("[name=tmeFriYn]")[i]).is(":checked") == true ?  "Y" : "N";
-            data["tmeSatYn"]    = $("#infntPrgrmTmBody").find($("[name=tmeSatYn]")[i]).is(":checked") == true ?  "Y" : "N";
-            data["bgngTm"]      = $("#infntPrgrmTmBody").find($("input[name=bgngTm]")[i]).val();
-            data["endTm"]       = $("#infntPrgrmTmBody").find($("input[name=endTm]")[i]).val();
-            data["ordr"]        = i+1;
+            data["tmeId"] = "";
+            data["tmeNm"] = $("#infntPrgrmTmBody").find($("input[name=tmeNm]")[i]).val();
+            data["tmeSunYn"] = $("#infntPrgrmTmBody").find($("[name=tmeSunYn]")[i]).is(":checked") == true ? "Y" : "N";
+            data["tmeMonYn"] = $("#infntPrgrmTmBody").find($("[name=tmeMonYn]")[i]).is(":checked") == true ? "Y" : "N";
+            data["tmeTuesYn"] = $("#infntPrgrmTmBody").find($("[name=tmeTuesYn]")[i]).is(":checked") == true ? "Y" : "N";
+            data["tmeWedYn"] = $("#infntPrgrmTmBody").find($("[name=tmeWedYn]")[i]).is(":checked") == true ? "Y" : "N";
+            data["tmeThurYn"] = $("#infntPrgrmTmBody").find($("[name=tmeThurYn]")[i]).is(":checked") == true ? "Y" : "N";
+            data["tmeFriYn"] = $("#infntPrgrmTmBody").find($("[name=tmeFriYn]")[i]).is(":checked") == true ? "Y" : "N";
+            data["tmeSatYn"] = $("#infntPrgrmTmBody").find($("[name=tmeSatYn]")[i]).is(":checked") == true ? "Y" : "N";
+            data["bgngTm"] = $("#infntPrgrmTmBody").find($("input[name=bgngTm]")[i]).val();
+            data["endTm"] = $("#infntPrgrmTmBody").find($("input[name=endTm]")[i]).val();
+            data["ordr"] = i + 1;
             infntPrgrmVoList.push(data);
         }
         jsonObj["infntPrgrmVoList"] = infntPrgrmVoList;
 
-        if(displayWorkProgress()){
+        if (displayWorkProgress()) {
             $.ajax({
-                url : "/mng/prtpn/infntPrgrm/insertInfntPrgrm.do",
+                url: "/mng/prtpn/infntPrgrm/insertInfntPrgrm.do",
                 type: 'POST',
-                cache : false,
+                cache: false,
                 dataType: 'json',
                 contentType: 'application/json;charset=UTF-8',
-                data : JSON.stringify(jsonObj),
-                success : function (data){
+                data: JSON.stringify(jsonObj),
+                success: function (data) {
                     alert(data.msg);
-                    if(data.result=="success"){
+                    if (data.result == "success") {
                         gridHelper1.resetListContent();
                     }
                     closeWorkProgress();
@@ -533,8 +552,8 @@ var clssrmViewngMaxAplyNope = 0;
         }
     }
 
-    function fn_changeClssrmId(item){
-    	var getCodeUrl = "/mng/prtpn/eduClssRm/selectClssrmEduTypeCd.do";
+    function fn_changeClssrmId(item) {
+        var getCodeUrl = "/mng/prtpn/eduClssRm/selectClssrmEduTypeCd.do";
         var url = getCodeUrl + "?clssrmId=" + $(item).val();
         if (displayWorkProgress()) {
             $.ajax({
@@ -542,156 +561,162 @@ var clssrmViewngMaxAplyNope = 0;
                 type: 'POST',
                 cache: false,
                 success: function (data) {
-                	$("#eduTypeCd").val(data.eduTypeCd);
-                	$("#eduNope").val(data.clssrmViewngMaxAplyNope);
-                	//교육관 최대 신청 인원수 세팅.
-                	clssrmViewngMaxAplyNope = data.clssrmViewngMaxAplyNope;
-                	closeWorkProgress();                	
+                    $("#eduTypeCd").val(data.eduTypeCd);
+                    $("#eduNope").val(data.clssrmViewngMaxAplyNope);
+                    //교육관 최대 신청 인원수 세팅.
+                    clssrmViewngMaxAplyNope = data.clssrmViewngMaxAplyNope;
+                    closeWorkProgress();
                 }
             });
         }
     }
-    
-    function fn_changeEduNope(item){
-    	if(parseInt(clssrmViewngMaxAplyNope) == 0){
-            return;    		
-    	}
-    	if(parseInt($(item).val()) > 0 && parseInt($(item).val()) > parseInt(clssrmViewngMaxAplyNope)){
-    		alert("교육관 관람 최대 신청 인원수("+clssrmViewngMaxAplyNope+"명)를 초과할 수 없습니다.");
-    		$(item).val(clssrmViewngMaxAplyNope);
-    		return;
-    	}
+
+    function fn_changeEduNope(item) {
+        if (parseInt(clssrmViewngMaxAplyNope) == 0) {
+            return;
+        }
+        if (parseInt($(item).val()) > 0 && parseInt($(item).val()) > parseInt(clssrmViewngMaxAplyNope)) {
+            alert("교육관 관람 최대 신청 인원수(" + clssrmViewngMaxAplyNope + "명)를 초과할 수 없습니다.");
+            $(item).val(clssrmViewngMaxAplyNope);
+            return;
+        }
     }
+
     // 체크박스
-    function fn_changeSelectItem(item){
-    	$(item).is(":checked") ? prgrmTmeSelectItem($(item).parent().next().text()) : prgrmTmeUnselectItem($(item).parent().next().text());    	
+    function fn_changeSelectItem(item) {
+        $(item).is(":checked") ? prgrmTmeSelectItem($(item).parent().next().text()) : prgrmTmeUnselectItem($(item).parent().next().text());
     }
-    
-    var prgrmTmeSelectItem = function(item) {
+
+    var prgrmTmeSelectItem = function (item) {
         prgrmTmeSelectedItems.push(item);
-        if($("[id=prgrmTmeSingleCheckbox]").length == $("[id=prgrmTmeSingleCheckbox]:checked").length) {
-            $("#prgrmTmeSelectAllCheckbox").prop("checked", true);
-        } else {
-            $("#prgrmTmeSelectAllCheckbox").prop("checked", false);
-        }
-    }
-     
-    var prgrmTmeUnselectItem = function(item) {
-        prgrmTmeSelectedItems = $.grep(prgrmTmeSelectedItems, function(i) {
-        return i !== item;
-        });
-        if(prgrmTmeSelectedItems.length == 0) {
-            $('#prgrmTmeSelectAllCheckbox').attr('checked', false);
-        }
-        if($("[id=prgrmTmeSingleCheckbox]").length == $("[id=prgrmTmeSingleCheckbox]:checked").length) {
+        if ($("[id=prgrmTmeSingleCheckbox]").length == $("[id=prgrmTmeSingleCheckbox]:checked").length) {
             $("#prgrmTmeSelectAllCheckbox").prop("checked", true);
         } else {
             $("#prgrmTmeSelectAllCheckbox").prop("checked", false);
         }
     }
 
-    $("#prgrmTmeSelectAllCheckbox").click(function(item) {
+    var prgrmTmeUnselectItem = function (item) {
+        prgrmTmeSelectedItems = $.grep(prgrmTmeSelectedItems, function (i) {
+            return i !== item;
+        });
+        if (prgrmTmeSelectedItems.length == 0) {
+            $('#prgrmTmeSelectAllCheckbox').attr('checked', false);
+        }
+        if ($("[id=prgrmTmeSingleCheckbox]").length == $("[id=prgrmTmeSingleCheckbox]:checked").length) {
+            $("#prgrmTmeSelectAllCheckbox").prop("checked", true);
+        } else {
+            $("#prgrmTmeSelectAllCheckbox").prop("checked", false);
+        }
+    }
+
+    $("#prgrmTmeSelectAllCheckbox").click(function (item) {
         prgrmTmeSelectedItems = [];
-        if(this.checked) { // check select status
-            $('[id=prgrmTmeSingleCheckbox]').each(function() { 
-                this.checked = true;   
-                prgrmTmeSelectItem($(this).parent().next().text());           
-            }); 
-        }else {
-            
-            $('[id=prgrmTmeSingleCheckbox]').each(function() { 
-                this.checked = false;      
+        if (this.checked) { // check select status
+            $('[id=prgrmTmeSingleCheckbox]').each(function () {
+                this.checked = true;
+                prgrmTmeSelectItem($(this).parent().next().text());
+            });
+        } else {
+
+            $('[id=prgrmTmeSingleCheckbox]').each(function () {
+                this.checked = false;
                 prgrmTmeUnselectItem(item);
-            });  
+            });
             prgrmTmeSelectedItems = [];
         }
     })
+
     // 교육주제 행추가
-    function fn_addRowClsfCds(item){
+    function fn_addRowClsfCds(item) {
         var rowCnt = $("#clsfCdDiv").find('.row').length;
         //추가버튼 삭제 -> 마지막 행에만 추가한다..
         $("#clsfCdDiv").find("#addRowClsfCds").remove();
-        $("#clsfCdDiv").find('.row').last().after( fn_makeClsfCdsListHtml() );
-    	
+        $("#clsfCdDiv").find('.row').last().after(fn_makeClsfCdsListHtml());
+
     }
+
     // 교육시간표 행삭제
     function fn_delRowClsfCds(item) {
-    	var rowCnt = $("#clsfCdDiv").find('.row').length;
-        if(rowCnt <= 1){
+        var rowCnt = $("#clsfCdDiv").find('.row').length;
+        if (rowCnt <= 1) {
             return;
-        }else{
-        	$(item).parent().parent().remove();
-        	//행삭제 후, 행추가 버튼 마지막 행에 동적 생성.
-        	$("#clsfCdDiv").find("#addRowClsfCds").remove();
-        	var btnHtml = '<button type="button" id="addRowClsfCds" class="input-group-text btn btn-primary btn-sm" onclick="fn_addRowClsfCds(this)">+</button>';
-        	
-        	$("#clsfCdDiv").find('.row :button').last().after( btnHtml );
+        } else {
+            $(item).parent().parent().remove();
+            //행삭제 후, 행추가 버튼 마지막 행에 동적 생성.
+            $("#clsfCdDiv").find("#addRowClsfCds").remove();
+            var btnHtml = '<button type="button" id="addRowClsfCds" class="input-group-text btn btn-primary btn-sm" onclick="fn_addRowClsfCds(this)">+</button>';
+
+            $("#clsfCdDiv").find('.row :button').last().after(btnHtml);
         }
     }
+
     // 교육시간표 행추가
     function fn_addRow() {
-    	var trCnt = $("#infntPrgrmTmBody").children().length;
-    	
-    	$("#infntPrgrmTmBody").append( fn_makeListHtml() );
+        var trCnt = $("#infntPrgrmTmBody").children().length;
+
+        $("#infntPrgrmTmBody").append(fn_makeListHtml());
     }
+
     // 교육시간표 행삭제
     function fn_delRow() {
-    	if(!prgrmTmeValidChecked()) return false;
-    	var trCnt = 0;
+        if (!prgrmTmeValidChecked()) return false;
+        var trCnt = 0;
         prgrmTmeSelectedItems.forEach(function (item, index, array) {
-        	$('#infntPrgrmTmBody .idx').each(function() {
-        		if($(this).text() == item){
-        			debugger;
-        			trCnt = $('#infntPrgrmTmBody .idx').length;
-        	        if(trCnt <= 2){
-        	            alert("더이상 삭제가 불가 합니다.")
-        	            return;
-        	        }           			
-        			$(this).parent().remove();
-        		}
-        	});
+            $('#infntPrgrmTmBody .idx').each(function () {
+                if ($(this).text() == item) {
+                    debugger;
+                    trCnt = $('#infntPrgrmTmBody .idx').length;
+                    if (trCnt <= 2) {
+                        alert("더이상 삭제가 불가 합니다.")
+                        return;
+                    }
+                    $(this).parent().remove();
+                }
+            });
         });
-        
+
         //넘버링 초기화
-        $('#infntPrgrmTmBody .idx').each(function(i) {$(this)
-        	$(this).text(i+1);
+        $('#infntPrgrmTmBody .idx').each(function (i) {
+            $(this)
+            $(this).text(i + 1);
         });
     }
-    
+
     function prgrmTmeValidChecked() {
-        if(prgrmTmeSelectedItems.length == 0) {
+        if (prgrmTmeSelectedItems.length == 0) {
             alert("삭제할 대상을 선택해주세요.");
             return false;
         }
         return true;
     }
-    
+
     function fn_makeClsfCdsListHtml() {
         var clsfCdsHtml = "";
-        var rowCnt =  $("#clsfCdDiv").find('.row').length;
-        
+        var rowCnt = $("#clsfCdDiv").find('.row').length;
+
         clsfCdsHtml += '<div class="row mt-1">   '
-	    clsfCdsHtml += '   <div class="col-sm">   '
-	    clsfCdsHtml += '       <select class="form-select form-select-sm form-control-sm   " style="" id="clsfCds_1" name="clsfCds_1" onchange=\'setNextDepth(155,this.value,"clsfCds_2_'+rowCnt+'" )\'>    '
-	    clsfCdsHtml += '           <option value="">- 선택 -</option>   '	    
-	    clsfCdsHtml += '           <option value="155101">생활환경</option>   '	    
-	    clsfCdsHtml += '           <option value="155103">지구환경</option>   '	    
-	    clsfCdsHtml += '           <option value="155102">자연환경</option>   '	    
-	    clsfCdsHtml += '           <option value="155104">환경문화</option>   '
-	    clsfCdsHtml += '       </select>    '	    
-	    //clsfCdsHtml += '       <th:block kattr:select_code="clsfCds_1" grpCd="155" upprCd="0" selectedCd="" onchange=\'setNextDepth(155,this.value,"clsfCds_2" )\' firstOptTxt="- 선택 -" isAdmin="true"></th:block>    '
-	    clsfCdsHtml += '   </div>   '
-	    clsfCdsHtml += '   <div class="col-sm mt-1 mt-sm-0">   '
-	    clsfCdsHtml += '       <select id="clsfCds_2_'+rowCnt+'" name="clsfCds_2" class="form-select form-select-sm form-control-sm">   '
-	    clsfCdsHtml += '           <option value="" disabled selected>대분류를 선택하세요</option>   '
-	    clsfCdsHtml += '       </select>    '
-	    clsfCdsHtml += '   </div>   '
-	    clsfCdsHtml += '   <div id="btnDiv" class="mt-1 mt-sm-0" style="width:100px;">   '
-	    clsfCdsHtml += '       <button type="button" class="input-group-text btn btn-primary btn-sm" onclick="fn_delRowClsfCds(this)">-</button>   '
-	    clsfCdsHtml += '       <button type="button" id="addRowClsfCds" class="input-group-text btn btn-primary btn-sm" onclick="fn_addRowClsfCds(this)">+</button>   '
-	    clsfCdsHtml += '   </div>   '
-	    clsfCdsHtml += '</div>    ';
-	    
+        clsfCdsHtml += '   <div class="col-sm">   '
+        clsfCdsHtml += '       <select class="form-select form-select-sm form-control-sm   " style="" id="clsfCds_1" name="clsfCds_1" onchange=\'setNextDepth(155,this.value,"clsfCds_2_' + rowCnt + '" )\'>    '
+        clsfCdsHtml += '           <option value="">- 선택 -</option>   '
+        clsfCdsHtml += '           <option value="155101">생활환경</option>   '
+        clsfCdsHtml += '           <option value="155103">지구환경</option>   '
+        clsfCdsHtml += '           <option value="155102">자연환경</option>   '
+        clsfCdsHtml += '           <option value="155104">환경문화</option>   '
+        clsfCdsHtml += '       </select>    '
+        //clsfCdsHtml += '       <th:block kattr:select_code="clsfCds_1" grpCd="155" upprCd="0" selectedCd="" onchange=\'setNextDepth(155,this.value,"clsfCds_2" )\' firstOptTxt="- 선택 -" isAdmin="true"></th:block>    '
+        clsfCdsHtml += '   </div>   '
+        clsfCdsHtml += '   <div class="col-sm mt-1 mt-sm-0">   '
+        clsfCdsHtml += '       <select id="clsfCds_2_' + rowCnt + '" name="clsfCds_2" class="form-select form-select-sm form-control-sm">   '
+        clsfCdsHtml += '           <option value="" disabled selected>대분류를 선택하세요</option>   '
+        clsfCdsHtml += '       </select>    '
+        clsfCdsHtml += '   </div>   '
+        clsfCdsHtml += '   <div id="btnDiv" class="mt-1 mt-sm-0" style="width:100px;">   '
+        clsfCdsHtml += '       <button type="button" class="input-group-text btn btn-primary btn-sm" onclick="fn_delRowClsfCds(this)">-</button>   '
+        clsfCdsHtml += '       <button type="button" id="addRowClsfCds" class="input-group-text btn btn-primary btn-sm" onclick="fn_addRowClsfCds(this)">+</button>   '
+        clsfCdsHtml += '   </div>   '
+        clsfCdsHtml += '</div>    ';
+
         return clsfCdsHtml;
     }
 
@@ -699,122 +724,123 @@ var clssrmViewngMaxAplyNope = 0;
         var html = "";
         var trCnt = $("#infntPrgrmTmBody").children().length;
         html += '<tr>                                                                                                                                                       '
-	    html += '    <td class="text-center v-middle">                                                                                                                      '
-	    html += '        <input id="prgrmTmeSingleCheckbox" class="form-check-input" type="checkbox" value="" aria-label="선택" onchange="fn_changeSelectItem(this);">       '
-	    html += '    </td>                                                                                                                                                  '
-	    html += '    <td class="text-center v-middle idx">' + (trCnt+1) + '</td>                                                                                                '
-	    html += '    <td class="text-center v-middle">                                                                                                                      '
-	    html += '        <input type="text" class="form-control form-control-sm d-inline-block" name="tmeNm" placeholder="" value="" style="width:88px;">                   '
-	    html += '    </td>                                                                                                                                                  '
-	    html += '    <td class="text-center v-middle">                                                                                                                      '
-	    html += '        <div class="border-checkbox-section">                                                                                                              '
-	    html += '            <div class="border-checkbox-group border-checkbox-group-inverse d-inline-block">                                                               '
-	    if(eduPssbDayWeekSelectedItems.includes('sunYn')){	    
-	    	html += '                <input class="border-checkbox" type="checkbox" name="tmeSunYn" id="tmeSunYn' + (trCnt+1) + '">                                             '
-	    }else{
-            html += '                <input class="border-checkbox" type="checkbox" name="tmeSunYn" id="tmeSunYn' + (trCnt+1) + '" disabled>                                             '	    	
-	    }	   
-	    html += '                <label class="form-label form-label-sm border-checkbox-label text-c-pink" for="tmeSunYn' + (trCnt+1) + '">                                 '
-	    html += '                    일                                                                                                                                      '
-	    html += '                </label>                                                                                                                                   '
-	    html += '            </div>                                                                                                                                         '
-	    html += '            <div class="border-checkbox-group d-inline-block">                                                                                             '
-	    if(eduPssbDayWeekSelectedItems.includes('monYn')){	    
-	    	html += '                <input class="border-checkbox" type="checkbox" name="tmeMonYn" id="tmeMonYn' + (trCnt+1) + '">                                             '
-	    }else{
-            html += '                <input class="border-checkbox" type="checkbox" name="tmeMonYn" id="tmeMonYn' + (trCnt+1) + '" disabled>                                             '	    	
-	    }
-	    html += '                <label class="form-label form-label-sm border-checkbox-label" for="tmeMonYn' + (trCnt+1) + '">                                             '
-	    html += '                    월                                                                                                                                      '
-	    html += '                </label>                                                                                                                                   '
-	    html += '            </div>                                                                                                                                         '
-	    html += '            <div class="border-checkbox-group d-inline-block">                                                                                             '
-	    if(eduPssbDayWeekSelectedItems.includes('tuesYn')){	    
-	    	html += '                <input class="border-checkbox" type="checkbox" name="tmeTuesYn" id="tmeTuesYn' + (trCnt+1) + '">                                           '
-	    }else{
-            html += '                <input class="border-checkbox" type="checkbox" name="tmeTuesYn" id="tmeTuesYn' + (trCnt+1) + '" disabled>                                           '	    	
-	    }
-	    html += '                <label class="form-label form-label-sm border-checkbox-label" for="tmeTuesYn' + (trCnt+1) + '">                                            '
-	    html += '                    화                                                                                                                                      '
-	    html += '                </label>                                                                                                                                   '
-	    html += '            </div>                                                                                                                                         '
-	    html += '            <div class="border-checkbox-group d-inline-block">                                                                                             '
-	    if(eduPssbDayWeekSelectedItems.includes('wedYn')){
-	    	html += '                <input class="border-checkbox" type="checkbox" name="tmeWedYn" id="tmeWedYn' + (trCnt+1) + '">                                             '
-	    }else{
-            html += '                <input class="border-checkbox" type="checkbox" name="tmeWedYn" id="tmeWedYn' + (trCnt+1) + '" disabled>                                             '	    	
-	    }
-	    html += '                <label class="form-label form-label-sm border-checkbox-label" for="tmeWedYn' + (trCnt+1) + '">                                             '
-	    html += '                    수                                                                                                                                      '
-	    html += '                </label>                                                                                                                                   '
-	    html += '            </div>                                                                                                                                         '
-	    html += '            <div class="border-checkbox-group d-inline-block">                                                                                             '
-	    if(eduPssbDayWeekSelectedItems.includes('thurYn')){
-	    	html += '                <input class="border-checkbox" type="checkbox" name="tmeThurYn" id="tmeThurYn' + (trCnt+1) + '">                                           '
-	    }else{
-            html += '                <input class="border-checkbox" type="checkbox" name="tmeThurYn" id="tmeThurYn' + (trCnt+1) + '" disabled>                                           '	    	
-	    }
-	    html += '                <label class="form-label form-label-sm border-checkbox-label" for="tmeThurYn' + (trCnt+1) + '">                                            '
-	    html += '                    목                                                                                                                                      '
-	    html += '                </label>                                                                                                                                   '
-	    html += '            </div>                                                                                                                                         '
-	    html += '            <div class="border-checkbox-group d-inline-block">                                                                                             '
-	    if(eduPssbDayWeekSelectedItems.includes('friYn')){	    
-	    	html += '                <input class="border-checkbox" type="checkbox" name="tmeFriYn" id="tmeFriYn' + (trCnt+1) + '">                                    '
-	    }else{
-	    	html += '                <input class="border-checkbox" type="checkbox" name="tmeFriYn" id="tmeFriYn' + (trCnt+1) + '" disabled>                                    '
-	    }	   
-	    html += '                <label class="form-label form-label-sm border-checkbox-label" for="tmeFriYn' + (trCnt+1) + '">                                             '
-	    html += '                    금                                                                                                                                      '
-	    html += '                </label>                                                                                                                                   '
-	    html += '            </div>                                                                                                                                         '
-	    html += '            <div class="border-checkbox-group d-inline-block">                                                                                             '
-	    if(eduPssbDayWeekSelectedItems.includes('satYn')){	    
-	    	html += '                <input class="border-checkbox" type="checkbox" name="tmeSatYn" id="tmeSatYn' + (trCnt+1) + '">                                             '
-	    }else{
-            html += '                <input class="border-checkbox" type="checkbox" name="tmeSatYn" id="tmeSatYn' + (trCnt+1) + '" disabled>                                             '	    	
-	    }
-	    html += '                <label class="form-label form-label-sm border-checkbox-label text-c-blue" for="tmeSatYn' + (trCnt+1) + '">                                 '
-	    html += '                    토                                                                                                                                      '
-	    html += '                </label>                                                                                                                                   '
-	    html += '            </div>                                                                                                                                         '
-	    html += '        </div>                                                                                                                                             '
-	    html += '    </td>                                                                                                                                                  '
-	    html += '    <td class="text-center v-middle">                                                                                                                      '
-	    html += '        <input type="time" name="bgngTm" class="form-control form-control-sm" />                                                                           '
-	    html += '    </td>                                                                                                                                                  '
-	    html += '    <td class="text-center v-middle">                                                                                                                      '
-	    html += '        <input type="time" name="endTm" class="form-control form-control-sm" />                                                                            '
-	    html += '    </td>                                                                                                                                                  '
-	    html += '</tr>                                                                                                                                                      '
-	    
+        html += '    <td class="text-center v-middle">                                                                                                                      '
+        html += '        <input id="prgrmTmeSingleCheckbox" class="form-check-input" type="checkbox" value="" aria-label="선택" onchange="fn_changeSelectItem(this);">       '
+        html += '    </td>                                                                                                                                                  '
+        html += '    <td class="text-center v-middle idx">' + (trCnt + 1) + '</td>                                                                                                '
+        html += '    <td class="text-center v-middle">                                                                                                                      '
+        html += '        <input type="text" class="form-control form-control-sm d-inline-block" name="tmeNm" placeholder="" value="" style="width:88px;">                   '
+        html += '    </td>                                                                                                                                                  '
+        html += '    <td class="text-center v-middle">                                                                                                                      '
+        html += '        <div class="border-checkbox-section">                                                                                                              '
+        html += '            <div class="border-checkbox-group border-checkbox-group-inverse d-inline-block">                                                               '
+        if (eduPssbDayWeekSelectedItems.includes('sunYn')) {
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeSunYn" id="tmeSunYn' + (trCnt + 1) + '">                                             '
+        } else {
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeSunYn" id="tmeSunYn' + (trCnt + 1) + '" disabled>                                             '
+        }
+        html += '                <label class="form-label form-label-sm border-checkbox-label text-c-pink" for="tmeSunYn' + (trCnt + 1) + '">                                 '
+        html += '                    일                                                                                                                                      '
+        html += '                </label>                                                                                                                                   '
+        html += '            </div>                                                                                                                                         '
+        html += '            <div class="border-checkbox-group d-inline-block">                                                                                             '
+        if (eduPssbDayWeekSelectedItems.includes('monYn')) {
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeMonYn" id="tmeMonYn' + (trCnt + 1) + '">                                             '
+        } else {
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeMonYn" id="tmeMonYn' + (trCnt + 1) + '" disabled>                                             '
+        }
+        html += '                <label class="form-label form-label-sm border-checkbox-label" for="tmeMonYn' + (trCnt + 1) + '">                                             '
+        html += '                    월                                                                                                                                      '
+        html += '                </label>                                                                                                                                   '
+        html += '            </div>                                                                                                                                         '
+        html += '            <div class="border-checkbox-group d-inline-block">                                                                                             '
+        if (eduPssbDayWeekSelectedItems.includes('tuesYn')) {
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeTuesYn" id="tmeTuesYn' + (trCnt + 1) + '">                                           '
+        } else {
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeTuesYn" id="tmeTuesYn' + (trCnt + 1) + '" disabled>                                           '
+        }
+        html += '                <label class="form-label form-label-sm border-checkbox-label" for="tmeTuesYn' + (trCnt + 1) + '">                                            '
+        html += '                    화                                                                                                                                      '
+        html += '                </label>                                                                                                                                   '
+        html += '            </div>                                                                                                                                         '
+        html += '            <div class="border-checkbox-group d-inline-block">                                                                                             '
+        if (eduPssbDayWeekSelectedItems.includes('wedYn')) {
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeWedYn" id="tmeWedYn' + (trCnt + 1) + '">                                             '
+        } else {
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeWedYn" id="tmeWedYn' + (trCnt + 1) + '" disabled>                                             '
+        }
+        html += '                <label class="form-label form-label-sm border-checkbox-label" for="tmeWedYn' + (trCnt + 1) + '">                                             '
+        html += '                    수                                                                                                                                      '
+        html += '                </label>                                                                                                                                   '
+        html += '            </div>                                                                                                                                         '
+        html += '            <div class="border-checkbox-group d-inline-block">                                                                                             '
+        if (eduPssbDayWeekSelectedItems.includes('thurYn')) {
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeThurYn" id="tmeThurYn' + (trCnt + 1) + '">                                           '
+        } else {
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeThurYn" id="tmeThurYn' + (trCnt + 1) + '" disabled>                                           '
+        }
+        html += '                <label class="form-label form-label-sm border-checkbox-label" for="tmeThurYn' + (trCnt + 1) + '">                                            '
+        html += '                    목                                                                                                                                      '
+        html += '                </label>                                                                                                                                   '
+        html += '            </div>                                                                                                                                         '
+        html += '            <div class="border-checkbox-group d-inline-block">                                                                                             '
+        if (eduPssbDayWeekSelectedItems.includes('friYn')) {
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeFriYn" id="tmeFriYn' + (trCnt + 1) + '">                                    '
+        } else {
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeFriYn" id="tmeFriYn' + (trCnt + 1) + '" disabled>                                    '
+        }
+        html += '                <label class="form-label form-label-sm border-checkbox-label" for="tmeFriYn' + (trCnt + 1) + '">                                             '
+        html += '                    금                                                                                                                                      '
+        html += '                </label>                                                                                                                                   '
+        html += '            </div>                                                                                                                                         '
+        html += '            <div class="border-checkbox-group d-inline-block">                                                                                             '
+        if (eduPssbDayWeekSelectedItems.includes('satYn')) {
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeSatYn" id="tmeSatYn' + (trCnt + 1) + '">                                             '
+        } else {
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeSatYn" id="tmeSatYn' + (trCnt + 1) + '" disabled>                                             '
+        }
+        html += '                <label class="form-label form-label-sm border-checkbox-label text-c-blue" for="tmeSatYn' + (trCnt + 1) + '">                                 '
+        html += '                    토                                                                                                                                      '
+        html += '                </label>                                                                                                                                   '
+        html += '            </div>                                                                                                                                         '
+        html += '        </div>                                                                                                                                             '
+        html += '    </td>                                                                                                                                                  '
+        html += '    <td class="text-center v-middle">                                                                                                                      '
+        html += '        <input type="time" name="bgngTm" class="form-control form-control-sm" />                                                                           '
+        html += '    </td>                                                                                                                                                  '
+        html += '    <td class="text-center v-middle">                                                                                                                      '
+        html += '        <input type="time" name="endTm" class="form-control form-control-sm" />                                                                            '
+        html += '    </td>                                                                                                                                                  '
+        html += '</tr>                                                                                                                                                      '
+
         return html;
     }
+
     //교육소개
-    $('#eduIntrcnFile').change(function(event) {
+    $('#eduIntrcnFile').change(function (event) {
         var formData = new FormData();
         var objFile = event.target;
         var content = "";
         formData.append("file", objFile.files[0]);
         formData.append("filegrpNm", "eduIntrcn_file");
-        if($('#eduIntrcnFilegrpid').val() != '')
+        if ($('#eduIntrcnFilegrpid').val() != '')
             formData.append("filegrpid", $('#eduIntrcnFilegrpid').val());
 
-        if(displayWorkProgress()){
+        if (displayWorkProgress()) {
             $.ajax({
-                url : '/uploadFile.do',
-                processData : false,
-                contentType : false,
-                data : formData,
-                type : 'POST',
-                success : function(response) {
-                    if(response.result == 'fail'){
+                url: '/uploadFile.do',
+                processData: false,
+                contentType: false,
+                data: formData,
+                type: 'POST',
+                success: function (response) {
+                    if (response.result == 'fail') {
                         alert(response.msg);
-                    }else if(response.filegrpid != undefined && response.filegrpid != ''){
+                    } else if (response.filegrpid != undefined && response.filegrpid != '') {
                         $("#eduIntrcnFilegrpid").val(response.filegrpid);
                         $("#eduIntrcnFileid").val(response.fileid);
-                        content = "<div class ='label label-inverse text-white' id='"+response.fileid+"'><a href=javascript:downloadFileByFileid('"+response.fileid+"','"+response.fileIdntfcKey+"') class='text-white'>"+response.orginlFileNm+"&nbsp;&nbsp;</a>";
-                        content +="<a href=javascript:fn_deleteEduIntrcnFileList('"+response.fileid+"','"+response.fileIdntfcKey+"') class='text-white'>X</a></div>";
+                        content = "<div class ='label label-inverse text-white' id='" + response.fileid + "'><a href=javascript:downloadFileByFileid('" + response.fileid + "','" + response.fileIdntfcKey + "') class='text-white'>" + response.orginlFileNm + "&nbsp;&nbsp;</a>";
+                        content += "<a href=javascript:fn_deleteEduIntrcnFileList('" + response.fileid + "','" + response.fileIdntfcKey + "') class='text-white'>X</a></div>";
                         $('#eduIntrcnFileUploadSuccess').html(content);
                     }
                     closeWorkProgress();
@@ -825,32 +851,32 @@ var clssrmViewngMaxAplyNope = 0;
         event.preventDefault();
     });
     //교육사진
-    $('#eduPhotoFile').change(function(event) {
+    $('#eduPhotoFile').change(function (event) {
         var formData = new FormData();
         var objFile = event.target;
         var content = "";
 
         formData.append("file", objFile.files[0]);
         formData.append("filegrpNm", "eduPhotoFile_file");
-        
-        if($('#eduPhotoFilegrpid').val() != '')
+
+        if ($('#eduPhotoFilegrpid').val() != '')
             formData.append("filegrpid", $('#eduPhotoFilegrpid').val());
 
-        if(displayWorkProgress()){
+        if (displayWorkProgress()) {
             $.ajax({
-                url : '/uploadFile.do',
-                processData : false,
-                contentType : false,
-                data : formData,
-                type : 'POST',
-                success : function(response) {
-                    if(response.result == 'fail'){
+                url: '/uploadFile.do',
+                processData: false,
+                contentType: false,
+                data: formData,
+                type: 'POST',
+                success: function (response) {
+                    if (response.result == 'fail') {
                         alert(response.msg);
-                    }else if(response.filegrpid != undefined && response.filegrpid != ''){
+                    } else if (response.filegrpid != undefined && response.filegrpid != '') {
                         $("#eduPhotoFilegrpid").val(response.filegrpid);
                         $("#eduPhotoFileid").val(response.fileid);
-                        content = "<div class ='label label-inverse text-white' id='"+response.fileid+"'><a href=javascript:downloadFileByFileid('"+response.fileid+"','"+response.fileIdntfcKey+"') class='text-white'>"+response.orginlFileNm+"&nbsp;&nbsp;</a>";
-                        content +="<a href=javascript:fn_deleteEduPhotoFileList('"+response.fileid+"','"+response.fileIdntfcKey+"') class='text-white'>X</a></div>";
+                        content = "<div class ='label label-inverse text-white' id='" + response.fileid + "'><a href=javascript:downloadFileByFileid('" + response.fileid + "','" + response.fileIdntfcKey + "') class='text-white'>" + response.orginlFileNm + "&nbsp;&nbsp;</a>";
+                        content += "<a href=javascript:fn_deleteEduPhotoFileList('" + response.fileid + "','" + response.fileIdntfcKey + "') class='text-white'>X</a></div>";
                         $('#eduPhotoFileUploadSuccess').html(content);
                     }
                     closeWorkProgress();
@@ -859,147 +885,151 @@ var clssrmViewngMaxAplyNope = 0;
             $("#eduPhotoFile").val("");
         }
         event.preventDefault();
-    });   
-    
-    function fn_deleteEduIntrcnFileList(fileid, fileIdntfcKey){
-        if(!confirm("파일을 삭제하시겠습니까?")){return;}
-        fn_deleteEduIntrcnFile(fileid, fileIdntfcKey);
-        $("#"+fileid).remove();
-        $('#eduIntrcnFile').val('');
-    } 
+    });
 
-    function fn_deleteEduIntrcnFile(fileid, fileIdntfcKey){
-        var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey; 
-          $.ajax({
-            url : deleteFileUrl,
+    function fn_deleteEduIntrcnFileList(fileid, fileIdntfcKey) {
+        if (!confirm("파일을 삭제하시겠습니까?")) {
+            return;
+        }
+        fn_deleteEduIntrcnFile(fileid, fileIdntfcKey);
+        $("#" + fileid).remove();
+        $('#eduIntrcnFile').val('');
+    }
+
+    function fn_deleteEduIntrcnFile(fileid, fileIdntfcKey) {
+        var deleteFileUrl = "/deleteFile.do?fileid=" + fileid + "&file_idntfc_key=" + fileIdntfcKey;
+        $.ajax({
+            url: deleteFileUrl,
             type: 'GET',
-            cache : false,
+            cache: false,
             dataType: 'json',
-            success : function (data){
-                if(data.result=="success"){
-                    $("#"+fileid).remove();
+            success: function (data) {
+                if (data.result == "success") {
+                    $("#" + fileid).remove();
                     $('#eduIntrcnFileid').val(0);
                     $('#eduIntrcnFilegrpid').val(0);
                     $('#eduIntrcnFile').val('');
                     alert("파일삭제가 완료 되었습니다.");
-                }else{
+                } else {
                     alert("파일삭제중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
                 }
             },
-            error : function (error){
-            } 
-         })
-    };   
+            error: function (error) {
+            }
+        })
+    };
 
-    function fn_deleteEduPhotoFileList(fileid, fileIdntfcKey){
-        if(!confirm("파일을 삭제하시겠습니까?")){return;}
+    function fn_deleteEduPhotoFileList(fileid, fileIdntfcKey) {
+        if (!confirm("파일을 삭제하시겠습니까?")) {
+            return;
+        }
         fn_deleteEduPhotoFile(fileid, fileIdntfcKey);
-        $("#"+fileid).remove();
+        $("#" + fileid).remove();
         $('#eduPhotoFile').val('');
-    } 
+    }
 
-    function fn_deleteEduPhotoFile(fileid, fileIdntfcKey){
-                   
-        var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey; 
-          $.ajax({
-            url : deleteFileUrl,
+    function fn_deleteEduPhotoFile(fileid, fileIdntfcKey) {
+
+        var deleteFileUrl = "/deleteFile.do?fileid=" + fileid + "&file_idntfc_key=" + fileIdntfcKey;
+        $.ajax({
+            url: deleteFileUrl,
             type: 'GET',
-            cache : false,
+            cache: false,
             dataType: 'json',
-            success : function (data){
-                if(data.result=="success"){
-                    $("#"+fileid).remove();
+            success: function (data) {
+                if (data.result == "success") {
+                    $("#" + fileid).remove();
                     $('#eduPhotoFileid').val(0);
                     $('#eduPhotoFilegrpid').val(0);
                     $('#eduPhotoFileFile').val('');
                     alert("파일삭제가 완료 되었습니다.");
-                }else{
+                } else {
                     alert("파일삭제중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
                 }
             },
-            error : function (error){
-            } 
-         })
-    }; 
-    
-    // 교육가능요일 체크박스
-    function fn_changeEduPssbDayWeekSelectItem(item){
-        $(item).is(":checked") ? eduPssbDayWeekSelectedItem($(item).attr('id')) : eduPssbDayWeekUnSelectedItem($(item).attr('id'));     
-    }    
-    
-    var eduPssbDayWeekSelectedItem = function(item) {
-    	eduPssbDayWeekSelectedItems.push(item);
-    	
-    	if(eduPssbDayWeekSelectedItems.includes('monYn')){
-    		$("#infntPrgrmTmBody").find('[name=tmeMonYn]').attr("disabled",false);
-    	}
-    	
-        if(eduPssbDayWeekSelectedItems.includes('tuesYn')){
-            $("#infntPrgrmTmBody").find('[name=tmeTuesYn]').attr("disabled",false);
-        }
-        
-        if(eduPssbDayWeekSelectedItems.includes('wedYn')){
-            $("#infntPrgrmTmBody").find('[name=tmeWedYn]').attr("disabled",false);
-        }
-        
-        if(eduPssbDayWeekSelectedItems.includes('thurYn')){
-            $("#infntPrgrmTmBody").find('[name=tmeThurYn]').attr("disabled",false);
-        }
-        
-        if(eduPssbDayWeekSelectedItems.includes('friYn')){
-            $("#infntPrgrmTmBody").find('[name=tmeFriYn]').attr("disabled",false);
-        }
-        
-        if(eduPssbDayWeekSelectedItems.includes('satYn')){
-            $("#infntPrgrmTmBody").find('[name=tmeSatYn]').attr("disabled",false);
-        }        
+            error: function (error) {
+            }
+        })
+    };
 
-        if(eduPssbDayWeekSelectedItems.includes('sunYn')){
-            $("#infntPrgrmTmBody").find('[name=tmeSunYn]').attr("disabled",false);
-        }        
+    // 교육가능요일 체크박스
+    function fn_changeEduPssbDayWeekSelectItem(item) {
+        $(item).is(":checked") ? eduPssbDayWeekSelectedItem($(item).attr('id')) : eduPssbDayWeekUnSelectedItem($(item).attr('id'));
     }
-     
-    var eduPssbDayWeekUnSelectedItem = function(item) {
-    	eduPssbDayWeekSelectedItems = $.grep(eduPssbDayWeekSelectedItems, function(i) {
-        return i !== item;
+
+    var eduPssbDayWeekSelectedItem = function (item) {
+        eduPssbDayWeekSelectedItems.push(item);
+
+        if (eduPssbDayWeekSelectedItems.includes('monYn')) {
+            $("#infntPrgrmTmBody").find('[name=tmeMonYn]').attr("disabled", false);
+        }
+
+        if (eduPssbDayWeekSelectedItems.includes('tuesYn')) {
+            $("#infntPrgrmTmBody").find('[name=tmeTuesYn]').attr("disabled", false);
+        }
+
+        if (eduPssbDayWeekSelectedItems.includes('wedYn')) {
+            $("#infntPrgrmTmBody").find('[name=tmeWedYn]').attr("disabled", false);
+        }
+
+        if (eduPssbDayWeekSelectedItems.includes('thurYn')) {
+            $("#infntPrgrmTmBody").find('[name=tmeThurYn]').attr("disabled", false);
+        }
+
+        if (eduPssbDayWeekSelectedItems.includes('friYn')) {
+            $("#infntPrgrmTmBody").find('[name=tmeFriYn]').attr("disabled", false);
+        }
+
+        if (eduPssbDayWeekSelectedItems.includes('satYn')) {
+            $("#infntPrgrmTmBody").find('[name=tmeSatYn]').attr("disabled", false);
+        }
+
+        if (eduPssbDayWeekSelectedItems.includes('sunYn')) {
+            $("#infntPrgrmTmBody").find('[name=tmeSunYn]').attr("disabled", false);
+        }
+    }
+
+    var eduPssbDayWeekUnSelectedItem = function (item) {
+        eduPssbDayWeekSelectedItems = $.grep(eduPssbDayWeekSelectedItems, function (i) {
+            return i !== item;
         });
-        if(!eduPssbDayWeekSelectedItems.includes('monYn')){
-            $("#infntPrgrmTmBody").find('[name=tmeMonYn]').attr("disabled",true);
+        if (!eduPssbDayWeekSelectedItems.includes('monYn')) {
+            $("#infntPrgrmTmBody").find('[name=tmeMonYn]').attr("disabled", true);
             $("#infntPrgrmTmBody").find('[name=tmeMonYn]').prop("checked", false);
         }
-        
-        if(!eduPssbDayWeekSelectedItems.includes('tuesYn')){
-            $("#infntPrgrmTmBody").find('[name=tmeTuesYn]').attr("disabled",true);
+
+        if (!eduPssbDayWeekSelectedItems.includes('tuesYn')) {
+            $("#infntPrgrmTmBody").find('[name=tmeTuesYn]').attr("disabled", true);
             $("#infntPrgrmTmBody").find('[name=tmeTuesYn]').prop("checked", false);
         }
-        
-        if(!eduPssbDayWeekSelectedItems.includes('wedYn')){
-            $("#infntPrgrmTmBody").find('[name=tmeWedYn]').attr("disabled",true);
+
+        if (!eduPssbDayWeekSelectedItems.includes('wedYn')) {
+            $("#infntPrgrmTmBody").find('[name=tmeWedYn]').attr("disabled", true);
             $("#infntPrgrmTmBody").find('[name=tmeWedYn]').prop("checked", false);
         }
-        
-        if(!eduPssbDayWeekSelectedItems.includes('thurYn')){
-            $("#infntPrgrmTmBody").find('[name=tmeThurYn]').attr("disabled",true);
+
+        if (!eduPssbDayWeekSelectedItems.includes('thurYn')) {
+            $("#infntPrgrmTmBody").find('[name=tmeThurYn]').attr("disabled", true);
             $("#infntPrgrmTmBody").find('[name=tmeThurYn]').prop("checked", false);
         }
-        
-        if(!eduPssbDayWeekSelectedItems.includes('friYn')){
-            $("#infntPrgrmTmBody").find('[name=tmeFriYn]').attr("disabled",true);
+
+        if (!eduPssbDayWeekSelectedItems.includes('friYn')) {
+            $("#infntPrgrmTmBody").find('[name=tmeFriYn]').attr("disabled", true);
             $("#infntPrgrmTmBody").find('[name=tmeFriYn]').prop("checked", false);
         }
-        
-        if(!eduPssbDayWeekSelectedItems.includes('satYn')){
-            $("#infntPrgrmTmBody").find('[name=tmeSatYn]').attr("disabled",true);
-            $("#infntPrgrmTmBody").find('[name=tmeSatYn]').prop("checked", false);
-        }        
 
-        if(!eduPssbDayWeekSelectedItems.includes('sunYn')){
-            $("#infntPrgrmTmBody").find('[name=tmeSunYn]').attr("disabled",true);
+        if (!eduPssbDayWeekSelectedItems.includes('satYn')) {
+            $("#infntPrgrmTmBody").find('[name=tmeSatYn]').attr("disabled", true);
+            $("#infntPrgrmTmBody").find('[name=tmeSatYn]').prop("checked", false);
+        }
+
+        if (!eduPssbDayWeekSelectedItems.includes('sunYn')) {
+            $("#infntPrgrmTmBody").find('[name=tmeSunYn]').attr("disabled", true);
             $("#infntPrgrmTmBody").find('[name=tmeSunYn]').prop("checked", false);
-        }        
+        }
     }
     $(function () {
-        init(); 
+        init();
         validForm();
     })
 
@@ -1007,28 +1037,28 @@ var clssrmViewngMaxAplyNope = 0;
         $("#infntPrgrmInsertForm").validate({
             onsubmit: false,
             rules: {
-            	clssrmId: {required: true},
-            	eduYr: {required: true},
-            	prgrmNm: {required: true},
-            	eduNope: {required: true},
-            	eduHrMnt: {required: true},
-            	aplcntDgstfnSrvyid: {required: true},
-            	stdntDgstfnSrvyid: {required: true},
-            	eduTypeCd: {required: true}
+                clssrmId: {required: true},
+                eduYr: {required: true},
+                prgrmNm: {required: true},
+                eduNope: {required: true},
+                eduHrMnt: {required: true},
+                aplcntDgstfnSrvyid: {required: true},
+                stdntDgstfnSrvyid: {required: true},
+                eduTypeCd: {required: true}
             },
             messages: {
-            	clssrmId: {required: "교육관을 선택해주십시오."},
-            	eduYr: {required: "교육년도를 선택해주십시오."},
-            	prgrmNm: {required: "프로그램명을 입력해주십시오."},
-            	eduNope: {required: "교육인원을 입력해주십시오."},
-            	eduHrMnt: {required: "교육시간을 입력해주십시오."},
-            	aplcntDgstfnSrvyid: {required: "신청자 만족도 설문을 선택해주십시오."},
-            	stdntDgstfnSrvyid: {required: "학생 만족도 설문을 선택해주십시오."},
-            	eduTypeCd: {required: "교육유형을 선택해주십시오."}
+                clssrmId: {required: "교육관을 선택해주십시오."},
+                eduYr: {required: "교육년도를 선택해주십시오."},
+                prgrmNm: {required: "프로그램명을 입력해주십시오."},
+                eduNope: {required: "교육인원을 입력해주십시오."},
+                eduHrMnt: {required: "교육시간을 입력해주십시오."},
+                aplcntDgstfnSrvyid: {required: "신청자 만족도 설문을 선택해주십시오."},
+                stdntDgstfnSrvyid: {required: "학생 만족도 설문을 선택해주십시오."},
+                eduTypeCd: {required: "교육유형을 선택해주십시오."}
             }
         });
 
-    }    
-    
-    
+    }
+
+
 </script>
