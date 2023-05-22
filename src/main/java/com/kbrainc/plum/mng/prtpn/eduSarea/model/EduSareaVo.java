@@ -1,5 +1,6 @@
 package com.kbrainc.plum.mng.prtpn.eduSarea.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -54,7 +55,7 @@ public class EduSareaVo extends ParentRequestVo {
     /** 지역코드 */
     private String ctprvnGrp;
     /** 지역코드 저장용 */
-    private String [] ctprvnCds;
+    private List<String> ctprvnCds = new ArrayList<>();
     /** 시군구코드 */
     private String signguCd;
     /** 시군구코드명 */

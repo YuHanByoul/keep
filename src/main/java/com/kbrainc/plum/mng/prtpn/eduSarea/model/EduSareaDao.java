@@ -113,7 +113,7 @@ public interface EduSareaDao {
     * @throws Exception
     * @return int
     */
-    public int deleteCtprvnCd(EduSareaVo eduSareaVo) throws Exception;
+    public int deleteCtprvnCdAll(EduSareaVo eduSareaVo) throws Exception;
     /**
     * 시군구코드 목록을 조회.
     **
@@ -195,4 +195,6 @@ public interface EduSareaDao {
     public int deleteEduSareaSignguAll(EduSareaVo eduSareaVo) throws Exception;
 
     public EduSareaVo selectEduSareaSignguById(EduSareaVo eduSareaVo) throws Exception;
+
+    public int deleteCtprvnCd(EduSareaVo eduSareaVo) throws Exception;
 }
