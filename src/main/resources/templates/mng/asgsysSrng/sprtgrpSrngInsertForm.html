@@ -181,7 +181,7 @@
             </div>
 
             <!-- 체크리스트 -->
-            <div th:each="title , a : ${sprtgrpCheckList}">
+            <div id="chklv1" th:each="title , a : ${sprtgrpCheckList}">
 
                 <div th:if="${title.treeOrd==1}" >
 
@@ -196,7 +196,7 @@
 
                 </div>
 
-                <div th:if="${title.treeOrd==2}" class="card-block-small p-t-0">
+                <div id="chklv2" th:if="${title.treeOrd==2}" class="card-block-small p-t-0">
                     <div name="chkLv2block" class="col-12 table-border-style mb-3">
                         <div class="col-12 table-responsive">
                             <table class="table table-border-style table-columned">
@@ -210,7 +210,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="border-bottom" th:each="row, b : ${sprtgrpCheckList}" th:if="${row.treeOrd==3 and title.lv2key==row.lv2key}">
+                                    <div id="chklv3" class="border-bottom" th:each="row, b : ${sprtgrpCheckList}" th:if="${row.treeOrd==3 and title.lv2key==row.lv2key}">
                                         <td class="text-center v-middle" style="width: 60px;"><th:block th:text="${row.ordr}"</th:block></td>
                                         <td th:id="${'cnY' + row.lv1key}">
                                             <th:block th:text="${row.cn}"</th:block>
@@ -263,8 +263,7 @@
             </div>
             <div class="card-block-small p-t-0">
                 <div class="mb-0 form-group row">
-                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="supportGroupJudgingFinalEvaluation"><strong>위 지표
-                        점수부여에 대한 평가 근거, 조정사유 및 추가의견을 기술하여 주십시오.</strong></label>
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="chklstRsltCn"><strong>현장점검 결과 총평을 적어주세요.</strong></label>
                     <div class="col-12">
                         <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="" id="chklstRsltCn" name="chklstRsltCn"><th:block th:text="${sprtgrpSrngInfo.chklstRsltCn}"</th:block></textarea>
                     </div>
@@ -567,10 +566,14 @@
     $(function(){
         initSprtgrpSrngFrm();
 
+        $('[id^=chklv2]').each(function(){
+            if($(this).find('[id^=chklv3]').length == 0 )$(this).hide();
+        });
+
         var validator = $("#sprtgrpSrngFrm").validate({
             rules: {
-                srngOpnn : { maxlength: 1000 ,isBlank: true}
-              , chklstRsltCn : { maxlength: 1000 ,isBlank: true}
+                srngOpnn : { maxlength: 1000}
+              , chklstRsltCn : { maxlength: 1000}
             },
             messages: {
                 srngOpnn : { maxlength: "현장점검결과는 1000자를 넘을 수 없습니다." }
