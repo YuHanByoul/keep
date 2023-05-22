@@ -96,7 +96,6 @@ public class EduSareaServiceImpl extends PlumAbstractServiceImpl implements EduS
         int retVal = 0;
         retVal += eduSareaDao.updateEduSarea(eduSareaVo);
 
-        EduSareaVo eduSareaInfo = eduSareaDao.selectEduSareaInfo(eduSareaVo);
         // 세부지역 정보 select
         EduSareaVo signguInfo = eduSareaDao.selectEduSareaSignguById(eduSareaVo);
 
@@ -108,16 +107,16 @@ public class EduSareaServiceImpl extends PlumAbstractServiceImpl implements EduS
                 retVal += eduSareaDao.insertCtprvnCd(eduSareaVo);
             }
         } else {
-            Boolean isChanged;
-            isChanged = Arrays.stream(eduSareaInfo.getCtprvnCd().split(",")).anyMatch(cd -> cd.equals(signguInfo.getCtprvnCd()));
+            Boolean isNotChanged;
+            isNotChanged = Arrays.stream(eduSareaVo.getCtprvnCd().split(",")).anyMatch(cd -> cd.equals(signguInfo.getCtprvnCd()));
 
-            if (!isChanged) {
+            if (isNotChanged) {
+
                 // 세부 지역 설정이 되어 있는 지역이 삭제 되지 않고 남아 있는 경우
                 eduSareaVo.getCtprvnCds().remove(signguInfo.getCtprvnCd());
-                retVal += eduSareaDao.insertCtprvnCd(eduSareaVo);
-                retVal += eduSareaDao.deleteCtprvnCd(eduSareaVo);
 
                 if(!eduSareaVo.getCtprvnCds().isEmpty()) {
+                    retVal += eduSareaDao.deleteCtprvnCd(eduSareaVo);
                     retVal += eduSareaDao.insertCtprvnCd(eduSareaVo);
                 }
             } else {
