@@ -136,7 +136,9 @@ public class InfntSchdlServiceImpl extends PlumAbstractServiceImpl implements In
 
         retVal += infntSchdlDao.deleteDeSttId(infntSchdlVo);
         retVal += infntSchdlDao.deletePrgrmSttId(infntSchdlVo);
-
+        retVal += infntSchdlDao.deleteInfntSchdlDe(infntSchdlVo);
+        retVal += infntSchdlDao.deleteInfntSchdlPrgrm(infntSchdlVo);
+        retVal += infntSchdlDao.deleteInfntTmeSchdl(infntSchdlVo);
         retVal += infntSchdlDao.deleteInfntSchdl(infntSchdlVo);
         
         return retVal;        

@@ -170,6 +170,38 @@ public interface InfntSchdlDao {
      * @throws Exception 예외
      * @return int
      */
-    public int selectInfntAplyCnt(InfntSchdlVo infntSchdlVo) throws Exception;    
+    public int selectInfntAplyCnt(InfntSchdlVo infntSchdlVo) throws Exception;
+
+    /**
+    * 프로그램 일정 일자 삭제
+    *
+    * @Title : deleteInfntSchdlDe
+    * @param infntSchdlVo
+    * @return
+    * @throws Exception
+    * @return int
+    */
+    public int deleteInfntSchdlDe(InfntSchdlVo infntSchdlVo) throws Exception;
+
+    /**
+    * 프로그램 일정 프로그램 삭제
+    *
+    * @Title : deleteInfntSchdlPrgrm
+    * @param infntSchdlVo
+    * @return
+    * @throws Exception
+    * @return int
+    */
+    public int deleteInfntSchdlPrgrm(InfntSchdlVo infntSchdlVo) throws Exception;
+
+    /**
+    * 프로그램 회차 일정 삭제
+    *
+    * @Title : deleteInfntTmeSchdl
+    * @param infntSchdlVo
+    * @return
+    * @return int
+    */
+    public int deleteInfntTmeSchdl(InfntSchdlVo infntSchdlVo);    
 
 }
