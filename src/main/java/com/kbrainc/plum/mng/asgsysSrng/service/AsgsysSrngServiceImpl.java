@@ -971,6 +971,9 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	}
 
     	ret += asgsysSrngDao.updateJdgsSrngDetail(asgsysSrngVo);    //심사위원심사제출 수정
+    	//심사위원심사 상태 수정
+    	ret += asgsysSrngDao.updatePrgrmJdgs(asgsysSrngVo);
+
 
         return ret;
 	}
@@ -990,7 +993,11 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	int ret = 0;
     	AsgsysSrngVo sbmsnVo =null;
 
+    	//심사위원심사 제출 등록
     	ret += asgsysSrngDao.insertJdgsSrngDetail(asgsysSrngVo);
+
+    	//심사위원심사 상태 수정
+    	ret += asgsysSrngDao.updatePrgrmJdgs(asgsysSrngVo);
 
     	sbmsnVo = asgsysSrngDao.selectJdgsSrngDetail(asgsysSrngVo);
 

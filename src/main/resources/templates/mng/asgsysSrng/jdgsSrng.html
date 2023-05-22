@@ -167,7 +167,7 @@
                         </tr>
 
                         <th:block th:each="item, k : ${srngScrList}">
-                            <tr class="border-bottom">
+                            <tr th:id='srngScr+${k.count}' class="border-bottom">
                                 <td class="text-center v-middle"><th:block th:text="${k.count}"></th:block></td>
                                 <td class="text-center v-middle"><th:block th:text="${item.jdgsNm}"></th:block>
                                     <div class="d-inline-block btn-group-sm">
@@ -228,13 +228,9 @@ initJdgsSrngForm();
 function setFormScr(){
 
 	var sumScr = 0 ;
-	var usrCnt = 0 ;
+	var usrCnt = $("tr[id^=srngScr]").length;
 	var avg = 0.00;
 	var sumAvg = 0;
-
-	$("[id^=sbmsnDt]").each(function(idx,item) {
-		if($("#"+item.id)[0].innerText !="") usrCnt++;
-	});
 
 	if(usrCnt > 0){
 
@@ -249,7 +245,8 @@ function setFormScr(){
 
     		avg = parseFloat(sumScr/usrCnt);
     		sumAvg = parseFloat(sumAvg) + parseFloat(avg);
-    		$("#"+item.id)[0].innerHTML = '<strong>'+avg+'</strong>';
+    		debugger;
+    		$("#"+item.id)[0].innerHTML = '<strong>'+avg.toFixed(2)+'</strong>';
     	});
 
         $("#sumAvg")[0].innerHTML = "<strong class=\"text-info\">"+sumAvg.toFixed(2)+"</strong>"

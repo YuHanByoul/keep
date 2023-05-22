@@ -76,8 +76,7 @@
         (
             SELECT
                 PRGRMID
-              , SRNG_STTS_CD
-              , MAX(JDGSID)
+              , MAX(SRNG_STTS_CD)    SRNG_STTS_CD
             FROM TB_ASS_PRGRM_JDGS
             GROUP BY PRGRMID
         ) B ON A.PRGRMID  = B.PRGRMID
@@ -120,8 +119,7 @@
         (
             SELECT
                 PRGRMID
-              , SRNG_STTS_CD
-              , MAX(JDGSID)
+              , MAX(SRNG_STTS_CD)    SRNG_STTS_CD
             FROM TB_ASS_PRGRM_JDGS
             GROUP BY PRGRMID
         ) B ON A.PRGRMID  = B.PRGRMID
@@ -2970,7 +2968,7 @@
           <if test="srngOpnn!= null and srngOpnn != ''">
           , SRNG_OPNN = #{srngOpnn}
           </if>
-          <if test="SRNG_STTS_CD!= null and srngOpnn != ''">
+          <if test="SRNG_STTS_CD!= null and srngSttsCd != ''">
           , SRNG_STTS_CD = #{srngSttsCd}
           </if>
         WHERE SPRTGRPID= #{sprtgrpid}
@@ -3184,6 +3182,16 @@ SELECT
         WHERE PRGRMID = #{prgrmid}
         AND   JDGSID = #{jdgsid}
     </delete>
+
+    <!-- 담당자 심사위원 수정 -->
+    <update id="updatePrgrmJdgs" parameterType="AsgsysSrngVo" >
+        UPDATE TB_ASS_PRGRM_JDGS SET
+            SRNG_STTS_CD = #{srngSttsCd}
+          , MDFCN_DT = NOW()
+          , MDFRID = #{user.userid}
+        WHERE PRGRMID = #{prgrmid}
+        AND   JDGSID = #{jdgsid}
+    </update>
 
     <!-- 담당자 지원단 삭제 -->
     <delete id="deletePicSprtgrp" parameterType="AsgsysSrngVo" >

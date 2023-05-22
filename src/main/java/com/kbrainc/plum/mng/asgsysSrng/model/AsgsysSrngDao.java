@@ -123,6 +123,18 @@ public interface AsgsysSrngDao {
 	public int updatePrgrSttsCd(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
+	* 심사위원 수정
+	*
+	* @Title : updatePrgrmJdgs
+	* @Description : 심사위원 수정
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int updatePrgrmJdgs(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
 	* 지원단 캘린더 목록 조회
 	*
 	* @Title : selectSprtgrpClndrList
