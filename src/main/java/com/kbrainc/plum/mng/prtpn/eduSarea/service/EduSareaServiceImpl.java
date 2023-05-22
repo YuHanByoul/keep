@@ -94,8 +94,18 @@ public class EduSareaServiceImpl extends PlumAbstractServiceImpl implements EduS
     @Transactional    
     public int updateEduSarea(EduSareaVo eduSareaVo) throws Exception{
         int retVal = 0;
+
         retVal += eduSareaDao.updateEduSarea(eduSareaVo);
 
+        retVal += eduSareaDao.deleteCtprvnCd(eduSareaVo);
+
+        if(!eduSareaVo.getCtprvnCds().isEmpty()) {
+            retVal += eduSareaDao.insertCtprvnCd(eduSareaVo);
+        }
+
+        return retVal;
+
+        /*
         // 세부지역 정보 select
         EduSareaVo signguInfo = eduSareaDao.selectEduSareaSignguById(eduSareaVo);
 
@@ -130,18 +140,9 @@ public class EduSareaServiceImpl extends PlumAbstractServiceImpl implements EduS
             }
         }
 
-        return retVal;
-
-        /*int retVal =0;
-        retVal += eduSareaDao.updateEduSarea(eduSareaVo);
-
-        //eduSareaDao.deleteCtprvnCd(eduSareaVo);
-
-        if(eduSareaVo.getCtprvnCds()!=null & eduSareaVo.getCtprvnCds().length > 0) {
-            retVal += eduSareaDao.insertCtprvnCd(eduSareaVo);
-        }
-
         return retVal;*/
+
+
     }
 
     /**
@@ -158,8 +159,7 @@ public class EduSareaServiceImpl extends PlumAbstractServiceImpl implements EduS
     public int updateEduSareaSignguSetting(EduSareaVo eduSareaVo) throws Exception{
         int retVal = 0;
         
-//        eduSareaDao.deleteEduSareaSignguSetting(eduSareaVo);
-        retVal += eduSareaDao.deleteEduSareaSignguAll(eduSareaVo);
+        eduSareaDao.deleteEduSareaSignguSetting(eduSareaVo);
         retVal += eduSareaDao.updateEduSareaSignguSetting(eduSareaVo);
         
         return retVal;
