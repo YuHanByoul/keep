@@ -119,13 +119,15 @@
             ) AS PRGRMIDS
           , (
             SELECT
-                TB2.RCPT_MTHD_CD
+                TB4.RCPT_MTHD_CD
             FROM
                 TB_EDU_INFNT_PRGRM_SCHDL TB1
-                    LEFT OUTER JOIN tb_edu_infnt_prgrm TB2 ON TB1.CLSSRMID = TB2.CLSSRMID
+                    LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME_SCHDL TB2 ON TB1.PRGRM_SCHDLID = TB2.PRGRM_SCHDLID
+                    LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME TB3 ON TB2.TMEID = TB3.TMEID
+                    LEFT OUTER JOIN TB_EDU_INFNT_PRGRM TB4 ON TB3.PRGRMID = TB4.PRGRMID
             WHERE
-                PRGRM_SCHDLID = #{prgrmSchdlid}
-            GROUP BY TB2.RCPT_MTHD_CD
+                TB1.PRGRM_SCHDLID = #{prgrmSchdlid}
+            GROUP BY TB4.RCPT_MTHD_CD
             ) AS RCPT_MTHD_CD
         FROM
             TB_EDU_INFNT_PRGRM_SCHDL A
@@ -146,13 +148,32 @@
                 , MDFRID                        = #{user.userid}
          WHERE PRGRM_SCHDLID                    = #{prgrmSchdlid}
     </update>    
+
+    <!-- 교육일정관리 게시글 삭제 -->
+    <delete id="deleteInfntTmeSchdl" parameterType="InfntSchdlVo">
+        /* InfntSchdlDao.deleteInfntTmeSchdl */
+        DELETE FROM TB_EDU_INFNT_PRGRM_TME_SCHDL
+        WHERE PRGRM_SCHDLID = #{prgrmSchdlid}
+    </delete>
     
     <!-- 교육일정관리 게시글 삭제 -->
     <delete id="deleteInfntSchdl" parameterType="InfntSchdlVo">
         /* InfntSchdlDao.deleteInfntSchdl */
         DELETE FROM TB_EDU_INFNT_PRGRM_SCHDL
         WHERE PRGRM_SCHDLID = #{prgrmSchdlid}
-    </delete>      
+    </delete>
+    
+    <delete id="deleteInfntSchdlDe" parameterType="InfntSchdlVo">
+        /* InfntSchdlDao.deleteInfntSchdlDe */
+        DELETE FROM TB_EDU_INFNT_PRGRM_SCHDL_DE
+        WHERE PRGRM_SCHDLID = #{prgrmSchdlid}
+    </delete>
+    
+    <delete id="deleteInfntSchdlPrgrm" parameterType="InfntSchdlVo">
+        /* InfntSchdlDao.deleteInfntSchdlPrgrm */
+        DELETE FROM TB_EDU_INFNT_PRGRM_SCHDL_PRGRM
+        WHERE PRGRM_SCHDLID = #{prgrmSchdlid}
+    </delete>        
     
     <!-- EDU_유아_프로그램_일정_일자 저장 -->
     <insert id="insertDeSttId" parameterType="InfntSchdlVo" >

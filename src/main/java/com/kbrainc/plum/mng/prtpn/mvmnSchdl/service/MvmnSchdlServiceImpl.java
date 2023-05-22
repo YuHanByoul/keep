@@ -136,7 +136,9 @@ public class MvmnSchdlServiceImpl extends PlumAbstractServiceImpl implements Mvm
 
         retVal += mvmnSchdlDao.deleteDeSttId(mvmnSchdlVo);
         retVal += mvmnSchdlDao.deletePrgrmSttId(mvmnSchdlVo);
-
+        retVal += mvmnSchdlDao.deleteMvmnSchdlDe(mvmnSchdlVo);
+        retVal += mvmnSchdlDao.deleteMvmnSchdlPrgrm(mvmnSchdlVo);
+        retVal += mvmnSchdlDao.deleteMvmnTmeSchdl(mvmnSchdlVo);
         retVal += mvmnSchdlDao.deleteMvmnSchdl(mvmnSchdlVo);
         
         return retVal;        
