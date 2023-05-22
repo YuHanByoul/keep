@@ -42,7 +42,7 @@
                 <div class="mb-0 form-group row">
                     <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="brdt"><strong>생년월일</strong></label>
                     <div class="col-auto">
-                        <input type="date" class="form-control form-control-sm" name="brdt" id="brdt" placeholder="" th:value="${snrstfdvlprHstry.brdt}"/>
+                        <input type="date" maxlength="10" class="form-control form-control-sm" name="brdt" id="brdt" placeholder="" th:value="${snrstfdvlprHstry.brdt}"/>
                     </div>
                 </div>
             </div>
@@ -184,9 +184,13 @@
           var taskCn = row?.taskCn ?? "";
           var idx = $("[id^=ldrTr]").length + 1;
 
+          if(idx==1) se = '책임개발자';
+
           var htmlTr=`
               <tr id="ldrTr${idx}">
-                  <td><input type='text' maxlength='60' class='form-control form-control-sm' name='se'     id='se'     placeholder='' value='${se}' /></td>
+                  ${idx==1 ? `<td><input type='text' maxlength='60' class='form-control form-control-sm' name='se' id='se' placeholder='' value='책임개발자' readonly/></td>`:
+              	             `<td><input type='text' maxlength='60' class='form-control form-control-sm' name='se' id='se' placeholder='' value='${se}' /></td>`
+                  }
                   <td><input type='text' maxlength='60' class='form-control form-control-sm' name='nm'     id='nm'     placeholder='' value='${nm}' /></td>
                   <td><input type='text' maxlength='100' class='form-control form-control-sm' name='taskCn' id='taskCn' placeholder='' value='${taskCn}' /></td>
                   <td>
@@ -215,8 +219,8 @@
           var htmlTr=`
             <tr id="acbgTr${idx}">
                         <td class="v-middle text-center">${idx}</td>
-                        <td><input type="date" class="form-control form-control-sm" name="bgngDe${idx}" id="bgngDe${idx}" placeholder="" value="${bgngDe}" /></td>
-                        <td><input type="date" class="form-control form-control-sm" name="endDe${idx}"  id="endDe${idx}"  placeholder="" value="${endDe}" /></td>
+                        <td><input type="date" maxlength="10" class="form-control form-control-sm" name="bgngDe${idx}" id="bgngDe${idx}" placeholder="" value="${bgngDe}" /></td>
+                        <td><input type="date" maxlength="10" class="form-control form-control-sm" name="endDe${idx}"  id="endDe${idx}"  placeholder="" value="${endDe}" /></td>
                         <td><input type="text" maxlength='60' class="form-control form-control-sm" name="schlNm${idx}" id="schlNm${idx}" placeholder="" value="${schlNm}"/></td>
                         <td><input type="text" maxlength='10' class="form-control form-control-sm" name="mjr${idx}"    id="mjr${idx}"    placeholder="" value="${mjr}"/></td>
                         <td><input type="text" maxlength='10' class="form-control form-control-sm" name="dgr${idx}"    id="dgr${idx}"    placeholder="" value="${dgr}"/></td>
@@ -244,10 +248,10 @@
 
           var htmlTr=`
             <tr id="qlfcTr${idx}">
-                <td class="v-middle text-center">2</td>
+                <td class="v-middle text-center">${idx}</td>
                 <td><input type="text" maxlength='100' class="form-control form-control-sm" name="qlfcNm${idx}" id="qlfcNm${idx}" placeholder="" value="${qlfcNm}" /></td>
                 <td><input type="text" maxlength='60' class="form-control form-control-sm" name="grd${idx}"    id="grd${idx}"    placeholder="" value="${grd}" /></td>
-                <td><input type="date" class="form-control form-control-sm" name="acqsDe${idx}" id="acqsDe${idx}" placeholder="" value="${acqsDe}" /></td>
+                <td><input type="date" maxlength="10" class="form-control form-control-sm" name="acqsDe${idx}" id="acqsDe${idx}" placeholder="" value="${acqsDe}" /></td>
                 <td><input type="text" maxlength='60' class="form-control form-control-sm" name="wrkplc${idx}" id="wrkplc${idx}" placeholder="" value="${wrkplc}" /></td>
                 <td>
                     <div class="btn-group-sm">
@@ -274,9 +278,9 @@
 
           var htmlTr=`
             <tr id="careerTr${idx}">
-                  <td class="v-middle text-center">1</td>
-                  <td><input type="date" class="form-control form-control-sm" name="bgngDe${idx}"    id="bgngDe${idx}"    placeholder="" value="${bgngDe}"    /></td>
-                  <td><input type="date" class="form-control form-control-sm" name="endDe${idx}"     id="endDe${idx}"     placeholder="" value="${endDe}"     /></td>
+                  <td class="v-middle text-center">${idx}</td>
+                  <td><input type="date" maxlength='10' class="form-control form-control-sm" name="bgngDe${idx}"    id="bgngDe${idx}"    placeholder="" value="${bgngDe}"    /></td>
+                  <td><input type="date" maxlength='10' class="form-control form-control-sm" name="endDe${idx}"     id="endDe${idx}"     placeholder="" value="${endDe}"     /></td>
                   <td><input type="text" maxlength='60' class="form-control form-control-sm" name="actvtNm${idx}"   id="actvtNm${idx}"   placeholder="" value="${actvtNm}"   /></td>
                   <td><input type="text" maxlength='60' class="form-control form-control-sm" name="actvtType${idx}" id="actvtType${idx}" placeholder="" value="${actvtType}" /></td>
                   <td>
@@ -297,6 +301,7 @@
         doSave(call){
         	var param={};
 
+        	if($("#ldrQlfcFrm").valid() == false) return;
             if(!confirm("저장하시겠습니까?")) return;
 
             $("#ldrQlfcFrm #ldrTbody [id^=se           ]").each(function(index,item){ param["ldrLst["+index+"].se"] = item.value; });
@@ -330,6 +335,8 @@
             $("#ldrQlfcFrm #careerTbody [id^=actvtNm  ]").each(function(index,item){ param["careerLst["+index+"].actvtNm"] = item.value; });    /** 활동명 */
             $("#ldrQlfcFrm #careerTbody [id^=actvtType]").each(function(index,item){ param["careerLst["+index+"].actvtType"] = item.value; });    /** 활동 유형 */
 
+
+
             $.ajax({
                 url : "/mng/asgsysSrng/insertPrgrmLdrQlfc.do",
                 type: 'POST',
@@ -340,11 +347,12 @@
                     if(data.result=="success"){
                         alert(data.msg);
 
+                        var prgrmid = $("#prgrmid").val();
                         if(call=='next'){
 
                         	$('[id^=jdsgTab]').removeClass('active')
                             $("#jdsgTab5Link").addClass("active");
-                            var prgrmid = $("#prgrmid").val();
+
                             var url = "/mng/asgsysSrng/sftyMngForm.html?prgrmid="+prgrmid;
                             loadJdsgTabContent(url);
 
@@ -365,7 +373,19 @@
     }
 
     $(function() {
-      ldrQlfc.init()
+        ldrQlfc.init()
+
+        var validator= $("#ldrQlfcFrm").validate({
+            rules: {
+                   nm   : { maxlength: 100 }    // 평가목적
+                 , brdt : { maxlength: 10 }    // 사전 지도자 평가 항목
+            },
+            messages: {
+                nm   : { maxlength: "성명은 100자를 넘을 수 없습니다."}
+             , brdt  : { maxlength: "생년월일은 10자를 넘을 수 없습니다.."}
+            }
+        });
+
     });
 
 </script>

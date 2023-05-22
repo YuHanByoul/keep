@@ -1914,6 +1914,7 @@
           , D.SPLMNT_DMND_OPNN
           , D.SRNG_OPNN
           , E.SBMSNID
+          , E.CHKLST_RSLT_CN
           , G.FORMID
           , G.OPER_FRM_CD
           , G.USE_YN
@@ -1944,6 +1945,7 @@
                 SRNG.PRGRMID
               , CHK.SBMSNID
               , CHK.SBMSN_SE_CD
+              , CHK.CHKLST_RSLT_CN
             FROM
                 TB_ASS_SPRTGRP_SRNG SRNG
             LEFT OUTER JOIN
@@ -2624,34 +2626,37 @@
         /* AsgsysSrngDao.selectSprtgrpSrng*/
         SELECT
                 A.PRGRMID
-              , A.SPRTGRPID
-              , B.PRGRM_NM        /* 프로그램명 */
-              , B.INST_NM         /* 기관명 */
-              , A.SRNG_STTS_CD    /* (지원단)심사 진행상태 */
-              , A.REG_DT
+              , B.SPRTGRPID
+              , USR.NM
+              , A.PRGRM_NM        /* 프로그램명 */
+              , A.INST_NM         /* 기관명 */
+              , A.STTS_CD    /* 진행상태 */
+              , B.SRNG_STTS_CD    /* (지원단)심사 진행상태 */
+              , B.REG_DT
               , DATE_FORMAT(A.REG_DT, "%Y-%m-%d")  AS ALTMNT_DE   /* 배정일 */
               , C.STY_YN          /* 숙박여부 */
-              , A.SPLMNT_DMND_OPNN
-              , A.SRNG_OPNN
-              , A.MDFCN_DT
-              , A.MDFRID
-              , A.RGTRID
+              , B.SPLMNT_DMND_OPNN
+              , B.SRNG_OPNN
+              , B.MDFCN_DT
+              , B.MDFRID
+              , B.RGTRID
               , C.STY_NIGHT
               , C.STY_DAYTM
-              , C.OPER_FRM_CD
+              , C.OPER_FRM_CD    AS DSTNCTN_OPER_FRM_CD
               , IFNULL(E.PRGRMID,'N') AS SFTY_MNG_YN
-              , B.FILEGRPID  AS APLY_FILEGRPID
+              , A.FILEGRPID  AS APLY_FILEGRPID
               , E.BFR_CERT_FILEGRPID
-              , CONCAT(A.VST_DE , " " , A.VST_HR , ":" , A.VST_MNT) AS VST_DT
-              , B.CHKLSTID
+              , CONCAT(B.VST_DE , " " , B.VST_HR , ":" , B.VST_MNT) AS VST_DT
+              , A.CHKLSTID
               , G.CHKLST_RSLT_CN
               , G.SBMSNID
               , G.SCR
               , H.SBMSNID    AS APLCNT_SBMSNID
         FROM
-            TB_ASS_SPRTGRP_SRNG A
+            TB_ASS_PRGRM A
         LEFT OUTER JOIN
-            TB_ASS_PRGRM B ON A.PRGRMID = B.PRGRMID
+            TB_ASS_SPRTGRP_SRNG B ON A.PRGRMID = B.PRGRMID
+        LEFT OUTER JOIN TB_CMM_USER USR ON B.SPRTGRPID = USR.USERID
         LEFT OUTER JOIN
             TB_ASS_PRGRM_DSTNCTN C ON A.PRGRMID = C.PRGRMID
         LEFT OUTER JOIN
@@ -2669,7 +2674,7 @@
             SELECT PRGRMID , SBMSNID ,CHKLSTID, CHKLST_RSLT_CN ,SCR, USERID
             FROM TB_ASS_CHKLST_SBMSN
             WHERE SBMSN_SE_CD ='242101'
-        ) H ON A.PRGRMID = H.PRGRMID AND B.APLCNTID = H.USERID /*자가진단*/
+        ) H ON A.PRGRMID = H.PRGRMID AND A.APLCNTID = H.USERID /*자가진단*/
         WHERE 1=1
         AND  A.PRGRMID = #{prgrmid}
     </select>
@@ -3185,7 +3190,7 @@ SELECT
         DELETE FROM
             TB_ASS_SPRTGRP_SRNG
         WHERE PRGRMID = #{prgrmid}
-        AND   SPRTGRPID = #{sprtgrpid}
+        AND   SPRTGRPID = #{bfrSprtgrpid}
     </delete>
 
 

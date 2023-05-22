@@ -613,7 +613,8 @@ public class AsgsysSrngController {
     @RequestMapping(value = "/mng/asgsysSrng/sprtgrpSrngForm.html")
     public String sprtgrpSrngForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
     	//신청정보조회
-    	AsgsysSrngVo aplyInfo = asgsysSrngService.selectAplyInfo(asgsysSrngVo);
+//    	AsgsysSrngVo aplyInfo = asgsysSrngService.selectAplyInfo(asgsysSrngVo);
+    	AsgsysSrngVo aplyInfo = asgsysSrngService.selectSprtgrpSrng(asgsysSrngVo);
 
     	model.addAttribute("sprtgrpCheckList", asgsysSrngService.selectCheckList(aplyInfo));
 
@@ -647,6 +648,10 @@ public class AsgsysSrngController {
     	}
 
     	model.addAttribute("aplyInfo", aplyInfo);
+
+//    	AsgsysSrngVo asgsysSrngInfo = asgsysSrngService.selectSprtgrpSrng(asgsysSrngVo);
+    	//model.addAttribute("sprtgrpCheckList", asgsysSrngService.selectCheckList(asgsysSrngInfo));
+
     	return "mng/asgsysSrng/sprtgrpSrng";
     }
 
@@ -830,13 +835,13 @@ public class AsgsysSrngController {
     	List<FileVo> eduPhotoFileList = new ArrayList<FileVo>();
 
     	//교육사진 그룹 조회
-    	if (prgrmDstnctnInfo.getEduPhotoFilegrpid() != null && !prgrmDstnctnInfo.getEduPhotoFilegrpid().equals(0)) {
+    	if (prgrmDstnctnInfo.getEduPhotoFilegrpid() != null && prgrmDstnctnInfo.getEduPhotoFilegrpid()!=0) {
 
     		fileVo.setFilegrpid(prgrmDstnctnInfo.getEduPhotoFilegrpid());
-
     		eduPhotoFileList = asgsysSrngService.selectEvdncDcmntFileList(fileVo);
 
     	}
+
     	for(int i=1; i < 4; i++) {    //교육사진 3개
 
     		if(eduPhotoFileList.size() == (i-1)) {
