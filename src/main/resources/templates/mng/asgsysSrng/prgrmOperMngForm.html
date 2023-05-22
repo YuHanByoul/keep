@@ -21,7 +21,7 @@
 	                        <td>
 	                            <div class="col-12 row m-0 align-items-center justify-content-center">
 	                                <div class="col-11 p-l-0 p-r-0">
-	                                    <input type="Number" class="form-control form-control-sm" maxlength="3" name="etrfeeIncm" id="etrfeeIncm" placeholder="" th:value="${prgrmOperMngInfo.etrfeeIncm}" onchange="btgSum()">
+	                                    <input type="number" class="form-control form-control-sm" maxlength="3" name="etrfeeIncm" id="etrfeeIncm" placeholder="" th:value="${prgrmOperMngInfo.etrfeeIncm}" onchange="btgSum()">
 	                                </div>
 									<div class="col-auto p-l-5 p-r-0">%</div>
 								</div>
@@ -29,7 +29,7 @@
 	                        <td>
 	                            <div class="col-12 row m-0 align-items-center justify-content-center">
 	                                <div class="col-11 p-l-0 p-r-0">
-	                                    <input type="Number" class="form-control form-control-sm" maxlength="3" name="etcIncm" id="etcIncm" placeholder="" th:value="${prgrmOperMngInfo.etcIncm}" onchange="btgSum()">
+	                                    <input type="number" class="form-control form-control-sm" maxlength="3" name="etcIncm" id="etcIncm" placeholder="" th:value="${prgrmOperMngInfo.etcIncm}" onchange="btgSum()">
 	                                </div>
 									<div class="col-auto p-l-5 p-r-0">%</div>
 								</div>
@@ -37,7 +37,7 @@
 	                        <td>
 	                            <div class="col-12 row m-0 align-items-center justify-content-center">
 	                                <div class="col-11 p-l-0 p-r-0">
-	                                    <input type="text" class="form-control form-control-sm" maxlength="3" name="slfpy" id="slfpy" placeholder="" th:value="${prgrmOperMngInfo.slfpy}" onchange="btgSum()">
+	                                    <input type="number" class="form-control form-control-sm" maxlength="3" name="slfpy" id="slfpy" placeholder="" th:value="${prgrmOperMngInfo.slfpy}" onchange="btgSum()">
 	                                </div>
 									<div class="col-auto p-l-5 p-r-0">%</div>
 								</div>
@@ -74,7 +74,6 @@
     	                    <td>
     	                        <div class="col-12 row m-0 align-items-center justify-content-center">
     	                            <div class="col-11 p-l-0 p-r-0">
-<!--                                         <input type="text" class="form-control form-control-sm" name="amtStr" th:id="${ 'amtStr' + i.count }" placeholder="금액" th:value="${#numbers.formatInteger(item.amt, 0,'COMMA')}"/> -->
                                         <input type="number" title='금액은 12자를 넘을 수 없습니다.' maxlength='12' class="form-control form-control-sm" name="amt" th:id="${ 'amtStr' + i.count }" placeholder="금액" th:value="${item.amt}"/>
     	                            </div>
                                         <div class="col-auto p-l-5 p-r-0">원</div>
@@ -92,7 +91,7 @@
 
     	                <tr id="expndSumAmtTr">
     	                    <th class="table-active text-center">총 예산액</th>
-    	                    <th colspan="2" class="table-active text-center">
+    	                    <th colspan="2" class="table-active text-center" id='sumAmt'>
                                 <th:bolck th:unless="${#lists.isEmpty(expndArtclList[0].sumAmt)}" th:text="|${#numbers.formatInteger(expndArtclList[0].sumAmt, 0,'COMMA')}원|"></th:bolck>
                             </th>
     	                </tr>
@@ -339,12 +338,19 @@
     }
 
     function fn_savePrgrmOperBtn(call){
-debugger;
+
     	var param = {};
         var operMngKey = $("#operMngPrgrmid").val();
         var vUrl = "/mng/asgsysSrng/";
 
         if(!$("#prgrmOperMngFrm").valid()) return false;
+
+        var valid = true;
+        if($("#btgSum")[0].innerText != "100%") {
+            alert("총합은 100%가 되어야 합니다.");
+            $('#etrfeeIncm').focus();
+            return false;
+        }
 
         if(!confirm("저장 하시겠습니까?")){return;}
 
@@ -450,6 +456,18 @@ debugger;
 	          $(this).parent().removeClass("selected");
 	        }
 	   });
+
+	   $('#prgrmOperMngFrm [id^=amt]').on('change', function() {
+		   var sumAmt = 0;
+
+		   $('#prgrmOperMngFrm [id^=amt]').each(function(){
+			   var amt = this.value ?? 0;
+			   sumAmt+=Number(amt);
+		   });
+		   $('#sumAmt').prop('innerText',sumAmt.toLocaleString()+'원');
+
+
+       });
     });
 
 </script>

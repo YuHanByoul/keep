@@ -1953,22 +1953,21 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     		for(int i=0; i < tokens.size(); i++) {
     			asgsysSrngVo.setJdgsid(tokens.get(i));
     			asgsysSrngVo.setSrngSttsCd("114102");   //배정전->심사전
-    			ret = asgsysSrngDao.insertPicJdgs(asgsysSrngVo);
+    			ret += asgsysSrngDao.insertPicJdgs(asgsysSrngVo);
     		}
     	}
 
     	if("sprtgrp".equals( asgsysSrngVo.getMode())) {
 
-    		asgsysSrngVo.setSrngSttsCd("114102");    //배정전->심사전
-    		ret = asgsysSrngDao.insertPicSprtgrp(asgsysSrngVo);
-
-
     		//이전 지원단id삭제
     		if(CommonUtil.isNotEmpty(asgsysSrngVo.getBfrSprtgrpid())) {
-    			ret=0;
-    			asgsysSrngVo.setSprtgrpid(asgsysSrngVo.getBfrSprtgrpid());
-    			ret = asgsysSrngDao.deletePicSprtgrp(asgsysSrngVo);
+    			ret += asgsysSrngDao.deletePicSprtgrp(asgsysSrngVo);
     		}
+
+    		asgsysSrngVo.setSrngSttsCd("114102");    //배정전->심사전
+    		ret += asgsysSrngDao.insertPicSprtgrp(asgsysSrngVo);
+
+
     	}
 
     	return ret;
