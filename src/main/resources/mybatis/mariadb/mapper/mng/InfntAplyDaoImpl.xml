@@ -115,6 +115,7 @@
             , A.TOWWAY_ONLN_EDU_AGRE_YN
             , A.STTS_CD
             , D.CD_NM AS STTS_NM
+            , C.PRGRMID
             , A.MDFCN_DT
             , A.MDFRID
             , A.REG_DT
@@ -328,7 +329,8 @@
         , A.MDFCN_DT
         , A.MDFRID
         , A.REG_DT
-        , A.RGTRID  
+        , A.RGTRID
+        , C.PRGRMID  
         FROM TB_EDU_INFNT_PRGRM_APLY A 
         LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME_SCHDL B ON B.TME_SCHDLID = A.TME_SCHDLID 
         LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME C ON C.TMEID = B.TMEID
@@ -344,6 +346,7 @@
         UPDATE TB_EDU_INFNT_PRGRM_APLY SET
                 INSTID                      = #{instid}
                 , USERID                    = #{aplyUserid}
+                , TME_SCHDLID         = #{tmeSchdlid}
                 , ZIP                       = #{zip}
                 , ADDR                      = #{addr}
                 , ADDR_DTL                  = #{addrDtl}
@@ -419,7 +422,7 @@
             AND A.PRGRM_SCHDLID = #{prgrmSchdlid} 
             AND B.PRGRMID = #{prgrmId}
         ORDER BY 
-            A.DE 
+            A.DE, B.ORDR 
     </select>
                
     <!-- 회원정보 조회 -->
