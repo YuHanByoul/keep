@@ -142,6 +142,7 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
     public int updateMvmnAply(MvmnAplyVo mvmnAplyVo) throws Exception{
         int retVal = 0;
         retVal += mvmnAplyDao.updateMvmnAply(mvmnAplyVo);
+        retVal += mvmnAplyDao.updateMvmnAplySchdl(mvmnAplyVo);
         
         mvmnAplyDao.deleteTrgtCd(mvmnAplyVo);
 
