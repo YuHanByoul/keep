@@ -1,4 +1,5 @@
 <form id ="infntSchdlInsertPopupForm">
+	<input type="hidden" id="clssrmId" th:value="${eduClssRm.clssrmId}">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content type_2">
             <div class="modal-header">
@@ -184,7 +185,7 @@
     }    
     function fn_changeRcptMthdCd(item){
         var getCodeUrl = "/mng/prtpn/infntPrgrm/selectPrgrmSettingList.do";
-        var url = getCodeUrl + "?rcptMthdCd=" + $(item).val();
+        var url = getCodeUrl + "?rcptMthdCd=" + $(item).val() + "&clssrmId=" + $("#clssrmId").val();
         var prgrmStthtml = "";
         $("#insertPrgrmSettingList tr").remove();
         if($(item).val() == ""){
@@ -193,12 +194,20 @@
         	prgrmStthtml += '</tr>';
         	$("#insertPrgrmSettingList").append(prgrmStthtml);
         	return false;
-        } 
+        }
         $.ajax({
             url: url,
             type: 'POST',
             cache: false,
             success: function (data) {
+            	if(data.prgrmSttList.length == 0) {
+                	prgrmStthtml += '<tr>';
+                	prgrmStthtml += '<td class="text-center v-middle" colspan="3">등록된 프로그램이 없습니다.</td>';
+                	prgrmStthtml += '</tr>';
+                	$("#insertPrgrmSettingList").append(prgrmStthtml);
+                	return false;            		
+            	}
+            	
                 for(var i = 0; i < data.prgrmSttList.length; i++){
                     var weekDesc = "";
                     prgrmStthtml += '<tr>';

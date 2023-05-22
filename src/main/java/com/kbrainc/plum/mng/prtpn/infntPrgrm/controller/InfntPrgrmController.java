@@ -417,9 +417,9 @@ public class InfntPrgrmController {
     */
     @RequestMapping(value = "/mng/prtpn/infntPrgrm/selectPrgrmSettingList.do")
     @ResponseBody
-    public Map<String, Object> selectPrgrmSettingList(String rcptMthdCd) throws Exception {
+    public Map<String, Object> selectPrgrmSettingList(InfntPrgrmVo infntPrgrmVo) throws Exception {
         List<InfntPrgrmVo> result = null;
-        result =  infntPrgrmService.selectPrgrmSettingList(rcptMthdCd);
+        result =  infntPrgrmService.selectPrgrmSettingList(infntPrgrmVo);
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("prgrmSttList", result);
         return resultMap;

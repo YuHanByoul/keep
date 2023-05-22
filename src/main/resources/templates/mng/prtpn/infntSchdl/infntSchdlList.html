@@ -122,17 +122,19 @@
 		},
 
 		fn_popUpdForm = () => {
-            var prgrmSchdlid = eventClickSelectItem;
+            var prgrmSchdlid = $("#searchSchdlId").val() != "" && $("#searchSchdlId").val() != null ? $("#searchSchdlId").val() : eventClickSelectItem;
             if(prgrmSchdlid == "" || prgrmSchdlid == null){
                 alert("수정할 교육일정을 선택해 주시기 바랍니다.");
                 return;
             }
+             
             var url = "/mng/prtpn/infntSchdl/infntSchdlUpdatePopup.html?prgrmSchdlid="+prgrmSchdlid;
             
             $("#updatePopupModal").load(url, function(response, status, xhr) {
                 if (status == "success") {
                     popUpdFormModal = new bootstrap.Modal($('#updatePopupModal'));
                     popUpdFormModal.show();
+                    eventClickSelectItem = null;
                 }
             });
 		},
@@ -188,36 +190,9 @@
             },
             eventLimitText: "건 더보기",
             views: {month: {titleFormat: 'YYYY년 M월'}},
-/*            header: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'month'
-            },*/
-/*            defaultDate: moment().format("YYYY-MM-DD"),
-            navLinks: true, // can click day/week names to navigate views
-            businessHours: true, // display business hours
-            editable: true,
-            droppable: true, // this allows things to be dropped onto the calendar
-            drop: function() {
-                // is the "remove after drop" checkbox checked?
-                if ($('#checkbox2').is(':checked')) {
-                    // if so, remove the element from the "Draggable Events" list
-                    $(this).remove();
-                }
-            },*/
             dayClick: function(date, jsEvent, view) {
             },
             eventRender:function (event,element){
-                //fn_makeCalendarEvent();         
-/* 	            var tooltip = new Tooltip(info.el, {
-	            title: info.event.extendedProps.description,//이벤트 디스크립션을 툴팁으로 가져옵니다. 
-	            // title: info.event.title, 이벤트 타이틀을 툴팁으로 가져옵니다. 
-	            placement: 'top',
-	            trigger: 'hover',
-	            container: 'body'
-            	});
- */            	// $(element).tooltip({title: titleHtml});
-            	//$(element).tooltip({ title: '111111111111' });
                 //일정에 hover시 요약
                 element.popover({
                   title: $('<div />', {
@@ -229,14 +204,8 @@
                   }),
                   content: $('<div />', {
                       class: 'popoverInfoCalendar'
-                    })//.append('<p><strong>등록자:</strong> ' + event.id + '</p>')
-//                     .append('<p><strong>구분:</strong> ' + event.type + '</p>')
-//                     .append('<p><strong>시간:</strong> ' + getDisplayEventDate(event) + '</p>')
+                    })
                     .append('<div class="popoverDescCalendar"><b>' + event.prgrmNm + '</b></div>'),
-                  /*delay: {
-                    	show: "800",
-                    	hide: "50"
-                  },*/
                   trigger: 'hover',
                   placement: 'top',
                   html: true,
@@ -304,36 +273,36 @@
                         "searchSchdlId" : searchSchdlId
                     },
                     success : function (data){
-                    	var data = escapeGridData(data);                    	
-                        //JSON.stringify(data);
-                        $.each(data,function(i){
-                           var title  = "";
-                               title  +=  data[i].rcptMthdNm +' | ' + data[i].schdlNm 
-                           var prgrmNm = data[i].prgrmNm
-                           if(prgrmNm){
-                            prgrmNm = data[i].prgrmNm.replaceAll("&lt;br/&gt;", "<br/>");
-                           }
-                            
-                           // calendar.addEvent({title:data[0].title, start:data[0].start, borderColor:data[0].borderColor, backgroundColor:data[0].backgroundColor, borderColor:data[0].borderColor, textColor:data[0].textColor})
-                            p_events.events.push({
-                                title:title
-                               ,id:data[i].prgrmSchdlid
-                               ,start:data[i].de
-                               ,end:data[i].de
-                               ,borderColor:data[i].borderColor
-                               ,backgroundColor:data[i].backgroundColor
-                               ,textColor:data[i].textColor
-                               ,rcptMthdCd:data[i].rcptMthdCd                               
-                               ,rcptMthdNm:data[i].rcptMthdNm
-                               ,prgrmNm:prgrmNm
-                           })                           
-                            //events.push({title:data[0].title, start:data[0].start, borderColor:data[0].borderColor, backgroundColor:data[0].backgroundColor, borderColor:data[0].borderColor, textColor:data[0].textColor});
-                        });
-                       $("#calendar").fullCalendar('removeEventSources');
-                       $("#calendar").fullCalendar('addEventSource', p_events);
-                       
-                       closeWorkProgress();
-                       }
+						var data = escapeGridData(data);
+						$.each(data,function(i){
+							var title  = "";
+							title  +=  data[i].rcptMthdNm +' | ' + data[i].schdlNm
+							
+							var prgrmNm = data[i].prgrmNm
+							
+							if(prgrmNm){
+								prgrmNm = data[i].prgrmNm.replaceAll("&lt;br/&gt;", "<br/>");
+							}
+							
+							p_events.events.push({
+								title:title
+								,id:data[i].prgrmSchdlid
+								,start:data[i].de
+								,end:data[i].de
+								,borderColor:data[i].borderColor
+								,backgroundColor:data[i].backgroundColor
+								,textColor:data[i].textColor
+								,rcptMthdCd:data[i].rcptMthdCd                               
+								,rcptMthdNm:data[i].rcptMthdNm
+								,prgrmNm:prgrmNm
+							})
+						});
+						
+						$("#calendar").fullCalendar('removeEventSources');
+						$("#calendar").fullCalendar('addEventSource', p_events);
+						
+						closeWorkProgress();
+					}
                 });            
             }
         	

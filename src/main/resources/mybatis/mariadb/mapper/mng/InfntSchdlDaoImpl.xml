@@ -95,17 +95,47 @@
     <!-- 교육일정 관리 상세조회 -->
     <select id="selectInfntSchdlInfo" parameterType="InfntSchdlVo" resultType="InfntSchdlVo"> 
         /* InfntSchdlDao.selectInfntSchdlInfo */
-        SELECT 
+        SELECT
             A.PRGRM_SCHDLID
-            , A.YM
-            , A.SCHDL_NM
-            , A.CLSSRMID
-            , B.CLSSRM_NM
-            ,(SELECT GROUP_CONCAT(DE SEPARATOR',') FROM TB_EDU_INFNT_PRGRM_SCHDL_DE WHERE PRGRM_SCHDLID = #{prgrmSchdlid} ) AS DE
-            ,(SELECT GROUP_CONCAT(PRGRMID SEPARATOR',') FROM TB_EDU_INFNT_PRGRM_SCHDL_PRGRM WHERE PRGRM_SCHDLID = #{prgrmSchdlid} ) AS PRGRMIDS
-            FROM TB_EDU_INFNT_PRGRM_SCHDL A
-            LEFT OUTER JOIN TB_EDU_CLSSRM B ON A.CLSSRMID = B.CLSSRMID
-       WHERE A.PRGRM_SCHDLID = #{prgrmSchdlid}
+          , A.YM
+          , A.SCHDL_NM
+          , A.CLSSRMID
+          , E.CLSSRM_NM
+          , (
+            SELECT
+                GROUP_CONCAT(DE SEPARATOR ',')
+            FROM
+                TB_EDU_INFNT_PRGRM_SCHDL_DE
+            WHERE
+                PRGRM_SCHDLID = #{prgrmSchdlid}
+            ) AS DE
+          , (
+            SELECT
+                GROUP_CONCAT(PRGRMID SEPARATOR ',')
+            FROM
+                TB_EDU_INFNT_PRGRM_SCHDL_PRGRM
+            WHERE
+                PRGRM_SCHDLID = #{prgrmSchdlid}
+            ) AS PRGRMIDS
+          , (
+            SELECT
+                TB2.RCPT_MTHD_CD
+            FROM
+                TB_EDU_INFNT_PRGRM_SCHDL TB1
+                    LEFT OUTER JOIN tb_edu_infnt_prgrm TB2 ON TB1.CLSSRMID = TB2.CLSSRMID
+            WHERE
+                PRGRM_SCHDLID = #{prgrmSchdlid}
+            GROUP BY TB2.RCPT_MTHD_CD
+            ) AS RCPT_MTHD_CD
+        FROM
+            TB_EDU_INFNT_PRGRM_SCHDL A
+                LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME_SCHDL B ON A.PRGRM_SCHDLID = B.PRGRM_SCHDLID
+                LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME C ON B.TMEID = C.TMEID
+                LEFT OUTER JOIN TB_EDU_INFNT_PRGRM D ON C.PRGRMID = D.PRGRMID
+                LEFT OUTER JOIN TB_EDU_CLSSRM E ON A.CLSSRMID = E.CLSSRMID
+        WHERE
+            A.PRGRM_SCHDLID = #{prgrmSchdlid}
+        GROUP BY A.PRGRM_SCHDLID            
     </select>
     
     <!-- 교육일정관리 게시글 수정 -->

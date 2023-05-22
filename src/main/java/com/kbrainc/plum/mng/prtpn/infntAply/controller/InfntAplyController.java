@@ -121,8 +121,8 @@ public class InfntAplyController {
         EduClssRmVo eduClssRmVo = new EduClssRmVo(); 
         model.addAttribute("infntAplyVo", infntAplyVo);
         model.addAttribute("clssList", eduClssRmService.selectEduClssRmList(eduClssRmVo));
-        
-        model.addAttribute("tmeSchdlList", infntAplyService.selectTmeSchdlList(infntAplyVo));
+        List<InfntAplyVo> tmeSchdlList = infntAplyService.selectTmeSchdlList(infntAplyVo);
+        model.addAttribute("tmeSchdlList", tmeSchdlList);
         
         return "mng/prtpn/infntAply/infntAplyInsertForm";
     }

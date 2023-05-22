@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.prtpn.eduSarea.model.EduSareaVo;
-import com.kbrainc.plum.mng.code.model.CodeVo;
 import com.kbrainc.plum.mng.prtpn.eduSarea.model.EduSareaDao;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
@@ -61,7 +60,7 @@ public class EduSareaServiceImpl extends PlumAbstractServiceImpl implements EduS
     public int insertEduSarea(EduSareaVo eduSareaVo) throws Exception{
         int retVal = 0;
         retVal += eduSareaDao.insertEduSarea(eduSareaVo);
-        if(eduSareaVo.getCtprvnCds()!=null & eduSareaVo.getCtprvnCds().length > 0) {
+        if(!eduSareaVo.getCtprvnCds().isEmpty()) {
             retVal += eduSareaDao.insertCtprvnCd(eduSareaVo);
         }
 
@@ -94,42 +93,46 @@ public class EduSareaServiceImpl extends PlumAbstractServiceImpl implements EduS
     @Override
     @Transactional    
     public int updateEduSarea(EduSareaVo eduSareaVo) throws Exception{
-/*        int retVal = 0;
+        int retVal = 0;
         retVal += eduSareaDao.updateEduSarea(eduSareaVo);
 
-        EduSareaVo eduSareaInfo = eduSareaDao.selectEduSareaInfo(eduSareaVo);
         // 세부지역 정보 select
         EduSareaVo signguInfo = eduSareaDao.selectEduSareaSignguById(eduSareaVo);
 
         if(signguInfo == null) {
-            // 세부지역 설정이 되어있지 않은 상태
-            retVal += eduSareaDao.deleteCtprvnCd(eduSareaVo);
+            // 세부지역 설정이 되어 있지 않은 경우
+            retVal += eduSareaDao.deleteCtprvnCdAll(eduSareaVo);
 
-            if(eduSareaVo.getCtprvnCds()!=null & eduSareaVo.getCtprvnCds().length > 0) {
+            if(!eduSareaVo.getCtprvnCds().isEmpty()) {
                 retVal += eduSareaDao.insertCtprvnCd(eduSareaVo);
             }
         } else {
-            Boolean isChanged;
-            isChanged = Arrays.stream(eduSareaInfo.getCtprvnCd().split(",")).anyMatch(cd -> cd.equals(signguInfo.getCtprvnCd()));
+            Boolean isNotChanged;
+            isNotChanged = Arrays.stream(eduSareaVo.getCtprvnCd().split(",")).anyMatch(cd -> cd.equals(signguInfo.getCtprvnCd()));
 
-            if (!isChanged) {
-                // 세부 지역 설정이 되어 있는 지역이 삭제 되지 않고 남아있는 경우
-                List<String> list = Arrays.asList(eduSareaVo.getCtprvnCds());
-                list.remove(signguInfo.getCtprvnCd());
+            if (isNotChanged) {
+
+                // 세부 지역 설정이 되어 있는 지역이 삭제 되지 않고 남아 있는 경우
+                eduSareaVo.getCtprvnCds().remove(signguInfo.getCtprvnCd());
+
+                if(!eduSareaVo.getCtprvnCds().isEmpty()) {
+                    retVal += eduSareaDao.deleteCtprvnCd(eduSareaVo);
+                    retVal += eduSareaDao.insertCtprvnCd(eduSareaVo);
+                }
             } else {
                 // 세부 지역 설정이 되어 있는 지역이 삭제된 경우
                 retVal += eduSareaDao.deleteEduSareaSignguAll(eduSareaVo);
-                retVal += eduSareaDao.deleteCtprvnCd(eduSareaVo);
+                retVal += eduSareaDao.deleteCtprvnCdAll(eduSareaVo);
 
-                if(eduSareaVo.getCtprvnCds()!=null & eduSareaVo.getCtprvnCds().length > 0) {
+                if(!eduSareaVo.getCtprvnCds().isEmpty()) {
                     retVal += eduSareaDao.insertCtprvnCd(eduSareaVo);
                 }
             }
         }
 
-        return retVal;*/
+        return retVal;
 
-        int retVal =0;
+        /*int retVal =0;
         retVal += eduSareaDao.updateEduSarea(eduSareaVo);
 
         //eduSareaDao.deleteCtprvnCd(eduSareaVo);
@@ -138,7 +141,7 @@ public class EduSareaServiceImpl extends PlumAbstractServiceImpl implements EduS
             retVal += eduSareaDao.insertCtprvnCd(eduSareaVo);
         }
 
-        return retVal;
+        return retVal;*/
     }
 
     /**

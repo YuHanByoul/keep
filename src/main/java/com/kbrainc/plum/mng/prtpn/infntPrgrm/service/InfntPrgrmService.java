@@ -125,7 +125,7 @@ public interface InfntPrgrmService {
     * @throws Exception
     * @return List<InfntPrgrmVo>
     */
-    public List<InfntPrgrmVo> selectPrgrmSettingList(String rcptMthdCd) throws Exception;
+    public List<InfntPrgrmVo> selectPrgrmSettingList(InfntPrgrmVo infntPrgrm) throws Exception;
     
     /**
      * 유아환경교육(신청자) 설문지 목록 조회
