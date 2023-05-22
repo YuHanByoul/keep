@@ -54,7 +54,7 @@
                              </select>
                              
                          </div>
-                         <div class="col-sm-6 mb-3 form-group">
+                         <div class="col-sm-6 mb-3 form-group required">
                              <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="ctprvnCd_2"><strong>시군구</strong></label>
                              <select id="ctprvnCd_2" name="ctprvnCd_2" class="form-select form-select-sm form-control-sm" disabled>
                                   <option value="">- 선택 -</option>
@@ -146,20 +146,22 @@
                  <div class="col-lg-6">
                      <div class="row">
                          <div class="col-sm-6 mb-3 form-group required">
-                             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="de"><strong>교육일자</strong></label>
-                             <select name="tmeSchdlid" class="form-select form-select-sm form-control-sm" id="tmeSchdlid" onchange="fn_changeSelectDe(this);">
+                             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="tmeDe"><strong>교육일자</strong></label>
+                             <select name="tmeDe" class="form-select form-select-sm form-control-sm" id="tmeDe" onchange="fn_changeSelectDe(this);">
+                                <!--
                                  <option value="">- 선택 -</option>
                                  <th:block th:each="item : ${tmeSchdlList}">
                                      <option th:value="${item.tmeSchdlid}"><th:block th:text="${item.de}" /></option>
                                  </th:block>
+                                 -->
                              </select>
                          </div>
                          <div class="col-sm-6 mb-3 form-group required">
-                             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="tme"><strong>회차</strong></label>
-                             <select name="tme" class="form-select form-select-sm form-control-sm" id="tme" onchange="fn_changeSelectTme(this);">
+                             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="tmeSchdlid"><strong>회차</strong></label>
+                             <select name="tmeSchdlid" class="form-select form-select-sm form-control-sm" id="tmeSchdlid" onchange="fn_changeSelectTme(this);" disabled>
                                  <option value="">- 선택 -</option>
                                  <th:block th:each="item : ${tmeSchdlList}">
-                                     <option th:value="${item.tmeSchdlid}"><th:block th:text="${item.tmeNm}" /></option>
+                                     <option th:value="${item.tmeSchdlid}" th:data-de="${item.de}"><th:block th:text="${item.tmeNm}" /></option>
                                  </th:block>
                              </select>
                          </div>
@@ -180,7 +182,7 @@
                      <div class="mb-0 form-group required">
                          <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="eduNope"><strong>교육인원(명)</strong></label>
                          <div class="col-sm-12">
-                             <input type="number" class="form-control form-control-sm" name="eduNope" id="eduNope" placeholder="교육인원(명)을 숫자로 입력하세요." onchange="">
+                             <input type="number" class="form-control form-control-sm" name="eduNope" id="eduNope" placeholder="교육인원(명)을 숫자로 입력하세요." onchange="" min="1">
                          </div>
                      </div>
                  </div>
@@ -209,7 +211,7 @@
              </div>
          </div>
         <div class="card-block-small">
-            <button type="button" class="btn btn-disabled m-r-5" id="canceMvmnAply" onclick="gridHelper1.toggleContent()">취소</button>
+            <button type="button" class="btn btn-disabled m-r-5" id="canceMvmnAply" onclick="gridHelper2.toggleContent()">취소</button>
             <th:block sec:authorize-url="/mng/prtpn/mvmnAply/insertMvmnAply.do"><button type="button" class="btn btn-primary" id="insertMvmnAply" onclick="fn_insertMvmnAply()">저장</button></th:block>
         </div>
         <!-- Tab Container End -->
@@ -223,6 +225,7 @@
     var sareaViewngMaxAplyNope = 0;
     var userSearchPopupUrl = "/mng/prtpn/mvmnAply/mvmnAplyUserSearchPopup.html";
     var userSearchAddModal;
+    var tmeSchdlList = /*[[${tmeSchdlList}]]*/null;
 
     fn_openUserSearchModal = () => {
 
@@ -244,6 +247,7 @@
         var prgrmId = selectedItems[0].prgrmId;
         var prgrmNm = selectedItems[0].prgrmNm;
     
+        setTmeSchdlList();
         $('#eduYr').val(eduYr);
         $('#sareaId').val(sareaId).prop("selected", true);
         $('#prgrmId').val(prgrmId);
@@ -257,9 +261,15 @@
     
     function fn_insertMvmnAply(){
         if(!($("#mvmnAplyInsertForm").valid())) return;
+        // 교육대상확인
+        if($("input[name='trgtCd']:checked").length == 0) {
+            alert("교육대상을 확인해주세요.");
+            return;
+        }
+        
         if(!confirm("저장하시겠습니까?")) return;
         
-        var zip = $('#zip').val();
+        var zip = ""; //$('#zip').val();
         var addr = $('#addr').val();
         var addrDtl = $('#addrDtl').val();
         var telno = $('#telno').val();
@@ -281,7 +291,7 @@
                 success : function (data){
                     if(data.result=="success"){
                         alert(data.msg);
-                        gridHelper1.resetListContent();
+                        gridHelper2.resetListContent();
                     }else{
                         alert(data.msg);
                     }
@@ -351,14 +361,46 @@
         }
     }
     
+    function setTmeSchdlList() {
+        $("#tmeDe").empty();
+        var el = '<option value="">- 선택 -</option>';
+        var deList = [];
+        $(tmeSchdlList).each(function(index, item) {
+            var de = item.de;
+            if(deList.indexOf(de) == -1) {
+                //el += '<option value="' + item.tmeSchdlid + '"' + ' data-dt="' + item.de + '">' + item.de + '</option>';
+                el += '<option value="' + item.de + '">' + item.de + '</option>';
+                deList.push(de);
+            }
+        });
+        $("#tmeDe").append(el);
+    }
+    
+    function setTme(de) {
+        $('#tmeSchdlid option').each(function() {
+            if($(this).attr("data-de") != de) {
+                $(this).addClass("d-none");
+            } else {
+                $(this).removeClass("d-none");                
+            }
+        });
+    }
+    
     function fn_changeSelectDe(item){
-        var tmeSchdlid = $(item).val();
-        $('#tme').val(tmeSchdlid).prop("selected", true);
+        var de = $(item).val();
+        if(de) {
+            $('#tmeSchdlid').prop("disabled", false);
+            setTme(de);
+        } else {
+            $('#tmeSchdlid').prop("disabled", true).val("");
+        }
     }
     
     function fn_changeSelectTme(item){
+        /*
         var tmeSchdlid = $(item).val();
         $('#tmeSchdlid').val(tmeSchdlid).prop("selected", true);
+        */
     }
     
     $(function () {
@@ -373,8 +415,11 @@
             	sareaId: {required: true},
                 eduYr: {required: true},
                 prgrmNm: {required: true},
+                ctprvnCd_1: {required: true},
+                ctprvnCd_2: {required: true},
+                userNm: {required: true},
+                tmeDe: {required: true},
                 tmeSchdlid: {required: true},
-                tme: {required: true},
                 signguDesc: {required: true},
                 instNm: {required: true},
                 addr: {required: true},
@@ -386,8 +431,11 @@
                 sareaId: {required: "운영권역을 선택해주십시오."},
                 eduYr: {required: "교육년도를 선택해주십시오."},
                 prgrmNm: {required: "프로그램명을 입력해주십시오."},
-                tmeSchdlid: {required: "교육일자를 선택해주십시오."},
-                tme: {required: "회차를 선택해주십시오."},
+                ctprvnCd_1: {required: "신청지역을 선택해주십시오."},
+                ctprvnCd_2: {required: "시군구를 선택해주십시오."},
+                userNm: {required: "신청인을 선택해주십시오."},
+                tmeDe: {required: "교육일자를 선택해주십시오."},
+                tmeSchdlid: {required: "회차를 선택해주십시오."},
                 signguDesc: {required: "신청인 지역을 선택해주십시오."},
                 instNm: {required: "신청기관을 입력해주십시오."},
                 addr: {required: "기관주소를 입력해주십시오."},

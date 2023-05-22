@@ -102,6 +102,7 @@
         , A.MEMO
         , A.STTS_CD
         , D.CD_NM AS STTS_NM
+        , C.PRGRMID
         , A.MDFCN_DT
         , A.MDFRID
         , A.REG_DT
@@ -129,7 +130,7 @@
             </if>        
             <!-- 키워드.신청자ID -->
             <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchUserId'">
-                AND A.USERID LIKE CONCAT('%',#{searchKeyword},'%')
+                AND F.ACNT LIKE CONCAT('%',#{searchKeyword},'%')
             </if>        
             <!-- 키워드.신청자명 -->
             <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchUserNm'">
@@ -229,7 +230,7 @@
         </if>        
         <!-- 키워드.신청자ID -->
         <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchUserId'">
-            AND A.USERID LIKE CONCAT('%',#{searchKeyword},'%')
+            AND F.ACNT LIKE CONCAT('%',#{searchKeyword},'%')
         </if>        
         <!-- 키워드.신청자명 -->
         <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchUserNm'">
@@ -292,7 +293,6 @@
             ,#{eduNope}
             ,#{rmrk}
             ,#{memo}
-            -- ,CASE WHEN C.RCPT_MTHD_CD = '156101' THEN '180102' ELSE CASE WHEN COUNT(D.STTS_CD) <![CDATA[<=]]> C.EDU_NOPE THEN '180102' ELSE '180101' END END
             ,#{sttsCd}    
             ,NOW()
             ,#{user.userid}
@@ -343,6 +343,7 @@
         , A.MDFRID
         , A.REG_DT
         , A.RGTRID  
+        , C.PRGRMID
         FROM TB_EDU_MVMN_PRGRM_APLY A 
         LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_APLY_SCHDL Z ON Z.APLYID = A.APLYID
         LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME_SCHDL B ON B.TME_SCHDLID = Z.TME_SCHDLID 
@@ -368,6 +369,7 @@
                 , EML                       = #{eml}
                 , EDU_NOPE                  = #{eduNope}
                 , RMRK                      = #{rmrk}
+                , SIGNGU_CD = #{signguCd}
                 , MEMO                      = #{memo}
                 , STTS_CD                   = #{sttsCd}
                 , MDFCN_DT                  = NOW()
@@ -430,16 +432,21 @@
     <select id="selectTmeSchdlList" parameterType="MvmnAplyVo" resultType="MvmnAplyVo">
         /* MvmnAplyDao.selectTmeSchdlList */
         SELECT 
-        REPLACE(A.DE, '.', '-') DE
-        , A.TMEID
-        , B.TME_NM    
-        , A.TME_SCHDLID    
-        FROM TB_EDU_MVMN_PRGRM_TME_SCHDL A
-        LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME B ON B.TMEID = A.TMEID
+            REPLACE(A.DE, '.', '-') DE
+            , A.TMEID
+            , A.TME_SCHDLID
+            , B.TME_NM    
+            , B.PRGRMID    
+        FROM 
+            TB_EDU_MVMN_PRGRM_TME_SCHDL A
+        LEFT OUTER JOIN 
+            TB_EDU_MVMN_PRGRM_TME B ON (B.TMEID = A.TMEID)
         WHERE
-        1=1
-        AND A.PRGRM_SCHDLID = #{prgrmSchdlid}
-        ORDER BY A.DE 
+            1 = 1
+            AND A.PRGRM_SCHDLID = #{prgrmSchdlid} 
+            AND B.PRGRMID = #{prgrmId}
+        ORDER BY 
+            A.DE, B.ORDR 
     </select>
                
     <!-- 회원정보 조회 -->
@@ -520,4 +527,12 @@
              ,#{user.userid}
          )
     </insert>          
+    
+    <insert id="updateMvmnAplySchdl" parameterType="MvmnAplyVo">
+        /* MvmnAplyDao.updateMvmnAplySchdl */
+        UPDATE TB_EDU_MVMN_PRGRM_APLY_SCHDL SET
+            TME_SCHDLID = #{tmeSchdlid}
+        WHERE
+            APLYID = #{aplyId}
+    </insert>
 </mapper>

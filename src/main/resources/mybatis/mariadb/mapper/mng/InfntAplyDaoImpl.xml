@@ -11,79 +11,118 @@
     <select id="selectInfntAplyList" parameterType="InfntAplyVo" resultType="InfntAplyVo">
         /* InfntAplyDao.selectInfntAplyList */
         <include refid="PaginationMapper.header"/>
-        SELECT Z.PRGRM_SCHDLID
-             , Z.EDU_YR AS EDUYR
-             , Z.EDU_MM AS EDUMM
-             , Z.PRGRMID
-             , Z.PRGRM_NM AS PRGRMNM
-             , Z.EDU_NOPE
-             , Z.CLSSRMID
-             , Z.RCPT_MTHD_NM AS RCPTMTHDNM
-             , Z.CLSSRM_NM AS CLSSRMNM
-             , SUM(Z.ORG_WTNG_APLY_CNT) WTNG_APLY_CNT
-             , SUM(Z.ORG_WTNG_APPRV_CNT) WTNG_APPRV_CNT
-             , SUM(Z.ORG_APLY_CMPLT_CNT) APLY_CMPLT_CNT
-             , SUM(Z.ORG_CNCL_APLY_CNT) CNCL_APLY_CNT
-             , SUM(Z.ORG_DNL_APPRV_CNT) DNL_APPRV_CNT
-             , Z.REG_DT
-        FROM (
-             SELECT  C.PRGRM_SCHDLID
-                   , C.YM          
-                   , SUBSTRING_INDEX(C.YM, '-', 1) EDU_YR  
-                   , CONCAT(REPLACE(SUBSTRING_INDEX(C.YM, '-', -1), '0', ''), '월') EDU_MM
-                   , D.PRGRMID
-                   , E.PRGRM_NM
-                   , E.EDU_NOPE
-                   , C.CLSSRMID
-                   , L.CD_NM AS RCPT_MTHD_NM
-                   , F.CLSSRM_NM
-                   , (SELECT COUNT(T1.STTS_CD) FROM TB_EDU_INFNT_PRGRM_APLY T1 WHERE T1.STTS_CD = '180101' AND T1.TME_SCHDLID = B.TME_SCHDLID) ORG_WTNG_APLY_CNT
-                   , (SELECT COUNT(T2.STTS_CD) FROM TB_EDU_INFNT_PRGRM_APLY T2 WHERE T2.STTS_CD = '180102' AND T2.TME_SCHDLID = B.TME_SCHDLID) ORG_WTNG_APPRV_CNT
-                   , (SELECT COUNT(T3.STTS_CD) FROM TB_EDU_INFNT_PRGRM_APLY T3 WHERE T3.STTS_CD = '180103' AND T3.TME_SCHDLID = B.TME_SCHDLID) ORG_APLY_CMPLT_CNT
-                   , (SELECT COUNT(T4.STTS_CD) FROM TB_EDU_INFNT_PRGRM_APLY T4 WHERE T4.STTS_CD = '180104' AND T4.TME_SCHDLID = B.TME_SCHDLID) ORG_CNCL_APLY_CNT
-                   , (SELECT COUNT(T5.STTS_CD) FROM TB_EDU_INFNT_PRGRM_APLY T5 WHERE T5.STTS_CD = '180105' AND T5.TME_SCHDLID = B.TME_SCHDLID) ORG_DNL_APPRV_CNT        
-                   , C.YM REG_DT
-                   , B.TME_SCHDLID
-                   FROM TB_EDU_INFNT_PRGRM_SCHDL C 
-                   LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME_SCHDL B ON B.PRGRM_SCHDLID = C.PRGRM_SCHDLID 
-                   LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_SCHDL_PRGRM D ON D.PRGRM_SCHDLID = C.PRGRM_SCHDLID
-                   LEFT OUTER JOIN TB_EDU_INFNT_PRGRM E ON E.PRGRMID = D.PRGRMID
-                   LEFT OUTER JOIN TB_EDU_CLSSRM F ON F.CLSSRMID = C.CLSSRMID        
-                   LEFT OUTER JOIN TB_CMM_CD L ON L.CD = E.RCPT_MTHD_CD
-                   WHERE
-                   1=1
-                    AND D.PRGRMID IS NOT NULL
+        SELECT
+            A.PRGRMID
+          , A.EDU_YR
+          , B.CLSSRMID
+          , B.CLSSRM_NM
+          , A.PRGRM_NM
+          , NVL(CONCAT(REPLACE(SUBSTRING_INDEX(F.YM, '-', -1), '0', ''), '월'), '-') EDU_MM
+          , CDT.CD_NM AS RCPT_MTHD_NM
+          , A.EDU_NOPE
+          , D.PRGRM_SCHDLID
+          , NVL(E1.CNT, 0) AS WTNG_APLY_CNT
+          , NVL(E2.CNT, 0) AS WTNG_APPRV_CNT
+          , NVL(E3.CNT, 0) AS APLY_CMPLT_CNT
+          , NVL(E4.CNT, 0) AS CNCL_APLY_CNT
+          , NVL(E5.CNT, 0) AS DNL_APPRV_CNT
+          , D.REG_DT
+        FROM
+            TB_EDU_INFNT_PRGRM A
+                LEFT OUTER JOIN TB_EDU_CLSSRM B ON A.CLSSRMID = B.CLSSRMID
+                LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME C ON A.PRGRMID = C.PRGRMID
+                LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME_SCHDL D ON C.TMEID = D.TMEID
+        
+                LEFT OUTER JOIN (
+                                SELECT
+                                    TB2.PRGRM_SCHDLID
+                                  , COUNT(TB1.APLYID) AS CNT
+                                FROM
+                                    TB_EDU_INFNT_PRGRM_APLY TB1
+                                        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME_SCHDL TB2 ON TB1.TME_SCHDLID = TB2.TME_SCHDLID
+                                WHERE
+                                    TB1.STTS_CD = 180101
+                                GROUP BY TB2.PRGRM_SCHDLID
+                                ) E1 ON D.PRGRM_SCHDLID = E1.PRGRM_SCHDLID
+                LEFT OUTER JOIN (
+                                SELECT
+                                    TB2.PRGRM_SCHDLID
+                                  , COUNT(TB1.APLYID) AS CNT
+                                FROM
+                                    TB_EDU_INFNT_PRGRM_APLY TB1
+                                        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME_SCHDL TB2 ON TB1.TME_SCHDLID = TB2.TME_SCHDLID
+                                WHERE
+                                    TB1.STTS_CD = 180102
+                                GROUP BY TB2.PRGRM_SCHDLID
+                                ) E2 ON D.PRGRM_SCHDLID = E2.PRGRM_SCHDLID
+                LEFT OUTER JOIN (
+                                SELECT
+                                    TB2.PRGRM_SCHDLID
+                                  , COUNT(TB1.APLYID) AS CNT
+                                FROM
+                                    TB_EDU_INFNT_PRGRM_APLY TB1
+                                        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME_SCHDL TB2 ON TB1.TME_SCHDLID = TB2.TME_SCHDLID
+                                WHERE
+                                    TB1.STTS_CD = 180103
+                                GROUP BY TB2.PRGRM_SCHDLID
+                                ) E3 ON D.PRGRM_SCHDLID = E3.PRGRM_SCHDLID
+                LEFT OUTER JOIN (
+                                SELECT
+                                    TB2.PRGRM_SCHDLID
+                                  , COUNT(TB1.APLYID) AS CNT
+                                FROM
+                                    TB_EDU_INFNT_PRGRM_APLY TB1
+                                        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME_SCHDL TB2 ON TB1.TME_SCHDLID = TB2.TME_SCHDLID
+                                WHERE
+                                    TB1.STTS_CD = 180104
+                                GROUP BY TB2.PRGRM_SCHDLID
+                                ) E4 ON D.PRGRM_SCHDLID = E4.PRGRM_SCHDLID
+                LEFT OUTER JOIN (
+                                SELECT
+                                    TB2.PRGRM_SCHDLID
+                                  , COUNT(TB1.APLYID) AS CNT
+                                FROM
+                                    TB_EDU_INFNT_PRGRM_APLY TB1
+                                        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME_SCHDL TB2 ON TB1.TME_SCHDLID = TB2.TME_SCHDLID
+                                WHERE
+                                    TB1.STTS_CD = 180105
+                                GROUP BY TB2.PRGRM_SCHDLID
+                                ) E5 ON D.PRGRM_SCHDLID = E5.PRGRM_SCHDLID
+                LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_SCHDL F ON D.PRGRM_SCHDLID = F.PRGRM_SCHDLID
+                
+                LEFT OUTER JOIN TB_CMM_CD CDT ON A.RCPT_MTHD_CD = CDT.CD                                
+                WHERE
+                    1 = 1
+                    AND D.PRGRM_SCHDLID IS NOT NULL
                     <if test="searchKeyword != null and searchKeyword != ''">
-                    AND E.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%')
+                    AND A.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%')
                     </if>
                     <if test="searchEduYr != null and searchEduYr != ''">
-                    AND SUBSTRING_INDEX(C.YM, '-', 1) = #{searchEduYr}
+                    AND SUBSTRING_INDEX(F.YM, '-', 1) = #{searchEduYr}
                     </if>
                     <if test="searchClssrmId != null and searchClssrmId != ''">
-                    AND C.CLSSRMID = #{searchClssrmId}
+                    AND B.CLSSRMID = #{searchClssrmId}
                     </if>
                     <if test="searchClssrmMm != null and searchClssrmMm != ''">
-                    AND SUBSTRING_INDEX(C.YM, '-', -1) = #{searchClssrmMm}
+                    AND SUBSTRING_INDEX(F.YM, '-', -1) = #{searchClssrmMm}
                     </if>
                     <if test="searchRcptMthdCd != null and searchRcptMthdCd != ''">
-                    AND E.RCPT_MTHD_CD = #{searchRcptMthdCd}
+                    AND A.RCPT_MTHD_CD = #{searchRcptMthdCd}
                     </if>
                     <if test="searchSttsCd != null and searchSttsCd != ''">
                         <choose>
                             <when test="searchSttsCd == '174103'">
-                                AND F.RCPT_END_DT <![CDATA[<]]> NOW()
+                                AND B.RCPT_END_DT <![CDATA[<]]> NOW()
                             </when>
                             <when test="searchSttsCd == '174102'">
-                                AND NOW() BETWEEN F.RCPT_BGNG_DT AND F.RCPT_END_DT
+                                AND NOW() BETWEEN B.RCPT_BGNG_DT AND B.RCPT_END_DT
                             </when>
                             <otherwise>
-                                AND (F.RCPT_BGNG_DT <![CDATA[<]]> NOW() AND F.RCPT_END_DT <![CDATA[>]]> NOW())                    
+                                AND (B.RCPT_BGNG_DT <![CDATA[<]]> NOW() AND B.RCPT_END_DT <![CDATA[>]]> NOW())                    
                             </otherwise>
                         </choose>
                     </if>
-                    GROUP BY C.PRGRM_SCHDLID, C.YM, B.TME_SCHDLID, D.PRGRMID, C.CLSSRMID
-         )Z GROUP BY Z.PRGRM_SCHDLID, Z.YM, Z.PRGRMID, Z.CLSSRMID
-
+                GROUP BY D.PRGRM_SCHDLID
         <include refid="PaginationMapper.footer"/>        
     </select>
 
@@ -141,7 +180,7 @@
             </if>        
             <!-- 키워드.신청자ID -->
             <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchUserId'">
-                AND A.USERID LIKE CONCAT('%',#{searchKeyword},'%')
+                AND F.ACNT LIKE CONCAT('%',#{searchKeyword},'%')
             </if>        
             <!-- 키워드.신청자명 -->
             <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchUserNm'">
@@ -218,7 +257,7 @@
             </if>        
             <!-- 키워드.신청자ID -->
             <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchUserId'">
-                AND A.USERID LIKE CONCAT('%',#{searchKeyword},'%')
+                AND F.ACNT LIKE CONCAT('%',#{searchKeyword},'%')
             </if>        
             <!-- 키워드.신청자명 -->
             <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchUserNm'">
