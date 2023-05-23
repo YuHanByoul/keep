@@ -69,9 +69,9 @@ public class SpcltyDtaServiceImpl extends PlumAbstractServiceImpl implements Spc
         SpcltyDtaVo spcltyDta = spcltyDtaDao.selectSpcltyDta(spcltyDtaVo);
         if (spcltyDta == null) spcltyDta = new SpcltyDtaVo();
 
-        if (spcltyDta.getPdfFileid() != null && !spcltyDta.getPdfFileid().equals(0)) {
+        if (spcltyDta.getPdfFilegrpid() != null && !spcltyDta.getPdfFilegrpid().equals(0)) {
             FileVo fileVo = new FileVo();
-            fileVo.setFilegrpid(spcltyDta.getPdfFileid());
+            fileVo.setFilegrpid(spcltyDta.getPdfFilegrpid());
             ArrayList<FileVo> fileList = fileDao.getFileList(fileVo);
             spcltyDta.setPdfFileList(fileList);
         }
