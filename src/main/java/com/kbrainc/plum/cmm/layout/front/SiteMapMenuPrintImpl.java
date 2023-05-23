@@ -182,7 +182,7 @@ public class SiteMapMenuPrintImpl {
                                     menuTag.append("<a href=\"javascript:void(0)\"").append(">");
                                 } else {
                                     if ("N".equals(menuItem2.getPopupTrgtCd())) { // 새창
-                                        menuTag.append("<a href=\"").append(menuItem2.getUrl()).append("\" target=\"_blank\" title=\"새 창\"").append(">");
+                                        menuTag.append("<a href=\"").append(menuItem2.getUrl()).append("\" target=\"_blank\" rel=\"noopener noreferrer\" title=\"새 창\"").append(">");
                                     } else { // 현재창
                                         menuTag.append("<a href=\"javascript:goMenu('").append(menuItem2.getUrl()).append("','").append(mkey).append("','").append(menuItem2.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(">\n");
                                     }
@@ -201,7 +201,7 @@ public class SiteMapMenuPrintImpl {
                                         }
                                     } else {
                                         if ("N".equals(menuItem2.getPopupTrgtCd())) { // 새창
-                                            menuTag.append("<a href=\"").append(menuItem2.getUrl()).append("\" target=\"_blank\" title=\"새 창\"").append(">");
+                                            menuTag.append("<a href=\"").append(menuItem2.getUrl()).append("\" target=\"_blank\" rel=\"noopener noreferrer\" title=\"새 창\"").append(">");
                                         } else { // 현재창
                                             if ("/login.html".equals(menuItem2.getUrl()) && user != null) {
                                                 menuItemNm2 = "로그아웃";
@@ -241,7 +241,7 @@ public class SiteMapMenuPrintImpl {
                                                 menuTag.append("<a href=\"javascript:void(0)\"").append(">");
                                             } else {
                                                 if ("N".equals(menuItem3.getPopupTrgtCd())) { // 새창
-                                                    menuTag.append("<a href=\"").append(menuItem3.getUrl()).append("\" target=\"_blank\" title=\"새 창\"").append(">");
+                                                    menuTag.append("<a href=\"").append(menuItem3.getUrl()).append("\" target=\"_blank\" rel=\"noopener noreferrer\" title=\"새 창\"").append(">");
                                                 } else { // 현재창
                                                     menuTag.append("<a href=\"javascript:goMenu('").append(menuItem3.getUrl()).append("','").append(mkey).append("','").append(menuItem3.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(">");
                                                 }
@@ -260,7 +260,7 @@ public class SiteMapMenuPrintImpl {
                                                     }
                                                 } else {
                                                     if ("N".equals(menuItem3.getPopupTrgtCd())) { // 새창
-                                                        menuTag.append("<a href=\"").append(menuItem3.getUrl()).append("\" target=\"_blank\" title=\"새 창\"").append(">");
+                                                        menuTag.append("<a href=\"").append(menuItem3.getUrl()).append("\" target=\"_blank\" rel=\"noopener noreferrer\" title=\"새 창\"").append(">");
                                                     } else { // 현재창
                                                         menuTag.append("<a href=\"javascript:goMenu('").append(menuItem3.getUrl()).append("','").append(mkey).append("','").append(menuItem3.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(">");
                                                     }

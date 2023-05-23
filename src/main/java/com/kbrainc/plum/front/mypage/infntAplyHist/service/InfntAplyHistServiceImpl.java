@@ -158,5 +158,10 @@ public class InfntAplyHistServiceImpl extends PlumAbstractServiceImpl implements
         }
         
         return retVal;
+    }
+    
+    @Override
+    public List<InfntAplyHistVo> selectEduTrgtCd(InfntAplyHistVo infntAplyHistVo) throws Exception {
+        return infntAplyHistDao.selectEduTrgtCd(infntAplyHistVo);
     }    
 }

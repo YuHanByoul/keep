@@ -49,7 +49,7 @@ public class SpcltyDtaVo extends ParentRequestVo {
 
     private Integer hits;
 
-    private Integer pdfFileid;
+    private Integer pdfFilegrpid;
 
     private Integer atchFilegrpid;
 

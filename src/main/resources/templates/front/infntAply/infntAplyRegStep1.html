@@ -42,7 +42,7 @@
                 </div>
             </div>
             <div class="form-check-list">
-                <label class="inp"><input type="checkbox" name="prvcClctAgreYn" id="prvcClctAgreYn" th:checked="${infntAplyParamVo.prvcClctAgreYn == 'Y'}"><b>개인정보 제 3자 제공 동의안내에 동의합니다.</b></label>
+                <label class="inp"><input type="checkbox" name="checkYn" id="prvcClctAgreYn" th:checked="${infntAplyParamVo.prvcClctAgreYn == 'Y'}"><b>개인정보 제 3자 제공 동의안내에 동의합니다.</b></label>
             </div>
         </div>
         <div class="terms-content">
@@ -57,7 +57,7 @@
                 </div>
             </div>
             <div class="form-check-list">
-                <label class="inp"><input type="checkbox" name="prvcThptyPvsnAgreYn" id="prvcThptyPvsnAgreYn" th:checked="${infntAplyParamVo.prvcThptyPvsnAgreYn == 'Y'}"><b>개인정보 제 3자 제공 동의안내에 동의합니다.</b></label>
+                <label class="inp"><input type="checkbox" name="checkYn" id="prvcThptyPvsnAgreYn" th:checked="${infntAplyParamVo.prvcThptyPvsnAgreYn == 'Y'}"><b>개인정보 제 3자 제공 동의안내에 동의합니다.</b></label>
             </div>
         </div>
 
@@ -74,6 +74,22 @@
 
     <script th:inline="javascript">
     $(function () {
+    	var checkboxes = document.querySelectorAll('input[type=checkbox][name=checkYn]');
+    	var isChecked = true;
+        $('input[name="checkYn"]').on('change', function(e) {
+        	for(var i = 0; i < checkboxes.length; i++) {
+        		if(!$(checkboxes[i]).is(":checked")){
+        			isChecked = false;
+        			break;
+        		}else {
+        			isChecked = true;
+        		}	
+        	}
+        	if(isChecked) {
+        		$('#trmsAll').prop('checked', true);
+        	}
+        });
+    	
         $('#trmsAll').on('click', function(e) {
             if(e.target.checked) {
                 $('#prvcClctAgreYn').prop('checked', true);
@@ -87,7 +103,6 @@
     
     var infntAplyRegStep1 = {
         moveToNextStep() {
-            //if (!$('#trmsForm').valid()) return false;
             if(!$('#prvcClctAgreYn').is(':checked') || !$('#prvcThptyPvsnAgreYn').is(':checked')) {
                 alert('필수항목을 동의해야 교육신청이 가능합니다');
                 return ;
