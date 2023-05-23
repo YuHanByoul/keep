@@ -130,18 +130,18 @@
                             <div class="mb-0 row">
                                 <div class="col-12 col-lg-6 mb-2 mb-lg-0">
                                     <div class="mb-0 form-group">
-                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="regDt"><strong>등록일</strong></label>
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="regDe"><strong>등록일</strong></label>
                                         <div class="col-sm-12">
-                                            <input type="text" class="form-control form-control-sm" name="regDt" id="regDt" th:value="${chgAplyInfo.regDt != null ? #dates.format(chgAplyInfo.regDt, 'yyyy-MM-dd') : #dates.format(#dates.createNow(), 'yyyy-MM-dd')}" readonly />
+                                            <input type="text" class="form-control form-control-sm" name="regDe" id="regDe" th:value="${chgAplyInfo.regDe}" readonly />
 
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-12 col-lg-6">
                                     <div class="mb-0 form-group">
-                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="sttsMdfcnDe"><strong>최종수정일</strong></label>
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="mdfcnDe"><strong>최종수정일</strong></label>
                                         <div class="col-sm-12">
-                                            <input type="text" class="form-control form-control-sm" name="sttsMdfcnDe" id="sttsMdfcnDe" th:value="${chgAplyInfo.sttsMdfcnDe}" readonly />
+                                            <input type="text" class="form-control form-control-sm" name="mdfcnDe" id="mdfcnDe" th:value="${chgAplyInfo.mdfcnDe}" readonly />
                                         </div>
                                     </div>
                                 </div>
@@ -152,7 +152,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-inverse m-r-5" th:if='${chgAplyInfo.aplyid!=""}' data-bs-toggle="modal" onclick="openChgAplySttsChgModal()">상태변경</button>
+                <button type="button" class="btn btn-inverse m-r-5" th:if='${chgAplyInfo.aplyid!=""}' onclick="openChgAplySttsChgModal()">상태변경</button>
                 <button type="button" class="btn btn-primary" onclick="saveChgAplyDtlBtn()">저장</button>
             </div>
         </div>
@@ -255,9 +255,11 @@ function fn_deleteFile(fileid, fileIdntfcKey){
 var chgAplySttsChgModal;
 var openChgAplySttsChgModal = () =>{
 
-	var vAplyid = $("#aplyid").val();
+	var vAplyid       = $("#aplyid").val();
+	var sAplySttsCd   = $("#aplySttsCd").val();
+	var vSplmntDmndCn = $("#splmntDmndCn").val();
 
-    var url = "/mng/dsgnPrgrm/chgAplySttsChgPopup.html?aplyid=" + vAplyid;
+    var url = "/mng/dsgnPrgrm/chgAplySttsChgPopup.html?aplyid=" + vAplyid + "&aplySttsCd=" + sAplySttsCd + "&splmntDmndCn=" + vSplmntDmndCn;
 
     $("#chgAplySttsChgPopup").load(url, function(response, status, xhr) {
         if (status == "success") {
@@ -273,24 +275,24 @@ function closeChgAplyDtlBtn(){
 }
 
 var validator= $("#chgAplyDtlPopupFrm").validate(
-		{
-			rules    : {
-				samenssCn   : { maxlength : 1000 },
-				prgrmChgCn  : { maxlength : 1000 },
-				bgtChgCn    : { maxlength : 1000 },
-				ldrChgCn    : { maxlength : 1000 },
-				eduEnvChgCn : { maxlength : 1000 },
-				chgRsn      : { required  : true, maxlength: 1000 }
-		    }
-	      , messages : {
-	    	  samenssCn   : { maxlength : '동일내용은 1000자를 넘을 수 없습니다.' },
-              prgrmChgCn  : { maxlength : '프로그램변경내용은 1000자를 넘을 수 없습니다.' },
-              bgtChgCn    : { maxlength : '예산변경내용은 1000자를 넘을 수 없습니다.' },
-              ldrChgCn    : { maxlength : '지도자변경내용은 1000자를 넘을 수 없습니다.' },
-              eduEnvChgCn : { maxlength : '교육환경변경내용은 1000자를 넘을 수 없습니다.' },
-	    	  chgRsn      : { required  : '변경사유를 입력해 주십시오.' , maxlength: '그룹명은 1000자를 넘을 수 없습니다.' }
-	        }
-	    })
+	{
+		rules    : {
+			samenssCn   : { maxlength : 1000 },
+			prgrmChgCn  : { maxlength : 1000 },
+			bgtChgCn    : { maxlength : 1000 },
+			ldrChgCn    : { maxlength : 1000 },
+			eduEnvChgCn : { maxlength : 1000 },
+			chgRsn      : { required  : true, maxlength: 1000 }
+	    }
+      , messages : {
+    	  samenssCn   : { maxlength : '동일내용은 1000자를 넘을 수 없습니다.' },
+          prgrmChgCn  : { maxlength : '프로그램변경내용은 1000자를 넘을 수 없습니다.' },
+          bgtChgCn    : { maxlength : '예산변경내용은 1000자를 넘을 수 없습니다.' },
+          ldrChgCn    : { maxlength : '지도자변경내용은 1000자를 넘을 수 없습니다.' },
+          eduEnvChgCn : { maxlength : '교육환경변경내용은 1000자를 넘을 수 없습니다.' },
+    	  chgRsn      : { required  : '변경사유를 입력해 주십시오.' , maxlength: '그룹명은 1000자를 넘을 수 없습니다.' }
+        }
+    })
 
 
 function saveChgAplyDtlBtn(){

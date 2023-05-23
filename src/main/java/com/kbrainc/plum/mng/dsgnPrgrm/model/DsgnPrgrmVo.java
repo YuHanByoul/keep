@@ -224,6 +224,12 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     /** 교육환경 변경 내용 */
     private String eduEnvChgCn;
 
+    /** 수정 일*/
+    private String mdfcnDe;
+
+    /** 등록 일*/
+    private String regDe;
+
     /** 보완 요청 내용 */
     @Size(max = 1000, message = "보완 요청 내용은 1000자를 넘을 수 없습니다.")
     private String splmntDmndCn;
@@ -355,6 +361,9 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 
     /** 운영형태코드 */
     private String operFrmCd;
+
+    /** 운영형태코드 명 */
+    private String operFrmCdNm;
 
     /** 교육인원수 */
     private Integer eduNope;
@@ -686,7 +695,7 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 	private String grpDsgnNo;
 
 	/** 기관유형코드 이름*/
-	private String instTypeCdNm ;
+	private String instTypeCdNm;
 
     /** 제출_확인 */
     private String sbmsnIdnty;
@@ -769,6 +778,12 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 
     /** 점수 */
     private String scr;
+
+    /** 신청자 점수 */
+    private String aplcntScr
+    ;
+    /** 심사 점수 */
+    private String srngScr;
 
     /** 운영실적 목록*/
     private List<OperPrfmncVo> operPrfmncLst;

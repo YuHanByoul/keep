@@ -403,7 +403,7 @@
           , B.EDU_HR           /*교육시간_시간 */
           , B.EDU_MNT          /*교육시간_분 */
           , B.STY_YN           /*숙박여부 */
-          , CD.CD_NM    AS OPER_FRM_CD /*운영형태 */
+          , CD.CD_NM    AS OPER_FRM_CD_NM /*운영형태 */
           , GROUP_CONCAT(EDUCD.CD_NM separator ', ') AS EDU_SBJCT_NM_LST    /*교육주제 */
                     , CONCAT_WS(', ',
                              CASE WHEN B.INFNT   = 'Y' THEN '유아' END
@@ -417,7 +417,7 @@
           , MNG.ETC_INCM                      /*운영예산.후원 */
           , B.EDU_PLC                         /*교육장소 */
           , A.INST_NM                         /*기관명 */
-          , INSTCD.CD_NM    AS INST_CD_NM     /*기관유형 */
+          , INSTCD.CD_NM    AS INST_TYPE_CD_NM     /*기관유형 */
           , C.HSTRY_CNT                       /*보유지정프로그램 */
           , C.GRP_DSGN_NO                     /*지정번호 */
           , B.EDU_PRPS                        /*교육목적 */
@@ -449,13 +449,13 @@
             (
                 SELECT * FROM TB_ASS_CHKLST_SBMSN
                 WHERE PRGRMID = #{prgrmid}
-                AND SBMSN_SE_CD ='Y'
+                AND SBMSN_SE_CD = 242102
             ) D ON A.PRGRMID = D.PRGRMID    /*지원단 심사*/
             LEFT OUTER JOIN
             (
                 SELECT * FROM TB_ASS_CHKLST_SBMSN
                 WHERE PRGRMID = #{prgrmid}
-                AND SBMSN_SE_CD ='N'
+                AND SBMSN_SE_CD = 242101
             ) E ON A.PRGRMID = E.PRGRMID    /*신청자 자가진단*/
             LEFT OUTER JOIN
             (
@@ -472,6 +472,14 @@
     <!-- 지정프로그램 개요 체크리스트 목록 조회 -->
     <select id="selectDsgnOutlChkList" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
          SELECT
+             AA.SE_CD
+           , AA.CD_NM
+           , AA.ORDR
+           , MAX(IF(AA.SBMSN_SE_CD='242101',SCR,NULL))   AS APLCNT_SCR
+           , MAX(IF(AA.SBMSN_SE_CD='242102',SCR,NULL))   AS SRNG_SCR
+         FROM
+         (
+         SELECT
              A.PRGRMID
            , B.USERID
            , B.SBMSN_SE_CD
@@ -486,6 +494,8 @@
          LEFT OUTER JOIN TB_CMM_CD CD ON C.SE_CD =CD.CD
          WHERE A.PRGRMID = #{prgrmid}
          GROUP BY B.USERID, C.SE_CD
+         ) AA
+         GROUP BY AA.ORDR
     </select>
 
     <!-- 이의신청 목록 조회 -->
@@ -648,6 +658,7 @@
           , B.APLCNTID
           , B.APLY_STTS_CD
           , B.SPLMNT_DMND_CN
+          , IFNULL(DATE_FORMAT(B.STTS_MDFCN_DT, '%Y-%m-%d'),'-')    AS STTS_MDFCN_DE
           , B.STTS_MDFCN_DT
           , B.MDFCN_DT
           , B.MDFRID
@@ -664,33 +675,37 @@
 
     <select id="selectChgAplyDtl" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
         SELECT
-            APLYID
-          , PRGRMID
-          , SAMENSS_YN
-          , SAMENSS_CN
-          , PRGRM_CHG_YN
-          , PRGRM_CHG_CN
-          , BGT_CHG_YN
-          , BGT_CHG_CN
-          , LDR_CHG_YN
-          , LDR_CHG_CN
-          , EDU_ENV_CHG_YN
-          , EDU_ENV_CHG_CN
-          , CHG_RSN
-          , FILEGRPID
-          , APLCNTID
-          , APLY_STTS_CD
-          , SPLMNT_DMND_CN
-          , STTS_MDFCN_DT
-          , DATE_FORMAT( STTS_MDFCN_DT, '%Y-%m-%d')    AS STTS_MDFCN_DE
-          , MDFCN_DT
-          , MDFRID
-          , REG_DT
-          , RGTRID
+            A.APLYID
+          , A.PRGRMID
+          , A.SAMENSS_YN
+          , A.SAMENSS_CN
+          , A.PRGRM_CHG_YN
+          , A.PRGRM_CHG_CN
+          , A.BGT_CHG_YN
+          , A.BGT_CHG_CN
+          , A.LDR_CHG_YN
+          , A.LDR_CHG_CN
+          , A.EDU_ENV_CHG_YN
+          , A.EDU_ENV_CHG_CN
+          , A.CHG_RSN
+          , A.FILEGRPID
+          , A.APLCNTID
+          , A.APLY_STTS_CD
+          , A.SPLMNT_DMND_CN
+          , A.STTS_MDFCN_DT
+          , DATE_FORMAT( A.STTS_MDFCN_DT, '%Y-%m-%d')    AS STTS_MDFCN_DE
+          , CONCAT(DATE_FORMAT(A.MDFCN_DT, '%Y-%m-%d'),' (',USR1.ACNT ,')')      AS MDFCN_DE
+          , CONCAT(DATE_FORMAT(A.REG_DT  , '%Y-%m-%d'),' (',USR2.ACNT ,')')      AS REG_DE
+          , A.MDFCN_DT
+          , A.MDFRID
+          , A.REG_DT
+          , A.RGTRID
         FROM
-            TB_ASS_CHG_APLY
+            TB_ASS_CHG_APLY A
+        LEFT OUTER JOIN TB_CMM_USER USR1 ON USR1.USERID = A.MDFRID
+        LEFT OUTER JOIN TB_CMM_USER USR2 ON USR2.USERID = A.RGTRID
         WHERE
-            APLYID = #{aplyid}
+            A.APLYID = #{aplyid}
 
     </select>
 
@@ -701,7 +716,9 @@
         SET
             APLY_STTS_CD   = #{aplySttsCd  }
          ,  SPLMNT_DMND_CN = #{splmntDmndCn}
-         ,  STTS_MDFCN_DT  = #{sttsMdfcnDt}
+         <if test="aplySttsCd == '119104' ">
+         ,  STTS_MDFCN_DT  = NOW()
+         </if>
          ,  MDFCN_DT       = NOW()
          ,  MDFRID         = #{user.userid}
         WHERE
@@ -750,7 +767,7 @@
           , #{aplcntid    }
           , #{aplySttsCd  }
           , #{splmntDmndCn}
-          , NOW()
+          , #{sttsMdfcnDt }
           , NOW()
           , #{user.userid}
           , NOW()

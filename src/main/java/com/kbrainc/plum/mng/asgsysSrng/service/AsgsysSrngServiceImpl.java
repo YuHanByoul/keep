@@ -159,8 +159,18 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 	@Override
 	@Transactional
 	public int updatePrgrSttsCd(AsgsysSrngVo asgsysSrngVo) throws Exception {
-		int updateCnt = asgsysSrngDao.updatePrgrSttsCd(asgsysSrngVo);
-		return updateCnt;
+		int ret = asgsysSrngDao.updatePrgrSttsCd(asgsysSrngVo);
+
+//		//지정승인
+//		if(asgsysSrngVo.getSttsCd().equals("111111")) {
+//
+//		}
+//		//지정탈락
+//		if(asgsysSrngVo.getSttsCd().equals("111112")) {
+//
+//		}
+
+		return ret;
 	}
 
 	/**
