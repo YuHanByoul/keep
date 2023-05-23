@@ -1,5 +1,6 @@
 <form id ="infntSchdlUpdatePopupForm">
 <input type="hidden" id="prgrmSchdlid" name="prgrmSchdlid" th:value="${infntSchdl.prgrmSchdlid}">
+<input type="hidden" id="clssrmId" th:value="${infntSchdl.clssrmId}">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content type_2">
             <div class="modal-header">
@@ -106,8 +107,7 @@
     var deSttSelectedItems = [];
     var prgrmSttSelectedItems = [];     
     var infntAplyCnt = /*[[${infntAplyCnt}]]*/ null;
-    
-    fn_changeRcptMthdCd($("#rcptMthdCd"));
+    var classrmId = /*[[${infntSchdl.clssrmId}]]*/ null;
     
     $(function() {
         fn_makeListHtml();
@@ -224,10 +224,13 @@
             schdlHtml += '</tr>';  
        } 
        $("#updateCheckDayBody").append(schdlHtml);          
-    }    
+    }
+    
+    fn_changeRcptMthdCd($("#rcptMthdCd"));
+    
     function fn_changeRcptMthdCd(item){
-        var getCodeUrl = "/mng/prtpn/infntPrgrm/selectPrgrmSettingList.do";
-        var url = getCodeUrl + "?rcptMthdCd=" + $(item).val();
+    	var getCodeUrl = "/mng/prtpn/infntPrgrm/selectPrgrmSettingList.do";
+        var url = getCodeUrl + "?rcptMthdCd=" + $(item).val() + "&clssrmId=" + classrmId;
         var prgrmStthtml = "";
         
         $("#updatePrgrmSettingList tr").remove();
@@ -243,6 +246,14 @@
             type: 'POST',
             cache: false,
             success: function (data) {
+            	if(data.prgrmSttList.length == 0) {
+                	prgrmStthtml += '<tr>';
+                	prgrmStthtml += '<td class="text-center v-middle" colspan="3">등록된 프로그램이 없습니다.</td>';
+                	prgrmStthtml += '</tr>';
+                	$("#updatePrgrmSettingList").append(prgrmStthtml);
+                	return false;            		
+            	}
+            	
                 for(var i = 0; i < data.prgrmSttList.length; i++){
                     var weekDesc = "";
                     var checked = "";

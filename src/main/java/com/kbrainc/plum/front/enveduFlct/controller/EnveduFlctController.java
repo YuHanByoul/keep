@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.util.HtmlUtils;
 
 import com.kbrainc.plum.front.envEdu.model.PrgrmVo;
 import com.kbrainc.plum.front.enveduCntr.model.EnveduCntrVO;
@@ -102,7 +103,7 @@ public class EnveduFlctController {
           }
           
           if(param.get("keyword") != null && !"".equals(param.get("keyword"))) {
-              searchMap.put("keyword", param.get("keyword"));
+              searchMap.put("keyword", HtmlUtils.htmlEscape((String)param.get("keyword")));
           }
           
           if(param.get("type") != null && !"".equals(param.get("type"))) {

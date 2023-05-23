@@ -1917,7 +1917,26 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     @Override
     @Transactional
 	public int updateMbr(AsgsysSrngVo asgsysSrngVo) throws Exception {
-		return asgsysSrngDao.updateMbr(asgsysSrngVo);
+    	int ret=0;
+
+    	AsgsysSrngVo sbmsnInfo = null;
+
+    	//프로그램 신청자정보 수정
+    	ret+=asgsysSrngDao.updateMbr(asgsysSrngVo);
+
+    	//체크리스트 자가진단 조회
+    	asgsysSrngVo.setSbmsnSeCd("242101");
+    	sbmsnInfo = asgsysSrngDao.selectChkListSbmsn(asgsysSrngVo);
+
+    	//체크리스트 제출 있는경우 신청자 수정
+    	if(sbmsnInfo != null ) {
+
+    		sbmsnInfo.setUser(asgsysSrngVo.getUser());
+    		sbmsnInfo.setSprtgrpid(""+asgsysSrngVo.getAplcntid());
+    		ret+=asgsysSrngDao.updateChklstSbmsn(sbmsnInfo);
+    	}
+
+		return ret;
 	}
 
     /**
@@ -1973,6 +1992,19 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 
     		asgsysSrngVo.setSrngSttsCd("114102");    //배정전->심사전
     		ret += asgsysSrngDao.insertPicSprtgrp(asgsysSrngVo);
+
+    		//체크리스트 제출 조회
+    		AsgsysSrngVo sbmsnInfo = null;
+        	asgsysSrngVo.setSbmsnSeCd("242102");
+        	sbmsnInfo = asgsysSrngDao.selectChkListSbmsn(asgsysSrngVo);
+
+        	//체크리스트 제출 있는경우 수정
+        	if(sbmsnInfo != null ) {
+
+        		sbmsnInfo.setUser(asgsysSrngVo.getUser());
+        		sbmsnInfo.setSprtgrpid(""+asgsysSrngVo.getSprtgrpid());
+        		ret+=asgsysSrngDao.updateChklstSbmsn(sbmsnInfo);
+        	}
 
 
     	}

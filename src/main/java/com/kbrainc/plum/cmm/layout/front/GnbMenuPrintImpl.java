@@ -157,7 +157,7 @@ public class GnbMenuPrintImpl {
                         menuTag.append("        <a href=\"javascript:void(0)\"").append(ariaCurrentL1Attr).append(">");
                     } else {
                         if ("N".equals(menuItem1.getPopupTrgtCd())) { // 새창
-                            menuTag.append("        <a href=\"").append(menuItem1.getUrl()).append("\" target=\"_blank\" title=\"새 창\"").append(ariaCurrentL1Attr).append(">");
+                            menuTag.append("        <a href=\"").append(menuItem1.getUrl()).append("\" target=\"_blank\" rel=\"noopener noreferrer\"  title=\"새 창\"").append(ariaCurrentL1Attr).append(">");
                         } else { // 현재창
                             menuTag.append("        <a href=\"javascript:goMenu('").append(menuItem1.getUrl()).append("','").append(mkey).append("','").append(menuItem1.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(ariaCurrentL1Attr).append(">");
                         }
@@ -176,7 +176,7 @@ public class GnbMenuPrintImpl {
                             }
                         } else {
                             if ("N".equals(menuItem1.getPopupTrgtCd())) { // 새창
-                                menuTag.append("        <a href=\"").append(menuItem1.getUrl()).append("\" target=\"_blank\" title=\"새 창\"").append(ariaCurrentL1Attr).append(">");
+                                menuTag.append("        <a href=\"").append(menuItem1.getUrl()).append("\" target=\"_blank\" rel=\"noopener noreferrer\"  title=\"새 창\"").append(ariaCurrentL1Attr).append(">");
                             } else { // 현재창
                                 menuTag.append("        <a href=\"javascript:goMenu('").append(menuItem1.getUrl()).append("','").append(mkey).append("','").append(menuItem1.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(ariaCurrentL1Attr).append(">");
                             }
@@ -229,7 +229,7 @@ public class GnbMenuPrintImpl {
                                     menuTag.append("<a href=\"javascript:void(0)\"").append(ariaCurrentL2Attr).append(">");
                                 } else {
                                     if ("N".equals(menuItem2.getPopupTrgtCd())) { // 새창
-                                        menuTag.append("<a href=\"").append(menuItem2.getUrl()).append("\" target=\"_blank\" title=\"새 창\"").append(ariaCurrentL2Attr).append(">");
+                                        menuTag.append("<a href=\"").append(menuItem2.getUrl()).append("\" target=\"_blank\" rel=\"noopener noreferrer\"  title=\"새 창\"").append(ariaCurrentL2Attr).append(">");
                                     } else { // 현재창
                                         menuTag.append("<a href=\"javascript:goMenu('").append(menuItem2.getUrl()).append("','").append(mkey).append("','").append(menuItem2.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(ariaCurrentL2Attr).append(">\n");
                                     }
@@ -248,7 +248,7 @@ public class GnbMenuPrintImpl {
                                         }
                                     } else {
                                         if ("N".equals(menuItem2.getPopupTrgtCd())) { // 새창
-                                            menuTag.append("<a href=\"").append(menuItem2.getUrl()).append("\" target=\"_blank\" title=\"새 창\"").append(ariaCurrentL2Attr).append(">");
+                                            menuTag.append("<a href=\"").append(menuItem2.getUrl()).append("\" target=\"_blank\" rel=\"noopener noreferrer\"  title=\"새 창\"").append(ariaCurrentL2Attr).append(">");
                                         } else { // 현재창
                                             menuTag.append("<a href=\"javascript:goMenu('").append(menuItem2.getUrl()).append("','").append(mkey).append("','").append(menuItem2.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(ariaCurrentL2Attr).append(">");
                                         }
@@ -290,7 +290,7 @@ public class GnbMenuPrintImpl {
                                                 menuTag.append("<a href=\"javascript:void(0)\"").append(ariaCurrentL3Attr).append(">");
                                             } else {
                                                 if ("N".equals(menuItem3.getPopupTrgtCd())) { // 새창
-                                                    menuTag.append("<a href=\"").append(menuItem3.getUrl()).append("\" target=\"_blank\" title=\"새 창\"").append(ariaCurrentL3Attr).append(">");
+                                                    menuTag.append("<a href=\"").append(menuItem3.getUrl()).append("\" target=\"_blank\" rel=\"noopener noreferrer\"  title=\"새 창\"").append(ariaCurrentL3Attr).append(">");
                                                 } else { // 현재창
                                                     menuTag.append("<a href=\"javascript:goMenu('").append(menuItem3.getUrl()).append("','").append(mkey).append("','").append(menuItem3.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(ariaCurrentL3Attr).append(">");
                                                 }
@@ -309,7 +309,7 @@ public class GnbMenuPrintImpl {
                                                     }
                                                 } else {
                                                     if ("N".equals(menuItem3.getPopupTrgtCd())) { // 새창
-                                                        menuTag.append("<a href=\"").append(menuItem3.getUrl()).append("\" target=\"_blank\" title=\"새 창\"").append(ariaCurrentL3Attr).append(">");
+                                                        menuTag.append("<a href=\"").append(menuItem3.getUrl()).append("\" target=\"_blank\" rel=\"noopener noreferrer\"  title=\"새 창\"").append(ariaCurrentL3Attr).append(">");
                                                     } else { // 현재창
                                                         menuTag.append("<a href=\"javascript:goMenu('").append(menuItem3.getUrl()).append("','").append(mkey).append("','").append(menuItem3.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(ariaCurrentL3Attr).append(">");
                                                     }
@@ -333,7 +333,7 @@ public class GnbMenuPrintImpl {
                         
                         switch (i) {
                             case 1: menuTag.append("                        <li>\n");
-                                    menuTag.append("                            <a href=\"http://www.kmooc.kr/\" target=\"_blank\" title=\"새 창\">\n");
+                                    menuTag.append("                            <a href=\"http://www.kmooc.kr/\" target=\"_blank\"  rel=\"noopener noreferrer\"  title=\"새 창\">\n");
                                     menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb13.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>");
@@ -346,7 +346,7 @@ public class GnbMenuPrintImpl {
                                     menuTag.append("                            </a>\n");
                                     menuTag.append("                        </li>\n");
                                     menuTag.append("                        <li>\n");
-                                    menuTag.append("                            <a href=\"https://ehrd.me.go.kr/kor/index.do\" target=\"_blank\" title=\"새 창\">\n");
+                                    menuTag.append("                            <a href=\"https://ehrd.me.go.kr/kor/index.do\" target=\"_blank\" rel=\"noopener noreferrer\"  title=\"새 창\">\n");
                                     menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb14.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>");
@@ -359,7 +359,7 @@ public class GnbMenuPrintImpl {
                                     menuTag.append("                            </a>\n");
                                     menuTag.append("                        </li>\n");
                                     menuTag.append("                        <li>\n");
-                                    menuTag.append("                            <a href=\"https://cyberedu.kei.re.kr/edu/main.ndo\" target=\"_blank\" title=\"새 창\">\n");
+                                    menuTag.append("                            <a href=\"https://cyberedu.kei.re.kr/edu/main.ndo\" target=\"_blank\" rel=\"noopener noreferrer\"  title=\"새 창\">\n");
                                     menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb15.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>");
@@ -426,7 +426,7 @@ public class GnbMenuPrintImpl {
                                     menuTag.append("                        </li>\n");
                                     break;
                             case 3: menuTag.append("                        <li>\n");
-                                    menuTag.append("                            <a href=\"https://www.keep.go.kr/license/\" target=\"_blank\" title=\"새 창\">\n");
+                                    menuTag.append("                            <a href=\"https://www.keep.go.kr/license/\" target=\"_blank\" rel=\"noopener noreferrer\"  title=\"새 창\">\n");
                                     menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb14.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>");
@@ -440,7 +440,7 @@ public class GnbMenuPrintImpl {
                                     menuTag.append("                        </li>\n");
                                     break;
                             case 4: menuTag.append("                        <li>\n");
-                                    menuTag.append("                            <a href=\"https://test.keep.go.kr/front/intro/envEduPlcyAndBiz/intro11.html\" target=\"_blank\" title=\"새 창\">\n");
+                                    menuTag.append("                            <a href=\"https://test.keep.go.kr/front/intro/envEduPlcyAndBiz/intro11.html\" target=\"_blank\" rel=\"noopener noreferrer\"  title=\"새 창\">\n");
                                     menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb06.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>");
@@ -453,7 +453,7 @@ public class GnbMenuPrintImpl {
                                     menuTag.append("                            </a>\n");
                                     menuTag.append("                        </li>\n");
                                     menuTag.append("                        <li>\n");
-                                    menuTag.append("                            <a href=\"https://booking.naver.com/booking/10/bizes/504644/items/3859062\" target=\"_blank\" title=\"새 창\">\n");
+                                    menuTag.append("                            <a href=\"https://booking.naver.com/booking/10/bizes/504644/items/3859062\" target=\"_blank\" rel=\"noopener noreferrer\"  title=\"새 창\">\n");
                                     menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb05.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>");
@@ -493,7 +493,7 @@ public class GnbMenuPrintImpl {
                                     menuTag.append("                            </a>\n");
                                     menuTag.append("                        </li>\n");
                                     menuTag.append("                        <li>\n");
-                                    menuTag.append("                            <a href=\"http://환경교육주간.kr\" target=\"_blank\" title=\"새 창\">\n");
+                                    menuTag.append("                            <a href=\"http://환경교육주간.kr\" target=\"_blank\" rel=\"noopener noreferrer\"  title=\"새 창\">\n");
                                     menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb07.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>");

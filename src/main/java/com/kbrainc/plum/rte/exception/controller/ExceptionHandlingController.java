@@ -50,7 +50,7 @@ public class ExceptionHandlingController {
     @ExceptionHandler({ Exception.class })
     public String getCommonException(Exception e) {
         logger.error("getCommonException.Exception.53L");
-        e.printStackTrace();
+        //e.printStackTrace();
         return "error/error_500";
     }
     
