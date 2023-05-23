@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -260,11 +262,14 @@ public class SearchController {
     * @Title : autocomplete
     * @Description : 검색어 자동완성 목록 조회
     * @param keyword 검색어
+    * @param response 응답객체
     * @return List 자동완성 목록
     */
     @RequestMapping(value = "/search/autocomplete", method = RequestMethod.GET)
     @ResponseBody
-    public List autocomplete(@RequestParam(name="keyword", required=true) String keyword) throws Exception {
+    public List autocomplete(@RequestParam(name="keyword", required=true) String keyword, HttpServletResponse response) throws Exception {
+        response.setHeader("Cache-Control", "no-cache, no-store");
+        response.setHeader("Pragma", "no-cache");
         Map<String, Object> smartmakerInfo = searchService.getSmartmakerInfo(keyword);
         List<Map<String, String>> smartWordList = (ArrayList<Map<String, String>>) (((ArrayList<Map<String, Object>>) ((Map<String, Object>) smartmakerInfo.get("resultSet")).get("result")).get(0).get("resultDocuments"));
         
@@ -280,11 +285,14 @@ public class SearchController {
     *
     * @Title : autocomplete
     * @Description : 인기 검색어 조회
+    * @param response 응답객체
     * @return List 인기검색어 일간/주간/월간 목록
     */
     @RequestMapping(value = "/search/trndKeyword", method = RequestMethod.GET)
     @ResponseBody
-    public Map trndKeyword() throws Exception {
+    public Map trndKeyword(HttpServletResponse response) throws Exception {
+        response.setHeader("Cache-Control", "no-cache, no-store");
+        response.setHeader("Pragma", "no-cache");
         Map<String, Object> trndMap = new HashMap<String, Object>(); 
         Map<String, Object> keywordDay = searchService.getTrndKeywordDay();
         Map<String, Object> keywordWeek = searchService.getTrndKeywordWeek();
