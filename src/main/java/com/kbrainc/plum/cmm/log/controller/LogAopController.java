@@ -61,7 +61,7 @@ public class LogAopController {
             LOGGER.error("======================== ASPECT : {} Around NullPointerException========================", methodName);
             return null;
         }catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             LOGGER.error("======================== ASPECT : {} Around Exception========================", methodName);
             return null;
         }

@@ -249,7 +249,7 @@ public interface MvmnPrgrmDao {
     * @throws Exception
     * @return List<MvmnPrgrmVo>
     */
-    public List<MvmnPrgrmVo> selectPrgrmSettingList(@Param("operFomCd") String operFomCd) throws Exception;
+    public List<MvmnPrgrmVo> selectPrgrmSettingList(@Param("operFomCd") String operFomCd, @Param("sareaId") Integer sareaId) throws Exception;
     
     /**
     * 교육프로그램관리 복사대상 파일 상세조회
