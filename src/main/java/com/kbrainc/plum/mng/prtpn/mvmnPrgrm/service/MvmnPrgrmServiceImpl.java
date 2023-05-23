@@ -264,8 +264,8 @@ public class MvmnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Mvm
     * @return List<MvmnPrgrmVo>
     */
     @Override
-    public List<MvmnPrgrmVo> selectPrgrmSettingList(String operFomCd) throws Exception {
-        return mvmnPrgrmDao.selectPrgrmSettingList(operFomCd);
+    public List<MvmnPrgrmVo> selectPrgrmSettingList(String operFomCd, Integer sareaId) throws Exception {
+        return mvmnPrgrmDao.selectPrgrmSettingList(operFomCd, sareaId);
     }    
     
     private void copyFile(UserVo userVo, FileVo fileVo, String filegrpNm) throws Exception {

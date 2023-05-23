@@ -125,7 +125,7 @@ public interface MvmnPrgrmService {
     * @throws Exception
     * @return List<MvmnPrgrmVo>
     */
-    public List<MvmnPrgrmVo> selectPrgrmSettingList(String operFomCd) throws Exception;
+    public List<MvmnPrgrmVo> selectPrgrmSettingList(String operFomCd, Integer sareaId) throws Exception;
     
     /**
      * 푸름이이동환경교실(신청자) 설문지 목록 조회
