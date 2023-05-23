@@ -42,7 +42,7 @@
                         <div class="row justify-content-end my-2">
                             <div class="col-auto">
                                 <label class="form-label col-form-label me-2"><strong>운영형식</strong></label>
-                                <th:block kattr:select_code="operFomCd" th:attr="grpCd=197, selectedCd=${mvmnSchdl.operFomCd}" onchange="fn_changeOperFomCd(this)" firstOptTxt="- 선택 -" addClass="form-select form-select-sm d-inline-block" isAdmin="true"></th:block>
+                                <th:block kattr:select_code="operFomCd" th:attr="grpCd=197, selectedCd=${mvmnSchdl.operFomCd}" firstOptTxt="- 선택 -" addClass="form-select form-select-sm d-inline-block" isAdmin="true"></th:block>
                             </div>
                         </div>
                         <!-- // 접수방법 선택 -->
@@ -196,6 +196,10 @@
 
         //교육일자 원본저장
         deSttSelectedOrgItems = deSttSelectedItems;
+
+        $('#operFomCd').on('change',function() {
+            fn_changeOperFomCd(this);
+        })
     });
     
     function fn_makeListHtml(){
@@ -306,9 +310,10 @@
             $("#operFomType2").show();
             deSttSelectedItems = [];
         }
+
         
         var getCodeUrl = "/mng/prtpn/mvmnPrgrm/selectPrgrmSettingList.do";
-        var url = getCodeUrl + "?operFomCd=" + $(item).val();
+        var url = getCodeUrl + "?operFomCd=" + $(item).val() + "&sareaId="+ $('#sareaId').val();
         var prgrmStthtml = "";
         $("#updatePrgrmSettingList tr").remove();
         if($(item).val() == ""){
@@ -323,6 +328,15 @@
             type: 'POST',
             cache: false,
             success: function (data) {
+
+                if(data.prgrmSttList.length == 0) {
+                    prgrmStthtml += '<tr>';
+                    prgrmStthtml += '<td class="text-center v-middle" colspan="3">등록된 프로그램이 없습니다.</td>';
+                    prgrmStthtml += '</tr>';
+                    $("#updatePrgrmSettingList").append(prgrmStthtml);
+                    return false;
+                }
+
                 for(var i = 0; i < data.prgrmSttList.length; i++){
                     var weekDesc = "";
                     var checked = "";
@@ -529,9 +543,10 @@
             return;
         }         
         var ym = $("#ym01").val();
-        
+
         var data =  $("#mvmnSchdlUpdatePopupForm").serialize();
         data = data+"&deSttIds="+deSttIds+"&prgrmSttIds="+prgrmSttIds+"&schdlNm="+schdlNm+"&ym="+ym;
+        console.log(data);
 
         if(displayWorkProgress()){
             $.ajax({

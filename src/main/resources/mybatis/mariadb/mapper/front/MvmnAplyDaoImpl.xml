@@ -14,7 +14,7 @@
             SELECT 
                 A.PRGRMID
                 , A.SAREAID
-                , IFNULL(B.SAREA_NM, '') AS SAREA_NM
+                , IFNULL(B.SAREA_NM, '전체') AS SAREA_NM
                 , A.EDU_SE_CD
                 , E.CD_NM EDU_SE_NM
                 , F.CD_NM AS CLSF_NM
@@ -166,10 +166,10 @@
                             AND TB.TME_SCHDLID = TC.TME_SCHDLID 
                             AND TA.STTS_CD = '180101'
                             AND TB.TMEID = A.TMEID) WAIT_CNT    
-                      , (SELECT GROUP_CONCAT(REPLACE(TA.DE, '.', '-') SEPARATOR', ')
+                      , (SELECT GROUP_CONCAT(REPLACE(TA.DE, '.', '-') ORDER BY TA.DE ASC SEPARATOR', ')
                            FROM TB_EDU_MVMN_PRGRM_TME_SCHDL TA                                                             
-                          WHERE TA.TMEID = A.TMEID) DE_DESC  
-                      , (SELECT GROUP_CONCAT(DISTINCT CASE DAYOFWEEK(TA.DE) 
+                          WHERE TA.TMEID = A.TMEID) DE_DESC
+                      , (SELECT GROUP_CONCAT(DISTINCT CASE DAYOFWEEK(TA.DE)
                                     WHEN '1' THEN '일요일'
                                     WHEN '2' THEN '월요일'
                                     WHEN '3' THEN '화요일'
@@ -178,9 +178,9 @@
                                     WHEN '6' THEN '금요일'
                                     WHEN '7' THEN '토요일' END
                                 SEPARATOR', ')
-                           FROM TB_EDU_MVMN_PRGRM_TME_SCHDL TA                               
-                          WHERE TA.TMEID = A.TMEID) WEEK_DESC                             
-                  FROM TB_EDU_MVMN_PRGRM_TME A    
+                           FROM TB_EDU_MVMN_PRGRM_TME_SCHDL TA
+                          WHERE TA.TMEID = A.TMEID) WEEK_DESC
+                  FROM TB_EDU_MVMN_PRGRM_TME A
                   LEFT OUTER JOIN TB_EDU_MVMN_PRGRM B ON B.PRGRMID = A.PRGRMID
                   WHERE A.TMEID IN (SELECT TMEID FROM TB_EDU_MVMN_PRGRM_TME_SCHDL)
            ) X
@@ -251,27 +251,6 @@
     <!-- 푸름이 이동환경교실 교육신청 등록정보 상세조회 -->
     <select id="selectMvmnAplyRegInfo" parameterType="front.MvmnAplyVo" resultType="front.MvmnAplyVo"> 
         /* MvmnAplyDao.selectMvmnAplyInfo */
-            WITH T1 AS (
-                SELECT TMEID, REPLACE(DE, '.', '-') DE 
-                  FROM TB_EDU_MVMN_PRGRM_TME_SCHDL 
-                 WHERE TME_SCHDLID = #{tmeSchdlid}
-                 UNION ALL 
-                SELECT TMEID, DATE_ADD(REPLACE(DE, '.', '-'), INTERVAL 1 WEEK) DE 
-                  FROM TB_EDU_MVMN_PRGRM_TME_SCHDL 
-                 WHERE TME_SCHDLID = #{tmeSchdlid}
-                 UNION ALL 
-                SELECT TMEID, DATE_ADD(REPLACE(DE, '.', '-'), INTERVAL 2 WEEK) DE 
-                  FROM TB_EDU_MVMN_PRGRM_TME_SCHDL
-                 WHERE TME_SCHDLID = #{tmeSchdlid}
-                 UNION ALL 
-                SELECT TMEID, DATE_ADD(REPLACE(DE, '.', '-'), INTERVAL 3 WEEK) DE 
-                  FROM TB_EDU_MVMN_PRGRM_TME_SCHDL
-                 WHERE TME_SCHDLID = #{tmeSchdlid}
-                 UNION ALL 
-                SELECT TMEID, DATE_ADD(REPLACE(DE, '.', '-'), INTERVAL 4 WEEK) DE 
-                  FROM TB_EDU_MVMN_PRGRM_TME_SCHDL
-                 WHERE TME_SCHDLID = #{tmeSchdlid}
-            )        
             SELECT
                 A.PRGRMID
                 , A.SAREAID
@@ -282,8 +261,10 @@
                 , J.SIGNGU_CD
                 , CONCAT(E.CTPRVN_NM,' <![CDATA[>]]> ', G.SIGNGU_NM) SIGNGU_DESC
                 , CONCAT(C.TME_NM, ' ', C.BGNG_TM, ' ~ ', C.END_TM) TME_NM
-                -- , CASE WHEN A.OPER_FOM_CD = '197101' THEN REPLACE(D.DE, '.', '-') ELSE (SELECT GROUP_CONCAT(T1.DE SEPARATOR', ') FROM T1 WHERE MONTH(T1.DE) = MONTH(D.DE)) END DE
-                , GROUP_CONCAT(REPLACE(D.DE, '.', '-') SEPARATOR', ') DE
+                ,
+                    CASE WHEN A.OPER_FOM_CD = '197101' THEN D.DE
+                    ELSE GROUP_CONCAT(REPLACE(D.DE, '.', '-') ORDER BY D.DE ASC SEPARATOR', ')
+                    END DE
                 ,(SELECT GROUP_CONCAT(TB.CD_NM SEPARATOR', ') FROM TB_EDU_MVMN_PRGRM_TRGT_MAPNG TA, TB_CMM_CD TB WHERE TA.PRGRMID = A.PRGRMID and TA.TRGT_CD = TB.CD) AS TRGT_NM
                 ,(SELECT GROUP_CONCAT(TC.TRGT_CD SEPARATOR', ') FROM TB_EDU_MVMN_PRGRM_TRGT_MAPNG TC WHERE TC.PRGRMID = A.PRGRMID ) AS TRGT_CD
                 , F.INSTID
@@ -313,15 +294,14 @@
             WHERE A.USE_YN = 'Y'
               AND A.PRGRMID = #{prgrmid}
               <choose>
-                  <when test="operFomCd == '197101'">
+                  <when test="operFomCd == '197101'"> /* 일일교육 */
                     AND D.TME_SCHDLID = #{tmeSchdlid}
                   </when>
-                  <otherwise>
+                  <otherwise> /* 지속교육 */
                     AND D.TMEID = #{tmeid}
                   </otherwise>
               </choose>
-              AND I.CTPRVN_CD = SUBSTRING_INDEX(SUBSTRING_INDEX(#{sareaSignguCd}, '^', -2), '^', 1)
-              AND J.SIGNGU_CD = SUBSTRING_INDEX(#{sareaSignguCd}, '^', -1)
+              AND J.SIGNGU_CD = #{signguCd}
             GROUP BY A.PRGRMID
     </select>    
     <!-- 푸름이 이동환경교실 교육신청 등록 --> 
@@ -417,6 +397,7 @@
             , A.SAREA_NM
             , CONCAT(A.SAREAID,'^',B.CTPRVN_CD,'^',C.SIGNGU_CD) AS SAREA_SIGNGU_CD
             , CONCAT(A.SAREA_NM,' <![CDATA[>]]>',D.CTPRVN_NM,' ',E.SIGNGU_NM) AS SAREA_SIGNGU_DESC
+            , C.SIGNGU_CD
         FROM 
             TB_EDU_SAREA A
             LEFT OUTER JOIN TB_EDU_SAREA_CTPRVN_MAPNG B ON B.SAREAID = A.SAREAID

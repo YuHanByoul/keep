@@ -41,7 +41,7 @@
                         <div class="row justify-content-end my-2">
                             <div class="col-auto">
                                 <label class="form-label col-form-label me-2"><strong>운영형식</strong></label>
-                                <th:block kattr:select_code="operFomCd" grpCd="197" upprCd="0" onchange="fn_changeOperFomCd(this)" firstOptTxt="- 선택 -" addClass="form-select form-select-sm d-inline-block" isAdmin="true"></th:block>
+                                <th:block kattr:select_code="operFomCd" grpCd="197" upprCd="0" firstOptTxt="- 선택 -" addClass="form-select form-select-sm d-inline-block" isAdmin="true"></th:block>
                             </div>
                         </div>
                         <!-- // 접수방법 선택 -->
@@ -164,6 +164,10 @@
     $(function() {
         fn_makeListHtml();
         validForm();
+
+        $('#operFomCd').on('change',function() {
+            fn_changeOperFomCd(this);
+        })
     });        
     
     function fn_makeListHtml(){
@@ -272,13 +276,21 @@
             type: 'POST',
             cache: false,
             success: function (data) {
+                if(data.prgrmSttList.length == 0) {
+                    prgrmStthtml += '<tr>';
+                    prgrmStthtml += '<td class="text-center v-middle" colspan="3">등록된 프로그램이 없습니다.</td>';
+                    prgrmStthtml += '</tr>';
+                    $("#updatePrgrmSettingList").append(prgrmStthtml);
+                    return false;
+                }
+
                 for(var i = 0; i < data.prgrmSttList.length; i++){
                     var weekDesc = "";
                     prgrmStthtml += '<tr>';
                     prgrmStthtml += '<td class="text-center v-middle">';                        
                     prgrmStthtml += '<input id="prgrmSttSingleCheckbox" class="form-check-input" type="checkbox" value="" aria-label="선택" onchange="fn_changePrgrmSttSelectItem(this);">';
                     prgrmStthtml += '</td>';
-                    prgrmStthtml += '<input id="prgrmId" type="hidden" value="' + data.prgrmSttList[i].prgrmId + '" >';                     
+                    prgrmStthtml += '<input id="prgrmId" type="hidden" value="' + data.prgrmSttList[i].prgrmId + '" >';
                     prgrmStthtml += '<td class="text-center v-middle">' + data.prgrmSttList[i].prgrmNm + '</td>';
                     if(data.prgrmSttList[i].monYn == "Y"){
                         weekDesc += "월";
@@ -454,9 +466,10 @@
             return;
         }                 
         var ym = $("#ym01").val();
-        
+        var sareaId = $('#sareaId').val();
+
         var data =  $("#mvmnSchdlForm").serialize();
-        data = data+"&deSttIds="+deSttIds+"&prgrmSttIds="+prgrmSttIds+"&schdlNm="+schdlNm+"&ym="+ym;
+        data = data+"&deSttIds="+deSttIds+"&prgrmSttIds="+prgrmSttIds+"&schdlNm="+schdlNm+"&ym="+ym + "&sareaId="+sareaId;
 
         if(displayWorkProgress()){
             $.ajax({
