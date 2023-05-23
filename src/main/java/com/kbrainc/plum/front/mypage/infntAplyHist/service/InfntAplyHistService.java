@@ -108,6 +108,8 @@ public interface InfntAplyHistService {
     * @throws Exception
     * @return int
     */
-    public int updateInfntAply(InfntAplyHistVo infntAplyHistVo) throws Exception;    
+    public int updateInfntAply(InfntAplyHistVo infntAplyHistVo) throws Exception;
+
+    public List<InfntAplyHistVo> selectEduTrgtCd(InfntAplyHistVo infntAplyHistVo) throws Exception;
     
 }

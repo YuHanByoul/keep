@@ -112,6 +112,9 @@ public class InfntAplyHistVo extends ParentRequestVo {
     /** 설문제출ID */
     private Integer sbmsnid;
     
+    private String cd;
+    private String cdNm;
+    
     
     /** 등록일 */
     private String regDt;

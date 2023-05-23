@@ -134,4 +134,6 @@ public interface InfntAplyHistDao {
     * @return int
     */
     public int deleteTrgtCd(InfntAplyHistVo infntAplyHistVo) throws Exception;
+
+    public List<InfntAplyHistVo> selectEduTrgtCd(InfntAplyHistVo infntAplyHistVo) throws Exception;
 }
