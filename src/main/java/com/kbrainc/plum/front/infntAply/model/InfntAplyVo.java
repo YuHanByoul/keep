@@ -150,6 +150,8 @@ public class InfntAplyVo extends ParentRequestVo {
     /** 숙박_여부 */
     private String styYn;
     /** */
+    private String cd;
+    /** */
     private String cdNm;
     /** 운영일정 */
     private String targetMm;

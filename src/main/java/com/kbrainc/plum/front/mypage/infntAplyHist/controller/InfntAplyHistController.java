@@ -75,35 +75,24 @@ public class InfntAplyHistController {
     public String infntAplyHistDetail(InfntAplyHistVo infntAplyHistVo, Model model, @UserInfo UserVo user) throws Exception {
         InfntAplyHistVo infntAplyHistInfoVo = infntAplyHistService.selectInfntAplyHistInfo(infntAplyHistVo);
         InfntAplyHistVo infntAplyHistRegVo = infntAplyHistService.selectInfntAplyHistDetail(infntAplyHistVo);
+        List<InfntAplyHistVo> eduTrgtCd = infntAplyHistService.selectEduTrgtCd(infntAplyHistVo);
         
         model.addAttribute("infntAplyHistInfoVo", infntAplyHistInfoVo);
         model.addAttribute("infntAplyHistRegVo", infntAplyHistRegVo);
+        model.addAttribute("eduTrgtCd", eduTrgtCd);
         
-        List<Map<String, String>> listMap = new ArrayList<Map<String, String>>();
-        
-        if(!"".equals(StringUtil.nvl(infntAplyHistRegVo.getTrgtCd(), ""))){
-            String[] splitTrgtCdStr = infntAplyHistRegVo.getTrgtCd().split(",");
-            String[] splitTrgtNmStr = infntAplyHistRegVo.getTrgtNm().split(",");
-            for(int k=0; k<splitTrgtCdStr.length; k++){
-                Map<String, String> map = new HashMap<String, String>();
-                String trgtChk = "";
-                if(!"".equals(StringUtil.nvl(infntAplyHistRegVo.getTrgtCd(),""))){
-                    String[] splitEduTrgtCdStr = infntAplyHistRegVo.getTrgtCd().split(",");
-                    for(int i=0; i<splitEduTrgtCdStr.length; i++){
-                        if(splitEduTrgtCdStr[i].equals(splitTrgtCdStr[k])) {
-                            trgtChk = "checked";
-                        }
-                    }
-                }
-                map.put("TRGTCD", splitTrgtCdStr[k]);
-                map.put("TRGTNM", splitTrgtNmStr[k]);
-                map.put("TRGTCHK", trgtChk);
-                
-                listMap.add(map);
+        List<Map<String, String>> listMap = new ArrayList<Map<String, String>>();            
+        String[] splitCdStr = infntAplyHistRegVo.getCd().split(",");
+        String[] splitCdNmStr = infntAplyHistRegVo.getCdNm().split(",");
 
-            }
+        for(int i=0; i<splitCdStr.length; i++){
+            Map<String, String> map = new HashMap<String, String>();
+            map.put("CD", splitCdStr[i]);
+            map.put("CDNM", splitCdNmStr[i]);
+            listMap.add(map);
         }
-        model.addAttribute("trgtList", listMap);        
+        
+        model.addAttribute("cdList", listMap);
         model.addAttribute("infntAplyHistVo", infntAplyHistVo);        
         return VIEW_PATH + "/infntAplyHistDetail";
     }

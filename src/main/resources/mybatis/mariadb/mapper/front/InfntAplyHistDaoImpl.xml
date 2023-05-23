@@ -102,42 +102,67 @@
     <!-- 유아환경교육관 신청이력 상세 조회 -->
     <select id="selectInfntAplyHistDetail" parameterType="front.InfntAplyHistVo" resultType="front.InfntAplyHistVo">
         /* InfntAplyHistDao.selectInfntAplyHistDetail */
-        SELECT 
-              A.APLYID
-            , A.TME_SCHDLID  
-            , B.DE
-            , C.TMEID
-            , C.TME_NM
-            , A.REG_DT AS APLY_DT 
-            , A.INSTID
-            , NULLIF(E.INST_NM, '') INST_NM 
-            , NULLIF(A.USERID, '') APLY_USERID
-            , NULLIF(F.NM, '') APLY_USER_NM
-            , NULLIF(A.ADDR, '') ADDR
-            , NULLIF(A.ADDR_DTL, '') ADDR_DTL
-            , NULLIF(A.CTPRVN_CD, '') CTPRVN_CD
-            , NULLIF(A.TELNO, '') TELNO
-            , NULLIF(A.MOBLPHON, '') MOBLPHON
-            , NULLIF(A.EML, '') EML
-            , A.EDU_NOPE
-            , A.TCHER_NOPE
-            , NULLIF(A.ETC, '') ETC
-            , A.TOWWAY_ONLN_EDU_AGRE_YN
-            , A.STTS_CD
-            , D.CD_NM AS STTS_NM
-            ,(SELECT GROUP_CONCAT(EDU_TRGT_CD SEPARATOR',') FROM TB_EDU_INFNT_PRGRM_APLY_EDU_TRGT  WHERE APLYID = #{aplyid} ) AS TRGT_CD
-            ,(SELECT GROUP_CONCAT(TB.CD_NM SEPARATOR', ') FROM TB_EDU_INFNT_PRGRM_APLY_EDU_TRGT TA, TB_CMM_CD TB WHERE TA.APLYID = #{aplyid} and TA.EDU_TRGT_CD = TB.CD) AS TRGT_NM
-            , A.MDFCN_DT
-            , A.MDFRID
-            , A.REG_DT
-            , A.RGTRID  
-        FROM TB_EDU_INFNT_PRGRM_APLY A 
-        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME_SCHDL B ON B.TME_SCHDLID = A.TME_SCHDLID 
-        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME C ON C.TMEID = B.TMEID
-        LEFT OUTER JOIN TB_CMM_CD D ON D.CD = A.STTS_CD
-        LEFT OUTER JOIN TB_CMM_INST E ON E.INSTID = A.INSTID 
-        LEFT OUTER JOIN TB_CMM_USER F ON F.USERID = A.USERID        
-        WHERE A.APLYID = #{aplyid}
+        SELECT
+            A.APLYID
+          , A.TME_SCHDLID
+          , B.DE
+          , C.TMEID
+          , C.TME_NM
+          , A.REG_DT AS APLY_DT
+          , A.INSTID
+          , NULLIF(E.INST_NM, '') INST_NM
+          , NULLIF(A.USERID, '') APLY_USERID
+          , NULLIF(F.NM, '') APLY_USER_NM
+          , NULLIF(A.ADDR, '') ADDR
+          , NULLIF(A.ADDR_DTL, '') ADDR_DTL
+          , NULLIF(A.CTPRVN_CD, '') CTPRVN_CD
+          , NULLIF(A.TELNO, '') TELNO
+          , NULLIF(A.MOBLPHON, '') MOBLPHON
+          , NULLIF(A.EML, '') EML
+          , A.EDU_NOPE
+          , A.TCHER_NOPE
+          , NULLIF(A.ETC, '') ETC
+          , A.TOWWAY_ONLN_EDU_AGRE_YN
+          , A.STTS_CD
+          , D.CD_NM AS STTS_NM
+          , (
+            SELECT GROUP_CONCAT(CD SEPARATOR ',')
+            FROM tb_cmm_cd
+            WHERE CDGRPID = 162
+            ) AS CD
+          , (
+            SELECT GROUP_CONCAT(CD_NM SEPARATOR ',')
+            FROM tb_cmm_cd
+            WHERE CDGRPID = 162
+            ) AS CD_NM
+          , (
+            SELECT GROUP_CONCAT(EDU_TRGT_CD SEPARATOR ',')
+            FROM TB_EDU_INFNT_PRGRM_APLY_EDU_TRGT
+            WHERE APLYID = 47
+            ) AS TRGT_CD
+          , (
+            SELECT
+                GROUP_CONCAT(TB.CD_NM SEPARATOR ', ')
+            FROM
+                TB_EDU_INFNT_PRGRM_APLY_EDU_TRGT TA
+              , TB_CMM_CD TB
+            WHERE
+                  TA.APLYID = 47
+              and TA.EDU_TRGT_CD = TB.CD
+            ) AS TRGT_NM
+          , A.MDFCN_DT
+          , A.MDFRID
+          , A.REG_DT
+          , A.RGTRID
+        FROM
+            TB_EDU_INFNT_PRGRM_APLY A
+                LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME_SCHDL B ON B.TME_SCHDLID = A.TME_SCHDLID
+                LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME C ON C.TMEID = B.TMEID
+                LEFT OUTER JOIN TB_CMM_CD D ON D.CD = A.STTS_CD
+                LEFT OUTER JOIN TB_CMM_INST E ON E.INSTID = A.INSTID
+                LEFT OUTER JOIN TB_CMM_USER F ON F.USERID = A.USERID
+        WHERE   
+            A.APLYID = #{aplyid}
         AND A.TME_SCHDLID = #{tmeSchdlid}
     </select>
         
@@ -238,5 +263,15 @@
          DELETE FROM TB_EDU_INFNT_PRGRM_APLY_EDU_TRGT
          WHERE 1=1
            AND APLYID = #{aplyid}
-    </insert>             
+    </insert>
+    
+    <select id="selectEduTrgtCd" parameterType="front.InfntAplyHistVo" resultType="front.InfntAplyHistVo">
+        /* InfntAplyHistDao.selectEduTrgtCd */
+        SELECT
+            EDU_TRGT_CD AS TRGT_CD
+        FROM
+            TB_EDU_INFNT_PRGRM_APLY_EDU_TRGT
+        WHERE
+            APLYID = #{aplyid}
+    </select>       
 </mapper>
