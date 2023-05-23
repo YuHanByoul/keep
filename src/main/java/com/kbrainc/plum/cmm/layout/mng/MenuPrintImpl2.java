@@ -159,7 +159,7 @@ public class MenuPrintImpl2 {
                             }
                         } else {
                             if ("N".equals(menuItem1.getPopupTrgtCd())) { // 새창
-                                menuTag.append("    <a class=\"d-block pcoded-navigatio-lavel\" href=\"").append(menuItem1.getUrl()).append("\" target=\"blank\">\n");
+                                menuTag.append("    <a class=\"d-block pcoded-navigatio-lavel\" href=\"").append(menuItem1.getUrl()).append("\" target=\"blank\" rel=\"noopener noreferrer\" >\n");
                             } else { // 현재창
                                 menuTag.append("    <a class=\"d-block pcoded-navigatio-lavel\" href=\"javascript:goMenu('").append(menuItem1.getUrl()).append("','").append(mkey).append("')\">\n");
                             }
@@ -226,7 +226,7 @@ public class MenuPrintImpl2 {
                                         }
                                     } else {
                                         if ("N".equals(menuItem2.getPopupTrgtCd())) { // 새창
-                                            menuTag.append("    <a href=\"").append(menuItem2.getUrl()).append("\" target=\"blank\">\n");
+                                            menuTag.append("    <a href=\"").append(menuItem2.getUrl()).append("\" target=\"blank\" rel=\"noopener noreferrer\" >\n");
                                         } else { // 현재창
                                             menuTag.append("    <a href=\"javascript:goMenu('").append(menuItem2.getUrl()).append("','").append(mkey).append("')\">\n");
                                         }
@@ -288,7 +288,7 @@ public class MenuPrintImpl2 {
                                                     }
                                                 } else {
                                                     if ("N".equals(menuItem3.getPopupTrgtCd())) { // 새창
-                                                        menuTag.append("    <a href=\"").append(menuItem3.getUrl()).append("\" target=\"blank\">\n");
+                                                        menuTag.append("    <a href=\"").append(menuItem3.getUrl()).append("\" target=\"blank\" rel=\"noopener noreferrer\" >\n");
                                                     } else { // 현재창
                                                         menuTag.append("    <a href=\"javascript:goMenu('").append(menuItem3.getUrl()).append("','").append(mkey).append("')\">\n");
                                                     }
@@ -342,7 +342,7 @@ public class MenuPrintImpl2 {
                                                                 }
                                                             } else {
                                                                 if ("N".equals(menuItem4.getPopupTrgtCd())) { // 새창
-                                                                    menuTag.append("<a href=\"").append(menuItem4.getUrl()).append("\" target=\"blank\">\n");
+                                                                    menuTag.append("<a href=\"").append(menuItem4.getUrl()).append("\" target=\"blank\" rel=\"noopener noreferrer\" >\n");
                                                                 } else { // 현재창
                                                                     menuTag.append("<a href=\"javascript:goMenu('").append(menuItem4.getUrl()).append("','").append(mkey).append("')\">\n");
                                                                 }
