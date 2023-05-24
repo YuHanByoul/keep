@@ -6953,7 +6953,7 @@ var widgetsAccordion = $.widget( "ui.accordion", {
 
 		// Clean up headers
 		this.headers
-			.removeAttr( "role aria-expanded aria-selected aria-controls tabIndex" )
+			.removeAttr( "role aria-expanded aria-selected data-controls tabIndex" )
 			.removeUniqueId();
 
 		this._destroyIcons();
@@ -7137,7 +7137,7 @@ var widgetsAccordion = $.widget( "ui.accordion", {
 					headerId = header.uniqueId().attr( "id" ),
 					panel = header.next(),
 					panelId = panel.uniqueId().attr( "id" );
-				header.attr( "aria-controls", panelId );
+				header.attr( "data-controls", panelId );
 				panel.attr( "aria-labelledby", headerId );
 			} )
 			.next()
@@ -15149,7 +15149,7 @@ $.widget( "ui.tabs", {
 			// check the fragment identifier in the URL
 			if ( locationHash ) {
 				this.tabs.each( function( i, tab ) {
-					if ( $( tab ).attr( "aria-controls" ) === locationHash ) {
+					if ( $( tab ).attr( "data-controls" ) === locationHash ) {
 						active = i;
 						return false;
 					}
@@ -15463,7 +15463,7 @@ $.widget( "ui.tabs", {
 			var selector, panel, panelId,
 				anchorId = $( anchor ).uniqueId().attr( "id" ),
 				tab = $( anchor ).closest( "li" ),
-				originalAriaControls = tab.attr( "aria-controls" );
+				originalAriaControls = tab.attr( "data-controls" );
 
 			// Inline tab
 			if ( that._isLocal( anchor ) ) {
@@ -15474,9 +15474,9 @@ $.widget( "ui.tabs", {
 			// remote tab
 			} else {
 
-				// If the tab doesn't already have aria-controls,
+				// If the tab doesn't already have data-controls,
 				// generate an id by using a throw-away element
-				panelId = tab.attr( "aria-controls" ) || $( {} ).uniqueId()[ 0 ].id;
+				panelId = tab.attr( "data-controls" ) || $( {} ).uniqueId()[ 0 ].id;
 				selector = "#" + panelId;
 				panel = that.element.find( selector );
 				if ( !panel.length ) {
@@ -15490,10 +15490,10 @@ $.widget( "ui.tabs", {
 				that.panels = that.panels.add( panel );
 			}
 			if ( originalAriaControls ) {
-				tab.data( "ui-tabs-aria-controls", originalAriaControls );
+				tab.data( "ui-tabs-data-controls", originalAriaControls );
 			}
 			tab.attr( {
-				"aria-controls": panelId,
+				"data-controls": panelId,
 				"aria-labelledby": anchorId
 			} );
 			panel.attr( "aria-labelledby", anchorId );
@@ -15785,13 +15785,13 @@ $.widget( "ui.tabs", {
 
 		this.tabs.each( function() {
 			var li = $( this ),
-				prev = li.data( "ui-tabs-aria-controls" );
+				prev = li.data( "ui-tabs-data-controls" );
 			if ( prev ) {
 				li
-					.attr( "aria-controls", prev )
-					.removeData( "ui-tabs-aria-controls" );
+					.attr( "data-controls", prev )
+					.removeData( "ui-tabs-data-controls" );
 			} else {
-				li.removeAttr( "aria-controls" );
+				li.removeAttr( "data-controls" );
 			}
 		} );
 
@@ -15922,7 +15922,7 @@ $.widget( "ui.tabs", {
 	},
 
 	_getPanelForTab: function( tab ) {
-		var id = $( tab ).attr( "aria-controls" );
+		var id = $( tab ).attr( "data-controls" );
 		return this.element.find( this._sanitizeSelector( "#" + id ) );
 	}
 } );
