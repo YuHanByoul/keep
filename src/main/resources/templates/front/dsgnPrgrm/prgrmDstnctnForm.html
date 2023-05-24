@@ -268,28 +268,6 @@
                                                 </li>
                                             </th:block>
                                         </ul>
-                                <!--
-                                        <div class="upload-response">
-                                            <div id="multipleFileUploadError"></div>
-                                            <div id="multipleFileUploadSuccess">
-                                            <th:block th:if="${eduPhotoFileList != null}">
-                                                <div th:each="item : ${eduPhotoFileList}" th:id="${item.fileid}" class="col-auto">
-                                                    <ul th:if="${item.orginlFileNm != null}">
-                                                        <li th:fileid='${item.fileid}' th:id='fileid + ${item.fileid}'
-                                                            th:fileIdntfcKey="${item.fileIdntfcKey}"
-                                                            th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))"
-                                                            class='label label-inverse'
-                                                            th:data_ext="${#strings.replace(item.fileExtsn, '.', '')}">
-                                                            <th:block th:text="${item.orginlFileNm}" />&nbsp;&nbsp;
-                                                            <a th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="fn_deleteFileList(this.name, this.dataset.idntfcKey)" class='text-white'>
-                                                            <th:block th:text="X"></th:block></a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </th:block>
-                                            </div>
-                                        </div>
-                                         -->
 
                                         <input type="hidden"  id = "eduPhotoFilegrpid" name = "eduPhotoFilegrpid" th:value="${(aplyInfo.eduPhotoFilegrpid == '' or aplyInfo.eduPhotoFilegrpid == null) ? 0 : aplyInfo.eduPhotoFilegrpid}"/>
                                         <input type="text" id="chkFile" name="chkFile" value="" style="display: none;">
@@ -524,7 +502,7 @@
                     <div class="btn-wrap">
                         <div class="center">
                             <button type="button" class="btn-medium btn-gray"  onclick="goPrev()">이전</button>
-                            <button type="button" class="btn-medium btn-green" onclick="doSave('next')">다음</button>
+                            <button type="button" class="btn-medium btn-green" onclick="doSave('next')" id="nextBtn">다음</button>
                         </div>
                     </div>
                 </div>
@@ -735,8 +713,6 @@
                 $("#planBody [id^=prgrmNm]").each(function(index, item) { param["emrgcyActnPlanLst[" + index + "].prgrmNm"     ] = item.value; });    //본 프로그램명
 
                 //숙박여부와 프로그램우수성의 운영형태로 체크리스트의 운영형태를 판단하여 체크리스트 결정
-
-                debugger;
                 if($("#operFrmCd").val() == "120104") {
                 	param["chkOperFrmCd"] = "145103";
                 }
@@ -753,7 +729,7 @@
                 if(call == "next") {
 
                 	var bChk = true;
-//                 	if(!$("#dstnctnForm").valid()) return false;
+                 	if(!$("#dstnctnForm").valid()) return false;
                 	bChk = $("#dstnctnForm").valid();
 
                 	//컨설팅여부
@@ -794,10 +770,6 @@
                 		}
                 	}
 
-                    //체크박스 그룹
-//                     if (!validCbxGrp($("#operSchdlTd"), "운영일정을 입력해 주십시오.")) return false;
-//                     if (!validCbxGrp($("#eduSbjctTd") , "교육주제를 입력해 주십시오.")) return false;
-//                     if (!validCbxGrp($("#eduTrgtTd")  , "교육대상을 입력해 주십시오.")) return false;
                     bChk = validCbxGrp($("#operSchdlTd"), "운영일정을 입력해 주십시오.") ?  bChk:false;
                     bChk = validCbxGrp($("#eduSbjctTd") , "교육주제를 입력해 주십시오.") ?  bChk:false;
                     bChk = validCbxGrp($("#eduTrgtTd")  , "교육대상을 입력해 주십시오.") ?  bChk:false;
@@ -823,6 +795,7 @@
 
 
                 }else{
+
                 	if(!confirm("저장하시겠습니까?")) return;
                 }
 
@@ -837,7 +810,7 @@
                             if(call == "next") {
                                 location.href = nextUrl+"?prgrmid=" + $("#prgrmid").val()+"&opner="+$("#opner").val();
                             }else{
-                        	alert(data.msg);
+                        	    alert(data.msg);
                                 location.href = reUrl+"?prgrmid=" + $("#prgrmid").val()+"&opner="+$("#opner").val();
                             }
 
@@ -862,8 +835,8 @@
                 var html="";
                 var idx = $("[id^='schdlTr']").length;
 
-                if(idx >20){
-                	alert("최대 20행까지만 추가 가능합니다.");
+                if(idx >= 30){
+                	alert("최대 30행까지만 추가 가능합니다.");
                 	return;
                 }
 
@@ -908,8 +881,8 @@
                 var html="";
                 var idx = $("[id^='planTr']").length;
 
-                if(idx >20){
-                    alert("최대 20행까지만 추가 가능합니다.");
+                if(idx >= 30){
+                    alert("최대 30행까지만 추가 가능합니다.");
                     return;
                 }
 
@@ -938,9 +911,13 @@
 
             	var sttsCd = $("#sttsCd").val();
             	if(sttsCd =='111103'){
-//             		$('#dstnctnForm input, button,select,radio,checkbox,textarea').prop('disabled', true);
-//             		$('#dstnctnForm #nextBtn').prop('disabled', false);
+//             	if(sttsCd !='111101'&&sttsCd !='111102'){
+            		$('#dstnctnForm input,textarea').prop('readonly', true);
+            		$('#dstnctnForm button, select, input[type=checkbox],input[type=radio],input[type=file]').prop('disabled', true);
+
+            		$('#dstnctnForm #nextBtn').prop('disabled', false);
             	}
+
             }
 
             $(function() {

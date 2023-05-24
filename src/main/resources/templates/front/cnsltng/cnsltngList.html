@@ -8,97 +8,98 @@
 <body>
 <div layout:fragment="content">
     <section>
-	    <form class="search-filter" id="searchForm" name="searchForm">
+        <form class="search-filter" id="searchForm" name="searchForm">
             <input type="hidden" id="pageNumber" name="pageNumber" th:value="${reqMngVo.pageNumber == null ? 1 : reqMngVo.pageNumber}">
             <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${reqMngVo.rowPerPage == null ? 10 : reqMngVo.rowPerPage}">
             <input type="hidden" id="ORDER_DIRECTION" name="orderDirection" value="desc">
             <input type="hidden" id="orderField" name="orderField" value="REG_DT">
-	        <div class="form-input-wrap">
-	            <div class="form-row">
-	                <div class="form-header"><strong class="label">사업분야</strong></div>
-	                <div class="form-body">
-	                    <span kattr:select_code="searchFldCd" th:attr="selectedCd=${reqMngVo.searchFldCd}" grpCd="173" firstOptTxt="- 전체 -" addClass="input-sm" title="사업분야"></span>
-	                </div>
-	            </div>
-	            <div class="form-row">
-	                <div class="form-header"><strong class="label">공모명</strong></div>
-	                <div class="form-body">
-	                    <input type="search" title="공모명" placeholder="공모명을 입력해주세요." name="searchPcntstNm" id="searchPcntstNm" th:value="${reqMngVo.searchPcntstNm}">
-	                </div>
-	            </div>
-	            <div class="form-row">
-	                <div class="form-header"><strong class="label">프로그램명</strong></div>
-	                <div class="form-body">
-	                    <input type="search" title="프로그램명" id="searchPrgrmNm" name="searchPrgrmNm" placeholder="프로그램명을 입력해 주세요." th:value="${reqMngVo.searchPrgrmNm}">
-	                </div>
-	            </div>
-	            <div class="form-row">
-	                <div class="form-header"><strong class="label">상태</strong></div>
-	                <div class="form-body">
+            <div class="form-input-wrap">
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">사업분야</strong></div>
+                    <div class="form-body">
+                        <span kattr:select_code="searchFldCd" th:attr="selectedCd=${reqMngVo.searchFldCd}" grpCd="173" firstOptTxt="- 전체 -" addClass="input-sm" title="사업분야"></span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">공모명</strong></div>
+                    <div class="form-body">
+                        <input type="search" title="공모명" placeholder="공모명을 입력해주세요." name="searchPcntstNm" id="searchPcntstNm" th:value="${reqMngVo.searchPcntstNm}">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">프로그램명</strong></div>
+                    <div class="form-body">
+                        <input type="search" title="프로그램명" id="searchPrgrmNm" name="searchPrgrmNm" placeholder="프로그램명을 입력해 주세요." th:value="${reqMngVo.searchPrgrmNm}">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">상태</strong></div>
+                    <div class="form-body">
                         <select title="상태" name="searchSttsCd" id="searchSttsCd">
-	                        <option value="">- 전체 -</option>
-	                        <option value="B" th:selected="${reqMngVo.searchSttsCd == 'B'}">컨설팅전</option>
-	                        <option value="S" th:selected="${reqMngVo.searchSttsCd == 'S'}">컨설팅완료</option>
+                            <option value="">- 전체 -</option>
+                            <option value="B" th:selected="${reqMngVo.searchSttsCd == 'B'}">컨설팅전</option>
+                            <option value="S" th:selected="${reqMngVo.searchSttsCd == 'S'}">컨설팅완료</option>
                         </select>
-	                </div>
-	            </div>
-	        </div>
-	        <div class="search-filter-submit">
-	            <button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="listPage.searchInit();">초기화</button>
+                    </div>
+                </div>
+            </div>
+            <div class="search-filter-submit">
+                <button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="listPage.searchInit();">초기화</button>
                 <button type="submit" class="btn-medium btn-green btn-before-search" onclick="listPage.search(); return false;">검색</button>
-	        </div>
-	    </form>
-	
+            </div>
+        </form>
+    
         <div class="table-caption flex-nowrap">
             <div class="left">
                 <p>총 <b id="totalCount">0</b> 건</p>
             </div>
-            <div class="right">
-                <select title="글 보기 개수" id="rowPerPageChange" name="rowPerPageChange">
-                    <option value="10">10개씩 보기</option>
-                    <option value="50">50개씩 보기</option>
-                    <option value="100">100개씩 보기</option>
+            <div class="right d-flex">
+                <select title="글 보기 개수" class="sort-filter" id="rowPerPageChangeSelect">
+                    <option value="10">10개</option>
+                    <option value="50">50개</option>
+                    <option value="100">100개</option>
                 </select>
+                <div><button type="button" id="rowPerPageChange" class="btn-medium btn-outline-black">보기</button></div>
             </div>
         </div>
-	
-	    <div class="pc-only">
-	        <div class="table-col table-layout-auto table-col-mo">
-	            <table>
-	                <caption>공모 신청내역 - 번호, 사업분야, 프로그램명, 교부상태, 교부신청기간, 교부확정발표, 교부신청</caption>
-	                <thead>
-	                    <tr>
-	                        <th scope="col">번호</th>
-	                        <th scope="col">사업분야</th>
-	                        <th scope="col">공모명</th>
-	                        <th scope="col">프로그램명</th>
-	                        <th scope="col">상태</th>
-	                        <th scope="col">컨설팅일자</th>
-	                    </tr>
-	                </thead>
-	                <tbody id="list-area">
-	                </tbody>
-	            </table>
-	        </div>
-	    </div>
-	
-	    <div class="mo-only">
-	        <div class="table-list">
-	            <ul id="list-mobile-area">
-	            </ul>
-	        </div>
-	    </div>
+    
+        <div class="pc-only">
+            <div class="table-col table-layout-auto table-col-mo">
+                <table>
+                    <caption>공모 신청내역 - 번호, 사업분야, 프로그램명, 교부상태, 교부신청기간, 교부확정발표, 교부신청</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">번호</th>
+                            <th scope="col">사업분야</th>
+                            <th scope="col">공모명</th>
+                            <th scope="col">프로그램명</th>
+                            <th scope="col">상태</th>
+                            <th scope="col">컨설팅일자</th>
+                        </tr>
+                    </thead>
+                    <tbody id="list-area">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    
+        <div class="mo-only">
+            <div class="table-list">
+                <ul id="list-mobile-area">
+                </ul>
+            </div>
+        </div>
         
-	    <div id="pagination" aria-label="pagination"></div>
-	</section>
-	
+        <div id="pagination" aria-label="pagination"></div>
+    </section>
+    
     <!-- layerpopup -->
     <div class="layer-popup layer-large" data-layer-id="suppModalPopup">
         <div class="layer-dimmed" title="레이어팝업 닫기"></div>
         <div class="layer-wrap" id="suppModalPopup">
         </div>
     </div>
-	
+    
     <script th:inline="javascript">
         var listPage = {
             listUrl: '/front/cnsltng/selectCnsltngList.do',
@@ -180,45 +181,45 @@
                         
                         mobileHtml += `
                         <li class="block">
-	                        <div class="tbody">
-	                            <dl>
-	                                <div class="list">
-	                                    <dt>번호</dt>
-	                                    <dd>${item.rowNumber}</dd>
-	                                </div>
-	                                <div class="list">
-	                                    <dt>사업분야</dt>
-	                                    <dd>${item.fldNm}</dd>
-	                                </div>
-	                                <div class="list">
-	                                    <dt>공모명</dt>
-	                                    <dd>${item.pcntstNm}</dd>
-	                                </div>
-	                                <div class="list">
-	                                    <dt>프로그램명</dt>
-	                                    <dd>${item.prgrmNm}</dd>
-	                                </div>`;
-				                    if(`${item.cnsltngStts}` == '컨설팅완료'){
-				                        mobileHtml += `
-			                                <div class="list">
-			                                    <dt>상태</dt>
-				                                <dd><button type="button" class="link" onclick="listPage.moveToDetail(${item.cnsltngid})">${item.cnsltngStts}</button></dd>
-				                            </div>`;
-				                    } else {
-				                        mobileHtml += `
-				                            <div class="list">
-				                                <dt>상태</dt>
-				                                <dd>${item.cnsltngStts}</dd>
-				                            </div>`;
-				                    }
-				                    mobileHtml += `
-	                                <div class="list">
-	                                    <dt>컨설팅일자</dt>
-	                                    <dd>${item.vstDt == null ? '-' : item.vstDt}</dd>
-	                                </div>
-	                            </dl>
-	                        </div>
-	                    </li>`;
+                            <div class="tbody">
+                                <dl>
+                                    <div class="list">
+                                        <dt>번호</dt>
+                                        <dd>${item.rowNumber}</dd>
+                                    </div>
+                                    <div class="list">
+                                        <dt>사업분야</dt>
+                                        <dd>${item.fldNm}</dd>
+                                    </div>
+                                    <div class="list">
+                                        <dt>공모명</dt>
+                                        <dd>${item.pcntstNm}</dd>
+                                    </div>
+                                    <div class="list">
+                                        <dt>프로그램명</dt>
+                                        <dd>${item.prgrmNm}</dd>
+                                    </div>`;
+                                    if(`${item.cnsltngStts}` == '컨설팅완료'){
+                                        mobileHtml += `
+                                            <div class="list">
+                                                <dt>상태</dt>
+                                                <dd><button type="button" class="link" onclick="listPage.moveToDetail(${item.cnsltngid})">${item.cnsltngStts}</button></dd>
+                                            </div>`;
+                                    } else {
+                                        mobileHtml += `
+                                            <div class="list">
+                                                <dt>상태</dt>
+                                                <dd>${item.cnsltngStts}</dd>
+                                            </div>`;
+                                    }
+                                    mobileHtml += `
+                                    <div class="list">
+                                        <dt>컨설팅일자</dt>
+                                        <dd>${item.vstDt == null ? '-' : item.vstDt}</dd>
+                                    </div>
+                                </dl>
+                            </div>
+                        </li>`;
                     });
                 }
                 $('#list-area').html(listHtml);
@@ -231,9 +232,9 @@
         $(function () {
             listPage.init();
             
-            $("#rowPerPageChange").change(function(){
-                $("#rowPerPage").val($(this).val());
-                listPage.init($(this).val());
+            $("#rowPerPageChange").click(function(){
+                $("#rowPerPage").val($("#rowPerPageChangeSelect").val());
+                listPage.init($("#rowPerPageChangeSelect").val());
             });
         });
     </script>
