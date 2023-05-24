@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,7 @@ public class EnveduCntrController {
      */
     @RequestMapping(value = "/front/enveduCntr/crEnveduCntrList.html")
     public String crEnveduCntrList(EnveduCntrVO enveduCntrVO, Model model) throws Exception {
-        Map<String,List<EnveduCntrVO>> listMap = new HashMap<>();
+        Map<String,List<EnveduCntrVO>> listMap = new LinkedHashMap<>();
         enveduCntrVO.setSeCd("138101");
         List<EnveduCntrVO> list = enveduCntrService.selectEnveduCntrList(enveduCntrVO);
         for(EnveduCntrVO item : list ){
@@ -73,7 +74,7 @@ public class EnveduCntrController {
      */
     @RequestMapping(value = "/front/enveduCntr/waEnveduCntrList.html")
     public String waEnveduCntrList(EnveduCntrVO enveduCntrVO, Model model) throws Exception {
-        Map<String,List<EnveduCntrVO>> listMap = new HashMap<>();
+        Map<String,List<EnveduCntrVO>> listMap = new LinkedHashMap<>();
         enveduCntrVO.setSeCd("138102");
         List<EnveduCntrVO> list = enveduCntrService.selectEnveduCntrList(enveduCntrVO);
         for(EnveduCntrVO item : list ){
@@ -110,7 +111,7 @@ public class EnveduCntrController {
      */
     @RequestMapping(value = "/front/enveduCntr/basicEnveduCntrList.html")
     public String basicEnveduCntrList(EnveduCntrVO enveduCntrVO, Model model) throws Exception {
-        Map<String,List<EnveduCntrVO>> listMap = new HashMap<>();
+        Map<String,List<EnveduCntrVO>> listMap = new LinkedHashMap<>();
         enveduCntrVO.setSeCd("138103");
         List<EnveduCntrVO> list = enveduCntrService.selectEnveduCntrList(enveduCntrVO);
         for(EnveduCntrVO item : list ){
