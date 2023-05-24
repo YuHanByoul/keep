@@ -147,40 +147,39 @@
     <!-- 유아환경교육관 교육신청 회차 목록 조회 -->
     <select id="selectInfntAplyTmeList" parameterType="front.InfntAplyVo" resultType="front.InfntAplyVo">
         /* InfntAplyDao.selectInfntAplyTmeList */
-        SELECT  X.PRGRMID
-              , X.TMEID
-              , X.TME_NM
-              , (CASE WHEN X.EDU_NOPE > X.APLY_CNT THEN 
-                    CASE WHEN X.TMEID IN (
-                        SELECT TMEID FROM TB_EDU_INFNT_PRGRM_TME_SCHDL 
-                         WHERE DE <![CDATA[>=]]>  DATE_FORMAT(NOW(), '%Y.%m.%d')) THEN '신청가능' 
-                    ELSE '마감' END 
-                 ELSE '마감' END) AS STTS_DESC
-              , X.WAIT_CNT
-              , X.REG_DT
-          FROM (
-                SELECT  A.PRGRMID
-                      , A.TMEID
-                      , A.TME_NM
-                      , B.EDU_NOPE
-                      , A.REG_DT
-                      , (SELECT COUNT(TA.APLYID) 
-                           FROM TB_EDU_INFNT_PRGRM_APLY TA
-                              , TB_EDU_INFNT_PRGRM_TME_SCHDL TB 
-                          WHERE TA.TME_SCHDLID = TB.TME_SCHDLID 
-                            AND TB.TMEID = A.TMEID) APLY_CNT
-                     ,(SELECT COUNT(TA.APLYID) 
-                         FROM TB_EDU_INFNT_PRGRM_APLY TA, TB_EDU_INFNT_PRGRM_TME_SCHDL TB 
-                        WHERE TA.TME_SCHDLID = TB.TME_SCHDLID 
-                          AND TA.STTS_CD = '180101'
-                          AND TB.TMEID = A.TMEID) WAIT_CNT    
-                  FROM TB_EDU_INFNT_PRGRM_TME A    
-                  LEFT OUTER JOIN TB_EDU_INFNT_PRGRM B ON B.PRGRMID = A.PRGRMID
-                  WHERE A.TMEID IN (SELECT TMEID FROM TB_EDU_INFNT_PRGRM_TME_SCHDL)
-           ) X
-         WHERE 1=1
-           AND X.PRGRMID = #{prgrmid}    
-         ORDER BY X.REG_DT ASC             
+        SELECT
+            TBL.PRGRMID
+            , TBL.TMEID
+            , TBL.TME_SCHDLID
+            , TBL.TME_NM
+            , CASE WHEN TBL.DE <![CDATA[<=]]> DATE_FORMAT(NOW(), '%Y.%m.%d') OR TBL.EDU_NOPE <![CDATA[<=]]> TBL.APLY_CNT THEN '마감' ELSE '신청가능' END AS STTS_DESC
+            , TBL.WAIT_CNT
+        FROM (
+            SELECT
+                A.PRGRMID
+                , A.EDU_NOPE
+                , C.DE
+                , C.TMEID
+                , C.TME_SCHDLID
+                , B.TME_NM
+                , COUNT(CASE WHEN D.STTS_CD = '180101' THEN 1 END) AS WAIT_CNT
+                , COUNT(CASE WHEN D.STTS_CD = '180103' THEN 1 END) AS APLY_CNT
+            FROM
+                TB_EDU_INFNT_PRGRM A
+            LEFT OUTER JOIN
+                TB_EDU_INFNT_PRGRM_TME B ON (B.PRGRMID = A.PRGRMID)
+            LEFT OUTER JOIN
+                TB_EDU_INFNT_PRGRM_TME_SCHDL C ON (C.TMEID = B.TMEID)
+            LEFT OUTER JOIN
+                TB_EDU_INFNT_PRGRM_APLY D ON (D.TME_SCHDLID = C.TME_SCHDLID)
+            WHERE
+                A.PRGRMID = #{prgrmid}
+                AND DE = #{de}
+            GROUP BY
+                C.TMEID
+            ORDER BY
+                B.ORDR, C.DE
+        ) TBL     
     </select>    
 
     <!-- 유아환경교육관 동일 교육관 교육 프로그램 목록 조회 -->

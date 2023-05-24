@@ -116,9 +116,9 @@ public class EnvEduPlcyDtaServiceImpl extends PlumAbstractServiceImpl implements
     public SpcltyDtaVo selectSpcltyDta(SpcltyDtaVo spcltyDtaVo) throws Exception {
         SpcltyDtaVo spcltyDta = envEduPlcyDtaDao.selectSpcltyDta(spcltyDtaVo);
 
-        if (spcltyDta.getPdfFileid() != null && !spcltyDta.getPdfFileid().equals(0)) {
+        if (spcltyDta.getPdfFilegrpid() != null && !spcltyDta.getPdfFilegrpid().equals(0)) {
             FileVo fileVo = new FileVo();
-            fileVo.setFilegrpid(spcltyDta.getPdfFileid());
+            fileVo.setFilegrpid(spcltyDta.getPdfFilegrpid());
             ArrayList<FileVo> fileList = fileDao.getFileList(fileVo);
             spcltyDta.setPdfFileList(fileList);
         }
