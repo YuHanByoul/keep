@@ -1,5 +1,6 @@
 <form id="chgAplySttsChgFrm">
-<input type="hidden" id="aplyid" name="aplyid" th:value="${aplyid}">
+    <input type="hidden" id="aplyid" name="aplyid" th:value="${popupInfo.aplyid}">
+
 	<div class="modal-dialog modal-lg" role="document">
 	    <div class="modal-content type_2">
 	        <div class="modal-header">
@@ -15,14 +16,14 @@
 	                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>상태</strong></div>
 	                        <div class="col-12 mt-1">
 	                            <div class="form-radio">
-                                    <span id="aplySttsCd" kattr:radio_code="aplySttsCd" th:attr="grpCd=119, selectedCd=119102" disabled="119101" addStyle="margin-top:4px" addClass="col-sm-3" isAdmin="true" readonly>
+                                    <span id="aplySttsCd" kattr:radio_code="aplySttsCd" th:attr="grpCd=119, selectedCd=${popupInfo.aplySttsCd}" disabled="119101" addStyle="margin-top:4px" addClass="col-sm-3" isAdmin="true" readonly>
 	                            </div>
 	                        </div>
 	                    </div>
 	                    <div class="mb-0 form-group row required">
-	                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="updateRequestStatusUpdatePopupRedeemRequestContents"><strong>보완요청 내용</strong></label>
+	                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="splmntDmndCn"><strong>보완요청 내용</strong></label>
 	                        <div class="col-sm-12">
-	                            <textarea rows="5" cols="5" class="form-control form-control-sm"  id="splmntDmndCn" name="splmntDmndCn"></textarea>
+	                            <textarea rows="5" cols="5" class="form-control form-control-sm"  id="splmntDmndCn" name="splmntDmndCn" >[[${popupInfo.splmntDmndCn}]]</textarea>
 	                        </div>
 	                    </div>
 	                </div>
@@ -43,16 +44,17 @@ function initchgAplySttsChg(){
 
 }
 
-var validator= $("#chgAplySttsChgFrm").validate({
-    rules: {
-    	aplySttsCd : { required: true },
-    	splmntDmndCn  : { required: true },
-    },
-    messages: {
-    	aplySttsCd : { required:"변경신청상태를 선택해주십시오" },
-    	splmntDmndCn : { required:"보완요청 내용을 입력해주십시오"}
-    }
-})
+var validator= $("#chgAplySttsChgFrm").validate(
+        {
+            rules    : {
+                splmntDmndCn: { required  : true, maxlength: 1000 }
+            }
+          , messages : {
+        	    splmntDmndCn : { required  : '보완요청내용을 입력해 주십시오.' , maxlength: '보완요청내용은 1000자를 넘을 수 없습니다.' }
+            }
+        })
+
+
 
 function saveChgAplySttsChg(){
 

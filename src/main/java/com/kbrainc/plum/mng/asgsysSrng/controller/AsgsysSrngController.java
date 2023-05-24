@@ -230,13 +230,13 @@ public class AsgsysSrngController {
         retVal = asgsysSrngService.updatePrgrSttsCd(asgsysSrngVo);
         if (retVal == 1) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "지정지원 진행상태를 변경하였습니다.");
+            resultMap.put("msg", "진행상태를 변경하였습니다.");
         } else if(retVal < 1){
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
             resultMap.put("msg", "해당 하는 지정신청 프로그램ID가 없습니다.");
         }else {
         	resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-        	resultMap.put("msg", "지정지원 진행상태 변경을 실패 했습니다.");
+        	resultMap.put("msg", "진행상태 변경을 실패 했습니다.");
         }
 
     	return resultMap;
@@ -1733,7 +1733,6 @@ public class AsgsysSrngController {
     		model.addAttribute("bfrCertFileList", Collections.emptyList());
     	}
 
-
     	//심사 체크리스트 조회
     	if(jdgsSrngInfo.getSbmsnid() != null && jdgsSrngInfo.getSbmsnid() != 0) {
     		//심사정보 있는경우 답안목록 조회
@@ -1747,16 +1746,10 @@ public class AsgsysSrngController {
 
     	}
 
-
-
     	model.addAttribute("loginUserid", user.getUserid());
     	model.addAttribute("jdgsSrngInfo", jdgsSrngInfo);
 
-
-
     	BeanUtils.copyProperties(jdgsSrngInfo, dsgnSrngFormVo);
-    	logger.info(dsgnSrngFormVo.toString());
-
 
     	//심사양식 목록 조회
     	model.addAttribute("srngFormList",asgsysSrngService.selectSrngFormQitemList(dsgnSrngFormVo));

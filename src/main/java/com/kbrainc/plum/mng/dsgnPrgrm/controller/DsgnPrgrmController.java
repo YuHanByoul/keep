@@ -383,7 +383,7 @@ public class DsgnPrgrmController {
      */
     @RequestMapping(value = "/mng/dsgnPrgrm/chgAplySttsChgPopup.html")
     public String chgAplySttsChgPopup(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
-    	model.addAttribute("aplyid", dsgnPrgrmVo.getAplyid());
+    	model.addAttribute("popupInfo", dsgnPrgrmVo);
     	return "mng/dsgnPrgrm/chgAplySttsChgPopup";
     }
 
