@@ -86,7 +86,7 @@ public class InfntAplyController {
         infntAplyVo.setPrgrmid(infntAply.getPrgrmid());
         
         List<InfntAplyVo> eduPhotoFileList = null;
-        List<InfntAplyVo> infntAplyTmeList = null;
+//        List<InfntAplyVo> infntAplyTmeList = null;
         List<InfntAplyVo> infntAplyEduClssRmList = null;
         
         eduPhotoFileList = infntAplyService.selectEduPhotoFileList(infntAplyVo);
