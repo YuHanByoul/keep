@@ -84,8 +84,17 @@ public class MvmnAplyController {
         MvmnAplyVo mvmnAply = null;
         mvmnAply = mvmnAplyService.selectMvmnAplyInfo(mvmnAplyVo);
         model.addAttribute("mvmnAply", mvmnAply);
-        model.addAttribute("sareaSignguList", mvmnAplyService.selectMvmnAplySignguList(mvmnAplyVo));
-        
+
+         /*
+         특화교육인 경우 교육 프로그램 등록시 설정했던 운영권역의 목록을 가져온다.
+         공통교육인 경우 교육 일정에 등록되어 있는 운영권역의 목록을 가져온다.
+         */
+        if("196102".equals(mvmnAplyVo.getEduSeCd())) {
+            model.addAttribute("sareaSignguList", mvmnAplyService.selectMvmnAplySignguList(mvmnAplyVo));
+        } else {
+            model.addAttribute("sareaSignguList", mvmnAplyService.selectMvmnAplySignguListUsingSchdl(mvmnAplyVo));
+        }
+
         mvmnAplyVo.setInstid(mvmnAply.getInstid());
         mvmnAplyVo.setPrgrmid(mvmnAply.getPrgrmid());
         

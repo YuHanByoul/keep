@@ -388,8 +388,31 @@
           AND A.SAREAID = #{sareaid}
           AND C.SAREAID IS NOT NULL
           AND B.SAREAID IS NOT NULL
-    </select>    
-    
+    </select>
+
+    <select id="selectMvmnAplySignguListUsingSchdl" resultType="com.kbrainc.plum.front.mvmnAply.model.MvmnAplyVo">
+        SELECT A.SAREAID
+            , A.SAREA_NM
+            , CONCAT(A.SAREA_NM,' <![CDATA[>]]>',D.CTPRVN_NM,' ',E.SIGNGU_NM) AS SAREA_SIGNGU_DESC
+        FROM (
+                SELECT A.SAREAID, C.SAREA_NM
+                FROM TB_EDU_MVMN_PRGRM_SCHDL A
+                INNER JOIN TB_EDU_MVMN_PRGRM_SCHDL_PRGRM B
+                    ON A.PRGRM_SCHDLID = B.PRGRM_SCHDLID
+                INNER JOIN TB_EDU_SAREA C
+                    ON A.SAREAID = C.SAREAID
+                WHERE B.PRGRMID = #{prgrmid}
+                GROUP BY A.SAREAID
+             ) A
+        LEFT OUTER JOIN TB_EDU_SAREA_CTPRVN_MAPNG B ON B.SAREAID = A.SAREAID
+        LEFT OUTER JOIN TB_EDU_SAREA_SIGNGU C ON C.CTPRVN_CD = B.CTPRVN_CD AND C.SAREAID = A.SAREAID
+        LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN D ON D.CTPRVN_CD = B.CTPRVN_CD
+        LEFT OUTER JOIN TB_CMM_ADDR_SIGNGU E ON E.SIGNGU_CD = C.SIGNGU_CD
+        WHERE
+            C.SAREAID IS NOT NULL
+        AND B.SAREAID IS NOT NULL
+    </select>
+
     <insert id="insertMvmnAplySchdl" parameterType="front.MvmnAplyVo">
         /* MvmnAplyDao.insertMvmnAplySchdl */
          INSERT INTO TB_EDU_MVMN_PRGRM_APLY_SCHDL(
