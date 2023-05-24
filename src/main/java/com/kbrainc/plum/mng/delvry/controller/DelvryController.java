@@ -56,10 +56,10 @@ public class DelvryController {
     private FileService fileService;
     
     /**
-    * 공모 목록 화면
+    * 교부관리 목록 화면
     *
     * @Title : pcntstListForm
-    * @Description : 공모 목록 화면
+    * @Description : 교부관리 목록 화면
     * @return String 화면경로
     * @throws Exception 예외
     */
@@ -78,7 +78,8 @@ public class DelvryController {
     */
     @RequestMapping(value = "/mng/delvry/pcntstDetailForm.html")
     public String pcntstDetailForm(PcntstVo pcntstVo, Model model) throws Exception {
-        model.addAttribute("pcntstInfo", delvryService.selectPcntstInfo(pcntstVo));
+        PcntstVo info = delvryService.selectPcntstInfo(pcntstVo);
+        model.addAttribute("pcntstInfo", info);
         return "mng/delvry/pcntstDetail";
     }
     
