@@ -408,73 +408,40 @@
                                                    , dataType: "json"
                                                    , data: {prgrmid: $("#prgrmid").val(), de: yyyy + "." + mm + "." + dd}
                                                    , success: function(response) {
-                                                       //console.log(response);
                                                        var list = response.list;
                                                        $("#tmeDataDiv").empty();
                                                        for(var i = 0, len = list.length; i < len; i++) {
                                                            var data = list[i];
-                                                           var el = '<tr class="tr-check">';
-                                                           el += '<td>'; 
-                                                           el += '<label class="inp vm">'; 
+                                                           console.log(data)  
+                                                           var el = '<tr class="tr-check">';    
+                                                           el += '<td>';    
+                                                           el += '<label class="inp vm">';  
+                                                           // 마감상태인 회차는 disabled    
                                                            if(i == 0) {
-                                                               el += '<input name="tmeSchdlid" type="radio" value="' + data.tmeSchdlid + '" checked="true"/>';
+                                                               if(data.sttsDesc == "신청가능") {
+                                                                   el += '<input name="tmeSchdlid" type="radio" value="' + data.tmeSchdlid + '" checked="true"/>';                                                                   
+                                                               } else {
+                                                                   el += '<input name="tmeSchdlid" type="radio" value="' + data.tmeSchdlid + '" disabled/>';
+                                                               }
                                                            } else {
-                                                               el += '<input name="tmeSchdlid" type="radio" value="' + data.tmeSchdlid + '"/>';
-                                                           } 
-                                                           el += '</label>'; 
-                                                           el += '</td>'; 
-                                                           el += '<td>' + data.tmeNm + '</td>'; 
-                                                           el += '<td><span class="fc-blue">' + data.sttsDesc + '</span></td>'; 
-                                                           el += '<td>' + data.waitCnt + '팀</td>';
-                                                           el += '</tr>';
+                                                               if(data.sttsDesc == "신청가능") { 
+                                                                   el += '<input name="tmeSchdlid" type="radio" value="' + data.tmeSchdlid + '"/>';
+                                                               } else {
+                                                                   el += '<input name="tmeSchdlid" type="radio" value="' + data.tmeSchdlid + '" disabled/>';
+                                                               }
+                                                           }    
+                                                           el += '</label>';    
+                                                           el += '</td>';   
+                                                           el += '<td>' + data.tmeNm + '</td>';     
+                                                           el += '<td><span class="fc-blue">' + data.sttsDesc + '</span></td>';     
+                                                           el += '<td>' + data.waitCnt + '팀</td>';  
+                                                           el += '</tr>';   
                                                            $("#tmeDataDiv").append(el);
                                                        }
-                                                       
-                                                       //$("#tmeSchdlid").val(result[0].tmeSchdlid);
-                                                       $("#tmeBasicDiv").addClass("d-none");
-                                                       $("#tmeDataDiv").removeClass("d-none");
-                                                       /*
-                                                       for(var i=0; i<result.length; i++){
-                                                           tmeIdArr.push(result[i].tmeid);
-                                                       }
-                                                       $("#tmeBasicDiv").addClass("d-none");
-                                                       $("#tmeDataDiv").removeClass("d-none");
-                                                       */
-                                                       /*
-                                                       <tr class="tr-check">
-                                                        <td>
-                                                            <label class="inp vm">
-                                                                <th:block th:if="${item.sttsDesc ne '마감'}">   
-                                                                  <input name="tmeId" type="radio" th:value="${item.tmeid}" th:checked="${stat.first}"/>
-                                                                </th:block>
-                                                                <th:block th:if="${item.sttsDesc eq '마감'}">   
-                                                                  <input name="tmeId" type="radio" th:value="${item.tmeid}" disabled/>
-                                                                </th:block>
-                                                                
-                                                            </label>
-                                                        </td>
-                                                        <td><th:block th:text="${item.tmeNm}"/></td>
-                                                        <td><span class="fc-blue"><th:block th:text="${item.sttsDesc}"/></span></td>
-                                                        <td><th:block th:text="|${item.waitCnt}팀|"/></td>
-                                                    </tr>
-                                                    */
+                                                       $("#tmeBasicDiv").addClass("d-none");    
+                                                       $("#tmeDataDiv").removeClass("d-none");  
                                                    }
                                                });
-	                                           /*
-	                                    	   $("#tmeSchdlid").val(result[0].tmeSchdlid);
-                                               for(var i=0; i<result.length; i++){
-                                                   tmeIdArr.push(result[i].tmeid);
-                                               }
-	                                           $("input[name='tmeId']").each(function(){
-                                                   if(tmeIdArr.indexOf(Number($(this).val())) >= 0)  {
-                                                       $(this).prop("disabled", false);
-                                                   }else{
-                                                       $(this).prop("disabled", true);
-                                                   }
-	                                           })     
-                                               $("#tmeBasicDiv").hide();
-                                               $("#tmeDataDiv").show();
-                                               */
 	                                       }
 	                                   }else{
 	                                       alert("신청가능한 날짜를 선택해 주세요.");
