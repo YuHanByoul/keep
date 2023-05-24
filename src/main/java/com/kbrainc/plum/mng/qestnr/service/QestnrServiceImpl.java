@@ -294,6 +294,8 @@ public class QestnrServiceImpl extends PlumAbstractServiceImpl implements Qestnr
      */
     @Override
     public List<QitemVo> selectQitemWithExList(QitemVo qitemVo) throws Exception {
+        qitemVo.setOrderField("ORDR");
+        qitemVo.setOrderDirection(ORDER_DIRECTION.asc);
         List<QitemVo> qitemList = qestnrDao.selectQitemList(qitemVo);
         if(qitemList != null && qitemList.size() > 0) {
             for(int i = 0; i < qitemList.size(); i++) {
