@@ -7,6 +7,7 @@
     <div layout:fragment="content">
     <form id="sftyMngForm" name="sftyMngForm" th:action="@{/front/dsgnPrgrm/chkListForm.html}" method="post">
         <input type="hidden" id="prgrmid" name="prgrmid" th:value="${aplyInfo.prgrmid}">
+        <input type="hidden" id="sttsCd" name="sttsCd" th:value="${aplyInfo.sttsCd}">
         <input type="hidden" id="sbmsnid" name="sbmsnid" th:value="${aplyInfo.sbmsnid}">
         <input type="hidden" id="sbmsnSeCd" name="sbmsnSeCd" th:value="242101">    <!-- 제출 구분 코드 : 신청자자가진단 -->
         <input type="hidden" id="sprtgrpid" name="sprtgrpid" th:value="${loginUserid}"><!-- 심사자 : loginUser-->
@@ -65,7 +66,7 @@
                         <div class="btn-wrap">
                             <div class="center">
                                 <button type="button" class="btn-large btn-gray" onclick="doSave()">중간저장</button>
-                                <button type="button" class="btn-large btn-green" onclick="goNext()">다음</button>
+                                <button type="button" class="btn-large btn-green" onclick="goNext()" id="nextBtn">다음</button>
                             </div>
                         </div>
                     </div>
@@ -264,7 +265,7 @@
                     <div class="btn-wrap">
                         <div class="center">
                             <button type="button" class="btn-medium btn-gray">이전</button>
-                            <button type="button" class="btn-medium btn-green" onclick="goNext()">다음</button>>
+                            <button type="button" class="btn-medium btn-green" onclick="goNext()" id="nextBtn">다음</button>
                         </div>
                     </div>
                 </div>
@@ -272,6 +273,7 @@
             </div>
         </div>
         <!-- //content -->
+        </form>
 
         <script th:inline="javascript">
         var insertUrl = "/front/dsgnPrgrm/insertPrgrmSftyMngForm.do";
@@ -380,6 +382,14 @@
             		$("#multiFileInput2").prop("disabled",true);
             	}
             });
+
+            var sttsCd = $("#sttsCd").val();
+            if(sttsCd =='111103'){
+
+                $('#sftyMngForm input,textarea').prop('readonly', true);
+                $('#sftyMngForm button, select, input[type=checkbox],input[type=radio],input[type=file]').prop('disabled', true);
+                $('#sftyMngForm #nextBtn').prop('disabled', false);
+            }
         });
 
         // 파일업로드

@@ -23,13 +23,13 @@
             </form>
 
             <div class="tab-content tab-sub dropDown">
-                <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">이행확인</button>
-                <ul class="tab-list tab-list-pc target" role="tablist">
-                    <li class="tab"><a th:href="@{/front/dsgnMng/dsgnMngDetailForm.html?aplcntid=}+${aplcntid}" role="tab">지정내역</a></li>
-                    <li class="tab"><a th:href="@{/front/dsgnMng/chgDsctnForm.html?aplcntid=}+${aplcntid}" role="tab" >변경내역</a></li>
-                    <li class="tab"><a th:href="@{/front/dsgnMng/operRsltForm.html?aplcntid=}+${aplcntid}" role="tab" >운영결과</a></li>
-                    <li class="tab active"><a id="implmntIdntyTab" th:href="@{/front/dsgnMng/implmntIdntyForm.html?aplcntid=}+${aplcntid}" role="tab" >이행확인</a></li>
-                    <li class="tab"><a th:href="@{/front/dsgnMng/objcAplyForm.html?aplcntid=}+${aplcntid}" role="tab" >이의신청</a></li>
+                <button type="button" class="tab-mobile-trigger trigger"  aria-expanded="true">이행확인</button>
+                <ul class="tab-list tab-list-pc target">
+                    <li class="tab"><a th:href="@{/front/dsgnMng/dsgnMngDetailForm.html?aplcntid=}+${aplcntid}" >지정내역</a></li>
+                    <li class="tab"><a th:href="@{/front/dsgnMng/chgDsctnForm.html?aplcntid=}+${aplcntid}"  >변경내역</a></li>
+                    <li class="tab"><a th:href="@{/front/dsgnMng/operRsltForm.html?aplcntid=}+${aplcntid}"  >운영결과</a></li>
+                    <li class="tab active"><a id="implmntIdntyTab" th:href="@{/front/dsgnMng/implmntIdntyForm.html?aplcntid=}+${aplcntid}"  >이행확인</a></li>
+                    <li class="tab"><a th:href="@{/front/dsgnMng/objcAplyForm.html?aplcntid=}+${aplcntid}"  >이의신청</a></li>
                 </ul>
             </div>
 
@@ -94,6 +94,9 @@
                     var html = "";
                     var list = data;
                     var mobileHtml = "";
+
+
+
                     if (list == null || list.length <= 0) {
                         html += `<tr>
                                      <td class="nodata" colspan="5">
@@ -108,6 +111,11 @@
                             `;
                     } else {
                         list.forEach(function (item) {
+
+                        	var btnSe = item?.btnSe ?? '-';
+                            var dmndid = item?.dmndid ?? '';
+                            var sttsCdNm = item?.sttsCdNm ?? '';
+
                             let canGoToDetail = item.rlsYn == 'Y' || (item.rlsYn == 'N' && (item.userid == aplyDsctnList.userid));
                             html +=
                                 `
@@ -118,17 +126,17 @@
                             	<td>${item.vstDe != null ? item.vstDe : '' }</td>
                             	`
                             if(item.sttsCdNm=="보완개선요청"){
-                                html += `<td><button type="button" class="link" onclick="implmntIdnty.openPop('${item.sttsCdNm}',${item.dmndid})">${item.sttsCdNm}</button></td>`
+                                html += `<td><button type="button" class="link" onclick="implmntIdnty.openPop('${sttsCdNm}',${dmndid})">${sttsCdNm}</button></td>`
                             }else{
-                                html += `<td>${item.sttsCdNm}</td>`
+                                html += `<td>${sttsCdNm}</td>`
                             }
 
-                            if(item.btnSe != "-"){
-                                html += `<td><button type="button" onclick="implmntIdnty.openPop2('${item.btnSe}',${item.dmndid})" class="btn-small btn-outline-blue">${item.btnSe}</button></td>
+                            if(btnSe != "-"){
+                                html += `<td><button type="button" onclick="implmntIdnty.openPop2('${btnSe}',${dmndid})" class="btn-small btn-outline-blue">${btnSe}</button></td>
                                     </tr>
                                     `
                             }else{
-                            	html += `<td>${item.btnSe}</td>
+                            	html += `<td>${btnSe}</td>
                                     </tr>
                                     `
                             }
