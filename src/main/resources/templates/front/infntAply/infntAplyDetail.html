@@ -7,7 +7,7 @@
 	<div layout:fragment="content">
 	    <form id="infntAplyForm" name="infntAplyForm" th:action="@{/front/infntAply/infntAplyRegStep1.html}" >
 	        <input type="hidden" id="prgrmid" name="prgrmid" th:value="${infntAply.prgrmid}" />
-	        <input type="hidden" id="tmeSchdlid" name="tmeSchdlid"/>
+	        <!--<input type="hidden" id="tmeSchdlid" name="tmeSchdlid"/>-->
 	        <div class="product-wrap sub-banner-swiper">
 	            <div class="thumb-swiper">
 			        <div class="swiper gallery-thumb">
@@ -76,9 +76,9 @@
 	                        </div>
 	                    </dl>
 	                </div>
-	                <div class="btn-wrap">
+	                <div class="btn-wrap" th:if="${infntAply.eduIntrcnFileIdntfcKey != null}">
 	                    <div class="left">
-	                        <a th:href="|javascript:downloadFileByFileid('${infntAply.eduIntrcnFileid}','${infntAply.eduIntrcnFileIdntfcKey}')|" class="btn-medium btn-outline-black btn-before-download">교육자료소개</a>
+	                        <a th:href="|javascript:downloadFileByFileid('infntAply.eduIntrcnFileid','${infntAply.eduIntrcnFileIdntfcKey}')|" class="btn-medium btn-outline-black btn-before-download">교육자료소개</a>
 	                    </div>
 	                </div>
                 </div>
@@ -104,7 +104,13 @@
                                         <th scope="col">대기팀</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tmeDataDiv" style="display:none;">
+                                <tbody id="tmeBasicDiv">
+                                    <tr class="tr-check">
+                                        <td colspan="4">날짜를 선택해 주세요</td>
+                                    </tr>
+                                </tbody>
+                                <tbody id="tmeDataDiv" class="d-none">
+                                    <!--
 	                                <th:block th:if="${infntAplyTmeList != 'null'}">
 	                                    <th:block th:each="item, stat: ${infntAplyTmeList}">                                
 		                                    <tr class="tr-check">
@@ -131,6 +137,7 @@
 	                                    <td colspan="4">날짜를 선택해 주세요</td>
 	                                </tr>
                                 </tbody>
+                                -->
                             </table>
                         </div>
                         <div class="btn-wrap">
@@ -387,23 +394,53 @@
 	                                           var tempDt = new Date(dateStr);
 	                                           var yyyy = tempDt.getFullYear();
 	                                           var mm = tempDt.getMonth()+1;
+	                                           if(mm < 10) mm = "0" + mm;
 	                                           var dd = tempDt.getDate();
 	                                           var returnStr = yyyy + '년 ' + mm + '월 ' + dd +'일';
 	                                           var tmeIdArr = [];
+	                                           
+	                                           // 선택한 날짜 회차목록 조회
 	                                           $("#selDayDiv").text('선택일 : ' + returnStr);
-	                                    	   $("#tmeSchdlid").val(result[0].tmeSchdlid);
-                                               for(var i=0; i<result.length; i++){
-                                                   tmeIdArr.push(result[i].tmeid);
-                                               }
-	                                           $("input[name='tmeId']").each(function(){
-                                                   if(tmeIdArr.indexOf(Number($(this).val())) >= 0)  {
-                                                       $(this).prop("disabled", false);
-                                                   }else{
-                                                       $(this).prop("disabled", true);
+	                                           $.ajax({
+                                                   url : "/front/infntAply/selectInfntAplyTmeList.do"
+                                                   , type: "POST"
+                                                   , cache: false
+                                                   , dataType: "json"
+                                                   , data: {prgrmid: $("#prgrmid").val(), de: yyyy + "." + mm + "." + dd}
+                                                   , success: function(response) {
+                                                       var list = response.list;
+                                                       $("#tmeDataDiv").empty();
+                                                       for(var i = 0, len = list.length; i < len; i++) {
+                                                           var data = list[i];
+                                                           var el = '<tr class="tr-check">';    
+                                                           el += '<td>';    
+                                                           el += '<label class="inp vm">';  
+                                                           // 마감상태인 회차는 disabled    
+                                                           if(i == 0) {
+                                                               if(data.sttsDesc == "신청가능") {
+                                                                   el += '<input name="tmeSchdlid" type="radio" value="' + data.tmeSchdlid + '" checked="true"/>';                                                                   
+                                                               } else {
+                                                                   el += '<input name="tmeSchdlid" type="radio" value="' + data.tmeSchdlid + '" disabled/>';
+                                                               }
+                                                           } else {
+                                                               if(data.sttsDesc == "신청가능") { 
+                                                                   el += '<input name="tmeSchdlid" type="radio" value="' + data.tmeSchdlid + '"/>';
+                                                               } else {
+                                                                   el += '<input name="tmeSchdlid" type="radio" value="' + data.tmeSchdlid + '" disabled/>';
+                                                               }
+                                                           }    
+                                                           el += '</label>';    
+                                                           el += '</td>';   
+                                                           el += '<td>' + data.tmeNm + '</td>';     
+                                                           el += '<td><span class="fc-blue">' + data.sttsDesc + '</span></td>';     
+                                                           el += '<td>' + data.waitCnt + '팀</td>';  
+                                                           el += '</tr>';   
+                                                           $("#tmeDataDiv").append(el);
+                                                       }
+                                                       $("#tmeBasicDiv").addClass("d-none");    
+                                                       $("#tmeDataDiv").removeClass("d-none");  
                                                    }
-	                                           })     
-                                               $("#tmeBasicDiv").hide();
-                                               $("#tmeDataDiv").show();
+                                               });
 	                                       }
 	                                   }else{
 	                                       alert("신청가능한 날짜를 선택해 주세요.");

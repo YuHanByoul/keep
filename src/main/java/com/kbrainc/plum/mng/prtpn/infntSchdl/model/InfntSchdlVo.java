@@ -37,9 +37,9 @@ public class InfntSchdlVo extends ParentRequestVo {
     private List<InfntSchdlVo> infntPrgrmVoList;
     
     /** 프로그램아이디 */
-    private int prgrmId;
+    private Integer prgrmId;
     /** 교육관아이디 */
-    private int clssrmId;    
+    private Integer clssrmId;    
     /** 프로그램_이름 */
     private String prgrmNm;
     /** 교육관_이름 */

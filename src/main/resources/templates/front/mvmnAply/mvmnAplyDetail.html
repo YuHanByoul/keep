@@ -1,550 +1,654 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" 
-    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
-    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
-    layout:decorator="layout/front/subLayout" >
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
 <body>
-	<div layout:fragment="content">
-	    <form id="mvmnAplyForm" name="mvmnAplyForm" th:action="@{/front/mvmnAply/mvmnAplyRegStep1.html}" >
-	        <input type="hidden" id="prgrmid" name="prgrmid" th:value="${mvmnAply.prgrmid}" />
-	        <input type="hidden" id="operFomCd" name="operFomCd" th:value="${mvmnAply.operFomCd}" />
-	        <input type="hidden" id="tmeid" name="tmeid"/>
-	        <input type="hidden" id="tmeSchdlid" name="tmeSchdlid"/>
-	        <div class="product-wrap sub-banner-swiper">
-	            <div class="thumb-swiper">
-			        <div class="swiper gallery-thumb">
-			            <div class="swiper-wrapper">
-			                <th:block th:each="item : ${eduPhotoFileList}">
-			                    <th:block th:if="${item.fileid != null}">
-				                    <div class="swiper-slide">
-				                        <div class="thumb"><img alt="" th:src="@{/downloadFileByFileid.do?fileid=}+${item.fileid}+@{&file_idntfc_key=}+${item.fileIdntfcKey}" onerror="this.src='/images/front/bg/bg-noimage.png'; this.style.objectFit='none';"/></div>
-				                    </div>
-			                    </th:block>
-			                </th:block>
-			            </div>
-			        </div>
-			        <div thumbsSlider="" class="swiper gallery-list">
-			            <div class="swiper-wrapper">
-			                <th:block th:each="item : ${eduPhotoFileList}">
-	                            <th:block th:if="${item.fileid != null}">		                
-				                    <div class="swiper-slide">
-				                        <div class="thumb"><img alt="" th:src="@{/downloadFileByFileid.do?fileid=}+${item.fileid}+@{&file_idntfc_key=}+${item.fileIdntfcKey}" onerror="this.src='/images/front/bg/bg-noimage.png'; this.style.objectFit='scale-down'; this.style.padding='5px';"/></div>
-				                    </div>
-			                    </th:block>
-			                </th:block>
-			            </div>
-			        </div>
-	            </div>
-	            <div class="product-section">
-	                <div class="title">
-	                    <h3><th:block th:text="${mvmnAply.prgrmNm}"></th:block></h3>
-	                    <dl>
-	                        <div class="list">
-	                            <dt>교육구분 :</dt>
-	                            <dd><th:block th:text="${mvmnAply.eduSeNm}"></th:block></dd>
-	                        </div>
-	                        <div class="list">
-	                            <dt>운영권역 :</dt>
-	                            <dd><th:block th:text="${mvmnAply.sareaNm}"></th:block></dd>
-	                        </div>
-                            <div class="list">
-                                <dt>교육주제 :</dt>
-                                <dd><th:block th:text="${mvmnAply.clsfNm}"></th:block></dd>
-                            </div>
-	                        <div class="list">
-	                            <dt>운영형식 :</dt>
-	                            <dd><th:block th:text="${mvmnAply.operFomNm}"></th:block></dd>
-	                        </div>
-	                        <div class="list">
-	                            <dt>교육대상 :</dt>
-	                            <dd><th:block th:text="${mvmnAply.trgtNm}"></th:block></dd>
-	                        </div>
-                            <div class="list">
-                                <dt>교육정원 :</dt>
-                                <dd><th:block th:text="|${mvmnAply.eduNope}명|"></th:block></dd>
-                            </div>
-	                        <div class="list">
-	                            <dt>교육시간 :</dt>
-	                            <dd><th:block th:text="|${mvmnAply.eduHrMnt}분|"></th:block></dd>
-	                        </div>
-	                        <div class="list">
-	                            <dt>접수방법 :</dt>
-	                            <dd><th:block th:text="${mvmnAply.rcptMthdNm}"></th:block></dd>
-	                        </div>
-	                    </dl>
-	                </div>
-	                <div class="btn-wrap">
-	                    <div class="left">
-	                        <a th:href="|javascript:downloadFileByFileid('${mvmnAply.eduIntrcnFileid}','${mvmnAply.eduIntrcnFileIdntfcKey}')|" class="btn-medium btn-outline-black btn-before-download">교육자료소개</a>
-	                    </div>
-	                </div>
-                </div>
-               </div>
-               <th:block th:if="${mvmnAply.operFomCd == '197101'}">
-	               <div class="reservation-wrap">
-		               <div class="search-filter mb20">
-		                   <div class="form-input mo-flex-wrap">
-		                       <strong class="label">지역 선택</strong>
-		                       <div class="form-input">
-		                          <select name="sareaSignguCd" id="sareaSignguCd" onchange="mvmnAplyDetail.fn_sareaSignguChange(this)">
-		                              <option value="">- 선택 -</option>
-		                              <th:block th:each="item : ${sareaSignguList}">
-		                                  <option th:value="${item.sareaSignguCd}"><th:block th:text="${item.sareaSignguDesc}" /></option>
-		                              </th:block>
-		                          </select>
-		                       </div>
-		                   </div>
-		               </div>	    
-	                   <div class="reservation-inner">
-	                       <div class="left">
-	                           <input type="date" datepicker="true" class="blind">
-	                       </div>
-	                       <div class="right">
-	                           <div class="table-col table-layout-auto table-col-sm">
-	                               <div class="select-date" id="selDayDiv">선택일 : <th:block th:text="${#calendars.format(#calendars.createNow(), 'yyyy년 MM월 dd일')}" /></div>
-	                               <table>
-	                                   <caption>푸름이 이동환경교실 교육 신청 - 선택, 교육회차, 상태, 대기팀</caption>
-	                                   <colgroup>
-	                                       <col style="width:65px;">
-	                                   </colgroup>
-	                                   <thead>
-	                                       <tr>
-	                                           <th scope="col"><span class="blind">선택</span></th>
-	                                           <th scope="col">교육회차</th>
-	                                           <th scope="col">상태</th>
-	                                           <th scope="col">대기팀</th>
-	                                       </tr>
-	                                   </thead>
-									   <tbody id="tmeDataDiv" style="display:none;">
-										   <th:block th:if="${mvmnAplyTmeList != 'null'}">
-										       <th:block th:each="item : ${mvmnAplyTmeList}">                                
-										           <tr class="tr-check">
-										               <td>
-										                   <label class="inp vm">
-										                       <th:block th:if="${item.sttsDesc ne '마감'}">   
-										                         <input name="tmeId" type="radio" th:value="${item.tmeid}"/>
-										                       </th:block>
-										                       <th:block th:if="${item.sttsDesc eq '마감'}">   
-										                         <input name="tmeId" type="radio" th:value="${item.tmeid}" disabled/>
-										                       </th:block>
-										                   </label>
-										               </td>
-										               <td><th:block th:text="${item.tmeNm}"/></td>
-										               <td><span class="fc-blue"><th:block th:text="${item.sttsDesc}"/></span></td>
-										               <td><th:block th:text="|${item.waitCnt}팀|"/></td>
-										           </tr>
-										       </th:block>
-										   </th:block>
-									   </tbody>
-									   <tbody id="tmeBasicDiv">
-										   <tr class="tr-check">
-										       <td colspan="4">날짜를 선택해 주세요</td>
-										   </tr>
-									   </tbody>                                   
-	                               </table>
-	                           </div>
-	                           <div class="btn-wrap">
-	                               <div class="right">
-	                                   <a href="javascript:mvmnAplyDetail.moveToRegForm();" class="btn-medium btn-green">교육신청</a>
-	                               </div>
-	                           </div>
-	                       </div>
-	                   </div>
-	               </div>
-               </th:block>  
-               <th:block th:if="${mvmnAply.operFomCd == '197102'}">
-	               <div class="reservation-wrap">
-	               
-                       <div class="search-filter mb20">
-                           <div class="form-input mo-flex-wrap">
-                               <strong class="label">지역 선택</strong>
-                               <div class="form-input">
-		                           <select name="sareaSignguCd" id="sareaSignguCd">
-		                               <option value="">- 선택 -</option>
-		                               <th:block th:each="item : ${sareaSignguList}">
-		                                   <option th:value="${item.sareaSignguCd}"><th:block th:text="${item.sareaSignguDesc}" /></option>
-		                               </th:block>
-		                           </select>
-                               </div>
-                           </div>
-                       </div>	
-	                   <div class="table-col table-layout-auto table-col-sm mt20 table-col-scroll">
-	                       <table>
-	                           <caption>푸름이 이동환경교실 교육신청 - 신청, 교육요일, 교육일자, 교육회사, 상태, 대기팀</caption>
-	                           <colgruop>
-	                               <col style="width:5%;">
-	                               <col style="width:10%;">
-	                               <col>
-	                               <col>
-	                               <col style="width:10%;">
-	                               <col style="width:10%;">
-	                           </colgruop>
-	                           <thead>
-	                               <tr>
-	                                   <th scope="col">신청</th>
-	                                   <th scope="col">교육요일</th>
-	                                   <th scope="col">교육일자</th>
-	                                   <th scope="col">교육회차</th>
-	                                   <th scope="col">상태</th>
-	                                   <th scope="col">대기팀</th>
-	                               </tr>
-	                           </thead>
-	                           <tbody>
-		                           <th:block th:if="${mvmnAplyTmeList != 'null'}">
-		                               <th:block th:each="item : ${mvmnAplyTmeList}">                      
-			                               <tr class="tr-check">
-			                                   <td>
-			                                       <th:block th:if="${item.sttsDesc ne '마감'}">   
-			                                         <label class="inp vm"><input name="tmeId" type="radio" th:value="${item.tmeid}" onchange="mvmnAplyDetail.fn_tmeidChange(this)"/></label>
-			                                       </th:block>
-			                                       <th:block th:if="${item.sttsDesc eq '마감'}">   
-			                                         <label class="inp vm"><input name="tmeId" type="radio" th:value="${item.tmeid}" disabled/></label>
-			                                       </th:block>                                     
-			                                   </td>
-		                                        <td><th:block th:text="${item.weekDesc}"/></td>
-		                                        <td><th:block th:text="${item.deDesc}"/></td>
-		                                        <td><th:block th:text="${item.tmeNm}"/></td>
-		                                        <td><th:block th:text="${item.sttsDesc}"/></td>
-		                                        <td><th:block th:text="|${item.waitCnt}팀|"/></td>
-			                               </tr>
-		                               </th:block>
-	                               </th:block>
-	                           </tbody>
-	                       </table>
-	                   </div>
-	
-	                   <div class="btn-wrap">
-	                       <div class="right">
-	                           <button type="button" class="btn-medium btn-green" onclick="mvmnAplyDetail.moveToRegForm()">교육신청</button>
-	                       </div>
-	                   </div>
-                   </div>
-               </th:block>
-        </form>	        
-        <div class="tab-content tab-sub dropDown">
-            <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">상세정보</button>
-            <ul class="tab-list target" role="tablist">
-                <li class="tab active"><button aria-controls="tab-subpanel01" id="tab-sub01" role="tab">상세정보</button></li>
-                <li class="tab"><button aria-controls="tab-subpanel02" id="tab-sub02" role="tab">유의사항</button></li>
-                <li class="tab"><button aria-controls="tab-subpanel03" id="tab-sub03" role="tab">동일 운영권역 교육 프로그램</button></li>
-            </ul>
-            <div id="tab-subpanel01" class="tabpanel active" role="tabpanel" aria-labelledby="tab-sub01">
-                <th:block th:utext="${mvmnAply.eduExpln}"></th:block>
-            </div>
-            <div id="tab-subpanel02" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub02">
-				<th:block th:text="${#strings.replace(#strings.escapeXml(mvmnAply.mttrat),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></th:block>
-            </div>
-            <div id="tab-subpanel03" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub03">
-                <div class="pc-only">
-                    <div class="table-col table-layout-auto">
-                        <table>
-                            <caption>동일 운영권역 교육 프로그램 - 프로그램, 교육대상, 교육관지역, 교육주제, 교육시간</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">프로그램</th>
-                                    <th scope="col">운영권역</th>
-                                    <th scope="col">교육주제</th>                                    
-                                    <th scope="col">운영형식</th>
-                                    <th scope="col">교육시간</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-	                            <th:block th:if="${mvmnAplyEduSareaList != 'null'}">
-	                                <th:block th:each="item : ${mvmnAplyEduSareaList}">
-		                                <tr>
-		                                    <td class="al"><a th:href="|/front/mvmnAply/mvmnAplyDetailForm.html?prgrmid=${item.prgrmid}&sareaid=${item.sareaid}|" class="link url"><th:block th:text="${item.prgrmNm}"></th:block></a></td>
-		                                    <td><th:block th:text="${item.sareaNm}"></th:block></td>
-		                                    <td><th:block th:text="${item.clsfNm}"></th:block></td>
-		                                    <td><th:block th:text="${item.operFomNm}"></th:block></td>
-		                                    <td><th:block th:text="|${item.eduHrMnt}분|"></th:block></td>
-		                                </tr>
-	                                </th:block>
-	                            </th:block>
-                                <th:block th:if="${mvmnAplyEduSareaList == 'null'}">
-                                    <tr>
-                                        <td class="nodata" colspan="8">
-                                            <p><span class="icon icon-notice bg-black9"></span>동일 운영권역 교육 프로그램이 없습니다.</p>
-                                        </td>
-                                    </tr>
-                               </th:block>
-	                            
-                            </tbody>
-                        </table>
+<div layout:fragment="content">
+    <form id="mvmnAplyForm" name="mvmnAplyForm" th:action="@{/front/mvmnAply/mvmnAplyRegStep1.html}">
+        <input type="hidden" id="prgrmid" name="prgrmid" th:value="${mvmnAply.prgrmid}"/>
+        <input type="hidden" id="operFomCd" name="operFomCd" th:value="${mvmnAply.operFomCd}"/>
+        <input type="hidden" id="tmeid" name="tmeid"/>
+        <!-- <input type="hidden" id="tmeSchdlid" name="tmeSchdlid"/> -->
+        <!--swiper-->
+        <div class="product-wrap sub-banner-swiper">
+            <div class="thumb-swiper">
+                <div class="swiper gallery-thumb">
+                    <div class="swiper-wrapper">
+                        <th:block th:each="item : ${eduPhotoFileList}">
+                            <th:block th:if="${item.fileid != null}">
+                                <div class="swiper-slide">
+                                    <div class="thumb"><img alt="" th:src="@{/downloadFileByFileid.do?fileid=}+${item.fileid}+@{&file_idntfc_key=}+${item.fileIdntfcKey}"
+                                                            onerror="this.src='/images/front/bg/bg-noimage.png'; this.style.objectFit='none';"/></div>
+                                </div>
+                            </th:block>
+                        </th:block>
                     </div>
+                </div>
+                <div thumbsSlider="" class="swiper gallery-list">
+                    <div class="swiper-wrapper">
+                        <th:block th:each="item : ${eduPhotoFileList}">
+                            <th:block th:if="${item.fileid != null}">
+                                <div class="swiper-slide">
+                                    <div class="thumb"><img alt="" th:src="@{/downloadFileByFileid.do?fileid=}+${item.fileid}+@{&file_idntfc_key=}+${item.fileIdntfcKey}"
+                                                            onerror="this.src='/images/front/bg/bg-noimage.png'; this.style.objectFit='scale-down'; this.style.padding='5px';"/>
+                                    </div>
+                                </div>
+                            </th:block>
+                        </th:block>
+                    </div>
+                </div>
+            </div>
+            <div class="product-section">
+                <!-- 기본 정보 -->
+                <div class="title">
+                    <h3>
+                        <th:block th:text="${mvmnAply.prgrmNm}"></th:block>
+                    </h3>
+                    <dl>
+                        <div class="list">
+                            <dt>교육구분 :</dt>
+                            <dd>
+                                <th:block th:text="${mvmnAply.eduSeNm}"></th:block>
+                            </dd>
+                        </div>
+                        <div class="list">
+                            <dt>운영권역 :</dt>
+                            <dd>
+                                <th:block th:text="${mvmnAply.sareaNm}"></th:block>
+                            </dd>
+                        </div>
+                        <div class="list">
+                            <dt>교육주제 :</dt>
+                            <dd>
+                                <th:block th:text="${mvmnAply.clsfNm}"></th:block>
+                            </dd>
+                        </div>
+                        <div class="list">
+                            <dt>운영형식 :</dt>
+                            <dd>
+                                <th:block th:text="${mvmnAply.operFomNm}"></th:block>
+                            </dd>
+                        </div>
+                        <div class="list">
+                            <dt>교육대상 :</dt>
+                            <dd>
+                                <th:block th:text="${mvmnAply.trgtNm}"></th:block>
+                            </dd>
+                        </div>
+                        <div class="list">
+                            <dt>교육정원 :</dt>
+                            <dd>
+                                <th:block th:text="|${mvmnAply.eduNope}명|"></th:block>
+                            </dd>
+                        </div>
+                        <div class="list">
+                            <dt>교육시간 :</dt>
+                            <dd>
+                                <th:block th:text="|${mvmnAply.eduHrMnt}분|"></th:block>
+                            </dd>
+                        </div>
+                        <div class="list">
+                            <dt>접수방법 :</dt>
+                            <dd>
+                                <th:block th:text="${mvmnAply.rcptMthdNm}"></th:block>
+                            </dd>
+                        </div>
+                    </dl>
                 </div>
 
-                <div class="mo-only">
-                    <div class="table-list">
-                        <ul>
-	                        <th:block th:if="${mvmnAplyEduSareaList != 'null'}">
-	                            <li class="block">
-	                                <div class="tbody">
-	                                    <th:block th:each="item : ${mvmnAplyEduSareaList}">
-		                                    <dl>
-		                                        <div class="list">
-		                                            <dt>프로그램</dt>
-		                                            <dd><a href="|/front/mvmnAply/mvmnAplyDetailForm.html?prgrmid=${item.prgrmid}&sareaid=${item.sareaid}|" class="link url"><th:block th:text="${item.prgrmNm}"></th:block></a></dd>
-		                                        </div>
-		                                        <div class="list">
-		                                            <dt>운영권역</dt>
-		                                            <dd><th:block th:text="${item.sareaNm}"></th:block></dd>
-		                                        </div>
-                                                <div class="list">
-                                                    <dt>교육주제</dt>
-                                                    <dd><th:block th:text="${item.clsfNm}"></th:block></dd>
-                                                </div>
-		                                        <div class="list">
-		                                            <dt>운영형식</dt>
-		                                            <dd><th:block th:text="${item.operFomNm}"></th:block></dd>
-		                                        </div>
-		                                        <div class="list">
-		                                            <dt>교육시간</dt>
-		                                            <dd><th:block th:text="|${item.eduHrMnt}분|"></th:block></dd>
-		                                        </div>
-		                                    </dl>
-	                                    </th:block>
-	                                </div>
-	                            </li>
-                            </th:block>
-                        </ul>
+                <th:block th:if="${mvmnAply.eduIntrcnFileid != null and mvmnAply.eduIntrcnFileid != 0 }">
+                    <div class="btn-wrap">
+                        <div class="left">
+                            <a th:href="|javascript:downloadFileByFileid('${mvmnAply.eduIntrcnFileid}','${mvmnAply.eduIntrcnFileIdntfcKey}')|"
+                               class="btn-medium btn-outline-black btn-before-download">교육자료소개</a>
+                        </div>
+                    </div>
+                </th:block>
+            </div>
+        </div>
+        <th:block th:if="${mvmnAply.operFomCd == '197101'}">
+            <div class="reservation-wrap">
+                <div class="search-filter mb20">
+                    <div class="form-input mo-flex-wrap">
+                        <strong class="label">지역 선택</strong>
+                        <div class="form-input">
+                            <select name="signguCd" id="signguCd" onchange="mvmnAplyDetail.fn_sareaSignguChange(this)">
+                                <option value="">- 선택 -</option>
+                                <th:block th:each="item : ${sareaSignguList}">
+                                    <option th:value="${item.signguCd}">
+                                        <th:block th:text="${item.sareaSignguDesc}"/>
+                                    </option>
+                                </th:block>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="reservation-inner">
+                    <div class="left">
+                        <input type="date" datepicker="true" class="blind">
+                    </div>
+                    <div class="right">
+                        <div class="table-col table-layout-auto table-col-sm">
+                            <div class="select-date" id="selDayDiv">선택일 :
+                                <th:block th:text="${#calendars.format(#calendars.createNow(), 'yyyy년 MM월 dd일')}"/>
+                            </div>
+                            <table>
+                                <caption>푸름이 이동환경교실 교육 신청 - 선택, 교육회차, 상태, 대기팀</caption>
+                                <colgroup>
+                                    <col style="width:65px;">
+                                </colgroup>
+                                <thead>
+                                <tr>
+                                    <th scope="col"><span class="blind">선택</span></th>
+                                    <th scope="col">교육회차</th>
+                                    <th scope="col">상태</th>
+                                    <th scope="col">대기팀</th>
+                                </tr>
+                                </thead>
+                                <tbody id="tmeDataDiv" class="d-none">
+                                <!--
+                                <th:block th:if="${mvmnAplyTmeList != 'null'}">
+                                    <th:block th:each="item : ${mvmnAplyTmeList}">
+                                        <tr class="tr-check">
+                                            <td>
+                                                <label class="inp vm">
+                                                    <th:block th:if="${item.sttsDesc ne '마감'}">
+                                                        <input name="tmeId" type="radio" th:value="${item.tmeid}"/>
+                                                    </th:block>
+                                                    <th:block th:if="${item.sttsDesc eq '마감'}">
+                                                        <input name="tmeId" type="radio" th:value="${item.tmeid}" disabled/>
+                                                    </th:block>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <th:block th:text="${item.tmeNm}"/>
+                                            </td>
+                                            <td><span class="fc-blue"><th:block th:text="${item.sttsDesc}"/></span></td>
+                                            <td>
+                                                <th:block th:text="|${item.waitCnt}팀|"/>
+                                            </td>
+                                        </tr>
+                                    </th:block>
+                                </th:block>
+                                -->
+                                </tbody>
+                                <tbody id="tmeBasicDiv">
+                                <tr class="tr-check">
+                                    <td colspan="4">날짜를 선택해 주세요</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="btn-wrap">
+                            <div class="right">
+                                <a href="javascript:mvmnAplyDetail.moveToRegForm();" class="btn-medium btn-green">교육신청</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+        </th:block>
+        <th:block th:if="${mvmnAply.operFomCd == '197102'}">
+            <div class="reservation-wrap">
+
+                <div class="search-filter mb20">
+                    <div class="form-input mo-flex-wrap">
+                        <strong class="label">지역 선택</strong>
+                        <div class="form-input">
+                            <select name="signguCd" id="signguCd">
+                                <option value="">- 선택 -</option>
+                                <th:block th:each="item : ${sareaSignguList}">
+                                    <option th:value="${item.signguCd}">
+                                        <th:block th:text="${item.sareaSignguDesc}"/>
+                                    </option>
+                                </th:block>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-col table-layout-auto table-col-sm mt20 table-col-scroll">
+                    <table>
+                        <caption>푸름이 이동환경교실 교육신청 - 신청, 교육요일, 교육일자, 교육회사, 상태, 대기팀</caption>
+                        <colgruop>
+                            <col style="width:5%;">
+                            <col style="width:10%;">
+                            <col>
+                            <col>
+                            <col style="width:10%;">
+                            <col style="width:10%;">
+                        </colgruop>
+                        <thead>
+                        <tr>
+                            <th scope="col">신청</th>
+                            <th scope="col">교육요일</th>
+                            <th scope="col">교육일자</th>
+                            <th scope="col">교육회차</th>
+                            <th scope="col">상태</th>
+                            <th scope="col">대기팀</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <th:block th:if="${mvmnAplyTmeList != 'null'}">
+                            <th:block th:each="item, itemStat : ${mvmnAplyTmeList}">
+                                <tr class="tr-check">
+                                    <td>
+                                        <th:block th:if="${item.sttsDesc ne '마감'}">
+                                            <label class="inp vm"><input name="tmeId" type="radio" th:id="|tmeId${itemStat.index}|" th:value="${item.tmeid}"
+                                                                         onchange="mvmnAplyDetail.fn_tmeidChange(this)"/></label>
+                                        </th:block>
+                                        <th:block th:if="${item.sttsDesc eq '마감'}">
+                                            <label class="inp vm"><input name="tmeId" type="radio" th:value="${item.tmeid}" disabled/></label>
+                                        </th:block>
+                                    </td>
+                                    <td>
+                                        <th:block th:text="${item.weekDesc}"/>
+                                    </td>
+                                    <td>
+                                        <th:block th:text="${item.deDesc}"/>
+                                    </td>
+                                    <td>
+                                        <th:block th:text="${item.tmeNm}"/>
+                                    </td>
+                                    <td>
+                                        <th:block th:text="${item.sttsDesc}"/>
+                                    </td>
+                                    <td>
+                                        <th:block th:text="|${item.waitCnt}팀|"/>
+                                    </td>
+                                </tr>
+                            </th:block>
+                        </th:block>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="btn-wrap">
+                    <div class="right">
+                        <button type="button" class="btn-medium btn-green" onclick="mvmnAplyDetail.moveToRegForm()">교육신청</button>
+                    </div>
+                </div>
+            </div>
+        </th:block>
+    </form>
+    <div class="tab-content tab-sub dropDown">
+        <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">상세정보</button>
+        <ul class="tab-list target" role="tablist">
+            <li class="tab active">
+                <button aria-controls="tab-subpanel01" id="tab-sub01" role="tab">상세정보</button>
+            </li>
+            <li class="tab">
+                <button aria-controls="tab-subpanel02" id="tab-sub02" role="tab">유의사항</button>
+            </li>
+            <li class="tab">
+                <button aria-controls="tab-subpanel03" id="tab-sub03" role="tab">동일 운영권역 교육 프로그램</button>
+            </li>
+        </ul>
+        <div id="tab-subpanel01" class="tabpanel active" role="tabpanel" aria-labelledby="tab-sub01">
+            <th:block th:utext="${mvmnAply.eduExpln}"></th:block>
         </div>
-        <div class="btn-wrap">
-            <div class="center">
-                <button type="button" class="btn-medium btn-gray" onclick="mvmnAplyDetail.moveToList();">목록</button>
+        <div id="tab-subpanel02" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub02">
+            <th:block th:text="${#strings.replace(#strings.escapeXml(mvmnAply.mttrat),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></th:block>
+        </div>
+        <div id="tab-subpanel03" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub03">
+            <div class="pc-only">
+                <div class="table-col table-layout-auto">
+                    <table>
+                        <caption>동일 운영권역 교육 프로그램 - 프로그램, 교육대상, 교육관지역, 교육주제, 교육시간</caption>
+                        <thead>
+                        <tr>
+                            <th scope="col">프로그램</th>
+                            <th scope="col">운영권역</th>
+                            <th scope="col">교육주제</th>
+                            <th scope="col">운영형식</th>
+                            <th scope="col">교육시간</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <th:block th:if="${mvmnAplyEduSareaList != 'null'}">
+                            <th:block th:each="item : ${mvmnAplyEduSareaList}">
+                                <tr>
+                                    <td class="al"><a th:href="|/front/mvmnAply/mvmnAplyDetailForm.html?prgrmid=${item.prgrmid}&sareaid=${item.sareaid}|" class="link url">
+                                        <th:block th:text="${item.prgrmNm}"></th:block>
+                                    </a></td>
+                                    <td>
+                                        <th:block th:text="${item.sareaNm}"></th:block>
+                                    </td>
+                                    <td>
+                                        <th:block th:text="${item.clsfNm}"></th:block>
+                                    </td>
+                                    <td>
+                                        <th:block th:text="${item.operFomNm}"></th:block>
+                                    </td>
+                                    <td>
+                                        <th:block th:text="|${item.eduHrMnt}분|"></th:block>
+                                    </td>
+                                </tr>
+                            </th:block>
+                        </th:block>
+                        <th:block th:if="${mvmnAplyEduSareaList == 'null'}">
+                            <tr>
+                                <td class="nodata" colspan="8">
+                                    <p><span class="icon icon-notice bg-black9"></span>동일 운영권역 교육 프로그램이 없습니다.</p>
+                                </td>
+                            </tr>
+                        </th:block>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mo-only">
+                <div class="table-list">
+                    <ul>
+                        <th:block th:if="${mvmnAplyEduSareaList != 'null'}">
+                            <li class="block">
+                                <div class="tbody">
+                                    <th:block th:each="item : ${mvmnAplyEduSareaList}">
+                                        <dl>
+                                            <div class="list">
+                                                <dt>프로그램</dt>
+                                                <dd><a href="|/front/mvmnAply/mvmnAplyDetailForm.html?prgrmid=${item.prgrmid}&sareaid=${item.sareaid}|" class="link url">
+                                                    <th:block th:text="${item.prgrmNm}"></th:block>
+                                                </a></dd>
+                                            </div>
+                                            <div class="list">
+                                                <dt>운영권역</dt>
+                                                <dd>
+                                                    <th:block th:text="${item.sareaNm}"></th:block>
+                                                </dd>
+                                            </div>
+                                            <div class="list">
+                                                <dt>교육주제</dt>
+                                                <dd>
+                                                    <th:block th:text="${item.clsfNm}"></th:block>
+                                                </dd>
+                                            </div>
+                                            <div class="list">
+                                                <dt>운영형식</dt>
+                                                <dd>
+                                                    <th:block th:text="${item.operFomNm}"></th:block>
+                                                </dd>
+                                            </div>
+                                            <div class="list">
+                                                <dt>교육시간</dt>
+                                                <dd>
+                                                    <th:block th:text="|${item.eduHrMnt}분|"></th:block>
+                                                </dd>
+                                            </div>
+                                        </dl>
+                                    </th:block>
+                                </div>
+                            </li>
+                        </th:block>
+                    </ul>
+                </div>
             </div>
         </div>
-		<link rel="stylesheet" href="/css/front/flatpickr.min.css">
-		<script src="/js/front/flatpickr.js"></script>
-		<script src="/js/front/flatpickr-locale-ko.js"></script>
-		<script th:inline="javascript">
-        $(function() {
-        	mvmnAplyDetail.validateForm();
-        	mvmnAplyDetail.fn_makeCalendarEvent();
-        });       
+    </div>
+    <div class="btn-wrap">
+        <div class="center">
+            <button type="button" class="btn-medium btn-gray" onclick="mvmnAplyDetail.moveToList();">목록</button>
+        </div>
+    </div>
+    <link rel="stylesheet" href="/css/front/flatpickr.min.css">
+    <script src="/js/front/flatpickr.js"></script>
+    <script src="/js/front/flatpickr-locale-ko.js"></script>
+    <script th:inline="javascript">
+        $(function () {
+            mvmnAplyDetail.validateForm();
+            mvmnAplyDetail.fn_makeCalendarEvent();
+        });
         /*<![CDATA[*/
         var user = /*[[${user}]]*/null;
         /*]]>*/
-		
-        var mvmnAplyDetail = {			
-	        moveToList() {
-	            location.href = '/front/mvmnAply/mvmnAplyList.html';
-	        },
-	        moveToRegForm() {
+
+        var mvmnAplyDetail = {
+            moveToList() {
+                location.href = '/front/mvmnAply/mvmnAplyList.html';
+            },
+            moveToRegForm() {
                 var usrType = user != null ? user.loginUserType : "";
 
                 if (usrType == 'I') {
-                    if($("#tmeid").val() == ''){
+                    if (!$('[name=tmeSchdlid]').val()) {
                         alert("교육회차를 선택해 주세요.");
                         return false;
                     }
-                    if($("#sareaSignguCd").val() == ''){
+                    if ($("#signguCd").val() == '') {
                         alert("지역을 선택해 주세요.");
                         return false;
                     }
-                	
+
                     $('#mvmnAplyForm').submit();
-                }else{
+                } else {
                     alert("기관회원만 신청할 수 있습니다.");
-                    return false;                    
-                }                
-	        },
-	        fn_sareaSignguChange(obj) {
-	        	if($(obj).val() != ""){
-	        		$(".flatpickr-input").val("날짜를 선택해 주세요");
-	        		$(".flatpickr-input").attr("disabled", false);
-	        		
-                    $("#tmeBasicDivSpan").text("날짜를 선택해 주세요");	        		
-	        	}else{
+                    return false;
+                }
+            },
+            fn_sareaSignguChange(obj) {
+                if ($(obj).val() != "") {
+                    $(".flatpickr-input").val("날짜를 선택해 주세요");
+                    $(".flatpickr-input").attr("disabled", false);
+
+                    $("#tmeBasicDivSpan").text("날짜를 선택해 주세요");
+                } else {
                     $(".flatpickr-input").val("지역을 선택해 주세요");
                     $(".flatpickr-input").attr("disabled", true);
 
                     $("#tmeDataDiv").hide();
                     $("#tmeBasicDiv").show();
-                    $("#tmeBasicDivSpan").text("지역을 선택해 주세요");  
-	        	}
-	        },
-	        fn_makeCalendarEvent() {
-                   var swiper = new Swiper(".gallery-list", {
-                       loop: false,
-                       spaceBetween: 0,
-                       slidesPerView: 5,
-                       freeMode: true,
-                       watchSlidesProgress: true,
-                   });
-                   var swiper2 = new Swiper(".gallery-thumb", {
-                       loop: false,
-                       spaceBetween: 10,
-                       thumbs: {
-                           swiper: swiper,
-                       },
-                       navigation: {
-                           nextEl: ".swiper-button-next",
-                           prevEl: ".swiper-button-prev",
-                       },
-                       a11y: {
-                           prevSlideMessage: '이전 슬라이드',
-                           nextSlideMessage: '다음 슬라이드',
-                       },
-                   });
-                  const objData = [];
-                  $.ajax({
-                      url : "/front/mvmnAply/selectMvmnAplyDeList.do",
-                      type: "GET",
-                      dataType: 'json',
-                      data : {
-                          "prgrmid" : $("#prgrmid").val()
-                      },
-                      success : function (data){
-                    	 var data = escapeData(data);
-                         $.each(data, function(i){
-                           const obj = {};                           
-                           obj.tmeid = data[i].tmeid;
-                           obj.tmeSchdlid = data[i].tmeSchdlid;
-                           obj.de = data[i].de;
-                           obj.cd = data[i].sttsDesc == "신청가능" ? "0" : "1";
-                           objData.push(obj);
-                         });
-                          const classDict01 = {
-                                  '0' : ['dot-green','신청가능'],
-                                  '1' : ['dot-gray','마감'],
-                              };
-                          const list01 = `<ul><li class="dot-green">신청가능</li><li class="dot-gray">마감</li></ul>`;
-                          
-                          // Better always use a two digit format in your dates obj
-                          function get2DigitFmt(val) {
-                               return ('0' + val).slice(-2);
-                          }
-                              
-                          function fn_btnEvent(instance){
-                              $($(instance.rContainer.querySelectorAll(".flatpickr-day")).not(".prevMonthDay, .nextMonthDay")).each(function(index, item){
-                                  var dayElem = item; 
-                                  var date = dayElem.dateObj;
-                                  var key = date.getFullYear() + '-' + get2DigitFmt(date.getMonth() + 1) + '-' + get2DigitFmt(date.getDate());
-                                  const result = objData.filter((elem) => {
-                                      return (elem.de === key);
-                                  });
-                                  if(typeof result != 'undefined'){
-                                      if(result.length > 0){
-                                          var value = classDict01[result[0].cd];
-                                           //value = classDict01[dates01[key]];
-                                           if (value) {
-                                               dayElem.className += ' ' + value[0];
-                                               dayElem.title = value[1]
-                                           }
-                                      }/* else{
+                    $("#tmeBasicDivSpan").text("지역을 선택해 주세요");
+                }
+            },
+            fn_makeCalendarEvent() {
+                var swiper = new Swiper(".gallery-list", {
+                    loop: false,
+                    spaceBetween: 0,
+                    slidesPerView: 5,
+                    freeMode: true,
+                    watchSlidesProgress: true,
+                });
+                var swiper2 = new Swiper(".gallery-thumb", {
+                    loop: false,
+                    spaceBetween: 10,
+                    thumbs: {
+                        swiper: swiper,
+                    },
+                    navigation: {
+                        nextEl: ".swiper-button-next",
+                        prevEl: ".swiper-button-prev",
+                    },
+                    a11y: {
+                        prevSlideMessage: '이전 슬라이드',
+                        nextSlideMessage: '다음 슬라이드',
+                    },
+                });
+
+                const objData = [];
+                $.ajax({
+                    url: "/front/mvmnAply/selectMvmnAplyDeList.do",
+                    type: "GET",
+                    dataType: 'json',
+                    data: {
+                        "prgrmid": $("#prgrmid").val()
+                    },
+                    success: function (data) {
+                        var data = escapeData(data);
+                        $.each(data, function (i) {
+                            const obj = {};
+                            obj.tmeid = data[i].tmeid;
+                            obj.tmeSchdlid = data[i].tmeSchdlid;
+                            obj.de = data[i].de;
+                            obj.cd = data[i].sttsDesc == "신청가능" ? "0" : "1";
+                            objData.push(obj);
+                        });
+                        const classDict01 = {
+                            '0': ['dot-green', '신청가능'],
+                            '1': ['dot-gray', '마감'],
+                        };
+                        const list01 = `<ul><li class="dot-green">신청가능</li><li class="dot-gray">마감</li></ul>`;
+
+                        // Better always use a two digit format in your dates obj
+                        function get2DigitFmt(val) {
+                            return ('0' + val).slice(-2);
+                        }
+
+                        function fn_btnEvent(instance) {
+                            $($(instance.rContainer.querySelectorAll(".flatpickr-day")).not(".prevMonthDay, .nextMonthDay")).each(function (index, item) {
+                                var dayElem = item;
+                                var date = dayElem.dateObj;
+                                var key = date.getFullYear() + '-' + get2DigitFmt(date.getMonth() + 1) + '-' + get2DigitFmt(date.getDate());
+                                const result = objData.filter((elem) => {
+                                    return (elem.de === key);
+                                });
+                                if (typeof result != 'undefined') {
+                                    if (result.length > 0) {
+                                        var value = classDict01[result[0].cd];
+                                        //value = classDict01[dates01[key]];
+                                        if (value) {
+                                            dayElem.className += ' ' + value[0];
+                                            dayElem.title = value[1]
+                                        }
+                                    }/* else{
                                    	   dayElem.className = "flatpickr-day flatpickr-disabled";
                                       } */
-                                  }
-                              });
-                          }                               
-                          const datepicker = flatpickr("[datepicker=true]",{
-                              mode: "single",
-                              minDate: "today",
-                              defaultDate:false,
-                              dateFormat: "Y-m-d",
-                              //disable: disableDates,
-                              inline: true,                              
-                              locale: "ko",
-                              position: "bottom center",
-                              onDayCreate: function(dObj, dStr, fp, dayElem) {
-                           	   var date = dayElem.dateObj;
-                                  var key = date.getFullYear() + '-' + get2DigitFmt(date.getMonth() + 1) + '-' + get2DigitFmt(date.getDate());
-                                  const result = objData.filter((elem) => {
-                                      return (elem.de === key);
-                                  });
-                                  if(typeof result != 'undefined'){
-                                      if(result.length > 0){
-                                	   var value = classDict01[result[0].cd];
+                                }
+                            });
+                        }
+
+                        const datepicker = flatpickr("[datepicker=true]", {
+                            mode: "single",
+                            minDate: "today",
+                            defaultDate: false,
+                            dateFormat: "Y-m-d",
+                            //disable: disableDates,
+                            inline: true,
+                            locale: "ko",
+                            position: "bottom center",
+                            onDayCreate: function (dObj, dStr, fp, dayElem) {
+                                var date = dayElem.dateObj;
+                                var key = date.getFullYear() + '-' + get2DigitFmt(date.getMonth() + 1) + '-' + get2DigitFmt(date.getDate());
+                                const result = objData.filter((elem) => {
+                                    return (elem.de === key);
+                                });
+                                if (typeof result != 'undefined') {
+                                    if (result.length > 0) {
+                                        var value = classDict01[result[0].cd];
                                         if (value) {
-	                                        dayElem.className += ' ' + value[0];
-	                                        dayElem.title = value[1]
+                                            dayElem.className += ' ' + value[0];
+                                            dayElem.title = value[1]
                                         }
-                                      }/* else{
+                                    }/* else{
                                           dayElem.className = "flatpickr-day flatpickr-disabled";
                                       } */
-                                  }
-                              },
-                              onReady : function () {
-                                  const datepickerWrap = this.calendarContainer;
-                                  const datepickerList = document.createElement('div')
-                                  datepickerList.classList.add('datepicker-list')
-                                  datepickerWrap.appendChild(datepickerList)
-                                  datepickerList.insertAdjacentHTML('beforeend', list01);
+                                }
+                            },
+                            onReady: function () {
+                                const datepickerWrap = this.calendarContainer;
+                                const datepickerList = document.createElement('div')
+                                datepickerList.classList.add('datepicker-list')
+                                datepickerWrap.appendChild(datepickerList)
+                                datepickerList.insertAdjacentHTML('beforeend', list01);
 
-                                  $(".flatpickr-input").val("지역을 선택해 주세요");
-                                  $(".flatpickr-input").attr("disabled", true);
-                                  
-                              },
-                              onValueUpdate: function(selectedDates, dateStr, instance){
-                                  const result = objData.filter((elem) => {
-                                      return (elem.de === dateStr);
-                                  });
-                                  if(typeof result != 'undefined'){
-	                                   if(result.length > 0){
-	                                       if(result[0].cd != '0'){
-	                                           alert("신청가능한 날짜를 선택해 주세요.");
-	                                           //datepicker.clear();
-	                                           return true;
-	                                       }else{
-                                               var tempDt = new Date(dateStr);
-                                               var yyyy = tempDt.getFullYear();
-                                               var mm = tempDt.getMonth()+1;
-                                               var dd = tempDt.getDate();
-                                               var returnStr = yyyy + '년 ' + mm + '월 ' + dd +'일';
-                                               var tmeIdArr = [];
-                                               $("#selDayDiv").val('선택일 : ' + returnStr);
-	                                    	   $("#tmeid").val(result[0].tmeid);
-	                                    	   $("#tmeSchdlid").val(result[0].tmeSchdlid);
-	                                    	   for(var i=0; i<result.length; i++){
-	                                    		   tmeIdArr.push(result[i].tmeid);
-	                                    	   }
-	                                    	   debugger;
-	                                           $("input[name='tmeId']").each(function(){
-	                                        	   if(tmeIdArr.indexOf(Number($(this).val())) >= 0)  {	                                        	   
-	                                                   $(this).prop("disabled", false);                                                    
-	                                                   $(this).prop("checked", true);
-                                                   }else{
-	                                                   $(this).prop("disabled", true);
-	                                                   $(this).prop("checked", false);
+                                $(".flatpickr-input").val("지역을 선택해 주세요");
+                                $(".flatpickr-input").attr("disabled", true);
+
+                            },
+                            onValueUpdate: function (selectedDates, dateStr, instance) {
+                                const result = objData.filter((elem) => {
+                                    return (elem.de === dateStr);
+                                });
+                                if (typeof result != 'undefined') {
+                                    if (result.length > 0) {
+                                        if (result[0].cd != '0') {
+                                            alert("신청가능한 날짜를 선택해 주세요.");
+                                            //datepicker.clear();
+                                            return true;
+                                        } else {
+                                            var tempDt = new Date(dateStr);
+                                            var yyyy = tempDt.getFullYear();
+                                            var mm = tempDt.getMonth() + 1;
+                                            if(mm < 10) mm = "0" + mm;
+                                            var dd = tempDt.getDate();
+                                            var returnStr = yyyy + '년 ' + mm + '월 ' + dd + '일';
+                                            var tmeIdArr = [];
+                                            
+                                            // 선택한 날짜 회차목록 조회
+                                            $("#selDayDiv").html('선택일 : ' + returnStr);
+                                            $.ajax({
+                                                   url : "/front/mvmnAply/selectMvmnAplyTmeList.do"
+                                                   , type: "POST"
+                                                   , cache: false
+                                                   , dataType: "json"
+                                                   , data: {prgrmid: $("#prgrmid").val(), de: yyyy + "." + mm + "." + dd}
+                                                   , success: function(response) {
+                                                       var list = response.list;
+                                                       $("#tmeDataDiv").empty();
+                                                       for(var i = 0, len = list.length; i < len; i++) {
+                                                           var data = list[i];
+                                                           var el = '<tr class="tr-check">';    
+                                                           el += '<td>';    
+                                                           el += '<label class="inp vm">';  
+                                                           // 마감상태인 회차는 disabled    
+                                                           if(i == 0) {
+                                                               if(data.sttsDesc == "신청가능") {
+                                                                   el += '<input name="tmeSchdlid" type="radio" value="' + data.tmeSchdlid + '" checked="true"/>';                                                                   
+                                                               } else {
+                                                                   el += '<input name="tmeSchdlid" type="radio" value="' + data.tmeSchdlid + '" disabled/>';
+                                                               }
+                                                           } else {
+                                                               if(data.sttsDesc == "신청가능") { 
+                                                                   el += '<input name="tmeSchdlid" type="radio" value="' + data.tmeSchdlid + '"/>';
+                                                               } else {
+                                                                   el += '<input name="tmeSchdlid" type="radio" value="' + data.tmeSchdlid + '" disabled/>';
+                                                               }
+                                                           }    
+                                                           el += '</label>';    
+                                                           el += '</td>';   
+                                                           el += '<td>' + data.tmeNm + '</td>';     
+                                                           el += '<td><span class="fc-blue">' + data.sttsDesc + '</span></td>';     
+                                                           el += '<td>' + data.waitCnt + '팀</td>';  
+                                                           el += '</tr>';   
+                                                           $("#tmeDataDiv").append(el);
+                                                       }
+                                                       $("#tmeBasicDiv").addClass("d-none");    
+                                                       $("#tmeDataDiv").removeClass("d-none");  
                                                    }
-	                                           })   
-	                                           $("#tmeBasicDiv").hide();
-	                                           $("#tmeDataDiv").show();
-	                                       }
-	                                   }else{
-	                                       alert("신청가능한 날짜를 선택해 주세요.");
-	                                       //datepicker.clear();
-	                                       return true;
-	                                   }
-                                  }
-                              },
-                              onMonthChange: function(selectedDates, dateStr, instance) {
-                           	   fn_btnEvent(instance);
-                              },
-                              onYearChange: function(selectedDates, dateStr, instance) {
-                           	   fn_btnEvent(instance);
-                              }                                   
-                          });                            
-                      }
-                  });		        	
-	        },
-	        fn_tmeidChange(obj) {
-	        	$("#tmeid").val(obj.value);
-	        },
-	        validateForm() {
-	            $('#mvmnAplyForm').validate({
-	                rules: {
-	                	prgrmid: {required: true}
-	                  , tmeid: {required: true}
-	                    //, tmeSchdlid: {required: true}
-	                }
-	            });
-	        }
-	    }
-		</script>
-    </div>	
+                                               });
+                                        }
+                                    } else {
+                                        alert("신청가능한 날짜를 선택해 주세요.");
+                                        //datepicker.clear();
+                                        return true;
+                                    }
+                                }
+                            },
+                            onMonthChange: function (selectedDates, dateStr, instance) {
+                                fn_btnEvent(instance);
+                            },
+                            onYearChange: function (selectedDates, dateStr, instance) {
+                                fn_btnEvent(instance);
+                            }
+                        });
+                    }
+                });
+            },
+            fn_tmeidChange(obj) {
+                $("#tmeid").val(obj.value);
+            },
+            validateForm() {
+                $('#mvmnAplyForm').validate({
+                    rules: {
+                        prgrmid: {required: true}
+                        , tmeid: {required: true}
+                        //, tmeSchdlid: {required: true}
+                    }
+                });
+            }
+        }
+    </script>
+</div>
 </body>
 </html>

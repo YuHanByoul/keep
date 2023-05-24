@@ -86,21 +86,22 @@ public class InfntAplyController {
         infntAplyVo.setPrgrmid(infntAply.getPrgrmid());
         
         List<InfntAplyVo> eduPhotoFileList = null;
-        List<InfntAplyVo> infntAplyTmeList = null;
+//        List<InfntAplyVo> infntAplyTmeList = null;
         List<InfntAplyVo> infntAplyEduClssRmList = null;
         
         eduPhotoFileList = infntAplyService.selectEduPhotoFileList(infntAplyVo);
         model.addAttribute("eduPhotoFileList", eduPhotoFileList);
         model.addAttribute("user", user);
         
-        infntAplyTmeList =  infntAplyService.selectInfntAplyTmeList(infntAplyVo);
+        //infntAplyTmeList =  infntAplyService.selectInfntAplyTmeList(infntAplyVo);
         //infntAplyList = infntAplyService.selectInstInfntAplyList(infntAplyVo);
+        /*
         if(infntAplyTmeList.size() <= 0) {
             model.addAttribute("infntAplyTmeList", "null");
         }else {
             model.addAttribute("infntAplyTmeList", infntAplyTmeList);
         }
-
+        */
         infntAplyEduClssRmList =  infntAplyService.selectInfntAplyEduClssRmList(infntAplyVo);
         if(infntAplyEduClssRmList.size() <= 0) {
             model.addAttribute("infntAplyEduClssRmList", "null");
@@ -110,7 +111,33 @@ public class InfntAplyController {
         
         return "front/infntAply/infntAplyDetail";
     }
-      
+    
+    /**
+     * 유아환경교육관 교육신청 회차 목록 조회
+     *
+     * @Title : selectInstInfntAplyList
+     * @Description : 유아환경교육관 교육신청 회차 목록 조회
+     * @param infntAplyVo
+     * @return
+     * @throws Exception
+     * @return Map<String,Object>
+     */
+     @RequestMapping(value="/front/infntAply/selectInfntAplyTmeList.do")
+     @ResponseBody
+     public Map<String, Object> selectInfntAplyTmeList(InfntAplyVo infntAplyVo) throws Exception {
+         Map<String, Object> resultMap = new HashMap<>();
+         List<InfntAplyVo> result =  infntAplyService.selectInfntAplyTmeList(infntAplyVo);
+//         if (result.size() > 0) {
+//             resultMap.put("totalCount", (result.get(0).getTotalCount()));
+//             resultMap.put("pagination", PaginationUtil.getFrontPaginationHtml(result.get(0).getTotalPage(), result.get(0).getPageNumber(), 10));
+//         } else {
+//             resultMap.put("totalCount", 0);
+//         }
+         resultMap.put("list", result);
+         
+         return resultMap;
+     }
+    
     /**
     * 유아환경교육관 교육신청 게시글 목록 조회
     *
