@@ -75,6 +75,11 @@ public class LctrDmndController {
         return VIEW_PATH + "/lctrDmndList";
     }
 
+    @GetMapping("/envEduExprtList.html")
+    public String envEduExprtList() {
+        return VIEW_PATH + "/envEduExprtList";
+    }
+
     /**
      * 섭외요청 상세 화면
      *
