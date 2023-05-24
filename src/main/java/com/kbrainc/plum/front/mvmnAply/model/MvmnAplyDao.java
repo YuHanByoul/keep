@@ -167,5 +167,7 @@ public interface MvmnAplyDao {
      * @throws Exception
      * @return List<MvmnAplyVo>
      */
-    public List<MvmnAplyVo> selectMvmnAplySignguList(MvmnAplyVo mvmnAplyVo) throws Exception;    
+    public List<MvmnAplyVo> selectMvmnAplySignguList(MvmnAplyVo mvmnAplyVo) throws Exception;
+
+    public List<MvmnAplyVo> selectMvmnAplySignguListUsingSchdl(MvmnAplyVo mvmnAplyVo) throws Exception;
 }

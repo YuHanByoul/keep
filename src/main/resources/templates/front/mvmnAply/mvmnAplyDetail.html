@@ -9,7 +9,7 @@
         <input type="hidden" id="prgrmid" name="prgrmid" th:value="${mvmnAply.prgrmid}"/>
         <input type="hidden" id="operFomCd" name="operFomCd" th:value="${mvmnAply.operFomCd}"/>
         <input type="hidden" id="tmeid" name="tmeid"/>
-        <input type="hidden" id="tmeSchdlid" name="tmeSchdlid"/>
+        <!-- <input type="hidden" id="tmeSchdlid" name="tmeSchdlid"/> -->
         <!--swiper-->
         <div class="product-wrap sub-banner-swiper">
             <div class="thumb-swiper">
@@ -146,7 +146,8 @@
                                     <th scope="col">대기팀</th>
                                 </tr>
                                 </thead>
-                                <tbody id="tmeDataDiv" style="display:none;">
+                                <tbody id="tmeDataDiv" class="d-none">
+                                <!--
                                 <th:block th:if="${mvmnAplyTmeList != 'null'}">
                                     <th:block th:each="item : ${mvmnAplyTmeList}">
                                         <tr class="tr-check">
@@ -170,6 +171,7 @@
                                         </tr>
                                     </th:block>
                                 </th:block>
+                                -->
                                 </tbody>
                                 <tbody id="tmeBasicDiv">
                                 <tr class="tr-check">
@@ -410,7 +412,7 @@
                 var usrType = user != null ? user.loginUserType : "";
 
                 if (usrType == 'I') {
-                    if ($("#tmeid").val() == '') {
+                    if (!$('[name=tmeSchdlid]').val()) {
                         alert("교육회차를 선택해 주세요.");
                         return false;
                     }
@@ -568,30 +570,53 @@
                                             var tempDt = new Date(dateStr);
                                             var yyyy = tempDt.getFullYear();
                                             var mm = tempDt.getMonth() + 1;
+                                            if(mm < 10) mm = "0" + mm;
                                             var dd = tempDt.getDate();
                                             var returnStr = yyyy + '년 ' + mm + '월 ' + dd + '일';
                                             var tmeIdArr = [];
+                                            
+                                            // 선택한 날짜 회차목록 조회
                                             $("#selDayDiv").html('선택일 : ' + returnStr);
-
-                                            $("#tmeid").val(result[0].tmeid);
-                                            $("#tmeSchdlid").val(result[0].tmeSchdlid);
-                                            for (var i = 0; i < result.length; i++) {
-                                                tmeIdArr.push(result[i].tmeid);
-                                            }
-                                            $("input[name='tmeId']").each(function () {
-
-                                                if (tmeIdArr.indexOf(Number($(this).val())) >= 0) {
-                                                    $(this).prop("disabled", false);
-                                                    $(this).prop("checked", true);
-                                                } else {
-                                                    $(this).prop("disabled", true);
-                                                    $(this).prop("checked", false);
-                                                }
-                                            })
-                                            $("input[name='tmeId']")[0].checked = true;
-
-                                            $("#tmeBasicDiv").hide();
-                                            $("#tmeDataDiv").show();
+                                            $.ajax({
+                                                   url : "/front/mvmnAply/selectMvmnAplyTmeList.do"
+                                                   , type: "POST"
+                                                   , cache: false
+                                                   , dataType: "json"
+                                                   , data: {prgrmid: $("#prgrmid").val(), de: yyyy + "." + mm + "." + dd}
+                                                   , success: function(response) {
+                                                       var list = response.list;
+                                                       $("#tmeDataDiv").empty();
+                                                       for(var i = 0, len = list.length; i < len; i++) {
+                                                           var data = list[i];
+                                                           var el = '<tr class="tr-check">';    
+                                                           el += '<td>';    
+                                                           el += '<label class="inp vm">';  
+                                                           // 마감상태인 회차는 disabled    
+                                                           if(i == 0) {
+                                                               if(data.sttsDesc == "신청가능") {
+                                                                   el += '<input name="tmeSchdlid" type="radio" value="' + data.tmeSchdlid + '" checked="true"/>';                                                                   
+                                                               } else {
+                                                                   el += '<input name="tmeSchdlid" type="radio" value="' + data.tmeSchdlid + '" disabled/>';
+                                                               }
+                                                           } else {
+                                                               if(data.sttsDesc == "신청가능") { 
+                                                                   el += '<input name="tmeSchdlid" type="radio" value="' + data.tmeSchdlid + '"/>';
+                                                               } else {
+                                                                   el += '<input name="tmeSchdlid" type="radio" value="' + data.tmeSchdlid + '" disabled/>';
+                                                               }
+                                                           }    
+                                                           el += '</label>';    
+                                                           el += '</td>';   
+                                                           el += '<td>' + data.tmeNm + '</td>';     
+                                                           el += '<td><span class="fc-blue">' + data.sttsDesc + '</span></td>';     
+                                                           el += '<td>' + data.waitCnt + '팀</td>';  
+                                                           el += '</tr>';   
+                                                           $("#tmeDataDiv").append(el);
+                                                       }
+                                                       $("#tmeBasicDiv").addClass("d-none");    
+                                                       $("#tmeDataDiv").removeClass("d-none");  
+                                                   }
+                                               });
                                         }
                                     } else {
                                         alert("신청가능한 날짜를 선택해 주세요.");

@@ -193,5 +193,11 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
     public List<MvmnAplyVo> selectMvmnAplySignguList(MvmnAplyVo mvmnAplyVo) throws Exception{
         return mvmnAplyDao.selectMvmnAplySignguList(mvmnAplyVo);        
     }
-    
+
+    @Override
+    public List<MvmnAplyVo> selectMvmnAplySignguListUsingSchdl(MvmnAplyVo mvmnAplyVo) throws Exception {
+        return mvmnAplyDao.selectMvmnAplySignguListUsingSchdl(mvmnAplyVo);
+
+    }
+
 }

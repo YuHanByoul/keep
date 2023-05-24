@@ -20,6 +20,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.kbrainc.plum.front.infntAply.model.InfntAplyVo;
 import com.kbrainc.plum.front.mvmnAply.model.MvmnAplyVo;
 import com.kbrainc.plum.front.mvmnAply.service.MvmnAplyService;
 import com.kbrainc.plum.rte.constant.Constant;
@@ -83,27 +84,37 @@ public class MvmnAplyController {
         MvmnAplyVo mvmnAply = null;
         mvmnAply = mvmnAplyService.selectMvmnAplyInfo(mvmnAplyVo);
         model.addAttribute("mvmnAply", mvmnAply);
-        model.addAttribute("sareaSignguList", mvmnAplyService.selectMvmnAplySignguList(mvmnAplyVo));
-        
+
+         /*
+         특화교육인 경우 교육 프로그램 등록시 설정했던 운영권역의 목록을 가져온다.
+         공통교육인 경우 교육 일정에 등록되어 있는 운영권역의 목록을 가져온다.
+         */
+        if("196102".equals(mvmnAplyVo.getEduSeCd())) {
+            model.addAttribute("sareaSignguList", mvmnAplyService.selectMvmnAplySignguList(mvmnAplyVo));
+        } else {
+            model.addAttribute("sareaSignguList", mvmnAplyService.selectMvmnAplySignguListUsingSchdl(mvmnAplyVo));
+        }
+
         mvmnAplyVo.setInstid(mvmnAply.getInstid());
         mvmnAplyVo.setPrgrmid(mvmnAply.getPrgrmid());
         
         List<MvmnAplyVo> eduPhotoFileList = null;
-        List<MvmnAplyVo> mvmnAplyTmeList = null;
+//        List<MvmnAplyVo> mvmnAplyTmeList = null;
         List<MvmnAplyVo> mvmnAplyEduSareaList = null;
         
         eduPhotoFileList = mvmnAplyService.selectEduPhotoFileList(mvmnAplyVo);
         model.addAttribute("eduPhotoFileList", eduPhotoFileList);
         model.addAttribute("user", user);
         
-        mvmnAplyTmeList =  mvmnAplyService.selectMvmnAplyTmeList(mvmnAplyVo);
+//        mvmnAplyTmeList =  mvmnAplyService.selectMvmnAplyTmeList(mvmnAplyVo);
         //mvmnAplyList = mvmnAplyService.selectInstMvmnAplyList(mvmnAplyVo);
+        /*
         if(mvmnAplyTmeList.size() <= 0) {
             model.addAttribute("mvmnAplyTmeList", "null");
         }else {
             model.addAttribute("mvmnAplyTmeList", mvmnAplyTmeList);
         }
-
+        */
         mvmnAplyEduSareaList =  mvmnAplyService.selectMvmnAplyEduSareaList(mvmnAplyVo);
         if(mvmnAplyEduSareaList.size() <= 0) {
             model.addAttribute("mvmnAplyEduSareaList", "null");
@@ -113,6 +124,32 @@ public class MvmnAplyController {
         
         return "front/mvmnAply/mvmnAplyDetail";
     }
+    
+    /**
+     * 푸름이 이동환경교실 교육신청 회차 목록 조회
+     *
+     * @Title : selectMvmnAplyTmeList
+     * @Description : 푸름이 이동환경교실 교육신청 회차 목록 조회
+     * @param mvmnAplyVo
+     * @return
+     * @throws Exception
+     * @return Map<String,Object>
+     */
+     @RequestMapping(value="/front/mvmnAply/selectMvmnAplyTmeList.do")
+     @ResponseBody
+     public Map<String, Object> selectMvmnAplyTmeList(MvmnAplyVo mvmnAplyVo) throws Exception {
+         Map<String, Object> resultMap = new HashMap<>();
+         List<MvmnAplyVo> result =  mvmnAplyService.selectMvmnAplyTmeList(mvmnAplyVo);
+//         if (result.size() > 0) {
+//             resultMap.put("totalCount", (result.get(0).getTotalCount()));
+//             resultMap.put("pagination", PaginationUtil.getFrontPaginationHtml(result.get(0).getTotalPage(), result.get(0).getPageNumber(), 10));
+//         } else {
+//             resultMap.put("totalCount", 0);
+//         }
+         resultMap.put("list", result);
+         
+         return resultMap;
+     }
       
     /**
     * 푸름이 이동환경교실 교육신청 게시글 목록 조회

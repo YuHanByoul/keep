@@ -35,7 +35,7 @@
                 <div class="form-row">
                     <div class="form-header"><strong class="label">제출상태</strong></div>
                     <div class="form-body">
-                        <span kattr:select_code="searchSttsCd" th:attr="selectedCd=${reqMngVo.searchSttsCd}" grpCd="203" firstOptTxt="- 전체 -" addClass="input-sm"></span>
+                        <span kattr:select_code="searchSttsCd" th:attr="selectedCd=${reqMngVo.searchSttsCd}" grpCd="203" firstOptTxt="- 전체 -" addClass="input-sm" title="제출상태"></span>
                     </div>
                 </div>
             </div>
@@ -49,12 +49,13 @@
             <div class="left">
                 <p>총 <b id="totalCount">0</b> 건</p>
             </div>
-            <div class="right">
-                <select title="글 보기 개수" id="rowPerPageChange" name="rowPerPageChange">
-                    <option value="10">10개씩 보기</option>
-                    <option value="50">50개씩 보기</option>
-                    <option value="100">100개씩 보기</option>
+            <div class="right d-flex">
+                <select title="글 보기 개수" class="sort-filter" id="rowPerPageChangeSelect">
+                    <option value="10">10개</option>
+                    <option value="50">50개</option>
+                    <option value="100">100개</option>
                 </select>
+                <div><button type="button" id="rowPerPageChange" class="btn-medium btn-outline-black">보기</button></div>
             </div>
         </div>
 
@@ -164,11 +165,11 @@
                     `;
                 } else {
                     data.list.forEach(function(item) {
-                    	var minusAmt = listPage.addComma(item.minusAmt);
-                    	var nowAmt = listPage.addComma(item.nowAmt);
+                        var minusAmt = listPage.addComma(item.minusAmt);
+                        var nowAmt = listPage.addComma(item.nowAmt);
                         listHtml += `
                         <tr>
-                       	<td>${item.rowNumber}</td>
+                        <td>${item.rowNumber}</td>
                         <td>${item.fldNm}</td>
                         <td>${item.prgrmNm}</td>
                         <td>${minusAmt}</td>
@@ -181,69 +182,69 @@
                         listHtml += `
                         <td>${item.excclcReportBgngDt == null ? '-' : item.excclcReportBgngDt}<br class="pc-only"> ${item.excclcReportEndDt != null ? '~' : ''} ${item.excclcReportEndDt == null ? '' : item.excclcReportEndDt}</td>`;
                         if (`${item.crudBtn}` == 'C') {
-                            listHtml += `<td><a href="javascript:void(0)" onclick="listPage.moveToDetail(${item.aplyid})" class="btn-small btn-outline-blue">제출</a></td>`;
+                            listHtml += `<td><a href="javascript:listPage.moveToDetail(${item.aplyid})" class="btn-small btn-outline-blue">제출</a></td>`;
                         } else if (`${item.crudBtn}` == 'R') {
-                            listHtml += `<td><a href="javascript:void(0)" onclick="listPage.moveToDetail(${item.aplyid})" class="btn-small btn-outline-black">조회</a></td>`;
+                            listHtml += `<td><a href="javascript:listPage.moveToDetail(${item.aplyid})" class="btn-small btn-outline-black">조회</a></td>`;
                         } else if (`${item.crudBtn}` == 'U') {
-                            listHtml += `<td><a href="javascript:void(0)" onclick="listPage.moveToDetail(${item.aplyid})" class="btn-small btn-outline-blue">수정</a></td>`;
+                            listHtml += `<td><a href="javascript:listPage.moveToDetail(${item.aplyid})" class="btn-small btn-outline-blue">수정</a></td>`;
                         } else {
                             listHtml += `<td>-</td>`;
                         }
                         
                         mobileHtml += `
                         <li class="block" >
-	                        <div class="tbody">
-	                            <dl>
-	                                <div class="list">
-	                                    <dt>번호</dt>
-	                                    <dd>${item.rowNumber}</dd>
-	                                </div>
-	                                <div class="list">
-	                                    <dt>사업분야</dt>
-	                                    <dd>${item.fldNm}</dd>
-	                                </div>
-	                                <div class="list">
-		                                <dt>프로그램명</dt>
-		                                <dd>${item.prgrmNm}</dd>
-		                            </div>
-	                                <div class="list">
-	                                    <dt>집행금액</dt>
-	                                    <dd>${item.minusAmt}</dd>
-	                                </div>
-	                                <div class="list">
-	                                    <dt>잔액</dt>
-	                                    <dd>${item.nowAmt}</dd>
-	                                </div>
-	                                <div class="list">
-	                                    <dt>제출상태</dt>
-	                                `;
-			                        if(`${item.excclcSttsCd}` == '203104' || `${item.excclcSttsCd}` == '203105'){
-			                        	mobileHtml += `<dd><button type="button" class="link" onclick="listPage.suppPopup(${item.splmntid},${item.aplyid})">${item.excclcSttsNm}</button></dd>`;
-			                        } else {
-			                        	mobileHtml += `<dd>${item.excclcSttsNm}</dd>`;
-			                        }
-			                        mobileHtml += `
-	                                </div>
-	                                <div class="list">
-	                                    <dt>제출기간</dt>
-	                                    <dd>${item.excclcReportBgngDt == null ? '-' : item.excclcReportBgngDt}<br class="pc-only"> ${item.excclcReportEndDt != null ? '~' : ''} ${item.excclcReportEndDt == null ? '' : item.excclcReportEndDt}</dd>
-	                                </div>
-	                                <div class="list">
-	                                    <dt>보고서등록</dt>`;
-	                                    if (`${item.crudBtn}` == 'C') {
-	                                    listHtml += `<dd><a href="javascript:void(0)" onclick="listPage.moveToDetail(${item.aplyid})" class="btn-small btn-outline-blue">제출</a></dd>`;
-	                                } else if (`${item.crudBtn}` == 'R') {
-	                                    listHtml += `<dd><a href="javascript:void(0)" onclick="listPage.moveToDetail(${item.aplyid})" class="btn-small btn-outline-black">조회</a></dd>`;
-	                                } else if (`${item.crudBtn}` == 'U') {
-	                                    listHtml += `<dd><a href="javascript:void(0)" onclick="listPage.moveToDetail(${item.aplyid})" class="btn-small btn-outline-blue">수정</a></dd>`;
-	                                } else {
-	                                    listHtml += `<dd>-</dd>`;
-	                                }
-	                                mobileHtml += `
-	                                </div>
-	                            </dl>
-	                        </div>
-	                    </li>`;
+                            <div class="tbody">
+                                <dl>
+                                    <div class="list">
+                                        <dt>번호</dt>
+                                        <dd>${item.rowNumber}</dd>
+                                    </div>
+                                    <div class="list">
+                                        <dt>사업분야</dt>
+                                        <dd>${item.fldNm}</dd>
+                                    </div>
+                                    <div class="list">
+                                        <dt>프로그램명</dt>
+                                        <dd>${item.prgrmNm}</dd>
+                                    </div>
+                                    <div class="list">
+                                        <dt>집행금액</dt>
+                                        <dd>${item.minusAmt}</dd>
+                                    </div>
+                                    <div class="list">
+                                        <dt>잔액</dt>
+                                        <dd>${item.nowAmt}</dd>
+                                    </div>
+                                    <div class="list">
+                                        <dt>제출상태</dt>
+                                    `;
+                                    if(`${item.excclcSttsCd}` == '203104' || `${item.excclcSttsCd}` == '203105'){
+                                        mobileHtml += `<dd><button type="button" class="link" onclick="listPage.suppPopup(${item.splmntid},${item.aplyid})">${item.excclcSttsNm}</button></dd>`;
+                                    } else {
+                                        mobileHtml += `<dd>${item.excclcSttsNm}</dd>`;
+                                    }
+                                    mobileHtml += `
+                                    </div>
+                                    <div class="list">
+                                        <dt>제출기간</dt>
+                                        <dd>${item.excclcReportBgngDt == null ? '-' : item.excclcReportBgngDt}<br class="pc-only"> ${item.excclcReportEndDt != null ? '~' : ''} ${item.excclcReportEndDt == null ? '' : item.excclcReportEndDt}</dd>
+                                    </div>
+                                    <div class="list">
+                                        <dt>보고서등록</dt>`;
+                                        if (`${item.crudBtn}` == 'C') {
+                                        listHtml += `<dd><a href="javascript:listPage.moveToDetail(${item.aplyid})" class="btn-small btn-outline-blue">제출</a></dd>`;
+                                    } else if (`${item.crudBtn}` == 'R') {
+                                        listHtml += `<dd><a href="javascript:listPage.moveToDetail(${item.aplyid})" class="btn-small btn-outline-black">조회</a></dd>`;
+                                    } else if (`${item.crudBtn}` == 'U') {
+                                        listHtml += `<dd><a href="javascript:listPage.moveToDetail(${item.aplyid})" class="btn-small btn-outline-blue">수정</a></dd>`;
+                                    } else {
+                                        listHtml += `<dd>-</dd>`;
+                                    }
+                                    mobileHtml += `
+                                    </div>
+                                </dl>
+                            </div>
+                        </li>`;
                     });
                 }
                 $('#list-area').html(listHtml);
@@ -252,17 +253,17 @@
                 $("#totalCount").html(data.totalCount);
             },
             addComma(value) {
-            	var retVal = String(value).replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
-            	return retVal;
+                var retVal = String(value).replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
+                return retVal;
             }
         };
     
         $(function () {
             listPage.init();
             
-            $("#rowPerPageChange").change(function(){
-                $("#rowPerPage").val($(this).val());
-                listPage.init($(this).val());
+            $("#rowPerPageChange").click(function(){
+                $("#rowPerPage").val($("#rowPerPageChangeSelect").val());
+                listPage.init($("#rowPerPageChangeSelect").val());
             });
         });
     </script>

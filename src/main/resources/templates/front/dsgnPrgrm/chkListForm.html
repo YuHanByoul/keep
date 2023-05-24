@@ -113,38 +113,31 @@
             var html = "";
             var idx  = 1;
             var ordr = 1;
-//             if(list !=null){
-
-//                 list.sort((a, b) => {
-//                     return a["rnum"] - b["rnum"] || Object.keys(a).filter(key => key !== field)
-//                       .find(key => a[key] !== b[key]) && (a[key] < b[key] ? -1 : 1) || 0;
-//                 });
-//             }
 
             for(var row of list){
 
                 if(row.lv=="1"){
                 	html += `
-                        <div class="table-caption mt0">
+                        <div id="lv1_${idx++}" dp1="${row.dp1}" class="table-caption mt1">
                             <div class="left">
                                 <h3 class="sub-title">${row.cn}</h3>
                             </div>
                             <div class="right">
                                 <p id="sum${row.dp1}">총점 <b class="fc-blue" >0</b> / 0점</p>
                             </div>
-                         </div>
+                        </div>
+                        <div id='lv2'>
+                        </div>
                     `
                 }
-        	    if(row.lv=="2"){
-        	    	if(idx!=1){
-            	    	html += `
-                	    	</tbody>
-                            </table>
-                        </div>
-                        `
-        	    	}
+            }
 
-        	    	html += `
+            $("#checkList").append(html);
+
+            for(var row of list){
+
+            	if(row.lv=="2"){
+                    html = `
                         <div class="table-caption">
                             <div class="left">
                                 <h4 class="dot-title">${row.cn}</h4>
@@ -154,43 +147,49 @@
                         <div class="table-col table-layout-auto  table-col-scroll">
                             <table>
                                 <caption>${row.cn} - 번호, 내용, 배점, 예, 아니오</caption>
-                                <colgroup>
-                                    <col style="width:6%;">
-                                    <col>
-                                    <col style="width:85px;">
-                                    <col style="width:75px;">
-                                    <col style="width:75px;">
-                                </colgroup>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">번호</th>
-                                        <th scope="col">내용</th>
-                                        <th scope="col">배점</th>
-                                        <th scope="col">예</th>
-                                        <th scope="col">아니오</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
+                                    <colgroup>
+                                       <col style="width:6%;">
+                                       <col>
+                                       <col style="width:85px;">
+                                       <col style="width:75px;">
+                                       <col style="width:75px;">
+                                   </colgroup>
+                                   <thead>
+                                       <tr>
+                                           <th scope="col">번호</th>
+                                           <th scope="col">내용</th>
+                                           <th scope="col">배점</th>
+                                           <th scope="col">예</th>
+                                           <th scope="col">아니오</th>
+                                       </tr>
+                                   </thead>
+                                   <tbody id='lv3' dp2='${row.dp2}'>
+                                   </tbody>
+                                </table>
+                            </div>
                     `
-                    idx=1;
-        	    }
-
-        	    if(row.lv=="3"){
-                    html += `
-                    	<tr class="tr-survey" id="qiteRow">
-        	                <td>${row.qrow}</td>
-        	                <td class="al">${row.cn}</td>
-        	                <td>${row.altm}</td>
-        	                <td><label class="inp"><input type="radio" title="예"     id="chkRdo${row.qitemid}" lv1="${row.dp1}" altm="${row.altm}" name="chkRdo${row.qitemid}" value="Y" qitemidY="${row.qitemid}" ordr="${ordr}"></label></td>
-        	                <td><label class="inp"><input type="radio" title="아니오" id="chkRdo${row.qitemid}" lv1="${row.dp1}" altm="${row.altm}" name="chkRdo${row.qitemid}" qitemidN="${row.qitemid}"></label></td>
-        	            </tr>
-                    `
-                    idx++;
-                    ordr++;
-                }
+                    $('[dp1='+row.dp1+']').next().append(html);
+            	}
             }
 
-            $("#checkList").append(html);
+            idx=1;
+            for(var row of list){
+            	if(row.lv=="3"){
+                    html = `
+                    <tr class="tr-survey" id="qiteRow">
+                        <td>${row.qrow}</td>
+                        <td class="al">${row.cn}</td>
+                        <td>${row.altm}</td>
+                        <td><label class="inp"><input type="radio" title="예"     id="chkRdo${row.qitemid}" lv1="${row.dp1}" altm="${row.altm}" name="chkRdo${row.qitemid}" value="Y" qitemidY="${row.qitemid}" ordr="${ordr}"></label></td>
+                        <td><label class="inp"><input type="radio" title="아니오" id="chkRdo${row.qitemid}" lv1="${row.dp1}" altm="${row.altm}" name="chkRdo${row.qitemid}" qitemidN="${row.qitemid}"></label></td>
+                    </tr>
+                    `
+                    $('[dp2='+row.dp2+']').append(html);
+            	}
+            }
+
+
+
         }
 
         function setAnsList(){
@@ -293,11 +292,15 @@
 
             	$('#sum'+lv1).get(0).innerHTML = `총점 <b class="fc-blue" >${sumScr}</b> / ${sumAltm}점</p>`;
 
-            	//$("#allSum").val()
-
             });
 
             $("#chkListForm [name^=chkRdo]").trigger('change');
+
+            var sttsCd = $("#sttsCd").val();
+            if(sttsCd =='111103'){
+                $('#chkListForm button, select, input[type=checkbox],input[type=radio],input[type=file]').prop('disabled', true);
+                //$('#sftyMngForm #nextBtn').prop('disabled', false);
+            }
 
 
         });
