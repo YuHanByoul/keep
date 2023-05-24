@@ -99,7 +99,7 @@
 		            <div class="mb-0 form-group required">
 		                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="addr"><strong>주소</strong></label>
 		                <div class="col-12">
-		                    <input type="text" class="form-control form-control-sm" name="addr" id="addr" placeholder="주소" th:value="${envtcherTrnngInst.addr}" readonly/>
+		                    <input type="text" class="form-control form-control-sm" name="addr" id="addr" placeholder="주소" th:value="${envtcherTrnngInst.addr}" onclick="daumPostcode()" readonly/>
 		                </div>
 		            </div>
 		        </div>
@@ -107,7 +107,7 @@
 		            <div class="mb-0 form-group required">
 		                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="addrDtl"><strong>상세주소</strong></label>
 		                <div class="col-sm-12">
-		                    <input type="text" class="form-control form-control-sm" name="addrDtl" id="addrDtl" placeholder="상세주소" th:value="${envtcherTrnngInst.addrDtl}" readonly/>
+		                    <input type="text" class="form-control form-control-sm" name="addrDtl" id="addrDtl" placeholder="상세주소" th:value="${envtcherTrnngInst.addrDtl}"/>
 		                </div>
 		            </div>
 		        </div>
@@ -149,6 +149,8 @@
 	        </th:block>
 	    </div>
 		<!-- Tab Container End -->
+		
+			
 </form>
 
 <div class="modal fade" id="instSearchPopup" data-bs-backdrop="static"></div>
@@ -275,4 +277,82 @@
 			});
 		}
 	}
+ 	
+	function daumPostcode(){
+        new daum.Postcode({
+            oncomplete: function(data) {
+                var addr = '';
+                if (data.userSelectedType === 'R') {
+                    addr = data.roadAddress;
+                } else {
+                    addr = data.jibunAddress;
+                }
+                
+                var sidoCd = (data.sigunguCode).substr(0,2);
+                var sidoStr = "";
+                
+                switch(sidoCd) {
+	                case "11" : 
+	                	sidoStr = "서울특별시" 
+	                	break;
+	                case "26" : 
+	                	sidoStr = "부산광역시" 
+	                	break;
+	                case "27" : 
+	                	sidoStr = "대구광역시" 
+	                	break;
+	                case "28" : 
+	                	sidoStr = "인천광역시" 
+	                	break;
+	                case "29" : 
+	                	sidoStr = "광주광역시" 
+	                	break;
+	                case "30" : 
+	                	sidoStr = "대전광역시" 
+	                	break;
+	                case "31" : 
+	                	sidoStr = "울산광역시" 
+	                	break;
+	                case "36" : 
+	                	sidoStr = "세종특별자치시" 
+	                	break;
+	                case "41" : 
+	                	sidoStr = "경기도"
+	                	break;
+	                case "42" : 
+	                	sidoStr = "강원도" 
+	                	break;
+	                case "43" : 
+	                	sidoStr = "충청북도" 
+	                	break;
+	                case "44" : 
+	                	sidoStr = "충청남도" 
+	                	break;
+	                case "45" : 
+	                	sidoStr = "전라북도" 
+	                	break;
+	                case "46" : 
+	                	sidoStr = "전라남도" 
+	                	break;
+	                case "47" : 
+	                	sidoStr = "경상북도" 
+	                	break;
+	                case "48" : 
+	                	sidoStr = "경상남도" 
+	                	break;
+	                case "50" : 
+	                	sidoStr = "제주특별자치도" 
+	                	break;
+                }
+
+                $('#sidoCd').val(sidoCd);
+                $('#signguCd').val(data.sigunguCode);
+                $('#sidoNm').val(sidoStr);
+                $('#signguNm').val(data.sigungu);
+                $('#zip').val(data.zonecode);
+                $('#addr').val(addr);
+                $('#addrDtl').focus();
+            }
+        }).open();
+	} 	 	
 </script>

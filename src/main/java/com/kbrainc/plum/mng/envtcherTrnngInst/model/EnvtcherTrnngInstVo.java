@@ -67,7 +67,7 @@ public class EnvtcherTrnngInstVo extends ParentRequestVo {
     /** 설명 */
     private String expln;
     /** 썸네일_파일아이디 */
-    private int thmbnFileid;
+    private Integer thmbnFileid;
     /** 수정_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date mdfcnDt;

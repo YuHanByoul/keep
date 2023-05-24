@@ -109,7 +109,7 @@ public class EnvtcherTrnngInstController {
         result =  envtcherTrnngInstService.selectEnvtcherTrnngInstInfo(envtcherTrnngInstVo);
         model.addAttribute("envtcherTrnngInst", result);
         
-        if(envtcherTrnngInstVo.getThmbnFileid() != 0 && result.getFileIdntfcKey() != null) {
+        if(result.getThmbnFileid() != null && !result.getThmbnFileid().equals(0)) {
             StringBuffer fileBtn = new StringBuffer();
             
             fileBtn.append("<div class ='label label-inverse text-white' id='");

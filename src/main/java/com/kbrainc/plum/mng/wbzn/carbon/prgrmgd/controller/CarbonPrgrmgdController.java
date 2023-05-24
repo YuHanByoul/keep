@@ -137,7 +137,7 @@ public class CarbonPrgrmgdController {
         }
         model.addAttribute("years", years);
         
-        if(prgrmgdVo.getThmbnFileid() != 0 && result.getFileIdntfcKey() != null) {
+        if(result.getThmbnFileid() != null && !result.getThmbnFileid().equals(0)) {
             StringBuffer fileBtn = new StringBuffer();
             
             fileBtn.append("<div class ='label label-inverse text-white' id='");

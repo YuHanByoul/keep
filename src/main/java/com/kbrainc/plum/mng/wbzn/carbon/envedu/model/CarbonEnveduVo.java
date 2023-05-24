@@ -54,7 +54,7 @@ public class CarbonEnveduVo extends ParentRequestVo {
     /** URL */
     private String url;
     /** 썸네일_파일아이디 */
-    private int thmbnFileid;
+    private Integer thmbnFileid;
     /** 내용_STYLE */
     private String cnStyle;
     /** 내용 */
