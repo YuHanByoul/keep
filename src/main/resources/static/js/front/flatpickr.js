@@ -646,6 +646,7 @@
             o.setAttribute("aria-current", "date")),
             i ? (o.tabIndex = 0,
             be(n) && (o.classList.add("selected"),
+            o.setAttribute("title","선택됨"),
             w.selectedDateElem = o,
             "range" === w.config.mode && (s(o, "startRange", w.selectedDates[0] && 0 === M(n, w.selectedDates[0], !0)),
             s(o, "endRange", w.selectedDates[1] && 0 === M(n, w.selectedDates[1], !0)),
@@ -717,7 +718,7 @@
                 var e = function(e) {
                     return !(void 0 !== w.config.minDate && w.currentYear === w.config.minDate.getFullYear() && e < w.config.minDate.getMonth()) && !(void 0 !== w.config.maxDate && w.currentYear === w.config.maxDate.getFullYear() && e > w.config.maxDate.getMonth())
                 };
-                w.monthsDropdownContainer.tabIndex = 0,
+                // w.monthsDropdownContainer.tabIndex = 0,
                 w.monthsDropdownContainer.innerHTML = "";
                 for (var n = 0; n < 12; n++)
                     if (e(n)) {
@@ -734,6 +735,7 @@
             var e, n = d("div", "flatpickr-month"), t = window.document.createDocumentFragment();
             w.config.showMonths > 1 || "static" === w.config.monthSelectorType ? e = d("span", "cur-month") : (w.monthsDropdownContainer = d("select", "flatpickr-monthDropdown-months"),
             w.monthsDropdownContainer.setAttribute("aria-label", w.l10n.monthAriaLabel),
+            w.monthsDropdownContainer.setAttribute("title", "월"),
             P(w.monthsDropdownContainer, "change", (function(e) {
                 var n = g(e)
                   , t = parseInt(n.value, 10);
@@ -744,10 +746,11 @@
             q(),
             e = w.monthsDropdownContainer);
             var a = m("cur-year", {
-                tabindex: "-1"
+                // tabindex: "-1"
             })
               , i = a.getElementsByTagName("input")[0];
-            i.setAttribute("aria-label", w.l10n.yearAriaLabel),
+              i.setAttribute("aria-label", w.l10n.yearAriaLabel),
+              i.setAttribute("title", "년"),
             w.config.minDate && i.setAttribute("min", w.config.minDate.getFullYear().toString()),
             w.config.maxDate && (i.setAttribute("max", w.config.maxDate.getFullYear().toString()),
             i.disabled = !!w.config.minDate && w.config.minDate.getFullYear() === w.config.maxDate.getFullYear());
@@ -897,7 +900,7 @@
                     break;
                 case 37:
                 case 39:
-                    if (r || t)
+                    if (r || t) 
                         w.hourElement && w.hourElement.focus();
                     else {
                         e.preventDefault();
@@ -1547,15 +1550,17 @@
             w.isMobile || function() {
                 var e = window.document.createDocumentFragment();
                 if (w.calendarContainer = d("div", "flatpickr-calendar"),
-                w.calendarContainer.tabIndex = 0,
+                // w.calendarContainer.tabIndex = 0,
                 !w.config.noCalendar) {
                     if (e.appendChild((w.monthNav = d("div", "flatpickr-months"),
                     w.yearElements = [],
                     w.monthElements = [],
                     w.prevMonthNav = d("button", "flatpickr-prev-month"),
                     w.prevMonthNav.innerHTML = w.config.prevArrow,
+                    w.prevMonthNav.setAttribute("title","이전달"),
                     w.nextMonthNav = d("button", "flatpickr-next-month"),
                     w.nextMonthNav.innerHTML = w.config.nextArrow,
+                    w.nextMonthNav.setAttribute("title","다음달"),
                     V(),
                     Object.defineProperty(w, "_hidePrevMonthArrow", {
                         get: function() {
