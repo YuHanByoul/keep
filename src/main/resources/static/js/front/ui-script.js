@@ -761,7 +761,10 @@ const layerPopup = {
 
 		if (event !== undefined) {
 			eventTarget = event.target;
+			console.log(eventTarget)
 		}
+		
+
 	},
 	close : function ({target, callback}) {
 		const targetWrap = $('[data-layer-id="' + target + '"]');
