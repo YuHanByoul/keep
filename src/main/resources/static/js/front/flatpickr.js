@@ -644,16 +644,15 @@
             -1 === e.indexOf("hidden") && 0 === M(n, w.now) && (w.todayDateElem = o,
             o.classList.add("today"),
             o.setAttribute("aria-current", "date")),
-            i ? (o.tabIndex = 0,
-            be(n) && (o.classList.add("selected"),
-            o.setAttribute("title","선택됨"),
+            i ? (o.tabIndex = "",
+            be(n) && ((o.classList.add("selected"),o.setAttribute("title","선택됨")),
             w.selectedDateElem = o,
             "range" === w.config.mode && (s(o, "startRange", w.selectedDates[0] && 0 === M(n, w.selectedDates[0], !0)),
             s(o, "endRange", w.selectedDates[1] && 0 === M(n, w.selectedDates[1], !0)),
             "nextMonthDay" === e && o.classList.add("inRange")))) : o.classList.add("flatpickr-disabled"),
             "range" === w.config.mode && function(e) {
                 return !("range" !== w.config.mode || w.selectedDates.length < 2) && (M(e, w.selectedDates[0]) >= 0 && M(e, w.selectedDates[1]) <= 0)
-            }(n) && !be(n) && o.classList.add("inRange"),
+            }(n) && !be(n) && (o.classList.add("inRange"),o.setAttribute("title", "선택됨")),
             w.weekNumbers && 1 === w.config.showMonths && "prevMonthDay" !== e && a % 7 == 6 && w.weekNumbers.insertAdjacentHTML("beforeend", "<span class='flatpickr-day'>" + w.config.getWeek(n) + "</span>"),
             De("onDayCreate", o),
             o
@@ -1761,7 +1760,7 @@
             S();
             var n = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
             !w.isMobile && n && de(),
-            De("onReady")
+            De("onReady");
         }(),
         w
     }
