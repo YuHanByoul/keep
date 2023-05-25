@@ -49,9 +49,6 @@ public class EduSareaController {
     @Autowired
     private CommonService commonService;
     
-    @Autowired
-    private CodeService codeService; 
-    
     /**
     * 운영권역관리 리스트화면으로 이동
     *
@@ -68,14 +65,28 @@ public class EduSareaController {
     }
     
     @RequestMapping(value = "/mng/prtpn/eduSarea/eudSareaSignguSettingPopup.html")
-    public String infntSchdlInsertPopup(@RequestParam(value ="sareaid",required = false) int sareaid, Model model, HttpServletRequest request) throws Exception {
+    public String eudSareaSignguSettingPopup(@RequestParam(value ="sareaid",required = false) int sareaid, Model model, HttpServletRequest request) throws Exception {
         model.addAttribute("sareaid", sareaid);
         
-        model.addAttribute("ctprvnCdList", eduSareaService.selectCtprvnCdList(sareaid));
-        
+        model.addAttribute("ctprvnCdList", eduSareaService.selectCtprvnCdList(sareaid)); // 등록 되어 있는 시군구 코드 목록 조회
+
         return "mng/prtpn/eduSarea/eudSareaSignguSettingPopup";
     }
-    
+
+
+    /**
+     * 기관검색 팝업
+     *
+     * @return string
+     * @throws Exception
+     * @Title : instSearchPopup
+     * @Description : 기관검색 팝업
+     */
+    @RequestMapping("/mng/prtpn/eduSarea/instSearchPopup.html")
+    public String instSearchPopup() throws Exception {
+        return "mng/prtpn/eduSarea/instSearchPopup";
+    }
+
     /**
      * 시군구코드 목록을 조회한다.
      * 
@@ -89,11 +100,13 @@ public class EduSareaController {
     @ResponseBody
     public Map<String, Object> signguCodeList(EduSareaVo eduSareaVo) throws Exception {
 
-        //List<EduSareaVo> list = eduSareaService.selectSignguCodeList(eduSareaVo);
+//        List<EduSareaVo> list = eduSareaService.selectSignguCodeList(eduSareaVo);
         List<EduSareaVo> list = eduSareaService.selectAddrSignguList(eduSareaVo);
+        int count = eduSareaService.countAddrSignguList(eduSareaVo);
 
-        Map<String, Object> response = new HashMap<String, Object>();
+        Map<String, Object> response = new HashMap<>();
 
+        response.put("count",count);
         response.put("list", list);
 
         return response;
@@ -159,7 +172,7 @@ public class EduSareaController {
         }
 
         List<Map<String, Object>> instList = commonService.selectAlowedInstList();
-        
+
         resultMap.put("list", result);
         resultMap.put("instList", instList);
 
@@ -312,5 +325,6 @@ public class EduSareaController {
         
         return resultMap;
             
-    }        
+    }
+
 }

@@ -237,7 +237,21 @@ public class EduSareaServiceImpl extends PlumAbstractServiceImpl implements EduS
     @Override
     public List<EduSareaVo> selectAddrSignguList(EduSareaVo eduSareaVo) throws Exception{
         return eduSareaDao.selectAddrSignguList(eduSareaVo);        
-    }        
+    }
+
+    /**
+     * 권역 > 시도 테이블에 등록된 개수 조회
+     *
+     * @param eduSareaVo
+     * @return int
+     * @throws Exception
+     * @Title : countAddrSignguList
+     * @Description : TODO [메소드 설명]
+     */
+    @Override
+    public int countAddrSignguList(EduSareaVo eduSareaVo) throws Exception {
+        return eduSareaDao.countAddrSignguList(eduSareaVo);
+    }
 
     /**
     * 등록된 지역코드 목록 조회

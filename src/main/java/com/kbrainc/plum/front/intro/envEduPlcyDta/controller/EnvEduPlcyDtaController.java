@@ -182,21 +182,12 @@ public class EnvEduPlcyDtaController {
 
         if(pdfFileList != null) {
             for (FileVo fileVo : pdfFileList) {
-                String filePath = fileVo.getFilePath().substring(fileVo.getFilePath().lastIndexOf("/")) + "/";
+                String filePath = fileVo.getFilePath() + "/";
                 String saveFileNm = fileVo.getSaveFileNm();
                 boolean isExistExtension = true;
-//                int extenstionIndex = saveFileNm.lastIndexOf(".");
-                /*
-                    if(extenstionIndex < 0) {
-                        String extenstion = saveFileNm.substring(extenstionIndex+1);
-                        if(!"pdf".equals(extenstion)) {
-                            isExistExtension = false;
-                        }
-                    }
-                */
                 saveFileNm = saveFileNm.replaceAll("\\[", "%5B");
                 saveFileNm = saveFileNm.replaceAll("\\]", "%5D");
-                pdfFilePaths.add(isExistExtension ? filePath + saveFileNm : filePath + saveFileNm + ".pdf" );
+                pdfFilePaths.add(filePath + saveFileNm);
             }
         }
 

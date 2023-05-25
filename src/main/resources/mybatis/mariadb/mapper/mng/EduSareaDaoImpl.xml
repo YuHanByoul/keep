@@ -214,27 +214,28 @@
     </select>    
 
     <!-- 시군구코드 목록 조회 -->
-    <select id="selectAddrSignguList" parameterType="EduSareaVo" resultType="EduSareaVo">
+     <select id="selectAddrSignguList" parameterType="EduSareaVo" resultType="EduSareaVo">
         /* EduSareaDao.selectAddrSignguList */
-        SELECT A.CTPRVN_CD
-             , A.SIGNGU_NM
-             , A.SIGNGU_CD 
-             , #{sareaId} AS SAREAID 
-             , CASE WHEN B.SIGNGU_CD IS NULL THEN 'N' ELSE 'Y' END USE_YN
-             , B.HR_SE_CD
+        SELECT
+            A.CTPRVN_CD
+            , A.SIGNGU_NM
+            , A.SIGNGU_CD
+            , #{sareaId} AS SAREAID
+            , CASE WHEN B.SIGNGU_CD IS NULL THEN 'N' ELSE 'Y' END USE_YN
+            , B.HR_SE_CD
         FROM TB_CMM_ADDR_SIGNGU A
-        LEFT OUTER JOIN ( SELECT SAREAID
-                               , HR_SE_CD
-                               , SIGNGU_CD
-                               , CTPRVN_CD 
-                            FROM TB_EDU_SAREA_SIGNGU
-                            WHERE SAREAID = #{sareaId}
-                        ) B ON B.SIGNGU_CD = A.SIGNGU_CD AND B.CTPRVN_CD = A.CTPRVN_CD         
-        WHERE A.CTPRVN_CD = #{ctprvnCd}
-          AND A.CTPRVN_CD IN (SELECT CTPRVN_CD FROM TB_EDU_SAREA_CTPRVN_MAPNG WHERE SAREAID = #{sareaId})
-          AND A.SIGNGU_NM <![CDATA[<>]]> '' 
-          AND A.SIGNGU_NM IS NOT NULL
-        ORDER BY A.SIGNGU_NM ASC 
+        LEFT OUTER JOIN (
+            SELECT SAREAID
+            , HR_SE_CD
+            , SIGNGU_CD
+            , CTPRVN_CD
+            FROM TB_EDU_SAREA_SIGNGU
+            WHERE SAREAID = #{sareaId}
+        ) B
+            ON B.SIGNGU_CD = A.SIGNGU_CD AND B.CTPRVN_CD = A.CTPRVN_CD
+        WHERE A.CTPRVN_CD = ${ctprvnCd}
+        AND A.SIGNGU_NM IS NOT NULL AND A.SIGNGU_NM != ''
+        ORDER BY A.SIGNGU_NM ASC
     </select>    
     
     <!-- 등록된 지역코드 목록 조회 -->
@@ -256,5 +257,11 @@
         FROM TB_EDU_SAREA_SIGNGU
         WHERE SAREAID = #{sareaId}
         GROUP BY SAREAID, CTPRVN_CD
+    </select>
+
+    <select id="countAddrSignguList" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        From TB_EDU_SAREA_SIGNGU
+        where CTPRVN_CD = #{ctprvnCd} and SAREAID = #{sareaId}
     </select>
 </mapper>

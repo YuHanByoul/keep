@@ -116,7 +116,7 @@ public interface EduSareaService {
      * @return List<EduSareaVo>
      */
     public List<EduSareaVo> selectCtprvnCdList(int sareaid) throws Exception;
-    
+
     /**
     * 지역코드 목록을 공통 테이블에서 조회.
     **
@@ -128,7 +128,7 @@ public interface EduSareaService {
     * @return List<EduSareaVo>
     */
     public List<EduSareaVo> selectAddrCtprvnList() throws Exception;    
-    
+
     /**
      * 시군구 목록을 공통 테이블에서 조회.
      **
@@ -139,7 +139,18 @@ public interface EduSareaService {
      * @throws Exception
      * @return List<EduSareaVo>
      */
-    public List<EduSareaVo> selectAddrSignguList(EduSareaVo eduSareaVo) throws Exception;        
+    public List<EduSareaVo> selectAddrSignguList(EduSareaVo eduSareaVo) throws Exception;
+
+    /**
+     * 권역 > 시도 테이블에 등록된 개수 조회
+     *
+     * @param eduSareaVo
+     * @return int
+     * @throws Exception
+     * @Title : countAddrSignguList
+     * @Description : TODO [메소드 설명]
+     */
+    public int countAddrSignguList(EduSareaVo eduSareaVo) throws Exception;
     
     /**
     * 등록된 지역코드 목록 조회
