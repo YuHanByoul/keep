@@ -7,18 +7,27 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.apache.ibatis.type.Alias;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.front.dsgnMng.model.DsgnMngVo;
 import com.kbrainc.plum.front.dsgnMng.service.DsgnMngService;
+import com.kbrainc.plum.front.srvy.model.SrvySbmsnAnsVo;
+import com.kbrainc.plum.front.srvy.model.SrvySbmsnVo;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.mng.dsgnPrgrm.service.DsgnPrgrmService;
 import com.kbrainc.plum.mng.qestnr.model.QitemExVo;
@@ -884,7 +893,7 @@ public class DsgnMngController {
     		qitemVo.setQestnrid(aplyInfo.getQestnrid());
     		//컨설팅 문항 목록 조회
     		model.addAttribute("qitemList", qestnrService.selectQitemWithExList(qitemVo));
-    		model.addAttribute("ansList",   dsgnMngService.selectSrvyAnsList(dsgnMngVo));
+    		model.addAttribute("ansList",   dsgnMngService.selectSrvyAnsList(aplyInfo));
     		//컨설팅 답변 목록 조회
     	}
 
@@ -924,6 +933,7 @@ public class DsgnMngController {
 
         return resultMap;
     }
+
     /**
     * 컨설팅신청 삭제
     *
