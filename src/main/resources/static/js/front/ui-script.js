@@ -883,7 +883,7 @@ const tabContent = {
 		})
 	},
 	afterLoadTab  : function () {
-		$trigger = $tabList.find('button, a')
+		$trigger = $tabList.find('button:not(.link), a:not(.link)')
 		$trigger.each(function (){
 			const $parent = $(this).closest('li');
 			const $dropDown = $(this).closest('.dropDown');

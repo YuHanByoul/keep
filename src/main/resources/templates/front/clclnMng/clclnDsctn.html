@@ -155,9 +155,9 @@
 	<div class="right d-flex mo-flex-wrap">
 		<div class="btn-wrap mt0">
 			<div class="right">
-				<button type="button" class="btn-medium btn-red" th:onclick="listPage.bankPopup([[${detail.aplyid}]]);">뱅크다 거래등록</button>
-				<button type="button" class="btn-medium btn-blue" th:onclick="listPage.clclnDsctnPopup([[${detail.aplyid}]], 0, [[${detail.fldCd}]], '210102')">집행등록</button>
-				<button type="button" class="btn-medium btn-blue" th:onclick="listPage.clclnDsctnPopup([[${detail.aplyid}]], 0, [[${detail.fldCd}]], '210101')">입금등록</button>
+				<button type="button" class="btn-medium btn-red" th:onclick="listPage.bankPopup([[${detail.aplyid}]], event);">뱅크다 거래등록</button>
+				<button type="button" class="btn-medium btn-blue" th:onclick="listPage.clclnDsctnPopup([[${detail.aplyid}]], 0, [[${detail.fldCd}]], '210102', event)">집행등록</button>
+				<button type="button" class="btn-medium btn-blue" th:onclick="listPage.clclnDsctnPopup([[${detail.aplyid}]], 0, [[${detail.fldCd}]], '210101', event)">입금등록</button>
 				<button type="button" class="btn-medium btn-gray" onclick="listPage.deleteList()">삭제</button>
 			</div>
 		</div>
@@ -381,17 +381,17 @@
                 });
             }
         },
-        clclnDsctnPopup: function(aplyid, dsctnid, fldCd, seCd) {
+        clclnDsctnPopup: function(aplyid, dsctnid, fldCd, seCd, event) {
             $("#clclnDsctnModalPopup").load("/front/clclnMng/clclnDsctnPopup.html?aplyid=" + aplyid + "&dsctnid=" + dsctnid + "&fldCd=" + fldCd + "&seCd=" + seCd, function(response, status, xhr) {
                 if (status == "success") {
-                    layerPopup.open({target:'clclnDsctnModalPopup'});
+                    layerPopup.open({target:'clclnDsctnModalPopup'}, event);
                 }
             });
         },
-        bankPopup: function(aplyid) {
+        bankPopup: function(aplyid, event) {
             $("#bankModalPopup").load("/front/clclnMng/bankPopup.html?aplyid=" + aplyid, function(response, status, xhr) {
                 if (status == "success") {
-                    layerPopup.open({target:'bankModalPopup'});
+                    layerPopup.open({target:'bankModalPopup'}, event);
                 }
             });
         },
@@ -414,7 +414,7 @@
 	                        <td>${item.utztnSenm}</td>
 	                        <td>${item.artclUpperNm}</td>
 	                        <td>${item.artclNm}</td>
-	                        <td><a class="link" href="javascript:listPage.clclnDsctnPopup(${item.aplyid},${item.dsctnid},${item.fldCd},${item.seCd})">${item.excutTrgt}</a></td>
+	                        <td><a class="link" href="javascript:void(0)" onclick="listPage.clclnDsctnPopup(${item.aplyid},${item.dsctnid},${item.fldCd},${item.seCd},event)">${item.excutTrgt}</a></td>
 	                        <td class="ar ${item.color}">${item.amt}</td>
 	                        <td>${item.regDt}</td>
 	                        <td class="${item.color}">${item.seNm}</td>
