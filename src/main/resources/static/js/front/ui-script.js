@@ -12,6 +12,7 @@ $(function (){
 	// uploadFile();
 	headerSearch.init();
 	asideScrollTop();
+	skipLink();
 	$('body').removeClass('preload');
 });
 
@@ -831,6 +832,7 @@ const tabContent = {
 	init : function () {
 		$tabList = $('.tab-list li');
 		$trigger = $tabList.find('button') //toggle;
+		$mobileTabTrigger = $('.tab-mobile-trigger');
 		tabContent.onClick();
 		tabContent.afterLoadHash();
 		tabContent.afterLoadTab();
@@ -842,19 +844,31 @@ const tabContent = {
 			// 선택 탭 활성화
 			$parent.addClass('active');
 			$(this).attr({
-				'aria-selected': 'true'
+				'title':'선택됨'
 			})
 			// 기존 탭 비활성화
 			$parent.siblings().removeClass('active');
 			$parent.siblings().find('button').attr({
-				'aria-selected': 'false'
+				'title': ''
 			});
 			// 선택된 연관된 탭 패널 활성화
-			$('#' + $(this).attr('aria-controls')).addClass('active');
+			$('#' + $(this).attr('data-controls')).addClass('active');
 			// 기존 탭 패널 비활성화
-			$('#' + $(this).attr('aria-controls')).siblings('.tabpanel').removeClass('active');
+			$('#' + $(this).attr('data-controls')).siblings('.tabpanel').removeClass('active');
 			if ($(this).is('button')) {
 				history.pushState({}, "", "#" + $(this).attr('id'))
+			}
+		})
+		$mobileTabTrigger.on('click', function (){
+			const $parent = $(this).closest('.tab-content')
+			if ($parent.hasClass('active')) {
+				$(this).attr({
+					'aria-expanded':'true'
+				})
+			} else {
+				$(this).attr({
+					'aria-expanded':'false'
+				})
 			}
 		})
 	},
@@ -865,9 +879,9 @@ const tabContent = {
 			const $dropDown = $(this).closest('.dropDown');
 			if ($parent.hasClass('active')) {
 				$(this).attr({
-					'aria-selected': 'true'
+					'title':'선택됨'
 				})
-				$('#' + $(this).attr('aria-controls')).addClass('active');
+				$('#' + $(this).attr('data-controls')).addClass('active');
 
 				//mobile trigger text 
 				const $tabParent = $(this).closest('.tab-content');
@@ -876,9 +890,9 @@ const tabContent = {
 				$mobileTrigger.append($(this).html());
 			} else {
 				$(this).attr({
-					'aria-selected': 'false'
+					'title': ''
 				});
-				$('#' + $(this).attr('aria-controls')).removeClass('active');
+				$('#' + $(this).attr('data-controls')).removeClass('active');
 			}
 		});
 	},
@@ -902,7 +916,7 @@ const tabContent = {
 				tabContent.afterLoadTab();
 			}
 		})
-	}
+	},
 }
 
 const accordionContent = {
@@ -918,11 +932,11 @@ const accordionContent = {
 			if (parent.hasClass('active')) {
 				parent.removeClass('active');
 				$(this).attr('aria-expanded', 'true');
-				$('#' + $(this).attr('aria-controls')).removeClass('active')
+				$('#' + $(this).attr('data-controls')).removeClass('active')
 			} else {
 				parent.addClass('active');
 				$(this).attr('aria-expanded', 'false');
-				$('#' + $(this).attr('aria-controls')).addClass('active')
+				$('#' + $(this).attr('data-controls')).addClass('active')
 			}
 		})
 	},
@@ -931,10 +945,10 @@ const accordionContent = {
 			const parent = $(this).closest('.acc-title')
 			if (parent.hasClass('active')) {
 				$(this).attr('aria-expanded', 'false');
-				$('#' + $(this).attr('aria-controls')).addClass('active')
+				$('#' + $(this).attr('data-controls')).addClass('active')
 			} else {
 				$(this).attr('aria-expanded', 'true');
-				$('#' + $(this).attr('aria-controls')).removeClass('active')
+				$('#' + $(this).attr('data-controls')).removeClass('active')
 			}
 		});
 	}
@@ -1112,6 +1126,30 @@ const headerSearch = {
 const asideScrollTop = function () {
 	$('.aside .scroll-top a').on('click', function () {
 		$('html, body').animate({scrollTop: '0'}, 300);
+	});
+}
+const skipLink = function () {
+	const $skipLink = $('#skip a');
+		$skipLink.on('click', function () {
+		let linkHash = this.hash;
+		let dummyHeight = '';
+		console.log(this.hash)
+		if (linkHash === '#content') {
+			dummyHeight = $('#content').offset().top - $headerHeight;
+			$('html, body').animate({scrollTop: dummyHeight}, 300);
+		}
+		if (linkHash === '#aside') {
+			if ($WINDOW_MODE === DESKTOP) {
+				$('.footer .aside').removeAttr('id');
+				$(':not(.footer) .aside').attr('id','aside');
+				console.log(1)
+			}
+			if ($WINDOW_MODE === TABLET || $WINDOW_MODE === MOBILE) {
+				$(':not(.footer) .aside').removeAttr('id');
+				$('.footer-aside .aside').attr('id','aside');
+				console.log(2)
+			}
+		}
 	})
 }
 
