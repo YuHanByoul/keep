@@ -436,4 +436,10 @@ public class PublicContestServiceImpl extends PlumAbstractServiceImpl implements
         // TODO Auto-generated method stub
         return publicContestDao.selectMngGrpList(publicContestVo);
     }
+
+    @Override
+    public List<PublicContestMngGrpVo> selectCnsltngExprtList(PublicContestMngGrpVo publicContestVo) throws Exception {
+        // TODO Auto-generated method stub
+        return publicContestDao.selectCnsltngExprtList(publicContestVo);
+    }
 }
