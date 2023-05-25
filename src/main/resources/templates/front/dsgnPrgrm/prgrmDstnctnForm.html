@@ -32,13 +32,13 @@
                 <div class="sticky-navigation">
                     <strong class="tit">프로그램 정보 항목</strong>
                     <div class="sticky-steps">
-                        <ul>
-                            <li class="active"><a>프로그램 우수성</a></li>
-                            <li>               <a>프로그램 운영관리</a></li>
-                            <li>               <a>프로그램 평가</a></li>
-                            <li>               <a>지도자의 자격 및 배치</a></li>
-                            <li>               <a>안전관리</a></li>
-                            <li>               <a>체크리스트</a></li>
+                        <ul id='prgrmNav'>
+                            <li class="active"><a href="javascript:navClick('/front/dsgnPrgrm/prgrmDstnctnForm.html')" >프로그램 우수성</a></li>
+                            <li><a href="javascript:navClick('/front/dsgnPrgrm/prgrmOperMngForm.html')" >프로그램 운영관리</a></li>
+                            <li><a href="javascript:navClick('/front/dsgnPrgrm/prgrmEvlForm.html')" >프로그램 평가</a></li>
+                            <li><a href="javascript:navClick('/front/dsgnPrgrm/ldrQlfcForm.html')" >지도자의 자격 및 배치</a></li>
+                            <li><a href="javascript:navClick('/front/dsgnPrgrm/sftyMngForm.html')" >안전관리</a></li>
+                            <li><a href="javascript:navClick('/front/dsgnPrgrm/chkListForm.html')" >체크리스트</a></li>
                         </ul>
                         <div class="btn-wrap">
                             <div class="center">
@@ -250,7 +250,7 @@
                                             <th:block th:if="${eduPhotoFileList ne null}" th:each="file : ${eduPhotoFileList}">
                                                 <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}" th:id="${file.fileid}">
                                                 <span class="name">
-                                                    <a th:href="|javascript:downloadFileByFileid('${file.fileid}','${file.fileIdntfcKey}')|">   
+                                                    <a th:href="|javascript:downloadFileByFileid('${file.fileid}','${file.fileIdntfcKey}')|">
                                                         [[${file.orginlFileNm}]]
                                                     </a>
                                                 </span>
@@ -516,7 +516,13 @@
             var reUrl     = "/front/dsgnPrgrm/prgrmDstnctnForm.html";    //우수성
             var uploadFileCnt=0;
 
-
+            function navClick(link){
+                var sttsCd = $('#sttsCd').val();
+                var prgrmid = $('#prgrmid').val();
+                if(sttsCd != null && sttsCd != '' && sttsCd != '111101'){
+                    location.href = link+"?prgrmid="+prgrmid;
+                };
+            }
 
             function setDay(num){
             	$("#styDaytm").val(Number(num)+1);
@@ -903,19 +909,24 @@
             function initForm(){
 
             	var sttsCd = $("#sttsCd").val();
-            	if(sttsCd =='111103'){
-//             	if(sttsCd !='111101'&&sttsCd !='111102'){
+
+                if(sttsCd !=null && sttsCd !='' && sttsCd !='111101'&& sttsCd !='111102'){
             		$('#dstnctnForm input,textarea').prop('readonly', true);
             		$('#dstnctnForm button, select, input[type=checkbox],input[type=radio],input[type=file]').prop('disabled', true);
 
             		$('#dstnctnForm #nextBtn').prop('disabled', false);
             	}
 
+                if(sttsCd !=null && sttsCd !='' && sttsCd !='111101'){
+                    $("#prgrmNav .active").removeClass('active');
+                }
             }
 
+            //
             $(function() {
 
             	initForm();
+            	validate();
 
             	$("#eduSbjctTd input").each(function() {
             	    var chkVal = $(this).val();
@@ -1033,9 +1044,6 @@
                        }
                     }
                 });
-
-                validate();
-
             });
 
             function fn_deleteFileList(fileid, fileIdntfcKey){
