@@ -7,6 +7,7 @@
     <div layout:fragment="content">
         <form id="aplyInfoForm" name="aplyInfoForm" >
             <input type="hidden" id="cnsltngid"    name="cnsltngid"    th:value="${aplyInfo.cnsltngid}">
+            <input type="hidden" id="srvyid"       name="srvyid"       th:value="${aplyInfo.srvyid}">
             <input type="hidden" id="prgrmid"      name="prgrmid"      th:value="${aplyInfo.prgrmid}">
             <input type="hidden" id="sttsCd"       name="sttsCd"       th:value="${aplyInfo.sttsCd}">
             <input type="hidden" id="sttsCdNm"     name="sttsCdNm"     th:value="${aplyInfo.sttsCdNm}">
@@ -32,8 +33,8 @@
             <div class="tab-content tab-sub dropDown">
                 <button type="button" class="tab-mobile-trigger trigger"  aria-expanded="true"></button>
                 <ul class="tab-list target">
-                    <li class="tab active"><button onclick="aplyInfo.tabClick(this.id)" data-controls="tab-subpanel01" id="tab-sub01" >신청정보</button></li>
-                    <li class="tab">       <button onclick="aplyInfo.tabClick(this.id)" data-controls="tab-subpanel02" id="tab-sub02" >컨설팅평가</button></li>
+                    <li class="tab"><button type='button' onclick="aplyInfo.tabClick(this.id)" data-controls="tab-subpanel01" id="tab-sub01" >신청정보</button></li>
+                    <li class="tab"><button type='button' onclick="aplyInfo.tabClick(this.id)" data-controls="tab-subpanel02" id="tab-sub02" >컨설팅평가</button></li>
                 </ul>
                 <div id="tab-subpanel01" class="tabpanel">
 
@@ -170,7 +171,7 @@
                                                                 class='label label-inverse'
                                                                 th:data_ext="${#strings.replace(item.ext, '.', '')}">
                                                                 <th:block th:text="${item.orginlFileNm}" />&nbsp;&nbsp;
-                                                                <a th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="fn_deleteFileList(this.name, this.dataset.idntfcKey)" class='text-white'>
+                                                                <a href="javascript:void(0)" th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="fn_deleteFileList(this.name, this.dataset.idntfcKey)" class='text-white'>
                                                                 <th:block th:text="X"></th:block></a>
                                                             </li>
                                                         </ul>
@@ -264,18 +265,18 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="item , idx : ${qitemList}">
+                                <tr th:each="item , idx : ${qitemList}" th:if='${item.qitemTypeCd=="107103"}' th:data-qitemid="${item.qitemid}">
                                     <th scope="row">[[${idx.count}]]</th>
                                     <th scope="row" class="al">[[${item.cn}]]</th>
                                     <td th:each="rdo , idx2 : ${item.exampleList}">
-                                        <label class="inp vm"><input type="radio" th:title="${rdo.cn}" th:qitemid="${item.qitemid}" th:name="${'ans' + item.qitemid}" th:scr="${rdo.scr}"></label>
+                                        <label class="inp vm"><input type="radio" th:data-scr="${rdo.scr}" th:value="${rdo.exNo}" th:title="${rdo.cn}" th:data-qitemType='${item.qitemTypeCd}' th:name="${'ans' + item.qitemid}" th:scr="${rdo.scr}"></label>
                                     </td>
                             </tbody>
                             <tfoot>
-                                <tr>
-                                    <th scope="row" colspan="2" class="bg5">컨설팅 서비스에 대한 추가 의견 (선택)</th>
+                                <tr th:each="item , idx : ${qitemList}" th:if='${item.qitemTypeCd=="107105"}'>
+                                    <th scope="row" colspan="2" class="bg5">[[${item.cn}]]</th>
                                     <td colspan="7" class="bg-white">
-                                        <textarea title="선설팅 서비스에 대한 추가 의견 (선택)" maxlength="1000"></textarea>
+                                        <textarea th:title="${item.cn}" th:id="${'ans' + item.qitemid}" th:data-qitemid="${item.qitemid}" th:data-qitemType='${item.qitemTypeCd}' th:name="${'ans' + item.qitemid}" maxlength="1000" ></textarea>
                                         <div class="desc ar size"><span>0</span> / 1,000자</div>
                                     </td>
                                 </tr>
@@ -331,19 +332,24 @@
             		}else{
             			$("#evlBtn").hide();
             			$("#evlEndBtn").show();
+            			$('#tab-subpanel02').find('input,textarea').prop('disabled',true);
             		}
 
-            		this.setScore();
+            		if(ansList!=null) this.setScore();
 
             	},
             	tabClick(id){
             		if(id=="tab-sub01"){
                 		$('#tab-subpanel01').show();
+                		$('#tab-subpanel01').addClass('active');
                 		$('#tab-subpanel02').hide();
+                		$('#tab-subpanel02').removeClass('active');
             		}
             		if(id=="tab-sub02"){
                 		$('#tab-subpanel01').hide();
+                		$('#tab-subpanel01').removeClass('active');
                 		$('#tab-subpanel02').show();
+                		$('#tab-subpanel02').addClass('active');
             		}
             	},
             	doEvl(){
@@ -358,23 +364,28 @@
                         qitemid = $(item).attr("data-qitemid");
                         typeCd = $(item).attr("data-qitemType");
                         ansData.qitemid = qitemid;
+
                         if(typeCd == "107104") { // 단답형
                             ansDscrp = $(item).find("input[name='ans" + qitemid + "']").val();
                             if(!ansDscrp) {
+                            	alert("1");
                                 isValid = false;
                                 return false;
                             }
                             ansData.ansDscrp = ansDscrp;
                         } else if(typeCd == "107105") { // 서술형
                             ansDscrp = $(item).find("textarea[name='ans" + qitemid + "']").val();
-                            if(!ansDscrp) {
-                                isValid = false;
-                                return false;
-                            }
+//                             if(!ansDscrp) {
+//                                 isValid = false;
+//                                 return false;
+//                             }
                             ansData.ansDscrp = ansDscrp;
                         } else {
                             isChecked = $(item).find("input[name='ans" + qitemid + "']").is(":checked");
+
                             if(!isChecked) {
+
+                            	alert("2 : qitemid" + qitemid);
                                 isValid = false;
                                 return false;
                             }
@@ -398,37 +409,39 @@
                     });
 
                     var params = {
-                        srvyid: $("input[name='srvyid']").val()
+                        srvyid: $("#srvyid").val()
+                        , cnsltngid : $("#cnsltngid").val()
+                        , instid : $("#instid").val()
+                        , prtpntNm : $("#userNm").val()
                         , ansList: JSON.stringify(ansList)
                     };
 
                     if(!isValid) {
-                        alert("평가를 모두 완료후에 제출해주세요. ");
+                        alert("모든 객관식 평가를 완료해 주세요.");
                         return false;
                     }
 
-                    if(confirm("설문을 제출하시겠습니까?")) {
-                        if(displayWorkProgress(true)) {
-                            $.ajax({
-                                url : "/front/srvy/insertSrvySbmsn.do"
-                                , type: "POST"
-                                , cache: false
-                                , dataType: "json"
-                                , data: params
-                                , success: function(response) {
-                                    if(response.result == "success") {
-                                        alert(response.msg);
-                                        if(opener.srvy) {
-                                            opener.srvy.onLoadData();
-                                        }
-                                        window.close();
-                                    } else {
-                                        alert(response.msg);
-                                    }
-                                    closeWorkProgress();
+                    if(!confirm("평가를 완료 하시겠습니까? 완료시 수정이 불가합니다.")) return false;
+
+                    if(displayWorkProgress(true)) {
+                        $.ajax({
+                            url : "/front/srvy/insertSrvySbmsn.do"
+//                             url : "/front/dsgnMng/insertSrvySbmsn.do"
+                            , type: "POST"
+                            , cache: false
+                            , dataType: "json"
+                            , data: params
+                            , success: function(response) {
+                                if(response.result == "success") {
+                                    alert(response.msg);
+                                    //reload
+
+                                } else {
+                                    alert(response.msg);
                                 }
-                            });
-                        }
+                                closeWorkProgress();
+                            }
+                        });
                     }
             	},
             	delAply() {
@@ -523,38 +536,28 @@
             	},
 
             	setScore(){
-            		if(ansList != null){
-            			$("[name^=ans]").each(function(idx,item){
-
-            				var id  = Number($(this).attr("qitemid"));
-            				var scr = Number($(this).attr("scr")    );
-
-            				for(var row of ansList){
-            					if(row.scr!=0 && row.qitemid == id && row.scr == scr){
-debugger;
-            						$(this).prop("checked",true);
-            					}
-            				}
-
-            			});
-            		}
+        			for(row of ansList){
+        				if($("[name=ans"+row.qitemid+"][value="+row.ans+"]").attr('data-qitemType') == '107103') $("[name=ans"+row.qitemid+"][value="+row.ans+"]").prop('checked',true);
+        				if($("[name=ans"+row.qitemid+"][value="+row.ans+"]").attr('data-qitemType') == '107105') $("[name=ans"+row.qitemid+"]").prop('innerText',row.qitemid.val());
+        			};
             	}
-
 
             }
 
             $(function(){
             	aplyInfo.init();
-            	aplyInfo.tabClick("tab-sub01");
 
             	$("textArea").keyup(function (e) {
+            		if(this.id=='')return;
                     var inTxt = $(this).val();
                     if($("#"+this.id).next().prop("class")=="desc ar size"){
                         $("#"+this.id).next().children().prop("innerHTML",inTxt.length);
                     }
                 });
 
-                $("textArea").trigger("keyup");
+                $("textArea").trigger("keyup",'');
+
+                aplyInfo.tabClick("tab-sub01");
 
             	// 파일업로드
                 $('#multiFileInput').on("change", function(event) {

@@ -20,7 +20,7 @@
             <input type="hidden" id="orderField" name="orderField" value="MDFCN_DT">
             <input type="hidden" id="prgrmid" name="prgrmid" value="">
         </form>
-        
+
         <div class="box-desc-list bg7">
             <ul>
                 <li>아이돌봄서비스를 이용하시기 위해서는 먼저 정회원전환신청을 해주세요. 담당 서비스제공기관의 검토 후에 정회원으로 전환됩니다.</li>
@@ -45,7 +45,7 @@
                 <div class="ml10"><button type="button" class="btn-medium btn-green" id="btnAply" >등록</button></div>
             </div>
         </div>
-        
+
         <h3 class="blind">이의신청</h3>
 
         <div class="pc-only">
@@ -144,7 +144,7 @@
                                 	     <td>${item.rowNumber}</td>
                                 	     <td>${item.dsgnNo}</td>
                                 	     <td>${item.prgrmNm}</td>
-                                         <td><button type="button" onclick="objcAply.openPop(${item.sttsCd},${item.aplyid})" class="link">${item.sttsCdNm}</button></td>
+                                         <td><button type="button" onclick="objcAply.openPop(${item.sttsCd},${item.aplyid},event)" class="link">${item.sttsCdNm}</button></td>
                                          <td>${item.regDt}</td>
                                          <td>${item.ansDt == null ? "-" : item.ansDt}</td>
                                          </tr>
@@ -159,27 +159,23 @@
                                             </div>
                                             <div class="list">
                                                 <dt>지정번호</dt>
-                                                <dd>2231-01</dd>
+                                                <dd>${item.dsgnNo}</dd>
                                             </div>
                                             <div class="list">
                                                 <dt>프로그램명</dt>
-                                                <dd>훌륭한 환경교육프로그램 5</dd>
+                                                <dd>${item.prgrmNm}</dd>
                                             </div>
                                             <div class="list">
                                                 <dt>상태</dt>
-                                                <dd><button type="button" class="link">신청</button></dd>
-                                            </div>
-                                            <div class="list">
-                                                <dt>상태</dt>
-                                                <dd><button type="button" class="link">답변완료</button></dd>
+                                                <dd><button type="button" onclick="objcAply.openPop(${item.sttsCd},${item.aplyid},event)" class="link">${item.sttsCdNm}</button></dd>
                                             </div>
                                             <div class="list">
                                                 <dt>등록일</dt>
-                                                <dd>2023-01-01</dd>
+                                                <dd>${item.regDt}</dd>
                                             </div>
                                             <div class="list">
                                                 <dt>답변일</dt>
-                                                <dd>2023-01-01</dd>
+                                                <dd>${item.ansDt == null ? "-" : item.ansDt}</dd>
                                             </div>
                                         </dl>
                                     </div>
@@ -193,7 +189,7 @@
 
                 } ,
 
-                openPop(sttsCd,id){
+                openPop : function(sttsCd,id,event) {
 
                 	var popSe = "";
                 	if(sttsCd == "129101") popSe= "mod"
@@ -202,7 +198,7 @@
 
                 	$("#objcAplyPopup").load("/front/dsgnMng/objcAplyPopup.html?popSe="+popSe+"&aplyid="+id, function(response, status, xhr) {
                         if (status == "success") {
-                            layerPopup.open({target:'objcAplyPopup'});
+                            layerPopup.open({target:'objcAplyPopup'},event);
                         }
                     });
                  }
@@ -217,8 +213,8 @@
                 objcAply.selectList();
             });
 
-            jQuery("#btnAply").bind("click",function(){
-            	objcAply.openPop("reg",0);
+            jQuery("#btnAply").bind("click",function(event){
+            	objcAply.openPop("reg",0,event);
             });
 
         </script>
