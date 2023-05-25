@@ -685,11 +685,14 @@ const toggleActiveClass = {
 	
 }
 
+
+  
 const layerPopup = {
 	init : function () {
 		ZINDEX = 2000;
 		CLASS_LAYER_ACTIVE = 'active';
 		layerPosition = '';
+		let eventTarget = '';
 		
 		layerPopup.onClickTrigger();
 		layerPopup.onClickClose();
@@ -697,11 +700,10 @@ const layerPopup = {
 		layerPopup.resize();
 		
 	},
-	open : function ({target, w, h, l, t, callback}) {
+	open : function ({target, w, h, l, t, callback}, event) {
 		const targetWrap = $('[data-layer-id="' + target + '"]');
 		ZINDEX++;
-		
-		
+		eventTarget = event.target;
 		//layer
 		if (targetWrap.hasClass('layer-alert')) {
 			targetWrap.css({
@@ -771,6 +773,7 @@ const layerPopup = {
 		if (callback !== undefined) {
 			callback();
 		}
+		eventTarget.focus();
 		
 	},
 	onClickTrigger : function () {
@@ -800,7 +803,6 @@ const layerPopup = {
 		$(document).on('click', '[data-layer-close]' , function (){
 			const target = $(this).closest('.layer-popup').attr('data-layer-id');
 			layerPopup.close({target});
-			console.log(target)
 	
 		})
 	},
@@ -1133,7 +1135,6 @@ const skipLink = function () {
 		$skipLink.on('click', function () {
 		let linkHash = this.hash;
 		let dummyHeight = '';
-		console.log(this.hash)
 		if (linkHash === '#content') {
 			dummyHeight = $('#content').offset().top - $headerHeight;
 			$('html, body').animate({scrollTop: dummyHeight}, 300);
@@ -1142,12 +1143,10 @@ const skipLink = function () {
 			if ($WINDOW_MODE === DESKTOP) {
 				$('.footer .aside').removeAttr('id');
 				$(':not(.footer) .aside').attr('id','aside');
-				console.log(1)
 			}
 			if ($WINDOW_MODE === TABLET || $WINDOW_MODE === MOBILE) {
 				$(':not(.footer) .aside').removeAttr('id');
 				$('.footer-aside .aside').attr('id','aside');
-				console.log(2)
 			}
 		}
 	})
