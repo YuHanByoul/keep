@@ -83,8 +83,40 @@ public class PublicContestMngGrpVo extends ParentRequestVo {
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private String regDt;
     
+    /** 컨설팅 아이디 */
+    private Integer cnsltngid;
+    
+    /** 전문가 자격증 명 */
+    private String crtfctNm;
+    
+    /** 전문가 분야 코드 */
+    private String sbjctCd;
+    
+    /** 전문가 분야 명*/
+    private String sbjctNm;
+    
+    /** 전문가 활동 지역코드 */
+    private String rgnCd;
+    
+    /** 전문가 활동 지역명 */
+    private String rgnNm;
+    
+    private String checkExprtKnd;
+    
     /*****검색용 ***********************/
     /** 등록자아이디 */
     private String searchGrpNm;
+    
+    /** 등록자아이디 */
+    private String searchNm;
+    
+    /** 등록자아이디 */
+    private String searchCrtfctNm;
+    
+    /** 등록자아이디 */
+    private String searchSbjctCd;
+    
+    /** 등록자아이디 */
+    private String searchRgnCd;
     
 }
