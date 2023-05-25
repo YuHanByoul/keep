@@ -210,7 +210,7 @@
                 </div>
                 <div class="table-col table-layout-auto table-col-sm mt20 table-col-scroll">
                     <table>
-                        <caption>푸름이 이동환경교실 교육신청 - 신청, 교육요일, 교육일자, 교육회사, 상태, 대기팀</caption>
+                        <caption>푸름이 이동환경교실 교육신청 - 신청, 교육요일, 교육일자, 교육회차, 상태, 대기팀</caption>
                         <colgruop>
                             <col style="width:5%;">
                             <col style="width:10%;">
@@ -298,7 +298,7 @@
             <div class="pc-only">
                 <div class="table-col table-layout-auto">
                     <table>
-                        <caption>동일 운영권역 교육 프로그램 - 프로그램, 교육대상, 교육관지역, 교육주제, 교육시간</caption>
+                        <caption>동일 운영권역 교육 프로그램 - 프로그램, 운영권역, 교육주제, 운영형식, 교육시간</caption>
                         <thead>
                         <tr>
                             <th scope="col">프로그램</th>
@@ -400,6 +400,9 @@
     <script src="/js/front/flatpickr.js"></script>
     <script src="/js/front/flatpickr-locale-ko.js"></script>
     <script th:inline="javascript">
+
+        const skip = `<button type="button" class="skipCal">달력 넘기기</button>`;
+        
         $(function () {
             mvmnAplyDetail.validateForm();
             mvmnAplyDetail.fn_makeCalendarEvent();
@@ -559,6 +562,13 @@
                                 $(".flatpickr-input").val("지역을 선택해 주세요");
                                 $(".flatpickr-input").attr("disabled", true);
 
+                                const reservWrap = document.querySelector('.reservation-inner .left');
+
+                                const datepickerSkip = document.createElement('div');
+                                datepickerSkip.classList.add('blind');
+                                datepickerSkip.insertAdjacentHTML('beforeend', skip);
+                                this.input.after(datepickerSkip);
+
                             },
                             onValueUpdate: function (selectedDates, dateStr, instance) {
                                 const result = objData.filter((elem) => {
@@ -652,6 +662,11 @@
                 });
             }
         }
+
+        $('.skipCal').on('click', function () {
+            $(this).closest('.left').next().attr('tabindex','0').focus();
+        })
+        
     </script>
 </div>
 </body>

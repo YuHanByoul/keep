@@ -260,7 +260,7 @@
 	    var currentUser = /*[[${session.user}]]*/ null;
         var aplyMthdCd = /*[[${envReqst.aplyMthdCd}]]*/null;
 	    /*]]>*/
-
+        var mode = "range"
         var isInitCal = false;
         /* 이용 형태 변경 event(숙박 or 대여) */
         $(document).on('change', 'input[name="utztnSe"]' , function () {
@@ -271,8 +271,8 @@
                 return;
             }
             resetData();
-            var mode = 'range';
             if( $(this).val() == '169101' ){// 숙박
+                mode = 'range';
                 $('.dot-blue').show();
                 $('.dot-red').hide();
             }else{// 대여
@@ -587,6 +587,7 @@
                         let enableDates = [];
                         let disableDates = [];
                         let datesKind = {};
+                        
                         if(list.length > 0){
                             
                             list.forEach(function(item){
@@ -617,43 +618,44 @@
                                     }
                                 }
                             })
-                            
-                            let classDict = {                                  
-                                    '0' : ['dot-blue','숙박'],                   
-                                    '1' : ['dot-red','대여'],                    
-                            };               
-                            
-                            if(!isInitCal){
-                                datepicker.clear();
-	                            resetFlatpicker(mode,spceid);
-	                            isInitCal = true;
-                            }
-                            datepicker.set({enable:[]});
-                            datepicker.config.selectedDates= null;
-                            datepicker.set({
-                                defaultDate :moment(yyyymm).format("YYYY-MM-DD"),
-                                enable:enableDates
-                                });
-                            datepicker.config.onDayCreate.push(
-                                function(dObj, dStr, fp, dayElem) {
-                                    var date = dayElem.dateObj;                        
-                                    var calDate = moment(date).format("YYYY-MM-DD");   
-                                    var value = classDict[datesKind[calDate]];         
-                                    if (value) {                                       
-                                        dayElem.className +=' ' + value[0];            
-                                        dayElem.title = value[1]                       
-                                    }                                                  
-                                }                                
-                            );
-                            datepicker.config.onChange.push(
-                                    function(selectedDates, dateStr, instance) {
-                                    	   calendarOnchangeEvent(data,mode,selectedDates,dateStr,datesKind) 
-	                                } 
-                            );
-                            datepicker.redraw();
-                            $('#timeTable').hide();
                         }
-
+                            
+                            
+                        let classDict = {                                  
+                                '0' : ['dot-blue','숙박'],                   
+                                '1' : ['dot-red','대여'],                    
+                        };               
+                        
+                        if(!isInitCal){
+                            datepicker.clear();
+	                        resetFlatpicker(mode,spceid);
+	                        isInitCal = true;
+                        }
+                        datepicker.set({enable:[]});
+                        datepicker.config.selectedDates= null;
+                        datepicker.set({
+                            defaultDate :moment(yyyymm).format("YYYY-MM-DD"),
+                            enable:enableDates
+                            });
+                        datepicker.config.onDayCreate.push(
+                            function(dObj, dStr, fp, dayElem) {
+                                var date = dayElem.dateObj;                        
+                                var calDate = moment(date).format("YYYY-MM-DD");   
+                                var value = classDict[datesKind[calDate]];         
+                                if (value) {                                       
+                                    dayElem.className +=' ' + value[0];            
+                                    dayElem.title = value[1]                       
+                                }                                                  
+                            }                                
+                        );
+                        datepicker.config.onChange.push(
+                                function(selectedDates, dateStr, instance) {
+                                	   calendarOnchangeEvent(data,mode,selectedDates,dateStr,datesKind) 
+	                            } 
+                        );
+                        datepicker.redraw();
+                        $('#timeTable').hide();
+                   
                         closeWorkProgress();
                     }
                 });
@@ -676,6 +678,8 @@
                     datepickerList.classList.add('datepicker-list')
                     datepickerWrap.appendChild(datepickerList)
                     datepickerList.insertAdjacentHTML('beforeend', list02);
+                    
+                    
                 }
                 , onMonthChange :function(selectedDates, dateStr, instance){
                 	instance.selectedDates=[];
