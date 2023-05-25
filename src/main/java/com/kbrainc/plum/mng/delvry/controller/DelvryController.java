@@ -193,10 +193,10 @@ public class DelvryController {
     }
     
     /**
-    * 교부 목록 엑셀다운로드
+    * 공모 목록 엑셀다운로드
     *
     * @Title : downloadDelvryListExcel
-    * @Description : 교부 목록 엑셀다운로드
+    * @Description : 공모 목록 엑셀다운로드
     * @param delvryVo DelvryVo 객체
     */
     @RequestMapping(value = "/mng/delvry/downloadPcntstListExcel.do")
