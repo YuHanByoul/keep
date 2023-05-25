@@ -142,7 +142,7 @@ public interface EduSareaService {
     public List<EduSareaVo> selectAddrSignguList(EduSareaVo eduSareaVo) throws Exception;
 
     /**
-     * 권역 > 시도 테이블에 등록된 개수 조회
+     * 권역  > 시군구 테이블에 등록된 개수 조회
      *
      * @param eduSareaVo
      * @return int
