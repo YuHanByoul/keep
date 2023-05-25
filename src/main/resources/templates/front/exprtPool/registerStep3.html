@@ -151,10 +151,9 @@
                             <th scope="row">재직증명서</th>
                             <td>
                                 <div class="form-input-file form-input-button">
-                                    <label class="form-input">
-                                        <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="파일첨부" maxcount="1" onchange="uploadExprtFile(this,event)">
-                                        <span class="btn-medium btn-green">업로드</span>
-                                    </label>
+                                    <input type="file" th:id="|hdofCrtfFileInput${itemStat.index}|" class="blind" th:accept="${uploadFileExtsn}" title="파일첨부" maxcount="1"
+                                           onchange="uploadExprtFile(this,event)">
+                                    <label class="btn-medium btn-green" th:for="|hdofCrtfFileInput${itemStat.index}|">업로드</label>
                                     <input type="hidden" name="hdofcrtfFileid" th:value="${(item.hdofcrtfFileid == '' or item.hdofcrtfFileid == null) ? 0 : item.hdofcrtfFileid}">
                                     <ul>
                                         <th:block th:if="${item.hdofCrtfFile != null}">
@@ -247,10 +246,9 @@
                             <th scope="row">자격증명서</th>
                             <td>
                                 <div class="form-input-file form-input-button">
-                                    <label class="form-input">
-                                        <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="자격증명서" maxcount="1" onchange="uploadExprtFile(this,event)">
-                                        <span class="btn-medium btn-green">업로드</span>
-                                    </label>
+                                    <input type="file" class="blind"  th:id="|crtfctFileInput${itemStat.index}|" th:accept="${uploadFileExtsn}" title="자격증명서" maxcount="1"
+                                           onchange="uploadExprtFile(this,event)">
+                                    <label class="btn-medium btn-green" th:for="|crtfctFileInput${itemStat.index}|">업로드</label>
                                     <input type="hidden" name="crtfctFileid" th:value="${(item.crtfctFileid == '' or item.crtfctFileid == null) ? 0 : item.crtfctFileid}">
                                     <ul>
                                         <th:block th:if="${item.crtfctFile != null}">
@@ -390,10 +388,9 @@
                             <th scope="row">확인서</th>
                             <td>
                                 <div class="form-input-file form-input-button">
-                                    <label class="form-input">
-                                        <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="확인서" maxcount="1" onchange="uploadExprtFile(this,event)">
-                                        <span class="btn-medium btn-green">업로드</span>
-                                    </label>
+                                    <input type="file" class="blind" th:id="|crtfFileInput${itemStat.index}|" th:accept="${uploadFileExtsn}" title="확인서" maxcount="1"
+                                           onchange="uploadExprtFile(this,event)">
+                                    <label class="btn-medium btn-green" th:for="|crtfFileInput${itemStat.index}|">업로드</label>
                                     <input type="hidden" name="crtfFileid" th:value="${(item.crtfFileid == '' or item.crtfFileid == null) ? 0 : item.crtfFileid}">
                                     <ul>
                                         <th:block th:if="${item.crtfFile != null}">
@@ -418,11 +415,10 @@
                             <th scope="row">정관</th>
                             <td>
                                 <div class="form-input-file form-input-button">
-                                    <label class="form-input">
-                                        <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="정관" maxcount="1" onchange="uploadExprtFile(this,event)">
-                                        <span class="btn-medium btn-green">업로드</span>
-                                    </label>
-                                    <input type="hidden" name="artclassFileid" th:value="${(item.artclassFileid == '' or item.artclassFileid == null) ? 0 : item.artclassFileid}">
+                                    <input type="file" th:id="|artclassFileInput${itemStat.index}|" class="blind" th:accept="${uploadFileExtsn}" title="정관" maxcount="1" onchange="uploadExprtFile(this,event)">
+                                    <label class="btn-medium btn-green">업로드</label>
+                                    <input type="hidden" th:for="|artclassFileInput${itemStat.index}|" name="artclassFileid"
+                                           th:value="${(item.artclassFileid == '' or item.artclassFileid == null) ? 0 : item.artclassFileid}">
                                     <ul>
                                         <th:block th:if="${item.artClassFile != null}">
                                             <th:block th:with="file=${item.artClassFile}">
@@ -875,12 +871,21 @@
                 ++hdofCnt;
                 $cloneTable = $('#hdofTableTemplate').clone(true).attr('id', 'hdofTable' + hdofCnt).attr('name', 'hdofTable');
                 $cloneTable.find('input[type=radio]').attr('name', 'hdofSeCd' + hdofCnt);
+                $cloneTable.find('input[type=file]').attr('id', 'hdofCrtfFileInput' + hdofCnt )
+                $cloneTable.find('input[type=file]').next().attr('for', 'hdofCrtfFileInput' + hdofCnt)
             } else if (tableGroupId == 'crtfct') {
                 ++crtfctCnt;
                 $cloneTable = $('#crtfctTableTemplate').clone(true).attr('id', 'crtfctTable' + crtfctCnt).attr('name', 'crtfctTable');
+                $cloneTable.find('input[type=file]').attr('id', 'crtfctFileInput' + crtfctCnt )
+                $cloneTable.find('input[type=file]').next().attr('for', 'crtfctFileInput' + crtfctCnt )
             } else if (tableGroupId == 'career') {
                 ++careerCnt;
                 $cloneTable = $('#careerTableTemplate').clone(true).attr('id', 'careerTable' + careerCnt).attr('name', 'careerTable');
+                files = $cloneTable.find('input[type=file]');
+                $(files[0]).attr('id', 'crtfFileInput' + careerCnt);
+                $(files[0]).next().attr('for', 'crtfFileInput' + careerCnt);
+                $(files[1]).attr('id', 'artclassFileInput' + careerCnt);
+                $(files[1]).next().attr('for', 'artclassFileInput' + careerCnt);
             }
 
             $cloneTable.show();
@@ -1042,7 +1047,7 @@
 
     <div class="table-row table-row-mo" id="hdofTableTemplate" style="display:none">
         <table>
-            <caption>재직사항 입력 - 재직구분, 재직기관명, 부서(소속), 취득등급, 취득일, 재직증명서</caption>
+            <caption>재직사항 입력 - 재직구분, 재직기관명, 부서(소속), 지위(직급), 재직기간, 재직증명서</caption>
             <colgroup>
                 <col style="width:140px;">
                 <col>
@@ -1096,10 +1101,8 @@
                 <th scope="row">재직증명서</th>
                 <td>
                     <div class="form-input-file form-input-button">
-                        <label class="form-input">
-                            <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="파일첨부" maxcount="1" onchange="uploadExprtFile(this,event)">
-                            <span class="btn-medium btn-green">업로드</span>
-                        </label>
+                        <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="파일첨부" maxcount="1" onchange="uploadExprtFile(this,event)">
+                        <label class="btn-medium btn-green">업로드</label>
                         <input type="hidden" name="hdofcrtfFileid" value="0">
                         <ul></ul>
                     </div>
@@ -1162,10 +1165,8 @@
                 <th scope="row">자격증명서</th>
                 <td>
                     <div class="form-input-file form-input-button">
-                        <label class="form-input">
-                            <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="자격증명서" maxcount="1" onchange="uploadExprtFile(this,event)">
-                            <span class="btn-medium btn-green">업로드</span>
-                        </label>
+                        <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="자격증명서" maxcount="1" onchange="uploadExprtFile(this,event)">
+                        <label class="btn-medium btn-green">업로드</label>
                         <input type="hidden" name="crtfctFileid" value="0">
                         <ul></ul>
                     </div>
@@ -1182,7 +1183,7 @@
 
     <div class="table-row table-row-mo" id="careerTableTemplate" style="display:none">
         <table>
-            <caption>환경교육 경력(실적) 사항 입력 - 활동분야, 활동기간, 활동시간, 확인기관, 활동내용, 확인일, 확인서</caption>
+            <caption>환경교육 경력(실적) 사항 입력 - 활동분야, 활동기간, 활동시간, 확인기관, 활동내용, 확인일, 확인서, 정관</caption>
             <colgroup>
                 <col style="width:160px;">
                 <col style="width:380px">
@@ -1246,10 +1247,8 @@
                 <th scope="row">확인서</th>
                 <td>
                     <div class="form-input-file form-input-button">
-                        <label class="form-input">
-                            <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="확인서" maxcount="1" onchange="uploadExprtFile(this,event)">
-                            <span class="btn-medium btn-green">업로드</span>
-                        </label>
+                        <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="확인서" maxcount="1" onchange="uploadExprtFile(this,event)">
+                        <label class="btn-medium btn-green">업로드</label>
                         <input type="hidden" name="crtfFileid" value="0"/>
 
                         <ul></ul>
@@ -1258,10 +1257,8 @@
                 <th scope="row">정관</th>
                 <td>
                     <div class="form-input-file form-input-button">
-                        <label class="form-input">
-                            <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="정관" maxcount="1" onchange="uploadExprtFile(this,event)">
-                            <span class="btn-medium btn-green">업로드</span>
-                        </label>
+                        <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="정관" maxcount="1" onchange="uploadExprtFile(this,event)">
+                        <label class="btn-medium btn-green">업로드</label>
                         <input type="hidden" name="artclassFileid" value="0"/>
                         <ul></ul>
                     </div>

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" 
-    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
-    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
-    layout:decorator="layout/front/subLayout" 
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+    layout:decorator="layout/front/subLayout"
 >
 
 <body>
@@ -20,7 +20,7 @@
                         <div class="form-input">
                             <input type="text" title="접수번호" id="searchRcptNo" name="searchRcptNo" />
                         </div>
-                    </div>                
+                    </div>
                 </div>
                 <div class="form-row">
                     <div class="form-header"><strong class="label">신청상태</strong></div>
@@ -39,12 +39,13 @@
             <div class="left">
                 <p>총 <b id="totalCount">0</b> 건</p>
             </div>
-            <div class="right">
-                <select title="글 보기 개수" id="rowPerPageChange" name="rowPerPageChange">
-                    <option value="10">10개씩 보기</option>
-                    <option value="50">50개씩 보기</option>
-                    <option value="100">100개씩 보기</option>
+            <div class="right d-flex">
+                <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage">
+                    <option value="10">10개</option>
+                    <option value="50">50개</option>
+                    <option value="100">100개</option>
                 </select>
+                <div><button type="button" class="btn-medium btn-outline-black" onclick="onChangePageSize($('#selectRowPerPage').val(), listPage.selectList)">보기</button></div>
             </div>
         </div>
 
@@ -59,7 +60,7 @@
                         <col>
                         <col>
                         <col>
-                    </colgroup>                    
+                    </colgroup>
                     <thead>
                         <tr>
                             <th scope="col">번호</th>
@@ -90,7 +91,7 @@
         <div class="layer-dimmed" title="레이어팝업 닫기"></div>
         <div class="layer-wrap" id="suppModalPopup"></div>
     </div>
-    
+
     <script th:inline="javascript">
         function goPage(pageNum) {
             $("#pageNumber").val(pageNum);
@@ -118,10 +119,10 @@
                 this.selectList();
             },
             selectList() {
-            	
+
                 if (displayWorkProgress(true)) {
                     let formData = $('#searchForm').serializeArray();
-    
+
                     $.ajax({
                         url: listPage.listUrl,
                         cache: false,
@@ -138,10 +139,10 @@
             moveToDetail(aplyid) {
                 location.href = this.detailUrl + '?aplyid=' + aplyid;
             },
-            suppPopup: function(splmntid,aplyid,sttsCd) {
+            suppPopup: function(splmntid,aplyid,sttsCd,event) {
                 $("#suppModalPopup").load("/front/mypage/seeEnvEduInstHist/selectSplmntPopup.html?splmntid=" + splmntid + '&aplyid=' + aplyid + '&sttsCd=' + sttsCd, function(response, status, xhr) {
                     if (status == "success") {
-                        layerPopup.open({target:'suppModalPopup'});
+                        layerPopup.open({target:'suppModalPopup'},event);
                     }
                 });
             },
@@ -174,7 +175,7 @@
                         }
                         listHtml += `<td>${item.sttsNm}</td>`;
                         if(item.ansSttsCd == '201101' || item.ansSttsCd == '201102'){
-                            listHtml += `<td><button type="button" class="link" onclick="listPage.suppPopup(${item.splmntid},${item.aplyid},${item.sttsCd})">${item.ansSttsNm}</button></td>`;
+                            listHtml += `<td><button type="button" class="link" onclick="listPage.suppPopup(${item.splmntid},${item.aplyid},${item.sttsCd},event)">${item.ansSttsNm}</button></td>`;
                         } else {
                             listHtml += `<td>${item.ansSttsNm}</td>`;
                         }
@@ -198,7 +199,7 @@
 		                                if(item.sttsCd == '248101' || item.sttsCd == '248102'){
 		                                	mobileHtml += `<dd><a href="javascript:listPage.moveToDetail(${item.aplyid})" class="link">${item.rcptno}</a></dd>`;
 		                                }else{
-		                                	mobileHtml += `<dd>${item.rcptno}</dd>`;		                                	
+		                                	mobileHtml += `<dd>${item.rcptno}</dd>`;
 		                                }
 	                                mobileHtml += `</div>
 	                                <div class="list">
@@ -206,7 +207,7 @@
 	                                    <dd>${item.sttsNm}</dd>
 	                                </div>`;
                                     if(item.ansSttsCd == '201101' || item.ansSttsCd == '201102'){
-                                        mobileHtml += `<dd><button type="button" class="link" onclick="listPage.suppPopup(${item.splmntid},${item.aplyid},${item.sttsCd})">${item.ansSttsNm}</button></dd>`;
+                                        mobileHtml += `<dd><button type="button" class="link" onclick="listPage.suppPopup(${item.splmntid},${item.aplyid},${item.sttsCd},event)">${item.ansSttsNm}</button></dd>`;
                                     } else {
                                         mobileHtml += `<dd>${item.ansSttsNm}</dd>`;
                                     }
@@ -232,7 +233,8 @@
                 $("#totalCount").html(data.totalCount);
             }
         };
-    
+
+
         $(function () {
             listPage.init();
             $("#rowPerPageChange").change(function(){

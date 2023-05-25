@@ -30,12 +30,13 @@
             <div class="left">
                 <p>총 <b id="totalCount">0</b> 건</p>
             </div>
-            <div class="right">
-                <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage">
-                    <option value="10">10개씩 보기</option>
-                    <option value="50">50개씩 보기</option>
-                    <option value="100">100개씩 보기</option>
+            <div class="right d-flex">
+                <select title="글 보기 개수" class="sort-filter" id="selectRowPerPage" name="selectRowPerPage">
+                    <option value="10">10개</option>
+                    <option value="50">50개</option>
+                    <option value="100">100개</option>
                 </select>
+                <div><button type="button" class="btn-medium btn-outline-black" onclick="onChangePageSize($('#selectRowPerPage').val(), selectList)">보기</button></div>
             </div>
         </div>
 
@@ -111,7 +112,7 @@
             let listUrl = '/front/mypage/exprtPool/selectMdfcnHistoryList.do';
             let mdfcnRsnUrl = '/front/mypage/exprtPool/selectMdfcnRsnByDmndId.do';
             let logRsnUrl = '/front/mypage/exprtPool/selectLogRsnByDmndId.do';
-            let selectMdfcnRsn = (mdfcnDmndId) => {
+            let selectMdfcnRsn = (mdfcnDmndId,event) => {
                 if (displayWorkProgress(true)) {
                     $.ajax({
                         url: mdfcnRsnUrl,
@@ -123,13 +124,13 @@
                                 target: 'layer-popup24', callback: function () {
                                     $('#mdfcnRsn').html(response.replace(/(?:\r\n|\r|\n)/g, '<br />'));
                                 }
-                            });
+                            }, event);
                         }
                     });
                 }
             };
 
-            let selectLogRsn = (mdfcnDmndId) => {
+            let selectLogRsn = (mdfcnDmndId,event) => {
                 if (displayWorkProgress(true)) {
                     $.ajax({
                         url: logRsnUrl,
@@ -141,7 +142,7 @@
                                 target: 'layer-popup25', callback: function () {
                                     $('#logRsn').html(response.replace(/(?:\r\n|\r|\n)/g, '<br />'));
                                 }
-                            });
+                            }, event);
                         }
                     });
                 }
@@ -179,10 +180,11 @@
                         html += `<tr>
                                 <td>${item.rowNumber}</td>
                                 <td>${item.mdfcnRegDt}</td>
-                                <td><button type="button" class="btn-small btn-outline-blue" onclick="selectMdfcnRsn(${item.mdfcnDmndId})">사유보기</button></td>
+                                <td><button type="button" class="btn-small btn-outline-blue" onclick="selectMdfcnRsn(${item.mdfcnDmndId},event)">사유보기</button></td>
                                 <td>
                                     ${item.sttsCdNm}
-                                    ${item.sttsCd == '152103' ? `<button type="button" class="btn-small btn-outline-blue ml10" onclick="selectLogRsn(${item.mdfcnDmndId})">사유보기</button>` : ``}
+                                    ${item.sttsCd == '152103' ?
+                            `<button type="button" class="btn-small btn-outline-blue ml10" onclick="selectLogRsn(${item.mdfcnDmndId},event)">사유보기</button>` : ``}
                                 </td>
                                 <td>${isNull(item.logRegDt) ? '' : item.logRegDt}</td>
                              </tr> `;
@@ -224,9 +226,9 @@
                                 </div>
                                 <div class="btn-wrap">
                                     <div class="center">
-                                        <button type='button' class="btn-small btn-outline-blue" onclick="selectMdfcnRsn(${item.mdfcnDmndId})">변경 사유보기</button>
+                                        <button type='button' class="btn-small btn-outline-blue" onclick="selectMdfcnRsn(${item.mdfcnDmndId},event)">변경 사유보기</button>
                                         ${item.sttsCd == '152103' ?
-                                            `<button type='button' onclick="selectLogRsn(${item.mdfcnDmndId})" class="btn-small btn-outline-blue">변경불가 사유보기</button>` :
+                                            `<button type='button' onclick="selectLogRsn(${item.mdfcnDmndId},event)" class="btn-small btn-outline-blue">변경불가 사유보기</button>` :
                             ``}
                                     </div>
                                 </div>
@@ -244,10 +246,6 @@
                     selectList();
                 });
 
-                $('#selectRowPerPage').on('change', function (e) {
-                    $('#rowPerPage').val($(this).val());
-                    onChangePageSize($(this).val(), selectList)
-                });
             })
 
         </script>

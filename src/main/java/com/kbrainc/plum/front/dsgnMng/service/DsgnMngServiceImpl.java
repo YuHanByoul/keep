@@ -3,15 +3,24 @@ package com.kbrainc.plum.front.dsgnMng.service;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.ibatis.type.Alias;
+import org.springframework.mobile.device.Device;
+import org.springframework.mobile.device.DeviceUtils;
+import org.springframework.mobile.device.LiteDeviceResolver;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.front.dsgnMng.model.DsgnMngDao;
 import com.kbrainc.plum.front.dsgnMng.model.DsgnMngVo;
+import com.kbrainc.plum.front.srvy.model.SrvyDao;
+import com.kbrainc.plum.front.srvy.model.SrvySbmsnAnsVo;
+import com.kbrainc.plum.front.srvy.model.SrvySbmsnVo;
+import com.kbrainc.plum.front.srvy.model.SrvyVo;
 import com.kbrainc.plum.mng.qestnr.model.QitemVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+import com.kbrainc.plum.rte.util.CommonUtil;
 
 /**
 * 사용자.지정관리 serviceimple
@@ -33,7 +42,10 @@ import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 public class DsgnMngServiceImpl extends PlumAbstractServiceImpl implements DsgnMngService {
 
     @Resource(name = "front.dsgnMngDao")
-    DsgnMngDao dsgnMngDao;
+    private DsgnMngDao dsgnMngDao;
+
+    @Resource(name = "front.SrvyDao")
+    private SrvyDao srvyDao;
 
     /**
 	* 지정내역 목록 조회
@@ -461,6 +473,5 @@ public class DsgnMngServiceImpl extends PlumAbstractServiceImpl implements DsgnM
 	public List<QitemVo> selectSrvyAnsList(DsgnMngVo dsgnMngVo) throws Exception{
 		return dsgnMngDao.selectSrvyAnsList(dsgnMngVo);
 	}
-
 
 }

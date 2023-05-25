@@ -22,7 +22,7 @@
             <div class="form-row">
                 <div class="form-header"><strong class="label">전문분야</strong></div>
                 <div class="form-body">
-                    <select title="전문분야(대상)" id="exprtField" name="exprtField">
+                    <select title="전문분야" id="exprtField" name="exprtField">
                         <option value="">- 전체 -</option>
                         <option value="1">강의</option>
                         <option value="2">기획</option>
@@ -48,7 +48,7 @@
             <div class="form-row">
                 <div class="form-header"><strong class="label">가능 활동범위</strong></div>
                 <div class="form-body">
-                  <th:block kattr:exprt_select_ctprvn="exprtActvtScopeCd" firstOptTxt="- 전체 -"></th:block>
+                  <th:block kattr:exprt_select_ctprvn="exprtActvtScopeCd" firstOptTxt="- 전체 -" title="가능 활동범위"></th:block>
                 </div>
             </div>
         </div>
@@ -144,8 +144,8 @@
                                                 }
                                             </div>
                                         </div>
-                                        <div class="resume-center move-detail" data-id="${item.userid}" style="cursor:pointer;">
-                                            <div class="resume-detail">
+                                        <div class="resume-center">
+                                            <a class="resume-detail after-link move-detail" href="javascript:lctrDmndList.moveToDetail(${item.userid});" title="전문가 정보" >
                                                 <dl>
                                                     <div class="list">
                                                         <dt><span class="icon icon-doc bg-blue"></span>전문분야</dt>
@@ -171,12 +171,12 @@
                                                         <dd class="ellipsis">${item.exprtActvtScopeCdNm}</dd>
                                                     </div>
                                                 </dl>
-                                            </div>
+                                            </a>
                                             <div class="resume-update">
                                                 <div class="resume-update-date">${item.mdfcnDt} 업데이트</div>
                                                 ${item.itsMe == 'N' ?
                                                     `<div class="link">
-                                                        <button class="btn-medium btn-blue move-insert" data-id="${item.userid}">요청서 작성</button>
+                                                        <a href="javascript:lctrDmndList.moveToInsertForm(this, ${item.userid});" class="btn-medium btn-blue move-insert" >요청서 작성</a>
                                                     </div>`
                                                     : ``
                                                 }
@@ -227,7 +227,6 @@
             },
 
             moveToInsertForm(e, userid) {
-                e.stopPropagation();
 
                 if (this.user == null) {
                     alert('14세 이상 개인회원 또는 기관회원 가입 후 전문가 요청이 가능합니다.');
@@ -274,14 +273,6 @@
             $('#exprtActvtScopeCd').val(lctrDmndList.searchVo.exprtActvtScopeCd);
 
             lctrDmndList.selectExprtList();
-
-            $(document).on('click', '.move-detail', function(){
-                $this = $(this);
-                lctrDmndList.moveToDetail($this.data('id'));
-            }).on('click', '.move-insert', function(e){
-                $this = $(this);
-                lctrDmndList.moveToInsertForm(e, $this.data('id'));
-            });
 
         });
     </script>

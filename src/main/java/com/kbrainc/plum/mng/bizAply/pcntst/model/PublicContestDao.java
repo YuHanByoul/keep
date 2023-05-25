@@ -217,4 +217,17 @@ public interface PublicContestDao {
     * @return List<PublicContestMngGrpVo>
      */
     List<PublicContestMngGrpVo> selectMngGrpList(PublicContestMngGrpVo publicContestVo) throws Exception;
+    
+    /**
+     * 
+    * 전문가 조회. 
+    *
+    * @Title : selectCnsltngExprtList
+    * @Description : TODO
+    * @param cnsltngExprtVo
+    * @return
+    * @throws Exception
+    * @return List<PublicContestMngGrpVo>
+     */
+    List<PublicContestMngGrpVo> selectCnsltngExprtList(PublicContestMngGrpVo publicContestVo) throws Exception;
 }

@@ -1009,7 +1009,7 @@
             TB_CMM_CD TYPE_CD ON E.INST_TYPE_CD = TYPE_CD.CD
         LEFT OUTER JOIN
             TB_CMM_CD CD ON E.INST_TYPE_CD = CD.CD
-        LEFT OUTER JOIN TB_CMM_SRVY_SBMSN F ON A.CNSLTNGID = F.CNSLTNGID
+        LEFT OUTER JOIN TB_CMM_SRVY_SBMSN F ON A.SRVYID = F.SRVYID AND A.USERID = F.USERID
         WHERE 1=1
         AND A.CNSLTNGID = #{cnsltngid}
     </select>
@@ -1115,7 +1115,8 @@
     <!-- 설문응답 목록 조회 -->
     <select id="selectSrvyAnsList" parameterType="front.dsgnMngVo" resultType="QitemVo">
         SELECT
-            B.QITEMID      /*문항ID*/
+            A.SBMSNID      /*제출ID*/
+          , B.QITEMID      /*문항ID*/
           , B.ANS          /*답변*/
           , B.ANS_DSCRP    /*답변_서술형*/
           , B.SCALE        /*척도*/
@@ -1125,7 +1126,7 @@
         LEFT OUTER JOIN
             TB_CMM_SRVY_SBMSN_ANS B ON A.SBMSNID = B.SBMSNID
         WHERE
-            A.CNSLTNGID = #{cnsltngid}
+            A.SBMSNID = #{sbmsnid}
     </select>
 
 
