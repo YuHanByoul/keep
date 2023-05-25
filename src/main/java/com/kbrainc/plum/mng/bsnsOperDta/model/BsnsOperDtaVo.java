@@ -49,7 +49,7 @@ public class BsnsOperDtaVo extends ParentRequestVo {
 
     private String cn;
 
-    private Integer pdfFileid;
+    private Integer pdfFilegrpid;
 
     private Integer atchFilegrpid;
 

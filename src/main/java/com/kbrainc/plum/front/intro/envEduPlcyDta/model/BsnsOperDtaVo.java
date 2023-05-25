@@ -65,7 +65,7 @@ public class BsnsOperDtaVo extends ParentRequestVo {
 
     private String searchClsfCdNm;
 
-    private Integer pdfFileid;
+    private Integer pdfFilegrpid;
 
     private Integer atchFilegrpid;
 
