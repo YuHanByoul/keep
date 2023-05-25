@@ -703,7 +703,7 @@ const layerPopup = {
 	open : function ({target, w, h, l, t, callback}, event) {
 		const targetWrap = $('[data-layer-id="' + target + '"]');
 		ZINDEX++;
-		eventTarget = event.target;
+
 		//layer
 		if (targetWrap.hasClass('layer-alert')) {
 			targetWrap.css({
@@ -759,7 +759,9 @@ const layerPopup = {
 			targetWrap.css('z-index',ZINDEX);
 		});
 
-		
+		if (event !== undefined) {
+			eventTarget = event.target;
+		}
 	},
 	close : function ({target, callback}) {
 		const targetWrap = $('[data-layer-id="' + target + '"]');
@@ -768,12 +770,15 @@ const layerPopup = {
 		targetWrap.removeClass(CLASS_LAYER_ACTIVE);
 		targetWrap.removeAttr('tabindex style');
 		targetWrap.css('z-index','');
-		trigger.focus();
-		
+		if (trigger[0] !== undefined) {
+			trigger.focus();
+		} else {
+			eventTarget.focus();
+			
+		}
 		if (callback !== undefined) {
 			callback();
 		}
-		eventTarget.focus();
 		
 	},
 	onClickTrigger : function () {
