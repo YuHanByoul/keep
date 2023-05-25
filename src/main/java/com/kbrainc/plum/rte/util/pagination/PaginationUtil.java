@@ -42,11 +42,11 @@ public class PaginationUtil {
         paginationHtml.append("<div class=\"pagination\" aria-label=\"pagination\">");
 
         if (cntPageNumber <= 1) {
-            paginationHtml.append("<button type=\"button\" class=\"first\" title=\"처음\" disabled></button>");
-            paginationHtml.append("<button type=\"button\" class=\"prev\" title=\"이전\" disabled></button>");
+            paginationHtml.append("<button type=\"button\" class=\"first\" title=\"처음 페이지\" disabled></button>");
+            paginationHtml.append("<button type=\"button\" class=\"prev\" title=\"이전 페이지\" disabled></button>");
         } else {
-            paginationHtml.append("<button type=\"button\" class=\"first\" title=\"처음\" onclick='goPage(1)'></button>");
-            paginationHtml.append("<button type=\"button\" class=\"prev\" title=\"이전\" onclick='goPage(").append(cntPageNumber - 1).append(")'></button>");
+            paginationHtml.append("<button type=\"button\" class=\"first\" title=\"처음 페이지\" onclick='goPage(1)'></button>");
+            paginationHtml.append("<button type=\"button\" class=\"prev\" title=\"이전 페이지\" onclick='goPage(").append(cntPageNumber - 1).append(")'></button>");
         }
 
         for (int i = firstPageNum; i <= lastPageNum; i++) {
@@ -58,11 +58,11 @@ public class PaginationUtil {
         }
 
         if (cntPageNumber < totalPage) {
-            paginationHtml.append("<button type=\"button\" class=\"next\" title=\"다음\" onclick='goPage(").append(cntPageNumber + 1).append(")'></button>");
-            paginationHtml.append("<button type=\"button\" class=\"last\" title=\"마지막\" onclick='goPage(").append(totalPage).append(")'></button>");
+            paginationHtml.append("<button type=\"button\" class=\"next\" title=\"다음 페이지\" onclick='goPage(").append(cntPageNumber + 1).append(")'></button>"); 
+            paginationHtml.append("<button type=\"button\" class=\"last\" title=\"마지막 페이지\" onclick='goPage(").append(totalPage).append(")'></button>");
         } else {
-            paginationHtml.append("<button type=\"button\" class=\"next\" title=\"다음\" disabled></button>");
-            paginationHtml.append("<button type=\"button\" class=\"last\" title=\"마지막\" disabled></button>");
+            paginationHtml.append("<button type=\"button\" class=\"next\" title=\"다음 페이지\" disabled></button>");
+            paginationHtml.append("<button type=\"button\" class=\"last\" title=\"마지막 페이지\" disabled></button>");
         }
 
         paginationHtml.append("</div>");
