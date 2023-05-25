@@ -51,19 +51,13 @@
                 <div class="sticky-navigation">
                     <strong class="tit">프로그램 정보 항목</strong>
                     <div class="sticky-steps">
-                        <ul>
-<!--                             <li><a th:href="@{/front/dsgnPrgrm/prgrmDstnctnForm.html?prgrmid=}+${chkListInfo.prgrmid}" >프로그램 우수성</a></li> -->
-<!--                             <li><a th:href="@{/front/dsgnPrgrm/prgrmOperMngForm.html?prgrmid=}+${chkListInfo.prgrmid}" >프로그램 운영관리</a></li> -->
-<!--                             <li><a th:href="@{/front/dsgnPrgrm/prgrmEvlForm.html?prgrmid=}+${chkListInfo.prgrmid}" >프로그램 평가</a></li> -->
-<!--                             <li><a th:href="@{/front/dsgnPrgrm/ldrQlfcForm.html?prgrmid=}+${chkListInfo.prgrmid}" >지도자의 자격 및 배치</a></li> -->
-<!--                             <li><a th:href="@{/front/dsgnPrgrm/sftyMngForm.html?prgrmid=}+${chkListInfo.prgrmid}" >안전관리</a></li> -->
-<!--                             <li class="active"><a th:href="@{/front/dsgnPrgrm/chkListForm.html?prgrmid=}+${chkListInfo.prgrmid}" >체크리스트</a></li> -->
-                                <li >              <a>프로그램 우수성</a></li>
-                                <li>               <a>프로그램 운영관리</a></li>
-                                <li>               <a>프로그램 평가</a></li>
-                                <li>               <a>지도자의 자격 및 배치</a></li>
-                                <li>               <a>안전관리</a></li>
-                                <li class="active"><a>체크리스트</a></li>
+                        <ul id='prgrmNav'>
+                            <li><a href="javascript:navClick('/front/dsgnPrgrm/prgrmDstnctnForm.html')" >프로그램 우수성</a></li>
+                            <li><a href="javascript:navClick('/front/dsgnPrgrm/prgrmOperMngForm.html')" >프로그램 운영관리</a></li>
+                            <li><a href="javascript:navClick('/front/dsgnPrgrm/prgrmEvlForm.html')" >프로그램 평가</a></li>
+                            <li><a href="javascript:navClick('/front/dsgnPrgrm/ldrQlfcForm.html')" >지도자의 자격 및 배치</a></li>
+                            <li><a href="javascript:navClick('/front/dsgnPrgrm/sftyMngForm.html')" >안전관리</a></li>
+                            <li class="active"><a href="javascript:navClick('/front/dsgnPrgrm/chkListForm.html')" >체크리스트</a></li>
                         </ul>
                         <div class="btn-wrap">
                             <div class="center">
@@ -108,6 +102,14 @@
 
         var ansList = /*[[${ansList}]]*/null;
 
+        function navClick(link){
+            var sttsCd = $('#sttsCd').val();
+            var prgrmid = $('#prgrmid').val();
+            if(sttsCd != null && sttsCd != '' && sttsCd != '111101'){
+//                 location.href = link+"?prgrmid="+prgrmid;
+            };
+        }
+
         function setChkList(){
             var list = qitemList;
             var html = "";
@@ -118,7 +120,7 @@
 
                 if(row.lv=="1"){
                 	html += `
-                        <div id="lv1_${idx++}" dp1="${row.dp1}" class="table-caption mt1">
+                        <div id="lv1_${idx++}" dp1="${row.dp1}" class="table-caption">
                             <div class="left">
                                 <h3 class="sub-title">${row.cn}</h3>
                             </div>
@@ -268,10 +270,24 @@
             });
         }
 
+        function setForm(){
+
+            var sttsCd = $("#sttsCd").val();
+
+            if(sttsCd !=null && sttsCd !='' && sttsCd !='111101'&& sttsCd !='111102'){
+                $('#chkListForm button, select, input[type=checkbox],input[type=radio],input[type=file]').prop('disabled', true);
+            }
+
+            if(sttsCd !=null && sttsCd !='' && sttsCd !='111101'){
+//                 $("#prgrmNav .active").removeClass('active');
+            }
+        }
+
         $(function() {
 
             setChkList();
             setAnsList();
+            setForm();
 
             $("#chkListForm [name^=chkRdo]").on("change",function(e){
 
@@ -295,12 +311,6 @@
             });
 
             $("#chkListForm [name^=chkRdo]").trigger('change');
-
-            var sttsCd = $("#sttsCd").val();
-            if(sttsCd =='111103'){
-                $('#chkListForm button, select, input[type=checkbox],input[type=radio],input[type=file]').prop('disabled', true);
-                //$('#sftyMngForm #nextBtn').prop('disabled', false);
-            }
 
 
         });

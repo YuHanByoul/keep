@@ -47,24 +47,18 @@
                     <div class="sticky-navigation">
                         <strong class="tit">프로그램 정보 항목</strong>
                         <div class="sticky-steps">
-                            <ul>
-<!--                                 <li><a th:href="@{/front/dsgnPrgrm/prgrmDstnctnForm.html?prgrmid=}+${snrstfdvlprHstry.prgrmid}" >프로그램 우수성</a></li> -->
-<!--                                 <li><a th:href="@{/front/dsgnPrgrm/prgrmOperMngForm.html?prgrmid=}+${snrstfdvlprHstry.prgrmid}" >프로그램 운영관리</a></li> -->
-<!--                                 <li><a th:href="@{/front/dsgnPrgrm/prgrmEvlForm.html?prgrmid=}+${snrstfdvlprHstry.prgrmid}" >프로그램 평가</a></li> -->
-<!--                                 <li class="active"><a th:href="@{/front/dsgnPrgrm/ldrQlfcForm.html?prgrmid=}+${snrstfdvlprHstry.prgrmid}" >지도자의 자격 및 배치</a></li> -->
-<!--                                 <li><a th:href="@{/front/dsgnPrgrm/sftyMngForm.html?prgrmid=}+${snrstfdvlprHstry.prgrmid}" >안전관리</a></li> -->
-<!--                                 <li><a th:href="@{/front/dsgnPrgrm/chkListForm.html?prgrmid=}+${snrstfdvlprHstry.prgrmid}" >체크리스트</a></li> -->
-                                <li >              <a>프로그램 우수성</a></li>
-                                <li>               <a>프로그램 운영관리</a></li>
-                                <li>               <a>프로그램 평가</a></li>
-                                <li class="active"><a>지도자의 자격 및 배치</a></li>
-                                <li>               <a>안전관리</a></li>
-                                <li>               <a>체크리스트</a></li>
+                            <ul id='prgrmNav'>
+                                <li><a href="javascript:navClick('/front/dsgnPrgrm/prgrmDstnctnForm.html')" >프로그램 우수성</a></li>
+                                <li><a href="javascript:navClick('/front/dsgnPrgrm/prgrmOperMngForm.html')" >프로그램 운영관리</a></li>
+                                <li><a href="javascript:navClick('/front/dsgnPrgrm/prgrmEvlForm.html')" >프로그램 평가</a></li>
+                                <li class="active"><a href="javascript:navClick('/front/dsgnPrgrm/ldrQlfcForm.html')" >지도자의 자격 및 배치</a></li>
+                                <li><a href="javascript:navClick('/front/dsgnPrgrm/sftyMngForm.html')" >안전관리</a></li>
+                                <li><a href="javascript:navClick('/front/dsgnPrgrm/chkListForm.html')" >체크리스트</a></li>
                             </ul>
                             <div class="btn-wrap">
                                 <div class="center">
                                     <button type="button" class="btn-large btn-gray" onclick="doSave()">중간저장</button>
-                                    <button type="button" class="btn-large btn-green" onclick="goNext()" id="nextBtn">다음</button>
+                                    <button type="button" class="btn-large btn-green" onclick="doSave('next')" id="nextBtn">다음</button>
                                 </div>
                             </div>
                         </div>
@@ -236,8 +230,8 @@
                         </div>
                         <div class="btn-wrap">
                             <div class="center">
-                                <button type="button" class="btn-medium btn-gray">이전</button>
-                                <button type="button" class="btn-medium btn-green" id="nextBtn">다음</button>
+                                <button type="button" class="btn-medium btn-gray" onclick="goPrev()">이전</button>
+                                <button type="button" class="btn-medium btn-green" onclick="doSave('next')" id="nextBtn">다음</button>
                             </div>
                         </div>
                     </div>
@@ -271,6 +265,14 @@
         var nextUrl = "/front/dsgnPrgrm/sftyMngForm.html";    //안전관리
         var prevUrl = "/front/dsgnPrgrm/prgrmEvlForm.html";    //프로그램 평가
         var reUrl = "/front/dsgnPrgrm/ldrQlfcForm.html";    //지도자 의 자격 및 배치
+
+        function navClick(link){
+            var sttsCd = $('#sttsCd').val();
+            var prgrmid = $('#prgrmid').val();
+            if(sttsCd != null && sttsCd != '' && sttsCd != '111101'){
+//                 location.href = link+"?prgrmid="+prgrmid;
+            };
+        }
 
         function validate(){
 
@@ -313,11 +315,6 @@
         function goPrev(){
             document.dstnctnForm.action = "/front/dsgnPrgrm/evlForm.html";    //평가
             $("#ldrQlfcForm").submit();
-        }
-
-        function goNext(){
-//             if($("#ldrQlfcForm").valid() == false) return;
-            doSave("next");
         }
 
         function doSave(call){
@@ -699,21 +696,29 @@
         function delCareer(id){
             $("#careerTr"+id).remove();
         }
-      //####################### careerList
+       //####################### careerList
+
+        function setForm(){
+            var sttsCd = $("#sttsCd").val();
+
+            if(sttsCd !=null && sttsCd !='' && sttsCd !='111101'&& sttsCd !='111102'){
+                $('#ldrQlfcForm input,textarea').prop('readonly', true);
+                $('#ldrQlfcForm button, select, input[type=checkbox],input[type=radio],input[type=file]').prop('disabled', true);
+
+                $('#ldrQlfcForm #nextBtn').prop('disabled', false);
+            }
+
+            if(sttsCd !=null && sttsCd !='' && sttsCd !='111101'){
+//                 $("#prgrmNav .active").removeClass('active');
+            }
+        }
 
         $(function() {
             setLdrList();
             setAcbgList();
             setQlfcList();
             setCareerList();
-
-            var sttsCd = $("#sttsCd").val();
-            if(sttsCd =='111103'){
-                $('#ldrQlfcForm input,textarea').prop('readonly', true);
-                $('#ldrQlfcForm button, select, input[type=checkbox],input[type=radio],input[type=file]').prop('disabled', true);
-
-                $('#ldrQlfcForm #nextBtn').prop('disabled', false);
-            }
+            setForm();
         });
 
         </script>
