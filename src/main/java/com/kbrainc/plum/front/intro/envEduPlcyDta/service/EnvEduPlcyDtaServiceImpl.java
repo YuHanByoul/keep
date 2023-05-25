@@ -69,9 +69,9 @@ public class EnvEduPlcyDtaServiceImpl extends PlumAbstractServiceImpl implements
     @Transactional
     public BsnsOperDtaVo selectBsnsOperDta(BsnsOperDtaVo bsnsOperDtaVo) throws Exception {
         BsnsOperDtaVo bsnsOperDta = envEduPlcyDtaDao.selectBsnsOperDta(bsnsOperDtaVo);
-        if (bsnsOperDta.getPdfFileid() != null && !bsnsOperDta.getPdfFileid().equals(0)) {
+        if (bsnsOperDta.getPdfFilegrpid() != null && !bsnsOperDta.getPdfFilegrpid().equals(0)) {
             FileVo fileVo = new FileVo();
-            fileVo.setFilegrpid(bsnsOperDta.getPdfFileid());
+            fileVo.setFilegrpid(bsnsOperDta.getPdfFilegrpid());
             ArrayList<FileVo> fileList = fileDao.getFileList(fileVo);
             bsnsOperDta.setPdfFileList(fileList);
         }

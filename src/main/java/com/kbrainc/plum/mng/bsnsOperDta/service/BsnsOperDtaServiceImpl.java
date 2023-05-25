@@ -69,9 +69,9 @@ public class BsnsOperDtaServiceImpl extends PlumAbstractServiceImpl implements B
 
         if(bsnsOperDta == null) bsnsOperDta = new BsnsOperDtaVo();
 
-        if (bsnsOperDta.getPdfFileid() != null && !bsnsOperDta.getPdfFileid().equals(0)) {
+        if (bsnsOperDta.getPdfFilegrpid() != null && !bsnsOperDta.getPdfFilegrpid().equals(0)) {
             FileVo fileVo = new FileVo();
-            fileVo.setFilegrpid(bsnsOperDta.getPdfFileid());
+            fileVo.setFilegrpid(bsnsOperDta.getPdfFilegrpid());
             ArrayList<FileVo> fileList = fileDao.getFileList(fileVo);
             bsnsOperDta.setPdfFileList(fileList);
         }
