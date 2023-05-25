@@ -135,6 +135,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         		"/example/**/*",
         		"/js/ckeditor/**/*",
         		"/old/**/*",
+                "/infodata3/**/*", // 마이그레이션 데이터 pdf 허용
+                "/devnas/keep/portal/uploads/infodata4/**/*",
         		"/search/*" // 통합검색
         ); // 시큐리티를 적용하지 않을 자원들
     }

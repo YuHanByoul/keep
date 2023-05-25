@@ -70,5 +70,23 @@ public class WebMvcConfig implements WebMvcConfigurer {
         .setCachePeriod(3600)
         .resourceChain(true)
         .addResolver(new PathResourceResolver());
+
+        registry.addResourceHandler("/infodata3/**")
+            .addResourceLocations("file:///" + uploadImagesPath + "/infodata3/")
+            .setCachePeriod(3600)
+            .resourceChain(true)
+            .addResolver(new PathResourceResolver());
+
+        registry.addResourceHandler("/devnas/keep/portal/uploads/infodata4/**")
+            .addResourceLocations("file:///devnas/keep/portal/uploads/infodata4/")
+            .setCachePeriod(3600)
+            .resourceChain(true)
+            .addResolver(new PathResourceResolver());
+
+        registry.addResourceHandler("/old/**")
+            .addResourceLocations("file:///" + uploadImagesPath + "/old/")
+            .setCachePeriod(3600)
+            .resourceChain(true)
+            .addResolver(new PathResourceResolver());
     }
 }
