@@ -27,6 +27,7 @@ import com.kbrainc.plum.mng.bizAply.pcntst.model.GradeVo;
 import com.kbrainc.plum.mng.bizAply.pcntst.model.PublicContestMngGrpVo;
 import com.kbrainc.plum.mng.bizAply.pcntst.model.PublicContestVo;
 import com.kbrainc.plum.mng.bizAply.pcntst.service.PublicContestService;
+import com.kbrainc.plum.mng.cnsltng.model.CnsltngExprtVo;
 import com.kbrainc.plum.mng.cnsltng.service.CnsltngService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -328,7 +329,13 @@ public class PublicContestController {
     @ResponseBody
     public Map<String, Object> selectMngGrpList(PublicContestMngGrpVo publicContestVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
-        List<PublicContestMngGrpVo> result = this.publicContestService.selectMngGrpList(publicContestVo);
+        List<PublicContestMngGrpVo> result = null;
+        
+        if ("P".equals(publicContestVo.getCheckExprtKnd())) {
+            result = this.publicContestService.selectCnsltngExprtList(publicContestVo);
+        } else {
+            result = this.publicContestService.selectMngGrpList(publicContestVo);
+        }
         
         if (result.size() > 0) {
             resultMap.put("totalCount", result.get(0).getTotalCount());
