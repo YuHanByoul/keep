@@ -5,7 +5,7 @@
       layout:decorator="layout/front/subLayout">
 <body>
 <div layout:fragment="content">
-    <form id="mvmnAplyForm" name="mvmnAplyForm" th:action="@{/front/mvmnAply/mvmnAplyRegStep1.html}">
+    <form id="mvmnAplyForm" name="mvmnAplyForm" th:action="@{/front/mvmnAply/mvmnAplyRegStep1.html}" onsubmit="return false;">
         <input type="hidden" id="prgrmid" name="prgrmid" th:value="${mvmnAply.prgrmid}"/>
         <input type="hidden" id="operFomCd" name="operFomCd" th:value="${mvmnAply.operFomCd}"/>
         <input type="hidden" id="tmeid" name="tmeid"/>
@@ -235,11 +235,11 @@
                                 <tr class="tr-check">
                                     <td>
                                         <th:block th:if="${item.sttsDesc ne '마감'}">
-                                            <label class="inp vm"><input name="tmeId" type="radio" th:id="|tmeId${itemStat.index}|" th:value="${item.tmeid}"
+                                            <label class="inp vm"><input name="tmeRadio" type="radio" th:id="|tmeId${itemStat.index}|" th:value="${item.tmeid}"
                                                                          onchange="mvmnAplyDetail.fn_tmeidChange(this)"/></label>
                                         </th:block>
                                         <th:block th:if="${item.sttsDesc eq '마감'}">
-                                            <label class="inp vm"><input name="tmeId" type="radio" th:value="${item.tmeid}" disabled/></label>
+                                            <label class="inp vm"><input name="tmeRadio" type="radio" th:value="${item.tmeid}" disabled/></label>
                                         </th:block>
                                     </td>
                                     <td>
@@ -419,16 +419,23 @@
                 var usrType = user != null ? user.loginUserType : "";
 
                 if (usrType == 'I') {
-                    if (!$('[name=tmeSchdlid]').val()) {
-                        alert("교육회차를 선택해 주세요.");
-                        return false;
-                    }
                     if ($("#signguCd").val() == '') {
                         alert("지역을 선택해 주세요.");
                         return false;
                     }
-
-                    $('#mvmnAplyForm').submit();
+                    if($("#operFomCd").val() == "197102") { // 지속교육
+                        if (!$('#tmeid').val()) {
+                            alert("교육회차를 선택해 주세요.");
+                            return false;
+                        }                        
+                    } else { // 일일교육
+                        if (!$('[name=tmeSchdlid]').val()) {
+                            alert("교육회차를 선택해 주세요.");
+                            return false;
+                        }
+                    }
+                    $('#mvmnAplyForm').attr("onsubmit", "").submit();
+                    //$('#mvmnAplyForm').submit();
                 } else {
                     alert("기관회원만 신청할 수 있습니다.");
                     return false;
