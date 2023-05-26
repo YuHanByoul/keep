@@ -322,48 +322,52 @@
         //파일 첨부 (멀티 파일)
         $('#evdncDcmntFile').on("change", function(event) {
 
-           var objFile = document.querySelector('#evdncDcmntFile');
-           var formData = new FormData();
-           var content = "";
-           var uploadFileCnt = 0;
+             var objFile = document.querySelector('#evdncDcmntFile');
+             var formData = new FormData();
+             var content = "";
+             var uploadFileCnt = 0;
 
-           for( i = 0 ; i < objFile.files.length ; i++) {
-               formData.append("files", objFile.files[i]);
-               uploadFileCnt++;
-           }
+             for( i = 0 ; i < objFile.files.length ; i++) {
+                 formData.append("files", objFile.files[i]);
+                 uploadFileCnt++;
+             }
 
 
-           var filegrpid = $("#filegrpid").val()==null || $("#filegrpid").val()==''? 0 : $("#filegrpid").val();
+             var filegrpid = $("#filegrpid").val()==null || $("#filegrpid").val()==''? 0 : $("#filegrpid").val();
 
-           formData.append("filegrpid", filegrpid);
-           formData.append("filegrpNm", "asgsysSrng_file");
+             formData.append("filegrpid", filegrpid);
+             formData.append("filegrpNm", "asgsysSrng_file");
 
-           $('#evdncDcmntFile').val("");
-               $.ajax({
-                   url : '/uploadMultipleFiles.do',
-                   processData : false,
-                   contentType : false,
-                   data : formData,
-                   type : 'POST',
-                   success : function(response) {
+             $.ajax({
+                 url : '/uploadMultipleFiles.do',
+                 processData : false,
+                 contentType : false,
+                 data : formData,
+                 type : 'POST',
+                 success : function(response) {
+              	   if(response.result == 'fail'){
+                         alert(response.msg);
+              	   }else{
 
-                       if($("#filegrpid").val()=='0' || $("#filegrpid").val()==''  || $("#filegrpid").val()==null){
-                           $("#filegrpid").val( response[0].filegrpid );
-                       }
+                         if($("#filegrpid").val()=='0' || $("#filegrpid").val()==''  || $("#filegrpid").val()==null){
+                             $("#filegrpid").val( response[0].filegrpid );
+                         }
 
-                       for(i = 0 ;i < response.length; i++ ){
-                           content = "<span class ='label label-inverse mb-2' id='file_"+response[i].fileid+"'>"+response[i].orginlFileNm ;
-                           content +="&nbsp;&nbsp;  <a  class = 'text-white' href = javascript:fn_deleteFile('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"')>X</a></span>&nbsp;&nbsp;";
-                           $('#multipleFileUploadSuccess').append(content);
-                       }
-                   }
-               })
+                         for(i = 0 ;i < response.length; i++ ){
+                             content = "<span class ='label label-inverse mb-2' id='file_"+response[i].fileid+"'>"+response[i].orginlFileNm ;
+                             content +="&nbsp;&nbsp;  <a  class = 'text-white' href = javascript:fn_deleteFile('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"')>X</a></span>&nbsp;&nbsp;";
+                             $('#multipleFileUploadSuccess').append(content);
+                         }
+              	   }
 
-              if (detectBrowser() == "other") {
-                  $("#evdncDcmntFile").val("");
-              } else {
-                 $("#evdncDcmntFile").replaceWith( $("#evdncDcmntFile").clone(true))
-              }
+                 }
+             })
+
+             if (detectBrowser() == "other") {
+                 $("#evdncDcmntFile").val("");
+             } else {
+                $("#evdncDcmntFile").replaceWith( $("#evdncDcmntFile").clone(true))
+             }
         });
     });
 
