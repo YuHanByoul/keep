@@ -140,8 +140,10 @@ public class EnvReqstController {
         fileVo.setUser(user);
         // 대표 이미지
         if (resultVo.getRprsImgFileid() != null && !resultVo.getRprsImgFileid().equals(0)) {
-            fileVo.setFilegrpid(Integer.parseInt(resultVo.getRprsImgFileid().toString()));
-            ArrayList<FileVo> fileList= fileService.getFileList(fileVo);
+            fileVo.setFileid(Integer.parseInt(resultVo.getRprsImgFileid().toString()));
+            FileVo RprsImgFile= fileService.getFileInfo(fileVo);
+            ArrayList<FileVo> fileList= new ArrayList();
+            fileList.add(RprsImgFile);
             model.addAttribute("rprsImgFileMap",fileList );
         } else {
             model.addAttribute("rprsImgFileMap", null);
@@ -160,8 +162,10 @@ public class EnvReqstController {
 
         // 안내자료
         if (resultVo.getGdncFileid() != null && !resultVo.getGdncFileid().equals(0)) {
-            fileVo.setFilegrpid(Integer.parseInt(resultVo.getGdncFileid().toString()));
-            ArrayList<FileVo> fileList= fileService.getFileList(fileVo);
+            fileVo.setFileid(Integer.parseInt(resultVo.getGdncFileid().toString()));
+            FileVo GdncFile= fileService.getFileInfo(fileVo);
+            ArrayList<FileVo> fileList= new ArrayList();
+            fileList.add(GdncFile);
             model.addAttribute("gdncFileMap",fileList );
             model.addAttribute("gdncCurrentFileCnt", fileList.size());
         } else {
