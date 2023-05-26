@@ -161,7 +161,7 @@ public class PaginationAttr extends AbstractAttributeTagProcessor {
             String previousPageDisabledTag = "<button type=\"button\" title=\"이전 페이지\" class=\"prev\" disabled></button>";
             String firstPageTag = "<button type=\"button\" title=\"처음 페이지\" class=\"{0}\" onclick=\"{1}\"></button>";
             String previousPageTag = "<button type=\"button\" title=\"이전 페이지\" class=\"{0}\" onclick=\"{1}\"></button>";
-            String currentPageTag = "<button type=\"button\" class=\"active\">{0}</button>";
+            String currentPageTag = "<button type=\"button\" class=\"active\" title=\"현재 페이지\">{0}</button>";
             String otherPageTag = "<button type=\"button\" onclick=\"{0}\">{1}</button>";
             String nextPageTag = "<button type=\"button\" title=\"다음 페이지\" class=\"{0}\" onclick=\"{1}\"></button>";
             String lastPageTag = "<button type=\"button\" title=\"마지막 페이지\" class=\"{0}\" onclick=\"{1}\"></button>";
