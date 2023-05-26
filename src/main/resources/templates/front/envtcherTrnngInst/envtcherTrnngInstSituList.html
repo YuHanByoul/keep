@@ -9,38 +9,64 @@
     </div>
 
     <div class="edu-list type3">
-        <ul>
-            <li th:each="item : ${list}">
-                <dl>
-                    <dt th:text="|${item.instNm}(${item.grdcdNm})|"></dt>
-                    <dd class="logo"><img th:src="'/downloadFileByFileid.do?fileid='+${item.logoFileid}+'&file_idntfc_key='+${item.fileIdntfcKey}" th:alt="${item.instNm}" onerror="this.src='/images/front/bg/bg-noimage.png'; this.style.objectFit='none';"></dd>
-                    <dd>
-                        <ul class="dot-list">
-                            <li class="d-flex">
-                                <span class="tit">TEL</span>
-                                <span class="dc" th:text="${item.telno}"></span>
-                            </li>
-                            <li class="d-flex">
-                                <span class="tit">FAX</span>
-                                <span class="dc" th:text="${item.fxno}"></span>
-                            </li>
-                            <li class="d-flex">
-                                <span class="tit">주소</span>
-                                <span class="dc" th:text="${item.addr}"></span>
-                            </li>
-                        </ul>
-                    </dd>
-                </dl>
-                <div class="detail">
-                    <dl>
-                        <dt th:text="|${item.instNm}(${item.grdcdNm})|"></dt>
-                        <dd th:text="${item.expln}"></dd>
-                    </dl>
-                    <div th:if="${item.hmpg != null}" class="pc-btn"><button type="button" class="btn-medium"><a th:href="${item.hmpg}" target="_blank" rel="noopener noreferrer" title="새창열림">홈페이지 바로가기</a></button></div>
-                </div>
-                <div class="mo-only mo-btn"><button type="button" class="btn-medium btn-green">홈페이지 바로가기</button></div>
-            </li>
+        <ul id="list-area">
         </ul>
     </div>
+    
+    <script th:inline="javascript">
+   	var list = /*[[${list}]]*/ null;
+   	var listTag = "";
+   	var hmpgTag = "";
+   	var mo_hmpgTag = "";
+   	
+   	list.forEach(function(item) {
+   		item.telno = item.telno.replace(/^(\d{2,3})(\d{3,4})(\d{4})$/, `$1-$2-$3`);
+   		item.fxno = item.fxno.replace(/^(\d{2,3})(\d{3,4})(\d{4})$/, `$1-$2-$3`);
+   		
+   		if(item.hmpg != "") {
+			if(!((item.hmpg.includes("https://") || item.hmpg.includes("http://")))){
+				item.hmpg = "https://" + item.hmpg;
+			}
+			hmpgTag = `<div class="pc-btn"><button type="button" class="btn-medium"><a href="${item.hmpg}" target="_blank" rel="noopener noreferrer" title="새창열림">홈페이지 바로가기</a></button></div>`;
+			mo_hmpgTag = `<div class="mo-only mo-btn"><button type="button" class="btn-medium btn-green"><a href="${item.hmpg}" target="_blank" rel="noopener noreferrer" title="새창열림">홈페이지 바로가기</a></button></div>`;
+		}
+   		
+   		listTag += `
+        <li>
+            <dl>
+                <dt>${item.instNm}(${item.grdcdNm})</dt>
+                <dd class="logo"><img src="/downloadFileByFileid.do?fileid=${item.logoFileid}&file_idntfc_key=${item.fileIdntfcKey}" alt="${item.instNm}" onerror="this.src='/images/front/bg/bg-noimage.png'; this.style.objectFit='none';"></dd>
+                <dd>
+                    <ul class="dot-list">
+                        <li class="d-flex">
+                            <span class="tit">TEL</span>
+                            <span class="dc">${item.telno}</span>
+                        </li>
+                        <li class="d-flex">
+                            <span class="tit">FAX</span>
+                            <span class="dc">${item.fxno}</span>
+                        </li>
+                        <li class="d-flex">
+                            <span class="tit">주소</span>
+                            <span class="dc">${item.addr}</span>
+                        </li>
+                    </ul>
+                </dd>
+            </dl>
+            <div class="detail">
+                <dl>
+                    <dt>${item.instNm}(${item.grdcdNm})</dt>
+                    <dd>${item.expln}</dd>
+                </dl>
+                ${hmpgTag}
+            </div>
+            ${mo_hmpgTag}
+        </li>
+   		`;
+   	});
+    
+   	$("#list-area").html(listTag);
+   	
+    </script>
 </div>
 </html>
