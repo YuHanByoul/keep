@@ -99,22 +99,20 @@ public class MvmnAplyController {
         mvmnAplyVo.setPrgrmid(mvmnAply.getPrgrmid());
         
         List<MvmnAplyVo> eduPhotoFileList = null;
-//        List<MvmnAplyVo> mvmnAplyTmeList = null;
+        List<MvmnAplyVo> mvmnAplyTmeList = null;
         List<MvmnAplyVo> mvmnAplyEduSareaList = null;
         
         eduPhotoFileList = mvmnAplyService.selectEduPhotoFileList(mvmnAplyVo);
         model.addAttribute("eduPhotoFileList", eduPhotoFileList);
         model.addAttribute("user", user);
-        
-//        mvmnAplyTmeList =  mvmnAplyService.selectMvmnAplyTmeList(mvmnAplyVo);
+        mvmnAplyTmeList =  mvmnAplyService.selectMvmnTmeList(mvmnAplyVo);
         //mvmnAplyList = mvmnAplyService.selectInstMvmnAplyList(mvmnAplyVo);
-        /*
         if(mvmnAplyTmeList.size() <= 0) {
             model.addAttribute("mvmnAplyTmeList", "null");
         }else {
             model.addAttribute("mvmnAplyTmeList", mvmnAplyTmeList);
         }
-        */
+        
         mvmnAplyEduSareaList =  mvmnAplyService.selectMvmnAplyEduSareaList(mvmnAplyVo);
         if(mvmnAplyEduSareaList.size() <= 0) {
             model.addAttribute("mvmnAplyEduSareaList", "null");
@@ -288,10 +286,10 @@ public class MvmnAplyController {
     
     @RequestMapping(value = "/front/mvmnAply/insertMvmnAply.do")
     @ResponseBody
-    public Map<String, Object> insertMvmnAply(MvmnAplyVo mvmnAplyVo) throws Exception {
+    public Map<String, Object> insertMvmnAply(MvmnAplyVo mvmnAplyVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
+        mvmnAplyVo.setUser(user);
         int retVal = 0;
-        
         retVal = mvmnAplyService.insertMvmnAply(mvmnAplyVo);
         
         if (retVal > 0) {
