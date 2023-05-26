@@ -44,11 +44,6 @@ public class EnvtcherTrnngInstController {
     @RequestMapping(value = "/front/envtcherTrnngInst/envtcherTrnngInstSituList.html")
     public String envtcherTrnngInstSituList(Model model) throws Exception {
         List<EnvtcherTrnngInstVo> list = envtcherTrnngInstService.selectEnvtcherTrnngInstSituList();
-        for(EnvtcherTrnngInstVo item : list){
-            String regEx = "^(01\\d{1}|02|0505|0502|0506|0\\d{1,2})-?(\\d{3,4})-?(\\d{4})";
-            item.setTelno(item.getTelno().replaceAll(regEx, "$1-$2-$3"));
-            item.setFxno(item.getFxno().replaceAll(regEx, "$1-$2-$3"));
-        }
         model.addAttribute("list",list);
         return "front/envtcherTrnngInst/envtcherTrnngInstSituList";
     }
