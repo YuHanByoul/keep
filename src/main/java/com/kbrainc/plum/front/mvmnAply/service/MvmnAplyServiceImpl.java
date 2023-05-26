@@ -70,7 +70,7 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
     /**
     * 푸름이 이동환경교실 교육신청 회차 목록 조회
     *
-    * @Title : selectInstMvmnAplyList
+    * @Title : selectMvmnAplyTmeList
     * @Description : 푸름이 이동환경교실 교육신청 회차 목록 조회
     * @param mvmnAplyVo
     * @return
@@ -80,6 +80,21 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
     @Override
     public List<MvmnAplyVo> selectMvmnAplyTmeList(MvmnAplyVo mvmnAplyVo) throws Exception {
         return mvmnAplyDao.selectMvmnAplyTmeList(mvmnAplyVo);
+    }
+    
+    /**
+    * 푸름이 이동환경교실 교육신청 회차 목록 조회(지속교육)
+    *
+    * @Title : selectMvmnTmeList
+    * @Description : 푸름이 이동환경교실 교육신청 회차 목록 조회(지속교육)
+    * @param mvmnAplyVo
+    * @return
+    * @throws Exception
+    * @return List<MvmnAplyVo>
+    */
+    @Override
+    public List<MvmnAplyVo> selectMvmnTmeList(MvmnAplyVo mvmnAplyVo) throws Exception {
+        return mvmnAplyDao.selectMvmnTmeList(mvmnAplyVo);
     }
 
     /**
@@ -156,11 +171,11 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
     public int insertMvmnAply(MvmnAplyVo mvmnAplyVo) throws Exception{
         int retVal = 0;
         retVal += mvmnAplyDao.insertMvmnAply(mvmnAplyVo);
-        retVal += mvmnAplyDao.insertMvmnAplySchdl(mvmnAplyVo);
+//        retVal += mvmnAplyDao.insertMvmnAplySchdl(mvmnAplyVo);
         
-        if(mvmnAplyVo.getTrgtCds()!=null & mvmnAplyVo.getTrgtCds().length > 0) {
-            retVal += mvmnAplyDao.insertTrgtCd(mvmnAplyVo);
-        }
+//        if(mvmnAplyVo.getTrgtCds()!=null & mvmnAplyVo.getTrgtCds().length > 0) {
+//            retVal += mvmnAplyDao.insertTrgtCd(mvmnAplyVo);
+//        }
         return retVal;
     }    
     

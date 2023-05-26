@@ -59,6 +59,18 @@ public interface MvmnAplyService {
     * @return List<MvmnAplyVo>
     */
     public List<MvmnAplyVo> selectMvmnAplyTmeList(MvmnAplyVo mvmnAplyVo) throws Exception;
+    
+    /**
+    * 푸름이 이동환경교실 교육신청 회차 목록 조회(지속교육)
+    *
+    * @Title : selectMvmnTmeList
+    * @Description : 푸름이 이동환경교실 교육신청 회차 목록 조회(지속교육)
+    * @param mvmnAplyVo
+    * @return
+    * @throws Exception
+    * @return List<MvmnAplyVo>
+    */
+    public List<MvmnAplyVo> selectMvmnTmeList(MvmnAplyVo mvmnAplyVo) throws Exception;
 
     /**
      * 푸름이 이동환경교실 동일 운영권역 교육 프로그램 목록 조회
