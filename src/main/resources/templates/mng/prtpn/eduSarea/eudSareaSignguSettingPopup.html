@@ -91,56 +91,55 @@ function fn_signguDetail(item){
         dataType: "json",
         success: function (data) {
             for(var i = 0; i < data.list.length; i++){
-                signguDetailHtml += '<tr>';
-                signguDetailHtml += '   <input type="hidden" name="sareaId" value="'+data.list[i].sareaId+'"/>';                
-                signguDetailHtml += '   <input type="hidden" name="ctprvnCd" value="'+data.list[i].ctprvnCd+'"/>';                
-                signguDetailHtml += '   <input type="hidden" name="signguCd" value="'+data.list[i].signguCd+'"/>';
-                signguDetailHtml += '   <td class="text-center v-middle">'+data.list[i].signguNm+'</td>';
-                signguDetailHtml += '   <td class="text-center v-middle">';
-                signguDetailHtml += '       <div class="form-radio">';
-                signguDetailHtml += '           <div class="radio radio-inline">';
-            	signguDetailHtml += '              <label class="mb-0 form-label">';
-            	//전일
-            	if(data.list[i].hrSeCd == '191101'){
-            		signguDetailHtml += '                  <input type="radio" name="hrSeCd'+i+'" value="191101" addClass="hrSeCd" checked>';
-            	}else{
-            		if(data.list[i].hrSeCd == null){
-            			signguDetailHtml += '                  <input type="radio" name="hrSeCd'+i+'" value="191101" addClass="hrSeCd" checked>';
-            		}else{
-            		    signguDetailHtml += '                  <input type="radio" name="hrSeCd'+i+'" value="191101" addClass="hrSeCd">';
-            		}
-            	}
-            	signguDetailHtml += '                  <i class="helper"></i>전일';
-            	signguDetailHtml += '              </label>';
-            	signguDetailHtml += '          </div>';
-            	signguDetailHtml += '          <div class="radio radio-inline">';
-            	signguDetailHtml += '              <label class="mb-0 form-label">';
-            	//오후
-            	if(data.list[i].hrSeCd == '191102'){
-            		signguDetailHtml += '                  <input type="radio" name="hrSeCd'+i+'" value="191102" addClass="hrSeCd" checked>';
-            	}else{
-                    signguDetailHtml += '                  <input type="radio" name="hrSeCd'+i+'" value="191102" addClass="hrSeCd">';            		
-            	}
-            	signguDetailHtml += '                  <i class="helper"></i>오후';
-            	signguDetailHtml += '              </label>';
-            	signguDetailHtml += '          </div>';
-            	signguDetailHtml += '      </div>';
-            	signguDetailHtml += '  </td>';
-            	signguDetailHtml += '  <td class="text-center v-middle">';
-                if(data.list[i].useYn == "Y"){
-                	signguDetailHtml += '      <input type="checkbox" class="js-single-small" name="useYn" checked/>';
-                }else{
-                	if(data.list[i].hrSeCd == null){
-                        signguDetailHtml += '      <input type="checkbox" class="js-single-small" name="useYn" checked/>';
-                	}else{
-                		signguDetailHtml += '      <input type="checkbox" class="js-single-small" name="useYn"/>';
-                	}
-                }
-            	signguDetailHtml += '  </td>';
-            	signguDetailHtml += '</tr>';
+                signguDetailHtml += `<tr>
+                                        <input type="hidden" name="sareaId" value="${data.list[i].sareaId}"/>
+                                        <input type="hidden" name="ctprvnCd" value="${data.list[i].ctprvnCd}"/>
+                                        <input type="hidden" name="signguCd" value="${data.list[i].signguCd}"/>
+
+                                        <td class="text-center v-middle">${data.list[i].signguNm}</td>'
+                                        <td class="text-center v-middle">
+                                            <div class="form-radio">
+                                                <div class="radio radio-inline">
+                                                    <label class="mb-0 form-label">
+                                                        ${data.list[i].hrSeCd == null || data.list[i].hrSeCd == '191101' ?
+                                                        `<input type="radio" name="hrSeCd${i}" value="191101" addClass="hrSeCd" checked>
+                                                        <i class="helper"></i>전일
+                                                    </label>
+                                                </div>`
+                                                    :   `<input type="radio" name="hrSeCd${i}" value="191101" addClass="hrSeCd" >
+                                                        <i class="helper"></i>전일
+                                                    </label>
+                                                </div>`}
+
+                                                <div class="radio radio-inline">
+                                                    <label class="mb-0 form-label">
+                                                        ${data.list[i].hrSeCd != null && data.list[i].hrSeCd == '191102' ?
+                                                        `<input type="radio" name="hrSeCd${i}" value="191102" addClass="hrSeCd" checked>
+                                                        <i class="helper"></i>오후
+                                                    </label>
+                                                </div>`
+                                                    :   `<input type="radio" name="hrSeCd${i}" value="191102" addClass="hrSeCd">
+                                                        <i class="helper"></i>오후
+                                                    </label>
+                                                </div>`}
+                                            <div>
+                                        </td>
+                                        <td class="text-center v-middle">
+                                            ${ data.count == 0 || data.list[i].useYn == 'Y' ?  `<input type="checkbox" class="js-single-small" name="useYn" checked/>`
+                                                : `<input type="checkbox" class="js-single-small" name="useYn"/>`}
+                                        </td>
+                                    </tr>`
             }
             $("#areaNmTxt").text("지역 : " + item.ctprvnNm);
             $("#signguDetailTbody").append(signguDetailHtml);
+
+            var elemsingleSmallList = document.querySelectorAll('.js-single-small');
+            for(var i=0; i < elemsingleSmallList.length; i++){
+                switchCherryArr[elemsingleSmallList[i].getAttribute('id')]  = new Switchery(elemsingleSmallList[i], { color: '#93BE52', jackColor: '#fff', size : 'small'});
+            }
+            if(switchCherryCallback != undefined && typeof switchCherryCallback === 'function'){
+                switchCherryCallback();
+            }
         }
     });    
 }
@@ -160,9 +159,8 @@ function fn_updateEduSareaSignguSetting(){
 	            param["signguList[" + idx + "].ctprvnCd"] = $(this).find("[name=ctprvnCd]").val();
 	            param["signguList[" + idx + "].signguCd"] = $(this).find("[name=signguCd]").val();
 	            param["signguList[" + idx + "].hrSeCd"] = $(this).find("[name=hrSeCd"+index+"]:checked").val();
-	            idx ++;
+	            idx++;
     		}
-            //param["signguList[" + index + "].useYn"] = $(this).find("[name=useYn]").prop("checked") ? "Y" : "N";
         });
         $.ajax({
             url : "/mng/prtpn/eduSarea/updateEduSareaSignguSetting.do",

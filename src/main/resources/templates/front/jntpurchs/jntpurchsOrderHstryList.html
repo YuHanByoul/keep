@@ -38,12 +38,13 @@
             <div class="left">
                 <p>총 <b id="totalCount">0</b> 건</p>
             </div>
-            <div class="right">
-                <select title="글 보기 개수" id="viewNumber" onchange="jntpurchsOrderHstry.onChangeRowPerPage();">
+            <div class="right d-flex">
+                <select title="글 보기 개수" class="sort-filter" id="viewNumber">
                     <option value="10">10개씩 보기</option>
                     <option value="50">50개씩 보기</option>
                     <option value="100">100개씩 보기</option>
                 </select>
+                <div><button type="button" class="btn-medium btn-outline-black" onclick="jntpurchsOrderHstry.onChangeRowPerPage();">보기</button></div>
             </div>
         </div>
         
@@ -179,9 +180,9 @@
                         if(data.sttsCd == "181101") { // 신청취소
                             item += '<td>-</td>';
                         } else if(data.sttsCd == "181100" && data.rvwRegDt) { // 신청완료, 후기 작성완료
-                            item += '<td><button type="button" class="link" onclick="jntpurchsOrderHstry.onRvwPopup(true, ' + data.orderid + ');">작성완료</button></td>';
+                            item += '<td><button type="button" class="link" onclick="jntpurchsOrderHstry.onRvwPopup(event, true, ' + data.orderid + ');">작성완료</button></td>';
                         } else {
-                            item += '<td><button type="button" class="btn-small btn-outline-blue" onclick="jntpurchsOrderHstry.onRvwPopup(false, ' + data.orderid + ');">작성</button></td>';
+                            item += '<td><button type="button" class="btn-small btn-outline-blue" onclick="jntpurchsOrderHstry.onRvwPopup(event, false, ' + data.orderid + ');">작성</button></td>';
                         }
                         item += '<td>' + data.regDt.split(' ')[0] + '</td>';
                         item += '</tr>'; 
@@ -197,12 +198,12 @@
                         item += '<div class="list"><dt>신청상태</dt><dd>' + data.sttsCdNm + '</dd></div>';
                         item += '<div class="list"><dt>신청일</dt><dd>' + data.regDt.split(' ')[0] + '</dd></div>';
                         if(data.sttsCd == "181100" && data.rvwRegDt) { // 후기 작성완료
-                            item += '<div class="list"><dt>후기</dt><dd><button type="button" class="link" onclick="jntpurchsOrderHstry.onRvwPopup(true, ' + data.orderid + ');">작성완료</button></dd></div>';
+                            item += '<div class="list"><dt>후기</dt><dd><button type="button" class="link" onclick="jntpurchsOrderHstry.onRvwPopup(event, true, ' + data.orderid + ');">작성완료</button></dd></div>';
                         }
                         item += '</dl></div>';
                         if(data.sttsCd == "181100" && !data.rvwRegDt) { // 후기 미작성
                             item += '<div class="btn-wrap"><div class="center">';
-                            item += '<a href="javascript:jntpurchsOrderHstry.onRvwPopup(false, ' + data.orderid + ');" class="btn-small btn-outline-blue">후기작성</a>';
+                            item += '<a href="javascript:jntpurchsOrderHstry.onRvwPopup(event, false, ' + data.orderid + ');" class="btn-small btn-outline-blue">후기작성</a>';
                             item += '</div></div>';
                         }
                         item += '</li>'; 
@@ -237,7 +238,7 @@
                     */
                 }
                 
-                , onRvwPopup: function(isWrite, orderid) {
+                , onRvwPopup: function(event, isWrite, orderid) {
                     this.orderid = orderid;
                     var url = !isWrite ? "/front/jntpurchs/rvwInsertPopup.html" : "/front/jntpurchs/rvwUpdatePopup.html?orderid=" + orderid;
                     var id = !isWrite ? "#rvwInsertPopup" : "#rvwUpdatePopup";
@@ -245,7 +246,7 @@
                     $(id).load(url, function(response, status, xhr) {
                         if(status == "success") {
                             var target = !isWrite ? "rvwInsertPopup" : "rvwUpdatePopup";
-                            layerPopup.open({target, function() {}});
+                            layerPopup.open({target, function() {}}, event);
                         }
                     });
                 }
