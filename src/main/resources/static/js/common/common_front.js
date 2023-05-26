@@ -206,9 +206,9 @@ function deleteFile(fileid, fileIdntfcKey) {
 }
 
 jQuery(function (){
-    $('.open-msg-btn').on('click',function (){
+    $('.open-msg-btn').on('click',function (event){
         const {target, trgtId} = $(this).data();
-        layerPopup.open({target, callback: msgSendFormInit(target, trgtId)});
+        layerPopup.open({target, callback: msgSendFormInit(target, trgtId)},event);
     });
     $('#msgForm textarea[name=cn]').on('keyup input', function() {
         $(this).parent().find('#txtSize').text($(this).val().length);
