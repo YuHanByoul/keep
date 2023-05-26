@@ -120,5 +120,13 @@ public interface CarbonEnveduDao {
     * @return CarbonPrgrmgdVo
     */
     public CarbonPrgrmgdVo selectPrgrmgdInfo(CarbonPrgrmgdVo carbonPrgrmgdVo) throws Exception;
+
+    public int selectEnveduNextCount(CarbonEnveduVo carbonEnveduVo) throws Exception;
+
+    public int selectEnveduPrevCount(CarbonEnveduVo carbonEnveduVo) throws Exception;
+
+    public int selectEnveduNextCount(CarbonPrgrmgdVo carbonPrgrmgdVo) throws Exception;
+
+    public int selectEnveduPrevCount(CarbonPrgrmgdVo carbonPrgrmgdVo) throws Exception;
     
 }

@@ -139,7 +139,7 @@
         	, A.MDFRID
         	, A.REG_DT AS REGDT
         	, A.RGTRID
-            , B.NM         
+            , B.NM      
         FROM 
             TB_CMM_WBZN_ENVEDU A
             LEFT OUTER JOIN TB_CMM_USER B ON A.RGTRID = B.USERID
@@ -167,6 +167,54 @@
                 </otherwise>
             </choose>                   
         <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <select id="selectEnveduNextCount" parameterType="front.EnveduVo" resultType="int">
+        SELECT
+            COUNT(*) AS nextCnt
+        FROM
+            TB_CMM_WBZN_ENVEDU A
+        WHERE
+              1 = 1
+          AND A.CLSF_CD = '232101'
+          AND A.MM = DATE_FORMAT(DATE_ADD(#{compareDate}, INTERVAL 1 MONTH), '%m')
+          AND A.YR = DATE_FORMAT(DATE_ADD(#{compareDate}, INTERVAL 1 MONTH), '%Y')
+    </select>
+    
+    <select id="selectEnveduPrevCount" parameterType="front.EnveduVo" resultType="int">
+        SELECT
+            COUNT(*) AS prevCnt
+        FROM
+            TB_CMM_WBZN_ENVEDU A
+        WHERE
+              1 = 1
+          AND A.CLSF_CD = '232101'
+          AND A.MM = DATE_FORMAT(DATE_ADD(#{compareDate}, INTERVAL -1 MONTH), '%m')
+          AND A.YR = DATE_FORMAT(DATE_ADD(#{compareDate}, INTERVAL -1 MONTH), '%Y')
+    </select>
+    
+    <select id="selectPrgrmgdNextCount" parameterType="front.PrgrmgdVo" resultType="int">
+        SELECT
+            COUNT(*) AS nextCnt
+        FROM
+            TB_CMM_WBZN_PRGRM A
+        WHERE
+              1 = 1
+          AND A.CLSF_CD = '232101'
+          AND A.MM = DATE_FORMAT(DATE_ADD(#{compareDate}, INTERVAL 1 MONTH), '%m')
+          AND A.YR = DATE_FORMAT(DATE_ADD(#{compareDate}, INTERVAL 1 MONTH), '%Y')
+    </select>
+    
+    <select id="selectPrgrmgdPrevCount" parameterType="front.PrgrmgdVo" resultType="int">
+        SELECT
+            COUNT(*) AS prevCnt
+        FROM
+            TB_CMM_WBZN_PRGRM A
+        WHERE
+              1 = 1
+          AND A.CLSF_CD = '232101'
+          AND A.MM = DATE_FORMAT(DATE_ADD(#{compareDate}, INTERVAL -1 MONTH), '%m')
+          AND A.YR = DATE_FORMAT(DATE_ADD(#{compareDate}, INTERVAL -1 MONTH), '%Y')
     </select>
     
     <!-- 환경교육 상세조회 -->

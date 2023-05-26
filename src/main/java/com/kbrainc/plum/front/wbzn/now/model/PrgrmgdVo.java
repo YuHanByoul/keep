@@ -83,6 +83,8 @@ public class PrgrmgdVo extends ParentRequestVo {
     
     /** 연-월*/
     private String yrMm;
+    private int nextCnt;
+    private int prevCnt;
     
     private String beforeMonth;
     private String nextMonth;

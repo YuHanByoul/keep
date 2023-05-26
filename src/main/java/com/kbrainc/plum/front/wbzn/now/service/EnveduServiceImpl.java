@@ -175,6 +175,23 @@ public class EnveduServiceImpl extends PlumAbstractServiceImpl implements Envedu
         return enveduDao.selectPrgrmgdInfo(prgrmgdVo);
     }
 
+    @Override
+    public int selectEnveduNextCount(EnveduVo enveduVo) throws Exception {
+        return enveduDao.selectEnveduNextCount(enveduVo);
+    }
 
+    @Override
+    public int selectEnveduPrevCount(EnveduVo enveduVo) throws Exception {
+        return enveduDao.selectEnveduPrevCount(enveduVo);
+    }
+    
+    @Override
+    public int selectPrgrmgdNextCount(PrgrmgdVo prgrmgdVo) throws Exception {
+        return enveduDao.selectPrgrmgdNextCount(prgrmgdVo);
+    }
 
+    @Override
+    public int selectPrgrmgdPrevCount(PrgrmgdVo prgrmgdVo) throws Exception {
+        return enveduDao.selectPrgrmgdPrevCount(prgrmgdVo);
+    }
 }

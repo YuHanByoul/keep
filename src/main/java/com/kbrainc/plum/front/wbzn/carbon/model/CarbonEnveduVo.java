@@ -77,6 +77,8 @@ public class CarbonEnveduVo extends ParentRequestVo {
     
     /** 연-월*/
     private String yrMm;
+    private int nextCnt;
+    private int prevCnt;
     
     private String beforeQuarter;
     private String nextQuarter;
