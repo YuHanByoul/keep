@@ -412,7 +412,7 @@ public class DsgnMngVo extends ParentRequestVo {
     /** 컨설팅  진행 여부 */
     private String cnsltngPrgrsYn;
 
-    /** 컨설텅아이디 */
+    /** 컨설팅아이디 */
     private Integer cnsltngid;
 
     /** 사용자아이디 */
@@ -428,8 +428,14 @@ public class DsgnMngVo extends ParentRequestVo {
     /** 컨설턴트아이디 */
     private Integer cnstntid;
 
+    /** 컨설턴트아이디 목록*/
+    private String cnstntidLst;
+
     /** 컨설턴트 이름 */
     private String cnstntNm;
+
+    /** 컨설턴트 이름 목록*/
+    private String cnstntNmLst;
 
     /** 평가상태 */
     private String evlStts;

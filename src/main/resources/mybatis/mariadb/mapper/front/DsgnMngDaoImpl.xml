@@ -854,50 +854,6 @@
     <select id="selectCnsltngMngList" parameterType="front.dsgnMngVo" resultType="front.dsgnMngVo">
         /* front.DsgnMngDao.selectCnsltngMngList*/
         <include refid="PaginationMapper.header"/>
-<!--
-        SELECT
-            A.PRGRMID
-          , A.CNSLTNG_PRGRS_YN
-          , B.CNSLTNGID
-          , B.USERID               /*신청자*/
-          , D.CNSTNTID
-          , A.PRGRM_NM
-          , B.REG_DT    AS APLY_DT
-          , B.CNSLTNG_KND_CD
-          , CD.CD_NM               /*컨설팅유형*/
-          , USR.NM
-          , C.VST_DE
-          , C.VST_BGNG_DT
-          , C.VST_END_DT
-          , B.STTS_CD
-          , CASE WHEN B.STTS_CD = 131103
-                 THEN CASE WHEN D.CNSLTNGID IS NOT NULL
-                            THEN '평가완료'
-                            ELSE '평가'
-                       END
-                 ELSE '-'
-            END EVL_STTS
-        FROM
-            TB_ASS_PRGRM A
-        INNER JOIN
-            TB_ASS_CNSLTNG B ON A.CNSLTNGID = B.CNSLTNGID
-        LEFT OUTER JOIN TB_ASS_CNSLTNG_RSLT C ON A.CNSLTNGID = C.CNSLTNGID
-        LEFT OUTER JOIN TB_ASS_CNSLTNG_CNSTNT D ON A.CNSLTNGID = D.CNSLTNGID
-        LEFT OUTER JOIN TB_CMM_USER USR ON D.CNSTNTID = USR.USERID
-        INNER JOIN
-            TB_ASS_DSGN_HSTRY AA ON A.PRGRMID = AA.PRGRMID
-        INNER JOIN(
-            SELECT
-               MAX(HSTRYID) AS HSTRYID
-              , PRGRMID
-            FROM
-                TB_ASS_DSGN_HSTRY
-            WHERE 1=1
-            GROUP BY PRGRMID
-        ) BB ON AA.PRGRMID = BB.PRGRMID
-            AND AA.HSTRYID = BB.HSTRYID
-        LEFT OUTER JOIN TB_CMM_CD CD ON B.CNSLTNG_KND_CD = CD.CD
- -->
         SELECT
             A.CNSLTNGID             /*컨설팅아이디*/
           , A.INSTID                /*기관아이디*/
@@ -928,7 +884,7 @@
           , A.REG_DT                /*등록_일시*/
           , A.RGTRID                /*등록자아이디*/
           , CASE WHEN A.STTS_CD = 131103
-                 THEN CASE WHEN D.CNSLTNGID IS NOT NULL
+                 THEN CASE WHEN B.CNSLTNGID IS NOT NULL
                             THEN '평가완료'
                             ELSE '평가'
                        END
@@ -938,12 +894,20 @@
           , C.VST_BGNG_DT
           , C.VST_END_DT
           , CONCAT(DATE_FORMAT(C.VST_BGNG_DT, '%Y-%m-%d %h:%i'),' ~ ', DATE_FORMAT(C.VST_END_DT, '%h:%i')) AS VST_PRD
-          , D.CNSTNTID
-          , USR.NM    AS CNSTNT_NM
+          , GROUP_CONCAT(B.NM)    AS CNSTNT_NM
         FROM TB_ASS_CNSLTNG A
+        LEFT OUTER JOIN (
+            SELECT
+                AA.CNSLTNGID
+              , AA.CNSTNTID
+              , USR.USERID
+              , USR.NM
+            FROM
+                TB_ASS_CNSLTNG_CNSTNT AA
+            LEFT OUTER JOIN
+                TB_CMM_USER USR ON AA.CNSTNTID = USR.USERID
+        ) B ON A.CNSLTNGID = B.CNSLTNGID
         LEFT OUTER JOIN TB_ASS_CNSLTNG_RSLT C   ON A.CNSLTNGID = C.CNSLTNGID
-        LEFT OUTER JOIN TB_ASS_CNSLTNG_CNSTNT D ON A.CNSLTNGID = D.CNSLTNGID
-        LEFT OUTER JOIN TB_CMM_USER USR         ON D.CNSTNTID = USR.USERID
         LEFT OUTER JOIN TB_CMM_CD CD ON A.CNSLTNG_KND_CD = CD.CD
         WHERE 1=1
         <if test="user.userid != null and user.userid != ''">
@@ -992,13 +956,22 @@
           , C.VST_BGNG_DT
           , C.VST_END_DT
           , CONCAT(DATE_FORMAT(C.VST_BGNG_DT, '%Y-%m-%d %h:%i'),' ~ ', DATE_FORMAT(C.VST_END_DT, '%h:%i')) AS VST_PRD
-          , B.CNSTNTID
-          , USR.NM    AS CNSTNT_NM
+          , B.CNSTNTID AS CNSTNTID_LST
+          , GROUP_CONCAT(B.NM)    AS CNSTNT_NM_LST
         FROM
             TB_ASS_CNSLTNG A
         LEFT OUTER JOIN TB_CMM_SRVY SRVY ON A.SRVYID = SRVY.SRVYID
-        LEFT OUTER JOIN TB_ASS_CNSLTNG_CNSTNT B ON A.CNSLTNGID = B.CNSLTNGID
-        LEFT OUTER JOIN TB_CMM_USER USR         ON B.CNSTNTID = USR.USERID
+        LEFT OUTER JOIN (
+            SELECT
+                AA.CNSLTNGID
+              , AA.CNSTNTID
+              , USR.USERID
+              , USR.NM
+            FROM
+                TB_ASS_CNSLTNG_CNSTNT AA
+            LEFT OUTER JOIN
+                TB_CMM_USER USR ON AA.CNSTNTID = USR.USERID
+        ) B ON A.CNSLTNGID = B.CNSLTNGID
         LEFT OUTER JOIN
             TB_ASS_CNSLTNG_RSLT C ON A.CNSLTNGID = C.CNSLTNGID
         LEFT OUTER JOIN
