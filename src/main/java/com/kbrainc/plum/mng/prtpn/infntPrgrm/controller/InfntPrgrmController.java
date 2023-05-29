@@ -1,13 +1,13 @@
 package com.kbrainc.plum.mng.prtpn.infntPrgrm.controller;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.kbrainc.plum.mng.code.service.CodeService;
+import com.kbrainc.plum.rte.model.CodeInfoVo;
+import com.kbrainc.plum.rte.service.ResCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -50,7 +50,10 @@ public class InfntPrgrmController {
     
     @Autowired
     private EduClssRmService eduClssRmService; 
-    
+
+    @Autowired
+    private ResCodeService resCodeService;
+
     /**
     * 교육프로그램관리 리스트화면으로 이동
     *
@@ -92,7 +95,7 @@ public class InfntPrgrmController {
         model.addAttribute("clssList", eduClssRmService.selectEduClssRmList(eduClssRmVo));
         model.addAttribute("aplcntDgstfnSrvyList", infntPrgrmService.selectAplcntDgstfnSrvyList());
         model.addAttribute("stdntDgstfnSrvyList", infntPrgrmService.selectStdntDgstfnSrvyList());
-        
+
         
         int curYear = Integer.valueOf(DateTimeUtil.getYear());
         Integer[] years = new Integer[4];
@@ -136,7 +139,17 @@ public class InfntPrgrmController {
         
         result = infntPrgrmService.selectInfntPrgrmInfo(infntPrgrmVo);
         resultTmeList =  infntPrgrmService.selectInfntPrgrmTmeList(infntPrgrmVo);
-        
+
+        List<CodeInfoVo> codeList = resCodeService.getCodeList("155");
+        Map<String, List<CodeInfoVo>> subCodeMap = new HashMap<>();
+
+        for (CodeInfoVo codeInfoVo : codeList) {
+            List<CodeInfoVo> subCodeList = resCodeService.getCodeList("155", codeInfoVo.getCd());
+            subCodeMap.put(codeInfoVo.getCd(), subCodeList);
+        }
+        model.addAttribute("codeList", codeList);
+        model.addAttribute("subCodeMap", subCodeMap);
+
         //교육소개 첨부파일
         //if(infntPrgrmVo.getEduIntrcnFileid() != 0 && result.getEduIntrcnFileIdntfcKey() != null) {
         if(result.getEduIntrcnFileIdntfcKey() != null) {

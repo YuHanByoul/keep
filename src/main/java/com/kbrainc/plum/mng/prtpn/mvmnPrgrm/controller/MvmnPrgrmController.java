@@ -6,6 +6,8 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.kbrainc.plum.rte.model.CodeInfoVo;
+import com.kbrainc.plum.rte.service.ResCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -47,8 +49,11 @@ public class MvmnPrgrmController {
     private MvmnPrgrmService mvmnPrgrmService;
     
     @Autowired
-    private EduSareaService eduSareaService; 
-    
+    private EduSareaService eduSareaService;
+
+    @Autowired
+    private ResCodeService resCodeService;
+
     /**
     * 교육프로그램관리 리스트화면으로 이동
     *
@@ -122,6 +127,17 @@ public class MvmnPrgrmController {
         
         result = mvmnPrgrmService.selectMvmnPrgrmInfo(mvmnPrgrmVo);
         resultTmeList =  mvmnPrgrmService.selectMvmnPrgrmTmeList(mvmnPrgrmVo);
+
+        List<CodeInfoVo> codeList = resCodeService.getCodeList("155");
+        Map<String, List<CodeInfoVo>> subCodeMap = new HashMap<>();
+
+        for (CodeInfoVo codeInfoVo : codeList) {
+            List<CodeInfoVo> subCodeList = resCodeService.getCodeList("155", codeInfoVo.getCd());
+            subCodeMap.put(codeInfoVo.getCd(), subCodeList);
+        }
+        model.addAttribute("codeList", codeList);
+        model.addAttribute("subCodeMap", subCodeMap);
+
         
         //교육소개 첨부파일
         //if(mvmnPrgrmVo.getEduIntrcnFileid() != 0 && result.getEduIntrcnFileIdntfcKey() != null) {
