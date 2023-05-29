@@ -1,5 +1,7 @@
 package com.kbrainc.plum.front.wbzn.now.controller;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,6 +71,8 @@ public class EnveduController {
         List<PrgrmgdVo> prgrmgdMm = null;
         prgrmgdYr =  enveduService.selectPrgrmgdYrList(prgrmgdVo);
         prgrmgdMm =  enveduService.selectPrgrmgdMmList(prgrmgdVo);
+        
+        
         model.addAttribute("prgrmgdYr", prgrmgdYr);
         model.addAttribute("prgrmgdMm", prgrmgdMm);
         
@@ -108,8 +112,19 @@ public class EnveduController {
     public Map<String, Object> selectEnveduList(EnveduVo enveduVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         List<EnveduVo> result = null;
+        int nextCnt = 0;
+        int prevCnt = 0;
         
         result =  enveduService.selectEnveduList(enveduVo);
+        
+        if(enveduVo.getCompareDate().equals("")) {
+            LocalDate now = LocalDate.now();
+            LocalDate.now(ZoneId.of("Asia/Seoul"));
+            enveduVo.setCompareDate(now.toString());
+        }
+        
+        nextCnt = enveduService.selectEnveduNextCount(enveduVo);
+        prevCnt = enveduService.selectEnveduPrevCount(enveduVo);
         
         if (result.size() > 0) {
             resultMap.put("totalCount", (result.get(0).getTotalCount()));
@@ -117,6 +132,8 @@ public class EnveduController {
             resultMap.put("totalCount", 0);
         }
         resultMap.put("list", result);
+        resultMap.put("nextCnt", nextCnt);
+        resultMap.put("prevCnt", prevCnt);
 
         return resultMap;
     }
@@ -155,8 +172,17 @@ public class EnveduController {
     public Map<String, Object> selectPrgrmgdList(PrgrmgdVo prgrmgdVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         List<PrgrmgdVo> result = null;
+        int nextCnt = 0;
+        int prevCnt = 0;
         
         result =  enveduService.selectPrgrmgdList(prgrmgdVo);
+        
+        if(prgrmgdVo.getCompareDate().equals("")) {
+            prgrmgdVo.setCompareDate("2023-05-25");
+        }
+        
+        nextCnt = enveduService.selectPrgrmgdNextCount(prgrmgdVo);
+        prevCnt = enveduService.selectPrgrmgdPrevCount(prgrmgdVo);
         
         if (result.size() > 0) {
             resultMap.put("totalCount", (result.get(0).getTotalCount()));
@@ -164,6 +190,8 @@ public class EnveduController {
             resultMap.put("totalCount", 0);
         }
         resultMap.put("list", result);
+        resultMap.put("nextCnt", nextCnt);
+        resultMap.put("prevCnt", prevCnt);
 
         return resultMap;
     }

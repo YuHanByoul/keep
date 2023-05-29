@@ -25,6 +25,7 @@
         WHERE
             A.CLSF_CD = '232101'
             AND A.EXPSR_YN = 'Y'
+            AND (A.DEL_YN = 'N' OR A.DEL_YN IS NULL)
         ORDER BY
             A.REG_DT DESC
         LIMIT 
@@ -49,6 +50,7 @@
             1=1
             AND A.EXPSR_YN = 'Y'
             AND A.CLSF_CD = '232101'
+            AND (A.DEL_YN = 'N' OR A.DEL_YN IS NULL)
         ORDER BY ORDR ASC               
     </select>
     
@@ -59,8 +61,9 @@
             	YR
             FROM
             	TB_CMM_WBZN_ENVEDU
-            where
+            WHERE
                 CLSF_CD = '232101'
+                AND (DEL_YN = 'N' OR DEL_YN IS NULL)
             GROUP BY
             	YR
             ORDER BY
@@ -74,9 +77,10 @@
                 MM
             FROM
                 TB_CMM_WBZN_ENVEDU
-            where
+            WHERE
                 CLSF_CD = '232101'
                 AND YR = #{yr}
+                AND (DEL_YN = 'N' OR DEL_YN IS NULL)
             GROUP BY
                 MM
             ORDER BY
@@ -90,8 +94,9 @@
                 YR
             FROM
                 TB_CMM_WBZN_PRGRM
-            where
+            WHERE
                 CLSF_CD = '232101'
+                AND (DEL_YN = 'N' OR DEL_YN IS NULL)
             GROUP BY
                 YR
             ORDER BY
@@ -105,9 +110,10 @@
                 MM
             FROM
                 TB_CMM_WBZN_PRGRM
-            where
+            WHERE
                 CLSF_CD = '232101'
                 AND YR = #{yr}
+                AND (DEL_YN = 'N' OR DEL_YN IS NULL)
             GROUP BY
                 MM
             ORDER BY
@@ -139,7 +145,7 @@
         	, A.MDFRID
         	, A.REG_DT AS REGDT
         	, A.RGTRID
-            , B.NM         
+            , B.NM      
         FROM 
             TB_CMM_WBZN_ENVEDU A
             LEFT OUTER JOIN TB_CMM_USER B ON A.RGTRID = B.USERID
@@ -148,6 +154,7 @@
         WHERE 
             1=1
             AND A.CLSF_CD = '232101'
+            AND (A.DEL_YN = 'N' OR A.DEL_YN IS NULL)
             <choose>
                 <when test="beforeMonth != null and beforeMonth != ''">
                     AND A.MM = DATE_FORMAT(#{compareDate}, '%m')
@@ -167,6 +174,58 @@
                 </otherwise>
             </choose>                   
         <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <select id="selectEnveduNextCount" parameterType="front.EnveduVo" resultType="int">
+        SELECT
+            COUNT(*) AS nextCnt
+        FROM
+            TB_CMM_WBZN_ENVEDU A
+        WHERE
+              1 = 1
+          AND A.CLSF_CD = '232101'
+          AND (A.DEL_YN = 'N' OR A.DEL_YN IS NULL)
+          AND A.MM = DATE_FORMAT(DATE_ADD(#{compareDate}, INTERVAL 1 MONTH), '%m')
+          AND A.YR = DATE_FORMAT(DATE_ADD(#{compareDate}, INTERVAL 1 MONTH), '%Y')
+    </select>
+    
+    <select id="selectEnveduPrevCount" parameterType="front.EnveduVo" resultType="int">
+        SELECT
+            COUNT(*) AS prevCnt
+        FROM
+            TB_CMM_WBZN_ENVEDU A
+        WHERE
+              1 = 1
+          AND A.CLSF_CD = '232101'
+          AND (A.DEL_YN = 'N' OR A.DEL_YN IS NULL)
+          AND A.MM = DATE_FORMAT(DATE_ADD(#{compareDate}, INTERVAL -1 MONTH), '%m')
+          AND A.YR = DATE_FORMAT(DATE_ADD(#{compareDate}, INTERVAL -1 MONTH), '%Y')
+    </select>
+    
+    <select id="selectPrgrmgdNextCount" parameterType="front.PrgrmgdVo" resultType="int">
+        SELECT
+            COUNT(*) AS nextCnt
+        FROM
+            TB_CMM_WBZN_PRGRM A
+        WHERE
+              1 = 1
+          AND A.CLSF_CD = '232101'
+          AND (A.DEL_YN = 'N' OR A.DEL_YN IS NULL)
+          AND A.MM = DATE_FORMAT(DATE_ADD(#{compareDate}, INTERVAL 1 MONTH), '%m')
+          AND A.YR = DATE_FORMAT(DATE_ADD(#{compareDate}, INTERVAL 1 MONTH), '%Y')
+    </select>
+    
+    <select id="selectPrgrmgdPrevCount" parameterType="front.PrgrmgdVo" resultType="int">
+        SELECT
+            COUNT(*) AS prevCnt
+        FROM
+            TB_CMM_WBZN_PRGRM A
+        WHERE
+              1 = 1
+          AND A.CLSF_CD = '232101'
+          AND (A.DEL_YN = 'N' OR A.DEL_YN IS NULL)
+          AND A.MM = DATE_FORMAT(DATE_ADD(#{compareDate}, INTERVAL -1 MONTH), '%m')
+          AND A.YR = DATE_FORMAT(DATE_ADD(#{compareDate}, INTERVAL -1 MONTH), '%Y')
     </select>
     
     <!-- 환경교육 상세조회 -->
@@ -230,6 +289,7 @@
         WHERE 
             1=1
             AND A.CLSF_CD = '232101'
+            AND (A.DEL_YN = 'N' OR A.DEL_YN IS NULL)
             <choose>
                 <when test="beforeMonth != null and beforeMonth != ''">
                     AND A.MM = DATE_FORMAT(#{compareDate}, '%m')
@@ -248,14 +308,6 @@
                     AND A.YR = DATE_FORMAT(NOW(), '%Y')
                 </otherwise>
             </choose>
-            <!-- 
-            <if test="prgrmgdSearchYr != null and prgrmgdSearchYr != ''">
-            AND A.YR = #{prgrmgdSearchYr}
-            </if>
-            <if test="prgrmgdSearchMm != null and prgrmgdSearchMm != ''">
-            AND A.MM = #{prgrmgdSearchMm}
-            </if>
-             -->
         <include refid="PaginationMapper.footer"/>
     </select>
 

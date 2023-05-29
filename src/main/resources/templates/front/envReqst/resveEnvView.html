@@ -264,6 +264,8 @@
 	    /*]]>*/
         var mode = "range"
         var isInitCal = false;
+        const skip = `<button type="button" class="skipCal">달력 넘기기</button>`;
+        
         /* 이용 형태 변경 event(숙박 or 대여) */
         $(document).on('change', 'input[name="utztnSe"]' , function () {
             var selectedVal = $('select[name="spceList"]').val()
@@ -680,8 +682,12 @@
                     datepickerList.classList.add('datepicker-list')
                     datepickerWrap.appendChild(datepickerList)
                     datepickerList.insertAdjacentHTML('beforeend', list02);
-                    
-                    
+
+                    const reservWrap = document.querySelector('.reservation-inner .left');
+                    const datepickerSkip = document.createElement('div');
+                    datepickerSkip.classList.add('blind');
+                    datepickerSkip.insertAdjacentHTML('beforeend', skip);
+                    this.input.after(datepickerSkip);
                 }
                 , onMonthChange :function(selectedDates, dateStr, instance){
                 	instance.selectedDates=[];
@@ -692,6 +698,12 @@
                   }
             });
         }
+
+        $(document).on('click', '.skipCal', function () {
+            
+            $(this).closest('.left').next().attr('tabindex','0').focus();
+            console.log(1)
+        })
         
         function  calendarOnchangeEvent(data,mode,selectedDates,dateStr,datesKind){
 
