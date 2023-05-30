@@ -88,7 +88,7 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 	private String prgrmNm;
 
 	/** 기관지역코드 */
-	private Integer instRgnCd;
+	private String instRgnCd;
 
 	/** 지역 명 */
 	private String ctprvnNm;

@@ -8,17 +8,18 @@
 <body>
 <div layout:fragment="content">
     <section>
-        <form class="search-filter" id="searchForm" name="searchForm">
+        <form class="search-filter" id="searchForm" name="searchForm"  onsubmit="return false;">
             <input type="hidden" id="pageNumber" name="pageNumber" value="1">
             <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
-<!--             <input type="hidden" id="ORDER_DIRECTION" name="orderDirection" value="desc"> -->
+            <input type="hidden" id="orderDirection" name="orderDirection" value="desc">
             <input type="hidden" id="orderField" name="orderField" value="REG_DT">
+
             <div class="form-input-wrap">
                 <div class="form-row">
                     <div class="form-header"><strong class="label">접수번호</strong></div>
                     <div class="form-body">
                         <div class="form-input">
-                            <input type="text" title="접수번호" id="searchRcptNo" name="searchRcptNo" />
+                            <input type="search" title="접수번호" id="searchRcptNo" name="searchRcptNo" placeholder="접수번호를 입력해 주세요."/>
                         </div>
                     </div>
                 </div>
@@ -31,7 +32,7 @@
             </div>
             <div class="search-filter-submit">
                 <button type="reset" class="btn-medium btn-gray btn-before-refresh" onclick="listPage.searchInit();">초기화</button>
-                <button type="button" class="btn-medium btn-green btn-before-search" onclick="listPage.search();">검색</button>
+                <button type="submit" class="btn-medium btn-green btn-before-search" onclick="listPage.search();">검색</button>
             </div>
         </form>
 
@@ -45,14 +46,14 @@
                     <option value="50">50개</option>
                     <option value="100">100개</option>
                 </select>
-                <div><button type="button" class="btn-medium btn-outline-black" onclick="onChangePageSize($('#selectRowPerPage').val(), listPage.selectList)">보기</button></div>
+                <div><button type="button" class="btn-medium btn-outline-black" onclick="onChangePageSize($('#selectRowPerPage').val(), listPage.selectList())">보기</button></div>
             </div>
         </div>
 
         <div class="pc-only">
             <div class="table-col table-layout-auto">
                 <table>
-                    <caption>신청내역 - 번호, 시도, 접수번호, 신청상태, 신청일, 신청자</caption>
+                    <caption>신청내역 - 번호, 시도, 접수번호, 신청상태, 보완요청, 신청일, 신청자</caption>
                     <colgroup>
                         <col style="width:6%;">
                         <col>
@@ -102,21 +103,41 @@
             listUrl: '/front/mypage/seeEnvEduInstHist/selectSeeEnvEduInstHistList.do',
             detailUrl : '/front/eduInst/aplyInfoForm.html',
 
-            init(rowPerPage) {
-                if(rowPerPage != null) {
-                    $("#rowPerPage").val(parseInt(rowPerPage));
-                    $('#pageNumber').val('1');
+            init: function(rowPerPage) {
+            	this.onLoadData();
+            },
+            onLoadData:function(){
+            	if(displayWorkProgress(true)) {
+                    if(document.URL.indexOf('#') > -1) { // 검색유지
+                        var historyData = document.URL.substring(document.URL.indexOf("#") + 1).split("&");
+                        $("#pageNumber").val(historyData[0].split("=")[1]);
+                        $("#searchRcptNo").val(decodeURI(historyData[1].split("=")[1]));
+                        $("#searchSttsCd").val(historyData[2].split("=")[1]);
+                    }
+                    var param = $('#searchForm').serializeArray();
+                    $.ajax({
+                    	url: listPage.listUrl
+                        , cache: false
+                        , dataType: "json"
+                        , data: param
+                        , type: "GET"
+                        , success: function(response) {
+                        	let data = escapeData(response);
+                        	listPage.selectList(data);
+                            closeWorkProgress();
+                        }
+                    });
                 }
-                this.selectList();
             },
             search() {
                 $('#pageNumber').val('1');
                 this.selectList();
             },
             searchInit() {
+            	sessionStorage.clear();
                 $("#searchRcptNo").val('');
                 $("#searchSttsCd").val('');
-                this.selectList();
+
             },
             selectList() {
 

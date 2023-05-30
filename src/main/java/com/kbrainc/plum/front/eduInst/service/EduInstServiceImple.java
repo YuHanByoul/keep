@@ -81,6 +81,10 @@ public class EduInstServiceImple extends PlumAbstractServiceImpl implements EduI
 	@Override
 	public int insertAplyInfo(EduInstVo eduInstVo) throws Exception {
 		int ret=0;
+		//접수번호 생성 조회
+		String rcptno = eduInstDao.getRcpno(eduInstVo);
+		eduInstVo.setRcptno(rcptno);
+
 		ret+=eduInstDao.insertEnvEduInst(eduInstVo);
 		return ret;
 	}
@@ -416,6 +420,7 @@ public class EduInstServiceImple extends PlumAbstractServiceImpl implements EduI
 		List<EqpVo>    eqpList = null;
 
 		ret+=eduInstDao.updateSeeFclt(eduInstVo);
+		//ret+=eduInstDao.updateEnvEduInst(eduInstVo);
 
 		eduInstDao.deleteFcltLctrum(eduInstVo);
 	    eduInstDao.deleteFcltEqp(eduInstVo);

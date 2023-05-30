@@ -23,7 +23,6 @@ import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.front.eduInst.model.EduExprtVo;
 import com.kbrainc.plum.front.eduInst.model.EduInstVo;
-import com.kbrainc.plum.front.eduInst.model.EqpVo;
 import com.kbrainc.plum.front.eduInst.model.SchdlVo;
 import com.kbrainc.plum.front.eduInst.model.SeePrgrmVo;
 import com.kbrainc.plum.front.eduInst.service.EduInstService;
@@ -118,6 +117,7 @@ public class EduInstController {
 		eduInstVo.setAplcntid(user.getUserid());
 
 		if(null != eduInstVo.getAplyid() && 0 != eduInstVo.getAplyid()) {
+			//기관정보 조회
 			aplyInfo = eduInstService.selectEnvEduInst(eduInstVo);
 
 			//첨부파일

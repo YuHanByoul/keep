@@ -35,6 +35,17 @@
         WHERE A.USERID = #{aplcntid}
     </select>
 
+    <!-- 신청정보 조회 -->
+    <select id="getRcpno" parameterType="front.EduInstVo" resultType="String">
+        /* EduInstDao.getRcpno*/
+        SELECT CASE WHEN MAX(A.RCPTNO) IS NULL THEN CONCAT(DATE_FORMAT(NOW(),'%Y'),'-',#{ctprvnCd},'-0001')
+              ELSE CONCAT(SUBSTR(MAX(A.RCPTNO),1,8), LPAD (CAST ( REGEXP_REPLACE( SUBSTR(MAX(A.RCPTNO),9,4),0,'') AS INTEGER)+1 ,4,'0'))
+              END    AS RCPTNO
+            FROM TB_SEE_ENV_EDU_INST A
+            WHERE A.INSTID = #{instid}
+            AND A.CTPRVN_CD = #{ctprvnCd}
+    </select>
+
     <!-- 환경교육기관 상세 조회 -->
     <select id="selectEnvEduInst" parameterType="front.EduInstVo" resultType="front.EduInstVo">
         /* EduInstDao.selectAplyInfoForm*/

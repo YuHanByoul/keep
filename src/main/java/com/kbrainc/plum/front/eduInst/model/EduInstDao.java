@@ -331,4 +331,16 @@ public interface EduInstDao {
 	 */
 	public int updateSeeFclt(EduInstVo eduInstVo) throws Exception;
 
+	/**
+	* 접수번호 생성조회
+	*
+	* @Title : getRcpno
+	* @Description : 접수번호 생성조회
+	* @param rsltVo
+	* @return
+	* @throws Exception
+	* @return String
+	*/
+	public String getRcpno(EduInstVo rsltVo) throws Exception;
+
 }
