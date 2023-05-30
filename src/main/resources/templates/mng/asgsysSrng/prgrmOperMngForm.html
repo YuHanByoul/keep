@@ -67,7 +67,7 @@
 	                </thead>
 	                <tbody>
 
-    	                <tr th:unless="${#lists.isEmpty(expndArtclList)}" th:each="item ,i: ${expndArtclList}" th:id="${'expndTr' + i.count}">
+    	                <tr th:unless="${#lists.isEmpty(expndArtclList)}" th:each="item ,i: ${expndArtclList}" th:id="${'expndTr' + i.count}" name='expndTr'>
     	                    <td>
                                 <input type="text" class="form-control form-control-sm" maxlength="60" name="expndArtcl" th:id="${ 'expndArtcl' + i.count }" placeholder="지출 항목" th:value="${item.expndArtcl}"/>
     	                    </td>
@@ -231,7 +231,7 @@
 	    <button type="button" class="btn btn-inverse m-r-5" onclick="gridHelper1.toggleContent()">목록</button>
         <button type="button" class="btn btn-primary m-r-5" onclick="fn_savePrgrmOperBtn()">저장</button>
         <button type="button" class="btn btn-primary"       onclick="fn_savePrgrmOperBtn('next')">다음</button>
-<!--         <button type="button" class="btn btn-primary"       onclick="fn_prgrmOperNextbtn()">다음</button> -->
+
 	</div>
 
 	</div>
@@ -270,7 +270,7 @@
     	var trIdx = $("[id^=expndTr]").length + 1;
 
     	var vHtml = "";
-        vHtml += "<tr id='expndTr"+trIdx+"'>";
+        vHtml += "<tr id='expndTr"+trIdx+"' name='expndTr'>";
         vHtml += "    <td>"
         vHtml += "        <input type='text' class='form-control form-control-sm' maxlength='60' name='expndArtcl' id='expndArtcl"+trIdx+"' placeholder='지출 항목' value=''/>";
         vHtml += "    </td>";
@@ -299,18 +299,18 @@
     	var vHtml ="";
     	vHtml += "<tr id ='fcltTr"+trIdx+"'>                                                                                                                                           ";
     	vHtml += "    <td>                                                                                                                                                             ";
-    	vHtml += "        <input type='text' class='form-control form-control-sm' maxlength='60' name='${'dtlPrgrmNm"+trIdx+"' id='${'dtlPrgrmNm"+trIdx+"' placeholder='세부 프로그램명' value=''>    ";
+    	vHtml += "        <input type='text' class='form-control form-control-sm' maxlength='60' name='${'dtlPrgrmNm"+trIdx+"' id='dtlPrgrmNm"+trIdx+"' placeholder='세부 프로그램명' value=''>    ";
     	vHtml += "    </td>                                                                                                                                                            ";
     	vHtml += "    <td>                                                                                                                                                             ";
-    	vHtml += "        <input type='text' class='form-control form-control-sm' maxlength='60' name='${'eduPlc"+trIdx+"' id='${'eduPlc"+trIdx+"' placeholder='교육 장소' value=''>                  ";
+    	vHtml += "        <input type='text' class='form-control form-control-sm' maxlength='60' name='${'eduPlc"+trIdx+"' id='eduPlc"+trIdx+"' placeholder='교육 장소' value=''>                  ";
     	vHtml += "    </td>                                                                                                                                                            ";
     	vHtml += "    <td>                                                                                                                                                             ";
-    	vHtml += "        <input type='text' class='form-control form-control-sm' maxlength='60' name='${'tchaid"+trIdx+"' id='${'tchaid"+trIdx+"' placeholder='교구 및 매체 등' value=''>            ";
+    	vHtml += "        <input type='text' class='form-control form-control-sm' maxlength='60' name='${'tchaid"+trIdx+"' id='tchaid"+trIdx+"' placeholder='교구 및 매체 등' value=''>            ";
     	vHtml += "    </td>                                                                                                                                                            ";
     	vHtml += "    <td>                                                                                                                                                             ";
     	vHtml += "        <div class='col-12 row m-0 align-items-center justify-content-center'>                                                                                       ";
     	vHtml += "            <div class='col-11 p-l-0 p-r-0'>                                                                                                                         ";
-    	vHtml += "                <input type='number' class='form-control form-control-sm' maxlength='10' name='${'qnty"+trIdx+"' id='${'qnty"+trIdx+"' placeholder='수량(개) 또는 분량 (장)' value=''>";
+    	vHtml += "                <input type='number' class='form-control form-control-sm' maxlength='10' name='${'qnty"+trIdx+"' id='qnty"+trIdx+"' placeholder='수량(개) 또는 분량 (장)' value=''>";
     	vHtml += "            </div>                                                                                                                                                   ";
     	vHtml += "            <div class='col-auto p-l-5 p-r-0'>                                                                                                                       ";
     	vHtml += "                개/장                                                                                                                                                ";
@@ -337,12 +337,39 @@
         $("#fcltTr" + btnIdx).remove();
     }
 
+    function chkList(){
+
+    	var flag= true;
+    	$('[name=expndTr]').each(function(idx,row){
+    		var row = $(this);
+    		var chkExpndArtcl = row.find('[name=expndArtcl]').val();
+    		var chkAmt = row.find('[name=amt]').val();
+
+    		if(chkExpndArtcl==''){
+    			alert('지출항목은 필수 입력입니다.');
+    			row.find('[name=expndArtcl]').focus();
+    			flag= false;
+    			return flag;
+    		}
+
+    		if(chkAmt==''){
+    			alert('금액은 필수 입력 입니다.');
+    			row.find('[name=amt]').focus();
+    			flag= false;
+    			return flag;
+    		}
+    	});
+
+        return flag;
+    }
+
     function fn_savePrgrmOperBtn(call){
 
     	var param = {};
         var operMngKey = $("#operMngPrgrmid").val();
         var vUrl = "/mng/asgsysSrng/";
 
+        if(!chkList()) return false;
         if(!$("#prgrmOperMngFrm").valid()) return false;
 
         var valid = true;
@@ -370,12 +397,10 @@
         });
 
         //지출항목 목록
-        //$("[id^=fcltTr]"    ).each(function(index, item) { param["expndArtclLst[" + index + "].prgrmid"]    = prgrmid; });      //프로그램 id (key)
         $("[id^=expndArtcl]").each(function(index, item) { param["expndArtclLst[" + index + "].expndArtcl"] = item.value; });   //지출 항목
         $("[id^=amt]"       ).each(function(index, item) { param["expndArtclLst[" + index + "].amt"]        = item.value.replaceAll(",",""); });   //지출 항목
 
         //교구 및 시설
-        //$("[id^=expndTr]"   ).each(function(index, item) { param["tchaidFcltLst[" + index + "].prgrmid"]    = prgrmid;    });   //프로그램 id (key)
         $("[id^=dtlPrgrmNm]").each(function(index, item) { param["tchaidFcltLst[" + index + "].dtlPrgrmNm"] = item.value; });   //세부 프로그램 이름
         $("[id^=eduPlc]"    ).each(function(index, item) { param["tchaidFcltLst[" + index + "].eduPlc"]     = item.value; });   //교육 장소
         $("[id^=tchaid]"    ).each(function(index, item) { param["tchaidFcltLst[" + index + "].tchaid"]     = item.value; });   //교구
