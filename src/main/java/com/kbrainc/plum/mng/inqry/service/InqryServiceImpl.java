@@ -109,13 +109,11 @@ public class InqryServiceImpl extends PlumAbstractServiceImpl implements InqrySe
             retVal += inqryDao.insertInqryManager(inqryAnswrVO);
         }
 
-        InqryVo inqryVo = new InqryVo();
-        inqryVo.setInqryid(inqryAnswrVO.getInqryid());
-        InqryVo inqryInfo = inqryDao.selectInqryInfo(inqryVo);
-
-
         if(inqryAnswrVO.getInqrySttsCd().equals("103104")) {
             // 알림
+            InqryVo inqryVo = new InqryVo();
+            inqryVo.setInqryid(inqryAnswrVO.getInqryid());
+            InqryVo inqryInfo = inqryDao.selectInqryInfo(inqryVo);
             retVal += insertNtcn(inqryInfo);
 
             // SMS

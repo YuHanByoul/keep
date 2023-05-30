@@ -26,6 +26,7 @@
              , SUM(Z.ORG_APLY_CMPLT_CNT) APLY_CMPLT_CNT
              , SUM(Z.ORG_CNCL_APLY_CNT) CNCL_APLY_CNT
              , SUM(Z.ORG_DNL_APPRV_CNT) DNL_APPRV_CNT
+             , Z.OPER_FOM_CD
              , Z.REG_DT
         FROM (        
                 SELECT 
@@ -45,7 +46,8 @@
                 , (SELECT COUNT(T2.STTS_CD) FROM TB_EDU_MVMN_PRGRM_APLY T2 WHERE T2.STTS_CD = '180102' AND T2.APLYID = G.APLYID) ORG_WTNG_APPRV_CNT
                 , (SELECT COUNT(T3.STTS_CD) FROM TB_EDU_MVMN_PRGRM_APLY T3 WHERE T3.STTS_CD = '180103' AND T3.APLYID = G.APLYID) ORG_APLY_CMPLT_CNT
                 , (SELECT COUNT(T4.STTS_CD) FROM TB_EDU_MVMN_PRGRM_APLY T4 WHERE T4.STTS_CD = '180104' AND T4.APLYID = G.APLYID) ORG_CNCL_APLY_CNT
-                , (SELECT COUNT(T5.STTS_CD) FROM TB_EDU_MVMN_PRGRM_APLY T5 WHERE T5.STTS_CD = '180105' AND T5.APLYID = G.APLYID) ORG_DNL_APPRV_CNT        
+                , (SELECT COUNT(T5.STTS_CD) FROM TB_EDU_MVMN_PRGRM_APLY T5 WHERE T5.STTS_CD = '180105' AND T5.APLYID = G.APLYID) ORG_DNL_APPRV_CNT
+                , E.OPER_FOM_CD        
                 , C.YM REG_DT
                 FROM TB_EDU_MVMN_PRGRM_SCHDL C
                 LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_SCHDL_PRGRM D ON D.PRGRM_SCHDLID = C.PRGRM_SCHDLID
@@ -106,7 +108,8 @@
         , A.MDFCN_DT
         , A.MDFRID
         , A.REG_DT
-        , A.RGTRID  
+        , A.RGTRID
+        , H.OPER_FOM_CD  
         FROM TB_EDU_MVMN_PRGRM_APLY A 
         LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_APLY_SCHDL Z ON Z.APLYID = A.APLYID
         LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME_SCHDL B ON B.TME_SCHDLID = Z.TME_SCHDLID 
@@ -114,7 +117,8 @@
         LEFT OUTER JOIN TB_CMM_CD D ON D.CD = A.STTS_CD
         LEFT OUTER JOIN TB_CMM_INST E ON E.INSTID = A.INSTID 
         LEFT OUTER JOIN TB_CMM_USER F ON F.USERID = A.USERID    
-        LEFT OUTER JOIN TB_CMM_ADDR_SIGNGU G ON G.SIGNGU_CD = A.SIGNGU_CD    
+        LEFT OUTER JOIN TB_CMM_ADDR_SIGNGU G ON G.SIGNGU_CD = A.SIGNGU_CD
+        LEFT OUTER JOIN tb_edu_mvmn_prgrm H ON C.PRGRMID = H.PRGRMID    
         WHERE B.PRGRM_SCHDLID = #{prgrmSchdlid}
             <!-- 신청상태  -->
             <if test="searchSttsCd  != null and searchSttsCd != ''">
@@ -155,7 +159,8 @@
             <!-- 접수일 검색종료일  -->
             <if test="searchEndRcptDt != null and searchEndRcptDt != ''">
             AND A.REG_DT <![CDATA[<]]> CAST(CONCAT(#{searchEndRcptDt},' 23:59:59') AS DATETIME)
-            </if>            
+            </if>
+        GROUP BY A.APLYID    
         <include refid="PaginationMapper.footer"/>        
     </select>
 
@@ -272,6 +277,8 @@
             , FXNO
             , EML
             , EDU_NOPE
+            , HOPE_EDU_BGNG_TM
+            , HOPE_EDU_END_TM
             , RMRK
             , MEMO
             , STTS_CD
@@ -279,8 +286,7 @@
             , MDFRID
             , REG_DT
             , RGTRID
-        )
-        SELECT 
+        )VALUES (
             #{instid}
             ,#{aplyUserid}
             ,#{zip}
@@ -291,6 +297,8 @@
             ,#{fxno}
             ,#{eml}
             ,#{eduNope}
+            ,#{hopeEduBgngTm}
+            ,#{hopeEduEndTm}
             ,#{rmrk}
             ,#{memo}
             ,#{sttsCd}    
@@ -298,15 +306,7 @@
             ,#{user.userid}
             ,NOW()
             ,#{user.userid}
-          FROM TB_EDU_MVMN_PRGRM_TME_SCHDL A
-          LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME B ON B.TMEID = A.TMEID
-          LEFT OUTER JOIN TB_EDU_MVMN_PRGRM C ON C.PRGRMID = B.PRGRMID                
-          LEFT OUTER JOIN (
-            SELECT T1.STTS_CD, T2.TME_SCHDLID 
-            FROM TB_EDU_MVMN_PRGRM_APLY T1
-               , TB_EDU_MVMN_PRGRM_APLY_SCHDL T2 
-            WHERE T1.APLYID = T2.APLYID) D ON D.TME_SCHDLID = #{tmeSchdlid}                 
-         WHERE A.TME_SCHDLID = #{tmeSchdlid}    
+        )    
     </insert>
         
     <!-- 교육신청 관리 상세조회 -->
@@ -334,6 +334,8 @@
         , F.MOBLPHON
         , A.EML
         , A.EDU_NOPE
+        , A.HOPE_EDU_BGNG_TM
+        , A.HOPE_EDU_END_TM
         , A.MEMO
         , A.RMRK
         , A.STTS_CD
@@ -344,16 +346,48 @@
         , A.REG_DT
         , A.RGTRID  
         , C.PRGRMID
+        , H.EDU_YR
+        , H.PRGRM_NM
+        , I.SAREAID
         FROM TB_EDU_MVMN_PRGRM_APLY A 
         LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_APLY_SCHDL Z ON Z.APLYID = A.APLYID
         LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME_SCHDL B ON B.TME_SCHDLID = Z.TME_SCHDLID 
         LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME C ON C.TMEID = B.TMEID
+        LEFT OUTER JOIN TB_EDU_MVMN_PRGRM H ON C.PRGRMID = H.PRGRMID
+        LEFT OUTER JOIN TB_EDU_SAREA I ON H.SAREAID = I.SAREAID
         LEFT OUTER JOIN TB_CMM_CD D ON D.CD = A.STTS_CD
         LEFT OUTER JOIN TB_CMM_INST E ON E.INSTID = A.INSTID 
         LEFT OUTER JOIN TB_CMM_USER F ON F.USERID = A.USERID   
         LEFT OUTER JOIN TB_CMM_ADDR_SIGNGU G ON G.SIGNGU_CD = A.SIGNGU_CD  
         WHERE A.APLYID = #{aplyId}
+        GROUP BY A.APLYID
     </select>
+    
+    <!-- 교육신청 관리 상세조회 -->
+    <select id="selectMvmnAplyInsertInfo" parameterType="MvmnAplyVo" resultType="MvmnAplyVo"> 
+        /* MvmnAplyDao.selectMvmnAplyInfo */
+        SELECT
+            A.PRGRMID
+          , A.EDU_YR
+          , A.PRGRM_NM
+          , B.SAREAID
+          , B.SAREA_NM
+        FROM
+            TB_EDU_MVMN_PRGRM A
+                LEFT OUTER JOIN TB_EDU_SAREA B ON A.SAREAID = B.SAREAID
+        WHERE
+              1 = 1
+          AND PRGRMID = #{prgrmId}
+    </select>
+    
+    <!-- 교육신청 관리 상세조회 -->
+    <select id="selectEduYear" parameterType="MvmnAplyVo" resultType="MvmnAplyVo"> 
+        /* MvmnAplyDao.selectMvmnAplyInfo */
+        SELECT
+            A.EDU_YR
+        FROM
+            TB_EDU_MVMN_PRGRM A
+    </select>    
     
     <!-- 교육신청관리 게시글 수정 -->
     <update id="updateMvmnAply" parameterType="MvmnAplyVo" keyProperty="MvmnAplyVo">
@@ -368,8 +402,10 @@
                 , FXNO                      = #{fxno}
                 , EML                       = #{eml}
                 , EDU_NOPE                  = #{eduNope}
+                , HOPE_EDU_BGNG_TM          = #{hopeEduBgngTm}
+                , HOPE_EDU_END_TM           = #{hopeEduEndTm}
                 , RMRK                      = #{rmrk}
-                , SIGNGU_CD = #{signguCd}
+                , SIGNGU_CD                 = #{signguCd}
                 , MEMO                      = #{memo}
                 , STTS_CD                   = #{sttsCd}
                 , MDFCN_DT                  = NOW()
@@ -432,7 +468,7 @@
     <select id="selectTmeSchdlList" parameterType="MvmnAplyVo" resultType="MvmnAplyVo">
         /* MvmnAplyDao.selectTmeSchdlList */
         SELECT 
-            REPLACE(A.DE, '.', '-') DE
+            GROUP_CONCAT(REPLACE(A.DE, '.', '-') ORDER BY A.DE SEPARATOR ', ') DE
             , A.TMEID
             , A.TME_SCHDLID
             , B.TME_NM    
@@ -442,11 +478,11 @@
         LEFT OUTER JOIN 
             TB_EDU_MVMN_PRGRM_TME B ON (B.TMEID = A.TMEID)
         WHERE
-            1 = 1
-            AND A.PRGRM_SCHDLID = #{prgrmSchdlid} 
+            1 = 1 
             AND B.PRGRMID = #{prgrmId}
+        GROUP BY A.TMEID            
         ORDER BY 
-            A.DE, B.ORDR 
+            A.TMEID
     </select>
                
     <!-- 회원정보 조회 -->

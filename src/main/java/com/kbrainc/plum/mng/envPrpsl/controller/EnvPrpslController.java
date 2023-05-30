@@ -125,7 +125,7 @@ public class EnvPrpslController {
      */
     @RequestMapping(value = "/mng/envPrpsl/insertEnvPrpslAnswer.do", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> insertEnvPrpslAnswer(@UserInfo UserVo user, @Valid EnvPrpslAnsVO envPrpslAnsVO, BindingResult bindingResult){
+    public Map<String, Object> insertEnvPrpslAnswer(@UserInfo UserVo user, @Valid EnvPrpslAnsVO envPrpslAnsVO, BindingResult bindingResult) throws Exception{
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
         if(bindingResult.hasErrors()) {
@@ -162,7 +162,7 @@ public class EnvPrpslController {
      */
     @RequestMapping(value = "/mng/envPrpsl/updateEnvPrpslAnswer.do", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> updateEnvPrpslAnswer(@UserInfo UserVo user, @Valid EnvPrpslAnsVO envPrpslAnsVO, BindingResult bindingResult){
+    public Map<String, Object> updateEnvPrpslAnswer(@UserInfo UserVo user, @Valid EnvPrpslAnsVO envPrpslAnsVO, BindingResult bindingResult) throws Exception{
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
         if(bindingResult.hasErrors()) {

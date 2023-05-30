@@ -322,12 +322,12 @@
         /* MvmnAplyDao.selectMvmnAplyRegInfo */
             SELECT
                 A.PRGRMID
-                , A.SAREAID
+                , B.SAREAID
                 , B.SAREA_NM
                 , A.PRGRM_NM
                 , A.EDU_HR_MNT
                 , A.EDU_NOPE
-                , J.SIGNGU_CD
+                , #{signguCd} AS SIGNGU_CD
                 , CONCAT(E.CTPRVN_NM,' <![CDATA[>]]> ', G.SIGNGU_NM) SIGNGU_DESC
                 , CONCAT(C.TME_NM, ' ', C.BGNG_TM, ' ~ ', C.END_TM) TME_NM
                 ,
@@ -351,13 +351,23 @@
                 , A.REG_DT
                 , A.RGTRID
             FROM TB_EDU_MVMN_PRGRM A
-                LEFT OUTER JOIN TB_EDU_SAREA B ON A.SAREAID = B.SAREAID
-                LEFT OUTER JOIN TB_EDU_SAREA_CTPRVN_MAPNG I ON I.SAREAID = B.SAREAID
-                LEFT OUTER JOIN TB_EDU_SAREA_SIGNGU J ON J.CTPRVN_CD = I.CTPRVN_CD AND J.SAREAID = B.SAREAID
-                LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME C ON C.PRGRMID = A.PRGRMID
-                LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME_SCHDL D ON D.TMEID = C.TMEID 
+                <choose>
+                  <when test="eduSeCd == '196101'"> /* 공통교육 */
+                    LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME C ON C.PRGRMID = A.PRGRMID
+                    LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME_SCHDL D ON D.TMEID = C.TMEID
+                    LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_SCHDL K ON K.PRGRM_SCHDLID = D.PRGRM_SCHDLID
+                    LEFT OUTER JOIN TB_EDU_SAREA B ON B.SAREAID = K.SAREAID
+                    LEFT OUTER JOIN TB_EDU_SAREA_CTPRVN_MAPNG I ON I.SAREAID = B.SAREAID
+                  </when>
+                  <otherwise> /* 특화교육 */
+                    LEFT OUTER JOIN TB_EDU_SAREA B ON A.SAREAID = B.SAREAID                
+                    LEFT OUTER JOIN TB_EDU_SAREA_CTPRVN_MAPNG I ON I.SAREAID = B.SAREAID
+                    LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME C ON C.PRGRMID = A.PRGRMID
+                    LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME_SCHDL D ON D.TMEID = C.TMEID 
+                  </otherwise>
+              </choose>
                 LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN E ON E.CTPRVN_CD = I.CTPRVN_CD
-                LEFT OUTER JOIN TB_CMM_ADDR_SIGNGU G ON G.SIGNGU_CD = J.SIGNGU_CD
+                LEFT OUTER JOIN TB_CMM_ADDR_SIGNGU G ON G.SIGNGU_CD = #{signguCd}
                 LEFT OUTER JOIN TB_CMM_USER F ON F.USERID = #{user.userid}
                 LEFT OUTER JOIN TB_CMM_INST H ON H.INSTID = F.INSTID   
             WHERE A.USE_YN = 'Y'
@@ -370,7 +380,6 @@
                     AND D.TMEID = #{tmeid}
                   </otherwise>
               </choose>
-              AND J.SIGNGU_CD = #{signguCd}
             GROUP BY A.PRGRMID
     </select>    
     <!-- 푸름이 이동환경교실 교육신청 등록 --> 

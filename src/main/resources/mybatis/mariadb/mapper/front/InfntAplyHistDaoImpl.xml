@@ -126,22 +126,13 @@
           , A.STTS_CD
           , D.CD_NM AS STTS_NM
           , (
-            SELECT GROUP_CONCAT(CD SEPARATOR ',')
-            FROM tb_cmm_cd
-            WHERE CDGRPID = 162
-            ) AS CD
-          , (
-            SELECT GROUP_CONCAT(CD_NM SEPARATOR ',')
-            FROM tb_cmm_cd
-            WHERE CDGRPID = 162
-            ) AS CD_NM
             SELECT
                 GROUP_CONCAT(TB.CD_NM SEPARATOR ', ')
             FROM
                 TB_EDU_INFNT_PRGRM_APLY_EDU_TRGT TA
               , TB_CMM_CD TB
             WHERE
-                  TA.APLYID = 47
+                  TA.APLYID = #{aplyid}
               and TA.EDU_TRGT_CD = TB.CD
             ) AS TRGT_NM
           , A.MDFCN_DT
@@ -259,13 +250,14 @@
            AND APLYID = #{aplyid}
     </insert>
     
-    <select id="selectEduTrgtCd" parameterType="front.InfntAplyHistVo" resultType="front.InfntAplyHistVo">
+    <select id="selectEduTrgtCd" parameterType="front.InfntAplyHistVo" resultType="string">
         /* InfntAplyHistDao.selectEduTrgtCd */
         SELECT
-            EDU_TRGT_CD AS TRGT_CD
+            GROUP_CONCAT(EDU_TRGT_CD SEPARATOR ',') AS TRGT_CD
         FROM
             TB_EDU_INFNT_PRGRM_APLY_EDU_TRGT
         WHERE
             APLYID = #{aplyid}
+        GROUP BY APLYID
     </select>       
 </mapper>

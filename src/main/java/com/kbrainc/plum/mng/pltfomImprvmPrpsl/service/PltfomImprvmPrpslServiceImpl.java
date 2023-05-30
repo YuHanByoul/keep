@@ -1,7 +1,11 @@
+
 package com.kbrainc.plum.mng.pltfomImprvmPrpsl.service;
 
 import com.kbrainc.plum.cmm.file.model.FileDao;
 import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.cmm.service.SmsNhnService;
+import com.kbrainc.plum.mng.ntcn.model.NtcnDao;
+import com.kbrainc.plum.mng.ntcn.model.NtcnVo;
 import com.kbrainc.plum.mng.pltfomImprvmPrpsl.model.PltfomImprvmPrpslAnsVo;
 import com.kbrainc.plum.mng.pltfomImprvmPrpsl.model.PltfomImprvmPrpslDao;
 import com.kbrainc.plum.mng.pltfomImprvmPrpsl.model.PltfomImprvmPrpslVo;
@@ -36,6 +40,12 @@ public class PltfomImprvmPrpslServiceImpl extends PlumAbstractServiceImpl implem
 
     @Autowired
     private FileDao fileDao;
+
+    @Autowired
+    private SmsNhnService smsNhnService;
+
+    @Autowired
+    private NtcnDao ntcnDao;
 
     /**
      * 플랫폼개선제안 목록 조회
@@ -114,7 +124,35 @@ public class PltfomImprvmPrpslServiceImpl extends PlumAbstractServiceImpl implem
         retVal += pltfomImprvmPrpslDao.insertPltfomImprvmPrpslAns(pltfomImprvmPrpslAnsVo);
         retVal += pltfomImprvmPrpslDao.updatePltfomImprvmPrpslStts(pltfomImprvmPrpslAnsVo);
 
+        PltfomImprvmPrpslVo param = new PltfomImprvmPrpslVo();
+        param.setPrpslid(pltfomImprvmPrpslAnsVo.getPrpslid());
+        PltfomImprvmPrpslVo pltfomImprvmPrpslVo = pltfomImprvmPrpslDao.selectPltfomImprvmPrpsl(param);
+
+        if ("188104".equals(pltfomImprvmPrpslAnsVo.getPrcsSttsCd())) {
+            // 알림
+            retVal += insertNtcn(pltfomImprvmPrpslVo);
+
+            //SMS
+            String smsMsg = "[환경보전협회] 플랫폼 개선 제안 게시글에 답변이 등록되었습니다.";
+            String[] phoneList = new String[]{pltfomImprvmPrpslVo.getMoblphon()};
+            smsNhnService.sendSms(smsMsg, phoneList, "");
+        }
+
         return retVal;
+    }
+
+    private int insertNtcn(PltfomImprvmPrpslVo pltfomImprvmPrpslVo) throws Exception {
+        NtcnVo ntcnVo = new NtcnVo();
+        ntcnVo.setUserid(pltfomImprvmPrpslVo.getUserid());
+
+        ntcnVo.setTtl("플랫폼 개선 제안 게시글에 답변 등록");
+        ntcnVo.setCn("플랫폼 개선 제안에 남겨주신 글에 답변이 등록되었습니다.\r\n"
+                + "자세한 내용은 내 문의 내역에서 확인해 주십시오.\r\n");
+        ntcnVo.setMvmnurl("/front/mypage/inqry/pltfomImprvmPropslDetail.html?prpslid=" + pltfomImprvmPrpslVo.getPrpslid());
+        ntcnVo.setKndCd("245102");
+        ntcnVo.setInqYn("N");
+
+        return ntcnDao.insertNtcn(ntcnVo);
     }
 
     /**

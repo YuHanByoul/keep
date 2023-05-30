@@ -33,6 +33,10 @@ public class HelpDeskVo extends ParentRequestVo {
     private String sttsCdgrpid = "113";
     /** 로그인 사용자 정보 */
     private UserVo user;
+    /** 사용자 아이디 */
+    private Integer userid;
+    /** 휴대 번호 */
+    private String moblphon;
     /** 문의 일련번호 */
     private Integer inqryid;
     /** 분류코드 */

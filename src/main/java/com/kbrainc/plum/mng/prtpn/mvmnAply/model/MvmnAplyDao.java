@@ -274,4 +274,8 @@ public interface MvmnAplyDao {
     */
     public int insertMvmnAplySchdl(MvmnAplyVo mvmnAplyVo) throws Exception;
     
+    public MvmnAplyVo selectMvmnAplyInsertInfo(MvmnAplyVo mvmnAplyVo) throws Exception;
+    
+    public MvmnAplyVo selectEduYear() throws Exception;
+    
 }

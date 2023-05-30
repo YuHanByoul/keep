@@ -52,21 +52,25 @@
     <select id="selectEnvPrpsInfo" parameterType="EnvPrpslVO" resultType="EnvPrpslVO">
         /* EnvPrpslDao.selectEnvPrpsInfo */
         SELECT
-            PRPSLID
-             , CLSF_CD
-             , TTL
-             , CN
+            A.PRPSLID
+             , A.CLSF_CD
+             , A.TTL
+             , A.CN
              , (SELECT NM FROM TB_CMM_USER WHERE USERID = A.USERID) USER_NM
              , (SELECT ACNT FROM TB_CMM_USER WHERE USERID = A.USERID) ACNT
-             , USERID
+             , A.USERID
              , (SELECT INST_NM FROM TB_CMM_INST WHERE INSTID = A.INSTID) INST_NM
-             , INSTID
-             , PRCS_STTS_CD
-             , FILEGRPID
-             , MDFCN_DT
-             , REG_DT
+             , B.MOBLPHON
+             , A.INSTID
+             , A.PRCS_STTS_CD
+             , A.FILEGRPID
+             , A.MDFCN_DT
+             , A.REG_DT
         FROM
             TB_CMM_ENV_EDU_PRPSL A
+        INNER JOIN
+            TB_CMM_USER B
+        ON A.USERID = B.USERID
         WHERE
             PRPSLID = #{prpslid}
     </select>

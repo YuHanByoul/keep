@@ -30,7 +30,7 @@ public interface EnvPrpslService {
      * @param envPrpslVO
      * @return list
      */
-    List<EnvPrpslVO> selectEnvPrpslList(EnvPrpslVO envPrpslVO);
+    List<EnvPrpslVO> selectEnvPrpslList(EnvPrpslVO envPrpslVO) throws Exception;
 
     /**
      * 환경교육제안 정보 조회
@@ -40,7 +40,7 @@ public interface EnvPrpslService {
      * @param envPrpslVO
      * @return env prpsl vo
      */
-    EnvPrpslVO selectEnvPrpsInfo(EnvPrpslVO envPrpslVO);
+    EnvPrpslVO selectEnvPrpsInfo(EnvPrpslVO envPrpslVO) throws Exception;
 
     /**
      * 환경교육제안 답변 정보 조회
@@ -50,7 +50,7 @@ public interface EnvPrpslService {
      * @param envPrpslAnsVO
      * @return env prpsl ans vo
      */
-    EnvPrpslAnsVO selectEnvPrpslAnsInfo(EnvPrpslAnsVO envPrpslAnsVO);
+    EnvPrpslAnsVO selectEnvPrpslAnsInfo(EnvPrpslAnsVO envPrpslAnsVO) throws Exception;
 
     /**
      * 환경교육제안 관리 답변 등록
@@ -60,7 +60,7 @@ public interface EnvPrpslService {
      * @param envPrpslAnsVO
      * @return boolean
      */
-    boolean insertEnvPrpslAnswer(EnvPrpslAnsVO envPrpslAnsVO);
+    boolean insertEnvPrpslAnswer(EnvPrpslAnsVO envPrpslAnsVO) throws Exception;
 
     /**
      * 환경교육제안 관리 답변 수정
@@ -70,5 +70,5 @@ public interface EnvPrpslService {
      * @param envPrpslAnsVO
      * @return boolean
      */
-    boolean updateEnvPrpslAnswer(EnvPrpslAnsVO envPrpslAnsVO);
+    boolean updateEnvPrpslAnswer(EnvPrpslAnsVO envPrpslAnsVO) throws Exception;
 }

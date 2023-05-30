@@ -135,5 +135,5 @@ public interface InfntAplyHistDao {
     */
     public int deleteTrgtCd(InfntAplyHistVo infntAplyHistVo) throws Exception;
 
-    public List<InfntAplyHistVo> selectEduTrgtCd(InfntAplyHistVo infntAplyHistVo) throws Exception;
+    public String selectEduTrgtCd(InfntAplyHistVo infntAplyHistVo) throws Exception;
 }
