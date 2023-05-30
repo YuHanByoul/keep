@@ -31,6 +31,8 @@ public class HelpDeskAnswrVo extends ParentRequestVo {
     private UserVo user;
     /** 문의 일련번호 */
     private Integer inqryid;
+    /** 사용자 아이디 */
+    private Integer userid;
     /** 답변 일련번호 */
     private Integer ansid;
     /** 답변 제목 */

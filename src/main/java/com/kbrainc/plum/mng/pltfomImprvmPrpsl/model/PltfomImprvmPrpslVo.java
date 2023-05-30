@@ -43,6 +43,9 @@ public class PltfomImprvmPrpslVo extends ParentRequestVo {
     /** 사용자 아이디 */
     private Integer userid;
 
+    /** 휴대 번호 */
+    private String moblphon;
+
     /** 제목 */
     private String ttl;
 

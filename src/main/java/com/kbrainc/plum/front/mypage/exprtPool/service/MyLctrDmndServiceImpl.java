@@ -169,7 +169,7 @@ public class MyLctrDmndServiceImpl extends PlumAbstractServiceImpl implements My
         sb.append("자세한 내용은 전문가 섭외 관리 메뉴를 확인해 주십시오.");
 
         ntcnVo.setUserid(myLctrDmnd.getUserid());
-        ntcnVo.setTtl("환경교육 전문가 섭외 요청 수락");
+        ntcnVo.setTtl("환경교육 전문가 섭외 요청 " + dmndSttsCdNm);
         ntcnVo.setCn(sb.toString());
         ntcnVo.setInqYn("N");
         ntcnVo.setKndCd("245101");

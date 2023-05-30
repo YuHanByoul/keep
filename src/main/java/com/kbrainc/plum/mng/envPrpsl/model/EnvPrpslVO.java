@@ -54,6 +54,9 @@ public class EnvPrpslVO extends ParentRequestVo {
     /** 사용자이름 */
     private String userNm;
 
+    /** 휴대 번호 */
+    private String moblphon;
+
     /** 답변자계정 */
     private String ansAcnt;
 

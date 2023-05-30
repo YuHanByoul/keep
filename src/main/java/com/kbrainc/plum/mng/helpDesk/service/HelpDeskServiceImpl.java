@@ -2,7 +2,10 @@ package com.kbrainc.plum.mng.helpDesk.service;
 
 import com.kbrainc.plum.cmm.file.model.FileDao;
 import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.cmm.service.SmsNhnService;
 import com.kbrainc.plum.mng.helpDesk.model.*;
+import com.kbrainc.plum.mng.ntcn.model.NtcnDao;
+import com.kbrainc.plum.mng.ntcn.model.NtcnVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +38,12 @@ public class HelpDeskServiceImpl extends PlumAbstractServiceImpl implements Help
 
     @Autowired
     private FileDao fileDao;
+
+    @Autowired
+    private NtcnDao ntcnDao;
+
+    @Autowired
+    private SmsNhnService smsNhnService;
 
     /**
      * 문의 목록 조회
@@ -111,7 +120,34 @@ public class HelpDeskServiceImpl extends PlumAbstractServiceImpl implements Help
         retVal += helpDeskDao.updateHelpDeskSttsCd(helpDeskAnswrVo);
         retVal += helpDeskDao.insertHelpDeskAnswr(helpDeskAnswrVo);
 
+        if(helpDeskAnswrVo.getSttsCd().equals("113104")) {
+            // 알림
+            HelpDeskVo param = new HelpDeskVo();
+            param.setInqryid(helpDeskAnswrVo.getInqryid());
+            HelpDeskVo helpDeskVo = helpDeskDao.selectHelpDeskInfo(param);
+            retVal += insertNtcn(helpDeskVo);
+
+            //SMS
+            String smsMsg = "[환경보전협회] 환경교육 헬프 신청 게시글에 답변이 등록되었습니다.";
+            String[] phoneList = new String[]{helpDeskVo.getMoblphon()};
+            smsNhnService.sendSms(smsMsg, phoneList, "");
+        }
+
         return retVal;
+    }
+
+    private int insertNtcn(HelpDeskVo helpDeskVo) throws Exception {
+        NtcnVo ntcnVo = new NtcnVo();
+        ntcnVo.setUserid(helpDeskVo.getUserid());
+
+        ntcnVo.setTtl("환경교육 헬프 신청 게시글에 답변 등록");
+        ntcnVo.setCn("환경교육 헬프 신청에 남겨주신 글에 답변이 등록되었습니다.\r\n"
+                + "자세한 내용은 내 문의 내역에서 확인해 주십시오.\r\n");
+        ntcnVo.setMvmnurl("/front/mypage/inqry/helpdeskDetail.html?inqryid=" + helpDeskVo.getInqryid());
+        ntcnVo.setKndCd("245102");
+        ntcnVo.setInqYn("N");
+
+        return ntcnDao.insertNtcn(ntcnVo);
     }
 
     /**
