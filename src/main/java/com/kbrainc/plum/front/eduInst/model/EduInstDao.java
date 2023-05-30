@@ -47,6 +47,18 @@ public interface EduInstDao {
 	public EduInstVo selectEnvEduInst(EduInstVo eduInstVo) throws Exception;
 
 	/**
+	* 사회환경교육기관 신청 목록 조회
+	*
+	* @Title : selectEnvEduInstList
+	* @Description : 사회환경교육기관 신청 목록 조회
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return List<EduInstVo>
+	*/
+	public List<EduInstVo> selectEnvEduInstList(EduInstVo eduInstVo) throws Exception;
+
+	/**
 	* SEE_환경_교육_기관 등록
 	*
 	* @Title : insertEnvEduInst

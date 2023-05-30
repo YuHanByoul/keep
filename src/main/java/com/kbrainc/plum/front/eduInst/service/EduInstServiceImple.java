@@ -55,6 +55,21 @@ public class EduInstServiceImple extends PlumAbstractServiceImpl implements EduI
 	}
 
 	/**
+	* 사회환경교육기관 신청 목록 조회
+	*
+	* @Title : selectEnvEduInstList
+	* @Description : 사회환경교육기관 신청 목록 조회
+	* @param eduInstVo
+	* @return
+	* @throws Exception
+	* @return List<EduInstVo>
+	*/
+	@Override
+	public List<EduInstVo> selectEnvEduInstList(EduInstVo eduInstVo) throws Exception{
+		return eduInstDao.selectEnvEduInstList(eduInstVo);
+	}
+
+	/**
 	* 환경교육기관상세 조회
 	*
 	* @Title : selectEnvEduInst

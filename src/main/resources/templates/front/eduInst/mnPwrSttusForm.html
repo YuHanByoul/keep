@@ -163,6 +163,14 @@
         var reUrl="/front/eduInst/mnPwrSttusForm.html";
         var insertUrl="/front/eduInst/insertEduExprt.do";
 
+        let today = new Date();
+        let year = today.getFullYear(); // 년도
+        let month = today.getMonth() + 1;  // 월
+        let monthStr = (month < 10)? "0"+month : month;  // 월
+        let date = today.getDate();  // 날짜
+        let dateStr = (date < 10)? "0"+date : date;
+        let thisday =  year+""+monthStr+""+dateStr;
+
         function navClick(){
 
         }
@@ -178,7 +186,7 @@
                 return;
             }
 
-            var newRow = lastRow.clone().attr('id', 'exprtDiv' + idx);
+            var newRow = lastRow.clone(true).attr('id', 'exprtDiv' + idx);
 
             newRow.find('input').val('');
             newRow.find('select').val('');
@@ -188,47 +196,57 @@
 
             newRow.find('ul').attr('id','multipleFileUploadSuccess' + idx);
             newRow.find('[id^=atchFilegrpid]').attr('id','atchFilegrpid' + idx);
+            newRow.find('input[type=file]').attr('id','multiFileInput' + idx);
+            newRow.find('label[for]').prop('for','multiFileInput' + idx);
 
             lastRow.after(newRow);
 
             if ($('#exprtListDiv div[id^="exprtDiv"]').length == 2) {
                 $('#exprtListDiv div[id^="exprtDiv"] table:last').after(`<div class="table-add-button" >
-                                                          <button type="button" class="btn-remove-table mb0" title="테이블 삭제" onclick="delRow()">
-                                                              <span class="icon icon-remove"></span>
-                                                          </button>
-                                                      </div>`);
+                		                                                     <button type="button" class="btn-remove-table mb0" title="테이블 삭제" onclick="delRow(${idx})">
+                                                                                 <span class="icon icon-remove"></span>
+                                                                             </button>
+                                                                         </div>`);
             }
         }
 
-        function delRow(){
-            var lastRow = $('#exprtListDiv div[id^="exprtDiv"]:last');
-
-            if(lastRow.index() > 0) lastRow.remove();
+        function delRow(idx){
+            debugger;
+            var row = $('#exprtDiv'+idx);
+            if(idx > 0) row.remove();
 
         }
 
         function validateTable() {
             var valid = true;
 
-            $('div[id^="exprtDiv"] input[type="text"]').each(function(index,item) {
-              var inputVal = $(this).val().trim();
+            $('div[id^="exprtDiv"]').each(function(index,item) {
+                var row = $(this);
 
-              var trgtid= $(this).attr('id');
-              if (!inputVal && $(this).val()!='') {
-                  valid = false;
+                var chkBrdt = row.find('[name=brdt]').val() ?? '';
+                var hdofBgngDe = row.find('[name=hdofBgngDe]').val() ?? '';
+                var hdofEndDe  = row.find('[name=hdofEndDe]').val()  ?? '';
 
-                  if($("#"+trgtid).next().attr('class') != "feedback invalid"){
-                      $("#"+trgtid).after("<p class='feedback invalid'>공백은 입력할 수 없습니다.</p>");
-                  }
-              } else {
-            	  $("#"+trgtid).next().remove();
-              }
+                //생년월일 체크
+                if(chkBrdt!=''){
+                	chkBrdt = chkBrdt.replaceAll("-","");
+
+                    if(Number(chkBrdt) > Number(thisday)) {
+                    	valid = false;
+                        if(row.find('[name=brdt]').next().attr('class') != "feedback invalid"){
+                        	row.find('[name=brdt]').after("<p class='feedback invalid'>생년월일은 금일보다 이전이어야 합니다.</p>");
+                        }
+                    } else {
+                    	row.find('[name=brdt]').next().remove();
+                    }
+                }
             });
+
             return valid;
-          }
+        }
 
         function doSave(call){
-
+debugger;
             var param = {};
             var key = $("#planKey").val();
 
@@ -238,17 +256,11 @@
                 url = updateUrl
             }
 
-
             //테이블
             if(!validateTable()) return;
 
-
-
-            if(call!="next")if(!confirm("저장하시겠습니까?")) return;
-
             var exprtList = [];
             $('#exprtListDiv div[id^="exprtDiv"]').each(function(index, value){
-
                 var nm         = $(this).find('input[name="nm"]').val();
                 var seCd       = $(this).find('select[name=seCd]').val();
                 var brdt       = $(this).find('input[name="brdt"]').val();
@@ -265,6 +277,7 @@
               aplyid: $("#aplyid").val(),
               eduExprtList: exprtList
             };
+            if(call!="next")if(!confirm("저장하시겠습니까?")) return;
 
             $.ajax({
                 url : insertUrl,
@@ -276,11 +289,11 @@
                 success : function (data){
 
                     if(data.result=="success"){
-                        alert(data.msg);
                         var id = $("#aplyid").val();
                         if(call == "next") {
                             location.href = nextUrl+"?aplyid=" + id;
                         }else{
+                            alert(data.msg);
                             location.href = reUrl+"?aplyid=" + id;
                         }
                     }else{
@@ -298,7 +311,7 @@
             $('[id^=multiFileInput]').on("change", function(event) {
                 var objFile = document.querySelector('#'+this.id);
                 var no = this.id.replace('multiFileInput','');
-
+debugger;
                 var formData = new FormData();
                 var content = "";
                 uploadFileCnt = 0;

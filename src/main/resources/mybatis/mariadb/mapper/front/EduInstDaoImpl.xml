@@ -89,6 +89,52 @@
 
     </select>
 
+    <!-- 환경교육기관 목록 조회 -->
+    <select id="selectEnvEduInstList" parameterType="front.EduInstVo" resultType="front.EduInstVo">
+        /* EduInstDao.selectEnvEduInstList*/
+         SELECT
+            A.APLYID             /*신청아이디*/
+          , A.RCPTNO             /*접수번호*/
+          , A.INSTID             /*기관아이디*/
+          , A.APLCNTID           /*신청자아이디*/
+          , A.APLCNT_NM          /*신청자_이름*/
+          , A.APLCNT_EML         /*신청자_이메일*/
+          , A.APLCNT_MOBLPHON    /*신청자_휴대폰*/
+          , A.INST_NM            /*기관_이름*/
+          , A.INST_EML           /*기관_이메일*/
+          , A.INST_CNTCT         /*기관_연락처*/
+          , A.CTPRVN_CD          /*시도_코드*/
+          , A.RPRSV_BRDT         /*대표자_생년월일*/
+          , A.ATCH_FILEGRPID     /*첨부_파일그룹아이디*/
+          , A.DSGNNO             /*지정번호*/
+          , A.DSGN_DE            /*지정_일자*/
+          , A.AUTZRID            /*승인자아이디*/
+          , A.ISSU_DE            /*발급_일자*/
+          , A.ISGN_DE            /*재발급_일자*/
+          , A.STTS_CD            /*상태_코드*/
+          , A.MDFCN_DT           /*수정_일시*/
+          , A.MDFRID             /*수정자아이디*/
+          , A.REG_DT             /*등록_일시*/
+          , A.RGTRID             /*등록자아이디*/
+          , B.RGN_CD
+          , SUBSTR(B.RGN_CD,1,2)    AS CTPRVN_CD
+          , B.INST_TYPE_CD
+          , B.TELNO      AS INST_CNTCT
+          , B.ADDR
+          , B.ADDR_DTL
+          , B.BRNO
+          , TYPE_CD.CD_NM
+        FROM TB_SEE_ENV_EDU_INST A
+        LEFT OUTER JOIN TB_CMM_INST B ON A.INSTID =B.INSTID
+        LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN ADDR ON B.RGN_CD = ADDR.CTPRVN_CD
+        LEFT OUTER JOIN TB_CMM_CD TYPE_CD ON B.INST_TYPE_CD = TYPE_CD.CD
+        WHERE A.APLCNTID = #{aplcntid}
+        AND A.STTS_CD    = '248101'    /*작성중*/
+        ORDER BY A.REG_DT DESC
+
+
+    </select>
+
     <!-- 환경교육기관 등록 -->
     <insert id="insertEnvEduInst" parameterType="front.EduInstVo" useGeneratedKeys="true" keyProperty="aplyid">
     /* EduInstDao.insertEnvEduInst*/
