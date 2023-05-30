@@ -405,7 +405,7 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
     }
 
     @Override
-    public MvmnAplyVo selectEduYear() throws Exception {
+    public List<MvmnAplyVo> selectEduYear() throws Exception {
         return mvmnAplyDao.selectEduYear();
     }    
 }

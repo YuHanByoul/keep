@@ -189,7 +189,7 @@ public interface MvmnAplyService {
 
     public MvmnAplyVo selectMvmnAplyInsertInfo(MvmnAplyVo mvmnAplyVo) throws Exception;
 
-    public MvmnAplyVo selectEduYear() throws Exception;
+    public List<MvmnAplyVo> selectEduYear() throws Exception;
     
     
 }

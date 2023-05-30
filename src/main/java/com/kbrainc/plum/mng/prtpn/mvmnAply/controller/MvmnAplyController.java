@@ -71,12 +71,7 @@ public class MvmnAplyController {
         EduSareaVo eduSareaVo = new EduSareaVo(); 
         model.addAttribute("sareaList", eduSareaService.selectEduSareaList(eduSareaVo));
         
-        int curYear = Integer.valueOf(DateTimeUtil.getYear());
-        Integer[] years = new Integer[4];
-        
-        for(int i = curYear, j = 0; i <= i+3 && j <= 3; i++, j++) {
-            years[j] = i;
-        }
+        List<MvmnAplyVo> years = mvmnAplyService.selectEduYear();
         model.addAttribute("years", years);
         return "mng/prtpn/mvmnAply/mvmnAplyList";
     }
