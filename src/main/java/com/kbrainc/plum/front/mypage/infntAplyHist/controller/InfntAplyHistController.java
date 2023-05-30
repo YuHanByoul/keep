@@ -64,7 +64,6 @@ public class InfntAplyHistController {
         Map<String, Object> result = new HashMap<>();
         infntAplyHistVo.setUser(user);
         List<InfntAplyHistVo> list = infntAplyHistService.selectInfntAplyHistList(infntAplyHistVo);
-        //List<InfntAplyVo> list = null;
         if (list.size() > 0) {
             result.put("totalCount", list.get(0).getTotalCount());
             result.put("pagination", PaginationUtil.getFrontPaginationHtml(list.get(0).getTotalPage(), list.get(0).getPageNumber(), 10));
@@ -79,6 +78,7 @@ public class InfntAplyHistController {
 
     @GetMapping("/infntAplyHistDetail.html")
     public String infntAplyHistDetail(InfntAplyHistVo infntAplyHistVo, Model model, @UserInfo UserVo user) throws Exception {
+        infntAplyHistVo.setUser(user);
         InfntAplyHistVo infntAplyHistInfoVo = infntAplyHistService.selectInfntAplyHistInfo(infntAplyHistVo);
         InfntAplyHistVo infntAplyHistRegVo = infntAplyHistService.selectInfntAplyHistDetail(infntAplyHistVo);
         String eduTrgtCd = infntAplyHistService.selectEduTrgtCd(infntAplyHistVo);
