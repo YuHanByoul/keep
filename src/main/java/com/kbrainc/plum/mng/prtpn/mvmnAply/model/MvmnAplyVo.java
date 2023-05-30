@@ -69,6 +69,8 @@ public class MvmnAplyVo extends ParentRequestVo {
     private String rcptMthdCd;
     /** 접수_방법_코드명 */
     private String rcptMthdNm;
+    /** 운영_형식_코드*/
+    private String operFomCd;
     
     /** 교육일자 */
     private String de;
@@ -131,6 +133,11 @@ public class MvmnAplyVo extends ParentRequestVo {
     private String useYn;
 
     private String ym;
+    
+    /** 희망 교육 시작시간 */
+    private String hopeEduBgngTm;
+    /** 희망 교육 종료시간 */
+    private String hopeEduEndTm;
 
     /** 수정_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")

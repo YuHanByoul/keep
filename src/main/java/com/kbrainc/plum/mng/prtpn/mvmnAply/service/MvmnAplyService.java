@@ -186,6 +186,10 @@ public interface MvmnAplyService {
     * @return void
     */
     public void mvmnAplyExcelDownList(MvmnAplyVo mvmnAply, HttpServletResponse response, HttpServletRequest request) throws Exception;
+
+    public MvmnAplyVo selectMvmnAplyInsertInfo(MvmnAplyVo mvmnAplyVo) throws Exception;
+
+    public MvmnAplyVo selectEduYear() throws Exception;
     
     
 }

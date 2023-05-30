@@ -112,16 +112,15 @@ public class MvmnAplyController {
     */
     @RequestMapping(value = "/mng/prtpn/mvmnAply/mvmnAplyInsertForm.html")
     public String mvmnAplyInsertForm(MvmnAplyVo mvmnAplyVo, Model model) throws Exception {
-        int curYear = Integer.valueOf(DateTimeUtil.getYear());
-        Integer[] years = new Integer[4];
+        Integer[] years = new Integer[21];
         
-        for(int i = curYear, j = 0; i <= i+3 && j <= 3; i++, j++) {
+        for(int i = 2020, j = 0; i < 2041; i++, j++) {
             years[j] = i;
         }
         model.addAttribute("years", years);
         
         EduSareaVo eduSareaVo = new EduSareaVo(); 
-        model.addAttribute("mvmnAplyVo", mvmnAplyVo);
+        model.addAttribute("mvmnAplyVo", mvmnAplyService.selectMvmnAplyInsertInfo(mvmnAplyVo));
         model.addAttribute("sareaList", eduSareaService.selectEduSareaList(eduSareaVo));
         
         model.addAttribute("tmeSchdlList", mvmnAplyService.selectTmeSchdlList(mvmnAplyVo));
@@ -141,10 +140,9 @@ public class MvmnAplyController {
     */
     @RequestMapping(value = "/mng/prtpn/mvmnAply/mvmnAplyUpdateForm.html")
     public String mvmnAplyUpdateForm(MvmnAplyVo mvmnAplyVo, Model model) throws Exception {
-        int curYear = Integer.valueOf(DateTimeUtil.getYear());
-        Integer[] years = new Integer[4];
+        Integer[] years = new Integer[21];
         
-        for(int i = curYear, j = 0; i <= i+3 && j <= 3; i++, j++) {
+        for(int i = 2020, j = 0; i < 2041; i++, j++) {
             years[j] = i;
         }
         model.addAttribute("years", years);

@@ -397,5 +397,15 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
         workbook.write(fileOutput);
         fileOutput.flush();
         fileOutput.close();
+    }
+
+    @Override
+    public MvmnAplyVo selectMvmnAplyInsertInfo(MvmnAplyVo mvmnAplyVo) throws Exception {
+        return mvmnAplyDao.selectMvmnAplyInsertInfo(mvmnAplyVo);
+    }
+
+    @Override
+    public MvmnAplyVo selectEduYear() throws Exception {
+        return mvmnAplyDao.selectEduYear();
     }    
 }
