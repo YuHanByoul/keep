@@ -88,16 +88,6 @@
             detailUrl: '/front/mypage/mvmnAplyHist/mvmnAplyHistDetail.html',
             searchVo: /*[[${searchVo}]]*/null,
 
-            init() {
-                /*
-                $('#searchForm').on('submit', function (e) {
-                    e.preventDefault();
-                    $('#pageNumber').val(1);
-                    mvmnAplyHist.selectMvmnAplyHistList();
-                });
-                */
-            },
-            
             initSearch: function() {
                  $("#searchPrgrmNm").val("");
             },
@@ -166,14 +156,17 @@
                                     <td>${item.tmeNm}</td>
                                     <td>${item.sttsNm}</td>
                                     <td>${item.regDt}</td><td>`;
-                                    if(item.sttsCd == '180103'){                                    
-	                                    if(item.sbmsnYn == 'N'){
-		                                    if(item.aplcntDgstfnSrvyid > 0){
-		                                              html += `<button type="button" class="btn-small btn-outline-blue" onclick="mvmnAplyHist.onSrvySbmsnInsertPopup(${item.aplyid}, ${item.aplcntDgstfnSrvyid}, ${item.aplcntDgstfnQestnrid})">설문참여</button>`;
-		                                    }
-	                                    }else{
-	                                        html += `<button type="button" class="btn-small btn-outline-black" onclick="mvmnAplyHist.onSrvySbmsnInfoPopup(${item.aplyid}, ${item.sbmsnid}, ${item.aplcntDgstfnSrvyid}, ${item.aplcntDgstfnQestnrid})">설문확인</button>`;                                    	
-	                                    }
+                                    if(item.sttsCd == '180103'){
+                                        if(item.canSrvy == 'Y'){
+                                            // 현재날짜가 교육종료일인 경우
+                                            if(item.submitSrvy == 'Y') {
+                                                //설문 제출한 경우
+                                                html += `<button type="button" class="btn-small btn-outline-black" onclick="infntAplyHist.onSrvySbmsnInfoPopup(${item.aplyid}, ${item.sbmsnid}, ${item.aplcntDgstfnSrvyid}, ${item.aplcntDgstfnQestnrid})">설문확인</button>`;
+                                            } else {
+                                                //설문 미제출한 경우
+                                                html += `<button type="button" class="btn-small btn-outline-blue" onclick="infntAplyHist.onSrvySbmsnInsertPopup(${item.aplyid}, ${item.aplcntDgstfnSrvyid}, ${item.aplcntDgstfnQestnrid})">설문참여</button>`;
+                                            }
+                                        }
                                     }
                                     html += `</td>
                                 </tr>`;
@@ -225,14 +218,17 @@
                             </dl></div>
                             <div class="btn-wrap">
                             <div class="center">`;
-                            if(item.sttsCd == '180103'){                            
-	                            if(item.sbmsnYn == 'N'){
-		                            if(item.aplcntDgstfnSrvyid > 0){
-		                                moHtml += `<button type="button" class="btn-small btn-outline-blue" onclick="mvmnAplyHist.onSrvySbmsnInsertPopup(${item.aplyid}, ${item.aplcntDgstfnSrvyid}, ${item.aplcntDgstfnQestnrid})">설문참여</button>`;
-		                            }
-	                            }else{
-	                                moHtml += `<button type="button" class="btn-small btn-outline-black" onclick="mvmnAplyHist.onSrvySbmsnInfoPopup(${item.aplyid}, ${item.sbmsnid}, ${item.aplcntDgstfnSrvyid}, ${item.aplcntDgstfnQestnrid})">설문확인</button>`;                            	
-	                            }
+                            if(item.sttsCd == '180103'){
+                                if(item.canSrvy == 'Y'){
+                                    // 현재날짜가 교육종료일인 경우
+                                    if(item.submitSrvy == 'Y') {
+                                        //설문 제출한 경우
+                                        html += `<button type="button" class="btn-small btn-outline-black" onclick="infntAplyHist.onSrvySbmsnInfoPopup(${item.aplyid}, ${item.sbmsnid}, ${item.aplcntDgstfnSrvyid}, ${item.aplcntDgstfnQestnrid})">설문확인</button>`;
+                                    } else {
+                                        //설문 미제출한 경우
+                                        html += `<button type="button" class="btn-small btn-outline-blue" onclick="infntAplyHist.onSrvySbmsnInsertPopup(${item.aplyid}, ${item.aplcntDgstfnSrvyid}, ${item.aplcntDgstfnQestnrid})">설문참여</button>`;
+                                    }
+                                }
                             }
                             moHtml += `
                             </div>
@@ -256,8 +252,6 @@
         }
 
         $(function () {
-            mvmnAplyHist.init();
-
             $("#pageNumber").val(mvmnAplyHist.searchVo.pageNumber);
             $("#searchPrgrmNm").val(mvmnAplyHist.searchVo.searchPrgrmNm);
             $('#rowPerPage').val(mvmnAplyHist.searchVo.rowPerPage);

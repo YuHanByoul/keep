@@ -74,32 +74,20 @@
         <div class="table-list">
             <ul id="mo-list-area">
                 <li class="block">
-                    
                 </li>
             </ul>
         </div>    
-
-    <div class="pagination" aria-label="pagination" id="pagination">
     </div>
+
+    <div class="pagination" aria-label="pagination" id="pagination"></div>
     <div class="layer-popup layer-window-alert" data-layer-id="srvySbmsnCmplPopup">
-        <div class="layer-wrap pb0" id="srvySbmsnCmplPopup">
-        </div>
+        <div class="layer-wrap pb0" id="srvySbmsnCmplPopup"></div>
     </div>
     <script th:inline="javascript">
         var infntAplyHist = {
             listUrl: '/front/mypage/infntAplyHist/selectInfntAplyHistList.do',
             detailUrl: '/front/mypage/infntAplyHist/infntAplyHistDetail.html',
             searchVo: /*[[${searchVo}]]*/null,
-
-            init() {
-                /*
-                $('#searchForm').on('submit', function (e) {
-                    e.preventDefault();
-                    $('#pageNumber').val(1);
-                    infntAplyHist.selectInfntAplyHistList();
-                });
-                */
-            },
 
             changeRowPerPage() {
                 $('#rowPerPage').val($('#selectRowPerPage').val());
@@ -145,7 +133,6 @@
             },
 
             makeListHtml(list) {
-            	console.log(list)
                 let html = "";
                 if (list == null || list.length <= 0) {
                     html += `<tr>
@@ -155,7 +142,6 @@
                             </tr>`;
                 } else {
                     list.forEach(function (item) {
-                    	console.log(item)
                         html += `<tr>
                                     <td>${item.rowNumber}</td>
                                     <td>${item.clssrmNm}</td>
@@ -169,19 +155,21 @@
                                     <td>${item.sttsNm}</td>
                                     <td>${item.regDt}</td><td>`;
                                     if(item.sttsCd == '180103'){
-	                                    if(item.sbmsnYn == 'N'){
-		                                    if(item.aplcntDgstfnSrvyid > 0){
-		                                        html += `<button type="button" class="btn-small btn-outline-blue" onclick="infntAplyHist.onSrvySbmsnInsertPopup(${item.aplyid}, ${item.aplcntDgstfnSrvyid}, ${item.aplcntDgstfnQestnrid})">설문참여</button>`;
-		                                    }
-	                                    }else{
-	                                    	html += `<button type="button" class="btn-small btn-outline-black" onclick="infntAplyHist.onSrvySbmsnInfoPopup(${item.aplyid}, ${item.sbmsnid}, ${item.aplcntDgstfnSrvyid}, ${item.aplcntDgstfnQestnrid})">설문확인</button>`;
-	                                    }
+                                        if(item.canSrvy == 'Y'){
+                                            // 현재날짜가 교육종료일인 경우
+                                            if(item.submitSrvy == 'Y') {
+                                                //설문 제출한 경우
+                                                html += `<button type="button" class="btn-small btn-outline-black" onclick="infntAplyHist.onSrvySbmsnInfoPopup(${item.aplyid}, ${item.sbmsnid}, ${item.aplcntDgstfnSrvyid}, ${item.aplcntDgstfnQestnrid})">설문확인</button>`;
+                                            } else {
+                                                //설문 미제출한 경우
+                                                html += `<button type="button" class="btn-small btn-outline-blue" onclick="infntAplyHist.onSrvySbmsnInsertPopup(${item.aplyid}, ${item.aplcntDgstfnSrvyid}, ${item.aplcntDgstfnQestnrid})">설문참여</button>`;
+                                            }
+                                        }
                                     }
                                     html += `</td>
                                 </tr>`;
                     });
                 }
-                console.log(html)
                 return html;
             },
             makeListMoHtml(list) {
@@ -225,13 +213,16 @@
                         <div class="btn-wrap">
                         <div class="center">`;
                         if(item.sttsCd == '180103'){
-	                        if(item.sbmsnYn == 'N'){
-		                        if(item.aplcntDgstfnSrvyid > 0){
-		                            moHtml += `<button type="button" class="btn-small btn-outline-blue" onclick="infntAplyHist.onSrvySbmsnInsertPopup(${item.aplyid}, ${item.aplcntDgstfnSrvyid}, ${item.aplcntDgstfnQestnrid})">설문참여</button>`;
-		                        }
-	                        }else{
-	                            moHtml += `<button type="button" class="btn-small btn-outline-black" onclick="infntAplyHist.onSrvySbmsnInfoPopup(${item.aplyid}, ${item.sbmsnid}, ${item.aplcntDgstfnSrvyid}, ${item.aplcntDgstfnQestnrid})">설문확인</button>`;
-	                        }
+                            if(item.canSrvy == 'Y'){
+                                // 현재날짜가 교육종료일인 경우
+                                if(item.submitSrvy == 'Y') {
+                                    //설문 제출한 경우
+                                    moHtml += `<button type="button" class="btn-small btn-outline-black" onclick="infntAplyHist.onSrvySbmsnInfoPopup(${item.aplyid}, ${item.sbmsnid}, ${item.aplcntDgstfnSrvyid}, ${item.aplcntDgstfnQestnrid})">설문확인</button>`;
+                                } else {
+                                    //설문 미제출한 경우
+                                    moHtml += `<button type="button" class="btn-small btn-outline-blue" onclick="infntAplyHist.onSrvySbmsnInsertPopup(${item.aplyid}, ${item.aplcntDgstfnSrvyid}, ${item.aplcntDgstfnQestnrid})">설문참여</button>`;
+                                }
+                            }
                         }
                         moHtml += `
                         </div>
@@ -254,8 +245,6 @@
         }
 
         $(function () {
-            infntAplyHist.init();
-
             $("#pageNumber").val(infntAplyHist.searchVo.pageNumber);
             $("#searchKeyword").val(infntAplyHist.searchVo.searchKeyword);
             $('#rowPerPage').val(infntAplyHist.searchVo.rowPerPage);

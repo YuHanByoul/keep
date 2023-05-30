@@ -29,9 +29,20 @@
                 , H.QESTNRID APLCNT_DGSTFN_QESTNRID
                 , I.QESTNRID STDNT_DGSTFN_QESTNRID
                 , J.SBMSNID
-                , CASE WHEN J.SBMSN_DT IS NULL THEN 'N' ELSE 'Y' END SBMSN_YN
                 , DATE_FORMAT(A.REG_DT, '%Y-%m-%d') REG_DT
+                , CASE
+                    WHEN DATE_FORMAT(NOW(),'%Y-%m-%d') >= REPLACE(B.DE, '.', '-') THEN 'Y'
+                    ELSE 'N'
+                  END AS CAN_SRVY
                 , A.RGTRID
+                , CASE
+                    WHEN J.SBMSNID  THEN 'Y'
+                    ELSE 'N'
+                  END AS SUBMIT_SRVY
+                , CASE
+                    WHEN DATE_FORMAT(NOW(),'%Y-%m-%d') <![CDATA[<=]]> I.END_DE THEN 'Y'
+                    ELSE 'N'
+                  END AS CAN_SHARE_SRVY
             FROM TB_EDU_MVMN_PRGRM_APLY A
             LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_APLY_SCHDL Z ON Z.APLYID = A.APLYID            
             LEFT OUTER JOIN (SELECT * FROM TB_EDU_MVMN_PRGRM_TME_SCHDL ORDER BY DE ASC) B ON B.TME_SCHDLID = Z.TME_SCHDLID
@@ -43,7 +54,8 @@
             LEFT OUTER JOIN TB_CMM_CD G ON G.CD = A.STTS_CD
             LEFT OUTER JOIN TB_CMM_SRVY H ON H.SRVYID = D.APLCNT_DGSTFN_SRVYID
             LEFT OUTER JOIN TB_CMM_SRVY I ON I.SRVYID = D.STDNT_DGSTFN_SRVYID
-            LEFT OUTER JOIN (SELECT SRVYID, SBMSNID, MVMN_PRGRM_APLYID, MAX(SBMSN_DT) SBMSN_DT FROM TB_CMM_SRVY_SBMSN GROUP BY SRVYID, MVMN_PRGRM_APLYID) J ON J.SRVYID = D.APLCNT_DGSTFN_SRVYID AND J.MVMN_PRGRM_APLYID = A.APLYID
+            LEFT OUTER JOIN (SELECT SRVYID, SBMSNID, INFNT_PRGRM_APLYID FROM TB_CMM_SRVY_SBMSN WHERE USERID = #{user.userid}) J
+            ON J.SRVYID = D.APLCNT_DGSTFN_SRVYID AND J.INFNT_PRGRM_APLYID = A.APLYID
             WHERE 1=1
             AND A.USERID = #{user.userid}
             AND B.TME_SCHDLID IS NOT NULL
@@ -79,9 +91,20 @@
                 , H.QESTNRID APLCNT_DGSTFN_QESTNRID
                 , I.QESTNRID STDNT_DGSTFN_QESTNRID
                 , J.SBMSNID
-                , CASE WHEN J.SBMSN_DT IS NULL THEN 'N' ELSE 'Y' END SBMSN_YN
                 , DATE_FORMAT(A.REG_DT, '%Y-%m-%d') REG_DT
+                , CASE
+                    WHEN DATE_FORMAT(NOW(),'%Y-%m-%d') >= REPLACE(B.DE, '.', '-') THEN 'Y'
+                    ELSE 'N'
+                  END AS CAN_SRVY
                 , A.RGTRID
+                , CASE
+                    WHEN J.SBMSNID IS NOT NULL THEN 'Y'
+                    ELSE 'N'
+                  END AS SUBMIT_SRVY
+                , CASE
+                    WHEN DATE_FORMAT(NOW(),'%Y-%m-%d') <![CDATA[<=]]> I.END_DE THEN 'Y'
+                    ELSE 'N'
+                  END AS CAN_SHARE_SRVY
             FROM TB_EDU_MVMN_PRGRM_APLY A
             LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_APLY_SCHDL Z ON Z.APLYID = A.APLYID
             LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME_SCHDL B ON B.TME_SCHDLID = Z.TME_SCHDLID
@@ -92,7 +115,8 @@
             LEFT OUTER JOIN TB_CMM_CD G ON G.CD = A.STTS_CD
             LEFT OUTER JOIN TB_CMM_SRVY H ON H.SRVYID = D.APLCNT_DGSTFN_SRVYID
             LEFT OUTER JOIN TB_CMM_SRVY I ON I.SRVYID = D.STDNT_DGSTFN_SRVYID
-            LEFT OUTER JOIN (SELECT SRVYID, SBMSNID, MVMN_PRGRM_APLYID, MAX(SBMSN_DT) SBMSN_DT FROM TB_CMM_SRVY_SBMSN GROUP BY SRVYID, MVMN_PRGRM_APLYID) J ON J.SRVYID = D.APLCNT_DGSTFN_SRVYID AND J.MVMN_PRGRM_APLYID = A.APLYID
+            LEFT OUTER JOIN (SELECT SRVYID, SBMSNID, INFNT_PRGRM_APLYID FROM TB_CMM_SRVY_SBMSN WHERE USERID = #{user.userid}) J
+                ON J.SRVYID = D.APLCNT_DGSTFN_SRVYID AND J.INFNT_PRGRM_APLYID = A.APLYID
             WHERE 1=1
             AND A.APLYID = #{aplyid} 
             <choose>

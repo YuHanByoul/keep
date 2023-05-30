@@ -58,7 +58,6 @@ public class MvmnAplyHistController {
         Map<String, Object> result = new HashMap<>();
         mvmnAplyHistVo.setUser(user);
         List<MvmnAplyHistVo> list = mvmnAplyHistService.selectMvmnAplyHistList(mvmnAplyHistVo);
-        //List<MvmnAplyVo> list = null;
         if (list.size() > 0) {
             result.put("totalCount", list.get(0).getTotalCount());
             result.put("pagination", PaginationUtil.getFrontPaginationHtml(list.get(0).getTotalPage(), list.get(0).getPageNumber(), 10));
@@ -73,6 +72,7 @@ public class MvmnAplyHistController {
 
     @GetMapping("/mvmnAplyHistDetail.html")
     public String mvmnAplyHistDetail(MvmnAplyHistVo mvmnAplyHistVo, Model model, @UserInfo UserVo user) throws Exception {
+        mvmnAplyHistVo.setUser(user);
         MvmnAplyHistVo mvmnAplyHistInfoVo = mvmnAplyHistService.selectMvmnAplyHistInfo(mvmnAplyHistVo);
         MvmnAplyHistVo mvmnAplyHistRegVo = mvmnAplyHistService.selectMvmnAplyHistDetail(mvmnAplyHistVo);
         

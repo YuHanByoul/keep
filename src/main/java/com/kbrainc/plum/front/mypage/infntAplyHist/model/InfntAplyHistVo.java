@@ -111,7 +111,11 @@ public class InfntAplyHistVo extends ParentRequestVo {
     private String sbmsnYn;
     /** 설문제출ID */
     private Integer sbmsnid;
-    
+
+    private String canSrvy;
+    private String submitSrvy;
+    private String canShareSrvy;
+
     private String cd;
     private String cdNm;
     

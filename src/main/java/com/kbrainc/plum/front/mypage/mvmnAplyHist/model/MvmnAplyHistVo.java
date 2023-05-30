@@ -132,4 +132,8 @@ public class MvmnAplyHistVo extends ParentRequestVo {
     
     /** 필터 */
     private String searchPrgrmNm;
+
+    private String canSrvy;
+    private String submitSrvy;
+    private String canShareSrvy;
 }
