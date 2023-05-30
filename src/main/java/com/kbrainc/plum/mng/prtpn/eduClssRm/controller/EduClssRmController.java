@@ -7,6 +7,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.kbrainc.plum.mng.inst.model.InstVo;
+import com.kbrainc.plum.mng.inst.service.InstService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -49,6 +51,9 @@ public class EduClssRmController {
     
     @Autowired
     private CommonService commonService;
+
+    @Autowired
+    private InstService instService;
     
     /**
     * 교육관관리 리스트화면으로 이동
@@ -240,16 +245,29 @@ public class EduClssRmController {
     *
     * @Title : eduClssRmInstSearchPopup
     * @Description : 기관검색 팝업으로 이동
-    * @param model 객체
-    * @param request 객체
     * @throws Exception 예외
     * @return String
     */
     @RequestMapping(value = "/mng/prtpn/eduClssRm/eduClssRmInstSearchPopup.html")
-    public String eduClssRmInstSearchPopup(Model model, HttpServletRequest request) throws Exception {
-        String instNm = request.getParameter("instNm");
-        model.addAttribute("instNm", instNm);
-        
+    public String eduClssRmInstSearchPopup() throws Exception {
         return "mng/prtpn/eduClssRm/eduClssRmInstSearchPopup";
-    }    
+    }
+
+    @RequestMapping(value = "/mng/prtpn/eduClssRm/selectInstList.do")
+    @ResponseBody
+    public Map<String, Object> selectInstList(InstVo instVo, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> result = new HashMap<>();
+        instVo.setUser(user);
+        List<InstVo> list = instService.selectInstList(instVo);
+
+        if (list.size() > 0) {
+            result.put("totalCount", (list.get(0).getTotalCount()));
+        } else {
+            result.put("totalCount", 0);
+        }
+
+        result.put("list", list);
+
+        return result;
+    }
 }
