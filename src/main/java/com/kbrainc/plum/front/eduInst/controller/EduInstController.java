@@ -76,9 +76,12 @@ public class EduInstController {
 	* @return String
 	*/
 	@RequestMapping(value="/front/eduInst/instDsgnForm.html")
-    public String prgrmListForm(Model model, @UserInfo UserVo user) throws Exception {
+    public String prgrmListForm(EduInstVo eduInstVo, Model model, @UserInfo UserVo user) throws Exception {
 		model.addAttribute("loginUserType", user.getLoginUserType());
 		model.addAttribute("loginUserid", user.getUserid());
+		eduInstVo.setAplcntid(user.getUserid());
+
+		model.addAttribute("eduInstList", eduInstService.selectEnvEduInstList(eduInstVo));
         return "front/eduInst/instDsgnForm";
     }
 
