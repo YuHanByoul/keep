@@ -372,6 +372,7 @@
           , A.PRGRM_NM
           , B.SAREAID
           , B.SAREA_NM
+          , A.OPER_FOM_CD
         FROM
             TB_EDU_MVMN_PRGRM A
                 LEFT OUTER JOIN TB_EDU_SAREA B ON A.SAREAID = B.SAREAID
@@ -465,8 +466,8 @@
            AND APLYID = #{aplyId}
     </insert>   
         
-    <!-- 교육신청 관리 회차 목록 조회 -->
-    <select id="selectTmeSchdlList" parameterType="MvmnAplyVo" resultType="MvmnAplyVo">
+    <!-- 교육신청 관리 회차 목록 조회(일일교육) -->
+    <select id="selectDailyTmeSchdlList" parameterType="MvmnAplyVo" resultType="MvmnAplyVo">
         /* MvmnAplyDao.selectTmeSchdlList */
         SELECT 
             GROUP_CONCAT(REPLACE(A.DE, '.', '-') ORDER BY A.DE SEPARATOR ', ') DE
@@ -484,6 +485,27 @@
         GROUP BY A.TMEID            
         ORDER BY 
             A.TMEID
+    </select>
+    
+    <!-- 교육신청 관리 회차 목록 조회(지속교육) -->
+    <select id="selectTmeSchdlList" parameterType="MvmnAplyVo" resultType="MvmnAplyVo">
+        /* MvmnAplyDao.selectTmeSchdlList */
+        SELECT 
+            REPLACE(A.DE, '.', '-') DE
+            , A.TMEID
+            , A.TME_SCHDLID
+            , B.TME_NM    
+            , B.PRGRMID    
+        FROM 
+            TB_EDU_MVMN_PRGRM_TME_SCHDL A
+        LEFT OUTER JOIN 
+            TB_EDU_MVMN_PRGRM_TME B ON (B.TMEID = A.TMEID)
+        WHERE
+            1 = 1
+            AND A.PRGRM_SCHDLID = #{prgrmSchdlid} 
+            AND B.PRGRMID = #{prgrmId}
+        ORDER BY 
+            A.DE, B.ORDR 
     </select>
                
     <!-- 회원정보 조회 -->

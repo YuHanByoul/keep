@@ -187,9 +187,21 @@ public interface MvmnAplyService {
     */
     public void mvmnAplyExcelDownList(MvmnAplyVo mvmnAply, HttpServletResponse response, HttpServletRequest request) throws Exception;
 
+    /**
+    * insert form info
+    *
+    * @Title : selectMvmnAplyInsertInfo
+    * @Description : insert form info
+    * @param mvmnAplyVo
+    * @return
+    * @throws Exception
+    * @return MvmnAplyVo
+    */
     public MvmnAplyVo selectMvmnAplyInsertInfo(MvmnAplyVo mvmnAplyVo) throws Exception;
 
     public List<MvmnAplyVo> selectEduYear() throws Exception;
+
+    public List<MvmnAplyVo> selectDailyTmeSchdlList(MvmnAplyVo mvmnAplyVo) throws Exception;
     
     
 }
