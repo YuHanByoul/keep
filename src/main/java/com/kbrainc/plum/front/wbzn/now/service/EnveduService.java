@@ -132,5 +132,13 @@ public interface EnveduService {
     * @return PrgrmgdVo
     */
     public PrgrmgdVo selectPrgrmgdInfo(PrgrmgdVo prgrmgdVo) throws Exception;
+
+    public int selectEnveduNextCount(EnveduVo enveduVo) throws Exception;
+    
+    public int selectEnveduPrevCount(EnveduVo enveduVo) throws Exception;
+    
+    public int selectPrgrmgdNextCount(PrgrmgdVo prgrmgdVo) throws Exception;
+    
+    public int selectPrgrmgdPrevCount(PrgrmgdVo prgrmgdVo) throws Exception;
     
 }

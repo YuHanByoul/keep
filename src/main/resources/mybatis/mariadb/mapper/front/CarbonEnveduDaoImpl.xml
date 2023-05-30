@@ -24,6 +24,7 @@
             1=1
             AND A.EXPSR_YN = 'Y'
             AND A.CLSF_CD = '232102'
+            AND (A.DEL_YN = 'N' OR A.DEL_YN IS NULL)
         ORDER BY ORDR ASC               
     </select>
     
@@ -34,8 +35,9 @@
             	YR
             FROM
             	TB_CMM_WBZN_ENVEDU
-            where
+            WHERE
                 CLSF_CD = '232102'
+                AND (DEL_YN = 'N' OR DEL_YN IS NULL)                
             GROUP BY
             	YR
             ORDER BY
@@ -49,9 +51,10 @@
                 QU
             FROM
                 TB_CMM_WBZN_ENVEDU
-            where
+            WHERE
                 CLSF_CD = '232102'
                 AND YR = #{yr}
+                AND (DEL_YN = 'N' OR DEL_YN IS NULL)
             GROUP BY
                 QU
             ORDER BY
@@ -65,8 +68,9 @@
                 YR
             FROM
                 TB_CMM_WBZN_PRGRM
-            where
+            WHERE
                 CLSF_CD = '232102'
+                AND (DEL_YN = 'N' OR DEL_YN IS NULL)
             GROUP BY
                 YR
             ORDER BY
@@ -83,11 +87,64 @@
             WHERE
                 CLSF_CD = '232102'
                 AND YR = #{yr}
+                AND (DEL_YN = 'N' OR DEL_YN IS NULL)
             GROUP BY
                 QU
             ORDER BY
                 QU ASC
-    </select>      
+    </select>
+    
+    <select id="selectEnveduNextCount" parameterType="front.CarbonEnveduVo" resultType="int">
+        SELECT
+            COUNT(*) AS nextCnt
+        FROM
+            TB_CMM_WBZN_ENVEDU A
+        WHERE
+              1 = 1
+            AND A.CLSF_CD = '232102'
+            AND (A.DEL_YN = 'N' OR A.DEL_YN IS NULL)
+            AND A.QU = #{compareQuarter}
+            AND A.YR = #{compareYear}
+    </select>
+    
+    <select id="selectEnveduPrevCount" parameterType="front.CarbonEnveduVo" resultType="int">
+        SELECT
+            COUNT(*) AS prevCnt
+        FROM
+            TB_CMM_WBZN_ENVEDU A
+        WHERE
+              1 = 1
+            AND A.CLSF_CD = '232102'
+            AND (A.DEL_YN = 'N' OR A.DEL_YN IS NULL)
+            AND A.QU = #{compareQuarter}
+            AND A.YR = #{compareYear}
+    </select>
+    
+    <select id="selectPrgrmgdNextCount" parameterType="front.CarbonPrgrmgdVo" resultType="int">
+        SELECT
+            COUNT(*) AS nextCnt
+        FROM
+            TB_CMM_WBZN_PRGRM A
+        WHERE
+              1 = 1
+            AND A.CLSF_CD = '232102'
+            AND (A.DEL_YN = 'N' OR A.DEL_YN IS NULL)
+            AND A.QU = #{compareQuarter}
+            AND A.YR = #{compareYear}
+    </select>
+    
+    <select id="selectPrgrmgdPrevCount" parameterType="front.CarbonPrgrmgdVo" resultType="int">
+        SELECT
+            COUNT(*) AS prevCnt
+        FROM
+            TB_CMM_WBZN_PRGRM A
+        WHERE
+              1 = 1
+            AND A.CLSF_CD = '232102'
+            AND (A.DEL_YN = 'N' OR A.DEL_YN IS NULL)
+            AND A.QU = #{compareQuarter}
+            AND A.YR = #{compareYear}
+    </select>    
 
     <!-- 환경교육 목록 조회 -->
     <select id="selectEnveduList" parameterType="front.CarbonEnveduVo" resultType="front.CarbonEnveduVo">
@@ -123,6 +180,7 @@
             WHERE
                   1 = 1
               AND A.CLSF_CD = '232102'
+              AND (A.DEL_YN = 'N' OR A.DEL_YN IS NULL)
             <choose>
                 <when test="beforeQuarter != null and beforeQuarter != ''">
                     AND A.QU = #{compareQuarter}
@@ -217,6 +275,7 @@
         WHERE 
             1=1
             AND A.CLSF_CD = '232102'
+            AND (A.DEL_YN = 'N' OR A.DEL_YN IS NULL)
             <choose>
                 <when test="beforeQuarter != null and beforeQuarter != ''">
                     AND A.QU = #{compareQuarter}

@@ -11,8 +11,8 @@
         <div class="right">
             <div class="btn-wrap mt0">
                 <div class="left">
-                    <button type="button" class="btn-small btn-outline-blue open-msg-btn" data-target="msgFormPopup" th:data-trgt-id="${exprt.userid}">쪽지 보내기</button>
-
+                    <button type="button" class="btn-small btn-outline-blue open-msg-btn" onclick="lctrDmndDetail.onMsgPopup(event);">쪽지 보내기</button>
+                    <!-- <button type="button" class="btn-small btn-outline-blue open-msg-btn" data-target="msgFormPopup" th:data-trgt-id="${exprt.userid}" onclick="">쪽지 보내기</button> -->
                     <button th:if="${exprt.itsMe == 'N'}" type="button" class="btn-small btn-outline-blue" onclick="lctrDmndDetail.insertLtrstExprt()">관심 전문가 등록</button>
                 </div>
             </div>
@@ -300,6 +300,19 @@
             formUrl: '/front/exprtPool/lctrDmndForm.html?exprtTypePath='+ $('#exprtTypePath').val(),
             insertItrstExprtUrl: '/front/exprtPool/insertItrstExprt.do',
             user:/*[[${user}]]*/null,
+            
+            onMsgPopup(event) {
+                if(this.user == null) {
+                    const urlParams = new URL(location.href).searchParams;
+                    const exprtTypePath = urlParams.get("exprtTypePath");
+                    const userid = urlParams.get("userid");
+                    location.href = "/login.html?returnUrl=/front/exprtPool/lctrDmndDetail.html?" + encodeURIComponent("exprtTypePath=" + exprtTypePath + "&userid=" + userid);
+                    return false;
+                }
+                
+                layerPopup.open({target: 'msgFormPopup', callback: function() {
+                }}, event);
+            }, 
 
             moveToList() {
                 if(referer.includes('/front/mypage')) {

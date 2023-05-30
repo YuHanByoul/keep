@@ -51,7 +51,7 @@ public class PaginationUtil {
 
         for (int i = firstPageNum; i <= lastPageNum; i++) {
             if (i == cntPageNumber) {
-                paginationHtml.append("<button type=\"button\" class=\"active\">").append(i).append("</button>");
+                paginationHtml.append("<button type=\"button\" class=\"active\" title=\"현재 페이지\"> ").append(i).append("</button>");
             } else {
                 paginationHtml.append("<button type=\"button\" onclick='goPage(").append(i).append(")'>").append(i).append("</button>");
             }

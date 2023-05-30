@@ -408,6 +408,23 @@
     <!-- Tab Container End -->
 </form>
 
+<!-- 교육주제 복사 템플릿 -->
+<div class="row mt-1" style="display:none;" id="clsfCdTemplate">
+    <div class="col-sm">
+        <th:block kattr:select_code="clsfCds_1" grpCd="155" upprCd="0" firstOptTxt="- 선택 -"
+                  isAdmin="true"></th:block>
+    </div>
+    <div class="col-sm mt-1 mt-sm-0">
+        <select id="clsfCds_2" name="clsfCds_2" class="form-select form-select-sm form-control-sm">
+            <option value="" disabled selected>대분류를 선택하세요</option>
+        </select>
+    </div>
+    <div id="btnDiv" class="mt-1 mt-sm-0" style="width:100px;">
+        <button type="button" class="input-group-text btn btn-primary btn-sm" onclick="fn_delRowClsfCds(this)">-</button>
+        <button type="button" id="addRowClsfCds" class="input-group-text btn btn-primary btn-sm" onclick="fn_addRowClsfCds(this)">+</button>
+    </div>
+</div>
+
 <script src="/js/ckeditor/ckeditor.js"></script>
 <script th:inline="javascript">
     var clsfCdSelectedItems = [];
@@ -419,7 +436,8 @@
     var editor;
 
     var clssrmViewngMaxAplyNope = 0;
-
+    var codeList = /*[[${codeList}]]*/null;
+    var subCodeMap = /*[[${subCodeMap}]]*/null;
 
     function init() {
         prgrmTmeSelectedItems = [];
@@ -428,7 +446,7 @@
         var clsfCds = [[${infntPrgrm.clsfCd}]];
         var upprClsfCds = [[${infntPrgrm.upprClsfCd}]];
 
-        //1depth 교육주제 담기        
+        //1depth 교육주제 담기
         if (upprClsfCds.indexOf(",") >= 0) {
             var upprClsfCdsArr = upprClsfCds.split(",");
             for (var i = 0; i < upprClsfCdsArr.length; i++) {
@@ -516,7 +534,7 @@
         $('.trgtCds:checked').each((index, element) => tmpTrgtCds.push(element.value));
 
         var tmpClsfCds = [];
-        $('[name=clsfCds_2] option:selected').each((index, element) => tmpClsfCds.push(element.value));
+        $('#infntPrgrmUpdateForm [name=clsfCds_2] option:selected').each((index, element) => tmpClsfCds.push(element.value));
 
         jsonObj['mttrat'] = jsonObj['mttrat'].replace("\n", "\r\n");
         jsonObj['trgtCds'] = tmpTrgtCds;
@@ -730,6 +748,7 @@
     function fn_makeClsfCdsDivHtml() {
         var clsfCdsDivHtml = "";
         var rowCnt = $("#clsfCdDiv").find('.row').length;
+
         for (var i = 0; i < clsfCdSelectedItems.length; i++) {
             if (i == 0) {
                 clsfCdsDivHtml += '<div class="row">   ';
@@ -741,10 +760,9 @@
                 clsfCdsDivHtml += '       <select class="form-select form-select-sm form-control-sm   " style="" id="clsfCds_1" name="clsfCds_1" onchange=\'setNextDepth(155,this.value,"clsfCds_2_' + (i + 1) + '" )\'>    ';
             }
             clsfCdsDivHtml += '           <option value="">- 선택 -</option>   ';
-            clsfCdsDivHtml += upprClsfCdSelectedItems[i] == "155101" ? '<option value="155101" selected>생활환경</option>' : '<option value="155101">생활환경</option>';
-            clsfCdsDivHtml += upprClsfCdSelectedItems[i] == "155102" ? '<option value="155102" selected>지구환경</option>' : '<option value="155102">지구환경</option>';
-            clsfCdsDivHtml += upprClsfCdSelectedItems[i] == "155103" ? '<option value="155103" selected>자연환경</option>' : '<option value="155103">자연환경</option>';
-            clsfCdsDivHtml += upprClsfCdSelectedItems[i] == "155104" ? '<option value="155104" selected>환경문화</option>' : '<option value="155104">환경문화</option>';
+            for(var j=0; j<codeList.length;j++) {
+                clsfCdsDivHtml += `<option value="${codeList[j].cd}" ${codeList[j].cd == upprClsfCdSelectedItems[i] ? 'selected' : '' }> ${codeList[j].cdNm}</option> `
+            }
             clsfCdsDivHtml += '       </select>    ';
             clsfCdsDivHtml += '   </div>   ';
             clsfCdsDivHtml += '   <div class="col-sm mt-1 mt-sm-0">   ';
@@ -753,28 +771,23 @@
             } else {
                 clsfCdsDivHtml += '       <select id="clsfCds_2_' + (i + 1) + '" name="clsfCds_2" class="form-select form-select-sm form-control-sm">   '
             }
+
             clsfCdsDivHtml += '           <option value="">- 선택 -</option>   ';
-            if (upprClsfCdSelectedItems[i] == "155101") {
-                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155101101" ? '<option value="155101101" selected>소음</option>' : '<option value="155101101">소음</option>';
-                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155101102" ? '<option value="155101102" selected>폐기물 및 자원순환</option>' : '<option value="155101102">폐기물 및 자원순환</option>';
-                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155101103" ? '<option value="155101103" selected>환경보건</option>' : '<option value="155101103">환경보건</option>';
-            } else if (upprClsfCdSelectedItems[i] == "155102") {
-                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155102101" ? '<option value="155102101" selected>물</option>' : '<option value="155102101">물</option>';
-                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155102102" ? '<option value="155102102" selected>토양</option>' : '<option value="155102102">토양</option>';
-                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155102103" ? '<option value="155102103" selected>생태계</option>' : '<option value="155102103">생태계</option>';
-            } else if (upprClsfCdSelectedItems[i] == "155103") {
-                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155103101" ? '<option value="155103101" selected>기후변화 및 탄소중립</option>' : '<option value="155103101">기후변화 및 탄소중립</option>';
-                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155103102" ? '<option value="155103102" selected>대기</option>' : '<option value="155103102">대기</option>';
-                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155103103" ? '<option value="155103103" selected>에너지</option>' : '<option value="155103103">에너지</option>';
-            } else if (upprClsfCdSelectedItems[i] == "155104") {
-                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155104101" ? '<option value="155104101" selected>지속가능발전</option>' : '<option value="155104101">지속가능발전</option>';
-                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155104102" ? '<option value="155104102" selected>생명윤리</option>' : '<option value="155104102">생명윤리</option>';
+            for(var j=0; j<codeList.length;j++) {
+                if(codeList[j].cd == upprClsfCdSelectedItems[i]) {
+                    var subCodeList = subCodeMap[codeList[j].cd];
+                    for(var k =0; k<subCodeList.length;k++) {
+                        clsfCdsDivHtml += `<option value="${subCodeList[k].cd}" ${subCodeList[k].cd == clsfCdSelectedItems[i] ? 'selected' : ''}> ${subCodeList[k].cdNm}</option>`
+                    }
+                }
             }
+
             clsfCdsDivHtml += '       </select>    '
             clsfCdsDivHtml += '   </div>   '
             clsfCdsDivHtml += '   <div id="btnDiv" class="mt-1 mt-sm-0" style="width:100px;">   ';
             clsfCdsDivHtml += '       <button type="button" class="input-group-text btn btn-primary btn-sm" onclick="fn_delRowClsfCds(this)">-</button>   ';
-            clsfCdsDivHtml += '       <button type="button" id="addRowClsfCds" class="input-group-text btn btn-primary btn-sm" onclick="fn_addRowClsfCds(this)">+</button>   ';
+            if(i == clsfCdSelectedItems.length-1)
+                clsfCdsDivHtml += '       <button type="button" id="addRowClsfCds" class="input-group-text btn btn-primary btn-sm" onclick="fn_addRowClsfCds(this)">+</button>   ';
             clsfCdsDivHtml += '   </div>   ';
             clsfCdsDivHtml += '</div>    ';
         }
@@ -782,32 +795,23 @@
     }
 
     function fn_makeClsfCdsListHtml() {
-        var clsfCdsHtml = "";
-        var rowCnt = $("#clsfCdDiv").find('.row').length;
+        var rowCnt = $("#clsfCdDiv").find('.row').length + 1;
 
-        clsfCdsHtml += '<div class="row mt-1">   '
-        clsfCdsHtml += '   <div class="col-sm">   '
-        clsfCdsHtml += '       <select class="form-select form-select-sm form-control-sm   " style="" id="clsfCds_1" name="clsfCds_1" onchange=\'setNextDepth(155,this.value,"clsfCds_2_' + rowCnt + '" )\'>    '
-        clsfCdsHtml += '           <option value="">- 선택 -</option>   '
-        clsfCdsHtml += '           <option value="155101">생활환경</option>   '
-        clsfCdsHtml += '           <option value="155103">지구환경</option>   '
-        clsfCdsHtml += '           <option value="155102">자연환경</option>   '
-        clsfCdsHtml += '           <option value="155104">환경문화</option>   '
-        clsfCdsHtml += '       </select>    '
-        //clsfCdsHtml += '       <th:block kattr:select_code="clsfCds_1" grpCd="155" upprCd="0" selectedCd="" onchange=\'setNextDepth(155,this.value,"clsfCds_2" )\' firstOptTxt="- 선택 -" isAdmin="true"></th:block>    '
-        clsfCdsHtml += '   </div>   '
-        clsfCdsHtml += '   <div class="col-sm mt-1 mt-sm-0">   '
-        clsfCdsHtml += '       <select id="clsfCds_2_' + rowCnt + '" name="clsfCds_2" class="form-select form-select-sm form-control-sm">   '
-        clsfCdsHtml += '           <option value="" disabled selected>대분류를 선택하세요</option>   '
-        clsfCdsHtml += '       </select>    '
-        clsfCdsHtml += '   </div>   '
-        clsfCdsHtml += '   <div id="btnDiv" class="mt-1 mt-sm-0" style="width:100px;">   '
-        clsfCdsHtml += '       <button type="button" class="input-group-text btn btn-primary btn-sm" onclick="fn_delRowClsfCds(this)">-</button>   '
-        clsfCdsHtml += '       <button type="button" id="addRowClsfCds" class="input-group-text btn btn-primary btn-sm" onclick="fn_addRowClsfCds(this)">+</button>   '
-        clsfCdsHtml += '   </div>   '
-        clsfCdsHtml += '</div>    ';
+        var $clone = $('#clsfCdTemplate').clone(true);
+        var $clsfCd1Select = $clone.find('[id^=clsfCds_1]');
+        var $clsfCd2Select = $clone.find('[id^=clsfCds_2]');
 
-        return clsfCdsHtml;
+        $clone.attr('id', $clone.attr('id') + rowCnt);
+        $clsfCd1Select.attr('id', 'clsfCds_1_' + rowCnt);
+        $clsfCd2Select.attr('id', 'clsfCds_2_'+ rowCnt)
+
+        $clsfCd1Select.on('change', function() {
+            setNextDepth(155,this.value, "clsfCds_2_" + rowCnt);
+        });
+
+        $clone.show();
+
+        $("#clsfCdDiv").append($clone);
     }
 
     function fn_makeListHtml(list) {

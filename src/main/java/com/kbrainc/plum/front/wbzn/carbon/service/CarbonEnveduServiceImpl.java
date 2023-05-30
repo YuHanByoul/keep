@@ -161,6 +161,26 @@ public class CarbonEnveduServiceImpl extends PlumAbstractServiceImpl implements 
         return carbonEnveduDao.selectPrgrmgdInfo(carbonPrgrmgdVo);
     }
 
+    @Override
+    public int selectEnveduNextCount(CarbonEnveduVo carbonEnveduVo) throws Exception {
+        return carbonEnveduDao.selectEnveduNextCount(carbonEnveduVo);
+    }
+
+    @Override
+    public int selectEnveduPrevCount(CarbonEnveduVo carbonEnveduVo) throws Exception {
+        return carbonEnveduDao.selectEnveduPrevCount(carbonEnveduVo);
+    }
+
+    @Override
+    public int selectEnveduNextCount(CarbonPrgrmgdVo carbonPrgrmgdVo) throws Exception {
+        return carbonEnveduDao.selectEnveduNextCount(carbonPrgrmgdVo);
+    }
+
+    @Override
+    public int selectEnveduPrevCount(CarbonPrgrmgdVo carbonPrgrmgdVo) throws Exception {
+        return carbonEnveduDao.selectEnveduNextCount(carbonPrgrmgdVo);
+    }
+
 
 
 }

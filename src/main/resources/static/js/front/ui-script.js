@@ -761,7 +761,7 @@ const layerPopup = {
 
 		if (event !== undefined) {
 			eventTarget = event.target;
-			console.log(eventTarget)
+			// console.log(eventTarget)
 		}
 		
 

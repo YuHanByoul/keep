@@ -114,7 +114,7 @@ public class ProgramInfoVo extends ParentRequestVo {
     private String operPlan;
     
     /** 연간_이수_예정_인원수 */
-    private Integer fyerComplPrearngeNope;
+    private String fyerComplPrearngeNope;
     
     /** 1월_횟수 */
     private String janCnt;

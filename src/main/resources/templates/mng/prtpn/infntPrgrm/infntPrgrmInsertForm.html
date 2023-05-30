@@ -64,7 +64,7 @@
                     <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육주제</strong></div>
                     <div class="row">
                         <div class="col-sm">
-                            <th:block kattr:select_code="clsfCds_1" grpCd="155" upprCd="0" selectedCd="" onchange='setNextDepth(155,this.value,"clsfCds_2" )' firstOptTxt="- 선택 -"
+                            <th:block kattr:select_code="clsfCds_1" grpCd="155" upprCd="0" firstOptTxt="- 선택 -"
                                       isAdmin="true"></th:block>
                         </div>
                         <div class="col-sm mt-1 mt-sm-0">
@@ -432,14 +432,35 @@
     <!-- Tab Container End -->
 </form>
 
+
+<!-- 교육주제 복사 템플릿 -->
+<div class="row mt-1" style="display:none;" id="clsfCdTemplate">
+    <div class="col-sm">
+        <th:block kattr:select_code="clsfCds_1" grpCd="155" upprCd="0" firstOptTxt="- 선택 -" isAdmin="true"></th:block>
+    </div>
+    <div class="col-sm mt-1 mt-sm-0">
+        <select id="clsfCds_2" name="clsfCds_2" class="form-select form-select-sm form-control-sm">
+            <option value="" disabled selected>대분류를 선택하세요</option>
+        </select>
+    </div>
+    <div id="btnDiv" class="mt-1 mt-sm-0" style="width:100px;">
+        <button type="button" class="input-group-text btn btn-primary btn-sm" onclick="fn_delRowClsfCds(this)">-</button>
+        <button type="button" id="addRowClsfCds" class="input-group-text btn btn-primary btn-sm" onclick="fn_addRowClsfCds(this)">+</button>
+    </div>
+</div>
 <script src="/js/ckeditor/ckeditor.js"></script>
 <script th:inline="javascript">
     var prgrmTmeSelectedItems = [];
     var eduPssbDayWeekSelectedItems = [];
     var clssrmViewngMaxAplyNope = 0;
     var editor;
+    var clsfCdCnt = 2 ;
 
     function init() {
+        $('#clsfCds_1').on('change',function() {
+            setNextDepth(155, this.value, "clsfCds_2");
+        })
+
         prgrmTmeSelectedItems = [];
         clssrmViewngMaxAplyNope = 0;
         editor = CKEDITOR.replace('eduExpln', {enterMode: CKEDITOR.ENTER_BR});
@@ -509,7 +530,7 @@
         $('.trgtCds:checked').each((index, element) => tmpTrgtCds.push(element.value));
 
         var tmpClsfCds = [];
-        $('[name=clsfCds_2] option:selected').each((index, element) => tmpClsfCds.push(element.value));
+        $('#infntPrgrmInsertForm [name=clsfCds_2] option:selected').each((index, element) => tmpClsfCds.push(element.value));
 
         jsonObj['mttrat'] = jsonObj['mttrat'].replace("\n", "\r\n");
         jsonObj['trgtCds'] = tmpTrgtCds;
@@ -630,7 +651,6 @@
 
     // 교육주제 행추가
     function fn_addRowClsfCds(item) {
-        var rowCnt = $("#clsfCdDiv").find('.row').length;
         //추가버튼 삭제 -> 마지막 행에만 추가한다..
         $("#clsfCdDiv").find("#addRowClsfCds").remove();
         $("#clsfCdDiv").find('.row').last().after(fn_makeClsfCdsListHtml());
@@ -692,34 +712,27 @@
         return true;
     }
 
+
     function fn_makeClsfCdsListHtml() {
-        var clsfCdsHtml = "";
         var rowCnt = $("#clsfCdDiv").find('.row').length;
 
-        clsfCdsHtml += '<div class="row mt-1">   '
-        clsfCdsHtml += '   <div class="col-sm">   '
-        clsfCdsHtml += '       <select class="form-select form-select-sm form-control-sm   " style="" id="clsfCds_1" name="clsfCds_1" onchange=\'setNextDepth(155,this.value,"clsfCds_2_' + rowCnt + '" )\'>    '
-        clsfCdsHtml += '           <option value="">- 선택 -</option>   '
-        clsfCdsHtml += '           <option value="155101">생활환경</option>   '
-        clsfCdsHtml += '           <option value="155103">지구환경</option>   '
-        clsfCdsHtml += '           <option value="155102">자연환경</option>   '
-        clsfCdsHtml += '           <option value="155104">환경문화</option>   '
-        clsfCdsHtml += '       </select>    '
-        //clsfCdsHtml += '       <th:block kattr:select_code="clsfCds_1" grpCd="155" upprCd="0" selectedCd="" onchange=\'setNextDepth(155,this.value,"clsfCds_2" )\' firstOptTxt="- 선택 -" isAdmin="true"></th:block>    '
-        clsfCdsHtml += '   </div>   '
-        clsfCdsHtml += '   <div class="col-sm mt-1 mt-sm-0">   '
-        clsfCdsHtml += '       <select id="clsfCds_2_' + rowCnt + '" name="clsfCds_2" class="form-select form-select-sm form-control-sm">   '
-        clsfCdsHtml += '           <option value="" disabled selected>대분류를 선택하세요</option>   '
-        clsfCdsHtml += '       </select>    '
-        clsfCdsHtml += '   </div>   '
-        clsfCdsHtml += '   <div id="btnDiv" class="mt-1 mt-sm-0" style="width:100px;">   '
-        clsfCdsHtml += '       <button type="button" class="input-group-text btn btn-primary btn-sm" onclick="fn_delRowClsfCds(this)">-</button>   '
-        clsfCdsHtml += '       <button type="button" id="addRowClsfCds" class="input-group-text btn btn-primary btn-sm" onclick="fn_addRowClsfCds(this)">+</button>   '
-        clsfCdsHtml += '   </div>   '
-        clsfCdsHtml += '</div>    ';
+        var $clone = $('#clsfCdTemplate').clone(true);
+        var $clsfCd1Select = $clone.find('[id^=clsfCds_1]');
+        var $clsfCd2Select = $clone.find('[id^=clsfCds_2]');
 
-        return clsfCdsHtml;
+        $clone.attr('id', $clone.attr('id') + rowCnt);
+        $clsfCd1Select.attr('id', 'clsfCds_1_' + rowCnt);
+        $clsfCd2Select.attr('id', 'clsfCds_2_'+ rowCnt)
+
+        $clsfCd1Select.on('change', function() {
+            setNextDepth(155,this.value, "clsfCds_2_" + rowCnt);
+        });
+
+        $clone.show();
+
+        $("#clsfCdDiv").append($clone);
     }
+
 
     function fn_makeListHtml(list) {
         var html = "";

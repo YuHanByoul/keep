@@ -104,6 +104,8 @@ public class LnbMenuPrintImpl {
         UserVo user = (UserVo) session.getAttribute("user");
         String mkey = "";
         StringBuffer menuTag = new StringBuffer();
+        boolean isActiveL1 = false;
+        boolean isActiveL2 = false;
 
         for (TreeNode<MenuItem> treeNode0 : menuTree.getRoot().getChildren()) {
             if (menuItemL1.getMenuid().equals(treeNode0.getData().getMenuid())) {
@@ -113,6 +115,7 @@ public class LnbMenuPrintImpl {
 
             	for (TreeNode<MenuItem> treeNode1 : treeNode0.getChildren()) {
                     menuItem1 = treeNode1.getData();
+                    isActiveL1 = false;
 
 		            if ("02".equals(menuItem1.getPtypeCd()) && "N".equals(menuItem1.getHideYn())) {
 		                if ((isMenuAuth(menuItem1.getUrl())) || ("N".equals(menuItem1.getNmExpsrTrgtCd()) && user == null)) {
@@ -128,6 +131,7 @@ public class LnbMenuPrintImpl {
 		            	menuTag.append("                         <li class=\"");
 		            	if (menuItem1.getMenuid().equals(menuItem.getMenuid()) || menuTree.getMenuNodeByMenuID((MenuNode)treeNode1, menuItem.getMenuid()) != null) {
 		            		menuTag.append("active ");
+		            		isActiveL1 = true;
 		            	}
 		                menuTag.append("\">");
 		                
@@ -158,7 +162,7 @@ public class LnbMenuPrintImpl {
 		                            if ("N".equals(menuItem1.getPopupTrgtCd())) { // 새창
 		                                menuTag.append("<a href=\"").append(menuItem1.getUrl()).append("\" target=\"_blank\" rel=\"noopener noreferrer\" title=\"새 창\">");
                                     } else { // 현재창
-                                        menuTag.append("<a href=\"javascript:goMenu('").append(menuItem1.getUrl()).append("','").append(mkey).append("','").append(menuItem1.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\">");
+                                        menuTag.append("<a href=\"javascript:goMenu('").append(menuItem1.getUrl()).append("','").append(mkey).append("','").append(menuItem1.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\" ").append(isActiveL1 ? "title=\"활성화\"" : "\"\"").append(">");
                                     }
 		                        }
 		                    }
@@ -181,6 +185,7 @@ public class LnbMenuPrintImpl {
 
 		                    for (TreeNode<MenuItem> treeNode2 : treeNode1.getChildren()) {
 		                        menuItem2 = treeNode2.getData();
+		                        isActiveL2 = false;
 
 		                        if ("02".equals(menuItem2.getPtypeCd()) && "N".equals(menuItem2.getHideYn())) {
 		                            if ((isMenuAuth(menuItem2.getUrl()))
@@ -197,6 +202,7 @@ public class LnbMenuPrintImpl {
 		                            menuTag.append("				<li class=\""); // active필요
 		                            if (menuItem2.getMenuid().equals(menuItem.getMenuid()) || menuItem2.getMenuid().equals(menuItem.getUpprMenuid())) {
 		                                menuTag.append("active ");
+		                                isActiveL2 = true;
 		                            }
 		                            menuTag.append("\">");
 		                            
@@ -227,7 +233,7 @@ public class LnbMenuPrintImpl {
 		                                        if ("N".equals(menuItem2.getPopupTrgtCd())) { // 새창
 		                                            menuTag.append("<a href=\"").append(menuItem2.getUrl()).append("\" target=\"_blank\" rel=\"noopener noreferrer\" title=\"새 창\">");
                                                 } else { // 현재창
-                                                    menuTag.append("<a href=\"javascript:goMenu('").append(menuItem2.getUrl()).append("','").append(mkey).append("','").append(menuItem2.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\">");
+                                                    menuTag.append("<a href=\"javascript:goMenu('").append(menuItem2.getUrl()).append("','").append(mkey).append("','").append(menuItem2.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\" ").append(isActiveL2 ? "title=\"활성화\"" : "\"\"").append(">");
                                                 }
 		                                    }
 		                                }
