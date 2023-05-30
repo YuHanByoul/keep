@@ -75,10 +75,6 @@
                         <th scope="row">교육회차</th>
                         <td><th:block th:text="|${infntAplyHistInfoVo.de}, ${infntAplyHistInfoVo.tmeNm}|"></th:block></td>
                     </tr>
-<!--                     <tr> -->
-<!--                         <th scope="row">지역</th> -->
-<!--                         <td><th:block th:text="${infntAplyHistInfoVo.ctprvnNm}"></th:block></td> -->
-<!--                     </tr> -->
                 </tbody>
             </table>
         </div>
@@ -117,8 +113,6 @@
                         <td><th:block th:text="${infntAplyHistRegVo.aplyUserNm}"></th:block></td>
                         <th scope="row">신청자 이메일</th>
                         <td><th:block th:text="${infntAplyHistRegVo.eml}"></th:block></td>
-<!--                         <th scope="row">휴대전화</th> -->
-<!--                         <td><th:block th:text="${infntAplyHistRegVo.moblphon}"></th:block></td> -->
                     </tr>
                     <tr>
                         <th scope="row">기관주소</th>
@@ -139,9 +133,13 @@
                         <td>
                             <div class="form-input">
                                 <div class="form-check-list">
-                                    <th:block th:each="item, stat : ${cdList}">
-                                   		<label class="inp"><input type="checkbox" class="trgtCds" th:id="|trgtCd${item.CD}|" name="trgtCd" th:value="${item.CD}"><b><th:block th:text="${item.CDNM}"></th:block></b></label>
-                           		    </th:block>
+                                    <th:block th:each="codeInfo : ${codeInfoList}">
+                                        <label class="inp">
+                                            <input type="checkbox" class="trgtCds" name="trgtCd" th:value="${codeInfo.cd}"
+                                                   th:checked="${#strings.contains(eduTrgtCd, codeInfo.cd)}">
+                                            <b>[[${codeInfo.cdNm}]]</b>
+                                        </label>
+                                    </th:block>
                                 </div>
                             </div>
                         </td>    
@@ -227,13 +225,7 @@
     </div>
     
     <script th:inline="javascript">
-    var eduTrgtCd = /*[[${eduTrgtCd}]]*/ null;
-    
-    for(var i=0; i<eduTrgtCd.length; i++) {
-    	console.log(eduTrgtCd[i].trgtCd)
-    	$("#trgtCd"+eduTrgtCd[i].trgtCd).prop("checked", true);
-    }
-    
+
     /*<![CDATA[*/
 	    $(function () {
 	    	$('#etcTextSize').text($("#etc").val().length);
@@ -253,7 +245,6 @@
         let infntAplyHistDetail = {
             listUrl: '/front/mypage/infntAplyHist/infntAplyHistListForm.html',
             updateUrl: '/front/mypage/infntAplyHist/updateSttsInfntAply.do',
-            //refuseUrl: '/front/mypage/infntAplyHist/updateRefuseInfntAply.do',
             modifyUrl: '/front/mypage/infntAplyHist/updateInfntAply.do',
             cancelAply(id, stat) {
                if ("180103" == stat) {
@@ -268,16 +259,15 @@
                        dataType: 'json',
                        data: {aplyid: id, updCd: 'C'},
                        success: function (response) {
-                    	   var response = escapeData(response);
                            closeWorkProgress();
                            alert(response.msg);
-                           if (response.success)
+                           if (response.result == "success")
                                infntAplyHistDetail.submit(infntAplyHistDetail.listUrl);
                        }
                    })
                }
             },
-            refuseAply(id, stat) {
+            refuseAply(id) {
                if (!confirm('승인거부를 하시겠습니까?')) return;
                if (displayWorkProgress(true)) {
                    $.ajax({
@@ -286,10 +276,9 @@
                        dataType: 'json',
                        data: {aplyid: id, updCd: 'R'},
                        success: function (response) {
-                    	   var response = escapeData(response);
                            closeWorkProgress();
                            alert(response.msg);
-                           if (response.success)
+                           if (response.result == "success")
                                infntAplyHistDetail.submit(infntAplyHistDetail.listUrl);
                        }
                    })
@@ -332,10 +321,9 @@
                         dataType: 'json',
                         data : data,
                         success : function (response){
-                        	var response = escapeData(response);
                             closeWorkProgress();
                             alert(response.msg);
-                            if (response.success)
+                            if (response.result == "success")
                                 infntAplyHistDetail.submit(infntAplyHistDetail.listUrl);
                         }
                     });
@@ -347,6 +335,7 @@
             },
 
             submit(url) {
+                console.log(url);
                 let f = document.forms.listForm;
                 f.action = url;
                 f.submit();

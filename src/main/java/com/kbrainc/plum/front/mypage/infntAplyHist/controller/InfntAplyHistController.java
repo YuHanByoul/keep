@@ -7,6 +7,9 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.kbrainc.plum.rte.model.CodeInfoVo;
+import com.kbrainc.plum.rte.service.ResCodeService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,6 +46,9 @@ import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 public class InfntAplyHistController {
     private static final String VIEW_PATH = "/front/mypage/infntAplyHist";
 
+    @Autowired
+    private ResCodeService resCodeService;
+
     @Resource(name = "front.infntAplyHistServiceImpl")
     private InfntAplyHistService infntAplyHistService;
     
@@ -75,25 +81,19 @@ public class InfntAplyHistController {
     public String infntAplyHistDetail(InfntAplyHistVo infntAplyHistVo, Model model, @UserInfo UserVo user) throws Exception {
         InfntAplyHistVo infntAplyHistInfoVo = infntAplyHistService.selectInfntAplyHistInfo(infntAplyHistVo);
         InfntAplyHistVo infntAplyHistRegVo = infntAplyHistService.selectInfntAplyHistDetail(infntAplyHistVo);
-        List<InfntAplyHistVo> eduTrgtCd = infntAplyHistService.selectEduTrgtCd(infntAplyHistVo);
+        String eduTrgtCd = infntAplyHistService.selectEduTrgtCd(infntAplyHistVo);
         
         model.addAttribute("infntAplyHistInfoVo", infntAplyHistInfoVo);
         model.addAttribute("infntAplyHistRegVo", infntAplyHistRegVo);
         model.addAttribute("eduTrgtCd", eduTrgtCd);
-        
-        List<Map<String, String>> listMap = new ArrayList<Map<String, String>>();            
-        String[] splitCdStr = infntAplyHistRegVo.getCd().split(",");
-        String[] splitCdNmStr = infntAplyHistRegVo.getCdNm().split(",");
 
-        for(int i=0; i<splitCdStr.length; i++){
-            Map<String, String> map = new HashMap<String, String>();
-            map.put("CD", splitCdStr[i]);
-            map.put("CDNM", splitCdNmStr[i]);
-            listMap.add(map);
+        List<CodeInfoVo> codeInfoList = new ArrayList<>();
+        for (String tc : infntAplyHistInfoVo.getTrgtCd().split(",")) {
+            codeInfoList.add(resCodeService.getCodeInfo(tc));
         }
-        
-        model.addAttribute("cdList", listMap);
-        model.addAttribute("infntAplyHistVo", infntAplyHistVo);        
+
+        model.addAttribute("codeInfoList", codeInfoList);
+        model.addAttribute("infntAplyHistVo", infntAplyHistVo);
         return VIEW_PATH + "/infntAplyHistDetail";
     }
     
