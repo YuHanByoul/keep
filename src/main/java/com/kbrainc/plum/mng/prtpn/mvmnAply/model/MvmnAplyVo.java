@@ -135,8 +135,10 @@ public class MvmnAplyVo extends ParentRequestVo {
     private String ym;
     
     /** 희망 교육 시작시간 */
+    @NotEmpty(message = "희망 교육시간을 입력해주십시오.")
     private String hopeEduBgngTm;
     /** 희망 교육 종료시간 */
+    @NotEmpty(message = "희망 교육시간을 입력해주십시오.")
     private String hopeEduEndTm;
 
     /** 수정_일시 */

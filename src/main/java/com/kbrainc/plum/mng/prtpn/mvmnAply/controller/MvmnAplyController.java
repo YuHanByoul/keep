@@ -114,11 +114,15 @@ public class MvmnAplyController {
         }
         model.addAttribute("years", years);
         
-        EduSareaVo eduSareaVo = new EduSareaVo(); 
-        model.addAttribute("mvmnAplyVo", mvmnAplyService.selectMvmnAplyInsertInfo(mvmnAplyVo));
+        EduSareaVo eduSareaVo = new EduSareaVo();
+        MvmnAplyVo info =  mvmnAplyService.selectMvmnAplyInsertInfo(mvmnAplyVo);
+        model.addAttribute("mvmnAplyVo", info);
         model.addAttribute("sareaList", eduSareaService.selectEduSareaList(eduSareaVo));
-        
-        model.addAttribute("tmeSchdlList", mvmnAplyService.selectTmeSchdlList(mvmnAplyVo));
+        if(info.getOperFomCd().equals("197101")) {
+            model.addAttribute("tmeSchdlList", mvmnAplyService.selectTmeSchdlList(mvmnAplyVo));            
+        }else {
+            model.addAttribute("tmeSchdlList", mvmnAplyService.selectDailyTmeSchdlList(mvmnAplyVo));
+        }        
         
         return "mng/prtpn/mvmnAply/mvmnAplyInsertForm";
     }
