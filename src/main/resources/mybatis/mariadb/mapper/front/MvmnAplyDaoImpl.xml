@@ -175,6 +175,7 @@
         SELECT  
             X.PRGRMID
             , X.TMEID
+            , X.PRGRM_SCHDLID
             , X.TME_NM
             , (
                 CASE WHEN X.EDU_NOPE > X.APLY_CNT THEN
@@ -184,7 +185,7 @@
                     FROM 
                         TB_EDU_MVMN_PRGRM_TME_SCHDL
                     WHERE 
-                        DE >= DATE_FORMAT(NOW(), '%Y.%m.%d')
+                        DE > DATE_FORMAT(NOW(), '%Y.%m.%d')
                 ) THEN '신청가능' ELSE '마감' END ELSE '마감' END
             ) AS STTS_DESC
             , X.DE_DESC
@@ -195,6 +196,7 @@
             SELECT  
                 A.PRGRMID
                 , A.TMEID
+                , C.PRGRM_SCHDLID
                 , A.TME_NM
                 , B.EDU_NOPE
                 , A.REG_DT
@@ -244,8 +246,12 @@
                 TB_EDU_MVMN_PRGRM_TME A
             LEFT OUTER JOIN 
                 TB_EDU_MVMN_PRGRM B ON B.PRGRMID = A.PRGRMID
+            LEFT OUTER JOIN
+                TB_EDU_MVMN_PRGRM_TME_SCHDL C ON (C.TMEID = A.TMEID)    
             WHERE 
                 A.TMEID IN (SELECT TMEID FROM TB_EDU_MVMN_PRGRM_TME_SCHDL)
+            GROUP BY
+                C.PRGRM_SCHDLID, A.TMEID    
         ) X
         WHERE 1=1
         AND X.PRGRMID = #{prgrmid}
@@ -313,7 +319,7 @@
     
     <!-- 푸름이 이동환경교실 교육신청 등록정보 상세조회 -->
     <select id="selectMvmnAplyRegInfo" parameterType="front.MvmnAplyVo" resultType="front.MvmnAplyVo"> 
-        /* MvmnAplyDao.selectMvmnAplyInfo */
+        /* MvmnAplyDao.selectMvmnAplyRegInfo */
             SELECT
                 A.PRGRMID
                 , A.SAREAID
@@ -511,16 +517,38 @@
 
     <insert id="insertMvmnAplySchdl" parameterType="front.MvmnAplyVo">
         /* MvmnAplyDao.insertMvmnAplySchdl */
-         INSERT INTO TB_EDU_MVMN_PRGRM_APLY_SCHDL(
-              APLYID
-              ,TME_SCHDLID
-              ,REG_DT
-              ,RGTRID
-         )VALUES(
-             #{aplyid}
-             ,#{tmeSchdlid}
-             ,NOW()
-             ,#{user.userid}
-         )
+        <choose>
+            <when test="operFomCd == '197101'"> /* 일일교육 */
+                INSERT INTO TB_EDU_MVMN_PRGRM_APLY_SCHDL (
+                    APLYID
+                    , TME_SCHDLID
+                    , REG_DT
+                    , RGTRID
+                ) VALUES(
+                    #{aplyid}
+                    , #{tmeSchdlid}
+                    , NOW()
+                    , #{user.userid}
+                )
+            </when>
+            <otherwise> /* 지속교육 */
+                INSERT TB_EDU_MVMN_PRGRM_APLY_SCHDL (
+                  APLYID
+                  , TME_SCHDLID
+                  , REG_DT
+                  , RGTRID
+                )
+                SELECT
+                    #{aplyid}
+                    , TME_SCHDLID
+                    , NOW()
+                    , #{user.userid}
+                FROM
+                    TB_EDU_MVMN_PRGRM_TME_SCHDL
+                WHERE
+                    PRGRM_SCHDLID = #{prgrmSchdlid} 
+                    AND TMEID = #{tmeid}
+            </otherwise>
+        </choose>
     </insert>          
 </mapper>

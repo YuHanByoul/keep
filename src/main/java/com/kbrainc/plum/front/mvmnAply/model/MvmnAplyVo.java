@@ -42,6 +42,8 @@ public class MvmnAplyVo extends ParentRequestVo {
     private Integer aplyid;
     /** 프로그램명 */
     private String prgrmNm;
+    /** 프로그램 일정 아이디 */
+    private Integer prgrmSchdlid;
     /** 회차_일정아이디 */
     private Integer tmeSchdlid;
     /** 프로그램 회차 아이디 */
