@@ -57,6 +57,8 @@ public class MvmnSchdlVo extends ParentRequestVo {
     
     /** 교육_일자 */
     private String de;
+    /** 월화수목금토일 */
+    private String week;
     
     /** 프로그램아이디(조회용) */
     private String prgrmIds;    
