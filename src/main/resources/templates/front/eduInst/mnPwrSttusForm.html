@@ -224,8 +224,9 @@
                 var row = $(this);
 
                 var chkBrdt = row.find('[name=brdt]').val() ?? '';
-                var hdofBgngDe = row.find('[name=hdofBgngDe]').val() ?? '';
-                var hdofEndDe  = row.find('[name=hdofEndDe]').val()  ?? '';
+                var chkHdofBgngDe = row.find('[name=hdofBgngDe]').val() ?? '';
+                var chkHdofEndDe  = row.find('[name=hdofEndDe]').val()  ?? '';
+                var msg ="";
 
                 //생년월일 체크
                 if(chkBrdt!=''){
@@ -233,20 +234,52 @@
 
                     if(Number(chkBrdt) > Number(thisday)) {
                     	valid = false;
+                    	msg = "생년월일은 금일보다 이전이어야 합니다.";
                         if(row.find('[name=brdt]').next().attr('class') != "feedback invalid"){
-                        	row.find('[name=brdt]').after("<p class='feedback invalid'>생년월일은 금일보다 이전이어야 합니다.</p>");
+                        	row.find('[name=brdt]').after(`<p class='feedback invalid'>${msg}</p>`);
                         }
                     } else {
                     	row.find('[name=brdt]').next().remove();
                     }
                 }
+
+                //재직기간
+                chkHdofBgngDe = chkHdofBgngDe.replaceAll("-","");
+                chkHdofEndDe  = chkHdofEndDe .replaceAll("-","");
+                msg="";
+                //시작일 ~ 종료일
+                if('' != chkHdofBgngDe && '' != chkHdofEndDe && Number(chkHdofBgngDe) > Number(chkHdofEndDe)) {
+                	valid = false;
+                	msg = "재직기간 시작일은 종료일보다 이전이어야 합니다.";
+                }
+                else if(Number(chkHdofBgngDe) > Number(thisday)) {
+                //시작일
+                    valid = false;
+                    msg = "재직기간 시작일은 금일보다 이전이어야 합니다.";
+                }
+                else if(Number(chkHdofEndDe) > Number(thisday)) {
+                //종료일
+                    valid = false;
+                    msg = "재직기간 종료일은 금일보다 이전이어야 합니다.";
+                    if(row.find('[name=hdofEndDe]').next().attr('class') != "feedback invalid"){
+                        row.find('[name=hdofEndDe]').after("<p class='feedback invalid'>재직기간 종료일은 금일보다 이전이어야 합니다.</p>");
+                    }
+                } else {
+                    row.find('[name=hdofEndDe]').next().remove();
+                }
+
+                row.find('[name=hdofEndDe]').next().remove();
+                if(msg!=""){
+                	row.find('[name=hdofEndDe]').after(`<p class='feedback invalid'>${msg}</p>`);
+                }
+
             });
 
             return valid;
         }
 
         function doSave(call){
-debugger;
+
             var param = {};
             var key = $("#planKey").val();
 
@@ -311,7 +344,6 @@ debugger;
             $('[id^=multiFileInput]').on("change", function(event) {
                 var objFile = document.querySelector('#'+this.id);
                 var no = this.id.replace('multiFileInput','');
-debugger;
                 var formData = new FormData();
                 var content = "";
                 uploadFileCnt = 0;

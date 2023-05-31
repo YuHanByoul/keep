@@ -127,7 +127,7 @@
                             <th scope="row">대표자명</th>
                             <td>[[${aplyInfo.cdNm}]]</td>
                             <th scope="row">대표자 생년월일</th>
-                            <td><input type="date" title="대표자 생년월일" id="rprsvBrdt" name="rprsvBrdt" th:value="${aplyInfo.rprsvBrdt}"></td>
+                            <td><input type="date" title="대표자 생년월일" maxlength="10" id="rprsvBrdt" name="rprsvBrdt" th:value="${aplyInfo.rprsvBrdt}"></td>
                         </tr>
 
                         <tr>
@@ -148,7 +148,7 @@
                         </tr>
                         <tr>
                             <th scope="row">신청자 연락처</th>
-                            <td><input type="text" title="신청자 연락처" id="aplcntMoblphon" name="aplcntMoblphon" th:value="${aplyInfo.aplcntMoblphon}" maxlength="40">
+                            <td><input type="text" title="신청자 연락처" maxlength="40" id="aplcntMoblphon" name="aplcntMoblphon" th:value="${aplyInfo.aplcntMoblphon}" >
                                 <p class="feedback"></p>
                             </td>
                             <th scope="row">신청자 이메일</th>
@@ -221,6 +221,14 @@
         var updateUrl="/front/eduInst/updateAplyInfo.do";
         var uploadFileCnt=0;
 
+        let today = new Date();
+        let year = today.getFullYear(); // 년도
+        let month = today.getMonth() + 1;  // 월
+        let monthStr = (month < 10)? "0"+month : month;  // 월
+        let date = today.getDate();  // 날짜
+        let dateStr = (date < 10)? "0"+date : date;
+        let thisday =  year+""+monthStr+""+dateStr;
+
         function navClick(){
 
         }
@@ -231,6 +239,25 @@
             var param = {};
         	var aplyid = $("#aplyid").val();
         	var url ="";
+
+        	var chkRprsvBrdt = $('#rprsvBrdt').val();
+debugger;
+        	//chkRprsvBrdt
+
+        	//생년월일 체크
+            if(chkRprsvBrdt!=''){
+                chkRprsvBrdt = chkRprsvBrdt.replaceAll("-","");
+
+                $('#rprsvBrdt').next().remove();
+                if(Number(chkRprsvBrdt) > Number(thisday)) {
+
+                    msg = "생년월일은 금일보다 이전이어야 합니다.";
+                    if($('#rprsvBrdt').next().attr('class') != "feedback invalid"){
+                        $('#rprsvBrdt').after(`<p class='feedback invalid'>${msg}</p>`);
+                    }
+                    return false;
+                }
+            }
 
         	if(aplyid == null || aplyid == 0 || aplyid == ''){
         		url = insertUrl;
@@ -321,17 +348,17 @@ debugger;
             var validator= $("#aplyForm").validate({
                 rules: {
                 	 ctprvnCd       : { required: true }
-                    ,instEml        : { isBlank : true, maxlength: 50 }
-                    ,aplcntNm       : { isBlank : true ,maxlength: 50 }
-                    ,aplcntMoblphon : { isBlank : true}
-                    ,aplcntEml      : { isBlank : true, maxlength: 50 }
+                    ,instEml        : { isBlank : true, maxlength: 100 }
+                    ,aplcntNm       : { isBlank : true ,maxlength: 60 }
+                    ,aplcntMoblphon : { isBlank : true ,maxlength: 40 }
+                    ,aplcntEml      : { isBlank : true, maxlength: 100 }
                 },
                 messages: {
                 	ctprvnCd        : { required: "시도를 선택해 주십시오."}
-                    ,instEml        : { isBlank : "입력값에 공백이 있습니다.", maxlength: "이메일은 50자 이하여야 합니다." }
-                    ,aplcntNm       : { isBlank : "입력값에 공백이 있습니다.", maxlength: "신청자명은 20자 이하여야 합니다." }
-                    ,aplcntMoblphon : { isBlank : "입력값에 공백이 있습니다." }
-                    ,aplcntEml      : { isBlank : "입력값에 공백이 있습니다.", maxlength: "이메일은 50자 이하여야 합니다." }
+                    ,instEml        : { maxlength: "이메일은 100자 이하여야 합니다." }
+                    ,aplcntNm       : { maxlength: "신청자명은 60자 이하여야 합니다." }
+                    ,aplcntMoblphon : { maxlength: "신청자연락처는 40자 이하여야 합니다." }
+                    ,aplcntEml      : { maxlength: "이메일은 100자 이하여야 합니다." }
                 }
             })
 
