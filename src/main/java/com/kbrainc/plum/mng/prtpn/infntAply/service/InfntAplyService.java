@@ -161,5 +161,16 @@ public interface InfntAplyService {
     * @return void
     */
     public void infntAplyExcelDownList(InfntAplyVo infntAply, HttpServletResponse response, HttpServletRequest request) throws Exception;
+
+    /**
+    * 교육년도 조회
+    *
+    * @Title : selectEduYear
+    * @Description : TODO
+    * @return
+    * @throws Exception
+    * @return List<InfntAplyVo>
+    */
+    public List<InfntAplyVo> selectEduYear() throws Exception;
     
 }
