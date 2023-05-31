@@ -494,9 +494,6 @@ public class DsgnMngVo extends ParentRequestVo {
     /** 주소 상세 */
     private String addrDtl;
 
-    /** 안전관리 */
-    private String sftymng;
-
     /** 설문아이디 */
     private Integer srvyid;
 

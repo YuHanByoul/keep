@@ -427,21 +427,12 @@ public class DsgnMngServiceImpl extends PlumAbstractServiceImpl implements DsgnM
 	 * @return int
 	 */
 	@Override
+	@Transactional
 	public int updateCnsltngAply(DsgnMngVo dsgnMngVo) throws Exception {
-		DsgnMngVo aplyInfo = null;
-		aplyInfo = dsgnMngDao.selectAplyInfo(dsgnMngVo);
-		aplyInfo.setCnsltngKndCd (dsgnMngVo.getCnsltngKndCd ());
-		aplyInfo.setHopeDe1      (dsgnMngVo.getHopeDe1      ());
-		aplyInfo.setHopeDe1AmPmCd(dsgnMngVo.getHopeDe1AmPmCd());
-		aplyInfo.setHopeDe2      (dsgnMngVo.getHopeDe2      ());
-		aplyInfo.setHopeDe2AmPmCd(dsgnMngVo.getHopeDe2AmPmCd());
-		aplyInfo.setPrgrm        (dsgnMngVo.getPrgrm        ());
-		aplyInfo.setLdr          (dsgnMngVo.getLdr          ());
-		aplyInfo.setEtc          (dsgnMngVo.getEtc          ());
-		aplyInfo.setFilegrpid    (dsgnMngVo.getFilegrpid    ());
-		aplyInfo.setSttsCd       (dsgnMngVo.getSttsCd       ());
-		aplyInfo.setUser(dsgnMngVo.getUser());
-		return dsgnMngDao.updateCnsltngAply(aplyInfo);
+		int ret=0;
+
+		ret+=dsgnMngDao.updateCnsltngAply(dsgnMngVo);
+		return ret;
 	}
 
 	/**
