@@ -41,7 +41,9 @@
                                     <div class="mb-0 form-group row">
                                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterSearchSelectDate"><strong>교육일자</strong></label>
                                         <div class="col-sm-12">
-                                            <input type="text" id="searchDeDt" name="searchDeDt" class="form-control form-control-sm" value="">
+		                                    <input type="text" name="searchEduPeriod" class="form-control form-control-sm" value="" id="searchEduPeriod" autocomplete="off">
+		                                    <input type="hidden" id="searchEduBgngDt" name="searchEduBgngDt" >
+		                                    <input type="hidden" id="searchEduEndDt" name="searchEduEndDt" >                                            
                                         </div>
                                     </div>
                                 </div>                                
@@ -60,21 +62,18 @@
                                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
                                             <strong>신청지역</strong>
                                         </div>
-		                                <div class="col-6 pe-1">
-		                                    <th:block kattr:select_code="searchCtprvnCd_1" grpCd="143" upprCd="0" selectedCd="" onchange='setNextDepth(143,this.value,"searchCtprvnCd_2" )' firstOptTxt="- 전체 -" isAdmin="true"></th:block>
-		                                </div>
-		                                <div class="col-6 ps-1">
-		                                    <select id="searchCtprvnCd_2" name="searchCtprvnCd_2" class="form-select form-select-sm form-control-sm">
-		                                         <option value="">- 전체 -</option>
-		                                    </select>
-		                                </div>
+                                        <div class="col-sm-12">
+			                                <th:block kattr:select_rgn="searchSigngu" width="100%" firstOptTxt="- 전체 -" firstOptVal="">
+                                        </div>
 	                                </div>
                                 </div>
                                 <div class="col-lg-3 col-md-6 mb-3">
                                     <div class="mb-0 form-group row">
                                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterSearchSelectDate"><strong>접수일자</strong></label>
                                         <div class="col-sm-12">
-                                            <input type="text" id="searchRcptDt" name="searchRcptDt" class="form-control form-control-sm" value="">
+		                                    <input type="text" name="searchPeriod" class="form-control form-control-sm" value="" id="searchPeriod" autocomplete="off">
+		                                    <input type="hidden" id="searchBgngDt"name="searchBgngDt" >
+		                                    <input type="hidden" id="searchEndDt"name="searchEndDt" >                                            
                                         </div>
                                     </div>
                                 </div>
@@ -118,8 +117,15 @@
                 </div>   
 <div class="modal fade" id="aplyClosePopup" data-bs-backdrop="static"></div>
 <div class="modal fade" id="dwnldDsctnPopup" aria-hidden="true" data-bs-backdrop="static"></div>
+
+
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script type="text/javascript" src="/js/common/jsgrid-master/dist/jsgrid.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
+
+
 <script th:inline="javascript">
 var aplyClosePopupUrl = "/mng/prtpn/mvmnAply/mvmnAplyClosePopup.html";
 var aplyCloseModal;
@@ -144,52 +150,6 @@ fn_openAplyCloseModal = () => {
 	    f.action ="/mng/prtpn/mvmnAply/mvmnAplyExcelDownList.do";
 	    f.submit();
 	}
-    //var selectedItems;
-    //커스텀 테그 라이브러리 임시 설정
-       var getCodeListUrl = "/mng/customAttr/grpCodeList.do";
-       function fn_getNextDepthList(grpcd , upprcd, targetId){
-           $.ajax({
-               url : getCodeListUrl,
-               type: 'GET',
-               cache : false,
-               dataType: 'json',
-               data: {
-                     grpcd  : grpcd
-                   , upprcd : upprcd
-               }, 
-               success : function (data){
-                   writeHtml(grpcd,targetId,data,"");
-               },
-               error : function (error){
-               } 
-           });
-       }
-       
-          function writeHtml(grpcd,targetId,list,selected){
-              var cntArr = targetId.split("_");
-              var nextCnt = Number(cntArr[1])+1;
-              var nextTarget =  cntArr[0]+"_"+nextCnt;
-              var html ="<select id='"+targetId+"' class ='form-control' onchange=setNextDepth('"+grpcd+"',this.value,'"+nextTarget+"') >";
-                  html +="    <option  >전체</option>";
-                  for(var i=0 ; i < list.length;i++){
-                    if(list[i].cdid==selected){
-                        html +="    <option value="+list[i].cd+" selected>"+ list[i].cdNm+ "</option>";
-                    }else{
-                        html +="    <option value="+list[i].cd+">"+ list[i].cdNm+ "</option>";
-                    }
-                  }
-                  if(list.length == 0 && jQuery("#"+nextTarget)[0] != undefined){
-                     writeHtml(grpcd,nextTarget,list,selected);
-                  }
-                  html +="    </select>";
-                  $("#"+targetId).html(html);
-          }
-          
-          function setNextDepth(grpcd , upprcd , targetId){
-              fn_getNextDepthList(grpcd , upprcd , targetId);
-          }
-       
-	//var selectedItems = [];
 	
 	var gridHelper2;
 	var codeList = /*[[${sttCodeList}]]*/;
@@ -197,36 +157,9 @@ fn_openAplyCloseModal = () => {
 	$(function() {
 		gridHelper2 = new GridHelper('jsDetailGrid', 'contentDetailPanel');
 		writeJsDetailGridData();
-        $("#searchDeDt").daterangepicker({
-            autoUpdateInput: false,
-            locale: {
-                format: "YYYY-MM-DD",
-            },
-        });
-        $("#searchDeDt").on('apply.daterangepicker', function(ev, picker) {
-            $("#searchStartDeDt").val(picker.startDate.format('YYYY-MM-DD'));
-            $("#searchEndDeDt").val(picker.endDate.format('YYYY-MM-DD'));
-            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
-        });
-
-        $("#searchDeDt").on('cancel.daterangepicker', function(ev, picker) {
-            $(this).val('');
-        });             
-        $("#searchRcptDt").daterangepicker({
-            autoUpdateInput: false,
-            locale: {
-                format: "YYYY-MM-DD",
-            },
-        });
-        $("#searchRcptDt").on('apply.daterangepicker', function(ev, picker) {
-            $("#searchStartRcptDt").val(picker.startDate.format('YYYY-MM-DD'));
-            $("#searchEndRcptDt").val(picker.endDate.format('YYYY-MM-DD'));
-            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
-        });
-
-        $("#searchRcptDt").on('cancel.daterangepicker', function(ev, picker) {
-            $(this).val('');
-        });     		
+		
+		initDateRangePicker("searchEduPeriod", "searchEduBgngDt", "searchEduEndDt");
+		initDateRangePicker("searchPeriod", "searchBgngDt", "searchEndDt");
 	});
 
 	function fn_goInsertForm() {
@@ -243,8 +176,14 @@ fn_openAplyCloseModal = () => {
 		$("#searchDtlFrm #searchEduYr").val('');
 		$("#searchDtlFrm #searchSareaId").val('');
 		$("#searchDtlFrm #searchSareaMm").val('');
-		$("#searchDtlFrm #searchRcptMthdCd").val('');
+		$("#searchDtlFrm #searchEduPeriod").val('');
+		$("#searchDtlFrm #searchEduBgngDt").val('');
+		$("#searchDtlFrm #searchEduEndDt").val('');
+		$("#searchDtlFrm #searchPeriod").val('');
+		$("#searchDtlFrm #searchBgngDt").val('');
+		$("#searchDtlFrm #searchEndDt").val('');
 		$("#searchDtlFrm #searchSttsCd").val('');
+		$("#searchDtlFrm #searchSigngu").val('');
 		//gridHelper2.resetListContent();
 	}
     

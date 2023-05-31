@@ -407,5 +407,10 @@ public class MvmnAplyServiceImpl extends PlumAbstractServiceImpl implements Mvmn
     @Override
     public List<MvmnAplyVo> selectEduYear() throws Exception {
         return mvmnAplyDao.selectEduYear();
+    }
+
+    @Override
+    public List<MvmnAplyVo> selectDailyTmeSchdlList(MvmnAplyVo mvmnAplyVo) throws Exception {
+        return mvmnAplyDao.selectDailyTmeSchdlList(mvmnAplyVo);
     }    
 }

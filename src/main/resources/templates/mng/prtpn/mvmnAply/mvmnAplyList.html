@@ -148,51 +148,6 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
 <script th:inline="javascript">
-    var selectedItems = [];
-    //커스텀 테그 라이브러리 임시 설정
-       var getCodeListUrl = "/mng/customAttr/grpCodeList.do";
-       function fn_getNextDepthList(grpcd , upprcd, targetId){
-           $.ajax({
-               url : getCodeListUrl,
-               type: 'GET',
-               cache : false,
-               dataType: 'json',
-               data: {
-                     grpcd  : grpcd
-                   , upprcd : upprcd
-               }, 
-               success : function (data){
-                   writeHtml(grpcd,targetId,data,"");
-               },
-               error : function (error){
-               } 
-           });
-       }
-       
-          function writeHtml(grpcd,targetId,list,selected){
-              var cntArr = targetId.split("_");
-              var nextCnt = Number(cntArr[1])+1;
-              var nextTarget =  cntArr[0]+"_"+nextCnt;
-              var html ="<select id='"+targetId+"' class ='form-control' onchange=setNextDepth('"+grpcd+"',this.value,'"+nextTarget+"') >";
-                  html +="    <option  >전체</option>";
-                  for(var i=0 ; i < list.length;i++){
-                    if(list[i].cdid==selected){
-                        html +="    <option value="+list[i].cd+" selected>"+ list[i].cdNm+ "</option>";
-                    }else{
-                        html +="    <option value="+list[i].cd+">"+ list[i].cdNm+ "</option>";
-                    }
-                  }
-                  if(list.length == 0 && jQuery("#"+nextTarget)[0] != undefined){
-                     writeHtml(grpcd,nextTarget,list,selected);
-                  }
-                  html +="    </select>";
-                  $("#"+targetId).html(html);
-          }
-          
-          function setNextDepth(grpcd , upprcd , targetId){
-              fn_getNextDepthList(grpcd , upprcd , targetId);
-          }
-       
 	var selectedItems = [];
 	
 	var gridHelper1;

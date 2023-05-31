@@ -278,4 +278,6 @@ public interface MvmnAplyDao {
     
     public List<MvmnAplyVo> selectEduYear() throws Exception;
     
+    public List<MvmnAplyVo> selectDailyTmeSchdlList(MvmnAplyVo mvmnAplyVo) throws Exception;
+    
 }
