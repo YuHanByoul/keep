@@ -162,12 +162,15 @@ public class MvmnAplyVo extends ParentRequestVo {
     private String searchClssMm;
     private String searchRcptMthdCd;
     private String searchSttsCd;
-    private String searchType;
-    private String searchDeDt;    
-    private String searchRcptDt;    
-    private String searchStartRcptDt;    
-    private String searchEndRcptDt;    
-    private String searchStartDeDt;    
-    private String searchEndDeDt;    
-    private String searchOperFomCd;    
+    private String searchType;    
+    private String searchOperFomCd;
+    
+    private String searchEduPeriod;
+    private String searchEduBgngDt;
+    private String searchEduEndDt;
+    private String searchPeriod;
+    private String searchBgngDt;
+    private String searchEndDt;
+    
+    private String searchSigngu;
 }
