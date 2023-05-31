@@ -120,7 +120,7 @@
                                 <th scope="row">교육대상</th>
                                 <td><input type="text" title="교육대상" placeholder="교육대상을 입력해 주세요" id="eduTrgt" name="eduTrgt" th:value="${prgrm.eduTrgt}"></td>
                                 <th scope="row">교육인원</th>
-                                <td><input type="number" title="교육인원" placeholder="교육인원을 입력해 주세요" id="eduNope" name="eduNope" th:value="${prgrm.eduNope}"></td>
+                                <td><input type="text" class="ar" title="교육인원" placeholder="교육인원을 입력해 주세요" id="eduNope" name="eduNope" th:value="${prgrm.eduNope}"></td>
                             </tr>
                             <tr>
                                 <th scope="row">교육방법</th>
@@ -132,7 +132,7 @@
                                 <th scope="row">교육장소</th>
                                 <td><input type="text" title="교육장소" placeholder="교육장소를 입력해 주세요" id="eduPlc" name="eduPlc" th:value="${prgrm.eduPlc}"></td>
                                 <th scope="row">참가비</th>
-                                <td><input type="number" class="ar" title="참가비" placeholder="참가비를 입력해 주세요" id="etrfee" name="etrfee" th:value="${prgrm.etrfee}"></td>
+                                <td><input type="text" class="ar" title="참가비" placeholder="참가비를 입력해 주세요" id="etrfee" name="etrfee" th:value="${prgrm.etrfee}"></td>
                             </tr>
                             <tr>
                                 <th scope="row">지정 및 인증여부</th>
@@ -201,7 +201,7 @@
                 return;
             }
 
-            var newRow = lastRow.clone().attr('id', 'prgrmDiv' + idx);
+            var newRow = lastRow.clone(true).attr('id', 'prgrmDiv' + idx);
 
             newRow.find('input[name=prgrmNm]').attr('id','prgrmNm'+idx);
 
@@ -228,7 +228,32 @@
             if(lastRow.index() > 0) lastRow.remove();
         }
 
+        function chkList(){
+            var flag = true;
+
+            var num_check=/^[0-9]*$/;
+
+            $('[name=eduNope],[name=etrfee]').each(function(idx,data){
+                var chkVal= $(this).val();
+                var msg ="숫자만 입력 가능합니다.";
+
+                //숫자 체크
+                if($(this).next().length==1) $(this).next().remove();
+                if(!num_check.test(chkVal)){
+                    if($(this).next().length==0) $(this).after(`<p class="feedback invalid" style='text-align:left;'>${msg}</p>`);
+                    flag =false;
+                }
+            });
+
+            return flag;
+        }
+
         function doSave(call){
+
+        	var flag = true;
+
+        	if(!$('#hldngForm').valid()) return;
+            if(!chkList()) return
 
         	if(call!="next")if(!confirm("저장하시겠습니까?")) return;
 
@@ -313,7 +338,6 @@
         		}
         	})
 
-//         	$("[id^=selfYn]").trigger("onchange");
         });
     </script>
 </div>
