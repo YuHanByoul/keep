@@ -34,6 +34,8 @@
                                       , ES.CNTNTSID
                                       , ES.EDU_SBJCT_CD
                                       , ESCD.UPPR_CD AS EDU_SBJCT_UPPR_CD
+                                      , GROUP_CONCAT(ES.EDU_SBJCT_CD separator ',') GRP_EDU_SBJCT_CD
+                                      , GROUP_CONCAT(ESCD.UPPR_CD separator ',') GRP_EDU_SBJCT_UPPR_CD                                 
                                     FROM
                                         TB_CMM_CNTNTS_EDU_SBJCT ES
                                             LEFT OUTER JOIN TB_CMM_CD ESCD ON ES.EDU_SBJCT_CD = ESCD.CD
@@ -77,10 +79,10 @@
             
             <!-- 교육주제 -->
             <if test="searchManinEduSbjctCd != null and searchManinEduSbjctCd != ''">
-            AND TB1.EDU_SBJCT_UPPR_CD = #{searchManinEduSbjctCd}
+            AND TB1.GRP_EDU_SBJCT_UPPR_CD LIKE CONCAT('%',#{searchManinEduSbjctCd},'%')
             </if>
             <if test="searchMdleEduSbjctCd != null and searchMdleEduSbjctCd != ''">
-            AND TB1.EDU_SBJCT_CD = #{searchMdleEduSbjctCd}
+            AND TB1.GRP_EDU_SBJCT_CD LIKE CONCAT('%',#{searchMdleEduSbjctCd},'%')
             </if>
             
             <!-- 교육대상 -->
