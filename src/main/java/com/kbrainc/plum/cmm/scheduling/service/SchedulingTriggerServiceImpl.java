@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.kbrainc.plum.cmm.scheduling.model.SchedulingTriggerDao;
 import com.kbrainc.plum.cmm.scheduling.model.SchedulingTriggerVo;
+import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
 * 스케줄링트리거 서비스 구현 클래스.
@@ -24,7 +25,7 @@ import com.kbrainc.plum.cmm.scheduling.model.SchedulingTriggerVo;
 * @Company     : CopyrightⒸ KBRAINC. All Rights Reserved
 */
 @Service
-public class SchedulingTriggerServiceImpl implements SchedulingTriggerService {
+public class SchedulingTriggerServiceImpl extends PlumAbstractServiceImpl implements SchedulingTriggerService {
 
     @Autowired
     private SchedulingTriggerDao schedulingTriggerDao;

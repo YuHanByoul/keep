@@ -136,7 +136,9 @@ public class CarbonEnveduController {
         }
         
         String nextCmprQrtr = carbonEnveduVo.getCompareQuarter();
+        String nextCmprYr = carbonEnveduVo.getCompareYear();
         String prevCmprQrtr = carbonEnveduVo.getCompareQuarter();
+        String prevCmprYr = carbonEnveduVo.getCompareYear();
         
         if(!nextCmprQrtr.equals("5")) {
             if(!nextCmprQrtr.equals("4")) {
@@ -145,7 +147,7 @@ public class CarbonEnveduController {
                 resultMap.put("nextCnt", nextCnt);
             }else if(nextCmprQrtr.equals("4")) {
                 carbonEnveduVo.setCompareQuarter( "1" );
-                carbonEnveduVo.setCompareYear( Integer.toString(Integer.parseInt(carbonEnveduVo.getCompareYear()) + 1) );
+                carbonEnveduVo.setCompareYear( Integer.toString(Integer.parseInt(nextCmprYr) + 1) );
                 nextCnt = carbonEnveduService.selectEnveduNextCount(carbonEnveduVo);
                 resultMap.put("nextCnt", nextCnt);
             }            
@@ -157,7 +159,7 @@ public class CarbonEnveduController {
             if(!prevCmprQrtr.equals("4")) {
                 if(prevCmprQrtr.equals("1")) {
                     carbonEnveduVo.setCompareQuarter( "4" );
-                    carbonEnveduVo.setCompareYear( Integer.toString(Integer.parseInt(carbonEnveduVo.getCompareYear()) - 1) );
+                    carbonEnveduVo.setCompareYear( Integer.toString(Integer.parseInt(prevCmprYr) - 1) );
                     prevCnt = carbonEnveduService.selectEnveduPrevCount(carbonEnveduVo);
                     resultMap.put("prevCnt", prevCnt);
                 }else {
@@ -166,6 +168,7 @@ public class CarbonEnveduController {
                     resultMap.put("prevCnt", prevCnt);
                 }
             }else if(prevCmprQrtr.equals("4")) {
+                carbonEnveduVo.setCompareYear( prevCmprYr );
                 carbonEnveduVo.setCompareQuarter( Integer.toString(Integer.parseInt(prevCmprQrtr) - 1) );
                 prevCnt = carbonEnveduService.selectEnveduPrevCount(carbonEnveduVo);
                 resultMap.put("prevCnt", prevCnt);
@@ -240,34 +243,45 @@ public class CarbonEnveduController {
 
         }
         
-        if(!carbonPrgrmgdVo.getCompareQuarter().equals("5")) {
-            if(!carbonPrgrmgdVo.getCompareQuarter().equals("4")) {
-                carbonPrgrmgdVo.setCompareQuarter( Integer.toString(Integer.parseInt(carbonPrgrmgdVo.getCompareQuarter()) + 1) );
+        String nextCmprQrtr = carbonPrgrmgdVo.getCompareQuarter();
+        String nextCmprYr = carbonPrgrmgdVo.getCompareYear();
+        String prevCmprQrtr = carbonPrgrmgdVo.getCompareQuarter();
+        String prevCmprYr = carbonPrgrmgdVo.getCompareYear();
+        
+        if(!nextCmprQrtr.equals("5")) {
+            if(!nextCmprQrtr.equals("4")) {
+                carbonPrgrmgdVo.setCompareQuarter( Integer.toString(Integer.parseInt(nextCmprQrtr) + 1) );
                 nextCnt = carbonEnveduService.selectEnveduNextCount(carbonPrgrmgdVo);
                 resultMap.put("nextCnt", nextCnt);
-                
-                if(carbonPrgrmgdVo.getCompareQuarter().equals("1")) {
+            }else if(nextCmprQrtr.equals("4")) {
+                carbonPrgrmgdVo.setCompareQuarter( "1" );
+                carbonPrgrmgdVo.setCompareYear( Integer.toString(Integer.parseInt(nextCmprYr) + 1) );
+                nextCnt = carbonEnveduService.selectEnveduNextCount(carbonPrgrmgdVo);
+                resultMap.put("nextCnt", nextCnt);
+            }            
+        }else {
+            resultMap.put("nextCnt", 0);
+        }
+        
+        if(!prevCmprQrtr.equals("5")) {
+            if(!prevCmprQrtr.equals("4")) {
+                if(prevCmprQrtr.equals("1")) {
                     carbonPrgrmgdVo.setCompareQuarter( "4" );
-                    carbonPrgrmgdVo.setCompareYear( Integer.toString(Integer.parseInt(carbonPrgrmgdVo.getCompareYear()) - 1) );
+                    carbonPrgrmgdVo.setCompareYear( Integer.toString(Integer.parseInt(prevCmprYr) - 1) );
                     prevCnt = carbonEnveduService.selectEnveduPrevCount(carbonPrgrmgdVo);
                     resultMap.put("prevCnt", prevCnt);
                 }else {
-                    carbonPrgrmgdVo.setCompareQuarter( Integer.toString(Integer.parseInt(carbonPrgrmgdVo.getCompareQuarter()) - 1) );
+                    carbonPrgrmgdVo.setCompareQuarter( Integer.toString(Integer.parseInt(prevCmprQrtr) - 1) );
                     prevCnt = carbonEnveduService.selectEnveduPrevCount(carbonPrgrmgdVo);
                     resultMap.put("prevCnt", prevCnt);
                 }
-            }else if(carbonPrgrmgdVo.getCompareQuarter().equals("4")) {
-                carbonPrgrmgdVo.setCompareQuarter( Integer.toString(Integer.parseInt(carbonPrgrmgdVo.getCompareQuarter()) - 1) );
+            }else if(prevCmprQrtr.equals("4")) {
+                carbonPrgrmgdVo.setCompareYear( prevCmprYr );
+                carbonPrgrmgdVo.setCompareQuarter( Integer.toString(Integer.parseInt(prevCmprQrtr) - 1) );
                 prevCnt = carbonEnveduService.selectEnveduPrevCount(carbonPrgrmgdVo);
                 resultMap.put("prevCnt", prevCnt);
-                
-                carbonPrgrmgdVo.setCompareQuarter( "1" );
-                carbonPrgrmgdVo.setCompareYear( Integer.toString(Integer.parseInt(carbonPrgrmgdVo.getCompareYear()) + 1) );
-                nextCnt = carbonEnveduService.selectEnveduNextCount(carbonPrgrmgdVo);
-                resultMap.put("nextCnt", nextCnt);
-            }
+            }            
         }else {
-            resultMap.put("nextCnt", 0);
             resultMap.put("prevCnt", 0);
         }
         

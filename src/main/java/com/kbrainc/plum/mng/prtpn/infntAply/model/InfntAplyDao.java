@@ -230,4 +230,15 @@ public interface InfntAplyDao {
     * @throws Exception
     */
     public List<InfntAplyVo> infntAplyExcelDownList(InfntAplyVo infntAplyVo) throws Exception;
+    
+    /**
+    * 교육년도 조회
+    *
+    * @Title : selectEduYear
+    * @Description : TODO
+    * @return
+    * @throws Exception
+    * @return List<InfntAplyVo>
+    */
+    public List<InfntAplyVo> selectEduYear() throws Exception;
 }

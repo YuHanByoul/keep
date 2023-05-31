@@ -370,5 +370,10 @@ public class InfntAplyServiceImpl extends PlumAbstractServiceImpl implements Inf
         workbook.write(fileOutput);
         fileOutput.flush();
         fileOutput.close();
+    }
+
+    @Override
+    public List<InfntAplyVo> selectEduYear() throws Exception {
+        return infntAplyDao.selectEduYear(); 
     }    
 }

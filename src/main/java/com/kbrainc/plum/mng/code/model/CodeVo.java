@@ -84,6 +84,14 @@ public class CodeVo extends ParentRequestVo implements Serializable {
     /** 옵션3 */
     @Size(max = 200, message = "옵션3는 200자를 넘을 수 없습니다.")
     private String optn3;
+    
+    /** 옵션4 */
+    @Size(max = 200, message = "옵션4는 200자를 넘을 수 없습니다.")
+    private String optn4;
+    
+    /** 옵션5 */
+    @Size(max = 200, message = "옵션5는 200자를 넘을 수 없습니다.")
+    private String optn5;
 
     /** 사용_여부 */
     private String useYn;

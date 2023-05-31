@@ -18,6 +18,7 @@ import com.kbrainc.plum.cmm.service.AlimtalkNhnService;
 import com.kbrainc.plum.cmm.service.SmsNhnServiceImpl;
 import com.kbrainc.plum.rte.scheduling.annotation.SchedulingHistory;
 import com.kbrainc.plum.rte.scheduling.annotation.Triggerid;
+import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import com.kbrainc.plum.rte.util.CommonUtil;
 import com.kbrainc.plum.rte.util.mail.model.MailRcptnVo;
 import com.kbrainc.plum.rte.util.mail.model.MailVo;
@@ -39,7 +40,7 @@ import com.kbrainc.plum.rte.util.mail.service.MailService;
 * @Company     : CopyrightⒸ KBRAINC. All Rights Reserved
 */
 @Service
-public class BatchJobServiceImpl implements BatchJobService {
+public class BatchJobServiceImpl extends PlumAbstractServiceImpl implements BatchJobService {
 
 	@Autowired
     private BatchJobDao batchJobDao;
