@@ -15,6 +15,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
+import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import com.kbrainc.plum.rte.util.CommonUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Service
-public class PushServiceImpl implements PushService {
+public class PushServiceImpl extends PlumAbstractServiceImpl implements PushService {
 
     @Value("${fcm.server.key}")
     private String fcmServerKey;

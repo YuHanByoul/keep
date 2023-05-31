@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.kbrainc.plum.mng.scheduling.model.SchedulingDao;
 import com.kbrainc.plum.mng.scheduling.model.SchedulingHistVo;
 import com.kbrainc.plum.mng.scheduling.model.SchedulingVo;
+import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
 * 스케줄링 서비스 구현 클래스.
@@ -25,7 +26,7 @@ import com.kbrainc.plum.mng.scheduling.model.SchedulingVo;
 * @Company     : CopyrightⒸ KBRAINC. All Rights Reserved
 */
 @Service
-public class SchedulingServiceImpl implements SchedulingService {
+public class SchedulingServiceImpl  extends PlumAbstractServiceImpl implements SchedulingService {
 
     @Autowired
     private SchedulingDao schedulingDao;

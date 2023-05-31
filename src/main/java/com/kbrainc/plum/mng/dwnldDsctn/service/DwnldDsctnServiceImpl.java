@@ -2,6 +2,8 @@ package com.kbrainc.plum.mng.dwnldDsctn.service;
 
 import com.kbrainc.plum.mng.dwnldDsctn.model.DwnldDsctnDao;
 import com.kbrainc.plum.mng.dwnldDsctn.model.DwnldDsctnVo;
+import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
  */
 @Service
-public class DwnldDsctnServiceImpl implements DwnldDsctnService {
+public class DwnldDsctnServiceImpl extends PlumAbstractServiceImpl implements DwnldDsctnService {
 
     @Autowired
     private DwnldDsctnDao dwnldDsctnDao;
