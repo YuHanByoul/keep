@@ -7,30 +7,20 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
 import org.apache.ibatis.type.Alias;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.front.dsgnMng.model.DsgnMngVo;
 import com.kbrainc.plum.front.dsgnMng.service.DsgnMngService;
-import com.kbrainc.plum.front.srvy.model.SrvySbmsnAnsVo;
-import com.kbrainc.plum.front.srvy.model.SrvySbmsnVo;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.mng.dsgnPrgrm.service.DsgnPrgrmService;
-import com.kbrainc.plum.mng.qestnr.model.QitemExVo;
 import com.kbrainc.plum.mng.qestnr.model.QitemVo;
 import com.kbrainc.plum.mng.qestnr.service.QestnrService;
 import com.kbrainc.plum.mng.srvy.service.SrvyService;
@@ -435,23 +425,9 @@ public class DsgnMngController {
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
         dsgnPrgrmVo.setUser(user);
-        //dsgnPrgrmVo.setAplcntid(user.getUserid());
 
         int retVal = 0;
 
-        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-
-        log.info(dsgnPrgrmVo.toString());
-
-        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-
-        //retVal = dsgnMngService.insertOperRslt(dsgnMngVo);
         retVal = dsgnPrgrmService.updateOperRslt(dsgnPrgrmVo);
 
         if (retVal > 0) {
@@ -896,6 +872,13 @@ public class DsgnMngController {
     		model.addAttribute("ansList",   dsgnMngService.selectSrvyAnsList(aplyInfo));
     		//컨설팅 답변 목록 조회
     	}
+
+    	if(aplyInfo.getFilegrpid() != null && aplyInfo.getFilegrpid() != 0) {
+            List<DsgnMngVo> fileList = dsgnMngService.selectFileList(aplyInfo);
+            model.addAttribute("fileList", fileList);
+        }else {
+        	model.addAttribute("fileList", Collections.emptyList());
+        }
 
     	return "front/dsgnMng/aplyInfo";
     }

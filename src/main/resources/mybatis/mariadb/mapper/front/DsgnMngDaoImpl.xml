@@ -874,7 +874,7 @@
           , A.HOPE_DE2_AM_PM_CD     /*희망_일자2_오전_오후_코드*/
           , A.PRGRM                 /*프로그램*/
           , A.LDR                   /*지도자*/
-          , A.SFTYMNG               /*안전관리*/
+          , A.SFTYMNG    AS SFTY_MNG           /*안전관리*/
           , A.ETC                   /*기타*/
           , A.FILEGRPID             /*파일그룹아이디*/
           , A.STTS_CD               /*상태_코드*/
@@ -910,9 +910,11 @@
         LEFT OUTER JOIN TB_ASS_CNSLTNG_RSLT C   ON A.CNSLTNGID = C.CNSLTNGID
         LEFT OUTER JOIN TB_CMM_CD CD ON A.CNSLTNG_KND_CD = CD.CD
         WHERE 1=1
+
         <if test="user.userid != null and user.userid != ''">
             AND A.USERID = #{user.userid}
         </if>
+        GROUP BY A.CNSLTNGID
         <include refid="PaginationMapper.footer"/>
     </select>
 
@@ -1036,7 +1038,7 @@
           , #{hopeDe2AmPmCd}     /*희망_일자2_오전_오후_코드*/
           , #{prgrm}             /*프로그램*/
           , #{ldr}               /*지도자*/
-          , #{sftymng}           /*안전관리*/
+          , #{sftyMng}           /*안전관리*/
           , #{etc}               /*기타*/
           , #{filegrpid}         /*파일그룹아이디*/
           , #{sttsCd}            /*상태_코드*/
@@ -1052,29 +1054,19 @@
     <update id="updateCnsltngAply" parameterType="front.dsgnMngVo">
         /* front.DsgnMngDao.updateCnsltngAply*/
         UPDATE TB_ASS_CNSLTNG SET
-            INSTID            = #{instid}           /*기관아이디*/
-          , USERID            = #{userid}           /*사용자아이디*/
-          , USER_NM           = #{userNm}           /*사용자_이름*/
-          , PIC_TELNO         = #{picTelno}         /*담당자_전화번호*/
-          , INST_TELNO        = #{instTelno}        /*기관_전화번호*/
-          , PIC_EML           = #{picEml}           /*담당자_이메일*/
-          , ZIP               = #{zip}              /*우편번호*/
-          , ADDR              = #{addr}             /*주소*/
-          , ADDR_DTL          = #{addrDtl}          /*주소_상세*/
-          , PRGRM_NM          = #{prgrmNm}          /*프로그램_이름*/
-          , CNSLTNG_KND_CD    = #{cnsltngKndCd}     /*컨설팅_종류_코드*/
-          , HOPE_DE1          = #{hopeDe1}          /*희망_일자1*/
-          , HOPE_DE1_AM_PM_CD = #{hopeDe1AmPmCd}    /*희망_일자1_오전_오후_코드*/
-          , HOPE_DE2          = #{hopeDe2}          /*희망_일자2*/
-          , HOPE_DE2_AM_PM_CD = #{hopeDe2AmPmCd}    /*희망_일자2_오전_오후_코드*/
-          , PRGRM             = #{prgrm}            /*프로그램*/
-          , LDR               = #{ldr}              /*지도자*/
-          , SFTYMNG           = #{sftymng}          /*안전관리*/
-          , ETC               = #{etc}              /*기타*/
-          , FILEGRPID         = #{filegrpid}        /*파일그룹아이디*/
-          , STTS_CD           = #{sttsCd}           /*상태_코드*/
-          , SRVYID            = #{srvyid}           /*설문아이디*/
-          , MDFCN_DT          = Now()               /*수정_일시*/
+            PRGRM_NM          = #{prgrmNm}
+          , CNSLTNG_KND_CD    = #{cnsltngKndCd}
+          , HOPE_DE1          = #{hopeDe1}
+          , HOPE_DE1_AM_PM_CD = #{hopeDe1AmPmCd}
+          , HOPE_DE2          = #{hopeDe2}
+          , HOPE_DE2_AM_PM_CD = #{hopeDe2AmPmCd}
+          , PRGRM             = #{prgrm}
+          , LDR               = #{ldr}
+          , SFTYMNG           = #{sftyMng}
+          , ETC               = #{etc}
+          , FILEGRPID         = #{filegrpid}
+          , STTS_CD           = #{sttsCd}
+          , MDFCN_DT          = Now()
         WHERE CNSLTNGID = #{cnsltngid}
     </update>
 

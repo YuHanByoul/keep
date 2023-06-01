@@ -159,6 +159,7 @@
                                                 <input type="file" id="multiFileInput" name="files" class="blind" multiple="multiple" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부" maxcount="10">
                                             </span>
                                             <label for="multiFileInput" class="btn-medium btn-gray">파일선택</label>
+                                            <p>등록 가능 확장자 : jpg, jpeg, png, gif, hwp, doc, docx, xls, xlsx, pdf, txt, zip</p>
                                             <div class="upload-response">
                                                 <div id="multipleFileUploadError"></div>
                                                 <div id="multipleFileUploadSuccess">
@@ -171,13 +172,14 @@
                                                                 class='label label-inverse'
                                                                 th:data_ext="${#strings.replace(item.ext, '.', '')}">
                                                                 <th:block th:text="${item.orginlFileNm}" />&nbsp;&nbsp;
-                                                                <a href="javascript:void(0)" th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="fn_deleteFileList(this.name, this.dataset.idntfcKey)" class='text-white'>
+                                                                <a href="javascript:void(0)" th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="fn_deleteFile(this.name, this.dataset.idntfcKey)" class='text-white'>
                                                                 <th:block th:text="X"></th:block></a>
                                                             </li>
                                                         </ul>
-                                                        <p>등록 가능 확장자 : jpg, jpeg, png, gif, hwp, doc, docx, xls, xlsx, pdf, txt, zip</p>
                                                     </div>
                                                 </th:block>
+
+                                                <input type="hidden" id="filegrpid" name="filegrpid" th:value="${(aplyInfo.filegrpid == '' or aplyInfo.filegrpid == null) ? 0 : aplyInfo.filegrpid}"/>
                                                 </div>
                                             </div>
                                         </div>
@@ -308,6 +310,7 @@
             	insertUrl : "/front/dsgnMng/insertCnsltngAply.do",
             	deleteUrl : "/front/dsgnMng/deleteCnsltngAply.do",
             	updateUrl : "/front/dsgnMng/updateCnsltngAply.do",
+            	reUrl:"/front/dsgnMng/aplyInfoForm.html",
 
             	init(){
 
@@ -427,7 +430,6 @@
                     if(displayWorkProgress(true)) {
                         $.ajax({
                             url : "/front/srvy/insertSrvySbmsn.do"
-//                             url : "/front/dsgnMng/insertSrvySbmsn.do"
                             , type: "POST"
                             , cache: false
                             , dataType: "json"
@@ -456,7 +458,8 @@
                          success: function (data) {
                              if(data.result=="success"){
                                  alert(data.msg);
-                                 $("#chgDsctnTab").get(0).click();
+                                 aplyInfo.goList();
+
                              }else{
                                  alert(data.msg);
                              }
@@ -487,7 +490,7 @@
 
             			var data = $("#aplyInfoForm").serialize();
 
-            			if(!confirm("수정 하시겠습니까?")){return;}
+            			if(!confirm("저장 하시겠습니까?")){return;}
 
                         $.ajax({
                             url : url
@@ -498,7 +501,7 @@
                             , success: function(response) {
                                 if(response.result == "success") {
                                     alert(response.msg);
-                                    $("#operRsltTab").get(0).click();
+                                    location.href= aplyInfo.reUrl+'?cnsltngid='+$('#cnsltngid').val();
                                 } else {
                                     alert(response.msg);
                                 }
@@ -526,6 +529,7 @@
                             if(data.result=="success"){
                                 $("#"+fileid).remove();
                                 alert("신청취소가 완료 되었습니다.");
+                                aplyInfo.goList();
                             }else{
                                 alert("신청취소중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
                             }
@@ -562,22 +566,18 @@
 
             	// 파일업로드
                 $('#multiFileInput').on("change", function(event) {
-                    debugger;
+
                     var objFile = document.querySelector('#multiFileInput');
                     var formData = new FormData();
                     var content = "";
 
                     for( i = 0 ; i < objFile.files.length ; i++) {
-                        if(uploadFileCnt >= atchfileCnt){
-                            alert("첨부파일은  "+atchfileCnt+ " 개 까지 가능합니다." ); break;
-                        } else {
-                            formData.append("files", objFile.files[i]);
-                            uploadFileCnt++;
-                        }
+                        formData.append("files", objFile.files[i]);
+                        uploadFileCnt++;
                     }
 
-
-                 formData.append("filegrpNm", "asgsysSrng_file");
+                    formData.append("filegrpid", $("#filegrpid").val());
+                    formData.append("filegrpNm", "asgsysSrng_file");
 
                     if(uploadFileCnt > 0){
                         $.ajax({
@@ -597,7 +597,7 @@
                                     for(i = 0 ;i < response.length; i++ ){
                                         content = '<ul>';
                                         content +=  '<li class="file-block" data_ext="'+response[i].fileExtsn.replace(".", '')+'" id="'+response[i].fileid+'"><span class="name">'+response[i].orginlFileNm
-                                        content += '&nbsp;&nbsp;<a href="javascript:uploadFileCnt--;fn_deleteFileList("'+response[i].fileid+'","'+response[i].fileIdntfcKey+'")>X</a></span></li>'
+                                        content += '&nbsp;&nbsp;<a href="javascript:void(0)" onclick=uploadFileCnt--;fn_deleteFile("'+response[i].fileid+'","'+response[i].fileIdntfcKey+'")>X</a></span></li>'
                                         content += '</ul>';
                                         $('#multipleFileUploadSuccess').append(content);
                                     }
@@ -607,13 +607,6 @@
                     }
                 });
             });
-
-            // 파일삭제
-            function fn_deleteFileList(fileid, fileIdntfcKey){
-                if(!confirm("파일을 삭제하시겠습니까?")){return;}
-                fn_deleteFile(fileid, fileIdntfcKey);
-                $("#"+fileid).remove();
-            }
 
             // 파일삭제
             function fn_deleteFile(fileid, fileIdntfcKey){

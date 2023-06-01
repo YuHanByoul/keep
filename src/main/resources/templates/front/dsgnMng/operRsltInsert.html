@@ -128,21 +128,23 @@
                                 <span kattr:radio_code="prgrmTypeCd" th:attr="grpCd=120, selectedCd=${operRsltInfo.prgrmTypeCd}">
                             </td>
                             <th scope="row">숙박여부</th>
+
                             <td>
                                 <span kattr:radio_yn="styYn" label1="숙박" label2="비숙박" th:attr="defaultVal=${operRsltInfo.styYn== null ? 'N':operRsltInfo.styYn}" ></span>
                                 <span class="form-input mo-flex-wrap">
-                                    <input type="number" class="ar" title="박" style="flex:0 0 50px;width:50px;" id="styNight" name="styNight" th:value="${operRsltInfo.styNight}">
+                                    <input type="number" class="ar" title="박" style="flex:0 0 50px;width:50px;" id="styNight" name="styNight" th:value="${operRsltInfo.styNight}" th:readonly='${operRsltInfo.styYn!="Y" ? true:false}'>
                                     <div class="bul">박</div>
-                                    <input type="number" class="ar" title="일" style="flex:0 0 50px;width:50px;" id="styDaytm" name="styDaytm" th:value="${operRsltInfo.styDaytm}">
+                                    <input type="number" class="ar" title="일" style="flex:0 0 50px;width:50px;" id="styDaytm" name="styDaytm" th:value="${operRsltInfo.styDaytm}" th:readonly='${operRsltInfo.styYn!="Y" ? true:false}'>
                                     <div class="bul">일</div>
                                 </span>
                             </td>
                         </tr>
                         <tr>
-                            <th scope="row">(실외활동) <br> 보험가입여부</th>
+                            <th scope="row">(실외활동) <br> 보험가입여부[[${operRsltInfo.insrncJoinYn}]]</th>
+
                             <td>
-                                <span kattr:radio_yn="insrncJoinYn" label1="가입" label2="미가입" th:attr="defaultVal=${operRsltInfo.insrncJoinYn== Y ? 'Y':operRsltInfo.insrncJoinYn}" ></span>
-                                <input type="text" title="보험사유" id="insrncRsn" name="insrncRsn" th:value="${operRsltInfo.insrncRsn}">
+                                <span kattr:radio_yn="insrncJoinYn" label1="가입" label2="미가입" th:attr="defaultVal=${operRsltInfo.insrncJoinYn=='Y'?'Y':operRsltInfo.insrncJoinYn}" ></span>
+                                <input type="text" title="보험사유" id="insrncRsn" name="insrncRsn" th:value="${operRsltInfo.insrncRsn}" th:readonly='${operRsltInfo.insrncJoinYn=="Y" ? true:false}'>
                             </td>
                             <th scope="row">변경여부</th>
                             <td>
@@ -196,10 +198,6 @@
                             <th scope="row">안전사고유무</th>
                             <td>
                                 <span kattr:radio_yn="sftyacdntEnnc" label1="있음" label2="없음" th:attr="defaultVal=${operRsltInfo.sftyacdntEnnc== 'Y' ? 'Y':'N'}" ></span>
-<!--                                 <div class="form-check-list"> -->
-<!--                                     <label class="inp"><input type="radio"><b>있음</b></label> -->
-<!--                                     <label class="inp"><input type="radio"><b>없음</b></label> -->
-<!--                                 </div> -->
                             </td>
                         </tr>
                         <tr>
@@ -347,9 +345,9 @@
                                 <textarea maxlength="1000" title="자격 및 배치" id="qlfcPostng" name="qlfcPostng" >[[${operRsltInfo.qlfcPostng}]]</textarea>
                                 <div class="desc ar size"><span>0</span> / 1,000자</div>
                             </td>
-                        </tr
-                        ><tr>
-                            <th scope="row">교육활동 퐌경</th>
+                        </tr>
+                        <tr>
+                            <th scope="row">교육활동 환경</th>
                             <th scope="row">안전관리</th>
                             <td>
                                 <textarea maxlength="1000" title="안전관리" id="sftyMng" name="sftyMng" >[[${operRsltInfo.sftyMng}]]</textarea>
@@ -359,12 +357,12 @@
                         <tr>
                             <th scope="row">첨부파일</th>
                             <td colspan="2">
-                                <div class="form-input-file">
-
+                                <div class="form-input-file al">
                                     <span class="form-input">
                                         <input type="file" id="multiFileInput" name="files" class="blind" multiple="multiple" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부" maxcount="10">
                                     </span>
                                     <label for="multiFileInput" class="btn-medium btn-gray">파일선택</label>
+
                                     <div class="upload-response">
                                         <div id="multipleFileUploadError"></div>
                                         <div id="multipleFileUploadSuccess">
@@ -465,7 +463,7 @@
         		$("#listBtn").hide();
         		//조회 모드
         		if($("#mode").val() =="read"){
-            		$("#operRsltInsertForm input, textArea ").prop('readonly', true);
+            		$("#operRsltInsertForm input, textarea ").prop('readonly', true);
 
             		$('input[type=radio], input[type=checkbox]').click(function (event){
             		       event.preventDefault();
@@ -486,6 +484,7 @@
                 var vWholNopeSum = 0;
 
                 list.forEach(function (item, idx) {
+
                 	vCntSum      += item.cnt      !=null ? Number(item.cnt     ) : 0;
                 	vWholHrSum   += item.wholHr   !=null ? Number(item.wholHr  ) : 0;
                 	vWholNopeSum += item.wholNope !=null ? Number(item.wholNope) : 0;
@@ -501,18 +500,16 @@
                              <td><input type="number" title="지도자 배치 비율" id="ldrPostngRt" name="ldrPostngRt" value="${item.ldrPostngRt}"></td>
                              <td>
                                  <div class="btn-calc">
-
-                                     ${idx > 1 ? `<button type="button" id="prfmncBtnAdd" class="btn-minus-table" onclick="operRsltInsert.delPrfmnc(${idx+1})" title="행 삭제"></button>`:``}
-
                                      <button type="button" class="btn-plus-table" id="prfmncBtnDel" onclick="operRsltInsert.addPrfmnc(${idx+1})" title="행 추가"></button>
+                   ${(idx+1) != 1 ? `<button type="button" id="prfmncBtnAdd" class="btn-minus-table" onclick="operRsltInsert.delPrfmnc(${idx+1})" title="행 삭제"></button>`:``}
                                  </div>
                              </td>
                              </tr>
                              `
-                    $("#prfmncTbody").append(html);
 
                 });
 
+                $("#prfmncTbody").append(html);
                 $("#cntSum"     ).prop("innerText",vCntSum      + "회" );
                 $("#wholHrSum"  ).prop("innerText",vWholHrSum   + "시간" );
                 $("#wholNopeSum").prop("innerText",vWholNopeSum + "명" );
@@ -532,19 +529,17 @@
                     <td><input type="number" title="지도자 배치 비율" id="ldrPostngRt" name="ldrPostngRt" ></td>
                     <td>
                         <div class="btn-calc">
-
-                            ${idx!=1?`<button type="button" class="btn-minus-table" onclick="operRsltInsert.delPrfmnc(${idx+1})" title="행 삭제"></button>`:``}
-
+                            <button type="button" class="btn-minus-table" onclick="operRsltInsert.delPrfmnc(${idx+1})" title="행 삭제"></button>
                             <button type="button" class="btn-plus-table"  onclick="operRsltInsert.addPrfmnc(${idx+1})" title="행 추가"></button>
                         </div>
                     </td>
                     </tr>
                     `
-           $("#prfmncTbody").append(html);
+                $("#prfmncTbody").append(html);
         	},
 
         	delPrfmnc(idx){
-
+        		$("#prfmncTr"+idx).remove();
         	},
 
         	goList(){
@@ -557,17 +552,17 @@
             },
         	doSbmsn(){
 
-        		//var param = $("#operRsltInsertForm").serializeArray();
-
         		var param={};
 
-        		$("#operRsltInsertForm input, textArea").each(function(idx,item){ param[item.id]=item.value; });
+        		$("#operRsltInsertForm input, textarea").each(function(idx,item){ param[item.id]=item.value; });
 
-        		param["prgrmTypeCd"]=$("[id^=prgrmTypeCd]:checked").val();
-        		param["sftyacdntEnnc"]=$("[id^=sftyacdntEnnc]:checked").val();
-        		param["styYn"]=$("[id^=styYn]:checked").val();
-        		param["issuYn"]=$("[id^=issuYn]:checked").val();
-        		//debugger;return;
+        		param["prgrmTypeCd"  ] = $("[name=prgrmTypeCd]:checked").val();
+        		param["sftyacdntEnnc"] = $("[name=sftyacdntEnnc]:checked").val();
+        		param["styYn"        ] = $("[name=styYn]:checked").val();
+                param["insrncJoinYn" ] = $("[name=insrncJoinYn]:checked").val();
+                param["pchrgYn"      ] = $("[name=pchrgYn]:checked").val();
+                param["issuYn"       ] = $("[name=issuYn]:checked").val();
+debugger;
 
         		$("#prfmncTbody [id^=oprtnDe] ").each(function(idx,item){ param["operPrfmncLst[" + idx+ "].oprtnDe" ]=item.value; });
         		$("#prfmncTbody [id^=trgt]    ").each(function(idx,item){ param["operPrfmncLst[" + idx+ "].trgt"    ]=item.value; });
@@ -576,8 +571,9 @@
         		$("#prfmncTbody [id^=cnt]     ").each(function(idx,item){ param["operPrfmncLst[" + idx+ "].cnt"     ]=item.value; });
         		$("#prfmncTbody [id^=wholHr]  ").each(function(idx,item){ param["operPrfmncLst[" + idx+ "].wholHr"  ]=item.value; });
         		$("#prfmncTbody [id^=wholNope]").each(function(idx,item){ param["operPrfmncLst[" + idx+ "].wholNope"]=item.value; });
+        		$("#prfmncTbody [id^=ldrPostngRt]").each(function(idx,item){ param["operPrfmncLst[" + idx+ "].ldrPostngRt"]=item.value; });
 
-
+        		if(!confirm("저장 하시겠습니까?")) return;
 
         		if(displayWorkProgress(true)) {
                     $.ajax({
@@ -613,6 +609,15 @@
                   , ldrChgCn    : { maxlength:1000 }
                   , eduEnvChgCn : { maxlength:1000 }
                   , aplcntid    : { maxlength:1000 }
+                  , snrstfdvlprTelno : { number: true, maxlength: 12}
+                  , snrstfdvlprMoblphon : { number: true, maxlength: 12}
+                  , picTelno : { number: true, maxlength: 12}
+                  , picMoblphon : { number: true, maxlength: 12}
+                  , eduNope : { number: true, maxlength: 10}
+                  , etrfee : { number: true, maxlength: 10}
+                  , eduCnt : { number: true, maxlength: 10}
+                  , eduHr : { number: true, maxlength: 10}
+                  , eduMnt : { number: true, maxlength: 10}
                 } ,
                 messages: {
                     splmntDmndCn: { maxlength:"변경시 : 변경내용 은 1000자를 넘을 수 없습니다."  }
@@ -621,18 +626,27 @@
                   , eduEnvChgCn : { maxlength:"지도자영역 : 변경내용 은 1000자를 넘을 수 없습니다."  }
                   , aplcntid    : { maxlength:"교육활동환경 : 변경내용 은 1000자를 넘을 수 없습니다."  }
                   , prgrmChgCn  : { maxlength:"변경사유 : 변경내용 은 1000자를 넘을 수 없습니다."  }
+                  , snrstfdvlprTelno : { number: "숫자만 입력가능합니다.", maxlength:"책임개발자 전화번호는 12자를 초과할 수 없습니다." }
+                  , snrstfdvlprMoblphon : { number: "숫자만 입력가능합니다.", maxlength:"휴대전화번호는 12자를 초과할 수 없습니다." }
+                  , picTelno : { number: "숫자만 입력가능합니다.", maxlength:"운영실무자 전화번호는 12자를 초과할 수 없습니다." }
+                  , picMoblphon : { number: "숫자만 입력가능합니다.", maxlength:"운영실무자 휴대전화번호는 12자를 초과할 수 없습니다." }
+                  , eduNope : { number: "숫자만 입력가능합니다.", maxlength:"교육인원은 10자를 초과할 수 없습니다." }
+                  , etrfee : { number: "숫자만 입력가능합니다.", maxlength:"참가비는 10자를 초과할 수 없습니다." }
+                  , eduCnt : { number: "숫자만 입력가능합니다.", maxlength:"교육시간(회)는 10자를 초과할 수 없습니다." }
+                  , eduHr : { number: "숫자만 입력가능합니다.", maxlength:"교육시간(시간)은 10자를 초과할 수 없습니다." }
+                  , eduMnt : { number: "숫자만 입력가능합니다.", maxlength:"교육시간(분)은 10자를 초과할 수 없습니다." }
                 }
 
             });
 ////////////////
-            $("textArea").keyup(function (e) {
+            $("textarea").keyup(function (e) {
                 var inTxt = $(this).val();
                 if($("#"+this.id).next().prop("class")=="desc ar size"){
                     $("#"+this.id).next().children().prop("innerHTML",inTxt.length);
                 }
             });
 
-            $("textArea").trigger("keyup");
+            $("textarea").trigger("keyup");
 ////////////////
             $('#prfmncTbody').on("change", function(event) {
             	var id = event.originalEvent.target.id;
@@ -648,6 +662,58 @@
                     $("#"+id+"Sum").prop("innerText",scr + unit);
             	}
             });
+
+////////////////
+            $("input[type='radio']").on("change", function(e) {
+                var id = e.originalEvent.target.id;
+
+                //숙박여부
+                if(id.startsWith("styYn")){
+                    if($("#styYn1:checked").length==1){
+                        $("#styNight").prop("readonly", false)
+                        $("#styDaytm").prop("readonly", false)
+                    }else if($("#styYn2:checked").length==1) {
+                    	$("#styNight").val(0);
+                    	$("#styDaytm").val(0);
+                    	$("#styNight").prop("readonly", true)
+                    	$("#styDaytm").prop("readonly", true)
+                    }
+                }
+
+                //보험가입여부
+                if(id.startsWith("insrncJoinYn")){
+                    if($("#insrncJoinYn1:checked").length==1){
+                    	$("#cnsltngid").val("");
+                    	$("#insrncRsn").prop("readonly", true)
+                    }else if($("#insrncJoinYn2:checked").length==1) {
+                        $("#insrncRsn").prop("readonly", false)
+                    }
+                }
+
+                //유료 여부
+                if(id.startsWith("pchrgYn")){
+                    if($("#pchrgYn1:checked").length==1){
+                    	$("#etrfee").prop("readonly", false)
+                    }else if($("#pchrgYn2:checked").length==1) {
+                    	$("#etrfee").val(0);
+                    	$("#etrfee").prop("readonly", true)
+                    }
+                }
+
+                //발급여부
+                if(id.startsWith("issuYn")){
+                    if($("#issuYn1:checked").length==1){
+                    	$("#issuNocs").prop("readonly", false)
+                    	$("#issuSum").prop("readonly", false)
+                    }else if($("#issuYn2:checked").length==1) {
+                    	$("#issuNocs").val(0);
+                    	$("#issuSum").val(0);
+                    	$("#issuNocs").prop("readonly", true)
+                    	$("#issuSum").prop("readonly", true)
+                    }
+                }
+            });
+
 
 ////////////////
             // 파일업로드
@@ -669,6 +735,7 @@
                 formData.append("filegrpid", $("#filegrpid").val());
                 formData.append("filegrpNm", "asgsysSrng_file");
 
+                $('#multiFileInput').val("");
                 if(uploadFileCnt > 0){
                     $.ajax({
                         url : '/uploadMultipleFiles.do',
@@ -684,10 +751,18 @@
                                     $("#filegrpid").val( response[0].filegrpid );
                                 }
 
+//                                 for(i = 0 ;i < response.length; i++ ){
+//                                     content = '<ul>';
+//                                     content +=  '<li class="file-block" data_ext="'+response[i].fileExtsn.replace(".", '')+'" id="'+response[i].fileid+'"><span class="name">'+response[i].orginlFileNm
+//                                     content += '&nbsp;&nbsp;<a href="javascript:uploadFileCnt--;fn_deleteFileList("'+response[i].fileid+'","'+response[i].fileIdntfcKey+'")>X</a></span></li>'
+//                                     content += '</ul>';
+//                                     $('#multipleFileUploadSuccess').append(content);
+//                                 }
+
                                 for(i = 0 ;i < response.length; i++ ){
                                     content = '<ul>';
                                     content +=  '<li class="file-block" data_ext="'+response[i].fileExtsn.replace(".", '')+'" id="'+response[i].fileid+'"><span class="name">'+response[i].orginlFileNm
-                                    content += '&nbsp;&nbsp;<a href="javascript:uploadFileCnt--;fn_deleteFileList("'+response[i].fileid+'","'+response[i].fileIdntfcKey+'")>X</a></span></li>'
+                                    content += '&nbsp;&nbsp;<a href="javascript:void(0)" onclick=uploadFileCnt--;fn_deleteFile("'+response[i].fileid+'","'+response[i].fileIdntfcKey+'")>X</a></span></li>'
                                     content += '</ul>';
                                     $('#multipleFileUploadSuccess').append(content);
                                 }
@@ -697,13 +772,6 @@
                 }
             });
         });
-
-     // 파일삭제
-        function fn_deleteFileList(fileid, fileIdntfcKey){
-            if(!confirm("파일을 삭제하시겠습니까?")){return;}
-            fn_deleteFile(fileid, fileIdntfcKey);
-            $("#"+fileid).remove();
-        }
 
         // 파일삭제
         function fn_deleteFile(fileid, fileIdntfcKey){
