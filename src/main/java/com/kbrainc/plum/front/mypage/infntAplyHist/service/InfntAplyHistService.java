@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.kbrainc.plum.front.mypage.infntAplyHist.model.InfntAplyHistVo;
 import com.kbrainc.plum.front.srvy.model.SrvyVo;
+import com.kbrainc.plum.mng.qestnr.model.QitemVo;
 
 /**
 * 유아환경교육관 교육신청 서비스 클래스
@@ -111,5 +112,8 @@ public interface InfntAplyHistService {
     public int updateInfntAply(InfntAplyHistVo infntAplyHistVo) throws Exception;
 
     public String selectEduTrgtCd(InfntAplyHistVo infntAplyHistVo) throws Exception;
-    
+
+    public SrvyVo selectSrvyInfo(SrvyVo srvyVo) throws Exception;
+
+    public List<QitemVo> selectAnsList(SrvyVo srvyVo) throws Exception;
 }

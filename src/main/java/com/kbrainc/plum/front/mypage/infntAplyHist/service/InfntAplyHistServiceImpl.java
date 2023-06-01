@@ -3,18 +3,19 @@
  */
 package com.kbrainc.plum.front.mypage.infntAplyHist.service;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
+import com.kbrainc.plum.front.mypage.infntAplyHist.model.InfntAplyHistDao;
+import com.kbrainc.plum.front.mypage.infntAplyHist.model.InfntAplyHistVo;
+import com.kbrainc.plum.front.srvy.model.SrvyDao;
+import com.kbrainc.plum.front.srvy.model.SrvyVo;
+import com.kbrainc.plum.mng.qestnr.model.QitemExVo;
+import com.kbrainc.plum.mng.qestnr.model.QitemVo;
+import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import org.apache.ibatis.type.Alias;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kbrainc.plum.front.mypage.infntAplyHist.model.InfntAplyHistDao;
-import com.kbrainc.plum.front.mypage.infntAplyHist.model.InfntAplyHistVo;
-import com.kbrainc.plum.front.srvy.model.SrvyVo;
-import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+import javax.annotation.Resource;
+import java.util.List;
 
 /**
 * 유아환경교육관 교육신청 서비스 구현 클래스
@@ -37,7 +38,10 @@ public class InfntAplyHistServiceImpl extends PlumAbstractServiceImpl implements
 
     @Resource(name = "front.infntAplyHistDao")
     private InfntAplyHistDao infntAplyHistDao;
-    
+
+    @Resource(name = "front.SrvyDao")
+    private SrvyDao srvyDao;
+
     /**
      * 유아환경교육관 신청이력 조회
      *
@@ -163,5 +167,28 @@ public class InfntAplyHistServiceImpl extends PlumAbstractServiceImpl implements
     @Override
     public String selectEduTrgtCd(InfntAplyHistVo infntAplyHistVo) throws Exception {
         return infntAplyHistDao.selectEduTrgtCd(infntAplyHistVo);
-    }    
+    }
+
+    @Override
+    public SrvyVo selectSrvyInfo(SrvyVo srvyVo) throws Exception {
+        return infntAplyHistDao.selectSrvyInfo(srvyVo);
+    }
+
+    @Override
+    public List<QitemVo> selectAnsList(SrvyVo srvyVo) throws Exception {
+        List<QitemVo> qitemList = srvyDao.selectAnsList(srvyVo);
+        QitemVo qitemInfo;
+        List<QitemExVo> exList;
+        if(qitemList != null && qitemList.size() >0) {
+            for(int i = 0; i < qitemList.size(); i++) {
+                qitemInfo = qitemList.get(i);
+                if(qitemInfo.getExCnt() > 0) {
+                    exList = srvyDao.selectExList(qitemInfo);
+                    qitemInfo.setExampleList(exList);
+                }
+            }
+        }
+
+        return qitemList;
+    }
 }

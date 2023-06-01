@@ -40,7 +40,7 @@
                             <button type="button" class="btn-small btn-gray"  th:onclick="infntAplyHistDetail.onSrvySbmsnInfoPopup([[${infntAplyHistInfoVo.aplyid}]], [[${infntAplyHistInfoVo.sbmsnid}]], [[${infntAplyHistInfoVo.aplcntDgstfnSrvyid}]], [[${infntAplyHistInfoVo.aplcntDgstfnQestnrid}]])">설문확인</button>
                         </th:block>
 
-                        <th:block th:if="${infntAplyHistInfoVo.canSrvy == 'Y' and infntAplyHistInfoVo.canShareSrvy == 'Y'}">
+                        <th:block th:if="${infntAplyHistInfoVo.canSrvy == 'Y'}">
                             <button type="button" class="btn-small btn-outline-blue" th:onclick="infntAplyHistDetail.srvySendPopup([[${infntAplyHistInfoVo.aplyid}]], [[${infntAplyHistInfoVo.stdntDgstfnSrvyid}]], [[${infntAplyHistInfoVo.stdntDgstfnQestnrid}]])">설문공유</button>
                         </th:block>
 
@@ -94,7 +94,7 @@
         </div>
         <div class="table-row table-row-mo">
             <table>
-                <caption>신청 정보 - 신청상태, 신청일, 신청기관, 전화번호, 신청자명, 휴대전화, 기관주소, 상세주소, 이메일, 교육대상, 총 교육인원, 인솔교사인원, 신청인 지역, 기타사항</caption>
+                <caption>신청 정보 - 신청상태, 신청일, 신청기관, 전화번호, 신청자명, 신청자 이메일, 기관주소, 방문교사 휴대전화, 교육대상, 총 교육인원, 인솔교사인원, 신청인 지역, 기타사항</caption>
                 <colgroup>
                     <col style="width:140px;">
                     <col>
@@ -216,7 +216,7 @@
         <input type="hidden" id="searchKeyword" name="searchKeyword" th:value="${infntAplyHistVo.searchKeyword}">
         <input type="hidden" id="orderField" name="orderField" th:value="${infntAplyHistVo.orderField}">
         <input type="hidden" id="aplyid" name="aplyid" th:value="${infntAplyHistVo.aplyid}">
-        <input type="hidden" id="prgrmNm" name="prgrmNm" th:value="${infntAplyHistVo.prgrmNm}">
+        <input type="hidden" id="prgrmNm" name="prgrmNm" th:value="${infntAplyHistInfoVo.prgrmNm}">
     </form>
 
     <!-- layerpopup -->
@@ -233,6 +233,7 @@
     </div>
     
     <script th:inline="javascript">
+        var de = /*[[${infntAplyHistInfoVo.de}]]*/null;
 
     /*<![CDATA[*/
 	    $(function () {
@@ -351,14 +352,13 @@
             },
 
             submit(url) {
-                console.log(url);
                 let f = document.forms.listForm;
                 f.action = url;
                 f.submit();
             },
 
             onSrvySbmsnInsertPopup: function(aplyid, srvyid, qestnrid) {
-                popupCenter({url: '/front/srvy/srvySbmsnInsertPopup.html?srvyid=' + srvyid + '&qestnrid=' + qestnrid + '&infntPrgrmAplyid=' + aplyid, title: '설문조사', w: 1280, h: 1000, l: 0, t: 0});
+                popupCenter({url: '/front/mypage/infntAplyHist/srvySbmsnInsertPopup.html?srvyid=' + srvyid + '&qestnrid=' + qestnrid + '&infntPrgrmAplyid=' + aplyid, title: '설문조사', w: 1280, h: 1000, l: 0, t: 0});
             },
 
             onSrvySbmsnInfoPopup: function(aplyid, sbmsnid, srvyid, qestnrid) {
@@ -366,7 +366,8 @@
             },
 
             srvySendPopup: function(aplyid, srvyid, qestnrid) {
-                $("#srvySendModalPopup").load("/front/mypage/infntAplyHist/infntAplyHistSrvySendPopup.html?aplyid=" + aplyid + "&stdntDgstfnSrvyid=" + srvyid + "&stdntDgstfnQestnrid=" + qestnrid + "&prgrmNm=" + $("#prgrmNm").val(), function(response, status, xhr) {
+                $("#srvySendModalPopup").load("/front/mypage/infntAplyHist/infntAplyHistSrvySendPopup.html?aplyid=" + aplyid + "&stdntDgstfnSrvyid=" + srvyid +
+                    "&stdntDgstfnQestnrid=" + qestnrid + "&de=" + de, function(response, status, xhr) {
                     if (status == "success") {
                         layerPopup.open({target:'srvySendModalPopup'});
                     }

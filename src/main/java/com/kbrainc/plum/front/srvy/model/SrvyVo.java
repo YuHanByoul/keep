@@ -121,7 +121,10 @@ public class SrvyVo extends ParentRequestVo {
     
     /** 등록자 아이디 */
     private String rgtrid;
-    
+
+    /** 공유설문 여부 */
+    private String shareYn = "N";
+
     /** 수정일자 정보 */
     public Date getMdfcnDt() {
         return mdfcnDt != null ? (Date) mdfcnDt.clone() : null;

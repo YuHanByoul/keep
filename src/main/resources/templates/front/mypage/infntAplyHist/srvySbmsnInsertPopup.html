@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/popupLayout" >
+<body>
+<div layout:fragment="content">
+        <div class="layer-popup layer-window-alert layer-alert active">
+            <div class="layer-wrap">
+                <div class="layer-header">
+                    <strong class="tit">설문조사</strong>
+                    <button type="button" class="btn-layer-close" title="닫기" onclick="window.close()"></button>
+                </div>
+                <div class="layer-content">
+
+                    <div class="table-caption j-center mt0">
+                        <h3 class="sub-title ac" th:text="${srvyInfo.srvyNm}"></h3>
+                    </div>
+                    <hr style="display:block;border:0;border-top:1px solid var(--graye);margin:0 0 20px 0;">
+                    <p th:text="${srvyInfo.expln}"></p>
+                    <p class="desc-info mt15">문항에 대한 귀하의 의견(찬성정도)을 평가해주십시오.  </p>
+                    <hr style="display:block;border:0;border-top:1px solid var(--graye);margin:20px 0 -22px;">
+                    <div class="table-caption">
+                        <div class="right">
+                        </div>
+                    </div>
+
+                    <th:block th:if="${srvyInfo.qestnrKndCd == '110104' or srvyInfo.qestnrKndCd == '110106'}">
+                        <div class="table-caption d-flex">
+                            <div class="left d-flex a-center">
+                                <div class="mr10">참여자 이름<i class="ast" title="필수입력">*</i></div>
+                                <div class="form-input">
+                                    <input name="prtpntNm" type="text" title="참여자 이름" placeholder="실명을 입력해 주세요.">
+                                </div>
+                            </div>
+                        </div>
+                    </th:block>
+                    <div class="survay-list">
+                        <dl>
+                            <div class="list" th:each="item : ${qitemList}" th:data-qitemid="${item.qitemid}" th:data-qitemType="${item.qitemTypeCd}">
+                                <dt>
+                                    <div class="tit">
+                                        <strong th:text="${item.cn}"></strong>
+                                    </div>
+                                </dt>
+                                <dd>
+                                    <th:block th:switch="${item.qitemTypeCd}">
+                                        <div th:case="107100" class="form-check-list flex-row mo-flex-column">
+                                            <th:block th:each="example : ${item.exampleList}">
+                                                <label class="inp"><input type="radio" th:value="${example.exNo}" th:name="${'ans' + item.qitemid}"><b th:text="${example.cn}"></b></label>
+                                            </th:block>
+                                        </div>
+                                        <div th:case="107101" class="form-check-list flex-row mo-flex-column">
+                                            <th:block th:each="example : ${item.exampleList}">
+                                                <label class="inp" th><input type="radio" th:value="${example.exNo}" th:name="${'ans' + item.qitemid}"><b th:text="${example.cn}"></b></label>
+                                            </th:block>
+                                        </div>
+                                        <div th:case="107102" class="form-check-list flex-row mo-flex-column">
+                                            <th:block th:each="example : ${item.exampleList}">
+                                                <label class="inp"><input type="checkbox" th:value="${example.exNo}" th:name="${'ans' + item.qitemid}"><b th:text="${example.cn}"></b></label>
+                                            </th:block>
+                                        </div>
+                                        <div th:case="107103" class="form-check-list flex-row mo-flex-column">
+                                            <th:block th:each="example : ${item.exampleList}">
+                                                <label class="inp"><input type="radio"  th:data-scr="${example.scr}" th:value="${example.exNo}" th:name="${'ans' + item.qitemid}"><b th:text="${example.cn + '(' + example.scr + '점)'}"></b></label>
+                                            </th:block>
+                                        </div>
+                                        <div th:case="107104" class="form-input">
+                                            <input type="text" th:title="${item.cn}" th:name="${'ans' + item.qitemid}" maxlength="50" onkeyup="srvySbmsnInsert.onChangeText(this);">
+                                            <div class="desc ar size fc-black9 mt5"><span class="textLen">0</span> / 50자</div>
+                                        </div>
+                                        <div th:case="107105" class="form-input mt10">
+                                            <textarea th:title="${item.cn}" th:name="${'ans' + item.qitemid}" maxlength="500" onkeyup="srvySbmsnInsert.onChangeText(this);"></textarea>
+                                            <div class="desc ar size fc-black9 mt5"><span class="textLen">0</span> / 500자</div>
+                                        </div>
+                                        <th:block th:case="107106">
+                                            <div class="form-check-list flex-row mo-flex-column">
+                                                <th:block th:each="example : ${item.exampleList}">
+                                                    <label class="inp">
+                                                        <input type="radio" th:data-etcYn="${example.etcYn}" th:value="${example.exNo}" th:name="${'ans' + item.qitemid}" th:qitemid="${item.qitemid}" onclick="srvySbmsnInsert.onChangeAnswer(this);">
+                                                        <b th:text="${example.cn}"></b>
+                                                    </label>
+                                                </th:block>
+                                            </div>
+                                            <div class="form-input mt10 d-none" th:id="${'etc' + item.qitemid}">
+                                                <textarea th:title="${item.cn}" th:name="${'etc' + item.qitemid}" maxlength="500" onkeyup="srvySbmsnInsert.onChangeText(this);"></textarea>
+                                                <div class="desc ar size fc-black9 mt5"><span class="textLen">0</span> / 500자</div>
+                                            </div>
+                                        </th:block>
+                                    </th:block>
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+                <div class="layer-footer">
+                    <div class="btn-wrap">
+                        <div class="center">
+                            <button type="button" class="btn-medium btn-gray" data-layer-close onclick="srvySbmsnInsert.offInsert();">닫기</button>
+                            <th:block sec:authorize-url="/front/mypage/infntAplyHist/insertSrvySbmsn.do">
+                                <button type="button" class="btn-medium btn-green" onclick="srvySbmsnInsert.onInsert();">제출하기</button>
+                            </th:block>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <form id="srvySbmsnForm">
+        <input type="hidden" name="srvyid" th:value="${srvyInfo.srvyid}" />
+        <input type="hidden" name="infntPrgrmAplyid" th:value="${infntPrgrmAplyid}" />
+        <input type="hidden" name="mvmnPrgrmAplyid" th:value="${mvmnPrgrmAplyid}" />
+        <input type="hidden" id="qestnrKndCd" th:value="${srvyInfo.qestnrKndCd}" />
+    </form>
+    <div class="layer-popup layer-window-alert" data-layer-id="srvySbmsnCmplPopup">
+        <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+        <div class="layer-wrap pb0" id="srvySbmsnCmplPopup">
+        </div>
+    </div>
+
+
+    <!-- //content -->
+    <script th:inline="javascript">
+        var srvySbmsnInsert = {
+            init: function() {
+                this.registEvent();
+            }
+
+            , registEvent: function() {
+                // TODO
+            }
+
+            , onChangeText: function(el) {
+                $(el).closest("div").find(".textLen").text($(el).val().length);
+            }
+
+            , onChangeAnswer: function(el) {
+                var etcYn = $(el).attr("data-etcYn");
+                var qitemid = $(el).attr("qitemid");
+
+                if(etcYn == "Y") {
+                    $("#etc" + qitemid).removeClass("d-none");
+                } else {
+                    $("#etc" + qitemid).addClass("d-none");
+                }
+            }
+
+            , onInsert: function() {
+                var isValid = true;
+                var qitemid, typeCd;
+                var ansDscrp, ans, isChecked;
+                var ansList = [];
+                var ansData;
+
+                $("[data-qitemid]").each(function(index, item) {
+                    ansData = {};
+                    qitemid = $(item).attr("data-qitemid");
+                    typeCd = $(item).attr("data-qitemType");
+                    ansData.qitemid = qitemid;
+                    if(typeCd == "107104") { // 단답형
+                        ansDscrp = $(item).find("input[name='ans" + qitemid + "']").val();
+                        if(!ansDscrp) {
+                            isValid = false;
+                            return false;
+                        }
+                        ansData.ansDscrp = ansDscrp;
+                    } else if(typeCd == "107105") { // 서술형
+                        ansDscrp = $(item).find("textarea[name='ans" + qitemid + "']").val();
+                        if(!ansDscrp) {
+                            isValid = false;
+                            return false;
+                        }
+                        ansData.ansDscrp = ansDscrp;
+                    } else {
+                        isChecked = $(item).find("input[name='ans" + qitemid + "']").is(":checked");
+                        if(!isChecked) {
+                            isValid = false;
+                            return false;
+                        }
+                        ans = $(item).find("input[name='ans" + qitemid + "']:checked");
+                        if(typeCd == "107102") { // 복수선택형
+                            ansData.ans = ans.map(function() { return this.value; }).get().join(",");
+                        } else if(typeCd == "107106") { // 혼합형
+                            ansData.ans = ans.val();
+                            if(ans.attr("data-etcYn") == "Y") {
+                                ansData.ansDscrp = $(item).find("textarea[name='etc" + qitemid + "']").val();///////////////
+                            }
+                        } else if(typeCd == "107103") { // 척도형
+                            ansData.ans = ans.val();
+                            ansData.scale = ans.val();
+                            ansData.scr = ans.attr("data-scr");
+                        } else { // OX형, 선택형
+                            ansData.ans = ans.val();
+                        }
+                    }
+                    ansList.push(ansData);
+                });
+
+                var prtpntNm = $("input[name='prtpntNm']").val() ;
+                if(prtpntNm == undefined || prtpntNm == ''){
+                    if($("#qestnrKndCd").val() == '110104' || $("#qestnrKndCd").val() == '110106'){
+                        isValid = false;
+                        return false;
+                    }
+                }
+                var params = {
+                    srvyid: $("input[name='srvyid']").val()
+                    , infntPrgrmAplyid: $("input[name='infntPrgrmAplyid']").val()
+                    , mvmnPrgrmAplyid: $("input[name='mvmnPrgrmAplyid']").val()
+                    , prtpntNm: prtpntNm
+                    , ansList: JSON.stringify(ansList)
+                };
+
+                if(!isValid) {
+                    alert("평가를 모두 완료후에 제출해주세요. ");
+                    return false;
+                }
+
+                if(confirm("설문을 제출하시겠습니까?")) {
+                    if(displayWorkProgress(true)) {
+                        $.ajax({
+                            url : "/front/mypage/infntAplyHist/insertSrvySbmsn.do"
+                            , type: "POST"
+                            , cache: false
+                            , dataType: "json"
+                            , data: params
+                            , success: function(response) {
+                                if(response.result == "success") {
+                                    alert(response.msg);
+
+                                    if(opener != null ) {
+                                        if(opener.infntAplyHist){
+                                            opener.infntAplyHist.selectInfntAplyHistList();
+                                        }
+                                        if(opener.mvmnAplyHist){
+                                            opener.mvmnAplyHist.selectMvmnAplyHistList();
+                                        }
+                                    }
+
+                                    var aplyType = "";
+
+                                    if($("input[name='infntPrgrmAplyid']").val() > 0) aplyType = "I";
+                                    if($("input[name='mvmnPrgrmAplyid']").val()  > 0) aplyType = "M";
+
+                                    if(aplyType != "") {
+                                        popupCenter({url: '/front/srvy/srvySbmsnCmplPopup.html?aplyType=' + aplyType, title: '설문조사완료', w: 442, h: 389, l: 0, t: 0});
+                                    } else {
+                                        window.close();
+                                    }
+                                } else {
+                                    alert(response.msg);
+                                    window.close();
+                                    location.href = "/";
+                                }
+                                closeWorkProgress();
+                            }
+                        });
+                    }
+                }
+            }
+
+            , offInsert: function() {
+                if(confirm("설문조사를 중지 하시겠습니까?\n설문내용은 저장되지 않습니다.")) {
+                    window.close();
+                }
+            }
+        };
+
+        $(function() {
+            srvySbmsnInsert.init();
+        });
+
+        function closeWin(){   //국가환경교육관 설문완료 팝업시, 부모창 닫기 2023-03-30
+            top.window.opener = top;
+            top.window.open('','_parent','');
+            top.window.close();
+        }
+    </script>
+</div>
+</body>
+</html>

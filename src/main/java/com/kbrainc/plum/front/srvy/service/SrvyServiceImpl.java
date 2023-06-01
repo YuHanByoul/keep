@@ -146,10 +146,14 @@ public class SrvyServiceImpl extends PlumAbstractServiceImpl implements SrvyServ
         SrvyVo srvyVo = new SrvyVo();
         srvyVo.setUser(srvySbmsnVo.getUser());
         srvyVo.setSrvyid(srvySbmsnVo.getSrvyid());
-        int cnt = srvyDao.selectSbmsnCnt(srvyVo);
-        if(cnt > 0) {
-            return retVal;
+
+        if(srvySbmsnVo.getUser() != null) {
+            int cnt = srvyDao.selectSbmsnCnt(srvyVo);
+            if(cnt > 0) {
+                return retVal;
+            }
         }
+
         // 아이피 확인
         srvySbmsnVo.setUserIp(CommonUtil.getClientIp(request));
         // 브라우저 확인

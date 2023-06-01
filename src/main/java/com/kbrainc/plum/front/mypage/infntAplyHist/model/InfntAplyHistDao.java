@@ -5,6 +5,7 @@ package com.kbrainc.plum.front.mypage.infntAplyHist.model;
 
 import java.util.List;
 
+import com.kbrainc.plum.mng.qestnr.model.QitemVo;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import com.kbrainc.plum.front.srvy.model.SrvyVo;
@@ -136,4 +137,6 @@ public interface InfntAplyHistDao {
     public int deleteTrgtCd(InfntAplyHistVo infntAplyHistVo) throws Exception;
 
     public String selectEduTrgtCd(InfntAplyHistVo infntAplyHistVo) throws Exception;
+
+    public SrvyVo selectSrvyInfo(SrvyVo srvyVo) throws Exception;
 }
