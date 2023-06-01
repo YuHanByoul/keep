@@ -131,6 +131,7 @@ public class EnveduController {
         } else {
             resultMap.put("totalCount", 0);
         }
+        
         resultMap.put("list", result);
         resultMap.put("nextCnt", nextCnt);
         resultMap.put("prevCnt", prevCnt);
@@ -178,7 +179,9 @@ public class EnveduController {
         result =  enveduService.selectPrgrmgdList(prgrmgdVo);
         
         if(prgrmgdVo.getCompareDate().equals("")) {
-            prgrmgdVo.setCompareDate("2023-05-25");
+            LocalDate now = LocalDate.now();
+            LocalDate.now(ZoneId.of("Asia/Seoul"));
+            prgrmgdVo.setCompareDate(now.toString());
         }
         
         nextCnt = enveduService.selectPrgrmgdNextCount(prgrmgdVo);
@@ -189,6 +192,7 @@ public class EnveduController {
         } else {
             resultMap.put("totalCount", 0);
         }
+        
         resultMap.put("list", result);
         resultMap.put("nextCnt", nextCnt);
         resultMap.put("prevCnt", prevCnt);
