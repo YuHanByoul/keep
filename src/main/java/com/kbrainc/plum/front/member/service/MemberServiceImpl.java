@@ -465,29 +465,29 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     }
     
     /**
-    * ci에 해당하는 회원과 어린이회원의 계정정보를 조회한다.
+    * ci 또는 휴대폰번호에 해당하는 회원과 어린이회원의 계정정보를 조회한다.
     *
-    * @Title : selectAcntFromCiList
-    * @Description : ci에 해당하는 회원과 어린이회원의 계정정보를 조회한다
+    * @Title : selectAcntFromCiAndMoblphonList
+    * @Description : ci 또는 휴대폰번호에 해당하는 회원과 어린이회원의 계정정보를 조회한다
     * @param memberAcntPswdFindVo MemberAcntPswdFindVo객체
     * @return List<MemberAcntPswdFindVo> 계정 목록
     * @throws Exception 예외
     */
-    public List<MemberAcntPswdFindVo> selectAcntFromCiList(MemberAcntPswdFindVo memberAcntPswdFindVo) throws Exception {
-        return memberDao.selectAcntFromCiList(memberAcntPswdFindVo);
+    public List<MemberAcntPswdFindVo> selectAcntFromCiAndMoblphonList(MemberAcntPswdFindVo memberAcntPswdFindVo) throws Exception {
+        return memberDao.selectAcntFromCiAndMoblphonList(memberAcntPswdFindVo);
     }
     
     /**
-    * ci와 acnt에 해당하는 회원 정보를 조회한다.
+    * ci 또는 휴대폰번호가 일치하는 acnt에 해당하는 회원 정보를 조회한다.
     *
-    * @Title : selectAcntFromCi
-    * @Description : ci와 acnt에 해당하는 회원 정보를 조회한다.
+    * @Title : selectAcntFromCiAndMoblphon
+    * @Description : ci 또는 휴대폰번호가 일치하는 acnt에 해당하는 회원 정보를 조회한다.
     * @param memberAcntPswdFindVo MemberAcntPswdFindVo객체
     * @return MemberAcntPswdFindVo 계정 정보
     * @throws Exception 예외
     */
-    public MemberAcntPswdFindVo selectAcntFromCi(MemberAcntPswdFindVo memberAcntPswdFindVo) throws Exception {
-        return memberDao.selectAcntFromCi(memberAcntPswdFindVo);
+    public MemberAcntPswdFindVo selectAcntFromCiAndMoblphon(MemberAcntPswdFindVo memberAcntPswdFindVo) throws Exception {
+        return memberDao.selectAcntFromCiAndMoblphon(memberAcntPswdFindVo);
     }
     
     /**
