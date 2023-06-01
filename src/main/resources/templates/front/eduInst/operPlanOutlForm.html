@@ -54,6 +54,7 @@
         <form id="operPlanForm" name="operPlanForm" class="col col-wide">
             <input type="hidden"  id="aplyid" name="aplyid" th:value="${planOutlInfo.aplyid}" />
             <input type="hidden"  id="planKey" name="planKey" th:value="${planOutlInfo.planKey}" />
+            <input type="hidden"  id="sttsCd" name="sttsCd" th:value="${planOutlInfo.sttsCd}" />
 
             <div class="table-caption mt0">
                 <div class="left">
@@ -88,7 +89,7 @@
                                         <input type="file" id="multiFileInput" name="files" class="blind" multiple="multiple" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부" maxcount="10">
                                     </span>
                                     <button class="btn-medium btn-gray" type="button" title="파일선택" onclick="javascript:$('#multiFileInput').click()">파일선택</button>
-                                    <ul id="multipleFileUploadSuccess">
+                                    <ul id="multipleFileUploadSuccess" style='margin-top:10px'>
                                         <th:block th:if="${fileList ne null}" th:each="file : ${fileList}">
                                             <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}" th:id="${file.fileid}">
                                             <span class="name">
@@ -97,7 +98,7 @@
                                                 </a>
                                             </span>
                                                 <button type="button" class="file-delete" title="삭제" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
-                                                        th:onclick="|javascript:fn_deleteFileList(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                        th:onclick="|javascript:deleteFile(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
                                                     <span class="icon icon-circle-close"></span>
                                                 </button>
                                             </li>
@@ -324,6 +325,7 @@
 
                         if(call == "next") {
                             var id = saveData?.aplyid?? $("#aplyid").val();
+
                             location.href = nextUrl+"?aplyid=" + id;
                         }else{
                             alert("저장에 성공하였습니다.");
@@ -340,6 +342,15 @@
         }
 
         $(function(){
+
+        	if(sttsCd !='248101' && sttsCd !='248102'&& sttsCd !=null && sttsCd !='' ){
+
+                $('#operPlanForm input,textarea').prop('readonly', true);
+                $('#operPlanForm button, select, input[type=checkbox],input[type=radio],input[type=file]').prop('disabled', true);
+                $('#operPlanForm #nextBtn').prop('disabled', false);
+                $('.icon.icon-circle-close').remove();
+
+            }
         	//
         	var validator= $("#operPlanForm").validate({
                 rules: {
