@@ -195,7 +195,7 @@ public class EnveduController {
         
         resultMap.put("list", result);
         resultMap.put("nextCnt", nextCnt);
-        resultMap.put("prevCnt", prevCnt);
+        resultMap.put("prevCnt", prevCnt); 
 
         return resultMap;
     }
