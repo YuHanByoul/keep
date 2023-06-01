@@ -93,12 +93,19 @@
             CASE WHEN FXD_NTC_YN = 'Y' THEN 1
             ELSE 2
             END AS FIXORDER ,
-            A.MDFCN_DT
+            A.MDFCN_DT,
+            IFNULL(D.INST_NM,'') AS INST_NM
         FROM
             TB_CMM_PST A
         INNER JOIN
             TB_CMM_BBS B
         ON A.BBSID = B.BBSID
+        INNER JOIN
+            TB_CMM_USER C
+        ON A.RGTRID = C.USERID
+        LEFT OUTER JOIN
+            TB_CMM_INST D
+        ON C.INSTID = D.INSTID
         WHERE 1=1
             AND A.DEL_YN = 'N'
             AND A.BBSID= #{bbsid}
