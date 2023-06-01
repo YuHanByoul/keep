@@ -54,4 +54,7 @@ public class MemberAcntPswdFindVo {
     
     /** 화면에 띄울 alert메시지 */
     private String alertMsg;
+    
+    /** 휴대폰번호 */
+    private String moblphon;
 }
