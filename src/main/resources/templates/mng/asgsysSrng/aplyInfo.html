@@ -234,7 +234,7 @@
 </form>
 
 <div class="card-header p-b-10">
-    <ul class="nav nav-tabs tabs" role="tablist"><!-- [230125] nav-pills flex-column flex-lg-row -> nav-tabs tabs 탭 변경 (첫번째 탭 활성화) -->
+    <ul id='tabUl' class="nav nav-tabs tabs" role="tablist"><!-- [230125] nav-pills flex-column flex-lg-row -> nav-tabs tabs 탭 변경 (첫번째 탭 활성화) -->
         <th:block sec:authorize-url="/mng/asgsysSrng/prgrmDstnctnUpdate.html">
             <li class="nav-item flex-lg-fill text-center"><a class="nav-link" data-bs-toggle="tab" id="jdsgTab1Link" href="#jdsgTab1" role="tab" ><strong>프로그램 우수성</strong></a></li>
         </th:block>
@@ -314,7 +314,7 @@ var dsgnAplyInfo= /*[[${dsgnAplyInfo}]]*/null;
         }
 	}
 //tabEvent
-$('.nav-item a').on('show.bs.tab', function(event) {
+$('#tabUl a').on('show.bs.tab', function(event) {
     var tabId = event.currentTarget.attributes.id.value;
     console.log("############## tabId : " + tabId);
 
@@ -325,17 +325,27 @@ $('.nav-item a').on('show.bs.tab', function(event) {
 //init
 function initAplyInfoForm(){
 
-    prgrmid = $("#prgrmid").val();
 
+	prgrmid = $("#prgrmid").val();
     $('#applyInfo').focus();
-    $("#instTypeCd").attr("disabled", true);
-    $("#rgnCd").attr("disabled", true);
-    $("#sttsCd").attr("disabled", true);
-
     $("#aplcntNm").val($("#aplcntNm").val()+"("+$("#acnt").val()+ ")");
 
-    initJdsgTab();
-    setPic();
+	if($('#dsgnPrgrmDtlFrm').length>0){
+	    $('input').prop('readonly',true);
+	    $('select').prop('disabled',true);
+	    $('button').prop('disabled',true);
+	    $('#printBtn').prop('disabled',false);
+	    $('#tabUl').hide();
+
+	}else{
+
+        $("#instTypeCd").attr("disabled", true);
+        $("#rgnCd").attr("disabled", true);
+        $("#sttsCd").attr("disabled", true);
+
+        initJdsgTab();
+        setPic();
+	}
 
 }
 
