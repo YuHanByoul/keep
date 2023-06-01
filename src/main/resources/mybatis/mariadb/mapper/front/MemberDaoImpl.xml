@@ -416,33 +416,40 @@
         WHERE I.INSTID = #{instid}
     </update>
    
-    <!-- ci에 해당하는 회원과 어린이회원의 계정정보를 조회한다. -->
-    <select id="selectAcntFromCiList" parameterType="MemberAcntPswdFindVo" resultType="MemberAcntPswdFindVo">
-        /* front.MemberDao.selectAcntFromCiList */
+    <!-- ci 또는 휴대폰번호에 해당하는 회원과 어린이회원의 계정정보를 조회한다. -->
+    <select id="selectAcntFromCiAndMoblphonList" parameterType="MemberAcntPswdFindVo" resultType="MemberAcntPswdFindVo">
+        /* front.MemberDao.selectAcntFromCiAndMoblphonList */
         SELECT 
             ACNT,
-            REG_DT,
-            CI
+            REG_DT
         FROM 
             TB_CMM_USER 
         WHERE
             CI = #{ci}
         AND DEL_YN = 'N'
-        UNION ALL
+        UNION
         SELECT 
             ACNT,
-            REG_DT,
-            CI
+            REG_DT
         FROM 
             TB_CMM_USER 
         WHERE
             CI_PARNTS = #{ci}
         AND DEL_YN = 'N'
+        UNION
+        SELECT 
+            ACNT,
+            REG_DT
+        FROM 
+            TB_CMM_USER 
+        WHERE
+            MOBLPHON = #{moblphon}
+        AND DEL_YN = 'N'
     </select>
    
-    <!-- ci와 acnt에 해당하는 회원 정보를 조회한다. -->
-    <select id="selectAcntFromCi" parameterType="MemberAcntPswdFindVo" resultType="MemberAcntPswdFindVo">
-        /* front.MemberDao.selectAcntFromCi */
+    <!-- ci 또는 휴대폰번호가 일치하는 acnt에 해당하는 회원 정보를 조회한다. -->
+    <select id="selectAcntFromCiAndMoblphon" parameterType="MemberAcntPswdFindVo" resultType="MemberAcntPswdFindVo">
+        /* front.MemberDao.selectAcntFromCiAndMoblphon */
         SELECT 
             USERID,
             ACNT,
@@ -450,7 +457,7 @@
         FROM 
             TB_CMM_USER 
         WHERE
-            (CI = #{ci} OR CI_PARNTS = #{ci})
+            (CI = #{ci} OR CI_PARNTS = #{ci} OR MOBLPHON = #{moblphon})
         AND ACNT = #{acnt}
         AND DEL_YN = 'N'
     </select>

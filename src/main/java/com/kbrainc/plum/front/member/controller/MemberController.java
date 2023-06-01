@@ -765,7 +765,8 @@ public class MemberController {
             } else {  
                 MemberAcntPswdFindVo paramVo = new MemberAcntPswdFindVo();
                 paramVo.setCi(result.getSConnInfo());
-                List<MemberAcntPswdFindVo> acntList = memberService.selectAcntFromCiList(paramVo);
+                paramVo.setMoblphon(result.getSMobileNo());
+                List<MemberAcntPswdFindVo> acntList = memberService.selectAcntFromCiAndMoblphonList(paramVo);
                 if (acntList.size() == 0) {
                     memberAcntPswdFindVo.setEncodeData(null);
                     memberAcntPswdFindVo.setAlertMsg("존재하지 않는 회원입니다.");
@@ -801,7 +802,8 @@ public class MemberController {
             } else {  
                 MemberAcntPswdFindVo paramVo = new MemberAcntPswdFindVo();
                 paramVo.setCi(result.getSConnInfo());
-                List<MemberAcntPswdFindVo> acntList = memberService.selectAcntFromCiList(paramVo);
+                paramVo.setMoblphon(result.getSMobileNo());
+                List<MemberAcntPswdFindVo> acntList = memberService.selectAcntFromCiAndMoblphonList(paramVo);
                 if (acntList.size() == 0) {
                     memberAcntPswdFindVo.setEncodeData(null);
                     memberAcntPswdFindVo.setAlertMsg("존재하지 않는 회원입니다.");
@@ -849,7 +851,8 @@ public class MemberController {
                 MemberAcntPswdFindVo paramVo = new MemberAcntPswdFindVo();
                 paramVo.setAcnt(memberAcntPswdFindVo.getAcnt());
                 paramVo.setCi(result.getSConnInfo());
-                MemberAcntPswdFindVo memberInfo = memberService.selectAcntFromCi(paramVo);
+                paramVo.setMoblphon(result.getSMobileNo());
+                MemberAcntPswdFindVo memberInfo = memberService.selectAcntFromCiAndMoblphon(paramVo);
                 if (memberInfo == null) {
                     resultMap.put("msg", "회원정보가 일치하지 않습니다.");
                     return resultMap;
