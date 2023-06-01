@@ -38,6 +38,7 @@
 
     <form id="propSchldForm" class="row row-section">
         <input type="hidden"  id="aplyid" name="aplyid" th:value="${eduInstVo.aplyid}" />
+        <input type="hidden"  id="sttsCd" name="sttsCd" th:value="${eduInstVo.sttsCd}" />
 
         <div class="col col-small">
             <div class="sticky-navigation">
@@ -136,7 +137,6 @@
         }
 
         function goNext(){
-            //if(!valid()) return false;
             location.href = nextUrl;
         }
 
@@ -164,22 +164,21 @@
         }
 
         function validateTable() {
-    	  var valid = true;
+    	    var valid = true;
 
-
-    	  $("#schldTbody input").each(function() {
-    	    var inputVal = $(this).val().trim();
-    	    var feedback = $(this).parent().find(".feedback");
-    	    if (!inputVal && $(this).val() != '') {
-    	      valid = false;
-    	      if (!feedback.length) {
-    	        $(this).parent().append("<p class='feedback invalid'>공백은 입력할 수 없습니다.</p>");
-    	      }
-    	    } else {
-    	      feedback.remove();
-    	    }
-    	  });
-    	  return valid;
+    	    $("#schldTbody input").each(function() {
+    	        var inputVal = $(this).val().trim();
+    	        var feedback = $(this).parent().find(".feedback");
+    	        if (!inputVal && $(this).val() != '') {
+    	            valid = false;
+          	        if (!feedback.length) {
+          	            $(this).parent().append("<p class='feedback invalid'>공백은 입력할 수 없습니다.</p>");
+          	        }
+    	        } else {
+    	            feedback.remove();
+    	        }
+    	    });
+    	    return valid;
     	}
 
         function doSave(call){
@@ -193,9 +192,7 @@
                 url = updateUrl
             }
 
-
             if(!validateTable()) return;
-
 
             if(call!="next")if(!confirm("저장하시겠습니까?")) return;
 
@@ -241,8 +238,21 @@
             });
         }
 
-        $(function(){
+        function setView(){
+            var sttsCd = $('#sttsCd').val();
 
+            if(sttsCd !='248101' && sttsCd !='248102'&& sttsCd !=null && sttsCd !='' ){
+
+                $('#propSchldForm input,textarea').prop('readonly', true);
+                $('#propSchldForm select, input[type=checkbox],input[type=radio],input[type=file]').prop('disabled', true);
+                $('#propSchldForm button').prop('disabled', true);
+                $('#propSchldForm').prop('disabled', false);
+                $('.icon.icon-circle-close').remove();
+            }
+        }
+
+        $(function(){
+        	setView();
         });
 
     </script>
