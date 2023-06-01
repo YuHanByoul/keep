@@ -281,10 +281,10 @@
                             <th scope="row">발급건수</th>
                             <td colspan="4">
                                 <div class="form-input mo-flex-wrap">
-                                    <input type="number" class="ar" title="발급 회" style="flex:0 0 50px;width:100px;" id="issuNocs" name="issuNocs" th:value="${operRsltInfo.issuNocs}">
+                                    <input type="number" class="ar" title="발급 회" style="flex:0 0 50px;width:100px;" id="issuNocs" name="issuNocs" th:value="${operRsltInfo.issuNocs}" th:readonly='${operRsltInfo.issuYn!="Y" ? true:false}'>
                                     <div class="bul">회</div>
                                     <div class="bul">(총</div>
-                                    <input type="number" class="ar" title="발급건수" style="flex:0 0 50px;width:100px;" id="issuSum" name="issuSum" th:value="${operRsltInfo.issuSum}">
+                                    <input type="number" class="ar" title="발급건수" style="flex:0 0 50px;width:100px;" id="issuSum" name="issuSum" th:value="${operRsltInfo.issuSum}" th:readonly='${operRsltInfo.issuYn!="Y" ? true:false}'>
                                     <div class="bul"> 건 발급)</div>
                                 </div>
                             </td>
@@ -368,6 +368,7 @@
                                         <div id="multipleFileUploadSuccess">
                                         <th:block th:if="${fileList != null}">
                                             <div th:each="item : ${fileList}" th:id="${item.fileid}" class="col-auto">
+
                                                 <ul th:if="${item.orginlFileNm != null}">
                                                     <li th:fileid='${item.fileid}'
                                                         th:fileIdntfcKey="${item.fileIdntfcKey}"
@@ -375,8 +376,8 @@
                                                         class='label label-inverse'
                                                         th:data_ext="${#strings.replace(item.ext, '.', '')}">
                                                         <th:block th:text="${item.orginlFileNm}" />&nbsp;&nbsp;
-                                                        <a th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="fn_deleteFileList(this.name, this.dataset.idntfcKey)" class='text-white'>
-                                                        <th:block th:text="${mode=='read'?'' :'X'}"></th:block></a>
+                                                        <a href="javascript:void(0)" th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="fn_deleteFile(this.name, this.dataset.idntfcKey)" class='text-white'>
+                                                        <th:block th:text="X"></th:block></a>
                                                     </li>
                                                 </ul>
                                                 <p>등록 가능 확장자 : jpg, jpeg, png, gif, hwp, doc, docx, xls, xlsx, pdf, txt, zip</p>
@@ -562,7 +563,6 @@
                 param["insrncJoinYn" ] = $("[name=insrncJoinYn]:checked").val();
                 param["pchrgYn"      ] = $("[name=pchrgYn]:checked").val();
                 param["issuYn"       ] = $("[name=issuYn]:checked").val();
-debugger;
 
         		$("#prfmncTbody [id^=oprtnDe] ").each(function(idx,item){ param["operPrfmncLst[" + idx+ "].oprtnDe" ]=item.value; });
         		$("#prfmncTbody [id^=trgt]    ").each(function(idx,item){ param["operPrfmncLst[" + idx+ "].trgt"    ]=item.value; });

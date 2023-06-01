@@ -52,7 +52,7 @@
                 FROM TB_EDU_MVMN_PRGRM_SCHDL C
                 LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_SCHDL_PRGRM D ON D.PRGRM_SCHDLID = C.PRGRM_SCHDLID
                 LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME_SCHDL B ON B.PRGRM_SCHDLID = C.PRGRM_SCHDLID  
-                LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_APLY_SCHDL G ON G.TME_SCHDLID = B.TME_SCHDLID
+                LEFT OUTER JOIN (SELECT APLYID, TME_SCHDLID FROM TB_EDU_MVMN_PRGRM_APLY_SCHDL GROUP BY APLYID) G ON G.TME_SCHDLID = B.TME_SCHDLID
                 LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME H ON H.TMEID = B.TMEID                 
                 LEFT OUTER JOIN TB_EDU_MVMN_PRGRM E ON E.PRGRMID = D.PRGRMID
                 LEFT OUTER JOIN TB_EDU_SAREA F ON F.SAREAID = C.SAREAID        
@@ -72,7 +72,7 @@
                 </if>
                 <if test="searchRcptMthdCd != null and searchRcptMthdCd != ''">
                 AND E.RCPT_MTHD_CD = #{searchRcptMthdCd}
-                </if>                                
+                </if>
          )Z GROUP BY Z.PRGRM_SCHDLID, Z.YM, Z.PRGRMID, Z.SAREAID                
         <include refid="PaginationMapper.footer"/>        
     </select>
